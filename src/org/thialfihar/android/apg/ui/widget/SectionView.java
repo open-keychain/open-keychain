@@ -1,0 +1,323 @@
+/*
+ * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.thialfihar.android.apg.ui.widget;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.Vector;
+
+import org.bouncycastle2.openpgp.PGPException;
+import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Runnable {
+    public static final int TYPE_USER_ID = 1;
+    public static final int TYPE_KEY = 2;
+
+    private LayoutInflater mInflater;
+    private View mAdd;
+    private ViewGroup mEditors;
+    private TextView mTitle;
+    private int mType = 0;
+
+    private KeyEditor.AlgorithmChoice mNewKeyAlgorithmChoice;
+    private int mNewKeySize;
+
+    volatile private PGPSecretKey mNewKey;
+    private ProgressDialog mProgressDialog;
+    private Thread mRunningThread = null;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle data = msg.getData();
+            if (data != null) {
+                boolean closeProgressDialog = data.getBoolean("closeProgressDialog");
+                if (closeProgressDialog) {
+                    if (mProgressDialog != null) {
+                        mProgressDialog.dismiss();
+                        mProgressDialog = null;
+                    }
+                }
+
+                String error = data.getString("error");
+                if (error != null) {
+                    Toast.makeText(getContext(),
+                                   "Error: " + error,
+                                   Toast.LENGTH_SHORT).show();
+                }
+
+                boolean gotNewKey = data.getBoolean("gotNewKey");
+                if (gotNewKey) {
+                    KeyEditor view =
+                        (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
+                                                      mEditors, false);
+                    view.setEditorListener(SectionView.this);
+                    boolean isMasterKey = (mEditors.getChildCount() == 0);
+                    view.setValue(mNewKey, isMasterKey);
+                    mEditors.addView(view);
+                    SectionView.this.updateEditorsVisible();
+                }
+            }
+        }
+    };
+
+    public SectionView(Context context) {
+        super(context);
+    }
+
+    public SectionView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public ViewGroup getEditors() {
+        return mEditors;
+    }
+
+    public void setType(int type) {
+        mType = type;
+        switch (type) {
+            case TYPE_USER_ID: {
+                mTitle.setText(R.string.section_userIds);
+                break;
+            }
+
+            case TYPE_KEY: {
+                mTitle.setText(R.string.section_keys);
+                break;
+            }
+
+            default: {
+                break;
+            }
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void onFinishInflate() {
+        mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        setDrawingCacheEnabled(true);
+        setAlwaysDrawnWithCacheEnabled(true);
+
+        mAdd = findViewById(R.id.header);
+        mAdd.setOnClickListener(this);
+
+        mEditors = (ViewGroup) findViewById(R.id.editors);
+        mTitle = (TextView) findViewById(R.id.title);
+
+        updateEditorsVisible();
+        super.onFinishInflate();
+    }
+
+    /** {@inheritDoc} */
+    public void onDeleted(Editor editor) {
+        this.updateEditorsVisible();
+    }
+
+    protected void updateEditorsVisible() {
+        final boolean hasChildren = mEditors.getChildCount() > 0;
+        mEditors.setVisibility(hasChildren ? View.VISIBLE : View.GONE);
+    }
+
+    /** {@inheritDoc} */
+    public void onClick(View v) {
+        switch (mType) {
+            case TYPE_USER_ID: {
+                UserIdEditor view =
+                        (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
+                                                         mEditors, false);
+                view.setEditorListener(this);
+                if (mEditors.getChildCount() == 0) {
+                    view.setIsMainUserId(true);
+                }
+                mEditors.addView(view);
+                break;
+            }
+
+            case TYPE_KEY: {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+
+                View view = mInflater.inflate(R.layout.create_key, null);
+                dialog.setView(view);
+                dialog.setTitle("Create Key");
+
+                final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
+                KeyEditor.AlgorithmChoice choices[] = {
+                        new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.DSA,
+                                                      getResources().getString(R.string.dsa)),
+                        /*new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.ELGAMAL,
+                                                      getResources().getString(R.string.elgamal)),*/
+                        new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.RSA,
+                                                      getResources().getString(R.string.rsa)),
+                };
+                ArrayAdapter<KeyEditor.AlgorithmChoice> adapter =
+                        new ArrayAdapter<KeyEditor.AlgorithmChoice>(
+                                getContext(),
+                                android.R.layout.simple_spinner_item,
+                                choices);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                algorithm.setAdapter(adapter);
+                // make RSA the default
+                for (int i = 0; i < choices.length; ++i) {
+                    if (choices[i].getId() == KeyEditor.AlgorithmChoice.RSA) {
+                        algorithm.setSelection(i);
+                        break;
+                    }
+                }
+
+                final EditText keySize = (EditText) view.findViewById(R.id.size);
+
+                dialog.setPositiveButton(android.R.string.ok,
+                                         new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface di, int id) {
+                        di.dismiss();
+                        try {
+                            mNewKeySize = Integer.parseInt("" + keySize.getText());
+                        } catch (NumberFormatException e) {
+                            mNewKeySize = 0;
+                        }
+
+                        mNewKeyAlgorithmChoice =
+                                (KeyEditor.AlgorithmChoice) algorithm.getSelectedItem();
+                        createKey();
+                    }
+                });
+
+                dialog.setCancelable(true);
+                dialog.setNegativeButton(android.R.string.cancel,
+                                         new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface di, int id) {
+                        di.dismiss();
+                    }
+                });
+
+                dialog.create().show();
+                break;
+            }
+
+            default: {
+                break;
+            }
+        }
+        this.updateEditorsVisible();
+    }
+
+    public void setUserIds(Vector<String> list) {
+        if (mType != TYPE_USER_ID) {
+            return;
+        }
+
+        mEditors.removeAllViews();
+        for (String userId : list) {
+            UserIdEditor view =
+                (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item, mEditors, false);
+            view.setEditorListener(this);
+            view.setValue(userId);
+            if (mEditors.getChildCount() == 0) {
+                view.setIsMainUserId(true);
+            }
+            mEditors.addView(view);
+        }
+
+        this.updateEditorsVisible();
+    }
+
+    public void setKeys(Vector<PGPSecretKey> list) {
+        if (mType != TYPE_KEY) {
+            return;
+        }
+
+        mEditors.removeAllViews();
+        for (PGPSecretKey key : list) {
+            KeyEditor view =
+                (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors, false);
+            view.setEditorListener(this);
+            boolean isMasterKey = (mEditors.getChildCount() == 0);
+            view.setValue(key, isMasterKey);
+            mEditors.addView(view);
+        }
+
+        this.updateEditorsVisible();
+    }
+
+    private void createKey() {
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setMessage("Generating key, this can take a while...");
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.show();
+        mRunningThread = new Thread(this);
+        mRunningThread.start();
+    }
+
+    public void run() {
+        String error = null;
+        try {
+            mNewKey = Apg.createKey(mNewKeyAlgorithmChoice, mNewKeySize, Apg.getPassPhrase());
+        } catch (NoSuchProviderException e) {
+            error = e.getMessage();
+        } catch (NoSuchAlgorithmException e) {
+            error = e.getMessage();
+        } catch (PGPException e) {
+            error = e.getMessage();
+        } catch (InvalidParameterException e) {
+            error = e.getMessage();
+        } catch (InvalidAlgorithmParameterException e) {
+            error = e.getMessage();
+        } catch (Apg.GeneralException e) {
+            error = e.getMessage();
+        }
+
+        Message message = new Message();
+        Bundle data = new Bundle();
+        data.putBoolean("closeProgressDialog", true);
+        if (error != null) {
+            data.putString("error", error);
+        } else {
+            data.putBoolean("gotNewKey", true);
+        }
+        message.setData(data);
+        mHandler.sendMessage(message);
+    }
+}

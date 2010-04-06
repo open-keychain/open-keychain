@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<resources>
+    <string name="app_name">APG</string>
+    <string name="title_mailInbox">Mail Inbox</string>
+    <string name="title_managePublicKeys">Manage Public Keys</string>
+    <string name="title_manageSecretKeys">Manage Secret Keys</string>
+    <string name="title_selectRecipients">Select Recipients</string>
+    <string name="title_selectSignature">Select Signature</string>
+    <string name="title_encryptMessage">Encrypt Message</string>
+    <string name="title_decryptMessage">Decrypt Message</string>
+    <string name="title_authentification">Authentification</string>
+    <string name="title_createKey">Create Key</string>
+    <string name="title_editKey">Edit Key</string>
+
+    <string name="section_userIds">User IDs</string>
+    <string name="section_keys">Keys</string>
+
+    <string name="btn_send">Send via Email</string>
+    <string name="btn_decrypt">Decrypt</string>
+    <string name="btn_selectEncryptKeys">Select Recipients</string>
+    <string name="btn_reply">Reply</string>
+    <string name="btn_encryptMessage">Encrypt Message</string>
+    <string name="btn_decryptMessage">Decrypt Message</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_doNotSave">Cancel</string>
+
+    <string name="menu_about">About</string>
+    <string name="menu_addAccount">Add GMail Account</string>
+    <string name="menu_managePublicKeys">Manage Public Keys</string>
+    <string name="menu_manageSecretKeys">Manage Secret Keys</string>
+
+    <string name="sign">Sign</string>
+    <string name="sign_as">Sign as</string>
+    <string name="no_keys_selected">Select Recipients</string>
+    <string name="one_key_selected">1 Recipient</string>
+    <string name="n_keys_selected">Recipients</string>
+    <string name="unknown_user_id">&lt;unknown&gt;</string>
+    <string name="none">&lt;none&gt;</string>
+
+    <string name="sign_only">Sign only</string>
+    <string name="encrypt_only">Encrypt only</string>
+    <string name="sign_and_encrypt">Sign and Encrypt</string>
+
+    <string name="dsa">DSA</string>
+    <string name="elgamal">ElGamal</string>
+    <string name="rsa">RSA</string>
+
+    <string name="wrong_pass_phrase">Wrong pass phrase.</string>
+    <string name="using_clipboard_content">Using clipboard content.</string>
+    <string name="key_saved">Key saved.</string>
+    <string name="set_a_pass_phrase">Set a pass phrase via the option menu first.</string>
+</resources>
+

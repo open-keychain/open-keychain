@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<org.thialfihar.android.apg.ui.widget.UserIdEditor
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:paddingLeft="5dip">
+
+<View
+  android:id="@+id/separator"
+  android:layout_width="fill_parent"
+  android:layout_height="1dip"
+  android:background="?android:attr/listDivider"/>
+
+<RadioButton
+  android:id="@+id/is_main_user_id" android:text="Main User ID"
+  android:layout_height="wrap_content" android:layout_width="wrap_content"
+  android:layout_marginLeft="20dip"/>
+
+<LinearLayout
+  android:layout_height="wrap_content"
+  android:layout_width="fill_parent"
+  android:orientation="horizontal">
+    <TableLayout
+      android:layout_height="wrap_content"
+      android:layout_width="0dip"
+      android:layout_weight="1"
+      android:layout_marginLeft="16dip">
+        <TableRow>
+            <TextView
+              android:id="@+id/name_label"
+              android:text="Name"
+              android:layout_gravity="center_vertical"
+              android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:paddingRight="5dip"/>
+            <EditText
+              android:id="@+id/name"
+              android:layout_weight="1"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+              android:id="@+id/email_label"
+              android:text="Email"
+              android:layout_gravity="center_vertical"
+              android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:paddingRight="5dip"/>
+            <EditText
+              android:id="@+id/email"
+              android:layout_weight="1"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+              android:id="@+id/comment_label"
+              android:text="Comment"
+              android:layout_gravity="center_vertical"
+              android:layout_height="wrap_content"
+              android:layout_width="wrap_content"
+              android:paddingRight="5dip"/>
+            <EditText
+              android:id="@+id/comment"
+              android:layout_weight="1"
+              android:layout_height="wrap_content"
+              android:layout_width="fill_parent"/>
+        </TableRow>
+    </TableLayout>
+
+    <ImageButton
+        android:id="@+id/edit_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/MinusButton"
+        android:layout_gravity="center_vertical"/>
+
+</LinearLayout>
+</org.thialfihar.android.apg.ui.widget.UserIdEditor>
