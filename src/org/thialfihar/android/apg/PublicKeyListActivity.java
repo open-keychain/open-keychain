@@ -481,7 +481,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
         ((PublicKeyListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
     }
 
-    private class PublicKeyListAdapter extends BaseExpandableListAdapter {
+    private static class PublicKeyListAdapter extends BaseExpandableListAdapter {
         private LayoutInflater mInflater;
 
         private class KeyChild {

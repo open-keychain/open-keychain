@@ -97,7 +97,7 @@ public class Apg {
         public static final String ENCRYPT = "org.thialfihar.android.apg.intent.ENCRYPT";
     }
 
-    public static String VERSION = "0.8.0";
+    public static String VERSION = "0.8.1";
     public static String FULL_VERSION = "APG v" + VERSION;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS =

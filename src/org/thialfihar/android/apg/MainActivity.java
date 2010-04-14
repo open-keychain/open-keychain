@@ -360,7 +360,7 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this, MailListActivity.class).putExtra("account", account));
     }
 
-    private class AccountListAdapter extends CursorAdapter {
+    private static class AccountListAdapter extends CursorAdapter {
         private LayoutInflater minflater;
 
         public AccountListAdapter(Context context, Cursor cursor) {

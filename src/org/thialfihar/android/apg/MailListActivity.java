@@ -39,7 +39,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class MailListActivity extends ListActivity {
     LayoutInflater minflater = null;
 
-    private class Conversation {
+    private static class Conversation {
         public long id;
         public String subject;
         public Vector<Message> messages;
@@ -50,7 +50,7 @@ public class MailListActivity extends ListActivity {
         }
     }
 
-    private class Message {
+    private static class Message {
         public Conversation parent;
         public long id;
         public String subject;

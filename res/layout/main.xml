@@ -26,12 +26,13 @@
    android:layout_marginTop="10dip"
    android:layout_width="fill_parent"
    android:layout_height="0dip"
-   android:layout_weight="1">
+   android:layout_weight="1"
+   android:fillViewport="true">
 
 <ListView
    android:id="@+id/account_list"
    android:layout_width="fill_parent"
-   android:layout_height="wrap_content">
+   android:layout_height="fill_parent">
 </ListView>
 
 </ScrollView>

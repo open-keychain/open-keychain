@@ -580,7 +580,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
                 .notifyDataSetChanged();
     }
 
-    private class SecretKeyListAdapter extends BaseExpandableListAdapter {
+    private static class SecretKeyListAdapter extends BaseExpandableListAdapter {
         private LayoutInflater mInflater;
 
         private class KeyChild {
