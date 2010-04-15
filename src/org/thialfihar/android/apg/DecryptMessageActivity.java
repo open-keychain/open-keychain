@@ -190,6 +190,8 @@ public class DecryptMessageActivity extends Activity
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
                     data = matcher.group(1);
+                    // replace non breakable spaces
+                    data = data.replaceAll("\\xa0", " ");
                     mMessage.setText(data);
                 }
             }
@@ -312,8 +314,9 @@ public class DecryptMessageActivity extends Activity
         Bundle data = new Bundle();
         Message msg = new Message();
 
-        ByteArrayInputStream in =
-                new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+        String messageData = mMessage.getText().toString();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(messageData.getBytes());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {

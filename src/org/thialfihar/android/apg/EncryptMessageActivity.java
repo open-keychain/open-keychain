@@ -312,7 +312,8 @@ public class EncryptMessageActivity extends Activity
 
         try {
             if (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) {
-                Apg.encrypt(in, out, mEncryptionKeyIds, mSignatureKeyId, Apg.getPassPhrase(), this);
+                Apg.encrypt(in, out, true, mEncryptionKeyIds, mSignatureKeyId,
+                            Apg.getPassPhrase(), this);
                 data.putString("message", new String(out.toByteArray()));
             } else {
                 Apg.sign(in, out, mSignatureKeyId, Apg.getPassPhrase(), this);

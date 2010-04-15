@@ -122,7 +122,7 @@ public class Apg {
     protected static Vector<PGPSecretKeyRing> mSecretKeyRings;
 
     public static Pattern PGP_MESSAGE =
-            Pattern.compile(".*?(-----BEGIN PGP MESSAGE-----\n.*?-----END PGP MESSAGE-----).*",
+            Pattern.compile(".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*",
                             Pattern.DOTALL);
 
     protected static boolean mInitialized = false;
@@ -1135,6 +1135,7 @@ public class Apg {
     }
 
     public static void encrypt(InputStream inStream, OutputStream outStream,
+                               boolean armored,
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
                                ProgressDialogUpdater progress)
@@ -1142,11 +1143,16 @@ public class Apg {
             NoSuchAlgorithmException, SignatureException {
         Security.addProvider(new BouncyCastleProvider());
 
-        ArmoredOutputStream armorOut = new ArmoredOutputStream(outStream);
-        armorOut.setHeader("Version", FULL_VERSION);
-        OutputStream out = armorOut;
+        ArmoredOutputStream armorOut = null;
+        OutputStream out = null;
         OutputStream encryptOut = null;
-
+        if (armored) {
+            armorOut = new ArmoredOutputStream(outStream);
+            armorOut.setHeader("Version", FULL_VERSION);
+            out = armorOut;
+        } else {
+            out = outStream;
+        }
         PGPSecretKey signingKey = null;
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
