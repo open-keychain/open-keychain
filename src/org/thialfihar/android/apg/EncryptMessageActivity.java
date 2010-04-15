@@ -24,6 +24,7 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Vector;
 
+import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
@@ -104,16 +105,9 @@ public class EncryptMessageActivity extends Activity
                             return;
                         } else {
                             String message = data.getString("message");
-                            String signature = data.getString("signature");
                             Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
                             emailIntent.setType("text/plain; charset=utf-8");
                             emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-                            if (signature != null) {
-                                String fullText = "-----BEGIN PGP SIGNED MESSAGE-----\n" +
-                                                  "Hash: SHA256\n" + "\n" +
-                                                  message + "\n" + signature;
-                                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, fullText);
-                            }
                             if (mSubject != null) {
                                 emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
                                                      mSubject);
@@ -305,7 +299,9 @@ public class EncryptMessageActivity extends Activity
         message = message.replaceAll(" +\n", "\n");
         message = message.replaceAll("\n\n+", "\n\n");
         message = message.replaceFirst("^\n+", "");
-        message = message.replaceFirst("\n+$", "");
+        // make sure there'll be exactly one newline at the end
+        message = message.replaceFirst("\n*$", "\n");
+
         ByteArrayInputStream in =
                 new ByteArrayInputStream(Strings.toUTF8ByteArray(message));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -316,9 +312,9 @@ public class EncryptMessageActivity extends Activity
                             Apg.getPassPhrase(), this);
                 data.putString("message", new String(out.toByteArray()));
             } else {
-                Apg.sign(in, out, mSignatureKeyId, Apg.getPassPhrase(), this);
-                data.putString("message", message);
-                data.putString("signature", new String(out.toByteArray()));
+                Apg.signText(in, out, mSignatureKeyId,
+                             Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
+                data.putString("message", new String(out.toByteArray()));
             }
         } catch (IOException e) {
             error = e.getMessage();

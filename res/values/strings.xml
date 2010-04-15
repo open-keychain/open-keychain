@@ -32,6 +32,7 @@
 
     <string name="btn_send">Send via Email</string>
     <string name="btn_decrypt">Decrypt</string>
+    <string name="btn_verify">Verify</string>
     <string name="btn_selectEncryptKeys">Select Recipients</string>
     <string name="btn_reply">Reply</string>
     <string name="btn_encryptMessage">Encrypt Message</string>

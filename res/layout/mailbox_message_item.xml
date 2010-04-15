@@ -25,7 +25,7 @@
     android:layout_width="fill_parent">
 
 <ImageView
-    android:id="@+id/ic_encrypted"
+    android:id="@+id/ic_status"
     android:src="@drawable/encrypted"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

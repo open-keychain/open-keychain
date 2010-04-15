@@ -63,6 +63,7 @@ public class DecryptMessageActivity extends Activity
 
     private String mReplyTo = null;
     private String mSubject = null;
+    private boolean mSignedOnly = false;
 
     private ProgressDialog mProgressDialog = null;
     private Thread mRunningThread = null;
@@ -193,6 +194,15 @@ public class DecryptMessageActivity extends Activity
                     // replace non breakable spaces
                     data = data.replaceAll("\\xa0", " ");
                     mMessage.setText(data);
+                } else {
+                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+                    if (matcher.matches()) {
+                        data = matcher.group(1);
+                        // replace non breakable spaces
+                        data = data.replaceAll("\\xa0", " ");
+                        mMessage.setText(data);
+                        mDecryptButton.setText(R.string.btn_verify);
+                    }
                 }
             }
             mReplyTo = intent.getExtras().getString("replyTo");
@@ -266,8 +276,18 @@ public class DecryptMessageActivity extends Activity
 
     private void decryptClicked() {
         String error = null;
+        String messageData = mMessage.getText().toString();
+        Matcher matcher = Apg.PGP_SIGNED_MESSAGE.matcher(messageData);
+        if (matcher.matches()) {
+            mSignedOnly = true;
+            decryptStart();
+            return;
+        }
+
+        // else treat it as an encrypted message
+        mSignedOnly = false;
         ByteArrayInputStream in =
-                new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+                new ByteArrayInputStream(messageData.getBytes());
         try {
             mDecryptionKeyId = Apg.getDecryptionKeyId(in);
             showDialog(AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE);
@@ -320,7 +340,11 @@ public class DecryptMessageActivity extends Activity
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-            data = Apg.decrypt(in, out, Apg.getPassPhrase(), this);
+            if (mSignedOnly) {
+                data = Apg.verifyText(in, out, this);
+            } else {
+                data = Apg.decrypt(in, out, Apg.getPassPhrase(), this);
+            }
         } catch (PGPException e) {
             error = e.getMessage();
         } catch (IOException e) {

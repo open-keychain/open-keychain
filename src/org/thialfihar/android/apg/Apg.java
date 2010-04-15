@@ -16,7 +16,9 @@
 
 package org.thialfihar.android.apg;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,6 +44,7 @@ import java.util.HashMap;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+import org.bouncycastle2.bcpg.ArmoredInputStream;
 import org.bouncycastle2.bcpg.ArmoredOutputStream;
 import org.bouncycastle2.bcpg.BCPGOutputStream;
 import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
@@ -124,6 +127,10 @@ public class Apg {
     public static Pattern PGP_MESSAGE =
             Pattern.compile(".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*",
                             Pattern.DOTALL);
+
+    public static Pattern PGP_SIGNED_MESSAGE =
+        Pattern.compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+                        Pattern.DOTALL);
 
     protected static boolean mInitialized = false;
 
@@ -1247,17 +1254,16 @@ public class Apg {
         progress.setProgress("done.", 100, 100);
     }
 
-    public static void sign(InputStream inStream, OutputStream outStream,
-                            long signatureKeyId, String signaturePassPhrase,
-                            ProgressDialogUpdater progress)
+    public static void signText(InputStream inStream, OutputStream outStream,
+                                long signatureKeyId, String signaturePassPhrase,
+                                int hashAlgorithm,
+                                ProgressDialogUpdater progress)
             throws GeneralException, PGPException, IOException, NoSuchAlgorithmException,
             SignatureException {
         Security.addProvider(new BouncyCastleProvider());
 
         ArmoredOutputStream armorOut = new ArmoredOutputStream(outStream);
         armorOut.setHeader("Version", FULL_VERSION);
-        OutputStream out = armorOut;
-        OutputStream signOut = out;
 
         PGPSecretKey signingKey = null;
         PGPSecretKeyRing signingKeyRing = null;
@@ -1286,7 +1292,7 @@ public class Apg {
         progress.setProgress("preparing signature...", 30, 100);
         signatureGenerator =
                 new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
-                                          HashAlgorithmTags.SHA1,
+                                          hashAlgorithm,
                                           new BouncyCastleProvider());
         signatureGenerator.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
         String userId = getMainUserId(getMasterKey(signingKeyRing));
@@ -1296,15 +1302,31 @@ public class Apg {
         signatureGenerator.setHashedSubpackets(spGen.generate());
 
         progress.setProgress("signing...", 40, 100);
-        int n = 0;
-        byte[] buffer = new byte[1 << 16];
-        while ((n = inStream.read(buffer)) > 0) {
-            signatureGenerator.update(buffer, 0, n);
+
+        armorOut.beginClearText(hashAlgorithm);
+
+        ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
+        int lookAhead = readInputLine(lineOut, inStream);
+
+        processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+
+        if (lookAhead != -1) {
+            do {
+                lookAhead = readInputLine(lineOut, lookAhead, inStream);
+
+                signatureGenerator.update((byte)'\r');
+                signatureGenerator.update((byte)'\n');
+
+                processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+            }
+            while (lookAhead != -1);
         }
 
-        signatureGenerator.generate().encode(signOut);
-        signOut.close();
-        out.close();
+        armorOut.endClearText();
+
+        BCPGOutputStream bOut = new BCPGOutputStream(armorOut);
+        signatureGenerator.generate().encode(bOut);
+        armorOut.close();
 
         progress.setProgress("done.", 100, 100);
     }
@@ -1492,11 +1514,229 @@ public class Apg {
         return returnData;
     }
 
+    public static Bundle verifyText(InputStream inStream, OutputStream outStream,
+                                    ProgressDialogUpdater progress)
+            throws IOException, GeneralException, PGPException, SignatureException {
+        Bundle returnData = new Bundle();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ArmoredInputStream aIn = new ArmoredInputStream(inStream);
+
+        progress.setProgress("reading data...", 0, 100);
+
+        // mostly taken from CLearSignedFileProcessor
+        ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
+        int lookAhead = readInputLine(lineOut, aIn);
+        byte[] lineSep = getLineSeparator();
+
+        if (lookAhead != -1 && aIn.isClearText())
+        {
+            byte[] line = lineOut.toByteArray();
+            out.write(line, 0, getLengthWithoutSeparator(line));
+            out.write(lineSep);
+
+            while (lookAhead != -1 && aIn.isClearText())
+            {
+                lookAhead = readInputLine(lineOut, lookAhead, aIn);
+
+                line = lineOut.toByteArray();
+                out.write(line, 0, getLengthWithoutSeparator(line));
+                out.write(lineSep);
+            }
+        }
+
+        out.close();
+
+        byte[] clearText = out.toByteArray();
+        outStream.write(clearText);
+
+        returnData.putBoolean("signature", true);
+
+        progress.setProgress("processing signature...", 60, 100);
+        PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
+
+        PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
+        if (sigList == null) {
+            throw new GeneralException("corrupt data");
+        }
+        PGPSignature signature = null;
+        long signatureKeyId = 0;
+        PGPPublicKey signatureKey = null;
+        for (int i = 0; i < sigList.size(); ++i) {
+            signature = sigList.get(i);
+            signatureKey = findPublicKey(signature.getKeyID());
+            if (signatureKeyId == 0) {
+                signatureKeyId = signature.getKeyID();
+            }
+            if (signatureKey == null) {
+                signature = null;
+            } else {
+                signatureKeyId = signature.getKeyID();
+                String userId = null;
+                PGPPublicKeyRing sigKeyRing = findPublicKeyRing(signatureKeyId);
+                if (sigKeyRing != null) {
+                    userId = getMainUserId(getMasterKey(sigKeyRing));
+                }
+                returnData.putString("signatureUserId", userId);
+                break;
+            }
+        }
+
+        returnData.putLong("signatureKeyId", signatureKeyId);
+
+        if (signature == null) {
+            returnData.putBoolean("signatureUnknown", true);
+            progress.setProgress("done.", 100, 100);
+            return returnData;
+        }
+
+        signature.initVerify(signatureKey, new BouncyCastleProvider());
+
+        InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
+
+        lookAhead = readInputLine(lineOut, sigIn);
+
+        processLine(signature, lineOut.toByteArray());
+
+        if (lookAhead != -1) {
+            do {
+                lookAhead = readInputLine(lineOut, lookAhead, sigIn);
+
+                signature.update((byte)'\r');
+                signature.update((byte)'\n');
+
+                processLine(signature, lineOut.toByteArray());
+            }
+            while (lookAhead != -1);
+        }
+
+        returnData.putBoolean("signatureSuccess", signature.verify());
+
+        progress.setProgress("done.", 100, 100);
+        return returnData;
+    }
+
     public static Vector<PGPPublicKeyRing> getPublicKeyRings() {
         return mPublicKeyRings;
     }
 
     public static Vector<PGPSecretKeyRing> getSecretKeyRings() {
         return mSecretKeyRings;
+    }
+
+
+    // taken from ClearSignedFileProcessor in BC
+    private static int readInputLine(ByteArrayOutputStream bOut, InputStream fIn)
+        throws IOException
+    {
+        bOut.reset();
+
+        int lookAhead = -1;
+        int ch;
+
+        while ((ch = fIn.read()) >= 0)
+        {
+            bOut.write(ch);
+            if (ch == '\r' || ch == '\n')
+            {
+                lookAhead = readPassedEOL(bOut, ch, fIn);
+                break;
+            }
+        }
+
+        return lookAhead;
+    }
+
+    private static int readInputLine(ByteArrayOutputStream bOut, int lookAhead, InputStream fIn)
+        throws IOException {
+        bOut.reset();
+
+        int ch = lookAhead;
+
+        do {
+            bOut.write(ch);
+            if (ch == '\r' || ch == '\n') {
+                lookAhead = readPassedEOL(bOut, ch, fIn);
+                break;
+            }
+        }
+        while ((ch = fIn.read()) >= 0);
+
+        if (ch < 0) {
+            lookAhead = -1;
+        }
+
+        return lookAhead;
+    }
+
+    private static int readPassedEOL(ByteArrayOutputStream bOut, int lastCh, InputStream fIn)
+        throws IOException {
+        int lookAhead = fIn.read();
+
+        if (lastCh == '\r' && lookAhead == '\n') {
+            bOut.write(lookAhead);
+            lookAhead = fIn.read();
+        }
+
+        return lookAhead;
+    }
+
+    private static void processLine(PGPSignature sig, byte[] line)
+        throws SignatureException, IOException {
+        int length = getLengthWithoutWhiteSpace(line);
+        if (length > 0)
+        {
+            sig.update(line, 0, length);
+        }
+    }
+
+    private static void processLine(OutputStream aOut, PGPSignatureGenerator sGen, byte[] line)
+        throws SignatureException, IOException {
+        int length = getLengthWithoutWhiteSpace(line);
+        if (length > 0)
+        {
+            sGen.update(line, 0, length);
+        }
+
+        aOut.write(line, 0, line.length);
+    }
+
+    private static int getLengthWithoutSeparator(byte[] line) {
+        int    end = line.length - 1;
+
+        while (end >= 0 && isLineEnding(line[end])) {
+            end--;
+        }
+
+        return end + 1;
+    }
+
+    private static boolean isLineEnding(byte b) {
+        return b == '\r' || b == '\n';
+    }
+
+    private static int getLengthWithoutWhiteSpace(byte[] line) {
+        int    end = line.length - 1;
+
+        while (end >= 0 && isWhiteSpace(line[end])) {
+            end--;
+        }
+
+        return end + 1;
+    }
+
+    private static boolean isWhiteSpace(byte b) {
+        return b == '\r' || b == '\n' || b == '\t' || b == ' ';
+    }
+
+    private static byte[] getLineSeparator() {
+        String nl = System.getProperty("line.separator");
+        byte[] nlBytes = new byte[nl.length()];
+
+        for (int i = 0; i != nlBytes.length; i++) {
+            nlBytes[i] = (byte)nl.charAt(i);
+        }
+
+        return nlBytes;
     }
 }
