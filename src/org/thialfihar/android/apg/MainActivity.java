@@ -220,12 +220,9 @@ public class MainActivity extends Activity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
-                                            " * create/edit keys\n" +
-                                            " * export keys\n" +
-                                            " * GUI more Android-like\n" +
-                                            " * better error handling\n" +
-                                            " * bug fixes, optimizations\n" +
-                                            " * starting with v0.8.0 APG will be open source, see website\n" +
+                                            " * display signed-only mails\n" +
+                                            " * verify signed-only mails\n" +
+                                            " * bug fixes, layout fixes\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
