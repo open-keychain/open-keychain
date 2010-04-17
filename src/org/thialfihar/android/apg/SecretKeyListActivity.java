@@ -36,18 +36,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnKeyListener;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -337,51 +333,23 @@ public class SecretKeyListActivity extends ExpandableListActivity
             }
 
             case DIALOG_IMPORT_KEYS: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                return FileDialog.build(this, "Import Keys",
+                                        "Please specify which file to import from.",
+                                        Environment.getExternalStorageDirectory() + "/secring.gpg",
+                                        new FileDialog.OnClickListener() {
 
-                alert.setTitle("Import Keys");
-                alert.setMessage("Please specify which file to import from.");
-
-                final EditText input = new EditText(this);
-                // TODO: default file?
-                input.setText(Environment.getExternalStorageDirectory() + "/secring.gpg");
-                input.setOnKeyListener(new OnKeyListener() {
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        // TODO: this doesn't actually work yet
-                        // If the event is a key-down event on the "enter"
-                        // button
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            try {
-                                ((AlertDialog) v.getParent())
-                                        .getButton(AlertDialog.BUTTON_POSITIVE)
-                                        .performClick();
-                            } catch (ClassCastException e) {
-                                // don't do anything if we're not in that dialog
-                            }
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                alert.setView(input);
-
-                alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onOkClick(String filename) {
                                                 removeDialog(DIALOG_IMPORT_KEYS);
-                                                mImportFilename = input.getText().toString();
+                                                mImportFilename = filename;
                                                 importKeys();
                                             }
-                                        });
 
-                alert.setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onCancelClick() {
                                                 removeDialog(DIALOG_IMPORT_KEYS);
                                             }
                                         });
-                return alert.create();
             }
 
             case DIALOG_EXPORT_KEY: {
@@ -390,58 +358,33 @@ public class SecretKeyListActivity extends ExpandableListActivity
             }
 
             case DIALOG_EXPORT_KEYS: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                String title = "Export Key";
 
-                if (singleKeyExport) {
-                    alert.setTitle("Export Key");
-                } else {
-                    alert.setTitle("Export Keys");
-                    mSelectedItem = -1;
+                if (!singleKeyExport) {
+                    // plural "Keys"
+                    title += "s";
                 }
                 final int thisDialogId = (singleKeyExport ? DIALOG_DELETE_KEY : DIALOG_EXPORT_KEYS);
-                alert.setMessage("Please specify which file to export to.\n" +
-                                 "WARNING! You are about to export a SECRET key.\n" +
-                                 "WARNING! File will be overwritten if it exists.");
 
-                final EditText input = new EditText(this);
-                // TODO: default file?
-                input.setText(Environment.getExternalStorageDirectory() + "/secexport.asc");
-                input.setOnKeyListener(new OnKeyListener() {
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        // TODO: this doesn't actually work yet
-                        // If the event is a key-down event on the "enter"
-                        // button
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            try {
-                                ((AlertDialog) v.getParent())
-                                        .getButton(AlertDialog.BUTTON_POSITIVE)
-                                        .performClick();
-                            } catch (ClassCastException e) {
-                                // don't do anything if we're not in that dialog
-                            }
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                alert.setView(input);
+                return FileDialog.build(this, title,
+                                        "Please specify which file to export to.\n" +
+                                        "WARNING! You are about to export SECRET keys.\n" +
+                                        "WARNING! File will be overwritten if it exists.",
+                                        Environment.getExternalStorageDirectory() + "/secexport.asc",
+                                        new FileDialog.OnClickListener() {
 
-                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onOkClick(String filename) {
                                                 removeDialog(thisDialogId);
-                                                mExportFilename = input.getText().toString();
+                                                mExportFilename = filename;
                                                 exportKeys();
                                             }
-                                        });
 
-                alert.setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onCancelClick() {
                                                 removeDialog(thisDialogId);
                                             }
                                         });
-                return alert.create();
             }
 
             case DIALOG_IMPORTING: {
