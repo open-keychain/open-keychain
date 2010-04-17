@@ -31,10 +31,13 @@ import android.app.ExpandableListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,12 +75,13 @@ public class PublicKeyListActivity extends ExpandableListActivity
     static final int TASK_EXPORT = 2;
 
     protected int mSelectedItem = -1;
-    protected String mImportFilename = null;
-    protected String mExportFilename = null;
     protected int mTask = 0;
 
     private ProgressDialog mProgressDialog = null;
     private Thread mRunningThread = null;
+
+    private String mImportFilename = Environment.getExternalStorageDirectory() + "/pubring.gpg";
+    private String mExportFilename = Environment.getExternalStorageDirectory() + "/pubexport.asc";
 
     private Handler mHandler = new Handler() {
         @Override
@@ -301,7 +305,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
             case DIALOG_IMPORT_KEYS: {
                 return FileDialog.build(this, "Import Keys",
                                         "Please specify which file to import from.",
-                                        Environment.getExternalStorageDirectory() + "/pubring.gpg",
+                                        mImportFilename,
                                         new FileDialog.OnClickListener() {
 
                                             @Override
@@ -315,7 +319,9 @@ public class PublicKeyListActivity extends ExpandableListActivity
                                             public void onCancelClick() {
                                                 removeDialog(DIALOG_IMPORT_KEYS);
                                             }
-                                        });
+                                        },
+                                        getString(R.string.filemanager_title_open),
+                                        getString(R.string.filemanager_btn_open));
             }
 
             case DIALOG_EXPORT_KEY: {
@@ -335,7 +341,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
                 return FileDialog.build(this, title,
                                         "Please specify which file to export to.\n" +
                                         "WARNING! File will be overwritten if it exists.",
-                                        Environment.getExternalStorageDirectory() + "/pubexport.asc",
+                                        mExportFilename,
                                         new FileDialog.OnClickListener() {
 
                                             @Override
@@ -349,7 +355,9 @@ public class PublicKeyListActivity extends ExpandableListActivity
                                             public void onCancelClick() {
                                                 removeDialog(thisDialogId);
                                             }
-                                        });
+                                        },
+                                        getString(R.string.filemanager_title_save),
+                                        getString(R.string.filemanager_btn_save));
             }
 
             case DIALOG_IMPORTING: {
@@ -620,5 +628,33 @@ public class PublicKeyListActivity extends ExpandableListActivity
             }
             return view;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case FileDialog.REQUEST_CODE_PICK_FILE_OR_DIRECTORY: {
+                if (resultCode == RESULT_OK && data != null) {
+                    String filename = data.getDataString();
+                    if (filename != null) {
+                        // Get rid of URI prefix:
+                        if (filename.startsWith("file://")) {
+                            filename = filename.substring(7);
+                        }
+                        // replace %20 and so on
+                        filename = Uri.decode(filename);
+
+                        FileDialog.setFilename(filename);
+                    }
+
+                }
+                return;
+            }
+
+            default: {
+                break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

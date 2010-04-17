@@ -65,5 +65,12 @@
     <string name="using_clipboard_content">Using clipboard content.</string>
     <string name="key_saved">Key saved.</string>
     <string name="set_a_pass_phrase">Set a pass phrase via the option menu first.</string>
+
+    <string name="no_filemanager_installed">OI File Manager not installed.</string>
+    <string name="filemanager_title_open">Open...</string>
+    <string name="filemanager_btn_open">Open</string>
+    <string name="filemanager_title_save">Save As...</string>
+    <string name="filemanager_btn_save">Save</string>
+
 </resources>
 

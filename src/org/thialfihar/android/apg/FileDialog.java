@@ -16,34 +16,66 @@
 
 package org.thialfihar.android.apg;
 
+import org.openintents.intents.FileManager;
+
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 public class FileDialog {
+    public static final int REQUEST_CODE_PICK_FILE_OR_DIRECTORY = 12345;
+    private static EditText mInput;
+    private static ImageButton mBrowse;
+    private static Activity mActivity;
+    private static String mFileManagerTitle;
+    private static String mFileManagerButton;
 
     public static interface OnClickListener {
         public void onCancelClick();
         public void onOkClick(String filename);
     }
 
-    public static AlertDialog build(Context context, String title, String message,
-                                    String defaultFile, OnClickListener onClickListener) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(context);
+    public static AlertDialog build(Activity activity, String title, String message,
+                                    String defaultFile, OnClickListener onClickListener,
+                                    String fileManagerTitle, String fileManagerButton) {
+        LayoutInflater inflater =
+            (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
         alert.setTitle(title);
         alert.setMessage(message);
 
-        final EditText input = new EditText(context);
-        input.setText(defaultFile);
-        alert.setView(input);
+        View view = (View) inflater.inflate(R.layout.file_dialog, null);
+
+        mActivity = activity;
+        mInput = (EditText) view.findViewById(R.id.input);
+        mInput.setText(defaultFile);
+        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
+        mBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFile();
+            }
+        });
+        mFileManagerTitle = fileManagerTitle;
+        mFileManagerButton = fileManagerButton;
+
+        alert.setView(view);
 
         final OnClickListener clickListener = onClickListener;
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        clickListener.onOkClick(input.getText().toString());
+                                        clickListener.onOkClick(mInput.getText().toString());
                                     }
                                 });
 
@@ -54,5 +86,32 @@ public class FileDialog {
                                     }
                                 });
         return alert.create();
+    }
+
+    public static void setFilename(String filename) {
+        if (mInput != null) {
+            mInput.setText(filename);
+        }
+    }
+
+    /**
+     * Opens the file manager to select a file to open.
+     */
+    private static void openFile() {
+        String fileName = mInput.getText().toString();
+
+        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+
+        intent.setData(Uri.parse("file://" + fileName));
+
+        intent.putExtra(FileManager.EXTRA_TITLE, mFileManagerTitle);
+        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, mFileManagerButton);
+
+        try {
+            mActivity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE_OR_DIRECTORY);
+        } catch (ActivityNotFoundException e) {
+            // No compatible file manager was found.
+            Toast.makeText(mActivity, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -72,6 +72,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        Apg.initialize(this);
+
         Button encryptMessageButton = (Button) findViewById(R.id.btn_encryptMessage);
         Button decryptMessageButton = (Button) findViewById(R.id.btn_decryptMessage);
         mAccounts = (ListView) findViewById(R.id.account_list);
@@ -220,9 +222,7 @@ public class MainActivity extends Activity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
-                                            " * display signed-only mails\n" +
-                                            " * verify signed-only mails\n" +
-                                            " * bug fixes, layout fixes\n" +
+                                            " * OI File Manager support\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
