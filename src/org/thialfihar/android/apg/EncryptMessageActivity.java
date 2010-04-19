@@ -32,12 +32,8 @@ import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.bouncycastle2.util.Strings;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,25 +43,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EncryptMessageActivity extends Activity
-                                    implements Runnable, ProgressDialogUpdater,
-                                               AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
-    static final int GET_PUCLIC_KEYS = 1;
-    static final int GET_SECRET_KEY = 2;
-
-    static final int DIALOG_ENCRYPTING = 1;
-
-    static final int MESSAGE_PROGRESS_UPDATE = 1;
-    static final int MESSAGE_DONE = 2;
-
+public class EncryptMessageActivity extends BaseActivity {
     private String mSubject = null;
     private String mSendTo = null;
 
     private long mEncryptionKeyIds[] = null;
-    private long mSignatureKeyId = 0;
-
-    private ProgressDialog mProgressDialog = null;
-    private Thread mRunningThread = null;
 
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
@@ -74,91 +56,10 @@ public class EncryptMessageActivity extends Activity
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
 
-    private Handler mhandler = new Handler() {
-        @Override
-        public void handleMessage(Message mSg) {
-            Bundle data = mSg.getData();
-            if (data != null) {
-                int type = data.getInt("type");
-                switch (type) {
-                    case MESSAGE_PROGRESS_UPDATE: {
-                        String message = data.getString("message");
-                        if (mProgressDialog != null) {
-                            if (message != null) {
-                                mProgressDialog.setMessage(message);
-                            }
-                            mProgressDialog.setMax(data.getInt("max"));
-                            mProgressDialog.setProgress(data.getInt("progress"));
-                        }
-                        break;
-                    }
-
-                    case MESSAGE_DONE: {
-                        removeDialog(DIALOG_ENCRYPTING);
-                        mProgressDialog = null;
-
-                        String error = data.getString("error");
-                        if (error != null) {
-                            Toast.makeText(EncryptMessageActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                            return;
-                        } else {
-                            String message = data.getString("message");
-                            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                            emailIntent.setType("text/plain; charset=utf-8");
-                            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-                            if (mSubject != null) {
-                                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                                                     mSubject);
-                            }
-                            if (mSendTo != null) {
-                                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                                     new String[] { mSendTo });
-                            }
-                            EncryptMessageActivity.this.
-                                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                        }
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
-    @Override
-    public void setProgress(int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mhandler.sendMessage(msg);
-    }
-
-    @Override
-    public void setProgress(String message, int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mhandler.sendMessage(msg);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encrypt_message);
-
-        Apg.initialize(this);
 
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
@@ -183,7 +84,7 @@ public class EncryptMessageActivity extends Activity
                     if (masterKey != null) {
                         Vector<PGPSecretKey> signKeys = Apg.getUsableSigningKeys(keyRing);
                         if (signKeys.size() > 0) {
-                            mSignatureKeyId = masterKey.getKeyID();
+                            setSecretKeyId(masterKey.getKeyID());
                         }
                     }
                 }
@@ -240,7 +141,7 @@ public class EncryptMessageActivity extends Activity
                 if (checkBox.isChecked()) {
                     selectSecretKey();
                 } else {
-                    mSignatureKeyId = 0;
+                    setSecretKeyId(0);
                     Apg.setPassPhrase(null);
                     updateView();
                 }
@@ -250,69 +151,56 @@ public class EncryptMessageActivity extends Activity
         updateView();
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_ENCRYPTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("initializing...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
-            }
-
-            case AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE: {
-                return AskForSecretKeyPassPhrase.createDialog(this, mSignatureKeyId, this);
-            }
-        }
-
-        return super.onCreateDialog(id);
-    }
-
     private void sendClicked() {
-        if (mSignatureKeyId != 0 && Apg.getPassPhrase() == null) {
-            showDialog(AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE);
+        if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+            showDialog(Id.dialog.pass_phrase);
         } else {
             encryptStart();
         }
     }
 
+    @Override
     public void passPhraseCallback(String passPhrase) {
-        Apg.setPassPhrase(passPhrase);
+        super.passPhraseCallback(passPhrase);
         encryptStart();
     }
 
     private void encryptStart() {
-        showDialog(DIALOG_ENCRYPTING);
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.encrypting);
+        startThread();
     }
 
+    @Override
     public void run() {
         String error = null;
         Bundle data = new Bundle();
         Message msg = new Message();
-        String message = mMessage.getText().toString();
-        // fix the message a bit, trailing spaces and newlines break stuff,
-        // because GMail sends as HTML and such things fuck up the signature,
-        // TODO: things like "<" and ">" also fuck up the signature
-        message = message.replaceAll(" +\n", "\n");
-        message = message.replaceAll("\n\n+", "\n\n");
-        message = message.replaceFirst("^\n+", "");
-        // make sure there'll be exactly one newline at the end
-        message = message.replaceFirst("\n*$", "\n");
-
-        ByteArrayInputStream in =
-                new ByteArrayInputStream(Strings.toUTF8ByteArray(message));
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-            if (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) {
-                Apg.encrypt(in, out, true, mEncryptionKeyIds, mSignatureKeyId,
+            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+
+            String message = mMessage.getText().toString();
+            if (!encryptIt) {
+                // fix the message a bit, trailing spaces and newlines break stuff,
+                // because GMail sends as HTML and such things fuck up the signature,
+                // TODO: things like "<" and ">" also fuck up the signature
+                message = message.replaceAll(" +\n", "\n");
+                message = message.replaceAll("\n\n+", "\n\n");
+                message = message.replaceFirst("^\n+", "");
+                // make sure there'll be exactly one newline at the end
+                message = message.replaceFirst("\n*$", "\n");
+            }
+
+            ByteArrayInputStream in =
+                new ByteArrayInputStream(Strings.toUTF8ByteArray(message));
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            if (encryptIt) {
+                Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
                             Apg.getPassPhrase(), this);
                 data.putString("message", new String(out.toByteArray()));
             } else {
-                Apg.signText(in, out, mSignatureKeyId,
+                Apg.signText(in, out, getSecretKeyId(),
                              Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
                 data.putString("message", new String(out.toByteArray()));
             }
@@ -330,14 +218,14 @@ public class EncryptMessageActivity extends Activity
             error = e.getMessage();
         }
 
-        data.putInt("type", MESSAGE_DONE);
+        data.putInt("type", Id.message.done);
 
         if (error != null) {
             data.putString("error", error);
         }
 
         msg.setData(data);
-        mhandler.sendMessage(msg);
+        sendMessage(msg);
     }
 
     private void updateView() {
@@ -350,7 +238,7 @@ public class EncryptMessageActivity extends Activity
                                       getResources().getString(R.string.n_keys_selected));
         }
 
-        if (mSignatureKeyId == 0) {
+        if (getSecretKeyId() == 0) {
             mSign.setText(R.string.sign);
             mSign.setChecked(false);
             mMainUserId.setText("");
@@ -358,7 +246,7 @@ public class EncryptMessageActivity extends Activity
         } else {
             String uid = getResources().getString(R.string.unknown_user_id);
             String uidExtra = "";
-            PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(mSignatureKeyId);
+            PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(getSecretKeyId());
             if (keyRing != null) {
                 PGPSecretKey key = Apg.getMasterKey(keyRing);
                 if (key != null) {
@@ -380,18 +268,18 @@ public class EncryptMessageActivity extends Activity
     private void selectPublicKeys() {
         Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
         intent.putExtra("selection", mEncryptionKeyIds);
-        startActivityForResult(intent, GET_PUCLIC_KEYS);
+        startActivityForResult(intent, Id.request.public_keys);
     }
 
     private void selectSecretKey() {
         Intent intent = new Intent(this, SelectSecretKeyListActivity.class);
-        startActivityForResult(intent, GET_SECRET_KEY);
+        startActivityForResult(intent, Id.request.secret_keys);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case GET_PUCLIC_KEYS: {
+            case Id.request.public_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mEncryptionKeyIds = bundle.getLongArray("selection");
@@ -400,26 +288,58 @@ public class EncryptMessageActivity extends Activity
                 break;
             }
 
-            case GET_SECRET_KEY: {
+            case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     long newId = bundle.getLong("selectedKeyId");
-                    if (mSignatureKeyId != newId) {
+                    if (getSecretKeyId() != newId) {
                         Apg.setPassPhrase(null);
                     }
-                    mSignatureKeyId = newId;
+                    setSecretKeyId(newId);
                 } else {
-                    mSignatureKeyId = 0;
+                    setSecretKeyId(0);
                     Apg.setPassPhrase(null);
                 }
                 updateView();
                 break;
             }
 
-            default:
+            default: {
                 break;
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+
+        removeDialog(Id.dialog.encrypting);
+
+        Bundle data = msg.getData();
+        String error = data.getString("error");
+        if (error != null) {
+            Toast.makeText(EncryptMessageActivity.this,
+                           "Error: " + data.getString("error"),
+                           Toast.LENGTH_SHORT).show();
+            return;
+        } else {
+            String message = data.getString("message");
+            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+            emailIntent.setType("text/plain; charset=utf-8");
+            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+            if (mSubject != null) {
+                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                                     mSubject);
+            }
+            if (mSendTo != null) {
+                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+                                     new String[] { mSendTo });
+            }
+            EncryptMessageActivity.this.
+                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+        }
     }
 }

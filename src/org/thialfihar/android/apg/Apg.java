@@ -98,6 +98,8 @@ public class Apg {
     public static class Intent {
         public static final String DECRYPT = "org.thialfihar.android.apg.intent.DECRYPT";
         public static final String ENCRYPT = "org.thialfihar.android.apg.intent.ENCRYPT";
+        public static final String DECRYPT_FILE = "org.thialfihar.android.apg.intent.DECRYPT_FILE";
+        public static final String ENCRYPT_FILE = "org.thialfihar.android.apg.intent.ENCRYPT_FILE";
     }
 
     public static String VERSION = "0.9.0";
@@ -121,8 +123,8 @@ public class Apg {
                     CompressionAlgorithmTags.BZIP2,
                     CompressionAlgorithmTags.ZIP };
 
-    protected static Vector<PGPPublicKeyRing> mPublicKeyRings;
-    protected static Vector<PGPSecretKeyRing> mSecretKeyRings;
+    protected static Vector<PGPPublicKeyRing> mPublicKeyRings = new Vector<PGPPublicKeyRing>();
+    protected static Vector<PGPSecretKeyRing> mSecretKeyRings = new Vector<PGPSecretKeyRing>();
 
     public static Pattern PGP_MESSAGE =
             Pattern.compile(".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*",
@@ -138,9 +140,6 @@ public class Apg {
     protected static final int RETURN_ERROR = -1;
     protected static final int RETURN_OK = 0;
     protected static final int RETURN_UPDATED = 1;
-
-    protected static final int TYPE_PUBLIC = 0;
-    protected static final int TYPE_SECRET = 1;
 
     protected static HashMap<Long, Integer> mSecretKeyIdToIdMap;
     protected static HashMap<Long, PGPSecretKeyRing> mSecretKeyIdToKeyRingMap;
@@ -180,13 +179,12 @@ public class Apg {
     }
 
     public static void initialize(Activity context) {
-        setPassPhrase(null);
         if (mInitialized) {
             return;
         }
 
-        loadKeyRings(context, TYPE_PUBLIC);
-        loadKeyRings(context, TYPE_SECRET);
+        loadKeyRings(context, Id.type.public_key);
+        loadKeyRings(context, Id.type.secret_key);
 
         mInitialized = true;
     }
@@ -546,8 +544,8 @@ public class Apg {
         saveKeyRing(context, secretKeyRing);
         saveKeyRing(context, publicKeyRing);
 
-        loadKeyRings(context, TYPE_PUBLIC);
-        loadKeyRings(context, TYPE_SECRET);
+        loadKeyRings(context, Id.type.public_key);
+        loadKeyRings(context, Id.type.secret_key);
         progress.setProgress("done.", 100, 100);
     }
 
@@ -617,7 +615,7 @@ public class Apg {
         Bundle returnData = new Bundle();
         PGPObjectFactory objectFactors = null;
 
-        if (type == TYPE_SECRET) {
+        if (type == Id.type.secret_key) {
             progress.setProgress("importing secret keys...", 0, 100);
         } else {
             progress.setProgress("importing public keys...", 0, 100);
@@ -647,7 +645,7 @@ public class Apg {
             PGPSecretKeyRing secretKeyRing;
             int retValue;
 
-            if (type == TYPE_SECRET) {
+            if (type == Id.type.secret_key) {
                 if (!(obj instanceof PGPSecretKeyRing)) {
                     continue;
                 }
@@ -729,7 +727,7 @@ public class Apg {
 
     private static void loadKeyRings(Activity context, int type) {
         Cursor cursor;
-        if (type == TYPE_SECRET) {
+        if (type == Id.type.secret_key) {
             mSecretKeyRings.clear();
             mSecretKeyIdToIdMap.clear();
             mSecretKeyIdToKeyRingMap.clear();
@@ -757,7 +755,7 @@ public class Apg {
             long keyId = cursor.getLong(keyIdIndex);
 
             try {
-                if (type == TYPE_SECRET) {
+                if (type == Id.type.secret_key) {
                     PGPSecretKeyRing key = new PGPSecretKeyRing(keyData);
                     mSecretKeyRings.add(key);
                     mSecretKeyIdToIdMap.put(keyId, id);
@@ -775,7 +773,7 @@ public class Apg {
             }
         }
 
-        if (type == TYPE_SECRET) {
+        if (type == Id.type.secret_key) {
             Collections.sort(mSecretKeyRings, new SecretKeySorter());
         } else {
             Collections.sort(mPublicKeyRings, new PublicKeySorter());
@@ -1059,14 +1057,14 @@ public class Apg {
         PGPPublicKey masterKey = getMasterKey(keyRing);
         Uri uri = Uri.withAppendedPath(PublicKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
         context.getContentResolver().delete(uri, null, null);
-        loadKeyRings(context, TYPE_PUBLIC);
+        loadKeyRings(context, Id.type.public_key);
     }
 
     public static void deleteKey(Activity context, PGPSecretKeyRing keyRing) {
         PGPSecretKey masterKey = getMasterKey(keyRing);
         Uri uri = Uri.withAppendedPath(SecretKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
         context.getContentResolver().delete(uri, null, null);
-        loadKeyRings(context, TYPE_SECRET);
+        loadKeyRings(context, Id.type.secret_key);
     }
 
     public static PGPPublicKey findPublicKey(long keyId) {

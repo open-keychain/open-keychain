@@ -21,77 +21,79 @@
     android:layout_height="fill_parent"
     android:fillViewport="true">
 
-<EditText
-    android:id="@+id/message"
-    android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-    android:layout_width="fill_parent"
-    android:layout_height="0dip"
-    android:layout_weight="1"
-    android:gravity="top"/>
+    <EditText
+        android:id="@+id/message"
+        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:gravity="top"/>
 
-<LinearLayout
-    android:orientation="horizontal"
-    android:layout_height="wrap_content"
-    android:layout_width="fill_parent"
-    android:paddingLeft="5dip"
-    android:paddingRight="5dip">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:paddingLeft="5dip"
+        android:paddingRight="5dip">
 
-<LinearLayout
-    android:id="@+id/layout_signature"
-    android:orientation="horizontal"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:layout_weight="2">
+        <LinearLayout
+            android:id="@+id/layout_signature"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_weight="2">
 
-<RelativeLayout
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
-<ImageView
-    android:id="@+id/ic_signature"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@drawable/signed_large"/>
+            <RelativeLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
 
-<ImageView
-    android:id="@+id/ic_signature_status"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@drawable/overlay_error"/>
+                <ImageView
+                    android:id="@+id/ic_signature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/signed_large"/>
 
-</RelativeLayout>
+                <ImageView
+                    android:id="@+id/ic_signature_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/overlay_error"/>
 
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:paddingLeft="5dip">
+            </RelativeLayout>
 
-<TextView
-    android:id="@+id/main_user_id"
-    android:text="Main User Id"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="left"/>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingLeft="5dip">
 
-<TextView
-    android:id="@+id/main_user_id_rest"
-    android:text="Main User Id Rest"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" android:layout_gravity="left"/>
+                <TextView
+                    android:id="@+id/main_user_id"
+                    android:text="Main User Id"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"/>
+
+                <TextView
+                    android:id="@+id/main_user_id_rest"
+                    android:text="Main User Id Rest"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_decrypt"
+            android:text="@string/btn_decrypt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
 </LinearLayout>
-</LinearLayout>
-
-<Button
-    android:id="@+id/btn_decrypt"
-    android:text="@string/btn_decrypt"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"/>
-
-</LinearLayout>
-
-</LinearLayout>
-

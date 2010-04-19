@@ -29,13 +29,9 @@ import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.util.Strings;
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.ClipboardManager;
 import android.view.View;
@@ -47,26 +43,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class DecryptMessageActivity extends Activity
-                                    implements Runnable, ProgressDialogUpdater,
-                                    AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
-    static final int GET_PUCLIC_KEYS = 1;
-    static final int GET_SECRET_KEY = 2;
-
-    static final int DIALOG_DECRYPTING = 1;
-
-    static final int MESSAGE_PROGRESS_UPDATE = 1;
-    static final int MESSAGE_DONE = 2;
-
-    private long mDecryptionKeyId = 0;
+public class DecryptMessageActivity extends BaseActivity {
     private long mSignatureKeyId = 0;
 
     private String mReplyTo = null;
     private String mSubject = null;
     private boolean mSignedOnly = false;
-
-    private ProgressDialog mProgressDialog = null;
-    private Thread mRunningThread = null;
 
     private EditText mMessage = null;
     private LinearLayout mSignatureLayout = null;
@@ -75,89 +57,10 @@ public class DecryptMessageActivity extends Activity
     private TextView mUserIdRest = null;
     private Button mDecryptButton = null;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle data = msg.getData();
-            if (data != null) {
-                int type = data.getInt("type");
-                switch (type) {
-                    case MESSAGE_PROGRESS_UPDATE: {
-                        String message = data.getString("message");
-                        if (mProgressDialog != null) {
-                            if (message != null) {
-                                mProgressDialog.setMessage(message);
-                            }
-                            mProgressDialog.setMax(data.getInt("max"));
-                            mProgressDialog.setProgress(data.getInt("progress"));
-                        }
-                        break;
-                    }
-
-                    case MESSAGE_DONE: {
-                        removeDialog(DIALOG_DECRYPTING);
-                        mProgressDialog = null;
-                        mSignatureKeyId = 0;
-                        String error = data.getString("error");
-                        String decryptedMessage = data.getString("decryptedMessage");
-                        if (error != null) {
-                            Toast.makeText(DecryptMessageActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                        }
-                        mSignatureLayout.setVisibility(View.INVISIBLE);
-                        if (decryptedMessage != null) {
-                            mMessage.setText(decryptedMessage);
-                            mDecryptButton.setText(R.string.btn_reply);
-                            mDecryptButton.setOnClickListener(new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    replyClicked();
-                                }
-                            });
-
-                            if (data.getBoolean("signature")) {
-                                String userId = data.getString("signatureUserId");
-                                mSignatureKeyId = data.getLong("signatureKeyId");
-                                mUserIdRest.setText("id: " +
-                                                    Long.toHexString(mSignatureKeyId & 0xffffffffL));
-                                if (userId == null) {
-                                    userId =
-                                            getResources()
-                                                    .getString(
-                                                               R.string.unknown_user_id);
-                                }
-                                String chunks[] = userId.split(" <", 2);
-                                userId = chunks[0];
-                                if (chunks.length > 1) {
-                                    mUserIdRest.setText("<" + chunks[1]);
-                                }
-                                mUserId.setText(userId);
-
-                                if (data.getBoolean("signatureSuccess")) {
-                                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                                } else if (data.getBoolean("signatureUnknown")) {
-                                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                                } else {
-                                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                                }
-                                mSignatureLayout.setVisibility(View.VISIBLE);
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.decrypt_message);
-
-        Apg.initialize(this);
 
         mMessage = (EditText) findViewById(R.id.message);
         mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
@@ -232,48 +135,6 @@ public class DecryptMessageActivity extends Activity
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-            case DIALOG_DECRYPTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("initializing...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
-            }
-
-            case AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE: {
-                return AskForSecretKeyPassPhrase.createDialog(this, mDecryptionKeyId, this);
-            }
-        }
-
-        return super.onCreateDialog(id);
-    }
-
-    @Override
-    public void setProgress(int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
-
-    @Override
-    public void setProgress(String message, int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
-
     private void decryptClicked() {
         String error = null;
         String messageData = mMessage.getText().toString();
@@ -289,8 +150,8 @@ public class DecryptMessageActivity extends Activity
         ByteArrayInputStream in =
                 new ByteArrayInputStream(messageData.getBytes());
         try {
-            mDecryptionKeyId = Apg.getDecryptionKeyId(in);
-            showDialog(AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE);
+            setSecretKeyId(Apg.getDecryptionKeyId(in));
+            showDialog(Id.dialog.pass_phrase);
         } catch (IOException e) {
             error = e.getLocalizedMessage();
         } catch (Apg.GeneralException e) {
@@ -311,22 +172,23 @@ public class DecryptMessageActivity extends Activity
         intent.putExtra("subject", "Re: " + mSubject);
         intent.putExtra("sendTo", mReplyTo);
         intent.putExtra("eyId", mSignatureKeyId);
-        intent.putExtra("signatureKeyId", mDecryptionKeyId);
+        intent.putExtra("signatureKeyId", getSecretKeyId());
         intent.putExtra("encryptionKeyIds", new long[] { mSignatureKeyId });
         startActivity(intent);
     }
 
+    @Override
     public void passPhraseCallback(String passPhrase) {
-        Apg.setPassPhrase(passPhrase);
+        super.passPhraseCallback(passPhrase);
         decryptStart();
     }
 
     private void decryptStart() {
-        showDialog(DIALOG_DECRYPTING);
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.decrypting);
+        startThread();
     }
 
+    @Override
     public void run() {
         String error = null;
         Security.addProvider(new BouncyCastleProvider());
@@ -356,7 +218,7 @@ public class DecryptMessageActivity extends Activity
             error = e.getMessage();
         }
 
-        data.putInt("type", MESSAGE_DONE);
+        data.putInt("type", Id.message.done);
 
         if (error != null) {
             data.putString("error", error);
@@ -365,6 +227,61 @@ public class DecryptMessageActivity extends Activity
         }
 
         msg.setData(data);
-        mHandler.sendMessage(msg);
+        sendMessage(msg);
+    }
+
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+
+        Bundle data = msg.getData();
+        removeDialog(Id.dialog.decrypting);
+        mSignatureKeyId = 0;
+        String error = data.getString("error");
+        String decryptedMessage = data.getString("decryptedMessage");
+        if (error != null) {
+            Toast.makeText(DecryptMessageActivity.this,
+                           "Error: " + data.getString("error"),
+                           Toast.LENGTH_SHORT).show();
+        }
+        mSignatureLayout.setVisibility(View.INVISIBLE);
+        if (decryptedMessage != null) {
+            mMessage.setText(decryptedMessage);
+            mDecryptButton.setText(R.string.btn_reply);
+            mDecryptButton.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    replyClicked();
+                }
+            });
+
+            if (data.getBoolean("signature")) {
+                String userId = data.getString("signatureUserId");
+                mSignatureKeyId = data.getLong("signatureKeyId");
+                mUserIdRest.setText("id: " +
+                                    Long.toHexString(mSignatureKeyId & 0xffffffffL));
+                if (userId == null) {
+                    userId =
+                            getResources()
+                                    .getString(
+                                               R.string.unknown_user_id);
+                }
+                String chunks[] = userId.split(" <", 2);
+                userId = chunks[0];
+                if (chunks.length > 1) {
+                    mUserIdRest.setText("<" + chunks[1]);
+                }
+                mUserId.setText(userId);
+
+                if (data.getBoolean("signatureSuccess")) {
+                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                } else if (data.getBoolean("signatureUnknown")) {
+                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                } else {
+                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                }
+                mSignatureLayout.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

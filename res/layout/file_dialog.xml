@@ -15,21 +15,23 @@
 -->
 
 <LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:paddingLeft="5dip"
-  android:paddingRight="5dip"
-  >
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingLeft="5dip"
+    android:paddingRight="5dip">
+
     <EditText
         android:id="@+id/input"
-        android:layout_width="wrap_content"
+        android:layout_width="0dip"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-      />
+        android:layout_weight="1"/>
 
-   <ImageButton
+    <ImageButton
         android:id="@+id/btn_browse"
+        android:src="@drawable/ic_launcher_folder_small"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_launcher_folder_small" android:layout_width="wrap_content"/>
+        android:layout_width="wrap_content"/>
+
 </LinearLayout>

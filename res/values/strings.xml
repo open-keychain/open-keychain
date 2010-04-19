@@ -23,6 +23,8 @@
     <string name="title_selectSignature">Select Signature</string>
     <string name="title_encryptMessage">Encrypt Message</string>
     <string name="title_decryptMessage">Decrypt Message</string>
+    <string name="title_encryptFile">Encrypt File</string>
+    <string name="title_decryptFile">Decrypt File</string>
     <string name="title_authentification">Authentification</string>
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
@@ -31,14 +33,20 @@
     <string name="section_keys">Keys</string>
 
     <string name="btn_send">Send via Email</string>
+    <string name="btn_encrypt">Encrypt</string>
     <string name="btn_decrypt">Decrypt</string>
     <string name="btn_verify">Verify</string>
     <string name="btn_selectEncryptKeys">Select Recipients</string>
     <string name="btn_reply">Reply</string>
     <string name="btn_encryptMessage">Encrypt Message</string>
     <string name="btn_decryptMessage">Decrypt Message</string>
+    <string name="btn_encryptFile">Encrypt File</string>
+    <string name="btn_decryptFile">Decrypt File</string>
     <string name="btn_save">Save</string>
     <string name="btn_doNotSave">Cancel</string>
+
+    <string name="tab_symmetric">Symmetric</string>
+    <string name="tab_asymmetric">Asymmetric</string>
 
     <string name="menu_about">About</string>
     <string name="menu_addAccount">Add GMail Account</string>
@@ -52,6 +60,9 @@
     <string name="n_keys_selected">Recipients</string>
     <string name="unknown_user_id">&lt;unknown&gt;</string>
     <string name="none">&lt;none&gt;</string>
+
+    <string name="label_file">File:</string>
+    <string name="label_encrypt_keys">Encrypt with:</string>
 
     <string name="sign_only">Sign only</string>
     <string name="encrypt_only">Encrypt only</string>

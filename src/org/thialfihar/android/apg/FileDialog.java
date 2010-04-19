@@ -32,8 +32,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class FileDialog {
-    public static final int REQUEST_CODE_PICK_FILE_OR_DIRECTORY = 12345;
-    private static EditText mInput;
+    private static EditText mFilename;
     private static ImageButton mBrowse;
     private static Activity mActivity;
     private static String mFileManagerTitle;
@@ -57,8 +56,8 @@ public class FileDialog {
         View view = (View) inflater.inflate(R.layout.file_dialog, null);
 
         mActivity = activity;
-        mInput = (EditText) view.findViewById(R.id.input);
-        mInput.setText(defaultFile);
+        mFilename = (EditText) view.findViewById(R.id.input);
+        mFilename.setText(defaultFile);
         mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +74,7 @@ public class FileDialog {
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        clickListener.onOkClick(mInput.getText().toString());
+                                        clickListener.onOkClick(mFilename.getText().toString());
                                     }
                                 });
 
@@ -89,8 +88,8 @@ public class FileDialog {
     }
 
     public static void setFilename(String filename) {
-        if (mInput != null) {
-            mInput.setText(filename);
+        if (mFilename != null) {
+            mFilename.setText(filename);
         }
     }
 
@@ -98,17 +97,17 @@ public class FileDialog {
      * Opens the file manager to select a file to open.
      */
     private static void openFile() {
-        String fileName = mInput.getText().toString();
+        String filename = mFilename.getText().toString();
 
         Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
 
-        intent.setData(Uri.parse("file://" + fileName));
+        intent.setData(Uri.parse("file://" + filename));
 
         intent.putExtra(FileManager.EXTRA_TITLE, mFileManagerTitle);
         intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, mFileManagerButton);
 
         try {
-            mActivity.startActivityForResult(intent, REQUEST_CODE_PICK_FILE_OR_DIRECTORY);
+            mActivity.startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
             Toast.makeText(mActivity, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();

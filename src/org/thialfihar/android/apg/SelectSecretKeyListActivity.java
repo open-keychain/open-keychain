@@ -38,7 +38,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class SelectSecretKeyListActivity extends Activity {
+public class SelectSecretKeyListActivity extends BaseActivity {
     protected Vector<PGPSecretKeyRing> mKeyRings;
     protected LayoutInflater mInflater;
     protected Intent mIntent;
@@ -54,8 +54,6 @@ public class SelectSecretKeyListActivity extends Activity {
 
         // fill things
         mIntent = getIntent();
-
-        Apg.initialize(this);
 
         mKeyRings = (Vector<PGPSecretKeyRing>) Apg.getSecretKeyRings().clone();
         Collections.sort(mKeyRings, new Apg.SecretKeySorter());

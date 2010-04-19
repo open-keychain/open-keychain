@@ -35,8 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class AskForSecretKeyPassPhrase {
-    public static final int DIALOG_PASS_PHRASE = 12345;
-
     public static interface PassPhraseCallbackInterface {
         void passPhraseCallback(String passPhrase);
     }
@@ -91,7 +89,7 @@ public class AskForSecretKeyPassPhrase {
         alert.setPositiveButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        activity.removeDialog(DIALOG_PASS_PHRASE);
+                                        activity.removeDialog(Id.dialog.pass_phrase);
                                         String passPhrase = "" + input.getText();
                                         try {
                                             secretKey.extractPrivateKey(passPhrase.toCharArray(),
@@ -109,7 +107,7 @@ public class AskForSecretKeyPassPhrase {
         alert.setNegativeButton(android.R.string.cancel,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        activity.removeDialog(DIALOG_PASS_PHRASE);
+                                        activity.removeDialog(Id.dialog.pass_phrase);
                                     }
                                 });
 

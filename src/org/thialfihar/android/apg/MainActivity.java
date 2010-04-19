@@ -51,17 +51,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MainActivity extends Activity {
-    private static final int DIALOG_NEW_ACCOUNT = 1;
-    private static final int DIALOG_ABOUT = 2;
-    private static final int DIALOG_CHANGE_LOG = 3;
-
-    private static final int OPTION_MENU_ADD_ACCOUNT = 1;
-    private static final int OPTION_MENU_ABOUT = 2;
-    private static final int OPTION_MENU_MANAGE_PUBLIC_KEYS = 3;
-    private static final int OPTION_MENU_MANAGE_SECRET_KEYS = 4;
-
-    private static final int MENU_DELETE_ACCOUNT = 1;
+public class MainActivity extends BaseActivity {
 
     private static String PREF_SEEN_CHANGE_LOG = "seenChangeLogDialog" + Apg.VERSION;
 
@@ -72,10 +62,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        Apg.initialize(this);
-
         Button encryptMessageButton = (Button) findViewById(R.id.btn_encryptMessage);
         Button decryptMessageButton = (Button) findViewById(R.id.btn_decryptMessage);
+        Button encryptFileButton = (Button) findViewById(R.id.btn_encryptFile);
+        Button decryptFileButton = (Button) findViewById(R.id.btn_decryptFile);
         mAccounts = (ListView) findViewById(R.id.account_list);
 
         encryptMessageButton.setOnClickListener(new OnClickListener() {
@@ -89,6 +79,20 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 startDecryptMessageActivity();
+            }
+        });
+
+        encryptFileButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startEncryptFileActivity();
+            }
+        });
+
+        decryptFileButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDecryptFileActivity();
             }
         });
 
@@ -113,14 +117,14 @@ public class MainActivity extends Activity {
 
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         if (!prefs.getBoolean(PREF_SEEN_CHANGE_LOG, false)) {
-            showDialog(DIALOG_CHANGE_LOG);
+            showDialog(Id.dialog.change_log);
         }
     }
 
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case DIALOG_NEW_ACCOUNT: {
+            case Id.dialog.new_account: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("Add Account");
@@ -132,7 +136,7 @@ public class MainActivity extends Activity {
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_NEW_ACCOUNT);
+                                                MainActivity.this.removeDialog(Id.dialog.new_account);
                                                 String accountName = "" + input.getText();
 
                                                 Cursor testCursor =
@@ -165,14 +169,14 @@ public class MainActivity extends Activity {
                 alert.setNegativeButton(android.R.string.cancel,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_NEW_ACCOUNT);
+                                                MainActivity.this.removeDialog(Id.dialog.new_account);
                                             }
                                         });
 
                 return alert.create();
             }
 
-            case DIALOG_ABOUT: {
+            case Id.dialog.about: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("About " + Apg.FULL_VERSION);
@@ -205,14 +209,14 @@ public class MainActivity extends Activity {
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_ABOUT);
+                                                MainActivity.this.removeDialog(Id.dialog.about);
                                             }
                 });
 
                 return alert.create();
             }
 
-            case DIALOG_CHANGE_LOG: {
+            case Id.dialog.change_log: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("Changes " + Apg.FULL_VERSION);
@@ -246,7 +250,7 @@ public class MainActivity extends Activity {
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_CHANGE_LOG);
+                                                MainActivity.this.removeDialog(Id.dialog.change_log);
                                                 SharedPreferences prefs = getPreferences(MODE_PRIVATE);
                                                 SharedPreferences.Editor editor = prefs.edit();
                                                 editor.putBoolean(PREF_SEEN_CHANGE_LOG, true);
@@ -261,18 +265,19 @@ public class MainActivity extends Activity {
                 break;
             }
         }
+
         return super.onCreateDialog(id);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, OPTION_MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_managePublicKeys)
+        menu.add(0, Id.menu.option.manage_public_keys, 0, R.string.menu_managePublicKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(0, OPTION_MENU_MANAGE_SECRET_KEYS, 1, R.string.menu_manageSecretKeys)
+        menu.add(0, Id.menu.option.manage_secret_keys, 1, R.string.menu_manageSecretKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(1, OPTION_MENU_ADD_ACCOUNT, 2, R.string.menu_addAccount)
+        menu.add(1, Id.menu.option.create, 2, R.string.menu_addAccount)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(1, OPTION_MENU_ABOUT, 3, R.string.menu_about)
+        menu.add(1, Id.menu.option.about, 3, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
@@ -280,22 +285,22 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case OPTION_MENU_ADD_ACCOUNT: {
-                showDialog(DIALOG_NEW_ACCOUNT);
+            case Id.menu.option.create: {
+                showDialog(Id.dialog.new_account);
                 return true;
             }
 
-            case OPTION_MENU_ABOUT: {
-                showDialog(DIALOG_ABOUT);
+            case Id.menu.option.about: {
+                showDialog(Id.dialog.about);
                 return true;
             }
 
-            case OPTION_MENU_MANAGE_PUBLIC_KEYS: {
+            case Id.menu.option.manage_public_keys: {
                 startPublicKeyManager();
                 return true;
             }
 
-            case OPTION_MENU_MANAGE_SECRET_KEYS: {
+            case Id.menu.option.manage_secret_keys: {
                 startSecretKeyManager();
                 return true;
             }
@@ -314,7 +319,7 @@ public class MainActivity extends Activity {
         TextView nameTextView = (TextView) v.findViewById(R.id.account_name);
         if (nameTextView != null) {
             menu.setHeaderTitle(nameTextView.getText());
-            menu.add(0, MENU_DELETE_ACCOUNT, 0, "Delete Account");
+            menu.add(0, Id.menu.delete, 0, "Delete Account");
         }
     }
 
@@ -324,7 +329,7 @@ public class MainActivity extends Activity {
                 (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
 
         switch (menuItem.getItemId()) {
-            case MENU_DELETE_ACCOUNT: {
+            case Id.menu.delete: {
                 Uri uri = Uri.withAppendedPath(Accounts.CONTENT_URI, "" + info.id);
                 this.getContentResolver().delete(uri, null, null);
                 return true;
@@ -342,7 +347,6 @@ public class MainActivity extends Activity {
 
     public void startSecretKeyManager() {
         startActivity(new Intent(this, SecretKeyListActivity.class));
-        //startActivity(new Intent(this, EditKeyActivity.class));
     }
 
     public void startEncryptMessageActivity() {
@@ -351,6 +355,14 @@ public class MainActivity extends Activity {
 
     public void startDecryptMessageActivity() {
         startActivity(new Intent(this, DecryptMessageActivity.class));
+    }
+
+    public void startEncryptFileActivity() {
+        startActivity(new Intent(this, EncryptFileActivity.class));
+    }
+
+    public void startDecryptFileActivity() {
+        //startActivity(new Intent(this, DecryptFileActivity.class));
     }
 
     public void startMailListActivity(String account) {

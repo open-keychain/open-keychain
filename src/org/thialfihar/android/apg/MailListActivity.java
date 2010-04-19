@@ -37,7 +37,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MailListActivity extends ListActivity {
-    LayoutInflater minflater = null;
+    LayoutInflater mInflater = null;
 
     private static class Conversation {
         public long id;
@@ -82,7 +82,7 @@ public class MailListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        minflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mconversations = new Vector<Conversation>();
         mmessages = new Vector<Message>();
@@ -191,7 +191,7 @@ public class MailListActivity extends ListActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = minflater.inflate(R.layout.mailbox_message_item, null);
+            View view = mInflater.inflate(R.layout.mailbox_message_item, null);
 
             Message message = (Message) getItem(position);
 

@@ -18,35 +18,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="fill_parent"
     android:layout_width="fill_parent">
+
         <TableLayout
             android:layout_height="fill_parent"
             android:layout_width="fill_parent"
             android:stretchColumns="1"
             android:layout_marginRight="?android:attr/scrollbarSize"
             android:paddingLeft="6dip">
+
             <TableRow>
+
                 <TextView android:id="@+id/label_algorithm"
                           android:text="Algorithm"
                           android:layout_height="wrap_content"
                           android:layout_width="wrap_content"
                           android:layout_gravity="center_vertical"
                           android:paddingRight="10dip"/>
+
                 <Spinner
                     android:id="@+id/algorithm"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"/>
+
             </TableRow>
+
             <TableRow>
+
                 <TextView android:id="@+id/label_size"
                           android:text="Key Size"
                           android:layout_height="wrap_content"
                           android:layout_width="wrap_content"
                           android:layout_gravity="center_vertical"
                           android:paddingRight="10dip"/>
+
                 <EditText android:id="@+id/size"
                           android:text="1024"
                           android:layout_height="wrap_content"
-                          android:layout_width="fill_parent" android:gravity="right" android:numeric="integer"/>
+                          android:layout_width="fill_parent"
+                          android:gravity="right"
+                          android:numeric="integer"/>
             </TableRow>
+
         </TableLayout>
+
 </ScrollView>

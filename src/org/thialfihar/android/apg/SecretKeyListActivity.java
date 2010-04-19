@@ -27,15 +27,12 @@ import org.thialfihar.android.apg.utils.IterableIterator;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ExpandableListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -52,165 +49,33 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 
-public class SecretKeyListActivity extends ExpandableListActivity
-                                   implements Runnable, ProgressDialogUpdater, OnChildClickListener,
-                                   AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
-    static final int CREATE_SECRET_KEY = 1;
-    static final int EDIT_SECRET_KEY = 2;
-
-    static final int MENU_EDIT = 1;
-    static final int MENU_EXPORT = 2;
-    static final int MENU_DELETE = 3;
-
-    static final int OPTION_MENU_IMPORT_KEYS = 1;
-    static final int OPTION_MENU_EXPORT_KEYS = 2;
-    static final int OPTION_MENU_CREATE_KEY = 3;
-
-    static final int MESSAGE_PROGRESS_UPDATE = 1;
-    static final int MESSAGE_DONE = 2;
-    static final int MESSAGE_IMPORT_DONE = 2;
-    static final int MESSAGE_EXPORT_DONE = 3;
-
-    static final int DIALOG_DELETE_KEY = 1;
-    static final int DIALOG_IMPORT_KEYS = 2;
-    static final int DIALOG_IMPORTING = 3;
-    static final int DIALOG_EXPORT_KEYS = 4;
-    static final int DIALOG_EXPORTING = 5;
-    static final int DIALOG_EXPORT_KEY = 6;
-
-    static final int TASK_IMPORT = 1;
-    static final int TASK_EXPORT = 2;
+public class SecretKeyListActivity extends BaseActivity implements OnChildClickListener {
+    ExpandableListView mList;
 
     protected int mSelectedItem = -1;
     protected int mTask = 0;
 
-    private ProgressDialog mProgressDialog = null;
-    private Thread mRunningThread = null;
-
     private String mImportFilename = Environment.getExternalStorageDirectory() + "/secring.gpg";
     private String mExportFilename = Environment.getExternalStorageDirectory() + "/secexport.asc";
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle data = msg.getData();
-            if (data != null) {
-                int type = data.getInt("type");
-                switch (type) {
-                    case MESSAGE_PROGRESS_UPDATE: {
-                        String message = data.getString("message");
-                        if (mProgressDialog != null) {
-                            if (message != null) {
-                                mProgressDialog.setMessage(message);
-                            }
-                            mProgressDialog.setMax(data.getInt("max"));
-                            mProgressDialog.setProgress(data.getInt("progress"));
-                        }
-                        break;
-                    }
-
-                    case MESSAGE_IMPORT_DONE: {
-                        removeDialog(DIALOG_IMPORTING);
-                        mProgressDialog = null;
-
-                        String error = data.getString("error");
-                        if (error != null) {
-                            Toast.makeText(SecretKeyListActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                        } else {
-                            int added = data.getInt("added");
-                            int updated = data.getInt("updated");
-                            String message;
-                            if (added > 0 && updated > 0) {
-                                message = "Succssfully added " + added + " keys and updated " +
-                                          updated + " keys.";
-                            } else if (added > 0) {
-                                message = "Succssfully added " + added + " keys.";
-                            } else if (updated > 0) {
-                                message = "Succssfully updated " + updated + " keys.";
-                            } else {
-                                message = "No keys added or updated.";
-                            }
-                            Toast.makeText(SecretKeyListActivity.this, message,
-                                           Toast.LENGTH_SHORT).show();
-                        }
-                        refreshList();
-                        break;
-                    }
-
-                    case MESSAGE_EXPORT_DONE: {
-                        removeDialog(DIALOG_EXPORTING);
-                        mProgressDialog = null;
-
-                        String error = data.getString("error");
-                        if (error != null) {
-                            Toast.makeText(SecretKeyListActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                        } else {
-                            int exported = data.getInt("exported");
-                            String message;
-                            if (exported == 1) {
-                                message = "Succssfully exported 1 key.";
-                            } else if (exported > 0) {
-                                message = "Succssfully exported " + exported + " keys.";
-                            } else{
-                                message = "No keys exported.";
-                            }
-                            Toast.makeText(SecretKeyListActivity.this, message,
-                                           Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
-    public void setProgress(int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
-
-    public void setProgress(String message, int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.key_list);
 
-        Apg.initialize(this);
-
-        setListAdapter(new SecretKeyListAdapter(this));
-        registerForContextMenu(getExpandableListView());
-        getExpandableListView().setOnChildClickListener(this);
+        mList = (ExpandableListView) findViewById(R.id.list);
+        mList.setAdapter(new SecretKeyListAdapter(this));
+        registerForContextMenu(mList);
+        mList.setOnChildClickListener(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, OPTION_MENU_IMPORT_KEYS, 0, "Import Keys")
+        menu.add(0, Id.menu.option.import_keys, 0, "Import Keys")
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, OPTION_MENU_EXPORT_KEYS, 1, "Export Keys")
+        menu.add(0, Id.menu.option.export_keys, 1, "Export Keys")
                 .setIcon(android.R.drawable.ic_menu_save);
-        menu.add(1, OPTION_MENU_CREATE_KEY, 2, "Create Key")
+        menu.add(1, Id.menu.option.create, 2, "Create Key")
                 .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -218,17 +83,17 @@ public class SecretKeyListActivity extends ExpandableListActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case OPTION_MENU_IMPORT_KEYS: {
-                showDialog(DIALOG_IMPORT_KEYS);
+            case Id.menu.option.import_keys: {
+                showDialog(Id.dialog.import_keys);
                 return true;
             }
 
-            case OPTION_MENU_EXPORT_KEYS: {
-                showDialog(DIALOG_EXPORT_KEYS);
+            case Id.menu.option.export_keys: {
+                showDialog(Id.dialog.export_keys);
                 return true;
             }
 
-            case OPTION_MENU_CREATE_KEY: {
+            case Id.menu.option.create: {
                 createKey();
                 return true;
             }
@@ -241,8 +106,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         ExpandableListView.ExpandableListContextMenuInfo info =
                 (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
@@ -253,9 +117,9 @@ public class SecretKeyListActivity extends ExpandableListActivity
             PGPSecretKeyRing keyRing = Apg.getSecretKeyRings().get(groupPosition);
             String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
             menu.setHeaderTitle(userId);
-            menu.add(0, MENU_EDIT, 0, "Edit Key");
-            menu.add(0, MENU_EXPORT, 1, "Export Key");
-            menu.add(0, MENU_DELETE, 2, "Delete Key");
+            menu.add(0, Id.menu.edit, 0, "Edit Key");
+            menu.add(0, Id.menu.export, 1, "Export Key");
+            menu.add(0, Id.menu.delete, 2, "Delete Key");
         }
     }
 
@@ -270,21 +134,21 @@ public class SecretKeyListActivity extends ExpandableListActivity
         }
 
         switch (menuItem.getItemId()) {
-            case MENU_EDIT: {
+            case Id.menu.edit: {
                 mSelectedItem = groupPosition;
-                showDialog(AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE);
+                showDialog(Id.dialog.pass_phrase);
                 return true;
             }
 
-            case MENU_EXPORT: {
+            case Id.menu.export: {
                 mSelectedItem = groupPosition;
-                showDialog(DIALOG_EXPORT_KEY);
+                showDialog(Id.dialog.export_key);
                 return true;
             }
 
-            case MENU_DELETE: {
+            case Id.menu.delete: {
                 mSelectedItem = groupPosition;
-                showDialog(DIALOG_DELETE_KEY);
+                showDialog(Id.dialog.delete_key);
                 return true;
             }
 
@@ -298,7 +162,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                 int childPosition, long id) {
         mSelectedItem = groupPosition;
-        showDialog(AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE);
+        showDialog(Id.dialog.pass_phrase);
         return true;
     }
 
@@ -307,7 +171,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
         boolean singleKeyExport = false;
 
         switch (id) {
-            case DIALOG_DELETE_KEY: {
+            case Id.dialog.delete_key: {
                 PGPSecretKeyRing keyRing = Apg.getSecretKeyRings().get(mSelectedItem);
 
                 String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
@@ -321,20 +185,20 @@ public class SecretKeyListActivity extends ExpandableListActivity
                                               public void onClick(DialogInterface dialog, int id) {
                                                   deleteKey(mSelectedItem);
                                                   mSelectedItem = -1;
-                                                  removeDialog(DIALOG_DELETE_KEY);
+                                                  removeDialog(Id.dialog.delete_key);
                                               }
                                           });
                 builder.setNegativeButton(android.R.string.ok,
                                           new DialogInterface.OnClickListener() {
                                               public void onClick(DialogInterface dialog, int id) {
                                                   mSelectedItem = -1;
-                                                  removeDialog(DIALOG_DELETE_KEY);
+                                                  removeDialog(Id.dialog.delete_key);
                                               }
                                           });
                 return builder.create();
             }
 
-            case DIALOG_IMPORT_KEYS: {
+            case Id.dialog.import_keys: {
                 return FileDialog.build(this, "Import Keys",
                                         "Please specify which file to import from.",
                                         mImportFilename,
@@ -342,33 +206,33 @@ public class SecretKeyListActivity extends ExpandableListActivity
 
                                             @Override
                                             public void onOkClick(String filename) {
-                                                removeDialog(DIALOG_IMPORT_KEYS);
+                                                removeDialog(Id.dialog.import_keys);
                                                 mImportFilename = filename;
                                                 importKeys();
                                             }
 
                                             @Override
                                             public void onCancelClick() {
-                                                removeDialog(DIALOG_IMPORT_KEYS);
+                                                removeDialog(Id.dialog.import_keys);
                                             }
                                         },
                                         getString(R.string.filemanager_title_open),
                                         getString(R.string.filemanager_btn_open));
             }
 
-            case DIALOG_EXPORT_KEY: {
+            case Id.dialog.export_key: {
                 singleKeyExport = true;
-                // break intentionally omitted, to use the DIALOG_EXPORT_KEYS dialog
+                // break intentionally omitted, to use the Id.dialog.export_keys dialog
             }
 
-            case DIALOG_EXPORT_KEYS: {
+            case Id.dialog.export_keys: {
                 String title = "Export Key";
 
                 if (!singleKeyExport) {
                     // plural "Keys"
                     title += "s";
                 }
-                final int thisDialogId = (singleKeyExport ? DIALOG_DELETE_KEY : DIALOG_EXPORT_KEYS);
+                final int thisDialogId = (singleKeyExport ? Id.dialog.delete_key : Id.dialog.export_keys);
 
                 return FileDialog.build(this, title,
                                         "Please specify which file to export to.\n" +
@@ -393,23 +257,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
                                         getString(R.string.filemanager_btn_save));
             }
 
-            case DIALOG_IMPORTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("importing...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
-            }
-
-            case DIALOG_EXPORTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("exporting...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
-            }
-
-            case AskForSecretKeyPassPhrase.DIALOG_PASS_PHRASE: {
+            case Id.dialog.pass_phrase: {
                 PGPSecretKeyRing keyRing = Apg.getSecretKeyRings().get(mSelectedItem);
                 long keyId = keyRing.getSecretKey().getKeyID();
                 return AskForSecretKeyPassPhrase.createDialog(this, keyId, this);
@@ -418,14 +266,15 @@ public class SecretKeyListActivity extends ExpandableListActivity
         return super.onCreateDialog(id);
     }
 
+    @Override
     public void passPhraseCallback(String passPhrase) {
-        Apg.setPassPhrase(passPhrase);
+        super.passPhraseCallback(passPhrase);
         editKey();
     }
 
     private void createKey() {
         Intent intent = new Intent(this, EditKeyActivity.class);
-        startActivityForResult(intent, CREATE_SECRET_KEY);
+        startActivityForResult(intent, Id.message.create_key);
     }
 
     private void editKey() {
@@ -433,21 +282,21 @@ public class SecretKeyListActivity extends ExpandableListActivity
         long keyId = keyRing.getSecretKey().getKeyID();
         Intent intent = new Intent(this, EditKeyActivity.class);
         intent.putExtra("keyId", keyId);
-        startActivityForResult(intent, EDIT_SECRET_KEY);
+        startActivityForResult(intent, Id.message.edit_key);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case CREATE_SECRET_KEY: // intentionally no break
-            case EDIT_SECRET_KEY: {
+            case Id.message.create_key: // intentionally no break
+            case Id.message.edit_key: {
                 if (resultCode == RESULT_OK) {
                     refreshList();
                 }
                 break;
             }
 
-            case FileDialog.REQUEST_CODE_PICK_FILE_OR_DIRECTORY: {
+            case Id.request.filename: {
                 if (resultCode == RESULT_OK && data != null) {
                     String filename = data.getDataString();
                     if (filename != null) {
@@ -465,42 +314,42 @@ public class SecretKeyListActivity extends ExpandableListActivity
                 return;
             }
 
-            default:
+            default: {
                 break;
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void importKeys() {
-        showDialog(DIALOG_IMPORTING);
-        mTask = TASK_IMPORT;
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.importing);
+        mTask = Id.task.import_keys;
+        startThread();
     }
 
     public void exportKeys() {
-        showDialog(DIALOG_EXPORTING);
-        mTask = TASK_EXPORT;
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.exporting);
+        mTask = Id.task.export_keys;
+        startThread();
     }
 
+    @Override
     public void run() {
         String error = null;
         Bundle data = new Bundle();
         Message msg = new Message();
 
         String filename = null;
-        if (mTask == TASK_IMPORT) {
+        if (mTask == Id.task.import_keys) {
             filename = mImportFilename;
         } else {
             filename = mExportFilename;
         }
 
         try {
-            if (mTask == TASK_IMPORT) {
-                data = Apg.importKeyRings(this, Apg.TYPE_SECRET, filename, this);
+            if (mTask == Id.task.import_keys) {
+                data = Apg.importKeyRings(this, Id.type.secret_key, filename, this);
             } else {
                 Vector<Object> keys = new Vector<Object>();
                 if (mSelectedItem == -1) {
@@ -522,10 +371,10 @@ public class SecretKeyListActivity extends ExpandableListActivity
             error = e.getMessage();
         }
 
-        if (mTask == TASK_IMPORT) {
-            data.putInt("type", MESSAGE_IMPORT_DONE);
+        if (mTask == Id.task.import_keys) {
+            data.putInt("type", Id.message.import_done);
         } else {
-            data.putInt("type", MESSAGE_EXPORT_DONE);
+            data.putInt("type", Id.message.export_done);
         }
 
         if (error != null) {
@@ -533,7 +382,7 @@ public class SecretKeyListActivity extends ExpandableListActivity
         }
 
         msg.setData(data);
-        mHandler.sendMessage(msg);
+        sendMessage(msg);
     }
 
     private void deleteKey(int index) {
@@ -543,8 +392,75 @@ public class SecretKeyListActivity extends ExpandableListActivity
     }
 
     private void refreshList() {
-        ((SecretKeyListAdapter) getExpandableListAdapter())
-                .notifyDataSetChanged();
+        ((SecretKeyListAdapter) mList.getExpandableListAdapter()).notifyDataSetChanged();
+    }
+
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+
+        Bundle data = msg.getData();
+        if (data != null) {
+            int type = data.getInt("type");
+            switch (type) {
+                case Id.message.import_done: {
+                    removeDialog(Id.dialog.importing);
+
+                    String error = data.getString("error");
+                    if (error != null) {
+                        Toast.makeText(SecretKeyListActivity.this,
+                                       "Error: " + data.getString("error"),
+                                       Toast.LENGTH_SHORT).show();
+                    } else {
+                        int added = data.getInt("added");
+                        int updated = data.getInt("updated");
+                        String message;
+                        if (added > 0 && updated > 0) {
+                            message = "Succssfully added " + added + " keys and updated " +
+                                      updated + " keys.";
+                        } else if (added > 0) {
+                            message = "Succssfully added " + added + " keys.";
+                        } else if (updated > 0) {
+                            message = "Succssfully updated " + updated + " keys.";
+                        } else {
+                            message = "No keys added or updated.";
+                        }
+                        Toast.makeText(SecretKeyListActivity.this, message,
+                                       Toast.LENGTH_SHORT).show();
+                    }
+                    refreshList();
+                    break;
+                }
+
+                case Id.message.export_done: {
+                    removeDialog(Id.dialog.exporting);
+
+                    String error = data.getString("error");
+                    if (error != null) {
+                        Toast.makeText(SecretKeyListActivity.this,
+                                       "Error: " + data.getString("error"),
+                                       Toast.LENGTH_SHORT).show();
+                    } else {
+                        int exported = data.getInt("exported");
+                        String message;
+                        if (exported == 1) {
+                            message = "Succssfully exported 1 key.";
+                        } else if (exported > 0) {
+                            message = "Succssfully exported " + exported + " keys.";
+                        } else{
+                            message = "No keys exported.";
+                        }
+                        Toast.makeText(SecretKeyListActivity.this, message,
+                                       Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+        }
     }
 
     private static class SecretKeyListAdapter extends BaseExpandableListAdapter {
