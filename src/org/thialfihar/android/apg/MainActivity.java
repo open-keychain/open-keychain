@@ -52,9 +52,6 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends BaseActivity {
-
-    private static String PREF_SEEN_CHANGE_LOG = "seenChangeLogDialog" + Apg.VERSION;
-
     private ListView mAccounts = null;
 
     @Override
@@ -116,7 +113,7 @@ public class MainActivity extends BaseActivity {
         registerForContextMenu(mAccounts);
 
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-        if (!prefs.getBoolean(PREF_SEEN_CHANGE_LOG, false)) {
+        if (!prefs.getBoolean(Constants.pref.has_seen_change_log, false)) {
             showDialog(Id.dialog.change_log);
         }
     }
@@ -227,6 +224,7 @@ public class MainActivity extends BaseActivity {
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
                                             " * OI File Manager support\n" +
+                                            " * file encryption\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
@@ -253,7 +251,7 @@ public class MainActivity extends BaseActivity {
                                                 MainActivity.this.removeDialog(Id.dialog.change_log);
                                                 SharedPreferences prefs = getPreferences(MODE_PRIVATE);
                                                 SharedPreferences.Editor editor = prefs.edit();
-                                                editor.putBoolean(PREF_SEEN_CHANGE_LOG, true);
+                                                editor.putBoolean(Constants.pref.has_seen_change_log, true);
                                                 editor.commit();
                                             }
                 });

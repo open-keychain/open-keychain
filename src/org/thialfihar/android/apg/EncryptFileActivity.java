@@ -16,10 +16,13 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -32,11 +35,14 @@ import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.openintents.intents.FileManager;
+import org.thialfihar.android.apg.Apg.GeneralException;
 
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,44 +57,49 @@ import android.widget.Toast;
 import android.widget.TabHost.TabSpec;
 
 public class EncryptFileActivity extends BaseActivity {
+    private final String TAB_ASYMMETRIC = "TAB_ASYMMETRIC";
+    private final String TAB_SYMMETRIC = "TAB_SYMMETRIC";
 
+    private TabHost mTabHost = null;
     private EditText mFilename = null;
     private ImageButton mBrowse = null;
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
-    private ListView mList;
+    private ListView mPublicKeyList = null;
     private Button mEncryptButton = null;
 
     private long mEncryptionKeyIds[] = null;
+    private String mInputFilename = null;
+    private String mOutputFilename = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encrypt_file);
 
-        TabHost tabHost = (TabHost) findViewById(R.id.tab_host);
-        tabHost.setup();
+        mTabHost = (TabHost) findViewById(R.id.tab_host);
+        mTabHost.setup();
 
-        TabSpec ts1 = tabHost.newTabSpec("TAB_ASYMMETRIC");
+        TabSpec ts1 = mTabHost.newTabSpec(TAB_ASYMMETRIC);
         ts1.setIndicator(getString(R.string.tab_asymmetric),
                          getResources().getDrawable(R.drawable.key));
         ts1.setContent(R.id.tab_asymmetric);
-        tabHost.addTab(ts1);
+        mTabHost.addTab(ts1);
 
-        TabSpec ts2 = tabHost.newTabSpec("TAB_SYMMETRIC");
+        TabSpec ts2 = mTabHost.newTabSpec(TAB_SYMMETRIC);
         ts2.setIndicator(getString(R.string.tab_symmetric),
                          getResources().getDrawable(R.drawable.encrypted));
         ts2.setContent(R.id.tab_symmetric);
-        tabHost.addTab(ts2);
+        mTabHost.addTab(ts2);
 
-        tabHost.setCurrentTab(0);
+        mTabHost.setCurrentTab(0);
 
         Vector<PGPPublicKeyRing> keyRings =
                 (Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
         Collections.sort(keyRings, new Apg.PublicKeySorter());
-        mList = (ListView) findViewById(R.id.public_key_list);
-        mList.setAdapter(new SelectPublicKeyListAdapter(mList, keyRings));
+        mPublicKeyList = (ListView) findViewById(R.id.public_key_list);
+        mPublicKeyList.setAdapter(new SelectPublicKeyListAdapter(mPublicKeyList, keyRings));
 
         mFilename = (EditText) findViewById(R.id.filename);
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
@@ -180,17 +191,60 @@ public class EncryptFileActivity extends BaseActivity {
     }
 
     private void encryptClicked() {
-        if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
-            showDialog(Id.dialog.pass_phrase);
-        } else {
-            encryptStart();
+        String currentFilename = mFilename.getText().toString();
+        if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
+            mInputFilename = mFilename.getText().toString();
+            File file = new File(mInputFilename);
+            mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ".gpg";
         }
+
+        if (mInputFilename.equals("")) {
+            Toast.makeText(this, "Select a file first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (mTabHost.getCurrentTabTag().equals(TAB_ASYMMETRIC)) {
+            Vector<Long> vector = new Vector<Long>();
+            for (int i = 0; i < mPublicKeyList.getCount(); ++i) {
+                if (mPublicKeyList.isItemChecked(i)) {
+                    vector.add(mPublicKeyList.getItemIdAtPosition(i));
+                }
+            }
+            if (vector.size() > 0) {
+                mEncryptionKeyIds = new long[vector.size()];
+                for (int i = 0; i < vector.size(); ++i) {
+                    mEncryptionKeyIds[i] = vector.get(i);
+                }
+            } else {
+                mEncryptionKeyIds = null;
+            }
+
+            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+            if (getSecretKeyId() == 0 && !encryptIt) {
+                Toast.makeText(this, "Select a signature key or encryption keys.",
+                               Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+                showDialog(Id.dialog.pass_phrase);
+                return;
+            }
+        } else {
+
+        }
+
+        askForOutputFilename();
     }
 
     @Override
     public void passPhraseCallback(String passPhrase) {
         super.passPhraseCallback(passPhrase);
-        encryptStart();
+        askForOutputFilename();
+    }
+
+    private void askForOutputFilename() {
+        showDialog(Id.dialog.output_filename);
     }
 
     private void encryptStart() {
@@ -205,19 +259,35 @@ public class EncryptFileActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            InputStream in = new FileInputStream(mFilename.getText().toString());
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            if (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) {
-                Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
-                            Apg.getPassPhrase(), this);
-                data.putString("message", new String(out.toByteArray()));
-            } else {
-                Apg.signText(in, out, getSecretKeyId(),
-                             Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
-                data.putString("message", new String(out.toByteArray()));
+            if (mInputFilename.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath()) ||
+                mOutputFilename.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+                if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                    throw new GeneralException("external storage not ready");
+                }
             }
-        } catch (IOException e) {
+
+            InputStream in = new FileInputStream(mInputFilename);
+            OutputStream out = new FileOutputStream(mOutputFilename);
+
+            if (mTabHost.getCurrentTabTag().equals(TAB_ASYMMETRIC)) {
+                boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+
+                if (encryptIt) {
+                    Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
+                                Apg.getPassPhrase(), this);
+                } else {
+                    Apg.signText(in, out, getSecretKeyId(),
+                                 Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
+                }
+            } else {
+
+            }
+
+            out.close();
+        } catch (FileNotFoundException e) {
+            error = "file not found: " + e.getMessage();
+        }
+        catch (IOException e) {
             error = e.getMessage();
         } catch (PGPException e) {
             error = e.getMessage();
@@ -235,10 +305,48 @@ public class EncryptFileActivity extends BaseActivity {
 
         if (error != null) {
             data.putString("error", error);
+            // delete the file if an error occurred
+            File file = new File(mOutputFilename);
+            file.delete();
         }
 
         msg.setData(data);
         sendMessage(msg);
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case Id.dialog.output_filename: {
+                return FileDialog.build(this, "Encrypt to file",
+                                        "Please specify which file to encrypt to.\n" +
+                                        "WARNING! File will be overwritten if it exists.",
+                                        mOutputFilename,
+                                        new FileDialog.OnClickListener() {
+
+                                            @Override
+                                            public void onOkClick(String filename) {
+                                                removeDialog(Id.dialog.output_filename);
+                                                mOutputFilename = filename;
+                                                encryptStart();
+                                            }
+
+                                            @Override
+                                            public void onCancelClick() {
+                                                removeDialog(Id.dialog.output_filename);
+                                            }
+                                        },
+                                        getString(R.string.filemanager_title_save),
+                                        getString(R.string.filemanager_btn_save),
+                                        Id.request.output_filename);
+            }
+
+            default: {
+                break;
+            }
+        }
+
+        return super.onCreateDialog(id);
     }
 
     @Override
@@ -261,20 +369,21 @@ public class EncryptFileActivity extends BaseActivity {
                 return;
             }
 
-            case Id.request.secret_keys: {
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    long newId = bundle.getLong("selectedKeyId");
-                    if (getSecretKeyId() != newId) {
-                        Apg.setPassPhrase(null);
+            case Id.request.output_filename: {
+                if (resultCode == RESULT_OK && data != null) {
+                    String filename = data.getDataString();
+                    if (filename != null) {
+                        // Get rid of URI prefix:
+                        if (filename.startsWith("file://")) {
+                            filename = filename.substring(7);
+                        }
+                        // replace %20 and so on
+                        filename = Uri.decode(filename);
+
+                        FileDialog.setFilename(filename);
                     }
-                    setSecretKeyId(newId);
-                } else {
-                    setSecretKeyId(0);
-                    Apg.setPassPhrase(null);
                 }
-                updateView();
-                break;
+                return;
             }
 
             default: {

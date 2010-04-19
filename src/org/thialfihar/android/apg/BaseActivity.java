@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 public class BaseActivity extends Activity
                           implements Runnable, ProgressDialogUpdater,
@@ -142,6 +141,21 @@ public class BaseActivity extends Activity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case Id.request.secret_keys: {
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    long newId = bundle.getLong("selectedKeyId");
+                    if (getSecretKeyId() != newId) {
+                        Apg.setPassPhrase(null);
+                    }
+                    setSecretKeyId(newId);
+                } else {
+                    setSecretKeyId(0);
+                    Apg.setPassPhrase(null);
+                }
+                break;
+            }
+
             default: {
                 break;
             }
@@ -208,7 +222,6 @@ public class BaseActivity extends Activity
     }
 
     public void passPhraseCallback(String passPhrase) {
-        Log.e("oink", "setting pass phrase to " + passPhrase);
         Apg.setPassPhrase(passPhrase);
     }
 

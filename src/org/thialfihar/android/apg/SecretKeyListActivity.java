@@ -217,7 +217,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                                             }
                                         },
                                         getString(R.string.filemanager_title_open),
-                                        getString(R.string.filemanager_btn_open));
+                                        getString(R.string.filemanager_btn_open),
+                                        Id.request.filename);
             }
 
             case Id.dialog.export_key: {
@@ -254,7 +255,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                                             }
                                         },
                                         getString(R.string.filemanager_title_save),
-                                        getString(R.string.filemanager_btn_save));
+                                        getString(R.string.filemanager_btn_save),
+                                        Id.request.filename);
             }
 
             case Id.dialog.pass_phrase: {

@@ -178,6 +178,9 @@ public class EncryptMessageActivity extends BaseActivity {
 
         try {
             boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+            if (getSecretKeyId() == 0 && !encryptIt) {
+                throw new Apg.GeneralException("no signature key or encryption key selected");
+            }
 
             String message = mMessage.getText().toString();
             if (!encryptIt) {
@@ -198,12 +201,11 @@ public class EncryptMessageActivity extends BaseActivity {
             if (encryptIt) {
                 Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
                             Apg.getPassPhrase(), this);
-                data.putString("message", new String(out.toByteArray()));
             } else {
                 Apg.signText(in, out, getSecretKeyId(),
                              Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
-                data.putString("message", new String(out.toByteArray()));
             }
+            data.putString("message", new String(out.toByteArray()));
         } catch (IOException e) {
             error = e.getMessage();
         } catch (PGPException e) {
@@ -285,22 +287,6 @@ public class EncryptMessageActivity extends BaseActivity {
                     mEncryptionKeyIds = bundle.getLongArray("selection");
                     updateView();
                 }
-                break;
-            }
-
-            case Id.request.secret_keys: {
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    long newId = bundle.getLong("selectedKeyId");
-                    if (getSecretKeyId() != newId) {
-                        Apg.setPassPhrase(null);
-                    }
-                    setSecretKeyId(newId);
-                } else {
-                    setSecretKeyId(0);
-                    Apg.setPassPhrase(null);
-                }
-                updateView();
                 break;
             }
 

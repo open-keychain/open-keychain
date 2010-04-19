@@ -48,6 +48,7 @@ public final class Id {
         public static final int public_keys = 0x21070001;
         public static final int secret_keys = 0x21070002;
         public static final int filename = 0x21070003;
+        public static final int output_filename = 0x21070004;
     }
 
     public static final class dialog {
@@ -67,6 +68,7 @@ public final class Id {
         public static final int new_account = 0x2107000e;
         public static final int about = 0x2107000f;
         public static final int change_log = 0x21070010;
+        public static final int output_filename = 0x21070011;
     }
 
     public static final class task {

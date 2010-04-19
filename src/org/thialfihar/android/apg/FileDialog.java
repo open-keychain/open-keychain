@@ -37,6 +37,7 @@ public class FileDialog {
     private static Activity mActivity;
     private static String mFileManagerTitle;
     private static String mFileManagerButton;
+    private static int mRequestCode;
 
     public static interface OnClickListener {
         public void onCancelClick();
@@ -45,7 +46,8 @@ public class FileDialog {
 
     public static AlertDialog build(Activity activity, String title, String message,
                                     String defaultFile, OnClickListener onClickListener,
-                                    String fileManagerTitle, String fileManagerButton) {
+                                    String fileManagerTitle, String fileManagerButton,
+                                    int requestCode) {
         LayoutInflater inflater =
             (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
@@ -67,6 +69,7 @@ public class FileDialog {
         });
         mFileManagerTitle = fileManagerTitle;
         mFileManagerButton = fileManagerButton;
+        mRequestCode = requestCode;
 
         alert.setView(view);
 
@@ -107,7 +110,7 @@ public class FileDialog {
         intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, mFileManagerButton);
 
         try {
-            mActivity.startActivityForResult(intent, Id.request.filename);
+            mActivity.startActivityForResult(intent, mRequestCode);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
             Toast.makeText(mActivity, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();

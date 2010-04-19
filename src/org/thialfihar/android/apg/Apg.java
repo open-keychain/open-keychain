@@ -183,6 +183,14 @@ public class Apg {
             return;
         }
 
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File dir = new File(Constants.path.app_dir);
+            if (!dir.exists() && !dir.mkdirs()) {
+                // ignore this for now, it's not crucial
+                // that the directory doesn't exist at this point
+            }
+        }
+
         loadKeyRings(context, Id.type.public_key);
         loadKeyRings(context, Id.type.secret_key);
 

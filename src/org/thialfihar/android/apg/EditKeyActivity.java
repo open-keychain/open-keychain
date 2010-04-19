@@ -36,7 +36,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,7 +115,6 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     }
 
     public boolean havePassPhrase() {
-        Log.e("oink", "password is " + Apg.getPassPhrase());
         return (Apg.getPassPhrase() != null && !Apg.getPassPhrase().equals("")) ||
                (mNewPassPhrase != null && mNewPassPhrase.equals(""));
     }
