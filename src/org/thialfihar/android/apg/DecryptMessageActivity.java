@@ -147,9 +147,8 @@ public class DecryptMessageActivity extends BaseActivity {
 
         // else treat it as an encrypted message
         mSignedOnly = false;
-        ByteArrayInputStream in =
-                new ByteArrayInputStream(messageData.getBytes());
         try {
+            ByteArrayInputStream in = new ByteArrayInputStream(messageData.getBytes());
             setSecretKeyId(Apg.getDecryptionKeyId(in));
             showDialog(Id.dialog.pass_phrase);
         } catch (IOException e) {
@@ -198,15 +197,18 @@ public class DecryptMessageActivity extends BaseActivity {
 
         String messageData = mMessage.getText().toString();
 
-        ByteArrayInputStream in = new ByteArrayInputStream(messageData.getBytes());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
         try {
+            ByteArrayInputStream in = new ByteArrayInputStream(messageData.getBytes());
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
             if (mSignedOnly) {
                 data = Apg.verifyText(in, out, this);
             } else {
                 data = Apg.decrypt(in, out, Apg.getPassPhrase(), this);
             }
+
+            out.close();
+            data.putString("decryptedMessage", Strings.fromUTF8ByteArray(out.toByteArray()));
         } catch (PGPException e) {
             error = e.getMessage();
         } catch (IOException e) {
@@ -222,8 +224,6 @@ public class DecryptMessageActivity extends BaseActivity {
 
         if (error != null) {
             data.putString("error", error);
-        } else {
-            data.putString("decryptedMessage", Strings.fromUTF8ByteArray(out.toByteArray()));
         }
 
         msg.setData(data);
@@ -258,13 +258,9 @@ public class DecryptMessageActivity extends BaseActivity {
             if (data.getBoolean("signature")) {
                 String userId = data.getString("signatureUserId");
                 mSignatureKeyId = data.getLong("signatureKeyId");
-                mUserIdRest.setText("id: " +
-                                    Long.toHexString(mSignatureKeyId & 0xffffffffL));
+                mUserIdRest.setText("id: " + Long.toHexString(mSignatureKeyId & 0xffffffffL));
                 if (userId == null) {
-                    userId =
-                            getResources()
-                                    .getString(
-                                               R.string.unknown_user_id);
+                    userId = getResources().getString(R.string.unknown_user_id);
                 }
                 String chunks[] = userId.split(" <", 2);
                 userId = chunks[0];

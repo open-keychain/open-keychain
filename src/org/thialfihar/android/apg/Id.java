@@ -80,5 +80,18 @@ public final class Id {
         public static final int public_key = 0x21070001;
         public static final int secret_key = 0x21070002;
     }
-}
 
+    public static final class choice {
+        public static final class algorithm {
+            public static final int dsa = 0x21070001;
+            public static final int elgamal = 0x21070002;
+            public static final int rsa = 0x21070003;
+        }
+
+        public static final class usage {
+            public static final int sign_only = 0x21070001;
+            public static final int encrypt_only = 0x21070002;
+            public static final int sign_and_encrypt = 0x21070003;
+        }
+    }
+}

@@ -360,7 +360,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void startDecryptFileActivity() {
-        //startActivity(new Intent(this, DecryptFileActivity.class));
+        startActivity(new Intent(this, DecryptFileActivity.class));
     }
 
     public void startMailListActivity(String account) {

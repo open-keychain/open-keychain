@@ -25,8 +25,10 @@ import java.util.Vector;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
+import org.thialfihar.android.apg.utils.Choice;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -57,7 +59,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private TextView mTitle;
     private int mType = 0;
 
-    private KeyEditor.AlgorithmChoice mNewKeyAlgorithmChoice;
+    private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
 
     volatile private PGPSecretKey mNewKey;
@@ -181,24 +183,23 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 dialog.setTitle("Create Key");
 
                 final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
-                KeyEditor.AlgorithmChoice choices[] = {
-                        new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.DSA,
-                                                      getResources().getString(R.string.dsa)),
-                        /*new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.ELGAMAL,
-                                                      getResources().getString(R.string.elgamal)),*/
-                        new KeyEditor.AlgorithmChoice(KeyEditor.AlgorithmChoice.RSA,
-                                                      getResources().getString(R.string.rsa)),
+                Choice choices[] = {
+                        new Choice(Id.choice.algorithm.dsa,
+                                   getResources().getString(R.string.dsa)),
+                        /*new Choice(Id.choice.algorithm.elgamal,
+                                   getResources().getString(R.string.elgamal)),*/
+                        new Choice(Id.choice.algorithm.rsa,
+                                   getResources().getString(R.string.rsa)),
                 };
-                ArrayAdapter<KeyEditor.AlgorithmChoice> adapter =
-                        new ArrayAdapter<KeyEditor.AlgorithmChoice>(
-                                getContext(),
-                                android.R.layout.simple_spinner_item,
-                                choices);
+                ArrayAdapter<Choice> adapter =
+                        new ArrayAdapter<Choice>(getContext(),
+                                                 android.R.layout.simple_spinner_item,
+                                                 choices);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 algorithm.setAdapter(adapter);
                 // make RSA the default
                 for (int i = 0; i < choices.length; ++i) {
-                    if (choices[i].getId() == KeyEditor.AlgorithmChoice.RSA) {
+                    if (choices[i].getId() == Id.choice.algorithm.rsa) {
                         algorithm.setSelection(i);
                         break;
                     }
@@ -217,8 +218,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                             mNewKeySize = 0;
                         }
 
-                        mNewKeyAlgorithmChoice =
-                                (KeyEditor.AlgorithmChoice) algorithm.getSelectedItem();
+                        mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
                         createKey();
                     }
                 });
@@ -294,7 +294,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void run() {
         String error = null;
         try {
-            mNewKey = Apg.createKey(mNewKeyAlgorithmChoice, mNewKeySize, Apg.getPassPhrase());
+            mNewKey = Apg.createKey(mNewKeyAlgorithmChoice.getId(),
+                                    mNewKeySize, Apg.getPassPhrase());
         } catch (NoSuchProviderException e) {
             error = e.getMessage();
         } catch (NoSuchAlgorithmException e) {

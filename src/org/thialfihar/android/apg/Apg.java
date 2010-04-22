@@ -275,14 +275,10 @@ public class Apg {
         return mPassPhrase;
     }
 
-    public static PGPSecretKey createKey(KeyEditor.AlgorithmChoice algorithmChoice, int keySize,
-                                         String passPhrase)
+    public static PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase)
                   throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
                   GeneralException, InvalidAlgorithmParameterException {
 
-        if (algorithmChoice == null) {
-            throw new GeneralException("unknown algorithm choice");
-        }
         if (keySize < 512) {
             throw new GeneralException("key size must be at least 512bit");
         }
@@ -296,15 +292,15 @@ public class Apg {
         int algorithm = 0;
         KeyPairGenerator keyGen = null;
 
-        switch (algorithmChoice.getId()) {
-            case KeyEditor.AlgorithmChoice.DSA: {
+        switch (algorithmChoice) {
+            case Id.choice.algorithm.dsa: {
                 keyGen = KeyPairGenerator.getInstance("DSA", new BouncyCastleProvider());
                 keyGen.initialize(keySize, new SecureRandom());
                 algorithm = PGPPublicKey.DSA;
                 break;
             }
 
-            case KeyEditor.AlgorithmChoice.ELGAMAL: {
+            case Id.choice.algorithm.elgamal: {
                 if (keySize != 2048) {
                     throw new GeneralException("ElGamal currently requires 2048bit");
                 }
@@ -323,7 +319,7 @@ public class Apg {
                 break;
             }
 
-            case KeyEditor.AlgorithmChoice.RSA: {
+            case Id.choice.algorithm.rsa: {
                 keyGen = KeyPairGenerator.getInstance("RSA", new BouncyCastleProvider());
                 keyGen.initialize(keySize, new SecureRandom());
 
@@ -429,11 +425,11 @@ public class Apg {
 
         progress.setProgress("preparing master key...", 10, 100);
         KeyEditor keyEditor = (KeyEditor) keyEditors.getChildAt(0);
-        int usageId = keyEditor.getUsage().getId();
-        boolean canSign = (usageId == KeyEditor.UsageChoice.SIGN_ONLY ||
-                           usageId == KeyEditor.UsageChoice.SIGN_AND_ENCRYPT);
-        boolean canEncrypt = (usageId == KeyEditor.UsageChoice.ENCRYPT_ONLY ||
-                              usageId == KeyEditor.UsageChoice.SIGN_AND_ENCRYPT);
+        int usageId = keyEditor.getUsage();
+        boolean canSign = (usageId == Id.choice.usage.sign_only ||
+                           usageId == Id.choice.usage.sign_and_encrypt);
+        boolean canEncrypt = (usageId == Id.choice.usage.encrypt_only ||
+                              usageId == Id.choice.usage.sign_and_encrypt);
 
         String mainUserId = userIds.get(0);
 
@@ -517,11 +513,11 @@ public class Apg {
             unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
             keyFlags = 0;
-            usageId = keyEditor.getUsage().getId();
-            canSign = (usageId == KeyEditor.UsageChoice.SIGN_ONLY ||
-                       usageId == KeyEditor.UsageChoice.SIGN_AND_ENCRYPT);
-            canEncrypt = (usageId == KeyEditor.UsageChoice.ENCRYPT_ONLY ||
-                          usageId == KeyEditor.UsageChoice.SIGN_AND_ENCRYPT);
+            usageId = keyEditor.getUsage();
+            canSign = (usageId == Id.choice.usage.sign_only ||
+                       usageId == Id.choice.usage.sign_and_encrypt);
+            canEncrypt = (usageId == Id.choice.usage.encrypt_only ||
+                          usageId == Id.choice.usage.sign_and_encrypt);
             if (canSign) {
                 keyFlags |= KeyFlags.SIGN_DATA;
             }
