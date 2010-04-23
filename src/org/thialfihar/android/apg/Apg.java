@@ -1147,10 +1147,16 @@ public class Apg {
                                boolean armored,
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
-                               ProgressDialogUpdater progress)
+                               ProgressDialogUpdater progress,
+                               int symmetricAlgorithm,
+                               String passPhrase)
             throws IOException, GeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
         Security.addProvider(new BouncyCastleProvider());
+
+        if (encryptionKeyIds == null) {
+            encryptionKeyIds = new long[0];
+        }
 
         ArmoredOutputStream armorOut = null;
         OutputStream out = null;
@@ -1166,8 +1172,8 @@ public class Apg {
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
 
-        if (encryptionKeyIds == null || encryptionKeyIds.length == 0) {
-            throw new GeneralException("no encryption key(s) given");
+        if (encryptionKeyIds.length == 0 && passPhrase == null) {
+            throw new GeneralException("no encryption key(s) or pass phrase given");
         }
 
         if (signatureKeyId != 0) {
@@ -1199,9 +1205,13 @@ public class Apg {
         progress.setProgress("preparing streams...", 20, 100);
         // encryptFile and compress input file content
         PGPEncryptedDataGenerator cPk =
-                new PGPEncryptedDataGenerator(PGPEncryptedData.AES_256, true, new SecureRandom(),
+                new PGPEncryptedDataGenerator(symmetricAlgorithm, true, new SecureRandom(),
                                               new BouncyCastleProvider());
 
+        if (encryptionKeyIds.length == 0) {
+            // symmetric encryption
+            cPk.addMethod(passPhrase.toCharArray());
+        }
         for (int i = 0; i < encryptionKeyIds.length; ++i) {
             PGPPublicKey key = getEncryptPublicKey(encryptionKeyIds[i]);
             if (key != null) {

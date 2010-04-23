@@ -83,5 +83,7 @@
     <string name="filemanager_title_save">Save As...</string>
     <string name="filemanager_btn_save">Save</string>
 
+    <string name="ascii_armour">ASCII armour</string>
+
 </resources>
 

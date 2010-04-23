@@ -31,12 +31,14 @@ import java.util.Collections;
 import java.util.Vector;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
+import org.bouncycastle2.openpgp.PGPEncryptedData;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.openintents.intents.FileManager;
 import org.thialfihar.android.apg.Apg.GeneralException;
+import org.thialfihar.android.apg.utils.Choice;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -47,11 +49,13 @@ import android.os.Environment;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,16 +72,23 @@ public class EncryptFileActivity extends BaseActivity {
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
     private ListView mPublicKeyList = null;
+    private Spinner mAlgorithm = null;
+    private EditText mPassPhrase = null;
+    private EditText mPassPhraseAgain = null;
+    private Button mAsciiArmour = null;
     private Button mEncryptButton = null;
 
     private long mEncryptionKeyIds[] = null;
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encrypt_file);
+
+        mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
 
         mTabHost = (TabHost) findViewById(R.id.tab_host);
         mTabHost.setup();
@@ -95,6 +106,8 @@ public class EncryptFileActivity extends BaseActivity {
         mTabHost.addTab(ts2);
 
         mTabHost.setCurrentTab(0);
+
+        // asymmetric tab
 
         Vector<PGPPublicKeyRing> keyRings =
                 (Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
@@ -129,6 +142,34 @@ public class EncryptFileActivity extends BaseActivity {
                 }
             }
         });
+
+        // symmetric tab
+
+        mAlgorithm = (Spinner) findViewById(R.id.algorithm);
+        Choice choices[] = {
+                new Choice(PGPEncryptedData.AES_128, "AES 128"),
+                new Choice(PGPEncryptedData.AES_192, "AES 192"),
+                new Choice(PGPEncryptedData.AES_256, "AES 256"),
+                new Choice(PGPEncryptedData.BLOWFISH, "Blowfish"),
+                new Choice(PGPEncryptedData.TWOFISH, "Twofish"),
+                new Choice(PGPEncryptedData.CAST5, "CAST5"),
+                new Choice(PGPEncryptedData.DES, "DES"),
+                new Choice(PGPEncryptedData.TRIPLE_DES, "Triple DES"),
+                new Choice(PGPEncryptedData.IDEA, "IDEA"),
+        };
+        ArrayAdapter<Choice> adapter =
+                new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAlgorithm.setAdapter(adapter);
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == PGPEncryptedData.AES_256) {
+                mAlgorithm.setSelection(i);
+                break;
+            }
+        }
+
+        mPassPhrase = (EditText) findViewById(R.id.pass_phrase);
+        mPassPhraseAgain = (EditText) findViewById(R.id.pass_phrase_again);
 
         mEncryptButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -232,7 +273,20 @@ public class EncryptFileActivity extends BaseActivity {
                 return;
             }
         } else {
+            // symmetric encryption
+            String passPhrase = mPassPhrase.getText().toString();
+            String passPhraseAgain = mPassPhraseAgain.getText().toString();
+            if (!passPhrase.equals(passPhraseAgain)) {
+                Toast.makeText(this, "Pass phrases don't match.",
+                               Toast.LENGTH_SHORT).show();
+                return;
+            }
 
+            if (passPhrase.length() == 0) {
+                Toast.makeText(this, "Enter a pass phrase.",
+                               Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         askForOutputFilename();
@@ -274,14 +328,16 @@ public class EncryptFileActivity extends BaseActivity {
                 boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
 
                 if (encryptIt) {
-                    Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
-                                Apg.getPassPhrase(), this);
-                } else {
-                    Apg.signText(in, out, getSecretKeyId(),
-                                 Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
+                    Apg.encrypt(in, out, mAsciiArmour.isSelected(),
+                                mEncryptionKeyIds, getSecretKeyId(),
+                                Apg.getPassPhrase(), this,
+                                PGPEncryptedData.AES_256, null);
                 }
             } else {
-
+                Apg.encrypt(in, out, mAsciiArmour.isSelected(),
+                            null, 0, null, this,
+                            ((Choice) mAlgorithm.getSelectedItem()).getId(),
+                            mPassPhrase.getText().toString());
             }
 
             out.close();

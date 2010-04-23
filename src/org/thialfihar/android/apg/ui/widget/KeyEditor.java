@@ -26,7 +26,6 @@ import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.R.id;
 import org.thialfihar.android.apg.utils.Choice;
 
 import android.app.DatePickerDialog;

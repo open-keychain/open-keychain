@@ -49,6 +49,12 @@
 
     </LinearLayout>
 
+    <CheckBox
+        android:id="@+id/ascii_armour"
+        android:text="@string/ascii_armour"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
+
     <TabHost
         android:id="@+id/tab_host"
         android:layout_weight="1"
@@ -66,6 +72,7 @@
             android:layout_height="fill_parent"
             android:paddingTop="65dip">
 
+<!-- -->
             <LinearLayout
                 android:id="@+id/tab_asymmetric"
                 android:layout_width="fill_parent"
@@ -132,17 +139,82 @@
                     android:layout_height="0dip"
                     android:layout_weight="1"/>
 
-           </LinearLayout>
-
-           <LinearLayout
+            </LinearLayout>
+ <!-- -->
+            <ScrollView
                 android:id="@+id/tab_symmetric"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation="vertical">
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="3dip">
+
+                    <TableLayout
+                        android:layout_height="fill_parent"
+                        android:layout_width="fill_parent"
+                        android:stretchColumns="1"
+                        android:layout_marginRight="?android:attr/scrollbarSize"
+                        android:paddingLeft="6dip">
+
+                        <TableRow
+                            android:layout_marginBottom="5dip">
+
+                            <TextView android:id="@+id/label_algorithm"
+                                      android:text="Algorithm:"
+                                      android:layout_height="wrap_content"
+                                      android:layout_width="wrap_content"
+                                      android:layout_gravity="center_vertical"
+                                      android:paddingRight="10dip"/>
+
+                            <Spinner
+                                android:id="@+id/algorithm"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"/>
+
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView android:id="@+id/label_pass_phrase"
+                                      android:text="Pass phrase"
+                                      android:layout_height="wrap_content"
+                                      android:layout_width="wrap_content"
+                                      android:layout_gravity="center_vertical"
+                                      android:paddingRight="10dip"/>
+
+                            <EditText android:id="@+id/pass_phrase"
+                                      android:layout_height="wrap_content"
+                                      android:layout_width="fill_parent"
+                                      android:inputType="textPassword"/>
+
+                        </TableRow>
+
+                        <TableRow>
+
+                            <TextView android:id="@+id/label_pass_phrase_again"
+                                      android:text="Again:"
+                                      android:layout_height="wrap_content"
+                                      android:layout_width="wrap_content"
+                                      android:layout_gravity="center_vertical"
+                                      android:paddingRight="10dip"/>
+
+                            <EditText android:id="@+id/pass_phrase_again"
+                                      android:layout_height="wrap_content"
+                                      android:layout_width="fill_parent"
+                                      android:inputType="textPassword"/>
+
+                        </TableRow>
+
+                    </TableLayout>
 
 
+                </LinearLayout>
 
-           </LinearLayout>
+            </ScrollView>
 
         </FrameLayout>
 

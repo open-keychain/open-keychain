@@ -25,6 +25,7 @@ import java.security.SignatureException;
 import java.util.Vector;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
+import org.bouncycastle2.openpgp.PGPEncryptedData;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
@@ -200,7 +201,8 @@ public class EncryptMessageActivity extends BaseActivity {
 
             if (encryptIt) {
                 Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
-                            Apg.getPassPhrase(), this);
+                            Apg.getPassPhrase(), this,
+                            PGPEncryptedData.AES_256, null);
             } else {
                 Apg.signText(in, out, getSecretKeyId(),
                              Apg.getPassPhrase(), HashAlgorithmTags.SHA256, this);
