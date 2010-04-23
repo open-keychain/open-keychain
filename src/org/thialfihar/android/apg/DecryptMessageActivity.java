@@ -204,7 +204,7 @@ public class DecryptMessageActivity extends BaseActivity {
             if (mSignedOnly) {
                 data = Apg.verifyText(in, out, this);
             } else {
-                data = Apg.decrypt(in, out, Apg.getPassPhrase(), this);
+                data = Apg.decrypt(in, out, Apg.getPassPhrase(), this, false);
             }
 
             out.close();

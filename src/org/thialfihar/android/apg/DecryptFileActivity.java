@@ -59,6 +59,8 @@ public class DecryptFileActivity extends BaseActivity {
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
+    private boolean mAssumeSymmetricEncryption = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +130,16 @@ public class DecryptFileActivity extends BaseActivity {
         try {
             InputStream in = new FileInputStream(mInputFilename);
             setSecretKeyId(Apg.getDecryptionKeyId(in));
+            if (getSecretKeyId() == 0) {
+                // reopen the file to check whether there's symmetric encryption data in there
+                in = new FileInputStream(mInputFilename);
+                if (!Apg.hasSymmetricEncryption(in)) {
+                    throw new Apg.GeneralException("no suitable keys found");
+                }
+                mAssumeSymmetricEncryption = true;
+            } else {
+                mAssumeSymmetricEncryption = false;
+            }
             showDialog(Id.dialog.pass_phrase);
         } catch (FileNotFoundException e) {
             error = "file not found: " + e.getLocalizedMessage();
@@ -168,7 +180,7 @@ public class DecryptFileActivity extends BaseActivity {
             InputStream in = new FileInputStream(mInputFilename);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            data = Apg.decrypt(in, out, Apg.getPassPhrase(), this);
+            data = Apg.decrypt(in, out, Apg.getPassPhrase(), this, mAssumeSymmetricEncryption);
 
             out.close();
             OutputStream fileOut = new FileOutputStream(mOutputFilename);

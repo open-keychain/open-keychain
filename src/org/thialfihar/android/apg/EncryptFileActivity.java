@@ -101,7 +101,7 @@ public class EncryptFileActivity extends BaseActivity {
 
         TabSpec ts2 = mTabHost.newTabSpec(TAB_SYMMETRIC);
         ts2.setIndicator(getString(R.string.tab_symmetric),
-                         getResources().getDrawable(R.drawable.encrypted));
+                         getResources().getDrawable(R.drawable.key));
         ts2.setContent(R.id.tab_symmetric);
         mTabHost.addTab(ts2);
 

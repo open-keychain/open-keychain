@@ -224,7 +224,7 @@ public class MainActivity extends BaseActivity {
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
                                             " * OI File Manager support\n" +
-                                            " * file encryption\n" +
+                                            " * file encryption/decryption\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +

@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -66,6 +67,7 @@ import org.bouncycastle2.openpgp.PGPLiteralDataGenerator;
 import org.bouncycastle2.openpgp.PGPObjectFactory;
 import org.bouncycastle2.openpgp.PGPOnePassSignature;
 import org.bouncycastle2.openpgp.PGPOnePassSignatureList;
+import org.bouncycastle2.openpgp.PGPPBEEncryptedData;
 import org.bouncycastle2.openpgp.PGPPrivateKey;
 import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyEncryptedData;
@@ -1361,24 +1363,60 @@ public class Apg {
             throw new GeneralException("data not valid encryption data");
         }
 
+        // TODO: currently we always only look at the first known key
         // find the secret key
         PGPSecretKey secretKey = null;
-        for (PGPPublicKeyEncryptedData pbe :
-                new IterableIterator<PGPPublicKeyEncryptedData>(enc.getEncryptedDataObjects())) {
-            secretKey = findSecretKey(pbe.getKeyID());
-            if (secretKey != null) {
-                break;
+        Iterator it = enc.getEncryptedDataObjects();
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPublicKeyEncryptedData) {
+                PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
+                secretKey = findSecretKey(pbe.getKeyID());
+                if (secretKey != null) {
+                    break;
+                }
             }
         }
+
         if (secretKey == null) {
-            throw new GeneralException("couldn't find a secret key to decrypt");
+            return 0;
         }
 
         return secretKey.getKeyID();
     }
 
+    public static boolean hasSymmetricEncryption(InputStream inStream)
+            throws GeneralException, IOException {
+        InputStream in = PGPUtil.getDecoderStream(inStream);
+        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+        PGPEncryptedDataList enc;
+        Object o = pgpF.nextObject();
+
+        // the first object might be a PGP marker packet.
+        if (o instanceof PGPEncryptedDataList) {
+            enc = (PGPEncryptedDataList) o;
+        } else {
+            enc = (PGPEncryptedDataList) pgpF.nextObject();
+        }
+
+        if (enc == null) {
+            throw new GeneralException("data not valid encryption data");
+        }
+
+        Iterator it = enc.getEncryptedDataObjects();
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPBEEncryptedData) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static Bundle decrypt(InputStream inStream, OutputStream outStream,
-                                 String passPhrase, ProgressDialogUpdater progress)
+                                 String passPhrase, ProgressDialogUpdater progress,
+                                 boolean assumeSymmetric)
             throws IOException, GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
         InputStream in = PGPUtil.getDecoderStream(inStream);
@@ -1399,32 +1437,66 @@ public class Apg {
             throw new GeneralException("data not valid encryption data");
         }
 
-        progress.setProgress("finding key...", 10, 100);
-        // find the secret key
-        PGPPublicKeyEncryptedData pbe = null;
-        PGPSecretKey secretKey = null;
-        for (PGPPublicKeyEncryptedData encData :
-                new IterableIterator<PGPPublicKeyEncryptedData>(enc.getEncryptedDataObjects())) {
-            secretKey = findSecretKey(encData.getKeyID());
-            if (secretKey != null) {
-                pbe = encData;
-                break;
+        InputStream clear = null;
+        PGPEncryptedData encryptedData = null;
+
+        // TODO: currently we always only look at the first known key or symmetric encryption,
+        // there might be more...
+        if (assumeSymmetric) {
+            PGPPBEEncryptedData pbe = null;
+            Iterator it = enc.getEncryptedDataObjects();
+            // find secret key
+            while (it.hasNext()) {
+                Object obj = it.next();
+                if (obj instanceof PGPPBEEncryptedData) {
+                    pbe = (PGPPBEEncryptedData) obj;
+                    break;
+                }
             }
-        }
-        if (secretKey == null) {
-            throw new GeneralException("couldn't find a secret key to decrypt");
+
+            if (pbe == null) {
+                throw new GeneralException("couldn't find a packet with symmetric encryption");
+            }
+
+            progress.setProgress("decrypting data...", 20, 100);
+            clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
+            encryptedData = pbe;
+        } else {
+            progress.setProgress("finding key...", 10, 100);
+            PGPPublicKeyEncryptedData pbe = null;
+            PGPSecretKey secretKey = null;
+            Iterator it = enc.getEncryptedDataObjects();
+            // find secret key
+            while (it.hasNext()) {
+                Object obj = it.next();
+                if (obj instanceof PGPPublicKeyEncryptedData) {
+                    PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
+                    secretKey = findSecretKey(encData.getKeyID());
+                    if (secretKey != null) {
+                        pbe = encData;
+                        break;
+                    }
+                }
+            }
+
+            if (secretKey == null) {
+                throw new GeneralException("couldn't find a secret key to decrypt");
+            }
+
+            progress.setProgress("extracting key...", 20, 100);
+            PGPPrivateKey privateKey = null;
+            try {
+                privateKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
+                                                         new BouncyCastleProvider());
+            } catch (PGPException e) {
+                throw new PGPException("wrong pass phrase");
+            }
+
+            progress.setProgress("decrypting data...", 30, 100);
+            clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
+            encryptedData = pbe;
         }
 
-        progress.setProgress("extracting key...", 20, 100);
-        PGPPrivateKey privateKey = null;
-        try {
-            privateKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                                                     new BouncyCastleProvider());
-        } catch (PGPException e) {
-            throw new PGPException("wrong pass phrase");
-        }
-        progress.setProgress("decrypting data...", 30, 100);
-        InputStream clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
         PGPObjectFactory plainFact = new PGPObjectFactory(clear);
         Object dataChunk = plainFact.nextObject();
         PGPOnePassSignature signature = null;
@@ -1511,15 +1583,15 @@ public class Apg {
         }
 
         // TODO: add integrity somewhere
-        if (pbe.isIntegrityProtected()) {
+        if (encryptedData.isIntegrityProtected()) {
             progress.setProgress("verifying integrity...", 90, 100);
-            if (!pbe.verify()) {
-                System.err.println("message failed integrity check");
+            if (encryptedData.verify()) {
+                // passed
             } else {
-                System.err.println("message integrity check passed");
+                // failed
             }
         } else {
-            System.err.println("no message integrity check");
+            // no integrity check
         }
 
         progress.setProgress("done.", 100, 100);

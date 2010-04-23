@@ -45,8 +45,8 @@
     <string name="btn_save">Save</string>
     <string name="btn_doNotSave">Cancel</string>
 
-    <string name="tab_symmetric">Symmetric</string>
-    <string name="tab_asymmetric">Asymmetric</string>
+    <string name="tab_symmetric">Use Pass Phrase</string>
+    <string name="tab_asymmetric">Use Public Key</string>
 
     <string name="menu_about">About</string>
     <string name="menu_addAccount">Add GMail Account</string>

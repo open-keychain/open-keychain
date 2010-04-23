@@ -26,9 +26,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -43,36 +40,25 @@ public class AskForSecretKeyPassPhrase {
                                       PassPhraseCallbackInterface callback) {
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
-        final PGPSecretKey secretKey =
-                Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
-        if (secretKey == null) {
-            return null;
-        }
-
-        String userId = Apg.getMainUserIdSafe(context, secretKey);
-
         alert.setTitle(R.string.title_authentification);
-        alert.setMessage("Pass phrase for " + userId);
+
+        final PGPSecretKey secretKey;
+
+        if (secretKeyId == 0) {
+            secretKey = null;
+            alert.setMessage("Pass phrase");
+        } else {
+            secretKey = Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
+            if (secretKey == null) {
+                return null;
+            }
+            String userId = Apg.getMainUserIdSafe(context, secretKey);
+            alert.setMessage("Pass phrase for " + userId);
+        }
 
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         input.setTransformationMethod(new PasswordTransformationMethod());
-        input.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                // If the event is a key-down event on the "enter" button
-                if (event.getAction() == KeyEvent.ACTION_DOWN &&
-                    keyCode == KeyEvent.KEYCODE_ENTER) {
-                    try {
-                        ((AlertDialog) v.getParent()).getButton(AlertDialog.BUTTON_POSITIVE)
-                                                     .performClick();
-                    } catch (ClassCastException e) {
-                        // don't do anything if we're not in that dialog
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
         // 5dip padding
         int padding = (int) (10 * context.getResources().getDisplayMetrics().densityDpi / 160);
         LinearLayout layout = new LinearLayout(context);
@@ -91,14 +77,16 @@ public class AskForSecretKeyPassPhrase {
                                     public void onClick(DialogInterface dialog, int id) {
                                         activity.removeDialog(Id.dialog.pass_phrase);
                                         String passPhrase = "" + input.getText();
-                                        try {
-                                            secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                                                                        new BouncyCastleProvider());
-                                        } catch (PGPException e) {
-                                            Toast.makeText(activity,
-                                                           R.string.wrong_pass_phrase,
-                                                           Toast.LENGTH_SHORT).show();
-                                            return;
+                                        if (secretKey != null) {
+                                            try {
+                                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
+                                                                            new BouncyCastleProvider());
+                                            } catch (PGPException e) {
+                                                Toast.makeText(activity,
+                                                               R.string.wrong_pass_phrase,
+                                                               Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
                                         }
                                         cb.passPhraseCallback(passPhrase);
                                     }
