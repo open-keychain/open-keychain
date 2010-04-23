@@ -46,7 +46,7 @@ public class AskForSecretKeyPassPhrase {
 
         if (secretKeyId == 0) {
             secretKey = null;
-            alert.setMessage("Pass phrase");
+            alert.setMessage("Pass phrase for symmetric encryption");
         } else {
             secretKey = Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
             if (secretKey == null) {
