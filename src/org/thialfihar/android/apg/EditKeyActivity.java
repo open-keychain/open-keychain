@@ -116,7 +116,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
     public boolean havePassPhrase() {
         return (Apg.getPassPhrase() != null && !Apg.getPassPhrase().equals("")) ||
-               (mNewPassPhrase != null && mNewPassPhrase.equals(""));
+               (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
     }
 
     @Override
