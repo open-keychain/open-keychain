@@ -283,6 +283,14 @@ public class EncryptMessageActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case Id.request.secret_keys: {
+                if (resultCode == RESULT_OK) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    updateView();
+                }
+                break;
+            }
+
             case Id.request.public_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();

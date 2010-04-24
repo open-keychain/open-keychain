@@ -72,7 +72,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         if (intent.getExtras() != null) {
             keyId = intent.getExtras().getLong("keyId");
         }
-        if (keyId != 0) {
+
+        if (keyId == 0) {
+            Apg.setPassPhrase(null);
+        } else {
             PGPSecretKey masterKey = null;
             mKeyRing = Apg.getSecretKeyRing(keyId);
             if (mKeyRing != null) {

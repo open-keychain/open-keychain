@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
@@ -150,30 +151,42 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
         Vector<Choice> choices = new Vector<Choice>();
-        choices.add(new Choice(Id.choice.usage.sign_only,
-                               getResources().getString(R.string.sign_only)));
+        boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
+        if (!isElGamalKey) {
+            choices.add(new Choice(Id.choice.usage.sign_only,
+                                   getResources().getString(R.string.sign_only)));
+        }
         if (!mIsMasterKey) {
             choices.add(new Choice(Id.choice.usage.encrypt_only,
                                    getResources().getString(R.string.encrypt_only)));
         }
-        choices.add(new Choice(Id.choice.usage.sign_and_encrypt,
-                               getResources().getString(R.string.sign_and_encrypt)));
+        if (!isElGamalKey) {
+            choices.add(new Choice(Id.choice.usage.sign_and_encrypt,
+                                   getResources().getString(R.string.sign_and_encrypt)));
+        }
 
         ArrayAdapter<Choice> adapter =
                 new ArrayAdapter<Choice>(getContext(),
-                                                        android.R.layout.simple_spinner_item,
-                                                        choices);
+                                         android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
+        int selectId = 0;
         if (Apg.isEncryptionKey(key)) {
             if (Apg.isSigningKey(key)) {
-                mUsage.setSelection(2);
+                selectId = Id.choice.usage.sign_and_encrypt;
             } else {
-                mUsage.setSelection(1);
+                selectId = Id.choice.usage.encrypt_only;
             }
         } else {
-            mUsage.setSelection(0);
+            selectId = Id.choice.usage.sign_only;
+        }
+
+        for (int i = 0; i < choices.size(); ++i) {
+            if (choices.get(i).getId() == selectId) {
+                mUsage.setSelection(i);
+                break;
+            }
         }
 
         GregorianCalendar cal = new GregorianCalendar();

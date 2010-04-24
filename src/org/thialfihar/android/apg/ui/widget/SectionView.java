@@ -181,16 +181,23 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 View view = mInflater.inflate(R.layout.create_key, null);
                 dialog.setView(view);
                 dialog.setTitle("Create Key");
+                dialog.setMessage("Note: only subkeys support ElGamal, and for ElGamal will use " +
+                                  "the next smallest keysize of 1536, 2048, 3072, 4096, or 8192.");
+
+                boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
 
                 final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
-                Choice choices[] = {
-                        new Choice(Id.choice.algorithm.dsa,
-                                   getResources().getString(R.string.dsa)),
-                        /*new Choice(Id.choice.algorithm.elgamal,
-                                   getResources().getString(R.string.elgamal)),*/
-                        new Choice(Id.choice.algorithm.rsa,
-                                   getResources().getString(R.string.rsa)),
-                };
+                Vector<Choice> choices = new Vector<Choice>();
+                choices.add(new Choice(Id.choice.algorithm.dsa,
+                                       getResources().getString(R.string.dsa)));
+                if (!wouldBeMasterKey) {
+                    choices.add(new Choice(Id.choice.algorithm.elgamal,
+                                           getResources().getString(R.string.elgamal)));
+                }
+
+                choices.add(new Choice(Id.choice.algorithm.rsa,
+                                       getResources().getString(R.string.rsa)));
+
                 ArrayAdapter<Choice> adapter =
                         new ArrayAdapter<Choice>(getContext(),
                                                  android.R.layout.simple_spinner_item,
@@ -198,8 +205,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 algorithm.setAdapter(adapter);
                 // make RSA the default
-                for (int i = 0; i < choices.length; ++i) {
-                    if (choices[i].getId() == Id.choice.algorithm.rsa) {
+                for (int i = 0; i < choices.size(); ++i) {
+                    if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
                         algorithm.setSelection(i);
                         break;
                     }
@@ -294,8 +301,12 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void run() {
         String error = null;
         try {
+            PGPSecretKey masterKey = null;
+            if (mEditors.getChildCount() > 0) {
+                masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
+            }
             mNewKey = Apg.createKey(mNewKeyAlgorithmChoice.getId(),
-                                    mNewKeySize, Apg.getPassPhrase());
+                                    mNewKeySize, Apg.getPassPhrase(), masterKey);
         } catch (NoSuchProviderException e) {
             error = e.getMessage();
         } catch (NoSuchAlgorithmException e) {

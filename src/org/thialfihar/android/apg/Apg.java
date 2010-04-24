@@ -277,7 +277,8 @@ public class Apg {
         return mPassPhrase;
     }
 
-    public static PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase)
+    public static PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase,
+                                         PGPSecretKey masterKey)
                   throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
                   GeneralException, InvalidAlgorithmParameterException {
 
@@ -303,21 +304,17 @@ public class Apg {
             }
 
             case Id.choice.algorithm.elgamal: {
-                if (keySize != 2048) {
-                    throw new GeneralException("ElGamal currently requires 2048bit");
+                if (masterKey == null) {
+                    throw new GeneralException("The master key cannot be an ElGamal key.");
                 }
                 keyGen = KeyPairGenerator.getInstance("ELGAMAL", new BouncyCastleProvider());
-                BigInteger p = new BigInteger(
-                "36F0255DDE973DCB3B399D747F23E32ED6FDB1F77598338BFDF44159C4EC64DDAEB5F78671CBFB22" +
-                "106AE64C32C5BCE4CFD4F5920DA0EBC8B01ECA9292AE3DBA1B7A4A899DA181390BB3BD1659C81294" +
-                "F400A3490BF9481211C79404A576605A5160DBEE83B4E019B6D799AE131BA4C23DFF83475E9C40FA" +
-                "6725B7C9E3AA2C6596E9C05702DB30A07C9AA2DC235C5269E39D0CA9DF7AAD44612AD6F88F696992" +
-                "98F3CAB1B54367FB0E8B93F735E7DE83CD6FA1B9D1C931C41C6188D3E7F179FC64D87C5D13F85D70" +
-                "4A3AA20F90B3AD3621D434096AA7E8E7C66AB683156A951AEA2DD9E76705FAEFEA8D71A575535597" +
-                "0000000000000001", 16);
-                ElGamalParameterSpec elParams = new ElGamalParameterSpec(p, new BigInteger("2"));
+                BigInteger p = Primes.getBestPrime(keySize);
+                BigInteger g = new BigInteger("2");
+
+                ElGamalParameterSpec elParams = new ElGamalParameterSpec(p, g);
+
                 keyGen.initialize(elParams);
-                algorithm = PGPPublicKey.ELGAMAL_GENERAL;
+                algorithm = PGPPublicKey.ELGAMAL_ENCRYPT;
                 break;
             }
 
@@ -336,11 +333,39 @@ public class Apg {
 
         PGPKeyPair keyPair = new PGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
 
-        // enough for now, as we assemble the key again later anyway
-        PGPSecretKey secretKey =
-                new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
-                                 PGPEncryptedData.CAST5, passPhrase.toCharArray(), null, null,
-                                 new SecureRandom(), new BouncyCastleProvider().getName());
+        PGPSecretKey secretKey = null;
+        if (masterKey == null) {
+            // enough for now, as we assemble the key again later anyway
+            secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
+                                         PGPEncryptedData.CAST5, passPhrase.toCharArray(),
+                                         null, null,
+                                         new SecureRandom(), new BouncyCastleProvider().getName());
+
+        } else {
+            PGPPublicKey tmpKey = masterKey.getPublicKey();
+            PGPPublicKey masterPublicKey =
+                new PGPPublicKey(tmpKey.getAlgorithm(),
+                                 tmpKey.getKey(new BouncyCastleProvider()),
+                                 tmpKey.getCreationTime());
+            PGPPrivateKey masterPrivateKey =
+                masterKey.extractPrivateKey(passPhrase.toCharArray(),
+                                            new BouncyCastleProvider());
+
+            PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
+            PGPKeyRingGenerator ringGen =
+                new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
+                                        masterKeyPair, "",
+                                        PGPEncryptedData.CAST5, passPhrase.toCharArray(),
+                                        null, null,
+                                        new SecureRandom(), new BouncyCastleProvider().getName());
+            ringGen.addSubKey(keyPair);
+            PGPSecretKeyRing secKeyRing = ringGen.generateSecretKeyRing();
+            Iterator it = secKeyRing.getSecretKeys();
+            // first one is the master key
+            it.next();
+            secretKey = (PGPSecretKey) it.next();
+        }
+
 
         return secretKey;
     }
@@ -490,7 +515,7 @@ public class Apg {
 
         progress.setProgress("building master key ring...", 30, 100);
         PGPKeyRingGenerator keyGen =
-                new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION,
+                new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
                                         masterKeyPair, mainUserId,
                                         PGPEncryptedData.CAST5, newPassPhrase.toCharArray(),
                                         hashedPacketsGen.generate(), unhashedPacketsGen.generate(),
