@@ -166,15 +166,15 @@ public final class Primes {
 
     public static BigInteger getBestPrime(int keySize) {
         String primeString;
-        if (keySize >= 8192) {
+        if (keySize >= (8192 + 6144) / 2) {
             primeString = P8192;
-        } else if (keySize >= 6144) {
+        } else if (keySize >= (6144 + 4096) / 2) {
             primeString = P6144;
-        } else if (keySize >= 4096) {
+        } else if (keySize >= (4096 + 3072) / 2) {
             primeString = P4096;
-        } else if (keySize >= 3072) {
+        } else if (keySize >= (3072 + 2048) / 2) {
             primeString = P3072;
-        } else if (keySize >= 2048) {
+        } else if (keySize >= (2048 + 1536) / 2) {
             primeString = P2048;
         } else {
             primeString = P1536;

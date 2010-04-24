@@ -181,8 +181,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 View view = mInflater.inflate(R.layout.create_key, null);
                 dialog.setView(view);
                 dialog.setTitle("Create Key");
-                dialog.setMessage("Note: only subkeys support ElGamal, and for ElGamal will use " +
-                                  "the next smallest keysize of 1536, 2048, 3072, 4096, or 8192.");
+                dialog.setMessage("Note: only subkeys support ElGamal, and for ElGamal " +
+                                  "the nearest keysize of 1536, 2048, 3072, 4096, or 8192 " +
+                                  "will be used");
 
                 boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
 
