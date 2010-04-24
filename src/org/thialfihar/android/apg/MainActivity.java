@@ -222,8 +222,6 @@ public class MainActivity extends BaseActivity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
-                                            "* ElGamal subkey support\n" +
-                                            "* bug fixes\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
