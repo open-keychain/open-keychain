@@ -48,15 +48,15 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/btn_encryptMessage"
-                android:text="@string/btn_encryptMessage"
+                android:id="@+id/btn_encryptFile"
+                android:text="@string/btn_encryptFile"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
 
             <Button
-                android:id="@+id/btn_decryptMessage"
-                android:text="@string/btn_decryptMessage"
+                android:id="@+id/btn_decryptFile"
+                android:text="@string/btn_decryptFile"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
@@ -69,15 +69,15 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/btn_encryptFile"
-                android:text="@string/btn_encryptFile"
+                android:id="@+id/btn_encryptMessage"
+                android:text="@string/btn_encryptMessage"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
 
             <Button
-                android:id="@+id/btn_decryptFile"
-                android:text="@string/btn_decryptFile"
+                android:id="@+id/btn_decryptMessage"
+                android:text="@string/btn_decryptMessage"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"/>
