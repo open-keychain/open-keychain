@@ -18,7 +18,6 @@ package org.thialfihar.android.apg;
 
 import org.thialfihar.android.apg.provider.Accounts;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -223,7 +222,7 @@ public class MainActivity extends BaseActivity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
-                                            " * OI File Manager support\n" +
+                                            " * OI File Manager support (install from Market)\n" +
                                             " * file encryption/decryption\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +

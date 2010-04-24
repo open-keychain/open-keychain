@@ -22,7 +22,6 @@ import java.util.Vector;
 import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

@@ -25,7 +25,6 @@ import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.utils.IterableIterator;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;

@@ -30,7 +30,6 @@ import java.security.SignatureException;
 import java.util.Collections;
 import java.util.Vector;
 
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
@@ -75,7 +74,7 @@ public class EncryptFileActivity extends BaseActivity {
     private Spinner mAlgorithm = null;
     private EditText mPassPhrase = null;
     private EditText mPassPhraseAgain = null;
-    private Button mAsciiArmour = null;
+    private CheckBox mAsciiArmour = null;
     private Button mEncryptButton = null;
 
     private long mEncryptionKeyIds[] = null;
@@ -237,7 +236,8 @@ public class EncryptFileActivity extends BaseActivity {
         if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
             mInputFilename = mFilename.getText().toString();
             File file = new File(mInputFilename);
-            mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ".gpg";
+            String ending = (mAsciiArmour.isChecked() ? ".asc" : ".gpg");
+            mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ending;
         }
 
         if (mInputFilename.equals("")) {
@@ -262,8 +262,9 @@ public class EncryptFileActivity extends BaseActivity {
             }
 
             boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
-            if (getSecretKeyId() == 0 && !encryptIt) {
-                Toast.makeText(this, "Select a signature key or encryption keys.",
+            // for now only support encryption
+            if (!encryptIt) {
+                Toast.makeText(this, "Select at least one encryption key.",
                                Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -328,13 +329,13 @@ public class EncryptFileActivity extends BaseActivity {
                 boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
 
                 if (encryptIt) {
-                    Apg.encrypt(in, out, mAsciiArmour.isSelected(),
+                    Apg.encrypt(in, out, mAsciiArmour.isChecked(),
                                 mEncryptionKeyIds, getSecretKeyId(),
                                 Apg.getPassPhrase(), this,
                                 PGPEncryptedData.AES_256, null);
                 }
             } else {
-                Apg.encrypt(in, out, mAsciiArmour.isSelected(),
+                Apg.encrypt(in, out, mAsciiArmour.isChecked(),
                             null, 0, null, this,
                             ((Choice) mAlgorithm.getSelectedItem()).getId(),
                             mPassPhrase.getText().toString());
