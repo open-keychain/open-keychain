@@ -27,12 +27,9 @@ import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.util.Collections;
-import java.util.Vector;
 
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.openintents.intents.FileManager;
@@ -47,35 +44,31 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.TabHost.TabSpec;
 
 public class EncryptFileActivity extends BaseActivity {
-    private final String TAB_ASYMMETRIC = "TAB_ASYMMETRIC";
-    private final String TAB_SYMMETRIC = "TAB_SYMMETRIC";
-
-    private TabHost mTabHost = null;
     private EditText mFilename = null;
     private ImageButton mBrowse = null;
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
-    private ListView mPublicKeyList = null;
     private Spinner mAlgorithm = null;
     private EditText mPassPhrase = null;
     private EditText mPassPhraseAgain = null;
     private CheckBox mAsciiArmour = null;
+    private CheckBox mUsePassPhrase = null;
+    private ViewGroup mPassPhraseLayout = null;
     private Button mEncryptButton = null;
+    private Button mSelectKeysButton = null;
 
     private long mEncryptionKeyIds[] = null;
     private String mInputFilename = null;
@@ -89,30 +82,14 @@ public class EncryptFileActivity extends BaseActivity {
 
         mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
 
-        mTabHost = (TabHost) findViewById(R.id.tab_host);
-        mTabHost.setup();
-
-        TabSpec ts1 = mTabHost.newTabSpec(TAB_ASYMMETRIC);
-        ts1.setIndicator(getString(R.string.tab_asymmetric),
-                         getResources().getDrawable(R.drawable.key));
-        ts1.setContent(R.id.tab_asymmetric);
-        mTabHost.addTab(ts1);
-
-        TabSpec ts2 = mTabHost.newTabSpec(TAB_SYMMETRIC);
-        ts2.setIndicator(getString(R.string.tab_symmetric),
-                         getResources().getDrawable(R.drawable.key));
-        ts2.setContent(R.id.tab_symmetric);
-        mTabHost.addTab(ts2);
-
-        mTabHost.setCurrentTab(0);
-
         // asymmetric tab
-
-        Vector<PGPPublicKeyRing> keyRings =
-                (Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
-        Collections.sort(keyRings, new Apg.PublicKeySorter());
-        mPublicKeyList = (ListView) findViewById(R.id.public_key_list);
-        mPublicKeyList.setAdapter(new SelectPublicKeyListAdapter(mPublicKeyList, keyRings));
+        mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
+        mSelectKeysButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectPublicKeys();
+            }
+        });
 
         mFilename = (EditText) findViewById(R.id.filename);
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
@@ -167,8 +144,29 @@ public class EncryptFileActivity extends BaseActivity {
             }
         }
 
+        mUsePassPhrase = (CheckBox) findViewById(R.id.use_pass_phrase);
+        mPassPhraseLayout = (ViewGroup) findViewById(R.id.layout_pass_phrase);
         mPassPhrase = (EditText) findViewById(R.id.pass_phrase);
         mPassPhraseAgain = (EditText) findViewById(R.id.pass_phrase_again);
+
+        mUsePassPhrase.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckBox checkBox = (CheckBox) v;
+                if (checkBox.isChecked()) {
+                    mPassPhraseLayout.setVisibility(ViewGroup.VISIBLE);
+                } else {
+                    mPassPhrase.setText("");
+                    mPassPhraseAgain.setText("");
+                    mPassPhraseLayout.setVisibility(ViewGroup.GONE);
+                }
+            }
+        });
+        if (mUsePassPhrase.isChecked()) {
+            mPassPhraseLayout.setVisibility(ViewGroup.VISIBLE);
+        } else {
+            mPassPhraseLayout.setVisibility(ViewGroup.GONE);
+        }
 
         mEncryptButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -181,8 +179,16 @@ public class EncryptFileActivity extends BaseActivity {
     }
 
     private void updateView() {
+        if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
+            mSelectKeysButton.setText(R.string.no_keys_selected);
+        } else if (mEncryptionKeyIds.length == 1) {
+            mSelectKeysButton.setText(R.string.one_key_selected);
+        } else {
+            mSelectKeysButton.setText("" + mEncryptionKeyIds.length + " " +
+                                      getResources().getString(R.string.n_keys_selected));
+        }
+
         if (getSecretKeyId() == 0) {
-            mSign.setText(R.string.sign);
             mSign.setChecked(false);
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
@@ -203,7 +209,6 @@ public class EncryptFileActivity extends BaseActivity {
             }
             mMainUserId.setText(uid);
             mMainUserIdRest.setText(uidExtra);
-            mSign.setText(R.string.sign_as);
             mSign.setChecked(true);
         }
     }
@@ -231,6 +236,12 @@ public class EncryptFileActivity extends BaseActivity {
         startActivityForResult(intent, Id.request.secret_keys);
     }
 
+    private void selectPublicKeys() {
+        Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
+        intent.putExtra("selection", mEncryptionKeyIds);
+        startActivityForResult(intent, Id.request.public_keys);
+    }
+
     private void encryptClicked() {
         String currentFilename = mFilename.getText().toString();
         if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
@@ -245,36 +256,9 @@ public class EncryptFileActivity extends BaseActivity {
             return;
         }
 
-        if (mTabHost.getCurrentTabTag().equals(TAB_ASYMMETRIC)) {
-            Vector<Long> vector = new Vector<Long>();
-            for (int i = 0; i < mPublicKeyList.getCount(); ++i) {
-                if (mPublicKeyList.isItemChecked(i)) {
-                    vector.add(mPublicKeyList.getItemIdAtPosition(i));
-                }
-            }
-            if (vector.size() > 0) {
-                mEncryptionKeyIds = new long[vector.size()];
-                for (int i = 0; i < vector.size(); ++i) {
-                    mEncryptionKeyIds[i] = vector.get(i);
-                }
-            } else {
-                mEncryptionKeyIds = null;
-            }
-
-            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
-            // for now only support encryption
-            if (!encryptIt) {
-                Toast.makeText(this, "Select at least one encryption key.",
-                               Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
-                showDialog(Id.dialog.pass_phrase);
-                return;
-            }
-        } else {
-            // symmetric encryption
+        // symmetric encryption
+        boolean gotPassPhrase = false;
+        if (mUsePassPhrase.isChecked()) {
             String passPhrase = mPassPhrase.getText().toString();
             String passPhraseAgain = mPassPhraseAgain.getText().toString();
             if (!passPhrase.equals(passPhraseAgain)) {
@@ -283,11 +267,25 @@ public class EncryptFileActivity extends BaseActivity {
                 return;
             }
 
-            if (passPhrase.length() == 0) {
+            gotPassPhrase = (passPhrase.length() != 0);
+            if (!gotPassPhrase) {
                 Toast.makeText(this, "Enter a pass phrase.",
                                Toast.LENGTH_SHORT).show();
                 return;
             }
+        }
+
+        boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+        // for now require at least one form of encryption
+        if (!encryptIt && !gotPassPhrase) {
+            Toast.makeText(this, "Select at least one encryption key or a pass phrase.",
+                           Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+            showDialog(Id.dialog.pass_phrase);
+            return;
         }
 
         askForOutputFilename();
@@ -325,21 +323,15 @@ public class EncryptFileActivity extends BaseActivity {
             InputStream in = new FileInputStream(mInputFilename);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            if (mTabHost.getCurrentTabTag().equals(TAB_ASYMMETRIC)) {
-                boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
-
-                if (encryptIt) {
-                    Apg.encrypt(in, out, mAsciiArmour.isChecked(),
+            String passPhrase = mPassPhrase.getText().toString();
+            if (passPhrase.length() == 0) {
+                passPhrase = null;
+            }
+            Apg.encrypt(in, out, mAsciiArmour.isChecked(),
                                 mEncryptionKeyIds, getSecretKeyId(),
                                 Apg.getPassPhrase(), this,
-                                PGPEncryptedData.AES_256, null);
-                }
-            } else {
-                Apg.encrypt(in, out, mAsciiArmour.isChecked(),
-                            null, 0, null, this,
-                            ((Choice) mAlgorithm.getSelectedItem()).getId(),
-                            mPassPhrase.getText().toString());
-            }
+                                ((Choice) mAlgorithm.getSelectedItem()).getId(),
+                                passPhrase);
 
             out.close();
             OutputStream fileOut = new FileOutputStream(mOutputFilename);
@@ -445,6 +437,23 @@ public class EncryptFileActivity extends BaseActivity {
                     }
                 }
                 return;
+            }
+
+            case Id.request.secret_keys: {
+                if (resultCode == RESULT_OK) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    updateView();
+                }
+                break;
+            }
+
+            case Id.request.public_keys: {
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    mEncryptionKeyIds = bundle.getLongArray("selection");
+                    updateView();
+                }
+                break;
             }
 
             default: {

@@ -74,7 +74,6 @@
         <activity
             android:name=".EncryptFileActivity"
             android:label="@string/title_encryptFile"
-            android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|keyboard">
 
             <intent-filter>

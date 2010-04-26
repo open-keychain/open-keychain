@@ -243,7 +243,6 @@ public class EncryptMessageActivity extends BaseActivity {
         }
 
         if (getSecretKeyId() == 0) {
-            mSign.setText(R.string.sign);
             mSign.setChecked(false);
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
@@ -264,7 +263,6 @@ public class EncryptMessageActivity extends BaseActivity {
             }
             mMainUserId.setText(uid);
             mMainUserIdRest.setText(uidExtra);
-            mSign.setText(R.string.sign_as);
             mSign.setChecked(true);
         }
     }

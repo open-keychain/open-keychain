@@ -45,24 +45,25 @@
     <string name="btn_save">Save</string>
     <string name="btn_doNotSave">Cancel</string>
 
-    <string name="tab_symmetric">Use Pass Phrase</string>
-    <string name="tab_asymmetric">Use Public Key</string>
-
     <string name="menu_about">About</string>
     <string name="menu_addAccount">Add GMail Account</string>
     <string name="menu_managePublicKeys">Manage Public Keys</string>
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
 
-    <string name="sign">Sign</string>
-    <string name="sign_as">Sign as</string>
-    <string name="no_keys_selected">Select Recipients</string>
-    <string name="one_key_selected">1 Recipient</string>
-    <string name="n_keys_selected">Recipients</string>
+    <string name="no_keys_selected">Select</string>
+    <string name="one_key_selected">1 Selected</string>
+    <string name="n_keys_selected">Selected</string>
     <string name="unknown_user_id">&lt;unknown&gt;</string>
     <string name="none">&lt;none&gt;</string>
 
-    <string name="label_file">File:</string>
-    <string name="label_encrypt_keys">Encrypt with:</string>
+    <string name="label_sign">Sign</string>
+    <string name="label_file">File</string>
+    <string name="label_pass_phrase">Pass Phrase</string>
+    <string name="label_pass_phrase_again">Again</string>
+    <string name="label_algorithm">Algorithm</string>
+    <string name="label_ascii_armour">ASCII Armour</string>
+    <string name="label_select_public_keys">Public Key(s)</string>
+    <string name="label_use_pass_phrase">Use Pass Phrase</string>
 
     <string name="sign_only">Sign only</string>
     <string name="encrypt_only">Encrypt only</string>
@@ -82,8 +83,6 @@
     <string name="filemanager_btn_open">Open</string>
     <string name="filemanager_title_save">Save As...</string>
     <string name="filemanager_btn_save">Save</string>
-
-    <string name="ascii_armour">ASCII armour</string>
 
 </resources>
 
