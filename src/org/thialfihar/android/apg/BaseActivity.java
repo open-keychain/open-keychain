@@ -16,12 +16,16 @@
 
 package org.thialfihar.android.apg;
 
+import org.bouncycastle2.bcpg.HashAlgorithmTags;
+import org.bouncycastle2.openpgp.PGPEncryptedData;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +38,7 @@ public class BaseActivity extends Activity
     private Thread mRunningThread = null;
 
     private long mSecretKeyId = 0;
+    protected static SharedPreferences mPreferences = null;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -46,6 +51,9 @@ public class BaseActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (mPreferences == null) {
+            mPreferences = getPreferences(MODE_PRIVATE);
+        }
         Apg.initialize(this);
     }
 
@@ -244,5 +252,47 @@ public class BaseActivity extends Activity
 
     public long getSecretKeyId() {
         return mSecretKeyId;
+    }
+
+    public int getDefaultEncryptionAlgorithm() {
+        return mPreferences.getInt(Constants.pref.default_encryption_algorithm,
+                                   PGPEncryptedData.AES_256);
+    }
+
+    public void setDefaultEncryptionAlgorithm(int value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.pref.default_encryption_algorithm, value);
+        editor.commit();
+    }
+
+    public int getDefaultHashAlgorithm() {
+        return mPreferences.getInt(Constants.pref.default_hash_algorithm,
+                                   HashAlgorithmTags.SHA256);
+    }
+
+    public void setDefaultHashAlgorithm(int value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.pref.default_hash_algorithm, value);
+        editor.commit();
+    }
+
+    public boolean getDefaultAsciiArmour() {
+        return mPreferences.getBoolean(Constants.pref.default_ascii_armour, false);
+    }
+
+    public void setDefaultAsciiArmour(boolean value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.pref.default_ascii_armour, value);
+        editor.commit();
+    }
+
+    public boolean hasSeenChangeLog() {
+        return mPreferences.getBoolean(Constants.pref.has_seen_change_log, false);
+    }
+
+    public void setHasSeenChangeLog(boolean value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.pref.has_seen_change_log, value);
+        editor.commit();
     }
 }

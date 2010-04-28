@@ -81,6 +81,7 @@ public class EncryptFileActivity extends BaseActivity {
         setContentView(R.layout.encrypt_file);
 
         mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
+        mAsciiArmour.setChecked(getDefaultAsciiArmour());
 
         // asymmetric tab
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
@@ -138,7 +139,7 @@ public class EncryptFileActivity extends BaseActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mAlgorithm.setAdapter(adapter);
         for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == PGPEncryptedData.AES_256) {
+            if (choices[i].getId() == getDefaultEncryptionAlgorithm()) {
                 mAlgorithm.setSelection(i);
                 break;
             }
@@ -331,6 +332,7 @@ public class EncryptFileActivity extends BaseActivity {
                                 mEncryptionKeyIds, getSecretKeyId(),
                                 Apg.getPassPhrase(), this,
                                 ((Choice) mAlgorithm.getSelectedItem()).getId(),
+                                getDefaultHashAlgorithm(),
                                 passPhrase);
 
             out.close();

@@ -1175,7 +1175,7 @@ public class Apg {
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
                                ProgressDialogUpdater progress,
-                               int symmetricAlgorithm,
+                               int symmetricAlgorithm, int hashAlgorithm,
                                String passPhrase)
             throws IOException, GeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
@@ -1251,7 +1251,7 @@ public class Apg {
             progress.setProgress("preparing signature...", 30, 100);
             signatureGenerator =
                     new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
-                                              HashAlgorithmTags.SHA1,
+                                              hashAlgorithm,
                                               new BouncyCastleProvider());
             signatureGenerator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
             String userId = getMainUserId(getMasterKey(signingKeyRing));

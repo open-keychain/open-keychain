@@ -115,6 +115,11 @@
             android:label="@string/title_mailInbox"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
+        <activity
+            android:name=".PreferencesActivity"
+            android:label="@string/title_preferences"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+
         <provider
             android:name="org.thialfihar.android.apg.provider.DataProvider"
             android:authorities="org.thialfihar.android.apg.provider" />

@@ -28,6 +28,7 @@
     <string name="title_authentification">Authentification</string>
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
+    <string name="title_preferences">Preferences</string>
 
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>
@@ -49,6 +50,7 @@
     <string name="menu_addAccount">Add GMail Account</string>
     <string name="menu_managePublicKeys">Manage Public Keys</string>
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
+    <string name="menu_preferences">Settings</string>
 
     <string name="no_keys_selected">Select</string>
     <string name="one_key_selected">1 Selected</string>
@@ -64,6 +66,11 @@
     <string name="label_ascii_armour">ASCII Armour</string>
     <string name="label_select_public_keys">Public Key(s)</string>
     <string name="label_use_pass_phrase">Use Pass Phrase</string>
+
+    <string name="label_encryption_algorithm">Encryption Algorithm</string>
+    <string name="label_hash_algorithm">Hash Algorithm</string>
+
+    <string name="section_defaults">Defaults</string>
 
     <string name="sign_only">Sign only</string>
     <string name="encrypt_only">Encrypt only</string>

@@ -67,28 +67,28 @@ public class MainActivity extends BaseActivity {
         encryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEncryptMessageActivity();
+                startActivity(new Intent(MainActivity.this, EncryptMessageActivity.class));
             }
         });
 
         decryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDecryptMessageActivity();
+                startActivity(new Intent(MainActivity.this, DecryptMessageActivity.class));
             }
         });
 
         encryptFileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEncryptFileActivity();
+                startActivity(new Intent(MainActivity.this, EncryptFileActivity.class));
             }
         });
 
         decryptFileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDecryptFileActivity();
+                startActivity(new Intent(MainActivity.this, DecryptFileActivity.class));
             }
         });
 
@@ -105,14 +105,14 @@ public class MainActivity extends BaseActivity {
                     cursor.moveToFirst();
                     int nameIndex = cursor.getColumnIndex(Accounts.NAME);
                     String accountName = cursor.getString(nameIndex);
-                    startMailListActivity(accountName);
+                    startActivity(new Intent(MainActivity.this, MailListActivity.class)
+                                        .putExtra("account", accountName));
                 }
             }
         });
         registerForContextMenu(mAccounts);
 
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-        if (!prefs.getBoolean(Constants.pref.has_seen_change_log, false)) {
+        if (!hasSeenChangeLog()) {
             showDialog(Id.dialog.change_log);
         }
     }
@@ -248,10 +248,7 @@ public class MainActivity extends BaseActivity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 MainActivity.this.removeDialog(Id.dialog.change_log);
-                                                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-                                                SharedPreferences.Editor editor = prefs.edit();
-                                                editor.putBoolean(Constants.pref.has_seen_change_log, true);
-                                                editor.commit();
+                                                setHasSeenChangeLog(true);
                                             }
                 });
 
@@ -268,13 +265,15 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.manage_public_keys, 0, R.string.menu_managePublicKeys)
+        menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
+        .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(1, Id.menu.option.manage_public_keys, 1, R.string.menu_managePublicKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(0, Id.menu.option.manage_secret_keys, 1, R.string.menu_manageSecretKeys)
+        menu.add(1, Id.menu.option.manage_secret_keys, 2, R.string.menu_manageSecretKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(1, Id.menu.option.create, 2, R.string.menu_addAccount)
+        menu.add(2, Id.menu.option.create, 3, R.string.menu_addAccount)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(1, Id.menu.option.about, 3, R.string.menu_about)
+        menu.add(2, Id.menu.option.about, 4, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
@@ -293,12 +292,17 @@ public class MainActivity extends BaseActivity {
             }
 
             case Id.menu.option.manage_public_keys: {
-                startPublicKeyManager();
+                startActivity(new Intent(this, PublicKeyListActivity.class));
                 return true;
             }
 
             case Id.menu.option.manage_secret_keys: {
-                startSecretKeyManager();
+                startActivity(new Intent(this, SecretKeyListActivity.class));
+                return true;
+            }
+
+            case Id.menu.option.preferences: {
+                startActivity(new Intent(this, PreferencesActivity.class));
                 return true;
             }
 
@@ -338,33 +342,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    public void startPublicKeyManager() {
-        startActivity(new Intent(this, PublicKeyListActivity.class));
-    }
-
-    public void startSecretKeyManager() {
-        startActivity(new Intent(this, SecretKeyListActivity.class));
-    }
-
-    public void startEncryptMessageActivity() {
-        startActivity(new Intent(this, EncryptMessageActivity.class));
-    }
-
-    public void startDecryptMessageActivity() {
-        startActivity(new Intent(this, DecryptMessageActivity.class));
-    }
-
-    public void startEncryptFileActivity() {
-        startActivity(new Intent(this, EncryptFileActivity.class));
-    }
-
-    public void startDecryptFileActivity() {
-        startActivity(new Intent(this, DecryptFileActivity.class));
-    }
-
-    public void startMailListActivity(String account) {
-        startActivity(new Intent(this, MailListActivity.class).putExtra("account", account));
-    }
 
     private static class AccountListAdapter extends CursorAdapter {
         private LayoutInflater minflater;
