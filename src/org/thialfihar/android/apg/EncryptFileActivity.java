@@ -458,8 +458,8 @@ public class EncryptFileActivity extends BaseActivity {
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
                     super.onActivityResult(requestCode, resultCode, data);
-                    updateView();
                 }
+                updateView();
                 break;
             }
 
@@ -467,8 +467,8 @@ public class EncryptFileActivity extends BaseActivity {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mEncryptionKeyIds = bundle.getLongArray("selection");
-                    updateView();
                 }
+                updateView();
                 break;
             }
 
