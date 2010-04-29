@@ -65,10 +65,12 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armour">ASCII Armour</string>
     <string name="label_select_public_keys">Public Key(s)</string>
-    <string name="label_use_pass_phrase">Use Pass Phrase</string>
 
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
+
+    <string name="use_asymmetric">Public Key</string>
+    <string name="use_symmetric">Pass Phrase</string>
 
     <string name="section_defaults">Defaults</string>
 

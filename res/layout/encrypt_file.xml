@@ -60,6 +60,12 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider"
+                android:layout_marginBottom="5dip"/>
+
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -112,76 +118,29 @@
                 android:background="?android:attr/listDivider"
                 android:layout_marginBottom="5dip"/>
 
-            <LinearLayout
+            <RadioGroup
+                android:id="@+id/encryption_mode"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/label_sign"
-                    android:text="@string/label_sign"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_width="0dip"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"/>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingRight="5dip">
-
-                    <TextView
-                        android:id="@+id/main_user_id"
-                        android:text="Main User Id"
-                        android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"/>
-
-                    <TextView
-                        android:id="@+id/main_user_id_rest"
-                        android:text="Main User Id Rest"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"/>
-
-                </LinearLayout>
-
-                <CheckBox
-                    android:id="@+id/sign"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="3dip"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/label_select_public_keys"
-                    android:text="@string/label_select_public_keys"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
+                <RadioButton
+                    android:id="@+id/use_asymmetric"
+                    android:text="@string/use_asymmetric"
                     android:layout_height="wrap_content"
                     android:layout_width="0dip"
                     android:layout_weight="1"
                     android:layout_gravity="center_vertical"/>
 
-                <Button
-                    android:text="@string/btn_selectEncryptKeys"
-                    android:id="@+id/btn_selectEncryptKeys"
-                    android:layout_width="wrap_content"
+                <RadioButton
+                    android:id="@+id/use_symmetric"
+                    android:text="@string/use_symmetric"
                     android:layout_height="wrap_content"
+                    android:layout_width="0dip"
+                    android:layout_weight="1"
                     android:layout_gravity="center_vertical"/>
 
-            </LinearLayout>
+            </RadioGroup>
 
             <View
                 android:layout_width="fill_parent"
@@ -190,30 +149,85 @@
                 android:layout_marginBottom="5dip"/>
 
             <LinearLayout
+                android:id="@+id/layout_asymmetric"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/label_use_pass_phrase"
-                    android:text="@string/label_use_pass_phrase"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_gravity="center_vertical"
-                    android:paddingRight="10dip"
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="0dip"
-                    android:layout_weight="1"/>
+                    android:orientation="horizontal">
 
-                <CheckBox
-                    android:id="@+id/use_pass_phrase"
+                    <TextView
+                        android:id="@+id/label_sign"
+                        android:text="@string/label_sign"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:layout_width="0dip"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:paddingRight="5dip">
+
+                        <TextView
+                            android:id="@+id/main_user_id"
+                            android:text="Main User Id"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"/>
+
+                        <TextView
+                            android:id="@+id/main_user_id_rest"
+                            android:text="Main User Id Rest"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="right"/>
+
+                    </LinearLayout>
+
+                    <CheckBox
+                        android:id="@+id/sign"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center_vertical"/>
+                    android:paddingBottom="3dip"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/label_select_public_keys"
+                        android:text="@string/label_select_public_keys"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dip"
+                        android:layout_weight="1"
+                        android:layout_gravity="center_vertical"/>
+
+                    <Button
+                        android:text="@string/btn_selectEncryptKeys"
+                        android:id="@+id/btn_selectEncryptKeys"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"/>
+
+                </LinearLayout>
             </LinearLayout>
 
             <TableLayout
-                android:id="@+id/layout_pass_phrase"
+                android:id="@+id/layout_symmetric"
                 android:layout_height="wrap_content"
                 android:layout_width="fill_parent"
                 android:stretchColumns="1">
@@ -223,6 +237,7 @@
                     <TextView
                         android:id="@+id/label_pass_phrase"
                         android:text="@string/label_pass_phrase"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -241,6 +256,7 @@
                     <TextView
                         android:id="@+id/label_pass_phrase_again"
                         android:text="@string/label_pass_phrase_again"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
                         android:layout_gravity="center_vertical"
@@ -255,6 +271,12 @@
                 </TableRow>
 
             </TableLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:background="?android:attr/listDivider"
+                android:layout_marginBottom="5dip"/>
 
         </LinearLayout>
 

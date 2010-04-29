@@ -95,4 +95,11 @@ public final class Id {
             public static final int sign_and_encrypt = 0x21070003;
         }
     }
+
+    public static final class return_value {
+        public static final int ok = 0;
+        public static final int error = -1;
+        public static final int no_master_key = -2;
+        public static final int updated = 1;
+    }
 }

@@ -138,11 +138,6 @@ public class Apg {
 
     protected static boolean mInitialized = false;
 
-    protected static final int RETURN_NO_MASTER_KEY = -2;
-    protected static final int RETURN_ERROR = -1;
-    protected static final int RETURN_OK = 0;
-    protected static final int RETURN_UPDATED = 1;
-
     protected static HashMap<Long, Integer> mSecretKeyIdToIdMap;
     protected static HashMap<Long, PGPSecretKeyRing> mSecretKeyIdToKeyRingMap;
     protected static HashMap<Long, Integer> mPublicKeyIdToIdMap;
@@ -586,14 +581,14 @@ public class Apg {
 
         PGPPublicKey masterKey = getMasterKey(keyRing);
         if (masterKey == null) {
-            return RETURN_NO_MASTER_KEY;
+            return Id.return_value.no_master_key;
         }
 
         try {
             keyRing.encode(out);
             out.close();
         } catch (IOException e) {
-            return RETURN_ERROR;
+            return Id.return_value.error;
         }
 
         values.put(PublicKeys.KEY_ID, masterKey.getKeyID());
@@ -603,10 +598,10 @@ public class Apg {
         Cursor cursor = context.managedQuery(uri, PUBLIC_KEY_PROJECTION, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             context.getContentResolver().update(uri, values, null, null);
-            return RETURN_UPDATED;
+            return Id.return_value.updated;
         } else {
             context.getContentResolver().insert(PublicKeys.CONTENT_URI, values);
-            return RETURN_OK;
+            return Id.return_value.ok;
         }
     }
 
@@ -616,14 +611,14 @@ public class Apg {
 
         PGPSecretKey masterKey = getMasterKey(keyRing);
         if (masterKey == null) {
-            return RETURN_NO_MASTER_KEY;
+            return Id.return_value.no_master_key;
         }
 
         try {
             keyRing.encode(out);
             out.close();
         } catch (IOException e) {
-            return RETURN_ERROR;
+            return Id.return_value.error;
         }
 
         values.put(SecretKeys.KEY_ID, masterKey.getKeyID());
@@ -633,10 +628,10 @@ public class Apg {
         Cursor cursor = context.managedQuery(uri, SECRET_KEY_PROJECTION, null, null, null);
         if (cursor != null && cursor.getCount() > 0) {
             context.getContentResolver().update(uri, values, null, null);
-            return RETURN_UPDATED;
+            return Id.return_value.updated;
         } else {
             context.getContentResolver().insert(SecretKeys.CONTENT_URI, values);
-            return RETURN_OK;
+            return Id.return_value.ok;
         }
     }
 
@@ -690,13 +685,13 @@ public class Apg {
                 retValue = saveKeyRing(context, publicKeyRing);
             }
 
-            if (retValue == RETURN_ERROR) {
+            if (retValue == Id.return_value.error) {
                 throw new GeneralException("error saving some key(s)");
             }
 
-            if (retValue == RETURN_UPDATED) {
+            if (retValue == Id.return_value.updated) {
                 ++oldKeys;
-            } else if (retValue == RETURN_OK) {
+            } else if (retValue == Id.return_value.ok) {
                 ++newKeys;
             }
         }

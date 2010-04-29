@@ -51,9 +51,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class EncryptFileActivity extends BaseActivity {
     private EditText mFilename = null;
@@ -65,8 +67,9 @@ public class EncryptFileActivity extends BaseActivity {
     private EditText mPassPhrase = null;
     private EditText mPassPhraseAgain = null;
     private CheckBox mAsciiArmour = null;
-    private CheckBox mUsePassPhrase = null;
-    private ViewGroup mPassPhraseLayout = null;
+    private RadioGroup mEncryptionMode = null;
+    private ViewGroup mAsymmetricLayout = null;
+    private ViewGroup mSymmetricLayout = null;
     private Button mEncryptButton = null;
     private Button mSelectKeysButton = null;
 
@@ -145,28 +148,36 @@ public class EncryptFileActivity extends BaseActivity {
             }
         }
 
-        mUsePassPhrase = (CheckBox) findViewById(R.id.use_pass_phrase);
-        mPassPhraseLayout = (ViewGroup) findViewById(R.id.layout_pass_phrase);
+        mEncryptionMode = (RadioGroup) findViewById(R.id.encryption_mode);
+        mAsymmetricLayout = (ViewGroup) findViewById(R.id.layout_asymmetric);
+        mSymmetricLayout = (ViewGroup) findViewById(R.id.layout_symmetric);
         mPassPhrase = (EditText) findViewById(R.id.pass_phrase);
         mPassPhraseAgain = (EditText) findViewById(R.id.pass_phrase_again);
 
-        mUsePassPhrase.setOnClickListener(new OnClickListener() {
+        mEncryptionMode.check(R.id.use_asymmetric);
+        mEncryptionMode.setOnCheckedChangeListener(new OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                CheckBox checkBox = (CheckBox) v;
-                if (checkBox.isChecked()) {
-                    mPassPhraseLayout.setVisibility(ViewGroup.VISIBLE);
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.use_symmetric) {
+                    mAsymmetricLayout.setVisibility(ViewGroup.GONE);
+                    mSymmetricLayout.setVisibility(ViewGroup.VISIBLE);
+                    mEncryptionKeyIds = null;
+                    setSecretKeyId(0);
                 } else {
+                    mAsymmetricLayout.setVisibility(ViewGroup.VISIBLE);
+                    mSymmetricLayout.setVisibility(ViewGroup.GONE);
                     mPassPhrase.setText("");
                     mPassPhraseAgain.setText("");
-                    mPassPhraseLayout.setVisibility(ViewGroup.GONE);
                 }
+                updateView();
             }
         });
-        if (mUsePassPhrase.isChecked()) {
-            mPassPhraseLayout.setVisibility(ViewGroup.VISIBLE);
+        if (mEncryptionMode.getCheckedRadioButtonId() == R.id.use_symmetric) {
+            mAsymmetricLayout.setVisibility(ViewGroup.GONE);
+            mSymmetricLayout.setVisibility(ViewGroup.VISIBLE);
         } else {
-            mPassPhraseLayout.setVisibility(ViewGroup.GONE);
+            mAsymmetricLayout.setVisibility(ViewGroup.VISIBLE);
+            mSymmetricLayout.setVisibility(ViewGroup.GONE);
         }
 
         mEncryptButton.setOnClickListener(new OnClickListener() {
@@ -258,8 +269,8 @@ public class EncryptFileActivity extends BaseActivity {
         }
 
         // symmetric encryption
-        boolean gotPassPhrase = false;
-        if (mUsePassPhrase.isChecked()) {
+        if (mEncryptionMode.getCheckedRadioButtonId() == R.id.use_symmetric) {
+            boolean gotPassPhrase = false;
             String passPhrase = mPassPhrase.getText().toString();
             String passPhraseAgain = mPassPhraseAgain.getText().toString();
             if (!passPhrase.equals(passPhraseAgain)) {
@@ -274,19 +285,19 @@ public class EncryptFileActivity extends BaseActivity {
                                Toast.LENGTH_SHORT).show();
                 return;
             }
-        }
+        } else {
+            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+            // for now require at least one form of encryption
+            if (!encryptIt) {
+                Toast.makeText(this, "Select at least one encryption key.",
+                               Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
-        // for now require at least one form of encryption
-        if (!encryptIt && !gotPassPhrase) {
-            Toast.makeText(this, "Select at least one encryption key or a pass phrase.",
-                           Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
-            showDialog(Id.dialog.pass_phrase);
-            return;
+            if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+                showDialog(Id.dialog.pass_phrase);
+                return;
+            }
         }
 
         askForOutputFilename();
@@ -324,16 +335,19 @@ public class EncryptFileActivity extends BaseActivity {
             InputStream in = new FileInputStream(mInputFilename);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-            String passPhrase = mPassPhrase.getText().toString();
-            if (passPhrase.length() == 0) {
-                passPhrase = null;
+            String passPhrase = null;
+            if (mEncryptionMode.getCheckedRadioButtonId() == R.id.use_symmetric) {
+                passPhrase = mPassPhrase.getText().toString();
+                if (passPhrase.length() == 0) {
+                    passPhrase = null;
+                }
             }
             Apg.encrypt(in, out, mAsciiArmour.isChecked(),
-                                mEncryptionKeyIds, getSecretKeyId(),
-                                Apg.getPassPhrase(), this,
-                                ((Choice) mAlgorithm.getSelectedItem()).getId(),
-                                getDefaultHashAlgorithm(),
-                                passPhrase);
+                                 mEncryptionKeyIds, getSecretKeyId(),
+                                 Apg.getPassPhrase(), this,
+                                 ((Choice) mAlgorithm.getSelectedItem()).getId(),
+                                 getDefaultHashAlgorithm(),
+                                 passPhrase);
 
             out.close();
             OutputStream fileOut = new FileOutputStream(mOutputFilename);
