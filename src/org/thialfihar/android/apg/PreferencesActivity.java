@@ -21,7 +21,6 @@ import org.bouncycastle2.openpgp.PGPEncryptedData;
 import org.thialfihar.android.apg.utils.Choice;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;

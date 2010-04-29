@@ -24,7 +24,6 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Vector;
 
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
