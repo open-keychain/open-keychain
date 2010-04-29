@@ -647,7 +647,7 @@ public class Apg {
                                         ProgressDialogUpdater progress)
             throws GeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
-        PGPObjectFactory objectFactors = null;
+        PGPObjectFactory objectFactory = null;
 
         if (type == Id.type.secret_key) {
             progress.setProgress("importing secret keys...", 0, 100);
@@ -661,13 +661,13 @@ public class Apg {
 
         FileInputStream fileIn = new FileInputStream(filename);
         InputStream in = PGPUtil.getDecoderStream(fileIn);
-        objectFactors = new PGPObjectFactory(in);
+        objectFactory = new PGPObjectFactory(in);
 
         Vector<Object> objects = new Vector<Object>();
-        Object obj = objectFactors.nextObject();
+        Object obj = objectFactory.nextObject();
         while (obj != null) {
             objects.add(obj);
-            obj = objectFactors.nextObject();
+            obj = objectFactory.nextObject();
         }
 
         int newKeys = 0;
@@ -1009,8 +1009,12 @@ public class Apg {
             return key.isEncryptionKey();
         }
 
-        // special case, this algorithm, no need to look further
+        // special cases
         if (key.getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT) {
+            return true;
+        }
+
+        if (key.getAlgorithm() == PGPPublicKey.RSA_ENCRYPT) {
             return true;
         }
 
@@ -1033,6 +1037,11 @@ public class Apg {
 
     public static boolean isSigningKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        // special case
+        if (key.getAlgorithm() == PGPPublicKey.RSA_SIGN) {
             return true;
         }
 
