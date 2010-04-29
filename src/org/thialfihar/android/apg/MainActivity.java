@@ -223,6 +223,7 @@ public class MainActivity extends BaseActivity {
                                             "Changes:\n" +
                                             "* new layout for encrypt file\n" +
                                             "* layout more consistent\n" +
+                                            "* settings for preferred algorithms\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
