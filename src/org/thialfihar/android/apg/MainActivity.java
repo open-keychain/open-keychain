@@ -221,10 +221,6 @@ public class MainActivity extends BaseActivity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
-                                            "* new layout for encrypt file\n" +
-                                            "* layout more consistent\n" +
-                                            "* settings for preferred algorithms\n" +
-                                            "* fixed hushmail key bugs\n" +
                                             "\n" +
                                             "WARNING: be careful editing your existing keys, as they " +
                                             "WILL be stripped of certificates right now.\n" +
