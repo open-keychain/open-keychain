@@ -54,8 +54,8 @@ public class PublicKeyListActivity extends BaseActivity {
     protected int mSelectedItem = -1;
     protected int mTask = 0;
 
-    private String mImportFilename = Environment.getExternalStorageDirectory() + "/pubring.gpg";
-    private String mExportFilename = Environment.getExternalStorageDirectory() + "/pubexport.asc";
+    private String mImportFilename = Constants.path.app_dir + "/pubring.gpg";
+    private String mExportFilename = Constants.path.app_dir + "/pubexport.asc";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

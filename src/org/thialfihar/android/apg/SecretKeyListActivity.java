@@ -55,8 +55,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
     protected int mSelectedItem = -1;
     protected int mTask = 0;
 
-    private String mImportFilename = Environment.getExternalStorageDirectory() + "/secring.gpg";
-    private String mExportFilename = Environment.getExternalStorageDirectory() + "/secexport.asc";
+    private String mImportFilename = Constants.path.app_dir + "/secring.gpg";
+    private String mExportFilename = Constants.path.app_dir + "/secexport.asc";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
