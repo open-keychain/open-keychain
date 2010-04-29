@@ -155,6 +155,8 @@ public class DecryptMessageActivity extends BaseActivity {
             error = e.getLocalizedMessage();
         } catch (Apg.GeneralException e) {
             error = e.getLocalizedMessage();
+        } catch (Apg.NoAsymmetricEncryptionException e) {
+            error = "no asymmetric encryption found";
         }
         if (error != null) {
             Toast.makeText(this, "Error: " + error, Toast.LENGTH_SHORT).show();

@@ -129,18 +129,23 @@ public class DecryptFileActivity extends BaseActivity {
 
         try {
             InputStream in = new FileInputStream(mInputFilename);
-            setSecretKeyId(Apg.getDecryptionKeyId(in));
-            if (getSecretKeyId() == 0) {
+            try {
+                setSecretKeyId(Apg.getDecryptionKeyId(in));
+                if (getSecretKeyId() == 0) {
+                    throw new Apg.GeneralException("no suitable keys found");
+                }
+                mAssumeSymmetricEncryption = false;
+            } catch (Apg.NoAsymmetricEncryptionException e) {
+                setSecretKeyId(0);
                 // reopen the file to check whether there's symmetric encryption data in there
                 in = new FileInputStream(mInputFilename);
                 if (!Apg.hasSymmetricEncryption(in)) {
-                    throw new Apg.GeneralException("no suitable keys found");
+                    throw new Apg.GeneralException("no known kind of encryption found");
                 }
                 mAssumeSymmetricEncryption = true;
-            } else {
-                mAssumeSymmetricEncryption = false;
-            }
-            showDialog(Id.dialog.pass_phrase);
+           }
+
+           showDialog(Id.dialog.pass_phrase);
         } catch (FileNotFoundException e) {
             error = "file not found: " + e.getLocalizedMessage();
         } catch (IOException e) {

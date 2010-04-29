@@ -166,6 +166,14 @@ public class Apg {
         }
     }
 
+    public static class NoAsymmetricEncryptionException extends Exception {
+        static final long serialVersionUID = 0xf812773343L;
+
+        public NoAsymmetricEncryptionException() {
+            super();
+        }
+    }
+
     static {
         mPublicKeyRings = new Vector<PGPPublicKeyRing>();
         mSecretKeyRings = new Vector<PGPSecretKeyRing>();
@@ -1366,7 +1374,7 @@ public class Apg {
     }
 
     public static long getDecryptionKeyId(InputStream inStream)
-            throws GeneralException, IOException {
+            throws GeneralException, NoAsymmetricEncryptionException, IOException {
         InputStream in = PGPUtil.getDecoderStream(inStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
@@ -1387,15 +1395,21 @@ public class Apg {
         // find the secret key
         PGPSecretKey secretKey = null;
         Iterator it = enc.getEncryptedDataObjects();
+        boolean gotAsymmetricEncryption = false;
         while (it.hasNext()) {
             Object obj = it.next();
             if (obj instanceof PGPPublicKeyEncryptedData) {
+                gotAsymmetricEncryption = true;
                 PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
                 secretKey = findSecretKey(pbe.getKeyID());
                 if (secretKey != null) {
                     break;
                 }
             }
+        }
+
+        if (!gotAsymmetricEncryption) {
+            throw new NoAsymmetricEncryptionException();
         }
 
         if (secretKey == null) {
