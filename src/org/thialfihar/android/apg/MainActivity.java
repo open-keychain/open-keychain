@@ -221,6 +221,7 @@ public class MainActivity extends BaseActivity {
                 SpannableString info =
                         new SpannableString("Read the warnings!\n\n" +
                                             "Changes:\n" +
+                                            "* option to delete file after encryption/decryption\n" +
                                             "* fixed several crashes\n" +
                                             "* can encrypt large files\n" +
                                             "* better progress bar calculation\n" +

@@ -65,7 +65,8 @@
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armour">ASCII Armour</string>
     <string name="label_select_public_keys">Public Key(s)</string>
-
+    <string name="label_delete_after_encryption">Delete After Encryption</string>
+    <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
 

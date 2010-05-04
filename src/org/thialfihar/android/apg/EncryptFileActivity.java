@@ -58,6 +58,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class EncryptFileActivity extends BaseActivity {
     private EditText mFilename = null;
+    private CheckBox mDeleteAfter = null;
     private ImageButton mBrowse = null;
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
@@ -109,6 +110,8 @@ public class EncryptFileActivity extends BaseActivity {
                 openFile();
             }
         });
+
+        mDeleteAfter = (CheckBox) findViewById(R.id.delete_after_encryption);
 
         mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
         mSign = (CheckBox) findViewById(R.id.sign);
@@ -278,6 +281,12 @@ public class EncryptFileActivity extends BaseActivity {
             return;
         }
 
+        File file = new File(mInputFilename);
+        if (!file.exists() || !file.isFile()) {
+            Toast.makeText(this, "Error: file not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // symmetric encryption
         if (mEncryptionMode.getCheckedRadioButtonId() == R.id.use_symmetric) {
             boolean gotPassPhrase = false;
@@ -385,9 +394,6 @@ public class EncryptFileActivity extends BaseActivity {
 
         if (error != null) {
             data.putString("error", error);
-            // delete the file if an error occurred
-            File file = new File(mOutputFilename);
-            file.delete();
         }
 
         msg.setData(data);
@@ -505,6 +511,10 @@ public class EncryptFileActivity extends BaseActivity {
             Toast.makeText(EncryptFileActivity.this,
                            "Successfully encrypted.",
                            Toast.LENGTH_SHORT).show();
+            if (mDeleteAfter.isChecked()) {
+                setDeleteFile(mInputFilename);
+                showDialog(Id.dialog.delete_file);
+            }
         }
     }
 }

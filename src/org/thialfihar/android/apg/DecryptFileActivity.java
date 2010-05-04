@@ -40,6 +40,7 @@ import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,6 +50,7 @@ import android.widget.Toast;
 
 public class DecryptFileActivity extends BaseActivity {
     private EditText mFilename = null;
+    private CheckBox mDeleteAfter = null;
     private ImageButton mBrowse = null;
     private Button mDecryptButton = null;
     private LinearLayout mSignatureLayout = null;
@@ -74,6 +76,8 @@ public class DecryptFileActivity extends BaseActivity {
                 openFile();
             }
         });
+
+        mDeleteAfter = (CheckBox) findViewById(R.id.delete_after_decryption);
 
         mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
         mDecryptButton.setOnClickListener(new OnClickListener() {
@@ -124,6 +128,12 @@ public class DecryptFileActivity extends BaseActivity {
 
         if (mInputFilename.equals("")) {
             Toast.makeText(this, "Select a file first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File file = new File(mInputFilename);
+        if (!file.exists() || !file.isFile()) {
+            Toast.makeText(this, "Error: file not found", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -303,6 +313,10 @@ public class DecryptFileActivity extends BaseActivity {
             Toast.makeText(DecryptFileActivity.this,
                            "Successfully decrypted.",
                            Toast.LENGTH_SHORT).show();
+            if (mDeleteAfter.isChecked()) {
+                setDeleteFile(mInputFilename);
+                showDialog(Id.dialog.delete_file);
+            }
         }
 
         mSignatureLayout.setVisibility(View.INVISIBLE);

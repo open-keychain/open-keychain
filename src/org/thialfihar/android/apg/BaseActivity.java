@@ -16,6 +16,8 @@
 
 package org.thialfihar.android.apg;
 
+import java.io.File;
+
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
@@ -29,6 +31,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.Toast;
 
 public class BaseActivity extends Activity
                           implements Runnable, ProgressDialogUpdater,
@@ -38,6 +41,7 @@ public class BaseActivity extends Activity
     private Thread mRunningThread = null;
 
     private long mSecretKeyId = 0;
+    private String mDeleteFile = null;
     protected static SharedPreferences mPreferences = null;
 
     private Handler mHandler = new Handler() {
@@ -137,6 +141,38 @@ public class BaseActivity extends Activity
                 return alert.create();
             }
 
+            case Id.dialog.delete_file: {
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                alert.setIcon(android.R.drawable.ic_dialog_alert);
+                alert.setTitle("Warning");
+                alert.setMessage("Are you sure you want to delete\n" + getDeleteFile() + "?");
+
+                alert.setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                removeDialog(Id.dialog.delete_file);
+                                                File file = new File(getDeleteFile());
+                                                String msg = "";
+                                                if (file.delete()) {
+                                                    msg = "Successfully deleted.";
+                                                } else {
+                                                    msg = "Error: deleting '" + file + "' failed";
+                                                }
+                                                Toast.makeText(BaseActivity.this,
+                                                               msg, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                alert.setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                removeDialog(Id.dialog.delete_file);
+                                            }
+                                        });
+                alert.setCancelable(true);
+
+                return alert.create();
+            }
 
             default: {
                 break;
@@ -294,5 +330,13 @@ public class BaseActivity extends Activity
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.pref.has_seen_change_log, value);
         editor.commit();
+    }
+
+    protected void setDeleteFile(String deleteFile) {
+        mDeleteFile = deleteFile;
+    }
+
+    protected String getDeleteFile() {
+        return mDeleteFile;
     }
 }

@@ -70,6 +70,7 @@ public final class Id {
         public static final int about = 0x2107000f;
         public static final int change_log = 0x21070010;
         public static final int output_filename = 0x21070011;
+        public static final int delete_file = 0x21070012;
     }
 
     public static final class task {
