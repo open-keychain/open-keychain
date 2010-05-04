@@ -333,7 +333,7 @@ public class EncryptFileActivity extends BaseActivity {
             }
 
             InputStream in = new FileInputStream(mInputFilename);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            OutputStream out = new FileOutputStream(mOutputFilename);
 
             String passPhrase = null;
             if (mEncryptionMode.getCheckedRadioButtonId() == R.id.use_symmetric) {
@@ -342,17 +342,18 @@ public class EncryptFileActivity extends BaseActivity {
                     passPhrase = null;
                 }
             }
-            Apg.encrypt(in, out, mAsciiArmour.isChecked(),
-                                 mEncryptionKeyIds, getSecretKeyId(),
-                                 Apg.getPassPhrase(), this,
-                                 ((Choice) mAlgorithm.getSelectedItem()).getId(),
-                                 getDefaultHashAlgorithm(),
-                                 passPhrase);
+
+            File file = new File(mInputFilename);
+            long fileSize = file.length();
+
+            Apg.encrypt(in, out, fileSize, mAsciiArmour.isChecked(),
+                        mEncryptionKeyIds, getSecretKeyId(),
+                        Apg.getPassPhrase(), this,
+                        ((Choice) mAlgorithm.getSelectedItem()).getId(),
+                        getDefaultHashAlgorithm(),
+                        passPhrase);
 
             out.close();
-            OutputStream fileOut = new FileOutputStream(mOutputFilename);
-            fileOut.write(out.toByteArray());
-            fileOut.close();
         } catch (FileNotFoundException e) {
             error = "file not found: " + e.getMessage();
         }

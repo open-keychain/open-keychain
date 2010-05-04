@@ -183,14 +183,9 @@ public class DecryptFileActivity extends BaseActivity {
 
         try {
             InputStream in = new FileInputStream(mInputFilename);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            OutputStream out = new FileOutputStream(mOutputFilename);
 
             data = Apg.decrypt(in, out, Apg.getPassPhrase(), this, mAssumeSymmetricEncryption);
-
-            out.close();
-            OutputStream fileOut = new FileOutputStream(mOutputFilename);
-            fileOut.write(out.toByteArray());
-            fileOut.close();
         } catch (PGPException e) {
             error = e.getMessage();
         } catch (IOException e) {

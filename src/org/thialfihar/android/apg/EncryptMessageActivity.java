@@ -193,12 +193,12 @@ public class EncryptMessageActivity extends BaseActivity {
                 message = message.replaceFirst("\n*$", "\n");
             }
 
-            ByteArrayInputStream in =
-                new ByteArrayInputStream(Strings.toUTF8ByteArray(message));
+            byte[] byteData = Strings.toUTF8ByteArray(message);
+            ByteArrayInputStream in = new ByteArrayInputStream(byteData);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             if (encryptIt) {
-                Apg.encrypt(in, out, true, mEncryptionKeyIds, getSecretKeyId(),
+                Apg.encrypt(in, out, byteData.length, true, mEncryptionKeyIds, getSecretKeyId(),
                             Apg.getPassPhrase(), this,
                             getDefaultEncryptionAlgorithm(), getDefaultHashAlgorithm(),
                             null);

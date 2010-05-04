@@ -1198,6 +1198,7 @@ public class Apg {
     }
 
     public static void encrypt(InputStream inStream, OutputStream outStream,
+                               long dataLength,
                                boolean armored,
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
@@ -1240,23 +1241,13 @@ public class Apg {
             if (signaturePassPhrase == null) {
                 throw new GeneralException("no pass phrase given");
             }
+            progress.setProgress("extracting signature key...", 0, 100);
             signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                                                new BouncyCastleProvider());
         }
 
         PGPSignatureGenerator signatureGenerator = null;
-        progress.setProgress("preparing data...", 0, 100);
-
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-        int n = 0;
-        byte[] buffer = new byte[1 << 16];
-        while ((n = inStream.read(buffer)) > 0) {
-            byteOut.write(buffer, 0, n);
-        }
-        byteOut.close();
-        byte messageData[] = byteOut.toByteArray();
-
-        progress.setProgress("preparing streams...", 20, 100);
+        progress.setProgress("preparing streams...", 5, 100);
         // encryptFile and compress input file content
         PGPEncryptedDataGenerator cPk =
                 new PGPEncryptedDataGenerator(symmetricAlgorithm, true, new SecureRandom(),
@@ -1275,7 +1266,7 @@ public class Apg {
         encryptOut = cPk.open(out, new byte[1 << 16]);
 
         if (signatureKeyId != 0) {
-            progress.setProgress("preparing signature...", 30, 100);
+            progress.setProgress("preparing signature...", 10, 100);
             signatureGenerator =
                     new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
                                               hashAlgorithm,
@@ -1298,19 +1289,27 @@ public class Apg {
         PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
         // file name not needed, so empty string
         OutputStream pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "",
-                                            messageData.length, new Date());
+                                            new Date(), new byte[1 << 16]);
 
-        progress.setProgress("encrypting...", 40, 100);
-        pOut.write(messageData);
-
-        if (signatureKeyId != 0) {
-            progress.setProgress("finishing signature...", 70, 100);
-            signatureGenerator.update(messageData);
+        progress.setProgress("encrypting...", 20, 100);
+        long done = 0;
+        int n = 0;
+        byte[] buffer = new byte[1 << 16];
+        while ((n = inStream.read(buffer)) > 0) {
+            pOut.write(buffer, 0, n);
+            if (signatureKeyId != 0) {
+                signatureGenerator.update(buffer, 0, n);
+            }
+            done += n;
+            if (dataLength != 0) {
+                progress.setProgress((int) (20 + (95 - 20) * done / dataLength), 100);
+            }
         }
 
         literalGen.close();
 
         if (signatureKeyId != 0) {
+            progress.setProgress("generating signature...", 95, 100);
             signatureGenerator.generate().encode(pOut);
         }
         compressGen.close();
@@ -1516,7 +1515,7 @@ public class Apg {
                 throw new GeneralException("couldn't find a packet with symmetric encryption");
             }
 
-            progress.setProgress("decrypting data...", 20, 100);
+            progress.setProgress("preparing streams...", 20, 100);
             clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
             encryptedData = pbe;
         } else {
@@ -1550,7 +1549,7 @@ public class Apg {
                 throw new PGPException("wrong pass phrase");
             }
 
-            progress.setProgress("decrypting data...", 30, 100);
+            progress.setProgress("preparing streams...", 30, 100);
             clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
             encryptedData = pbe;
         }
@@ -1606,9 +1605,9 @@ public class Apg {
         }
 
         if (dataChunk instanceof PGPLiteralData) {
-            progress.setProgress("unpacking data...", 70, 100);
+            progress.setProgress("decrypting data...", 70, 100);
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
-            BufferedOutputStream out = new BufferedOutputStream(outStream);
+            OutputStream out = outStream;
 
             byte[] buffer = new byte[1 << 16];
             InputStream dataIn = literalData.getInputStream();
