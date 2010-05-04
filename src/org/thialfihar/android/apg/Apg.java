@@ -1019,13 +1019,21 @@ public class Apg {
         }
 
         for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (!key.isMasterKey() || sig.getKeyID() == key.getKeyID()) {
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
 
-                if ((hashed.getKeyFlags() &
-                        (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                    return true;
-                }
+            if (hashed != null &&(hashed.getKeyFlags() &
+                                  (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null &&(unhashed.getKeyFlags() &
+                                  (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
+                return true;
             }
         }
         return false;
@@ -1046,12 +1054,19 @@ public class Apg {
         }
 
         for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (!key.isMasterKey() || sig.getKeyID() == key.getKeyID()) {
-                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
 
-                if ((hashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
-                    return true;
-                }
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
+                return true;
             }
         }
 
