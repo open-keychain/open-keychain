@@ -1314,7 +1314,9 @@ public class Apg {
         }
         compressGen.close();
         encryptOut.close();
-        out.close();
+        if (armored) {
+            armorOut.close();
+        }
 
         progress.setProgress("done.", 100, 100);
     }
@@ -1624,8 +1626,6 @@ public class Apg {
                     }
                 }
             }
-
-            out.close();
 
             if (signature != null) {
                 progress.setProgress("verifying signature...", 80, 100);

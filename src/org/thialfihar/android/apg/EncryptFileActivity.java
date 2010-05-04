@@ -16,7 +16,6 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,6 +84,13 @@ public class EncryptFileActivity extends BaseActivity {
 
         mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
         mAsciiArmour.setChecked(getDefaultAsciiArmour());
+        mAsciiArmour.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                guessOutputFilename();
+            }
+        });
 
         // asymmetric tab
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
@@ -254,13 +260,17 @@ public class EncryptFileActivity extends BaseActivity {
         startActivityForResult(intent, Id.request.public_keys);
     }
 
+    private void guessOutputFilename() {
+        mInputFilename = mFilename.getText().toString();
+        File file = new File(mInputFilename);
+        String ending = (mAsciiArmour.isChecked() ? ".asc" : ".gpg");
+        mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ending;
+    }
+
     private void encryptClicked() {
         String currentFilename = mFilename.getText().toString();
         if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
-            mInputFilename = mFilename.getText().toString();
-            File file = new File(mInputFilename);
-            String ending = (mAsciiArmour.isChecked() ? ".asc" : ".gpg");
-            mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ending;
+            guessOutputFilename();
         }
 
         if (mInputFilename.equals("")) {

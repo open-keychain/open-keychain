@@ -186,6 +186,8 @@ public class DecryptFileActivity extends BaseActivity {
             OutputStream out = new FileOutputStream(mOutputFilename);
 
             data = Apg.decrypt(in, out, Apg.getPassPhrase(), this, mAssumeSymmetricEncryption);
+
+            out.close();
         } catch (PGPException e) {
             error = e.getMessage();
         } catch (IOException e) {

@@ -206,6 +206,8 @@ public class EncryptMessageActivity extends BaseActivity {
                 Apg.signText(in, out, getSecretKeyId(),
                              Apg.getPassPhrase(), getDefaultHashAlgorithm(), this);
             }
+
+            out.close();
             data.putString("message", new String(out.toByteArray()));
         } catch (IOException e) {
             error = e.getMessage();
