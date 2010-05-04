@@ -1484,7 +1484,8 @@ public class Apg {
         Object o = pgpF.nextObject();
         long signatureKeyId = 0;
 
-        progress.setProgress("reading data...", 0, 100);
+        int currentProgress = 0;
+        progress.setProgress("reading data...", currentProgress, 100);
 
         if (o instanceof PGPEncryptedDataList) {
             enc = (PGPEncryptedDataList) o;
@@ -1498,6 +1499,8 @@ public class Apg {
 
         InputStream clear = null;
         PGPEncryptedData encryptedData = null;
+
+        currentProgress += 5;
 
         // TODO: currently we always only look at the first known key or symmetric encryption,
         // there might be more...
@@ -1517,11 +1520,12 @@ public class Apg {
                 throw new GeneralException("couldn't find a packet with symmetric encryption");
             }
 
-            progress.setProgress("preparing streams...", 20, 100);
+            progress.setProgress("preparing stream...", currentProgress, 100);
             clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
             encryptedData = pbe;
+            currentProgress += 5;
         } else {
-            progress.setProgress("finding key...", 10, 100);
+            progress.setProgress("finding key...", currentProgress, 100);
             PGPPublicKeyEncryptedData pbe = null;
             PGPSecretKey secretKey = null;
             Iterator it = enc.getEncryptedDataObjects();
@@ -1542,7 +1546,8 @@ public class Apg {
                 throw new GeneralException("couldn't find a secret key to decrypt");
             }
 
-            progress.setProgress("extracting key...", 20, 100);
+            currentProgress += 5;
+            progress.setProgress("extracting key...", currentProgress, 100);
             PGPPrivateKey privateKey = null;
             try {
                 privateKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
@@ -1550,10 +1555,11 @@ public class Apg {
             } catch (PGPException e) {
                 throw new PGPException("wrong pass phrase");
             }
-
-            progress.setProgress("preparing streams...", 30, 100);
+            currentProgress += 5;
+            progress.setProgress("preparing stream...", currentProgress, 100);
             clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
             encryptedData = pbe;
+            currentProgress += 5;
         }
 
         PGPObjectFactory plainFact = new PGPObjectFactory(clear);
@@ -1563,15 +1569,16 @@ public class Apg {
         int signatureIndex = -1;
 
         if (dataChunk instanceof PGPCompressedData) {
-            progress.setProgress("decompressing data...", 50, 100);
+            progress.setProgress("decompressing data...", currentProgress, 100);
             PGPObjectFactory fact =
                     new PGPObjectFactory(((PGPCompressedData) dataChunk).getDataStream());
             dataChunk = fact.nextObject();
             plainFact = fact;
+            currentProgress += 10;
         }
 
         if (dataChunk instanceof PGPOnePassSignatureList) {
-            progress.setProgress("processing signature...", 60, 100);
+            progress.setProgress("processing signature...", currentProgress, 100);
             returnData.putBoolean("signature", true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
@@ -1604,31 +1611,44 @@ public class Apg {
             }
 
             dataChunk = plainFact.nextObject();
+            currentProgress += 10;
         }
 
         if (dataChunk instanceof PGPLiteralData) {
-            progress.setProgress("decrypting data...", 70, 100);
+            progress.setProgress("decrypting data...", currentProgress, 100);
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
             OutputStream out = outStream;
 
             byte[] buffer = new byte[1 << 16];
             InputStream dataIn = literalData.getInputStream();
 
-            int bytesRead = 0;
-            while ((bytesRead = dataIn.read(buffer)) > 0) {
-                out.write(buffer, 0, bytesRead);
+            int startProgress = currentProgress;
+            int endProgress = 100;
+            if (signature != null) {
+                endProgress = 90;
+            } else if (encryptedData.isIntegrityProtected()) {
+                endProgress = 95;
+            }
+            int n = 0;
+            int done = 0;
+            while ((n = dataIn.read(buffer)) > 0) {
+                out.write(buffer, 0, n);
+                done += n;
                 if (signature != null) {
                     try {
-                        signature.update(buffer, 0, bytesRead);
+                        signature.update(buffer, 0, n);
                     } catch (SignatureException e) {
                         returnData.putBoolean("signatureSuccess", false);
                         signature = null;
                     }
                 }
+                // unknown size, but try to at least have a moving, slowing down progress bar
+                currentProgress = startProgress + (endProgress - startProgress) * done / (done + 100000);
+                progress.setProgress(currentProgress, 100);
             }
 
             if (signature != null) {
-                progress.setProgress("verifying signature...", 80, 100);
+                progress.setProgress("verifying signature...", 90, 100);
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = (PGPSignature) signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
@@ -1641,7 +1661,7 @@ public class Apg {
 
         // TODO: add integrity somewhere
         if (encryptedData.isIntegrityProtected()) {
-            progress.setProgress("verifying integrity...", 90, 100);
+            progress.setProgress("verifying integrity...", 95, 100);
             if (encryptedData.verify()) {
                 // passed
             } else {
