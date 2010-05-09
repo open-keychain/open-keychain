@@ -61,22 +61,12 @@
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <activity
-            android:name=".EncryptMessageActivity"
-            android:label="@string/title_encryptMessage"
+            android:name=".EncryptActivity"
+            android:label="@string/title_encrypt"
             android:configChanges="keyboardHidden|orientation|keyboard">
 
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
-            </intent-filter>
-
-        </activity>
-
-        <activity
-            android:name=".EncryptFileActivity"
-            android:label="@string/title_encryptFile"
-            android:configChanges="keyboardHidden|orientation|keyboard">
-
-            <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
             </intent-filter>
 

@@ -167,7 +167,7 @@ public class DecryptMessageActivity extends BaseActivity {
     }
 
     private void replyClicked() {
-        Intent intent = new Intent(this, EncryptMessageActivity.class);
+        Intent intent = new Intent(this, EncryptActivity.class);
         intent.setAction(Apg.Intent.ENCRYPT);
         String data = mMessage.getText().toString();
         data = data.replaceAll("(?m)^", "> ");

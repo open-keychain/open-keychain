@@ -24,14 +24,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,7 +41,6 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -67,7 +62,9 @@ public class MainActivity extends BaseActivity {
         encryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EncryptMessageActivity.class));
+                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+                intent.setAction(Apg.Intent.ENCRYPT);
+                startActivity(intent);
             }
         });
 
@@ -81,7 +78,9 @@ public class MainActivity extends BaseActivity {
         encryptFileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EncryptFileActivity.class));
+                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+                intent.setAction(Apg.Intent.ENCRYPT_FILE);
+                startActivity(intent);
             }
         });
 
@@ -212,6 +211,7 @@ public class MainActivity extends BaseActivity {
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
                                 "* encrypt to clipboard\n" +
+                                "* new encrypt GUI to handle everything\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
                                 "WILL be stripped of certificates right now.\n" +

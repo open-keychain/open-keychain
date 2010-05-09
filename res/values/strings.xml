@@ -21,7 +21,7 @@
     <string name="title_manageSecretKeys">Manage Secret Keys</string>
     <string name="title_selectRecipients">Select Recipients</string>
     <string name="title_selectSignature">Select Signature</string>
-    <string name="title_encryptMessage">Encrypt Message</string>
+    <string name="title_encrypt">Encrypt</string>
     <string name="title_decryptMessage">Decrypt Message</string>
     <string name="title_encryptFile">Encrypt File</string>
     <string name="title_decryptFile">Decrypt File</string>
@@ -60,6 +60,7 @@
     <string name="none">&lt;none&gt;</string>
 
     <string name="label_sign">Sign</string>
+    <string name="label_message">Message</string>
     <string name="label_file">File</string>
     <string name="label_pass_phrase">Pass Phrase</string>
     <string name="label_pass_phrase_again">Again</string>
@@ -71,8 +72,8 @@
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
 
-    <string name="use_asymmetric">Public Key</string>
-    <string name="use_symmetric">Pass Phrase</string>
+    <string name="label_asymmetric">Public Key</string>
+    <string name="label_symmetric">Pass Phrase</string>
 
     <string name="section_defaults">Defaults</string>
 

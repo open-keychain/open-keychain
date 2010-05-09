@@ -149,7 +149,7 @@
 
                 <RadioButton
                     android:id="@+id/use_asymmetric"
-                    android:text="@string/use_asymmetric"
+                    android:text="@string/label_asymmetric"
                     android:layout_height="wrap_content"
                     android:layout_width="0dip"
                     android:layout_weight="1"
@@ -157,7 +157,7 @@
 
                 <RadioButton
                     android:id="@+id/use_symmetric"
-                    android:text="@string/use_symmetric"
+                    android:text="@string/label_symmetric"
                     android:layout_height="wrap_content"
                     android:layout_width="0dip"
                     android:layout_weight="1"
