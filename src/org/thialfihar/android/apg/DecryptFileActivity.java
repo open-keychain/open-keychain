@@ -141,7 +141,7 @@ public class DecryptFileActivity extends BaseActivity {
             try {
                 setSecretKeyId(Apg.getDecryptionKeyId(in));
                 if (getSecretKeyId() == 0) {
-                    throw new Apg.GeneralException("no suitable keys found");
+                    throw new Apg.GeneralException("no suitable secret key found");
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (Apg.NoAsymmetricEncryptionException e) {

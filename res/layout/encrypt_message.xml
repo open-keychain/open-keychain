@@ -107,10 +107,18 @@
         style="@android:style/ButtonBar">
 
         <Button
+            android:id="@+id/btn_encrypt_to_clipboard"
+            android:text="@string/btn_encrypt_to_clipboard"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
             android:id="@+id/btn_send"
             android:text="@string/btn_send"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

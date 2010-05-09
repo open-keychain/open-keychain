@@ -34,6 +34,7 @@ import org.bouncycastle2.util.Strings;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -50,10 +51,13 @@ public class EncryptMessageActivity extends BaseActivity {
 
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
+    private Button mEncryptButton = null;
     private Button mSendButton = null;
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
+
+    private int mEncryptTarget;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,7 @@ public class EncryptMessageActivity extends BaseActivity {
 
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
+        mEncryptButton = (Button) findViewById(R.id.btn_encrypt_to_clipboard);
         mSendButton = (Button) findViewById(R.id.btn_send);
         mSign = (CheckBox) findViewById(R.id.sign);
         mMainUserId = (TextView) findViewById(R.id.main_user_id);
@@ -119,6 +124,13 @@ public class EncryptMessageActivity extends BaseActivity {
             }
         }
 
+        mEncryptButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked();
+            }
+        });
+
         mSendButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,7 +162,17 @@ public class EncryptMessageActivity extends BaseActivity {
         updateView();
     }
 
+    private void encryptClicked() {
+        mEncryptTarget = Id.target.clipboard;
+        if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+            showDialog(Id.dialog.pass_phrase);
+        } else {
+            encryptStart();
+        }
+    }
+
     private void sendClicked() {
+        mEncryptTarget = Id.target.email;
         if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
             showDialog(Id.dialog.pass_phrase);
         } else {
@@ -322,19 +344,36 @@ public class EncryptMessageActivity extends BaseActivity {
             return;
         } else {
             String message = data.getString("message");
-            Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-            emailIntent.setType("text/plain; charset=utf-8");
-            emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-            if (mSubject != null) {
-                emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                                     mSubject);
+            switch (mEncryptTarget) {
+                case Id.target.clipboard: {
+                    ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    clip.setText(message);
+                    Toast.makeText(this, "Successfully encrypted to clipboard.",
+                                   Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                case Id.target.email: {
+                    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    emailIntent.setType("text/plain; charset=utf-8");
+                    emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+                    if (mSubject != null) {
+                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                                             mSubject);
+                    }
+                    if (mSendTo != null) {
+                        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+                                             new String[] { mSendTo });
+                    }
+                    EncryptMessageActivity.this.
+                            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                }
+
+                default: {
+                    // shouldn't happen
+                    break;
+                }
             }
-            if (mSendTo != null) {
-                emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                     new String[] { mSendTo });
-            }
-            EncryptMessageActivity.this.
-                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
         }
     }
 }

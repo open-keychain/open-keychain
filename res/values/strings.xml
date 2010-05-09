@@ -33,7 +33,8 @@
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>
 
-    <string name="btn_send">Send via Email</string>
+    <string name="btn_encrypt_to_clipboard">Encrypt To Clipboard</string>
+    <string name="btn_send">Encrypt And Email</string>
     <string name="btn_encrypt">Encrypt</string>
     <string name="btn_decrypt">Decrypt</string>
     <string name="btn_verify">Verify</string>

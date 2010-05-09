@@ -150,6 +150,9 @@ public class DecryptMessageActivity extends BaseActivity {
         try {
             ByteArrayInputStream in = new ByteArrayInputStream(messageData.getBytes());
             setSecretKeyId(Apg.getDecryptionKeyId(in));
+            if (getSecretKeyId() == 0) {
+                throw new Apg.GeneralException("no suitable secret key found");
+            }
             showDialog(Id.dialog.pass_phrase);
         } catch (IOException e) {
             error = e.getLocalizedMessage();

@@ -24,6 +24,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
@@ -175,31 +176,19 @@ public class MainActivity extends BaseActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("About " + Apg.FULL_VERSION);
-                ScrollView scrollView = new ScrollView(this);
-                TextView message = new TextView(this);
 
-                SpannableString info =
-                        new SpannableString("This is an attempt to bring OpenPGP to Android. " +
-                                            "It is far from complete, but more features are " +
-                                            "planned (see website).\n" +
-                                            "\n" +
-                                            "Feel free to send bug reports, suggestions, feature " +
-                                            "requests, feedback, photographs.\n" +
-                                            "\n" +
-                                            "mail: thi@thialfihar.org\n" +
-                                            "site: http://apg.thialfihar.org\n" +
-                                            "\n" +
-                                            "This software is provided \"as is\", without " +
-                                            "warranty of any kind.");
-                Linkify.addLinks(info, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
-                message.setMovementMethod(LinkMovementMethod.getInstance());
-                message.setText(info);
-                // 5dip padding
-                int padding = (int) (10 * getResources().getDisplayMetrics().densityDpi / 160);
-                message.setPadding(padding, padding, padding, padding);
-                message.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                scrollView.addView(message);
-                alert.setView(scrollView);
+                LayoutInflater inflater =
+                        (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.info, null);
+                TextView message = (TextView) layout.findViewById(R.id.message);
+                message.setText("This is an attempt to bring OpenPGP to Android. " +
+                        "It is far from complete, but more features are planned (see website).\n\n" +
+                        "Feel free to send bug reports, suggestions, feature requests, feedback, " +
+                        "photographs.\n\n" +
+                        "mail: thi@thialfihar.org\n" +
+                        "site: http://apg.thialfihar.org\n\n" +
+                        "This software is provided \"as is\", without warranty of any kind.");
+                alert.setView(layout);
 
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
@@ -215,30 +204,27 @@ public class MainActivity extends BaseActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("Changes " + Apg.FULL_VERSION);
-                ScrollView scrollView = new ScrollView(this);
-                TextView message = new TextView(this);
+                LayoutInflater inflater =
+                    (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.info, null);
+                TextView message = (TextView) layout.findViewById(R.id.message);
 
-                SpannableString info =
-                        new SpannableString("Read the warnings!\n\n" +
-                                            "Changes:\n" +
-                                            "\n" +
-                                            "WARNING: be careful editing your existing keys, as they " +
-                                            "WILL be stripped of certificates right now.\n" +
-                                            "WARNING: key creation/editing doesn't support all " +
-                                            "GPG features yet. In particular: " +
-                                            "key cross-certification is NOT supported, so signing " +
-                                            "with those keys will get a warning when the signature is " +
-                                            "checked.\n" +
-                                            "\n" +
-                                            "I hope APG continues to be useful to you, please send " +
-                                            "bug reports, feature wishes, feedback.");
-                message.setText(info);
-                // 5dip padding
-                int padding = (int) (10 * getResources().getDisplayMetrics().densityDpi / 160);
-                message.setPadding(padding, padding, padding, padding);
-                message.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                scrollView.addView(message);
-                alert.setView(scrollView);
+                message.setText("Read the warnings!\n\n" +
+                                "Changes:\n" +
+                                "* encrypt to clipboard\n" +
+                                "\n" +
+                                "WARNING: be careful editing your existing keys, as they " +
+                                "WILL be stripped of certificates right now.\n" +
+                                "\n" +
+                                "WARNING: key creation/editing doesn't support all " +
+                                "GPG features yet. In particular: " +
+                                "key cross-certification is NOT supported, so signing " +
+                                "with those keys will get a warning when the signature is " +
+                                "checked.\n" +
+                                "\n" +
+                                "I hope APG continues to be useful to you, please send " +
+                                "bug reports, feature wishes, feedback.");
+                alert.setView(layout);
 
                 alert.setCancelable(false);
                 alert.setPositiveButton(android.R.string.ok,
