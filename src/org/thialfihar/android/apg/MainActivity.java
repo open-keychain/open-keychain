@@ -195,7 +195,7 @@ public class MainActivity extends BaseActivity {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 MainActivity.this.removeDialog(Id.dialog.about);
                                             }
-                });
+                                        });
 
                 return alert.create();
             }
