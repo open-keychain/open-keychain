@@ -41,7 +41,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.ClipboardManager;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -212,7 +211,6 @@ public class DecryptActivity extends BaseActivity {
             }
         }
 
-        Log.e("err?", "" + mSource.getCurrentView().getId() + " " + R.id.source_message + " " + mMessage.getText().length());
         if (mSource.getCurrentView().getId() == R.id.source_message &&
             mMessage.getText().length() == 0) {
             ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
