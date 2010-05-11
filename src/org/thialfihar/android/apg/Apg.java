@@ -1684,25 +1684,20 @@ public class Apg {
 
         progress.setProgress("reading data...", 0, 100);
 
-        // mostly taken from CLearSignedFileProcessor
+        // mostly taken from ClearSignedFileProcessor
         ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
         int lookAhead = readInputLine(lineOut, aIn);
         byte[] lineSep = getLineSeparator();
 
-        if (lookAhead != -1 && aIn.isClearText())
-        {
-            byte[] line = lineOut.toByteArray();
+        byte[] line = lineOut.toByteArray();
+        out.write(line, 0, getLengthWithoutSeparator(line));
+        out.write(lineSep);
+
+        while (lookAhead != -1 && aIn.isClearText()) {
+            lookAhead = readInputLine(lineOut, lookAhead, aIn);
+            line = lineOut.toByteArray();
             out.write(line, 0, getLengthWithoutSeparator(line));
             out.write(lineSep);
-
-            while (lookAhead != -1 && aIn.isClearText())
-            {
-                lookAhead = readInputLine(lineOut, lookAhead, aIn);
-
-                line = lineOut.toByteArray();
-                out.write(line, 0, getLengthWithoutSeparator(line));
-                out.write(lineSep);
-            }
         }
 
         out.close();

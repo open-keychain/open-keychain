@@ -41,6 +41,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -151,6 +152,13 @@ public class DecryptActivity extends BaseActivity {
 
         mDeleteAfter = (CheckBox) findViewById(R.id.delete_after_decryption);
 
+        // default: message source
+        mSource.setInAnimation(null);
+        mSource.setOutAnimation(null);
+        while (mSource.getCurrentView().getId() != R.id.source_message) {
+            mSource.showNext();
+        }
+
         Intent intent = getIntent();
         if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
             Uri uri = intent.getData();
@@ -196,12 +204,23 @@ public class DecryptActivity extends BaseActivity {
             }
             mReplyTo = extras.getString("replyTo");
             mSubject = extras.getString("subject");
+        } else if (intent.getAction() != null && intent.getAction().equals(Apg.Intent.DECRYPT_FILE)) {
+            mSource.setInAnimation(null);
+            mSource.setOutAnimation(null);
+            while (mSource.getCurrentView().getId() != R.id.source_file) {
+                mSource.showNext();
+            }
         }
 
-        if (mMessage.getText().length() == 0) {
+        Log.e("err?", "" + mSource.getCurrentView().getId() + " " + R.id.source_message + " " + mMessage.getText().length());
+        if (mSource.getCurrentView().getId() == R.id.source_message &&
+            mMessage.getText().length() == 0) {
             ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             String data = "";
             Matcher matcher = Apg.PGP_MESSAGE.matcher(clip.getText());
+            if (!matcher.matches()) {
+                matcher = Apg.PGP_SIGNED_MESSAGE.matcher(clip.getText());
+            }
             if (matcher.matches()) {
                 data = matcher.group(1);
                 mMessage.setText(data);
@@ -226,7 +245,8 @@ public class DecryptActivity extends BaseActivity {
         });
         mReplyButton.setVisibility(View.INVISIBLE);
 
-        if (mMessage.getText().length() > 0) {
+        if (mSource.getCurrentView().getId() == R.id.source_message &&
+            mMessage.getText().length() > 0) {
             mDecryptButton.performClick();
         }
 
