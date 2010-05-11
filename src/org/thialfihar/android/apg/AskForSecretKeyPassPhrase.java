@@ -23,9 +23,12 @@ import org.bouncycastle2.openpgp.PGPSecretKey;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -56,19 +59,14 @@ public class AskForSecretKeyPassPhrase {
             alert.setMessage("Pass phrase for " + userId);
         }
 
-        final EditText input = new EditText(context);
-        input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        input.setTransformationMethod(new PasswordTransformationMethod());
-        // 5dip padding
-        int padding = (int) (10 * context.getResources().getDisplayMetrics().densityDpi / 160);
-        LinearLayout layout = new LinearLayout(context);
-        layout.setPadding(padding, 0, padding, 0);
-        layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-                                                LayoutParams.WRAP_CONTENT));
-        input.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-                                               LayoutParams.WRAP_CONTENT));
-        layout.addView(input);
-        alert.setView(layout);
+        LayoutInflater inflater =
+            (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.pass_phrase, null);
+        final EditText input = (EditText) view.findViewById(R.id.pass_phrase);
+        final EditText inputNotUsed = (EditText) view.findViewById(R.id.pass_phrase_again);
+        inputNotUsed.setVisibility(View.GONE);
+
+        alert.setView(view);
 
         final PassPhraseCallbackInterface cb = callback;
         final Activity activity = context;

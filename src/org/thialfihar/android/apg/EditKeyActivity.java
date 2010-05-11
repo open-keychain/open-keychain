@@ -158,30 +158,13 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 }
                 alert.setMessage("Enter the pass phrase twice.");
 
-                final EditText input1 = new EditText(this);
-                final EditText input2 = new EditText(this);
-                input1.setText("");
-                input2.setText("");
-                input1.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                input2.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                input1.setTransformationMethod(new PasswordTransformationMethod());
-                input2.setTransformationMethod(new PasswordTransformationMethod());
+                LayoutInflater inflater =
+                    (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = inflater.inflate(R.layout.pass_phrase, null);
+                final EditText input1 = (EditText) view.findViewById(R.id.pass_phrase);
+                final EditText input2 = (EditText) view.findViewById(R.id.pass_phrase_again);
 
-                // 5dip padding
-                int padding = (int) (10 * getResources().getDisplayMetrics().densityDpi / 160);
-                LinearLayout layout = new LinearLayout(this);
-                layout.setOrientation(LinearLayout.VERTICAL);
-                layout.setPadding(padding, 0, padding, 0);
-                layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-                                                        LayoutParams.WRAP_CONTENT));
-                input1.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-                                                        LayoutParams.WRAP_CONTENT));
-                input2.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT,
-                                                        LayoutParams.WRAP_CONTENT));
-                layout.addView(input1);
-                layout.addView(input2);
-
-                alert.setView(layout);
+                alert.setView(view);
 
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
