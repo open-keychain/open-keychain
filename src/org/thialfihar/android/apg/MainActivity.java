@@ -214,8 +214,10 @@ public class MainActivity extends BaseActivity {
 
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
-                                "* encrypt to clipboard\n" +
+                                "* Android 1.5 support, please let me know if there are problems\n" +
                                 "* new encrypt/decrypt GUI to handle everything\n" +
+                                "* symmetric encryption of messages\n" +
+                                "* encrypt to clipboard\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
                                 "WILL be stripped of certificates right now.\n" +
