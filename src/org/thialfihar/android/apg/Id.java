@@ -108,5 +108,6 @@ public final class Id {
         public static final int clipboard = 0x21070001;
         public static final int email = 0x21070002;
         public static final int file = 0x21070003;
+        public static final int message = 0x21070004;
     }
 }

@@ -150,7 +150,7 @@ public class MailListActivity extends ListActivity {
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
-                Intent intent = new Intent(MailListActivity.this, DecryptMessageActivity.class);
+                Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
                 intent.putExtra("data", message.data);

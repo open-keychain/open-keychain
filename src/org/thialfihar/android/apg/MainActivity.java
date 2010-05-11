@@ -71,7 +71,9 @@ public class MainActivity extends BaseActivity {
         decryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, DecryptMessageActivity.class));
+                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
+                intent.setAction(Apg.Intent.DECRYPT);
+                startActivity(intent);
             }
         });
 
@@ -87,7 +89,9 @@ public class MainActivity extends BaseActivity {
         decryptFileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, DecryptFileActivity.class));
+                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
+                intent.setAction(Apg.Intent.DECRYPT_FILE);
+                startActivity(intent);
             }
         });
 
@@ -211,7 +215,7 @@ public class MainActivity extends BaseActivity {
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
                                 "* encrypt to clipboard\n" +
-                                "* new encrypt GUI to handle everything\n" +
+                                "* new encrypt/decrypt GUI to handle everything\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
                                 "WILL be stripped of certificates right now.\n" +

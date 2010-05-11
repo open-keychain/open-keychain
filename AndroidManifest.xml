@@ -73,8 +73,8 @@
         </activity>
 
         <activity
-            android:name=".DecryptMessageActivity"
-            android:label="@string/title_decryptMessage"
+            android:name=".DecryptActivity"
+            android:label="@string/title_decrypt"
             android:configChanges="keyboardHidden|orientation|keyboard">
 
             <intent-filter>
@@ -85,16 +85,6 @@
 
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
-            </intent-filter>
-
-        </activity>
-
-        <activity
-            android:name=".DecryptFileActivity"
-            android:label="@string/title_decryptFile"
-            android:configChanges="keyboardHidden|orientation|keyboard">
-
-            <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
             </intent-filter>
 
