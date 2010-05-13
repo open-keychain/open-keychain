@@ -46,8 +46,8 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/label_encryption_algorithm"
-                android:text="@string/label_encryption_algorithm"
+                android:id="@+id/label_encryptionAlgorithm"
+                android:text="@string/label_encryptionAlgorithm"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_height="wrap_content"
                 android:layout_width="0dip"
@@ -56,7 +56,7 @@
                 android:paddingRight="10dip"/>
 
             <Spinner
-                android:id="@+id/encryption_algorithm"
+                android:id="@+id/encryptionAlgorithm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>
@@ -69,8 +69,8 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/label_hash_algorithm"
-                android:text="@string/label_hash_algorithm"
+                android:id="@+id/label_hashAlgorithm"
+                android:text="@string/label_hashAlgorithm"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_height="wrap_content"
                 android:layout_width="0dip"
@@ -79,7 +79,7 @@
                 android:paddingRight="10dip"/>
 
             <Spinner
-                android:id="@+id/hash_algorithm"
+                android:id="@+id/hashAlgorithm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>
@@ -92,8 +92,8 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/label_ascii_armour"
-                android:text="@string/label_ascii_armour"
+                android:id="@+id/label_asciiArmour"
+                android:text="@string/label_asciiArmour"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_gravity="center_vertical"
                 android:paddingRight="10dip"
@@ -102,7 +102,7 @@
                 android:layout_weight="1"/>
 
             <CheckBox
-                android:id="@+id/ascii_armour"
+                android:id="@+id/asciiArmour"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center_vertical"/>

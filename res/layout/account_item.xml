@@ -25,7 +25,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight">
 
     <TextView
-        android:id="@+id/account_name"
+        android:id="@+id/accountName"
         android:text="someone@gmail.com"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_width="fill_parent"

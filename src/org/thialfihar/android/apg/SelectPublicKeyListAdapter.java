@@ -113,18 +113,18 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         Vector<PGPPublicKey> encryptKeys = Apg.getEncryptKeys(keyRing);
         Vector<PGPPublicKey> usableKeys = Apg.getUsableEncryptKeys(keyRing);
 
-        TextView mainUserId = (TextView) view.findViewById(R.id.main_user_id);
-        mainUserId.setText(R.string.unknown_user_id);
-        TextView mainUserIdRest = (TextView) view.findViewById(R.id.main_user_id_rest);
+        TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+        mainUserId.setText(R.string.unknownUserId);
+        TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
-        TextView keyId = (TextView) view.findViewById(R.id.key_id);
-        keyId.setText("<no key>");
+        TextView keyId = (TextView) view.findViewById(R.id.keyId);
+        keyId.setText(R.string.noKey);
         TextView creation = (TextView) view.findViewById(R.id.creation);
-        creation.setText("-");
+        creation.setText(R.string.noDate);
         TextView expiry = (TextView) view.findViewById(R.id.expiry);
-        expiry.setText("no expire");
+        expiry.setText(R.string.noExpiry);
         TextView status = (TextView) view.findViewById(R.id.status);
-        status.setText("???");
+        status.setText(R.string.unknownStatus);
 
         if (key != null) {
             String userId = Apg.getMainUserId(key);
@@ -147,17 +147,17 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         PGPPublicKey timespanKey = key;
         if (usableKeys.size() > 0) {
             timespanKey = usableKeys.get(0);
-            status.setText("can encrypt");
+            status.setText(R.string.canEncrypt);
         } else if (encryptKeys.size() > 0) {
             timespanKey = encryptKeys.get(0);
             Date now = new Date();
             if (now.compareTo(Apg.getCreationDate(timespanKey)) > 0) {
-                status.setText("not valid");
+                status.setText(R.string.notValid);
             } else {
-                status.setText("expired");
+                status.setText(R.string.expired);
             }
         } else {
-            status.setText("no key");
+            status.setText(R.string.noKey);
         }
 
         creation.setText(DateFormat.getDateInstance().format(Apg.getCreationDate(timespanKey)));

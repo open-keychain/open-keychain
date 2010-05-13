@@ -38,14 +38,14 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/main_user_id"
+            android:id="@+id/mainUserId"
             android:text="Main User ID"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:id="@+id/main_user_id_rest"
+            android:id="@+id/mainUserIdRest"
             android:text="&lt;user@somewhere.com&gt;"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_width="wrap_content"
@@ -54,7 +54,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/right_column"
         android:orientation="vertical"
         android:minWidth="90dip"
         android:paddingLeft="3dip"
@@ -63,7 +62,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/key_id"
+            android:id="@+id/keyId"
             android:text="BBBBBBBB"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:typeface="monospace"

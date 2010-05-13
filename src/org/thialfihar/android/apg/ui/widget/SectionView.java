@@ -50,9 +50,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Runnable {
-    public static final int TYPE_USER_ID = 1;
-    public static final int TYPE_KEY = 2;
-
     private LayoutInflater mInflater;
     private View mAdd;
     private ViewGroup mEditors;
@@ -82,7 +79,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 String error = data.getString("error");
                 if (error != null) {
                     Toast.makeText(getContext(),
-                                   "Error: " + error,
+                                   getContext().getString(R.string.errorMessage, error),
                                    Toast.LENGTH_SHORT).show();
                 }
 
@@ -116,12 +113,12 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void setType(int type) {
         mType = type;
         switch (type) {
-            case TYPE_USER_ID: {
+            case Id.type.user_id: {
                 mTitle.setText(R.string.section_userIds);
                 break;
             }
 
-            case TYPE_KEY: {
+            case Id.type.key: {
                 mTitle.setText(R.string.section_keys);
                 break;
             }
@@ -163,7 +160,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /** {@inheritDoc} */
     public void onClick(View v) {
         switch (mType) {
-            case TYPE_USER_ID: {
+            case Id.type.user_id: {
                 UserIdEditor view =
                         (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
                                                          mEditors, false);
@@ -175,15 +172,13 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 break;
             }
 
-            case TYPE_KEY: {
+            case Id.type.key: {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
                 View view = mInflater.inflate(R.layout.create_key, null);
                 dialog.setView(view);
-                dialog.setTitle("Create Key");
-                dialog.setMessage("Note: only subkeys support ElGamal, and for ElGamal " +
-                                  "the nearest keysize of 1536, 2048, 3072, 4096, or 8192 " +
-                                  "will be used");
+                dialog.setTitle(R.string.title_createKey);
+                dialog.setMessage(R.string.keyCreationElGamalInfo);
 
                 boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
 
@@ -252,7 +247,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     public void setUserIds(Vector<String> list) {
-        if (mType != TYPE_USER_ID) {
+        if (mType != Id.type.user_id) {
             return;
         }
 
@@ -272,7 +267,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     public void setKeys(Vector<PGPSecretKey> list) {
-        if (mType != TYPE_KEY) {
+        if (mType != Id.type.key) {
             return;
         }
 
@@ -291,7 +286,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private void createKey() {
         mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setMessage("Generating key, this can take a while...");
+        mProgressDialog.setMessage(getContext().getString(R.string.progress_generating));
         mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         mProgressDialog.show();

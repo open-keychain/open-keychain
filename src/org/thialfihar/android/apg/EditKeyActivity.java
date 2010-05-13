@@ -103,11 +103,11 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
         mUserIds = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mUserIds.setType(SectionView.TYPE_USER_ID);
+        mUserIds.setType(Id.type.user_id);
         mUserIds.setUserIds(userIds);
         container.addView(mUserIds);
         mKeys = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mKeys.setType(SectionView.TYPE_KEY);
+        mKeys.setType(Id.type.key);
         mKeys.setKeys(keys);
         container.addView(mKeys);
 
@@ -122,7 +122,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.new_pass_phrase, 0,
-                 (havePassPhrase() ? "Change Pass Phrase" : "Set Pass Phrase"))
+                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setPassPhrase))
                 .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -149,17 +149,17 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 if (havePassPhrase()) {
-                    alert.setTitle("Change Pass Phrase");
+                    alert.setTitle(R.string.title_changePassPhrase);
                 } else {
-                    alert.setTitle("Set Pass Phrase");
+                    alert.setTitle(R.string.title_setPassPhrase);
                 }
-                alert.setMessage("Enter the pass phrase twice.");
+                alert.setMessage(R.string.enterPassPhraseTwice);
 
                 LayoutInflater inflater =
                     (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View view = inflater.inflate(R.layout.pass_phrase, null);
-                final EditText input1 = (EditText) view.findViewById(R.id.pass_phrase);
-                final EditText input2 = (EditText) view.findViewById(R.id.pass_phrase_again);
+                final EditText input1 = (EditText) view.findViewById(R.id.passPhrase);
+                final EditText input2 = (EditText) view.findViewById(R.id.passPhraseAgain);
 
                 alert.setView(view);
 
@@ -213,7 +213,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
     private void saveClicked() {
         if (!havePassPhrase()) {
-            Toast.makeText(this, R.string.set_a_pass_phrase, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.setAPassPhrase, Toast.LENGTH_SHORT).show();
             return;
         }
         showDialog(Id.dialog.saving);
@@ -265,10 +265,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         String error = data.getString("error");
         if (error != null) {
             Toast.makeText(EditKeyActivity.this,
-                           "Error: " + data.getString("error"),
+                           getString(R.string.errorMessage, data.getString("error")),
                            Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(EditKeyActivity.this, R.string.key_saved, Toast.LENGTH_SHORT).show();
+            Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);
             finish();
         }

@@ -39,13 +39,13 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/source_previous"
+                    android:id="@+id/sourcePrevious"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_previous"/>
 
                 <TextView
-                    android:id="@+id/source_label"
+                    android:id="@+id/sourceLabel"
                     android:layout_width="0dip"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
@@ -55,7 +55,7 @@
                     android:textColor="#ffffffff"/>
 
                 <ImageView
-                    android:id="@+id/source_next"
+                    android:id="@+id/sourceNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_next"/>
@@ -69,7 +69,7 @@
                 android:layout_weight="1">
 
                 <LinearLayout
-                    android:id="@+id/source_message"
+                    android:id="@+id/sourceMessage"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical">
@@ -84,7 +84,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/source_file"
+                    android:id="@+id/sourceFile"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical">
@@ -114,8 +114,8 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/label_delete_after_decryption"
-                            android:text="@string/label_delete_after_decryption"
+                            android:id="@+id/label_deleteAfterDecryption"
+                            android:text="@string/label_deleteAfterDecryption"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_gravity="center_vertical"
                             android:paddingRight="10dip"
@@ -124,7 +124,7 @@
                             android:layout_weight="1"/>
 
                         <CheckBox
-                            android:id="@+id/delete_after_decryption"
+                            android:id="@+id/deleteAfterDecryption"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_gravity="center_vertical"/>
@@ -140,7 +140,7 @@
     </ScrollView>
 
     <LinearLayout
-        android:id="@+id/layout_signature"
+        android:id="@+id/signature"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent">
@@ -170,7 +170,7 @@
             android:paddingLeft="5dip">
 
             <TextView
-                android:id="@+id/main_user_id"
+                android:id="@+id/mainUserId"
                 android:text="Main User Id"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="wrap_content"
@@ -178,7 +178,7 @@
                 android:layout_gravity="left"/>
 
             <TextView
-                android:id="@+id/main_user_id_rest"
+                android:id="@+id/mainUserIdRest"
                 android:text="Main User Id Rest"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:layout_width="wrap_content"

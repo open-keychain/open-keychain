@@ -23,7 +23,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight">
 
     <TextView
-        android:id="@+id/user_id"
+        android:id="@+id/userId"
         android:text="User ID"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="wrap_content"

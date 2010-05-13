@@ -196,7 +196,7 @@ public class MailListActivity extends ListActivity {
             Message message = (Message) getItem(position);
 
             TextView subject = (TextView) view.findViewById(R.id.subject);
-            TextView email = (TextView) view.findViewById(R.id.email_address);
+            TextView email = (TextView) view.findViewById(R.id.emailAddress);
             ImageView status = (ImageView) view.findViewById(R.id.ic_status);
 
             subject.setText(message.subject);

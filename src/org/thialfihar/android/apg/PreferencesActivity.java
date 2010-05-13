@@ -39,9 +39,9 @@ public class PreferencesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences);
 
-        mEncryptionAlgorithm = (Spinner) findViewById(R.id.encryption_algorithm);
-        mHashAlgorithm = (Spinner) findViewById(R.id.hash_algorithm);
-        mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
+        mEncryptionAlgorithm = (Spinner) findViewById(R.id.encryptionAlgorithm);
+        mHashAlgorithm = (Spinner) findViewById(R.id.hashAlgorithm);
+        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
 
         mAsciiArmour.setChecked(getDefaultAsciiArmour());
 

@@ -81,17 +81,17 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setAlwaysDrawnWithCacheEnabled(true);
 
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
-        mKeyId = (TextView) findViewById(R.id.key_id);
+        mKeyId = (TextView) findViewById(R.id.keyId);
         mCreationDate = (TextView) findViewById(R.id.creation);
         mExpiryDateButton = (Button) findViewById(R.id.expiry);
         mUsage = (Spinner) findViewById(R.id.usage);
         Choice choices[] = {
                 new Choice(Id.choice.usage.sign_only,
-                           getResources().getString(R.string.sign_only)),
+                           getResources().getString(R.string.choice_signOnly)),
                 new Choice(Id.choice.usage.encrypt_only,
-                           getResources().getString(R.string.encrypt_only)),
+                           getResources().getString(R.string.choice_encryptOnly)),
                 new Choice(Id.choice.usage.sign_and_encrypt,
-                           getResources().getString(R.string.sign_and_encrypt)),
+                           getResources().getString(R.string.choice_signAndEncrypt)),
         };
         ArrayAdapter<Choice> adapter =
                 new ArrayAdapter<Choice>(getContext(),
@@ -99,7 +99,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
-        mDeleteButton = (ImageButton) findViewById(R.id.edit_delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
 
         setExpiryDate(null);
@@ -118,7 +118,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                              date.get(Calendar.MONTH),
                                              date.get(Calendar.DAY_OF_MONTH));
                 dialog.setCancelable(true);
-                dialog.setButton(Dialog.BUTTON_NEGATIVE, "None",
+                dialog.setButton(Dialog.BUTTON_NEGATIVE,
+                                 getContext().getString(R.string.btn_noDate),
                                  new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         setExpiryDate(null);
@@ -154,15 +155,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
         if (!isElGamalKey) {
             choices.add(new Choice(Id.choice.usage.sign_only,
-                                   getResources().getString(R.string.sign_only)));
+                                   getResources().getString(R.string.choice_signOnly)));
         }
         if (!mIsMasterKey) {
             choices.add(new Choice(Id.choice.usage.encrypt_only,
-                                   getResources().getString(R.string.encrypt_only)));
+                                   getResources().getString(R.string.choice_encryptOnly)));
         }
         if (!isElGamalKey) {
             choices.add(new Choice(Id.choice.usage.sign_and_encrypt,
-                                   getResources().getString(R.string.sign_and_encrypt)));
+                                   getResources().getString(R.string.choice_signAndEncrypt)));
         }
 
         ArrayAdapter<Choice> adapter =

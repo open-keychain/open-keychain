@@ -101,9 +101,9 @@ public class EncryptActivity extends BaseActivity {
         setContentView(R.layout.encrypt);
 
         mSource = (ViewFlipper) findViewById(R.id.source);
-        mSourceLabel = (TextView) findViewById(R.id.source_label);
-        mSourcePrevious = (ImageView) findViewById(R.id.source_previous);
-        mSourceNext = (ImageView) findViewById(R.id.source_next);
+        mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
+        mSourcePrevious = (ImageView) findViewById(R.id.sourcePrevious);
+        mSourceNext = (ImageView) findViewById(R.id.sourceNext);
 
         mSourcePrevious.setClickable(true);
         mSourcePrevious.setOnClickListener(new OnClickListener() {
@@ -136,9 +136,9 @@ public class EncryptActivity extends BaseActivity {
         mSourceLabel.setOnClickListener(nextSourceClickListener);
 
         mMode = (ViewFlipper) findViewById(R.id.mode);
-        mModeLabel = (TextView) findViewById(R.id.mode_label);
-        mModePrevious = (ImageView) findViewById(R.id.mode_previous);
-        mModeNext = (ImageView) findViewById(R.id.mode_next);
+        mModeLabel = (TextView) findViewById(R.id.modeLabel);
+        mModePrevious = (ImageView) findViewById(R.id.modePrevious);
+        mModeNext = (ImageView) findViewById(R.id.modeNext);
 
         mModePrevious.setClickable(true);
         mModePrevious.setOnClickListener(new OnClickListener() {
@@ -172,17 +172,17 @@ public class EncryptActivity extends BaseActivity {
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
         mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
-        mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encrypt_to_clipboard);
+        mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
         mSign = (CheckBox) findViewById(R.id.sign);
-        mMainUserId = (TextView) findViewById(R.id.main_user_id);
-        mMainUserIdRest = (TextView) findViewById(R.id.main_user_id_rest);
+        mMainUserId = (TextView) findViewById(R.id.mainUserId);
+        mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
 
-        mPassPhrase = (EditText) findViewById(R.id.pass_phrase);
-        mPassPhraseAgain = (EditText) findViewById(R.id.pass_phrase_again);
+        mPassPhrase = (EditText) findViewById(R.id.passPhrase);
+        mPassPhraseAgain = (EditText) findViewById(R.id.passPhraseAgain);
 
         // measure the height of the source_file view and set the message view's min height to that,
         // so it fills mSource fully... bit of a hack.
-        View tmp = findViewById(R.id.source_file);
+        View tmp = findViewById(R.id.sourceFile);
         tmp.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int height = tmp.getMeasuredHeight();
         mMessage.setMinimumHeight(height);
@@ -196,12 +196,11 @@ public class EncryptActivity extends BaseActivity {
             }
         });
 
-        mDeleteAfter = (CheckBox) findViewById(R.id.delete_after_encryption);
+        mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
 
-        mAsciiArmour = (CheckBox) findViewById(R.id.ascii_armour);
+        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
         mAsciiArmour.setChecked(getDefaultAsciiArmour());
         mAsciiArmour.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 guessOutputFilename();
@@ -302,13 +301,13 @@ public class EncryptActivity extends BaseActivity {
                 }
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
-                while (mSource.getCurrentView().getId() != R.id.source_message) {
+                while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                     mSource.showNext();
                 }
             } else if (intent.getAction().equals(Apg.Intent.ENCRYPT_FILE)) {
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
-                while (mSource.getCurrentView().getId() != R.id.source_file) {
+                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
                     mSource.showNext();
                 }
             }
@@ -326,14 +325,14 @@ public class EncryptActivity extends BaseActivity {
 
         intent.setData(Uri.parse("file://" + filename));
 
-        intent.putExtra(FileManager.EXTRA_TITLE, "Select file to encrypt...");
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, "Open");
+        intent.putExtra(FileManager.EXTRA_TITLE, R.string.filemanager_titleEncrypt);
+        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -346,14 +345,14 @@ public class EncryptActivity extends BaseActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-            case R.id.source_file: {
+            case R.id.sourceFile: {
                 mSourceLabel.setText(R.string.label_file);
                 mEncryptButton.setText(R.string.btn_encrypt);
                 mEncryptToClipboardButton.setEnabled(false);
                 break;
             }
 
-            case R.id.source_message: {
+            case R.id.sourceMessage: {
                 mSourceLabel.setText(R.string.label_message);
                 mEncryptButton.setText(R.string.btn_send);
                 mEncryptToClipboardButton.setEnabled(true);
@@ -368,12 +367,12 @@ public class EncryptActivity extends BaseActivity {
 
     private void updateMode() {
         switch (mMode.getCurrentView().getId()) {
-            case R.id.mode_asymmetric: {
+            case R.id.modeAsymmetric: {
                 mModeLabel.setText(R.string.label_asymmetric);
                 break;
             }
 
-            case R.id.mode_symmetric: {
+            case R.id.modeSymmetric: {
                 mModeLabel.setText(R.string.label_symmetric);
                 break;
             }
@@ -390,7 +389,7 @@ public class EncryptActivity extends BaseActivity {
     }
 
     private void encryptClicked() {
-        if (mSource.getCurrentView().getId() == R.id.source_file) {
+        if (mSource.getCurrentView().getId() == R.id.sourceFile) {
             mEncryptTarget = Id.target.file;
         } else {
             mEncryptTarget = Id.target.email;
@@ -406,43 +405,44 @@ public class EncryptActivity extends BaseActivity {
             }
 
             if (mInputFilename.equals("")) {
-                Toast.makeText(this, "Select a file first.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.noFileSelected, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             File file = new File(mInputFilename);
             if (!file.exists() || !file.isFile()) {
-                Toast.makeText(this, "Error: file not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.errorMessage,
+                                               getString(R.string.error_fileNotFound)),
+                               Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
         // symmetric encryption
-        if (mMode.getCurrentView().getId() == R.id.mode_symmetric) {
+        if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             boolean gotPassPhrase = false;
             String passPhrase = mPassPhrase.getText().toString();
             String passPhraseAgain = mPassPhraseAgain.getText().toString();
             if (!passPhrase.equals(passPhraseAgain)) {
-                Toast.makeText(this, "Pass phrases don't match.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passPhrasesDoNotMatch, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             gotPassPhrase = (passPhrase.length() != 0);
             if (!gotPassPhrase) {
-                Toast.makeText(this, "Enter a pass phrase.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passPhraseMustNotBeEmpty, Toast.LENGTH_SHORT).show();
                 return;
             }
         } else {
             boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
             // for now require at least one form of encryption for files
             if (!encryptIt && mEncryptTarget == Id.target.file) {
-                Toast.makeText(this, "Select at least one encryption key.",
-                               Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.selectEncryptionKey, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!encryptIt && getSecretKeyId() == 0) {
-                Toast.makeText(this, "Select at least one encryption key or a signature key.",
+                Toast.makeText(this, R.string.selectEncryptionOrSignatureKey,
                                Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -495,7 +495,7 @@ public class EncryptActivity extends BaseActivity {
             boolean signOnly = false;
 
             String passPhrase = null;
-            if (mMode.getCurrentView().getId() == R.id.mode_symmetric) {
+            if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
                 passPhrase = mPassPhrase.getText().toString();
                 if (passPhrase.length() == 0) {
                     passPhrase = null;
@@ -510,7 +510,7 @@ public class EncryptActivity extends BaseActivity {
                 if (mInputFilename.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath()) ||
                     mOutputFilename.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
                     if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                        throw new GeneralException("external storage not ready");
+                        throw new GeneralException(getString(R.string.error_externalStorageNotReady));
                     }
                 }
 
@@ -583,12 +583,12 @@ public class EncryptActivity extends BaseActivity {
 
     private void updateView() {
         if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-            mSelectKeysButton.setText(R.string.no_keys_selected);
+            mSelectKeysButton.setText(R.string.noKeysSelected);
         } else if (mEncryptionKeyIds.length == 1) {
-            mSelectKeysButton.setText(R.string.one_key_selected);
+            mSelectKeysButton.setText(R.string.oneKeySelected);
         } else {
             mSelectKeysButton.setText("" + mEncryptionKeyIds.length + " " +
-                                      getResources().getString(R.string.n_keys_selected));
+                                      getResources().getString(R.string.nKeysSelected));
         }
 
         if (getSecretKeyId() == 0) {
@@ -596,7 +596,7 @@ public class EncryptActivity extends BaseActivity {
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
         } else {
-            String uid = getResources().getString(R.string.unknown_user_id);
+            String uid = getResources().getString(R.string.unknownUserId);
             String uidExtra = "";
             PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(getSecretKeyId());
             if (keyRing != null) {
@@ -699,7 +699,7 @@ public class EncryptActivity extends BaseActivity {
         String error = data.getString("error");
         if (error != null) {
             Toast.makeText(EncryptActivity.this,
-                           "Error: " + data.getString("error"),
+                           getString(R.string.errorMessage, data.getString("error")),
                            Toast.LENGTH_SHORT).show();
             return;
         } else {
@@ -708,7 +708,7 @@ public class EncryptActivity extends BaseActivity {
                 case Id.target.clipboard: {
                     ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     clip.setText(message);
-                    Toast.makeText(this, "Successfully encrypted to clipboard.",
+                    Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
                                    Toast.LENGTH_SHORT).show();
                     break;
                 }
@@ -726,11 +726,12 @@ public class EncryptActivity extends BaseActivity {
                                              new String[] { mSendTo });
                     }
                     EncryptActivity.this.
-                            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                            startActivity(Intent.createChooser(emailIntent,
+                                                               getString(R.string.title_sendEmail)));
                 }
 
                 case Id.target.file: {
-                    Toast.makeText(this, "Successfully encrypted.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.encryptionSuccessful, Toast.LENGTH_SHORT).show();
                     if (mDeleteAfter.isChecked()) {
                         setDeleteFile(mInputFilename);
                         showDialog(Id.dialog.delete_file);
@@ -750,9 +751,8 @@ public class EncryptActivity extends BaseActivity {
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case Id.dialog.output_filename: {
-                return FileDialog.build(this, "Encrypt to file",
-                                        "Please specify which file to encrypt to.\n" +
-                                        "WARNING! File will be overwritten if it exists.",
+                return FileDialog.build(this, getString(R.string.title_encryptToFile),
+                                        getString(R.string.specifyFileToEncryptTo),
                                         mOutputFilename,
                                         new FileDialog.OnClickListener() {
 
@@ -768,8 +768,8 @@ public class EncryptActivity extends BaseActivity {
                                                 removeDialog(Id.dialog.output_filename);
                                             }
                                         },
-                                        getString(R.string.filemanager_title_save),
-                                        getString(R.string.filemanager_btn_save),
+                                        getString(R.string.filemanager_titleSave),
+                                        getString(R.string.filemanager_btnSave),
                                         Id.request.output_filename);
             }
 

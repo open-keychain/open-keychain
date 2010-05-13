@@ -8,13 +8,13 @@
   android:paddingRight="5dip">
 
     <EditText
-        android:id="@+id/pass_phrase"
+        android:id="@+id/passPhrase"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"/>
 
     <EditText
-        android:id="@+id/pass_phrase_again"
+        android:id="@+id/passPhraseAgain"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"/>

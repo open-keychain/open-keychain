@@ -28,7 +28,7 @@
         android:background="?android:attr/listDivider"/>
 
     <RadioButton
-        android:id="@+id/is_main_user_id"
+        android:id="@+id/isMainUserId"
         android:text="Main User ID"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
             <TableRow>
 
                 <TextView
-                    android:id="@+id/name_label"
+                    android:id="@+id/label_name"
                     android:text="Name"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             <TableRow>
 
                 <TextView
-                    android:id="@+id/email_label"
+                    android:id="@+id/label_email"
                     android:text="Email"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
             <TableRow>
 
                 <TextView
-                    android:id="@+id/comment_label"
+                    android:id="@+id/label_comment"
                     android:text="Comment"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
         </TableLayout>
 
         <ImageButton
-            android:id="@+id/edit_delete"
+            android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/MinusButton"

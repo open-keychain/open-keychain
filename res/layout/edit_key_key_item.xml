@@ -42,7 +42,7 @@
             <TableRow>
 
                 <TextView
-                   android:id="@+id/label_key_id"
+                   android:id="@+id/label_keyId"
                    android:text="Key ID"
                    android:layout_height="wrap_content"
                    android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
                    android:paddingRight="10dip"/>
 
                 <TextView
-                    android:id="@+id/key_id"
+                    android:id="@+id/keyId"
                     android:text="00000000 00000000"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
         </TableLayout>
 
         <ImageButton
-            android:id="@+id/edit_delete"
+            android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/MinusButton"

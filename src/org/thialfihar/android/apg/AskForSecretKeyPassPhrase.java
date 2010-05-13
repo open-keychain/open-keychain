@@ -45,21 +45,21 @@ public class AskForSecretKeyPassPhrase {
 
         if (secretKeyId == 0) {
             secretKey = null;
-            alert.setMessage("Pass phrase for symmetric encryption");
+            alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
             secretKey = Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
             if (secretKey == null) {
                 return null;
             }
             String userId = Apg.getMainUserIdSafe(context, secretKey);
-            alert.setMessage("Pass phrase for " + userId);
+            alert.setMessage(context.getString(R.string.passPhraseFor, userId));
         }
 
         LayoutInflater inflater =
             (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.pass_phrase, null);
-        final EditText input = (EditText) view.findViewById(R.id.pass_phrase);
-        final EditText inputNotUsed = (EditText) view.findViewById(R.id.pass_phrase_again);
+        final EditText input = (EditText) view.findViewById(R.id.passPhrase);
+        final EditText inputNotUsed = (EditText) view.findViewById(R.id.passPhraseAgain);
         inputNotUsed.setVisibility(View.GONE);
 
         alert.setView(view);
@@ -77,7 +77,7 @@ public class AskForSecretKeyPassPhrase {
                                                                             new BouncyCastleProvider());
                                             } catch (PGPException e) {
                                                 Toast.makeText(activity,
-                                                               R.string.wrong_pass_phrase,
+                                                               R.string.wrongPassPhrase,
                                                                Toast.LENGTH_SHORT).show();
                                                 return;
                                             }

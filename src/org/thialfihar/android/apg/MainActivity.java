@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
         Button decryptMessageButton = (Button) findViewById(R.id.btn_decryptMessage);
         Button encryptFileButton = (Button) findViewById(R.id.btn_encryptFile);
         Button decryptFileButton = (Button) findViewById(R.id.btn_decryptFile);
-        mAccounts = (ListView) findViewById(R.id.account_list);
+        mAccounts = (ListView) findViewById(R.id.accounts);
 
         encryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -126,44 +126,46 @@ public class MainActivity extends BaseActivity {
             case Id.dialog.new_account: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setTitle("Add Account");
-                alert.setMessage("Specify the Google Mail account you want to add.");
+                alert.setTitle(R.string.title_addAccount);
+                alert.setMessage(R.string.specifyGoogleMailAccount);
 
                 final EditText input = new EditText(this);
                 alert.setView(input);
 
                 alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(Id.dialog.new_account);
-                                                String accountName = "" + input.getText();
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                MainActivity.this.removeDialog(Id.dialog.new_account);
+                                String accountName = "" + input.getText();
 
-                                                Cursor testCursor =
-                                                        managedQuery(Uri.parse("content://gmail-ls/conversations/" +
-                                                                               accountName),
-                                                                     null, null, null, null);
-                                                if (testCursor == null) {
-                                                    Toast.makeText(MainActivity.this,
-                                                                   "Error: account '" + accountName +
-                                                                     "' not found",
-                                                                   Toast.LENGTH_SHORT).show();
-                                                    return;
-                                                }
+                                Cursor testCursor =
+                                        managedQuery(Uri.parse("content://gmail-ls/conversations/" +
+                                                               accountName),
+                                                     null, null, null, null);
+                                if (testCursor == null) {
+                                    Toast.makeText(MainActivity.this,
+                                                   getString(R.string.errorMessage,
+                                                             getString(R.string.error_accountNotFound,
+                                                                       accountName)),
+                                                   Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
-                                                ContentValues values = new ContentValues();
-                                                values.put(Accounts.NAME, accountName);
-                                                try {
-                                                    MainActivity.this.getContentResolver()
-                                                                     .insert(Accounts.CONTENT_URI,
-                                                                             values);
-                                                } catch (SQLException e) {
-                                                    Toast.makeText(MainActivity.this,
-                                                                   "Error: failed to add account '" +
-                                                                              accountName + "'",
-                                                                   Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
+                                ContentValues values = new ContentValues();
+                                values.put(Accounts.NAME, accountName);
+                                try {
+                                    MainActivity.this.getContentResolver()
+                                                     .insert(Accounts.CONTENT_URI,
+                                                             values);
+                                } catch (SQLException e) {
+                                    Toast.makeText(MainActivity.this,
+                                                   getString(R.string.errorMessage,
+                                                             getString(R.string.error_addingAccountFailed,
+                                                                       accountName)),
+                                                   Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
 
                 alert.setNegativeButton(android.R.string.cancel,
                                         new DialogInterface.OnClickListener() {
@@ -302,10 +304,10 @@ public class MainActivity extends BaseActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        TextView nameTextView = (TextView) v.findViewById(R.id.account_name);
+        TextView nameTextView = (TextView) v.findViewById(R.id.accountName);
         if (nameTextView != null) {
             menu.setHeaderTitle(nameTextView.getText());
-            menu.add(0, Id.menu.delete, 0, "Delete Account");
+            menu.add(0, Id.menu.delete, 0, R.string.menu_deleteAccount);
         }
     }
 
@@ -348,7 +350,7 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView nameTextView = (TextView) view.findViewById(R.id.account_name);
+            TextView nameTextView = (TextView) view.findViewById(R.id.accountName);
             int nameIndex = cursor.getColumnIndex(Accounts.NAME);
             final String account = cursor.getString(nameIndex);
             nameTextView.setText(account);

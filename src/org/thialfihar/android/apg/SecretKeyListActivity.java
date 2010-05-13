@@ -70,11 +70,11 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.import_keys, 0, "Import Keys")
+        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, Id.menu.option.export_keys, 1, "Export Keys")
+        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
                 .setIcon(android.R.drawable.ic_menu_save);
-        menu.add(1, Id.menu.option.create, 2, "Create Key")
+        menu.add(1, Id.menu.option.create, 2, R.string.menu_createKey)
                 .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -116,9 +116,9 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
             PGPSecretKeyRing keyRing = Apg.getSecretKeyRings().get(groupPosition);
             String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
             menu.setHeaderTitle(userId);
-            menu.add(0, Id.menu.edit, 0, "Edit Key");
-            menu.add(0, Id.menu.export, 1, "Export Key");
-            menu.add(0, Id.menu.delete, 2, "Delete Key");
+            menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
+            menu.add(0, Id.menu.export, 1, R.string.menu_exportKey);
+            menu.add(0, Id.menu.delete, 2, R.string.menu_deleteKey);
         }
     }
 
@@ -176,11 +176,11 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Warning  ");
-                builder.setMessage("Do you really want to delete the key '" + userId + "'?\n" +
-                                   "You can't undo this!");
+                builder.setTitle(R.string.warning);
+                builder.setMessage(getString(R.string.secretKeyDeletionConfirmation, userId));
                 builder.setIcon(android.R.drawable.ic_dialog_alert);
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.btn_delete,
+                                          new DialogInterface.OnClickListener() {
                                               public void onClick(DialogInterface dialog, int id) {
                                                   deleteKey(mSelectedItem);
                                                   mSelectedItem = -1;
@@ -198,8 +198,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
             }
 
             case Id.dialog.import_keys: {
-                return FileDialog.build(this, "Import Keys",
-                                        "Please specify which file to import from.",
+                return FileDialog.build(this, getString(R.string.title_importKeys),
+                                        getString(R.string.specifyFileToImportFrom),
                                         mImportFilename,
                                         new FileDialog.OnClickListener() {
 
@@ -215,8 +215,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                                                 removeDialog(Id.dialog.import_keys);
                                             }
                                         },
-                                        getString(R.string.filemanager_title_open),
-                                        getString(R.string.filemanager_btn_open),
+                                        getString(R.string.filemanager_titleOpen),
+                                        getString(R.string.filemanager_btnOpen),
                                         Id.request.filename);
             }
 
@@ -226,18 +226,14 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
             }
 
             case Id.dialog.export_keys: {
-                String title = "Export Key";
+                String title = (singleKeyExport ?
+                                     getString(R.string.title_exportKey) :
+                                     getString(R.string.title_exportKeys));
 
-                if (!singleKeyExport) {
-                    // plural "Keys"
-                    title += "s";
-                }
-                final int thisDialogId = (singleKeyExport ? Id.dialog.delete_key : Id.dialog.export_keys);
+                final int thisDialogId = (singleKeyExport ? Id.dialog.export_key : Id.dialog.export_keys);
 
                 return FileDialog.build(this, title,
-                                        "Please specify which file to export to.\n" +
-                                        "WARNING! You are about to export SECRET keys.\n" +
-                                        "WARNING! File will be overwritten if it exists.",
+                                        getString(R.string.specifyFileToExportSecretKeysTo),
                                         mExportFilename,
                                         new FileDialog.OnClickListener() {
 
@@ -253,8 +249,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                                                 removeDialog(thisDialogId);
                                             }
                                         },
-                                        getString(R.string.filemanager_title_save),
-                                        getString(R.string.filemanager_btn_save),
+                                        getString(R.string.filemanager_titleSave),
+                                        getString(R.string.filemanager_btnSave),
                                         Id.request.filename);
             }
 
@@ -363,7 +359,7 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 data = Apg.exportKeyRings(this, keys, filename, this);
             }
         } catch (FileNotFoundException e) {
-            error = "file '" + filename + "' not found";
+            error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
             error = e.getMessage();
         } catch (PGPException e) {
@@ -410,21 +406,20 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                     String error = data.getString("error");
                     if (error != null) {
                         Toast.makeText(SecretKeyListActivity.this,
-                                       "Error: " + data.getString("error"),
+                                       getString(R.string.errorMessage, data.getString("error")),
                                        Toast.LENGTH_SHORT).show();
                     } else {
                         int added = data.getInt("added");
                         int updated = data.getInt("updated");
                         String message;
                         if (added > 0 && updated > 0) {
-                            message = "Succssfully added " + added + " keys and updated " +
-                                      updated + " keys.";
+                            message = getString(R.string.keysAddedAndUpdated, added, updated);
                         } else if (added > 0) {
-                            message = "Succssfully added " + added + " keys.";
+                            message = getString(R.string.keysAdded, added);
                         } else if (updated > 0) {
-                            message = "Succssfully updated " + updated + " keys.";
+                            message = getString(R.string.keysUpdated, updated);
                         } else {
-                            message = "No keys added or updated.";
+                            message = getString(R.string.noKeysAddedOrUpdated);
                         }
                         Toast.makeText(SecretKeyListActivity.this, message,
                                        Toast.LENGTH_SHORT).show();
@@ -439,17 +434,17 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                     String error = data.getString("error");
                     if (error != null) {
                         Toast.makeText(SecretKeyListActivity.this,
-                                       "Error: " + data.getString("error"),
+                                       getString(R.string.errorMessage, data.getString("error")),
                                        Toast.LENGTH_SHORT).show();
                     } else {
                         int exported = data.getInt("exported");
                         String message;
                         if (exported == 1) {
-                            message = "Succssfully exported 1 key.";
+                            message = getString(R.string.keyExported);
                         } else if (exported > 0) {
-                            message = "Succssfully exported " + exported + " keys.";
+                            message = getString(R.string.keysExported);
                         } else{
-                            message = "No keys exported.";
+                            message = getString(R.string.noKeysExported);
                         }
                         Toast.makeText(SecretKeyListActivity.this, message,
                                        Toast.LENGTH_SHORT).show();
@@ -563,9 +558,9 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 view = mInflater.inflate(R.layout.key_list_group_item, null);
                 view.setBackgroundResource(android.R.drawable.list_selector_background);
 
-                TextView mainUserId = (TextView) view.findViewById(R.id.main_user_id);
+                TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
                 mainUserId.setText("");
-                TextView mainUserIdRest = (TextView) view.findViewById(R.id.main_user_id_rest);
+                TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
                 mainUserIdRest.setText("");
 
                 String userId = Apg.getMainUserId(key);
@@ -579,7 +574,7 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 }
 
                 if (mainUserId.getText().length() == 0) {
-                    mainUserId.setText(R.string.unknown_user_id);
+                    mainUserId.setText(R.string.unknownUserId);
                 }
 
                 if (mainUserIdRest.getText().length() == 0) {
@@ -607,22 +602,22 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                         view = mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
                     }
 
-                    TextView keyId = (TextView) view.findViewById(R.id.key_id);
+                    TextView keyId = (TextView) view.findViewById(R.id.keyId);
                     String keyIdStr = Long.toHexString(key.getKeyID() & 0xffffffffL);
                     while (keyIdStr.length() < 8) {
                         keyIdStr = "0" + keyIdStr;
                     }
                     keyId.setText(keyIdStr);
-                    TextView keyDetails = (TextView) view.findViewById(R.id.key_details);
+                    TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
                     String algorithmStr = Apg.getAlgorithmInfo(key);
                     keyDetails.setText("(" + algorithmStr + ")");
 
-                    ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encrypt_key);
+                    ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
                     if (!Apg.isEncryptionKey(key)) {
                         encryptIcon.setVisibility(View.GONE);
                     }
 
-                    ImageView signIcon = (ImageView) view.findViewById(R.id.ic_sign_key);
+                    ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
                     if (!Apg.isSigningKey(key)) {
                         signIcon.setVisibility(View.GONE);
                     }
@@ -631,7 +626,7 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
 
                 case KeyChild.USER_ID: {
                     view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-                    TextView userId = (TextView) view.findViewById(R.id.user_id);
+                    TextView userId = (TextView) view.findViewById(R.id.userId);
                     userId.setText(child.userId);
                     break;
                 }

@@ -39,13 +39,13 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/source_previous"
+                    android:id="@+id/sourcePrevious"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_previous"/>
 
                 <TextView
-                    android:id="@+id/source_label"
+                    android:id="@+id/sourceLabel"
                     android:layout_width="0dip"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
@@ -55,7 +55,7 @@
                     android:textColor="#ffffffff"/>
 
                 <ImageView
-                    android:id="@+id/source_next"
+                    android:id="@+id/sourceNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_next"/>
@@ -69,7 +69,7 @@
                 android:layout_weight="1">
 
                 <LinearLayout
-                    android:id="@+id/source_message"
+                    android:id="@+id/sourceMessage"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical">
@@ -84,7 +84,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/source_file"
+                    android:id="@+id/sourceFile"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical">
@@ -114,8 +114,8 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/label_delete_after_encryption"
-                            android:text="@string/label_delete_after_encryption"
+                            android:id="@+id/label_deleteAfterEncryption"
+                            android:text="@string/label_deleteAfterEncryption"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_gravity="center_vertical"
                             android:paddingRight="10dip"
@@ -124,7 +124,7 @@
                             android:layout_weight="1"/>
 
                         <CheckBox
-                            android:id="@+id/delete_after_encryption"
+                            android:id="@+id/deleteAfterEncryption"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_gravity="center_vertical"/>
@@ -137,8 +137,8 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/label_ascii_armour"
-                            android:text="@string/label_ascii_armour"
+                            android:id="@+id/label_asciiArmour"
+                            android:text="@string/label_asciiArmour"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_gravity="center_vertical"
                             android:paddingRight="10dip"
@@ -147,7 +147,7 @@
                             android:layout_weight="1"/>
 
                         <CheckBox
-                            android:id="@+id/ascii_armour"
+                            android:id="@+id/asciiArmour"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:layout_gravity="center_vertical"/>
@@ -170,13 +170,13 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/mode_previous"
+                    android:id="@+id/modePrevious"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_previous"/>
 
                 <TextView
-                    android:id="@+id/mode_label"
+                    android:id="@+id/modeLabel"
                     android:layout_width="0dip"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
@@ -186,7 +186,7 @@
                     android:textColor="#ffffffff"/>
 
                 <ImageView
-                    android:id="@+id/mode_next"
+                    android:id="@+id/modeNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_next"/>
@@ -199,7 +199,7 @@
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/mode_asymmetric"
+                    android:id="@+id/modeAsymmetric"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -226,7 +226,7 @@
                             android:paddingRight="5dip">
 
                             <TextView
-                                android:id="@+id/main_user_id"
+                                android:id="@+id/mainUserId"
                                 android:text="Main User Id"
                                 android:textAppearance="?android:attr/textAppearanceMedium"
                                 android:layout_width="wrap_content"
@@ -234,7 +234,7 @@
                                 android:layout_gravity="right"/>
 
                             <TextView
-                                android:id="@+id/main_user_id_rest"
+                                android:id="@+id/mainUserIdRest"
                                 android:text="Main User Id Rest"
                                 android:textAppearance="?android:attr/textAppearanceSmall"
                                 android:layout_width="wrap_content"
@@ -258,8 +258,8 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:id="@+id/label_select_public_keys"
-                            android:text="@string/label_select_public_keys"
+                            android:id="@+id/label_selectPublicKeys"
+                            android:text="@string/label_selectPublicKeys"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_height="wrap_content"
                             android:layout_width="0dip"
@@ -277,7 +277,7 @@
                 </LinearLayout>
 
                 <TableLayout
-                    android:id="@+id/mode_symmetric"
+                    android:id="@+id/modeSymmetric"
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
                     android:stretchColumns="1">
@@ -285,8 +285,8 @@
                     <TableRow>
 
                         <TextView
-                            android:id="@+id/label_pass_phrase"
-                            android:text="@string/label_pass_phrase"
+                            android:id="@+id/label_passPhrase"
+                            android:text="@string/label_passPhrase"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
@@ -294,7 +294,7 @@
                             android:paddingRight="10dip"/>
 
                         <EditText
-                            android:id="@+id/pass_phrase"
+                            android:id="@+id/passPhrase"
                             android:layout_height="wrap_content"
                             android:layout_width="fill_parent"
                             android:inputType="textPassword"/>
@@ -304,8 +304,8 @@
                     <TableRow>
 
                         <TextView
-                            android:id="@+id/label_pass_phrase_again"
-                            android:text="@string/label_pass_phrase_again"
+                            android:id="@+id/label_passPhraseAgain"
+                            android:text="@string/label_passPhraseAgain"
                             android:textAppearance="?android:attr/textAppearanceMedium"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
@@ -313,7 +313,7 @@
                             android:paddingRight="10dip"/>
 
                         <EditText
-                            android:id="@+id/pass_phrase_again"
+                            android:id="@+id/passPhraseAgain"
                             android:layout_height="wrap_content"
                             android:layout_width="fill_parent"
                             android:inputType="textPassword"/>
@@ -341,8 +341,8 @@
         style="@android:style/ButtonBar">
 
         <Button
-            android:id="@+id/btn_encrypt_to_clipboard"
-            android:text="@string/btn_encrypt_to_clipboard"
+            android:id="@+id/btn_encryptToClipboard"
+            android:text="@string/btn_encryptToClipboard"
             android:layout_weight="1"
             android:layout_width="0dip"
             android:layout_height="wrap_content"/>

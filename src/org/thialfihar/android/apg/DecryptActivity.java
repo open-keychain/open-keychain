@@ -91,9 +91,9 @@ public class DecryptActivity extends BaseActivity {
         setContentView(R.layout.decrypt);
 
         mSource = (ViewFlipper) findViewById(R.id.source);
-        mSourceLabel = (TextView) findViewById(R.id.source_label);
-        mSourcePrevious = (ImageView) findViewById(R.id.source_previous);
-        mSourceNext = (ImageView) findViewById(R.id.source_next);
+        mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
+        mSourcePrevious = (ImageView) findViewById(R.id.sourcePrevious);
+        mSourceNext = (ImageView) findViewById(R.id.sourceNext);
 
         mSourcePrevious.setClickable(true);
         mSourcePrevious.setOnClickListener(new OnClickListener() {
@@ -128,14 +128,14 @@ public class DecryptActivity extends BaseActivity {
         mMessage = (EditText) findViewById(R.id.message);
         mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
         mReplyButton = (Button) findViewById(R.id.btn_reply);
-        mSignatureLayout = (LinearLayout) findViewById(R.id.layout_signature);
+        mSignatureLayout = (LinearLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
-        mUserId = (TextView) findViewById(R.id.main_user_id);
-        mUserIdRest = (TextView) findViewById(R.id.main_user_id_rest);
+        mUserId = (TextView) findViewById(R.id.mainUserId);
+        mUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
 
         // measure the height of the source_file view and set the message view's min height to that,
         // so it fills mSource fully... bit of a hack.
-        View tmp = findViewById(R.id.source_file);
+        View tmp = findViewById(R.id.sourceFile);
         tmp.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int height = tmp.getMeasuredHeight();
         mMessage.setMinimumHeight(height);
@@ -149,12 +149,12 @@ public class DecryptActivity extends BaseActivity {
             }
         });
 
-        mDeleteAfter = (CheckBox) findViewById(R.id.delete_after_decryption);
+        mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
 
         // default: message source
         mSource.setInAnimation(null);
         mSource.setOutAnimation(null);
-        while (mSource.getCurrentView().getId() != R.id.source_message) {
+        while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
             mSource.showNext();
         }
 
@@ -206,12 +206,12 @@ public class DecryptActivity extends BaseActivity {
         } else if (intent.getAction() != null && intent.getAction().equals(Apg.Intent.DECRYPT_FILE)) {
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
-            while (mSource.getCurrentView().getId() != R.id.source_file) {
+            while (mSource.getCurrentView().getId() != R.id.sourceFile) {
                 mSource.showNext();
             }
         }
 
-        if (mSource.getCurrentView().getId() == R.id.source_message &&
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
             mMessage.getText().length() == 0) {
             ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             String data = "";
@@ -222,7 +222,7 @@ public class DecryptActivity extends BaseActivity {
             if (matcher.matches()) {
                 data = matcher.group(1);
                 mMessage.setText(data);
-                Toast.makeText(this, R.string.using_clipboard_content, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.usingClipboardContent, Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -243,7 +243,7 @@ public class DecryptActivity extends BaseActivity {
         });
         mReplyButton.setVisibility(View.INVISIBLE);
 
-        if (mSource.getCurrentView().getId() == R.id.source_message &&
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
             mMessage.getText().length() > 0) {
             mDecryptButton.performClick();
         }
@@ -258,14 +258,14 @@ public class DecryptActivity extends BaseActivity {
 
         intent.setData(Uri.parse("file://" + filename));
 
-        intent.putExtra(FileManager.EXTRA_TITLE, "Select file to decrypt...");
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, "Open");
+        intent.putExtra(FileManager.EXTRA_TITLE, getString(R.string.filemanager_titleDecrypt));
+        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -281,13 +281,13 @@ public class DecryptActivity extends BaseActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-            case R.id.source_file: {
+            case R.id.sourceFile: {
                 mSourceLabel.setText(R.string.label_file);
                 mDecryptButton.setText(R.string.btn_decrypt);
                 break;
             }
 
-            case R.id.source_message: {
+            case R.id.sourceMessage: {
                 mSourceLabel.setText(R.string.label_message);
                 mDecryptButton.setText(R.string.btn_decrypt);
                 break;
@@ -300,7 +300,7 @@ public class DecryptActivity extends BaseActivity {
     }
 
     private void decryptClicked() {
-        if (mSource.getCurrentView().getId() == R.id.source_file) {
+        if (mSource.getCurrentView().getId() == R.id.sourceFile) {
             mDecryptTarget = Id.target.file;
         } else {
             mDecryptTarget = Id.target.message;
@@ -316,13 +316,15 @@ public class DecryptActivity extends BaseActivity {
             }
 
             if (mInputFilename.equals("")) {
-                Toast.makeText(this, "Select a file first.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.noFileSelected, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             File file = new File(mInputFilename);
             if (!file.exists() || !file.isFile()) {
-                Toast.makeText(this, "Error: file not found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.errorMessage,
+                                               getString(R.string.error_fileNotFound)),
+                               Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -350,7 +352,7 @@ public class DecryptActivity extends BaseActivity {
             try {
                 setSecretKeyId(Apg.getDecryptionKeyId(in));
                 if (getSecretKeyId() == 0) {
-                    throw new Apg.GeneralException("no suitable secret key found");
+                    throw new Apg.GeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (Apg.NoAsymmetricEncryptionException e) {
@@ -363,21 +365,22 @@ public class DecryptActivity extends BaseActivity {
                     in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
                 }
                 if (!Apg.hasSymmetricEncryption(in)) {
-                    throw new Apg.GeneralException("no known kind of encryption found");
+                    throw new Apg.GeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;
            }
 
            showDialog(Id.dialog.pass_phrase);
         } catch (FileNotFoundException e) {
-            error = "file not found: " + e.getLocalizedMessage();
+            error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
             error = e.getLocalizedMessage();
         } catch (Apg.GeneralException e) {
             error = e.getLocalizedMessage();
         }
         if (error != null) {
-            Toast.makeText(this, "Error: " + error, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error),
+                           Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -481,12 +484,13 @@ public class DecryptActivity extends BaseActivity {
         String error = data.getString("error");
         if (error != null) {
             Toast.makeText(DecryptActivity.this,
-                           "Error: " + data.getString("error"),
+                           getString(R.string.errorMessage,
+                                     data.getString("error")),
                            Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Toast.makeText(this, "Successfully decrypted.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
         switch (mDecryptTarget) {
             case Id.target.message: {
                 String decryptedMessage = data.getString("decryptedMessage");
@@ -514,7 +518,7 @@ public class DecryptActivity extends BaseActivity {
             mSignatureKeyId = data.getLong("signatureKeyId");
             mUserIdRest.setText("id: " + Long.toHexString(mSignatureKeyId & 0xffffffffL));
             if (userId == null) {
-                userId = getResources().getString(R.string.unknown_user_id);
+                userId = getResources().getString(R.string.unknownUserId);
             }
             String chunks[] = userId.split(" <", 2);
             userId = chunks[0];
@@ -583,9 +587,8 @@ public class DecryptActivity extends BaseActivity {
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case Id.dialog.output_filename: {
-                return FileDialog.build(this, "Decrypt to file",
-                                        "Please specify which file to decrypt to.\n" +
-                                        "WARNING! File will be overwritten if it exists.",
+                return FileDialog.build(this, getString(R.string.title_decryptToFile),
+                                        getString(R.string.specifyFileToDecryptTo),
                                         mOutputFilename,
                                         new FileDialog.OnClickListener() {
 
@@ -601,8 +604,8 @@ public class DecryptActivity extends BaseActivity {
                                                 removeDialog(Id.dialog.output_filename);
                                             }
                                         },
-                                        getString(R.string.filemanager_title_save),
-                                        getString(R.string.filemanager_btn_save),
+                                        getString(R.string.filemanager_titleSave),
+                                        getString(R.string.filemanager_btnSave),
                                         Id.request.output_filename);
             }
 

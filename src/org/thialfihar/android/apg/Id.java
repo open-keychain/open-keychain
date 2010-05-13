@@ -81,6 +81,8 @@ public final class Id {
     public static final class type {
         public static final int public_key = 0x21070001;
         public static final int secret_key = 0x21070002;
+        public static final int user_id = 0x21070003;
+        public static final int key = 0x21070004;
     }
 
     public static final class choice {

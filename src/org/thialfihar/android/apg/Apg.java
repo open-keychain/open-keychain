@@ -977,7 +977,7 @@ public class Apg {
     public static String getMainUserIdSafe(Context context, PGPPublicKey key) {
         String userId = getMainUserId(key);
         if (userId == null) {
-            userId = context.getResources().getString(R.string.unknown_user_id);
+            userId = context.getResources().getString(R.string.unknownUserId);
         }
         return userId;
     }
@@ -985,7 +985,7 @@ public class Apg {
     public static String getMainUserIdSafe(Context context, PGPSecretKey key) {
         String userId = getMainUserId(key);
         if (userId == null) {
-            userId = context.getResources().getString(R.string.unknown_user_id);
+            userId = context.getResources().getString(R.string.unknownUserId);
         }
         return userId;
     }

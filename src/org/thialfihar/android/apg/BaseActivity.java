@@ -70,27 +70,27 @@ public class BaseActivity extends Activity
         mProgressDialog.setCancelable(false);
         switch (id) {
             case Id.dialog.encrypting: {
-                mProgressDialog.setMessage("initializing...");
+                mProgressDialog.setMessage(this.getString(R.string.progress_initializing));
                 return mProgressDialog;
             }
 
             case Id.dialog.decrypting: {
-                mProgressDialog.setMessage("initializing...");
+                mProgressDialog.setMessage(this.getString(R.string.progress_initializing));
                 return mProgressDialog;
             }
 
             case Id.dialog.saving: {
-                mProgressDialog.setMessage("saving...");
+                mProgressDialog.setMessage(this.getString(R.string.progress_saving));
                 return mProgressDialog;
             }
 
             case Id.dialog.importing: {
-                mProgressDialog.setMessage("importing...");
+                mProgressDialog.setMessage(this.getString(R.string.progress_importing));
                 return mProgressDialog;
             }
 
             case Id.dialog.exporting: {
-                mProgressDialog.setMessage("exporting...");
+                mProgressDialog.setMessage(this.getString(R.string.progress_exporting));
                 return mProgressDialog;
             }
 
@@ -109,8 +109,8 @@ public class BaseActivity extends Activity
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setIcon(android.R.drawable.ic_dialog_alert);
-                alert.setTitle("Error");
-                alert.setMessage("The pass phrases didn't match.");
+                alert.setTitle(R.string.error);
+                alert.setMessage(R.string.passPhrasesDoNotMatch);
 
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
@@ -127,8 +127,8 @@ public class BaseActivity extends Activity
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setIcon(android.R.drawable.ic_dialog_alert);
-                alert.setTitle("Error");
-                alert.setMessage("Empty pass phrases are not supported.");
+                alert.setTitle(R.string.error);
+                alert.setMessage(R.string.passPhraseMustNotBeEmpty);
 
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
@@ -145,24 +145,28 @@ public class BaseActivity extends Activity
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setIcon(android.R.drawable.ic_dialog_alert);
-                alert.setTitle("Warning");
-                alert.setMessage("Are you sure you want to delete\n" + getDeleteFile() + "?");
+                alert.setTitle(R.string.warning);
+                alert.setMessage(this.getString(R.string.fileDeleteConfirmation, getDeleteFile()));
 
                 alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                removeDialog(Id.dialog.delete_file);
-                                                File file = new File(getDeleteFile());
-                                                String msg = "";
-                                                if (file.delete()) {
-                                                    msg = "Successfully deleted.";
-                                                } else {
-                                                    msg = "Error: deleting '" + file + "' failed";
-                                                }
-                                                Toast.makeText(BaseActivity.this,
-                                                               msg, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                removeDialog(Id.dialog.delete_file);
+                                File file = new File(getDeleteFile());
+                                String msg = "";
+                                if (file.delete()) {
+                                    msg = BaseActivity.this.getString(
+                                            R.string.fileDeleteSuccessful);
+                                } else {
+                                    msg = BaseActivity.this.getString(
+                                            R.string.errorMessage,
+                                            BaseActivity.this.getString(
+                                                    R.string.error_fileDeleteFailed, file));
+                                }
+                                Toast.makeText(BaseActivity.this,
+                                               msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 alert.setNegativeButton(android.R.string.cancel,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
