@@ -301,7 +301,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             if (mEditors.getChildCount() > 0) {
                 masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
             }
-            mNewKey = Apg.createKey(mNewKeyAlgorithmChoice.getId(),
+            mNewKey = Apg.createKey(getContext(),
+                                    mNewKeyAlgorithmChoice.getId(),
                                     mNewKeySize, Apg.getPassPhrase(), masterKey);
         } catch (NoSuchProviderException e) {
             error = e.getMessage();

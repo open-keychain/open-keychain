@@ -350,7 +350,7 @@ public class DecryptActivity extends BaseActivity {
                 in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
             }
             try {
-                setSecretKeyId(Apg.getDecryptionKeyId(in));
+                setSecretKeyId(Apg.getDecryptionKeyId(this, in));
                 if (getSecretKeyId() == 0) {
                     throw new Apg.GeneralException(getString(R.string.error_noSecretKeyFound));
                 }
@@ -364,7 +364,7 @@ public class DecryptActivity extends BaseActivity {
                 } else {
                     in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
                 }
-                if (!Apg.hasSymmetricEncryption(in)) {
+                if (!Apg.hasSymmetricEncryption(this, in)) {
                     throw new Apg.GeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;
@@ -439,9 +439,10 @@ public class DecryptActivity extends BaseActivity {
             }
 
             if (mSignedOnly) {
-                data = Apg.verifyText(in, out, this);
+                data = Apg.verifyText(this, in, out, this);
             } else {
-                data = Apg.decrypt(in, out, Apg.getPassPhrase(), this, mAssumeSymmetricEncryption);
+                data = Apg.decrypt(this, in, out, Apg.getPassPhrase(),
+                                   this, mAssumeSymmetricEncryption);
             }
 
             out.close();

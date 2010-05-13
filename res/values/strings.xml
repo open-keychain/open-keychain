@@ -174,12 +174,57 @@
     <string name="error_accountNotFound">account '%s' not found</string>
     <string name="error_addingAccountFailed">adding account '%s' failed</string>
     <string name="error_invalidEmail">invalid email '%s'</string>
+    <string name="error_keySizeMinimum512bit">key size must be at least 512bit</string>
+    <string name="error_masterKeyMustNotBeElGamal">the master key cannot be an ElGamal key</string>
+    <string name="error_unknownAlgorithmChoice">unknown algorithm choice</string>
+    <string name="error_userIdNeedsAName">you need to specify a name</string>
+    <string name="error_userIdNeedsAnEmailAddress">you need to specify an email address</string>
+    <string name="error_keyNeedsAUserId">need at least one user id</string>
+    <string name="error_mainUserIdMustNotBeEmpty">main user id must not be empty</string>
+    <string name="error_keyNeedsMasterKey">need at least a master key</string>
+    <string name="error_expiryMustComeAfterCreation">expiry date must come after creation date</string>
+    <string name="error_noEncryptionKeysOrPassPhrase">no encryption key(s) or pass phrase given</string>
+    <string name="error_signatureFailed">signature failed</string>
+    <string name="error_noSignaturePassPhrase">no pass phrase given</string>
+    <string name="error_noSignatureKey">no signature key given</string>
+    <string name="error_invalidData">not valid encryption data</string>
+    <string name="error_corruptData">corrupt data</string>
+    <string name="error_noSymmetricEncryptionPacket">couldn't find a packet with symmetric encryption</string>
+    <string name="error_wrongPassPhrase">wrong pass phrase</string>
+    <string name="error_savingKeys">error saving some key(s)</string>
 
     <!-- progress_lowerCase: lowercase, phrases, usually ending in '...' -->
+    <string name="progress_done">done.</string>
     <string name="progress_initializing">initializing...</string>
     <string name="progress_saving">saving...</string>
     <string name="progress_importing">importing...</string>
     <string name="progress_exporting">exporting...</string>
     <string name="progress_generating">generating key, this can take a while...</string>
+    <string name="progress_buildingKey">building key...</string>
+    <string name="progress_preparingMasterKey">preparing master key...</string>
+    <string name="progress_certifyingMasterKey">certifying master key...</string>
+    <string name="progress_buildingMasterKeyRing">building master key ring...</string>
+    <string name="progress_addingSubKeys">adding sub keys...</string>
+    <string name="progress_savingKeyRing">saving key ring...</string>
+    <string name="progress_importingSecretKeys">importing secret keys...</string>
+    <string name="progress_importingPublicKeys">importing public keys...</string>
+    <string name="progress_reloadingKeys">reloading keys...</string>
+    <string name="progress_exportingKey">exporting key...</string>
+    <string name="progress_exportingKeys">exporting keys...</string>
+    <string name="progress_extractingSignatureKey">extracting signature key...</string>
+    <string name="progress_extractingKey">extracting key...</string>
+    <string name="progress_preparingStreams">preparing streams...</string>
+    <string name="progress_encrypting">encrypting data...</string>
+    <string name="progress_decrypting">decrypting data...</string>
+    <string name="progress_preparingSignature">preparing signature...</string>
+    <string name="progress_generatingSignature">generating signature...</string>
+    <string name="progress_processingSignature">processing signature...</string>
+    <string name="progress_verifyingSignature">verifying signature...</string>
+    <string name="progress_signing">signing...</string>
+    <string name="progress_readingData">reading data...</string>
+    <string name="progress_findingKey">finding key...</string>
+    <string name="progress_decompressingData">decompressing data...</string>
+    <string name="progress_verifyingIntegrity">verifying integrity...</string>
+
 </resources>
 

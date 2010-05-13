@@ -212,7 +212,10 @@ public class BaseActivity extends Activity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
+    public void setProgress(int resourceId, int progress, int max) {
+        setProgress(getString(resourceId), progress, max);
+    }
+
     public void setProgress(int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
@@ -223,7 +226,6 @@ public class BaseActivity extends Activity
         mHandler.sendMessage(msg);
     }
 
-    @Override
     public void setProgress(String message, int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();

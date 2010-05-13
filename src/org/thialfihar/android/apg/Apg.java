@@ -279,13 +279,14 @@ public class Apg {
         return mPassPhrase;
     }
 
-    public static PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase,
+    public static PGPSecretKey createKey(Context context,
+                                         int algorithmChoice, int keySize, String passPhrase,
                                          PGPSecretKey masterKey)
                   throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
                   GeneralException, InvalidAlgorithmParameterException {
 
         if (keySize < 512) {
-            throw new GeneralException("key size must be at least 512bit");
+            throw new GeneralException(context.getString(R.string.error_keySizeMinimum512bit));
         }
 
         Security.addProvider(new BouncyCastleProvider());
@@ -307,7 +308,7 @@ public class Apg {
 
             case Id.choice.algorithm.elgamal: {
                 if (masterKey == null) {
-                    throw new GeneralException("The master key cannot be an ElGamal key.");
+                    throw new GeneralException(context.getString(R.string.error_masterKeyMustNotBeElGamal));
                 }
                 keyGen = KeyPairGenerator.getInstance("ELGAMAL", new BouncyCastleProvider());
                 BigInteger p = Primes.getBestPrime(keySize);
@@ -329,7 +330,7 @@ public class Apg {
             }
 
             default: {
-                throw new GeneralException("unknown algorithm choice");
+                throw new GeneralException(context.getString(R.string.error_unknownAlgorithmChoice));
             }
         }
 
@@ -391,7 +392,7 @@ public class Apg {
             throws Apg.GeneralException, NoSuchProviderException, PGPException,
             NoSuchAlgorithmException, SignatureException {
 
-        progress.setProgress("building key...", 0, 100);
+        progress.setProgress(R.string.progress_buildingKey, 0, 100);
 
         Security.addProvider(new BouncyCastleProvider());
 
@@ -416,9 +417,9 @@ public class Apg {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new Apg.GeneralException("you need to specify a name");
+                throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
-                throw new Apg.GeneralException("you need to specify an email");
+                throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAnEmailAddress));
             } catch (UserIdEditor.InvalidEmailException e) {
                 throw new Apg.GeneralException(e.getMessage());
             }
@@ -436,15 +437,15 @@ public class Apg {
         }
 
         if (userIds.size() == 0) {
-            throw new Apg.GeneralException("need at least one user id");
+            throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
         }
 
         if (!gotMainUserId) {
-            throw new Apg.GeneralException("main user id can't be empty");
+            throw new Apg.GeneralException(context.getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         if (keyEditors.getChildCount() == 0) {
-            throw new Apg.GeneralException("need at least a main key");
+            throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -452,7 +453,7 @@ public class Apg {
             keys.add(editor.getValue());
         }
 
-        progress.setProgress("preparing master key...", 10, 100);
+        progress.setProgress(R.string.progress_preparingMasterKey, 10, 100);
         KeyEditor keyEditor = (KeyEditor) keyEditors.getChildAt(0);
         int usageId = keyEditor.getUsage();
         boolean canSign = (usageId == Id.choice.usage.sign_only ||
@@ -472,7 +473,7 @@ public class Apg {
             masterKey.extractPrivateKey(oldPassPhrase.toCharArray(),
                                         new BouncyCastleProvider());
 
-        progress.setProgress("certifying master key...", 20, 100);
+        progress.setProgress(R.string.progress_certifyingMasterKey, 20, 100);
         for (int i = 0; i < userIds.size(); ++i) {
             String userId = userIds.get(i);
 
@@ -510,12 +511,12 @@ public class Apg {
             GregorianCalendar expiryDate = keyEditor.getExpiryDate();
             long numDays = getNumDatesBetween(creationDate, expiryDate);
             if (numDays <= 0) {
-                throw new GeneralException("expiry date must be later than creation date");
+                throw new GeneralException(context.getString(R.string.error_expiryMustComeAfterCreation));
             }
             hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
         }
 
-        progress.setProgress("building master key ring...", 30, 100);
+        progress.setProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
         PGPKeyRingGenerator keyGen =
                 new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
                                         masterKeyPair, mainUserId,
@@ -523,7 +524,7 @@ public class Apg {
                                         hashedPacketsGen.generate(), unhashedPacketsGen.generate(),
                                         new SecureRandom(), new BouncyCastleProvider().getName());
 
-        progress.setProgress("adding sub keys...", 40, 100);
+        progress.setProgress(R.string.progress_addingSubKeys, 40, 100);
         for (int i = 1; i < keys.size(); ++i) {
             progress.setProgress(40 + 50 * (i - 1)/ (keys.size() - 1), 100);
             PGPSecretKey subKey = keys.get(i);
@@ -561,7 +562,7 @@ public class Apg {
                 GregorianCalendar expiryDate = keyEditor.getExpiryDate();
                 long numDays = getNumDatesBetween(creationDate, expiryDate);
                 if (numDays <= 0) {
-                    throw new GeneralException("expiry date must be later than creation date");
+                    throw new GeneralException(context.getString(R.string.error_expiryMustComeAfterCreation));
                 }
                 hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
             }
@@ -573,13 +574,13 @@ public class Apg {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        progress.setProgress("saving key ring...", 90, 100);
+        progress.setProgress(R.string.progress_savingKeyRing, 90, 100);
         saveKeyRing(context, secretKeyRing);
         saveKeyRing(context, publicKeyRing);
 
         loadKeyRings(context, Id.type.public_key);
         loadKeyRings(context, Id.type.secret_key);
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
     }
 
     private static int saveKeyRing(Activity context, PGPPublicKeyRing keyRing) {
@@ -649,13 +650,13 @@ public class Apg {
         PGPObjectFactory objectFactory = null;
 
         if (type == Id.type.secret_key) {
-            progress.setProgress("importing secret keys...", 0, 100);
+            progress.setProgress(R.string.progress_importingSecretKeys, 0, 100);
         } else {
-            progress.setProgress("importing public keys...", 0, 100);
+            progress.setProgress(R.string.progress_importingPublicKeys, 0, 100);
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new GeneralException("external storage not ready");
+            throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
 
         FileInputStream fileIn = new FileInputStream(filename);
@@ -693,7 +694,7 @@ public class Apg {
             }
 
             if (retValue == Id.return_value.error) {
-                throw new GeneralException("error saving some key(s)");
+                throw new GeneralException(context.getString(R.string.error_savingKeys));
             }
 
             if (retValue == Id.return_value.updated) {
@@ -703,13 +704,13 @@ public class Apg {
             }
         }
 
-        progress.setProgress("reloading keys...", 100, 100);
+        progress.setProgress(R.string.progress_reloadingKeys, 100, 100);
         loadKeyRings(context, type);
 
         returnData.putInt("added", newKeys);
         returnData.putInt("updated", oldKeys);
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
 
         return returnData;
     }
@@ -720,13 +721,13 @@ public class Apg {
         Bundle returnData = new Bundle();
 
         if (keys.size() == 1) {
-            progress.setProgress("exporting key...", 0, 100);
+            progress.setProgress(R.string.progress_exportingKey, 0, 100);
         } else {
-            progress.setProgress("exporting keys...", 0, 100);
+            progress.setProgress(R.string.progress_exportingKeys, 0, 100);
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new GeneralException("external storage not ready");
+            throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
         FileOutputStream fileOut = new FileOutputStream(new File(filename), false);
         ArmoredOutputStream out = new ArmoredOutputStream(fileOut);
@@ -753,7 +754,7 @@ public class Apg {
         fileOut.close();
         returnData.putInt("exported", numKeys);
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
 
         return returnData;
     }
@@ -1196,7 +1197,8 @@ public class Apg {
         return null;
     }
 
-    public static void encrypt(InputStream inStream, OutputStream outStream,
+    public static void encrypt(Context context,
+                               InputStream inStream, OutputStream outStream,
                                long dataLength,
                                boolean armored,
                                long encryptionKeyIds[], long signatureKeyId,
@@ -1227,26 +1229,26 @@ public class Apg {
         PGPPrivateKey signaturePrivateKey = null;
 
         if (encryptionKeyIds.length == 0 && passPhrase == null) {
-            throw new GeneralException("no encryption key(s) or pass phrase given");
+            throw new GeneralException(context.getString(R.string.error_noEncryptionKeysOrPassPhrase));
         }
 
         if (signatureKeyId != 0) {
             signingKeyRing = findSecretKeyRing(signatureKeyId);
             signingKey = getSigningKey(signatureKeyId);
             if (signingKey == null) {
-                throw new GeneralException("signature failed");
+                throw new GeneralException(context.getString(R.string.error_signatureFailed));
             }
 
             if (signaturePassPhrase == null) {
-                throw new GeneralException("no pass phrase given");
+                throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
             }
-            progress.setProgress("extracting signature key...", 0, 100);
+            progress.setProgress(R.string.progress_extractingSignatureKey, 0, 100);
             signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                                                new BouncyCastleProvider());
         }
 
         PGPSignatureGenerator signatureGenerator = null;
-        progress.setProgress("preparing streams...", 5, 100);
+        progress.setProgress(R.string.progress_preparingStreams, 5, 100);
         // encryptFile and compress input file content
         PGPEncryptedDataGenerator cPk =
                 new PGPEncryptedDataGenerator(symmetricAlgorithm, true, new SecureRandom(),
@@ -1265,7 +1267,7 @@ public class Apg {
         encryptOut = cPk.open(out, new byte[1 << 16]);
 
         if (signatureKeyId != 0) {
-            progress.setProgress("preparing signature...", 10, 100);
+            progress.setProgress(R.string.progress_preparingSignature, 10, 100);
             signatureGenerator =
                     new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
                                               hashAlgorithm,
@@ -1290,7 +1292,7 @@ public class Apg {
         OutputStream pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "",
                                             new Date(), new byte[1 << 16]);
 
-        progress.setProgress("encrypting...", 20, 100);
+        progress.setProgress(R.string.progress_encrypting, 20, 100);
         long done = 0;
         int n = 0;
         byte[] buffer = new byte[1 << 16];
@@ -1308,7 +1310,7 @@ public class Apg {
         literalGen.close();
 
         if (signatureKeyId != 0) {
-            progress.setProgress("generating signature...", 95, 100);
+            progress.setProgress(R.string.progress_generatingSignature, 95, 100);
             signatureGenerator.generate().encode(pOut);
         }
         compressGen.close();
@@ -1317,10 +1319,11 @@ public class Apg {
             armorOut.close();
         }
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
     }
 
-    public static void signText(InputStream inStream, OutputStream outStream,
+    public static void signText(Context context,
+                                InputStream inStream, OutputStream outStream,
                                 long signatureKeyId, String signaturePassPhrase,
                                 int hashAlgorithm,
                                 ProgressDialogUpdater progress)
@@ -1336,26 +1339,26 @@ public class Apg {
         PGPPrivateKey signaturePrivateKey = null;
 
         if (signatureKeyId == 0) {
-            throw new GeneralException("no signature key given");
+            throw new GeneralException(context.getString(R.string.error_noSignatureKey));
         }
 
         signingKeyRing = findSecretKeyRing(signatureKeyId);
         signingKey = getSigningKey(signatureKeyId);
         if (signingKey == null) {
-            throw new GeneralException("signature failed");
+            throw new GeneralException(context.getString(R.string.error_signatureFailed));
         }
 
         if (signaturePassPhrase == null) {
-            throw new GeneralException("no pass phrase given");
+            throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
         }
         signaturePrivateKey =
                 signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                              new BouncyCastleProvider());
 
         PGPSignatureGenerator signatureGenerator = null;
-        progress.setProgress("preparing data...", 0, 100);
+        progress.setProgress(R.string.progress_preparingStreams, 0, 100);
 
-        progress.setProgress("preparing signature...", 30, 100);
+        progress.setProgress(R.string.progress_preparingSignature, 30, 100);
         signatureGenerator =
                 new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
                                           hashAlgorithm,
@@ -1367,7 +1370,7 @@ public class Apg {
         spGen.setSignerUserID(false, userId);
         signatureGenerator.setHashedSubpackets(spGen.generate());
 
-        progress.setProgress("signing...", 40, 100);
+        progress.setProgress(R.string.progress_signing, 40, 100);
 
         armorOut.beginClearText(hashAlgorithm);
 
@@ -1394,10 +1397,10 @@ public class Apg {
         signatureGenerator.generate().encode(bOut);
         armorOut.close();
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
     }
 
-    public static long getDecryptionKeyId(InputStream inStream)
+    public static long getDecryptionKeyId(Context context, InputStream inStream)
             throws GeneralException, NoAsymmetricEncryptionException, IOException {
         InputStream in = PGPUtil.getDecoderStream(inStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
@@ -1412,7 +1415,7 @@ public class Apg {
         }
 
         if (enc == null) {
-            throw new GeneralException("data not valid encryption data");
+            throw new GeneralException(context.getString(R.string.error_invalidData));
         }
 
         // TODO: currently we always only look at the first known key
@@ -1443,7 +1446,7 @@ public class Apg {
         return secretKey.getKeyID();
     }
 
-    public static boolean hasSymmetricEncryption(InputStream inStream)
+    public static boolean hasSymmetricEncryption(Context context, InputStream inStream)
             throws GeneralException, IOException {
         InputStream in = PGPUtil.getDecoderStream(inStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
@@ -1458,7 +1461,7 @@ public class Apg {
         }
 
         if (enc == null) {
-            throw new GeneralException("data not valid encryption data");
+            throw new GeneralException(context.getString(R.string.error_invalidData));
         }
 
         Iterator it = enc.getEncryptedDataObjects();
@@ -1472,7 +1475,8 @@ public class Apg {
         return false;
     }
 
-    public static Bundle decrypt(InputStream inStream, OutputStream outStream,
+    public static Bundle decrypt(Context context,
+                                 InputStream inStream, OutputStream outStream,
                                  String passPhrase, ProgressDialogUpdater progress,
                                  boolean assumeSymmetric)
             throws IOException, GeneralException, PGPException, SignatureException {
@@ -1484,7 +1488,7 @@ public class Apg {
         long signatureKeyId = 0;
 
         int currentProgress = 0;
-        progress.setProgress("reading data...", currentProgress, 100);
+        progress.setProgress(R.string.progress_readingData, currentProgress, 100);
 
         if (o instanceof PGPEncryptedDataList) {
             enc = (PGPEncryptedDataList) o;
@@ -1493,7 +1497,7 @@ public class Apg {
         }
 
         if (enc == null) {
-            throw new GeneralException("data not valid encryption data");
+            throw new GeneralException(context.getString(R.string.error_invalidData));
         }
 
         InputStream clear = null;
@@ -1516,15 +1520,15 @@ public class Apg {
             }
 
             if (pbe == null) {
-                throw new GeneralException("couldn't find a packet with symmetric encryption");
+                throw new GeneralException(context.getString(R.string.error_noSymmetricEncryptionPacket));
             }
 
-            progress.setProgress("preparing stream...", currentProgress, 100);
+            progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
             clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
         } else {
-            progress.setProgress("finding key...", currentProgress, 100);
+            progress.setProgress(R.string.progress_findingKey, currentProgress, 100);
             PGPPublicKeyEncryptedData pbe = null;
             PGPSecretKey secretKey = null;
             Iterator it = enc.getEncryptedDataObjects();
@@ -1542,20 +1546,20 @@ public class Apg {
             }
 
             if (secretKey == null) {
-                throw new GeneralException("couldn't find a secret key to decrypt");
+                throw new GeneralException(context.getString(R.string.error_noSecretKeyFound));
             }
 
             currentProgress += 5;
-            progress.setProgress("extracting key...", currentProgress, 100);
+            progress.setProgress(R.string.progress_extractingKey, currentProgress, 100);
             PGPPrivateKey privateKey = null;
             try {
                 privateKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
                                                          new BouncyCastleProvider());
             } catch (PGPException e) {
-                throw new PGPException("wrong pass phrase");
+                throw new PGPException(context.getString(R.string.error_wrongPassPhrase));
             }
             currentProgress += 5;
-            progress.setProgress("preparing stream...", currentProgress, 100);
+            progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
             clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
@@ -1568,7 +1572,7 @@ public class Apg {
         int signatureIndex = -1;
 
         if (dataChunk instanceof PGPCompressedData) {
-            progress.setProgress("decompressing data...", currentProgress, 100);
+            progress.setProgress(R.string.progress_decompressingData, currentProgress, 100);
             PGPObjectFactory fact =
                     new PGPObjectFactory(((PGPCompressedData) dataChunk).getDataStream());
             dataChunk = fact.nextObject();
@@ -1577,7 +1581,7 @@ public class Apg {
         }
 
         if (dataChunk instanceof PGPOnePassSignatureList) {
-            progress.setProgress("processing signature...", currentProgress, 100);
+            progress.setProgress(R.string.progress_processingSignature, currentProgress, 100);
             returnData.putBoolean("signature", true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
@@ -1614,7 +1618,7 @@ public class Apg {
         }
 
         if (dataChunk instanceof PGPLiteralData) {
-            progress.setProgress("decrypting data...", currentProgress, 100);
+            progress.setProgress(R.string.progress_decrypting, currentProgress, 100);
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
             OutputStream out = outStream;
 
@@ -1647,7 +1651,7 @@ public class Apg {
             }
 
             if (signature != null) {
-                progress.setProgress("verifying signature...", 90, 100);
+                progress.setProgress(R.string.progress_verifyingSignature, 90, 100);
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = (PGPSignature) signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
@@ -1660,7 +1664,7 @@ public class Apg {
 
         // TODO: add integrity somewhere
         if (encryptedData.isIntegrityProtected()) {
-            progress.setProgress("verifying integrity...", 95, 100);
+            progress.setProgress(R.string.progress_verifyingIntegrity, 95, 100);
             if (encryptedData.verify()) {
                 // passed
             } else {
@@ -1670,11 +1674,12 @@ public class Apg {
             // no integrity check
         }
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
         return returnData;
     }
 
-    public static Bundle verifyText(InputStream inStream, OutputStream outStream,
+    public static Bundle verifyText(Context context,
+                                    InputStream inStream, OutputStream outStream,
                                     ProgressDialogUpdater progress)
             throws IOException, GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
@@ -1682,7 +1687,7 @@ public class Apg {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ArmoredInputStream aIn = new ArmoredInputStream(inStream);
 
-        progress.setProgress("reading data...", 0, 100);
+        progress.setProgress(R.string.progress_done, 0, 100);
 
         // mostly taken from ClearSignedFileProcessor
         ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
@@ -1707,12 +1712,12 @@ public class Apg {
 
         returnData.putBoolean("signature", true);
 
-        progress.setProgress("processing signature...", 60, 100);
+        progress.setProgress(R.string.progress_processingSignature, 60, 100);
         PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            throw new GeneralException("corrupt data");
+            throw new GeneralException(context.getString(R.string.error_corruptData));
         }
         PGPSignature signature = null;
         long signatureKeyId = 0;
@@ -1741,7 +1746,7 @@ public class Apg {
 
         if (signature == null) {
             returnData.putBoolean("signatureUnknown", true);
-            progress.setProgress("done.", 100, 100);
+            progress.setProgress(R.string.progress_done, 100, 100);
             return returnData;
         }
 
@@ -1767,7 +1772,7 @@ public class Apg {
 
         returnData.putBoolean("signatureSuccess", signature.verify());
 
-        progress.setProgress("done.", 100, 100);
+        progress.setProgress(R.string.progress_done, 100, 100);
         return returnData;
     }
 
@@ -1782,18 +1787,15 @@ public class Apg {
 
     // taken from ClearSignedFileProcessor in BC
     private static int readInputLine(ByteArrayOutputStream bOut, InputStream fIn)
-        throws IOException
-    {
+        throws IOException {
         bOut.reset();
 
         int lookAhead = -1;
         int ch;
 
-        while ((ch = fIn.read()) >= 0)
-        {
+        while ((ch = fIn.read()) >= 0) {
             bOut.write(ch);
-            if (ch == '\r' || ch == '\n')
-            {
+            if (ch == '\r' || ch == '\n') {
                 lookAhead = readPassedEOL(bOut, ch, fIn);
                 break;
             }
@@ -1839,8 +1841,7 @@ public class Apg {
     private static void processLine(PGPSignature sig, byte[] line)
         throws SignatureException, IOException {
         int length = getLengthWithoutWhiteSpace(line);
-        if (length > 0)
-        {
+        if (length > 0) {
             sig.update(line, 0, length);
         }
     }
@@ -1848,8 +1849,7 @@ public class Apg {
     private static void processLine(OutputStream aOut, PGPSignatureGenerator sGen, byte[] line)
         throws SignatureException, IOException {
         int length = getLengthWithoutWhiteSpace(line);
-        if (length > 0)
-        {
+        if (length > 0) {
             sGen.update(line, 0, length);
         }
 
@@ -1857,7 +1857,7 @@ public class Apg {
     }
 
     private static int getLengthWithoutSeparator(byte[] line) {
-        int    end = line.length - 1;
+        int end = line.length - 1;
 
         while (end >= 0 && isLineEnding(line[end])) {
             end--;
@@ -1871,7 +1871,7 @@ public class Apg {
     }
 
     private static int getLengthWithoutWhiteSpace(byte[] line) {
-        int    end = line.length - 1;
+        int end = line.length - 1;
 
         while (end >= 0 && isWhiteSpace(line[end])) {
             end--;

@@ -543,10 +543,10 @@ public class EncryptActivity extends BaseActivity {
             }
 
             if (signOnly) {
-                Apg.signText(in, out, getSecretKeyId(),
+                Apg.signText(this, in, out, getSecretKeyId(),
                              Apg.getPassPhrase(), getDefaultHashAlgorithm(), this);
             } else {
-                Apg.encrypt(in, out, size, useAsciiArmour,
+                Apg.encrypt(this, in, out, size, useAsciiArmour,
                             encryptionKeyIds, signatureKeyId,
                             Apg.getPassPhrase(), this,
                             getDefaultEncryptionAlgorithm(), getDefaultHashAlgorithm(),
