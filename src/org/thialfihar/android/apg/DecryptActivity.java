@@ -273,7 +273,7 @@ public class DecryptActivity extends BaseActivity {
         mInputFilename = mFilename.getText().toString();
         File file = new File(mInputFilename);
         String filename = file.getName();
-        if (filename.endsWith(".asc") || filename.endsWith(".gpg")) {
+        if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
             filename = filename.substring(0, filename.length() - 4);
         }
         mOutputFilename = Constants.path.app_dir + "/" + filename;
