@@ -25,12 +25,20 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class BaseActivity extends Activity
@@ -59,6 +67,35 @@ public class BaseActivity extends Activity
             mPreferences = getPreferences(MODE_PRIVATE);
         }
         Apg.initialize(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(0, Id.menu.option.about, 1, R.string.menu_about)
+                .setIcon(android.R.drawable.ic_menu_info_details);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case Id.menu.option.about: {
+                showDialog(Id.dialog.about);
+                return true;
+            }
+
+            case Id.menu.option.preferences: {
+                startActivity(new Intent(this, PreferencesActivity.class));
+                return true;
+            }
+
+            default: {
+                break;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -101,6 +138,34 @@ public class BaseActivity extends Activity
         mProgressDialog = null;
 
         switch (id) {
+            case Id.dialog.about: {
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                alert.setTitle("About " + Apg.FULL_VERSION);
+
+                LayoutInflater inflater =
+                        (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.info, null);
+                TextView message = (TextView) layout.findViewById(R.id.message);
+                message.setText("This is an attempt to bring OpenPGP to Android. " +
+                        "It is far from complete, but more features are planned (see website).\n\n" +
+                        "Feel free to send bug reports, suggestions, feature requests, feedback, " +
+                        "photographs.\n\n" +
+                        "mail: thi@thialfihar.org\n" +
+                        "site: http://apg.thialfihar.org\n\n" +
+                        "This software is provided \"as is\", without warranty of any kind.");
+                alert.setView(layout);
+
+                alert.setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                BaseActivity.this.removeDialog(Id.dialog.about);
+                                            }
+                                        });
+
+                return alert.create();
+            }
+
             case Id.dialog.pass_phrase: {
                 return AskForSecretKeyPassPhrase.createDialog(this, getSecretKeyId(), this);
             }
@@ -289,6 +354,16 @@ public class BaseActivity extends Activity
 
     public long getSecretKeyId() {
         return mSecretKeyId;
+    }
+
+    public int getPassPhraseCache() {
+        return mPreferences.getInt(Constants.pref.pass_phrase_cache_length, 300);
+    }
+
+    public void setPassPhraseCache(int value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.pref.pass_phrase_cache_length, value);
+        editor.commit();
     }
 
     public int getDefaultEncryptionAlgorithm() {

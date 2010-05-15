@@ -128,8 +128,12 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.new_pass_phrase, 0,
-                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setCachedPassPhrase))
+                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setPassPhrase))
                 .setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, Id.menu.option.preferences, 1, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(0, Id.menu.option.about, 2, R.string.menu_about)
+                .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
@@ -142,10 +146,9 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             }
 
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override
@@ -157,7 +160,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 if (havePassPhrase()) {
                     alert.setTitle(R.string.title_changePassPhrase);
                 } else {
-                    alert.setTitle(R.string.title_setCachedPassPhrase);
+                    alert.setTitle(R.string.title_setPassPhrase);
                 }
                 alert.setMessage(R.string.enterPassPhraseTwice);
 
@@ -201,10 +204,9 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             }
 
             default: {
-                break;
+                return super.onCreateDialog(id);
             }
         }
-        return super.onCreateDialog(id);
     }
 
     @Override

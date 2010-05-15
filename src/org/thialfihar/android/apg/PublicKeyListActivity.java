@@ -72,6 +72,10 @@ public class PublicKeyListActivity extends BaseActivity {
                 .setIcon(android.R.drawable.ic_menu_add);
         menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
                 .setIcon(android.R.drawable.ic_menu_save);
+        menu.add(1, Id.menu.option.preferences, 2, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(1, Id.menu.option.about, 3, R.string.menu_about)
+                .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
@@ -89,10 +93,9 @@ public class PublicKeyListActivity extends BaseActivity {
             }
 
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override
@@ -230,11 +233,9 @@ public class PublicKeyListActivity extends BaseActivity {
             }
 
             default: {
-                break;
+                return super.onCreateDialog(id);
             }
         }
-
-        return super.onCreateDialog(id);
     }
 
     public void importKeys() {

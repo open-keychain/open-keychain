@@ -42,6 +42,7 @@
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>
+    <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
@@ -92,6 +93,7 @@
     <string name="label_hashAlgorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
     <string name="label_symmetric">Pass Phrase</string>
+    <string name="label_passPhraseCache">Pass Phrase Cache</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -111,6 +113,12 @@
     <string name="choice_signOnly">Sign only</string>
     <string name="choice_encryptOnly">Encrypt only</string>
     <string name="choice_signAndEncrypt">Sign and Encrypt</string>
+    <string name="choice_15secs">15 secs</string>
+    <string name="choice_1min">1 min</string>
+    <string name="choice_3mins">3 mins</string>
+    <string name="choice_5mins">5 mins</string>
+    <string name="choice_10mins">10 mins</string>
+    <string name="choice_untilQuit">until quit</string>
 
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>

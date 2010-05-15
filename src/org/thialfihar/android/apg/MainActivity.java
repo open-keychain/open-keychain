@@ -177,34 +177,6 @@ public class MainActivity extends BaseActivity {
                 return alert.create();
             }
 
-            case Id.dialog.about: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                alert.setTitle("About " + Apg.FULL_VERSION);
-
-                LayoutInflater inflater =
-                        (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View layout = inflater.inflate(R.layout.info, null);
-                TextView message = (TextView) layout.findViewById(R.id.message);
-                message.setText("This is an attempt to bring OpenPGP to Android. " +
-                        "It is far from complete, but more features are planned (see website).\n\n" +
-                        "Feel free to send bug reports, suggestions, feature requests, feedback, " +
-                        "photographs.\n\n" +
-                        "mail: thi@thialfihar.org\n" +
-                        "site: http://apg.thialfihar.org\n\n" +
-                        "This software is provided \"as is\", without warranty of any kind.");
-                alert.setView(layout);
-
-                alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(Id.dialog.about);
-                                            }
-                                        });
-
-                return alert.create();
-            }
-
             case Id.dialog.change_log: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
@@ -243,11 +215,9 @@ public class MainActivity extends BaseActivity {
             }
 
             default: {
-                break;
+                return super.onCreateDialog(id);
             }
         }
-
-        return super.onCreateDialog(id);
     }
 
     @Override
@@ -273,11 +243,6 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
 
-            case Id.menu.option.about: {
-                showDialog(Id.dialog.about);
-                return true;
-            }
-
             case Id.menu.option.manage_public_keys: {
                 startActivity(new Intent(this, PublicKeyListActivity.class));
                 return true;
@@ -288,16 +253,10 @@ public class MainActivity extends BaseActivity {
                 return true;
             }
 
-            case Id.menu.option.preferences: {
-                startActivity(new Intent(this, PreferencesActivity.class));
-                return true;
-            }
-
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override

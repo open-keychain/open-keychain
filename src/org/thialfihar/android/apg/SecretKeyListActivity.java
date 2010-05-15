@@ -76,6 +76,10 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 .setIcon(android.R.drawable.ic_menu_save);
         menu.add(1, Id.menu.option.create, 2, R.string.menu_createKey)
                 .setIcon(android.R.drawable.ic_menu_add);
+        menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(2, Id.menu.option.about, 4, R.string.menu_about)
+                .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
@@ -98,10 +102,9 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
             }
 
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override
@@ -259,8 +262,11 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
                 long keyId = keyRing.getSecretKey().getKeyID();
                 return AskForSecretKeyPassPhrase.createDialog(this, keyId, this);
             }
+
+            default: {
+                return super.onCreateDialog(id);
+            }
         }
-        return super.onCreateDialog(id);
     }
 
     @Override

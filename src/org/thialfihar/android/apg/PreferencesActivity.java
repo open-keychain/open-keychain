@@ -30,6 +30,7 @@ import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class PreferencesActivity extends BaseActivity {
+    private Spinner mPassPhraseCache = null;
     private Spinner mEncryptionAlgorithm = null;
     private Spinner mHashAlgorithm = null;
     private CheckBox mAsciiArmour = null;
@@ -39,13 +40,48 @@ public class PreferencesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences);
 
+        mPassPhraseCache = (Spinner) findViewById(R.id.passPhraseCache);
+
+        Choice choices[] = {
+                new Choice(15, getString(R.string.choice_15secs)),
+                new Choice(60, getString(R.string.choice_1min)),
+                new Choice(180, getString(R.string.choice_3mins)),
+                new Choice(300, getString(R.string.choice_5mins)),
+                new Choice(600, getString(R.string.choice_10mins)),
+                new Choice(0, getString(R.string.choice_untilQuit)),
+        };
+        ArrayAdapter<Choice> adapter =
+                new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mPassPhraseCache.setAdapter(adapter);
+
+        int passPhraseCache = getPassPhraseCache();
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == passPhraseCache) {
+                mPassPhraseCache.setSelection(i);
+                break;
+            }
+        }
+
+        mPassPhraseCache.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
+                setPassPhraseCache(((Choice) mPassPhraseCache.getSelectedItem()).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+                // nothing to do
+            }
+        });
+
         mEncryptionAlgorithm = (Spinner) findViewById(R.id.encryptionAlgorithm);
         mHashAlgorithm = (Spinner) findViewById(R.id.hashAlgorithm);
         mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
 
         mAsciiArmour.setChecked(getDefaultAsciiArmour());
 
-        Choice choices[] = {
+        choices = new Choice[] {
                 new Choice(PGPEncryptedData.AES_128, "AES 128"),
                 new Choice(PGPEncryptedData.AES_192, "AES 192"),
                 new Choice(PGPEncryptedData.AES_256, "AES 256"),
@@ -56,13 +92,13 @@ public class PreferencesActivity extends BaseActivity {
                 new Choice(PGPEncryptedData.TRIPLE_DES, "Triple DES"),
                 new Choice(PGPEncryptedData.IDEA, "IDEA"),
         };
-        ArrayAdapter<Choice> adapter =
-                new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mEncryptionAlgorithm.setAdapter(adapter);
 
+        int defaultEncryptionAlgorithm = getDefaultEncryptionAlgorithm();
         for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == getDefaultEncryptionAlgorithm()) {
+            if (choices[i].getId() == defaultEncryptionAlgorithm) {
                 mEncryptionAlgorithm.setSelection(i);
                 break;
             }
@@ -80,7 +116,7 @@ public class PreferencesActivity extends BaseActivity {
             }
         });
 
-        Choice choices2[] = {
+        choices = new Choice[] {
                 new Choice(HashAlgorithmTags.MD5, "MD5"),
                 new Choice(HashAlgorithmTags.RIPEMD160, "RIPEMD160"),
                 new Choice(HashAlgorithmTags.SHA1, "SHA1"),
@@ -89,12 +125,13 @@ public class PreferencesActivity extends BaseActivity {
                 new Choice(HashAlgorithmTags.SHA384, "SHA384"),
                 new Choice(HashAlgorithmTags.SHA512, "SHA512"),
         };
-        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices2);
+        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mHashAlgorithm.setAdapter(adapter);
 
-        for (int i = 0; i < choices2.length; ++i) {
-            if (choices2[i].getId() == getDefaultHashAlgorithm()) {
+        int defaultHashAlgorithm = getDefaultHashAlgorithm();
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == defaultHashAlgorithm) {
                 mHashAlgorithm.setSelection(i);
                 break;
             }
