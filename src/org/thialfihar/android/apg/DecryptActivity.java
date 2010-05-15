@@ -351,26 +351,35 @@ public class DecryptActivity extends BaseActivity {
             }
             try {
                 setSecretKeyId(Apg.getDecryptionKeyId(this, in));
-                if (getSecretKeyId() == 0) {
+                if (getSecretKeyId() == Id.key.none) {
                     throw new Apg.GeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (Apg.NoAsymmetricEncryptionException e) {
-                setSecretKeyId(0);
-                // reopen the file/message to check whether there's
+                setSecretKeyId(Id.key.symmetric);
+                // look at the file/message again to check whether there's
                 // symmetric encryption data in there
                 if (mDecryptTarget == Id.target.file) {
-                    in = new FileInputStream(mInputFilename);
+                    ((FileInputStream) in).reset();
                 } else {
-                    in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+                    ((ByteArrayInputStream) in).reset();
                 }
                 if (!Apg.hasSymmetricEncryption(this, in)) {
                     throw new Apg.GeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;
-           }
+            }
 
-           showDialog(Id.dialog.pass_phrase);
+            if (getSecretKeyId() == Id.key.symmetric ||
+                Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
+                showDialog(Id.dialog.pass_phrase);
+            } else {
+                if (mDecryptTarget == Id.target.file) {
+                    askForOutputFilename();
+                } else {
+                    decryptStart();
+                }
+            }
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
@@ -404,8 +413,8 @@ public class DecryptActivity extends BaseActivity {
     }
 
     @Override
-    public void passPhraseCallback(String passPhrase) {
-        super.passPhraseCallback(passPhrase);
+    public void passPhraseCallback(long keyId, String passPhrase) {
+        super.passPhraseCallback(keyId, passPhrase);
         if (mDecryptTarget == Id.target.file) {
             askForOutputFilename();
         } else {
@@ -441,7 +450,7 @@ public class DecryptActivity extends BaseActivity {
             if (mSignedOnly) {
                 data = Apg.verifyText(this, in, out, this);
             } else {
-                data = Apg.decrypt(this, in, out, Apg.getPassPhrase(),
+                data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()),
                                    this, mAssumeSymmetricEncryption);
             }
 

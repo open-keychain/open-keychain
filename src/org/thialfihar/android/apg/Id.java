@@ -112,4 +112,9 @@ public final class Id {
         public static final int file = 0x21070003;
         public static final int message = 0x21070004;
     }
+
+    public static final class key {
+        public static final int none = 0;
+        public static final int symmetric = -1;
+    }
 }

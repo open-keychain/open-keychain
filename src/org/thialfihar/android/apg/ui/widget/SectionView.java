@@ -298,12 +298,17 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         String error = null;
         try {
             PGPSecretKey masterKey = null;
+            String passPhrase;
             if (mEditors.getChildCount() > 0) {
                 masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
+                passPhrase = Apg.getCachedPassPhrase(masterKey.getKeyID());
+            } else {
+                passPhrase = "";
             }
             mNewKey = Apg.createKey(getContext(),
                                     mNewKeyAlgorithmChoice.getId(),
-                                    mNewKeySize, Apg.getPassPhrase(), masterKey);
+                                    mNewKeySize, passPhrase,
+                                    masterKey);
         } catch (NoSuchProviderException e) {
             error = e.getMessage();
         } catch (NoSuchAlgorithmException e) {

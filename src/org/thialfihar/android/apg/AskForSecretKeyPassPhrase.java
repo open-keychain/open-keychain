@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 public class AskForSecretKeyPassPhrase {
     public static interface PassPhraseCallbackInterface {
-        void passPhraseCallback(String passPhrase);
+        void passPhraseCallback(long keyId, String passPhrase);
     }
 
     public static Dialog createDialog(Activity context, long secretKeyId,
@@ -43,7 +43,7 @@ public class AskForSecretKeyPassPhrase {
 
         final PGPSecretKey secretKey;
 
-        if (secretKeyId == 0) {
+        if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
@@ -71,6 +71,7 @@ public class AskForSecretKeyPassPhrase {
                                     public void onClick(DialogInterface dialog, int id) {
                                         activity.removeDialog(Id.dialog.pass_phrase);
                                         String passPhrase = "" + input.getText();
+                                        long keyId;
                                         if (secretKey != null) {
                                             try {
                                                 secretKey.extractPrivateKey(passPhrase.toCharArray(),
@@ -81,8 +82,11 @@ public class AskForSecretKeyPassPhrase {
                                                                Toast.LENGTH_SHORT).show();
                                                 return;
                                             }
+                                            keyId = secretKey.getKeyID();
+                                        } else {
+                                            keyId = Id.key.symmetric;
                                         }
-                                        cb.passPhraseCallback(passPhrase);
+                                        cb.passPhraseCallback(keyId, passPhrase);
                                     }
                                 });
 

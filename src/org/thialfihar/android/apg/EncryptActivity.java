@@ -235,8 +235,7 @@ public class EncryptActivity extends BaseActivity {
                 if (checkBox.isChecked()) {
                     selectSecretKey();
                 } else {
-                    setSecretKeyId(0);
-                    Apg.setPassPhrase(null);
+                    setSecretKeyId(Id.key.none);
                     updateView();
                 }
             }
@@ -447,7 +446,7 @@ public class EncryptActivity extends BaseActivity {
                 return;
             }
 
-            if (getSecretKeyId() != 0 && Apg.getPassPhrase() == null) {
+            if (getSecretKeyId() != 0 && Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
                 showDialog(Id.dialog.pass_phrase);
                 return;
             }
@@ -465,8 +464,8 @@ public class EncryptActivity extends BaseActivity {
     }
 
     @Override
-    public void passPhraseCallback(String passPhrase) {
-        super.passPhraseCallback(passPhrase);
+    public void passPhraseCallback(long keyId, String passPhrase) {
+        super.passPhraseCallback(keyId, passPhrase);
         if (mEncryptTarget == Id.target.file) {
             askForOutputFilename();
         } else {
@@ -544,11 +543,12 @@ public class EncryptActivity extends BaseActivity {
 
             if (signOnly) {
                 Apg.signText(this, in, out, getSecretKeyId(),
-                             Apg.getPassPhrase(), getDefaultHashAlgorithm(), this);
+                             Apg.getCachedPassPhrase(getSecretKeyId()),
+                             getDefaultHashAlgorithm(), this);
             } else {
                 Apg.encrypt(this, in, out, size, useAsciiArmour,
                             encryptionKeyIds, signatureKeyId,
-                            Apg.getPassPhrase(), this,
+                            Apg.getCachedPassPhrase(signatureKeyId), this,
                             getDefaultEncryptionAlgorithm(), getDefaultHashAlgorithm(),
                             passPhrase);
             }

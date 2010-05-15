@@ -192,14 +192,9 @@ public class BaseActivity extends Activity
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    long newId = bundle.getLong("selectedKeyId");
-                    if (getSecretKeyId() != newId) {
-                        Apg.setPassPhrase(null);
-                    }
-                    setSecretKeyId(newId);
+                    setSecretKeyId(bundle.getLong("selectedKeyId"));
                 } else {
-                    setSecretKeyId(0);
-                    Apg.setPassPhrase(null);
+                    setSecretKeyId(Id.key.none);
                 }
                 break;
             }
@@ -271,8 +266,8 @@ public class BaseActivity extends Activity
 
     }
 
-    public void passPhraseCallback(String passPhrase) {
-        Apg.setPassPhrase(passPhrase);
+    public void passPhraseCallback(long keyId, String passPhrase) {
+        Apg.setCachedPassPhrase(keyId, passPhrase);
     }
 
     public void sendMessage(Message msg) {

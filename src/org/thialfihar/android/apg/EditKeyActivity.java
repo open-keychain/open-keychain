@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.utils.IterableIterator;
 
@@ -70,9 +71,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             keyId = intent.getExtras().getLong("keyId");
         }
 
-        if (keyId == 0) {
-            Apg.setPassPhrase(null);
-        } else {
+        if (keyId != 0) {
             PGPSecretKey masterKey = null;
             mKeyRing = Apg.getSecretKeyRing(keyId);
             if (mKeyRing != null) {
@@ -86,10 +85,6 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                     userIds.add(userId);
                 }
             }
-        }
-
-        if (Apg.getPassPhrase() == null) {
-            Apg.setPassPhrase("");
         }
 
         mSaveButton = (Button) findViewById(R.id.btn_save);
@@ -114,15 +109,26 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
     }
 
+    public long getMasterKeyId() {
+        if (mKeys.getEditors().getChildCount() == 0) {
+            return 0;
+        }
+        return ((KeyEditor) mKeys.getEditors().getChildAt(0)).getValue().getKeyID();
+    }
+
     public boolean havePassPhrase() {
-        return (Apg.getPassPhrase() != null && !Apg.getPassPhrase().equals("")) ||
+        long keyId = getMasterKeyId();
+        if (keyId == 0) {
+            return false;
+        }
+        return (Apg.getCachedPassPhrase(keyId) != null && !Apg.getCachedPassPhrase(keyId).equals("")) ||
                (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.new_pass_phrase, 0,
-                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setPassPhrase))
+                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setCachedPassPhrase))
                 .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
@@ -151,7 +157,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 if (havePassPhrase()) {
                     alert.setTitle(R.string.title_changePassPhrase);
                 } else {
-                    alert.setTitle(R.string.title_setPassPhrase);
+                    alert.setTitle(R.string.title_setCachedPassPhrase);
                 }
                 alert.setMessage(R.string.enterPassPhraseTwice);
 
@@ -227,7 +233,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Message msg = new Message();
 
         try {
-            String oldPassPhrase = Apg.getPassPhrase();
+            String oldPassPhrase = Apg.getCachedPassPhrase(getMasterKeyId());
             String newPassPhrase = mNewPassPhrase;
             if (newPassPhrase == null) {
                 newPassPhrase = oldPassPhrase;

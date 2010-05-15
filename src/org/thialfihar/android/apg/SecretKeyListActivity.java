@@ -264,8 +264,8 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
     }
 
     @Override
-    public void passPhraseCallback(String passPhrase) {
-        super.passPhraseCallback(passPhrase);
+    public void passPhraseCallback(long keyId, String passPhrase) {
+        super.passPhraseCallback(keyId, passPhrase);
         editKey();
     }
 

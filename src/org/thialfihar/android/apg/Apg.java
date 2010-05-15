@@ -155,7 +155,8 @@ public class Apg {
                     PublicKeys.KEY_DATA,
                     PublicKeys.WHO_ID, };
 
-    private static String mPassPhrase = null;
+    private static HashMap<Long, CachedPassPhrase> mPassPhraseCache =
+            new HashMap<Long, CachedPassPhrase>();
 
     public static class GeneralException extends Exception {
         static final long serialVersionUID = 0xf812773342L;
@@ -271,12 +272,28 @@ public class Apg {
         }
     }
 
-    public static void setPassPhrase(String passPhrase) {
-        mPassPhrase = passPhrase;
+    public static void setCachedPassPhrase(long keyId, String passPhrase) {
+        mPassPhraseCache.put(keyId, new CachedPassPhrase(new Date().getTime(), passPhrase));
     }
 
-    public static String getPassPhrase() {
-        return mPassPhrase;
+    public static String getCachedPassPhrase(long keyId) {
+        long realId = keyId;
+        if (realId != Id.key.symmetric) {
+            PGPSecretKeyRing keyRing = findSecretKeyRing(keyId);
+            if (keyRing == null) {
+                return null;
+            }
+            PGPSecretKey masterKey = getMasterKey(keyRing);
+            if (masterKey == null) {
+                return null;
+            }
+            realId = masterKey.getKeyID();
+        }
+        CachedPassPhrase cpp = mPassPhraseCache.get(realId);
+        if (cpp == null) {
+            return null;
+        }
+        return cpp.passPhrase;
     }
 
     public static PGPSecretKey createKey(Context context,
@@ -1440,7 +1457,7 @@ public class Apg {
         }
 
         if (secretKey == null) {
-            return 0;
+            return Id.key.none;
         }
 
         return secretKey.getKeyID();
