@@ -37,6 +37,7 @@ import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.bouncycastle2.util.Strings;
 import org.openintents.intents.FileManager;
 import org.thialfihar.android.apg.Apg.GeneralException;
+import org.thialfihar.android.apg.utils.Choice;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -49,11 +50,13 @@ import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -87,6 +90,7 @@ public class EncryptActivity extends BaseActivity {
     private EditText mPassPhrase = null;
     private EditText mPassPhraseAgain = null;
     private CheckBox mAsciiArmour = null;
+    private Spinner mFileCompression = null;
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
@@ -195,6 +199,26 @@ public class EncryptActivity extends BaseActivity {
                 openFile();
             }
         });
+
+        mFileCompression = (Spinner) findViewById(R.id.fileCompression);
+        Choice[] choices = new Choice[] {
+                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
+                new Choice(Id.choice.compression.zip, "ZIP"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2"),
+                new Choice(Id.choice.compression.zlib, "ZLIB"),
+        };
+        ArrayAdapter<Choice> adapter =
+                new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mFileCompression.setAdapter(adapter);
+
+        int defaultFileCompression = getDefaultFileCompression();
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == defaultFileCompression) {
+                mFileCompression.setSelection(i);
+                break;
+            }
+        }
 
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
 
@@ -492,6 +516,7 @@ public class EncryptActivity extends BaseActivity {
             long encryptionKeyIds[] = null;
             long signatureKeyId = 0;
             boolean signOnly = false;
+            int compressionId = 0;
 
             String passPhrase = null;
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
@@ -519,6 +544,7 @@ public class EncryptActivity extends BaseActivity {
                 File file = new File(mInputFilename);
                 size = file.length();
                 useAsciiArmour = mAsciiArmour.isChecked();
+                compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
             } else {
                 String message = mMessage.getText().toString();
 
@@ -539,6 +565,7 @@ public class EncryptActivity extends BaseActivity {
 
                 size = byteData.length;
                 useAsciiArmour = true;
+                compressionId = getDefaultMessageCompression();
             }
 
             if (signOnly) {
@@ -550,7 +577,7 @@ public class EncryptActivity extends BaseActivity {
                             encryptionKeyIds, signatureKeyId,
                             Apg.getCachedPassPhrase(signatureKeyId), this,
                             getDefaultEncryptionAlgorithm(), getDefaultHashAlgorithm(),
-                            passPhrase);
+                            compressionId, passPhrase);
             }
 
             out.close();

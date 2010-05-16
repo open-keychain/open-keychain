@@ -30,9 +30,11 @@ import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 public class PreferencesActivity extends BaseActivity {
-    private Spinner mPassPhraseCache = null;
+    private Spinner mPassPhraseCacheTtl = null;
     private Spinner mEncryptionAlgorithm = null;
     private Spinner mHashAlgorithm = null;
+    private Spinner mMessageCompression = null;
+    private Spinner mFileCompression = null;
     private CheckBox mAsciiArmour = null;
 
     @Override
@@ -40,7 +42,7 @@ public class PreferencesActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.preferences);
 
-        mPassPhraseCache = (Spinner) findViewById(R.id.passPhraseCache);
+        mPassPhraseCacheTtl = (Spinner) findViewById(R.id.passPhraseCacheTtl);
 
         Choice choices[] = {
                 new Choice(15, getString(R.string.choice_15secs)),
@@ -53,20 +55,20 @@ public class PreferencesActivity extends BaseActivity {
         ArrayAdapter<Choice> adapter =
                 new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mPassPhraseCache.setAdapter(adapter);
+        mPassPhraseCacheTtl.setAdapter(adapter);
 
         int passPhraseCache = getPassPhraseCacheTtl();
         for (int i = 0; i < choices.length; ++i) {
             if (choices[i].getId() == passPhraseCache) {
-                mPassPhraseCache.setSelection(i);
+                mPassPhraseCacheTtl.setSelection(i);
                 break;
             }
         }
 
-        mPassPhraseCache.setOnItemSelectedListener(new OnItemSelectedListener() {
+        mPassPhraseCacheTtl.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setPassPhraseCacheTtl(((Choice) mPassPhraseCache.getSelectedItem()).getId());
+                setPassPhraseCacheTtl(((Choice) mPassPhraseCacheTtl.getSelectedItem()).getId());
             }
 
             @Override
@@ -76,11 +78,6 @@ public class PreferencesActivity extends BaseActivity {
         });
 
         mEncryptionAlgorithm = (Spinner) findViewById(R.id.encryptionAlgorithm);
-        mHashAlgorithm = (Spinner) findViewById(R.id.hashAlgorithm);
-        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
-
-        mAsciiArmour.setChecked(getDefaultAsciiArmour());
-
         choices = new Choice[] {
                 new Choice(PGPEncryptedData.AES_128, "AES 128"),
                 new Choice(PGPEncryptedData.AES_192, "AES 192"),
@@ -116,6 +113,7 @@ public class PreferencesActivity extends BaseActivity {
             }
         });
 
+        mHashAlgorithm = (Spinner) findViewById(R.id.hashAlgorithm);
         choices = new Choice[] {
                 new Choice(HashAlgorithmTags.MD5, "MD5"),
                 new Choice(HashAlgorithmTags.RIPEMD160, "RIPEMD160"),
@@ -149,6 +147,70 @@ public class PreferencesActivity extends BaseActivity {
             }
         });
 
+        mMessageCompression = (Spinner) findViewById(R.id.messageCompression);
+        choices = new Choice[] {
+                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
+                new Choice(Id.choice.compression.zip, "ZIP"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2"),
+                new Choice(Id.choice.compression.zlib, "ZLIB"),
+        };
+        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mMessageCompression.setAdapter(adapter);
+
+        int defaultMessageCompression = getDefaultMessageCompression();
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == defaultMessageCompression) {
+                mMessageCompression.setSelection(i);
+                break;
+            }
+        }
+
+        mMessageCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
+                setDefaultMessageCompression(((Choice) mMessageCompression.getSelectedItem()).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+                // nothing to do
+            }
+        });
+
+        mFileCompression = (Spinner) findViewById(R.id.fileCompression);
+        choices = new Choice[] {
+                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
+                new Choice(Id.choice.compression.zip, "ZIP"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2"),
+                new Choice(Id.choice.compression.zlib, "ZLIB"),
+        };
+        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mFileCompression.setAdapter(adapter);
+
+        int defaultFileCompression = getDefaultFileCompression();
+        for (int i = 0; i < choices.length; ++i) {
+            if (choices[i].getId() == defaultFileCompression) {
+                mFileCompression.setSelection(i);
+                break;
+            }
+        }
+
+        mFileCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
+                setDefaultFileCompression(((Choice) mFileCompression.getSelectedItem()).getId());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapter) {
+                // nothing to do
+            }
+        });
+
+        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
+        mAsciiArmour.setChecked(getDefaultAsciiArmour());
         mAsciiArmour.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

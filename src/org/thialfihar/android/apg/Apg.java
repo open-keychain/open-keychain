@@ -1248,7 +1248,7 @@ public class Apg {
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
                                ProgressDialogUpdater progress,
-                               int symmetricAlgorithm, int hashAlgorithm,
+                               int symmetricAlgorithm, int hashAlgorithm, int compression,
                                String passPhrase)
             throws IOException, GeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
@@ -1324,9 +1324,14 @@ public class Apg {
             signatureGenerator.setHashedSubpackets(spGen.generate());
         }
 
-        PGPCompressedDataGenerator compressGen =
-                new PGPCompressedDataGenerator(PGPCompressedDataGenerator.ZLIB);
-        BCPGOutputStream bcpgOut = new BCPGOutputStream(compressGen.open(encryptOut));
+        PGPCompressedDataGenerator compressGen = null;
+        BCPGOutputStream bcpgOut = null;
+        if (compression == Id.choice.compression.none) {
+            bcpgOut = new BCPGOutputStream(encryptOut);
+        } else {
+            compressGen = new PGPCompressedDataGenerator(CompressionAlgorithmTags.ZLIB);
+            bcpgOut = new BCPGOutputStream(compressGen.open(encryptOut));
+        }
         if (signatureKeyId != 0) {
             signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
         }
@@ -1357,7 +1362,9 @@ public class Apg {
             progress.setProgress(R.string.progress_generatingSignature, 95, 100);
             signatureGenerator.generate().encode(pOut);
         }
-        compressGen.close();
+        if (compressGen != null) {
+            compressGen.close();
+        }
         encryptOut.close();
         if (armored) {
             armorOut.close();

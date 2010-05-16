@@ -46,8 +46,8 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/label_passPhraseCache"
-                android:text="@string/label_passPhraseCache"
+                android:id="@+id/label_passPhraseCacheTtl"
+                android:text="@string/label_passPhraseCacheTtl"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_height="wrap_content"
                 android:layout_width="0dip"
@@ -56,7 +56,7 @@
                 android:paddingRight="10dip"/>
 
             <Spinner
-                android:id="@+id/passPhraseCache"
+                android:id="@+id/passPhraseCacheTtl"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>
@@ -117,6 +117,52 @@
 
             <Spinner
                 android:id="@+id/hashAlgorithm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
+
+       </LinearLayout>
+
+       <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/label_messageCompression"
+                android:text="@string/label_messageCompression"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"/>
+
+            <Spinner
+                android:id="@+id/messageCompression"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
+
+       </LinearLayout>
+
+       <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/label_fileCompression"
+                android:text="@string/label_fileCompression"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_height="wrap_content"
+                android:layout_width="0dip"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"/>
+
+            <Spinner
+                android:id="@+id/fileCompression"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"/>

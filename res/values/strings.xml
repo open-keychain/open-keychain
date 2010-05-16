@@ -93,7 +93,9 @@
     <string name="label_hashAlgorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
     <string name="label_symmetric">Pass Phrase</string>
-    <string name="label_passPhraseCache">Pass Phrase Cache</string>
+    <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
+    <string name="label_messageCompression">Message Compression</string>
+    <string name="label_fileCompression">File Compression</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -110,6 +112,7 @@
     <string name="notValid">not valid</string>
 
     <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
+    <string name="choice_none">None</string>
     <string name="choice_signOnly">Sign only</string>
     <string name="choice_encryptOnly">Encrypt only</string>
     <string name="choice_signAndEncrypt">Sign and Encrypt</string>

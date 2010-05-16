@@ -28,6 +28,8 @@ public final class Constants {
         public static final String default_encryption_algorithm = "defaultEncryptionAlgorithm";
         public static final String default_hash_algorithm = "defaultHashAlgorithm";
         public static final String default_ascii_armour = "defaultAsciiArmour";
+        public static final String default_message_compression = "defaultMessageCompression";
+        public static final String default_file_compression = "defaultFileCompression";
         public static final String pass_phrase_cache_ttl = "passPhraseCacheTtl";
     }
 }

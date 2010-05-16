@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
@@ -411,6 +412,28 @@ public class BaseActivity extends Activity
     public void setDefaultHashAlgorithm(int value) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt(Constants.pref.default_hash_algorithm, value);
+        editor.commit();
+    }
+
+    public int getDefaultMessageCompression() {
+        return mPreferences.getInt(Constants.pref.default_message_compression,
+                                   CompressionAlgorithmTags.ZLIB);
+    }
+
+    public void setDefaultMessageCompression(int value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.pref.default_message_compression, value);
+        editor.commit();
+    }
+
+    public int getDefaultFileCompression() {
+        return mPreferences.getInt(Constants.pref.default_file_compression,
+                                   CompressionAlgorithmTags.ZLIB);
+    }
+
+    public void setDefaultFileCompression(int value) {
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(Constants.pref.default_file_compression, value);
         editor.commit();
     }
 
