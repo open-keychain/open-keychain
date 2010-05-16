@@ -158,6 +158,7 @@ public class Apg {
 
     private static HashMap<Long, CachedPassPhrase> mPassPhraseCache =
             new HashMap<Long, CachedPassPhrase>();
+    private static String mEditPassPhrase = null;
 
     public static class GeneralException extends Exception {
         static final long serialVersionUID = 0xf812773342L;
@@ -271,6 +272,14 @@ public class Apg {
 
             return uid1.compareTo(uid2);
         }
+    }
+
+    public static void setEditPassPhrase(String passPhrase) {
+        mEditPassPhrase = passPhrase;
+    }
+
+    public static String getEditPassPhrase() {
+        return mEditPassPhrase;
     }
 
     public static void setCachedPassPhrase(long keyId, String passPhrase) {

@@ -138,7 +138,7 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
         switch (menuItem.getItemId()) {
             case Id.menu.edit: {
                 mSelectedItem = groupPosition;
-                showDialog(Id.dialog.pass_phrase);
+                checkPassPhraseAndEdit();
                 return true;
             }
 
@@ -164,7 +164,7 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                 int childPosition, long id) {
         mSelectedItem = groupPosition;
-        showDialog(Id.dialog.pass_phrase);
+        checkPassPhraseAndEdit();
         return true;
     }
 
@@ -269,13 +269,27 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
         }
     }
 
+    public void checkPassPhraseAndEdit() {
+        PGPSecretKeyRing keyRing = Apg.getSecretKeyRings().get(mSelectedItem);
+        long keyId = keyRing.getSecretKey().getKeyID();
+        String passPhrase = Apg.getCachedPassPhrase(keyId);
+        if (passPhrase == null) {
+            showDialog(Id.dialog.pass_phrase);
+        } else {
+            Apg.setEditPassPhrase(passPhrase);
+            editKey();
+        }
+    }
+
     @Override
     public void passPhraseCallback(long keyId, String passPhrase) {
         super.passPhraseCallback(keyId, passPhrase);
+        Apg.setEditPassPhrase(passPhrase);
         editKey();
     }
 
     private void createKey() {
+        Apg.setEditPassPhrase("");
         Intent intent = new Intent(this, EditKeyActivity.class);
         startActivityForResult(intent, Id.message.create_key);
     }

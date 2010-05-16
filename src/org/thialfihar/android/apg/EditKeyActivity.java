@@ -55,6 +55,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     private Button mSaveButton;
     private Button mDiscardButton;
 
+    private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
     @Override
@@ -106,6 +107,11 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         mKeys.setKeys(keys);
         container.addView(mKeys);
 
+        mCurrentPassPhrase = Apg.getEditPassPhrase();
+        if (mCurrentPassPhrase == null) {
+            mCurrentPassPhrase = "";
+        }
+
         Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
     }
 
@@ -117,11 +123,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     }
 
     public boolean havePassPhrase() {
-        long keyId = getMasterKeyId();
-        if (keyId == 0) {
-            return false;
-        }
-        return (Apg.getCachedPassPhrase(keyId) != null && !Apg.getCachedPassPhrase(keyId).equals("")) ||
+        return (!mCurrentPassPhrase.equals("")) ||
                (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
     }
 
@@ -235,7 +237,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Message msg = new Message();
 
         try {
-            String oldPassPhrase = Apg.getCachedPassPhrase(getMasterKeyId());
+            String oldPassPhrase = mCurrentPassPhrase;
             String newPassPhrase = mNewPassPhrase;
             if (newPassPhrase == null) {
                 newPassPhrase = oldPassPhrase;
