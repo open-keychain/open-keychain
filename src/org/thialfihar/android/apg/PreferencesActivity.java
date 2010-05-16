@@ -55,7 +55,7 @@ public class PreferencesActivity extends BaseActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mPassPhraseCache.setAdapter(adapter);
 
-        int passPhraseCache = getPassPhraseCache();
+        int passPhraseCache = getPassPhraseCacheTtl();
         for (int i = 0; i < choices.length; ++i) {
             if (choices[i].getId() == passPhraseCache) {
                 mPassPhraseCache.setSelection(i);
@@ -66,7 +66,7 @@ public class PreferencesActivity extends BaseActivity {
         mPassPhraseCache.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setPassPhraseCache(((Choice) mPassPhraseCache.getSelectedItem()).getId());
+                setPassPhraseCacheTtl(((Choice) mPassPhraseCache.getSelectedItem()).getId());
             }
 
             @Override

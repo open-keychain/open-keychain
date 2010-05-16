@@ -17,6 +17,8 @@
 package org.thialfihar.android.apg;
 
 import java.io.File;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
@@ -50,6 +52,8 @@ public class BaseActivity extends Activity
     private String mDeleteFile = null;
     protected static SharedPreferences mPreferences = null;
 
+    private static Timer mCacheTimer = new Timer();
+
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -65,6 +69,29 @@ public class BaseActivity extends Activity
             mPreferences = getPreferences(MODE_PRIVATE);
         }
         Apg.initialize(this);
+        if (mCacheTimer == null) {
+            setPassPhraseCacheTimer();
+        }
+    }
+
+    private void setPassPhraseCacheTimer() {
+        if (mCacheTimer != null) {
+            mCacheTimer.cancel();
+            mCacheTimer = null;
+        }
+        int ttl = getPassPhraseCacheTtl();
+        if (ttl == 0) {
+            // no timer needed
+            return;
+        }
+        // check every ttl/2 seconds, which shouldn't be heavy on the device (even if ttl = 15),
+        // and makes sure the longest a pass phrase survives int the cache is 1.5 * ttl
+        mCacheTimer = new Timer();
+        mCacheTimer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                Apg.cleanUpCache(BaseActivity.this.getPassPhraseCacheTtl());
+            }
+        }, 0, ttl * 1000 / 2);
     }
 
     @Override
@@ -98,7 +125,6 @@ public class BaseActivity extends Activity
 
     @Override
     protected Dialog onCreateDialog(int id) {
-
         // in case it is a progress dialog
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -354,14 +380,16 @@ public class BaseActivity extends Activity
         return mSecretKeyId;
     }
 
-    public int getPassPhraseCache() {
-        return mPreferences.getInt(Constants.pref.pass_phrase_cache_length, 300);
+    public int getPassPhraseCacheTtl() {
+        return mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 300);
     }
 
-    public void setPassPhraseCache(int value) {
+    public void setPassPhraseCacheTtl(int value) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.pass_phrase_cache_length, value);
+        editor.putInt(Constants.pref.pass_phrase_cache_ttl, value);
         editor.commit();
+
+        setPassPhraseCacheTimer();
     }
 
     public int getDefaultEncryptionAlgorithm() {

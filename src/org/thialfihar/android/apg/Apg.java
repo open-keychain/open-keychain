@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -293,7 +294,24 @@ public class Apg {
         if (cpp == null) {
             return null;
         }
+        // set it again to reset the cache life cycle
+        setCachedPassPhrase(realId, cpp.passPhrase);
         return cpp.passPhrase;
+    }
+
+    public static void cleanUpCache(int ttl) {
+        long now = new Date().getTime();
+
+        Vector<Long> oldKeys = new Vector<Long>();
+        for (Map.Entry<Long, CachedPassPhrase> pair : mPassPhraseCache.entrySet()) {
+            if ((now - pair.getValue().timestamp) >= 1000 * ttl) {
+                oldKeys.add(pair.getKey());
+            }
+        }
+
+        for (long keyId : oldKeys) {
+            mPassPhraseCache.remove(keyId);
+        }
     }
 
     public static PGPSecretKey createKey(Context context,
@@ -1266,7 +1284,7 @@ public class Apg {
 
         PGPSignatureGenerator signatureGenerator = null;
         progress.setProgress(R.string.progress_preparingStreams, 5, 100);
-        // encryptFile and compress input file content
+        // encrypt and compress input file content
         PGPEncryptedDataGenerator cPk =
                 new PGPEncryptedDataGenerator(symmetricAlgorithm, true, new SecureRandom(),
                                               new BouncyCastleProvider());
