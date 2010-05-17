@@ -436,21 +436,26 @@ public class DecryptActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            InputStream in = null;
+            PositionAwareInputStream in = null;
             OutputStream out = null;
+            long size = 0;
+
             if (mDecryptTarget == Id.target.message) {
                 String messageData = mMessage.getText().toString();
-                in = new ByteArrayInputStream(messageData.getBytes());
+                in = new PositionAwareInputStream(new ByteArrayInputStream(messageData.getBytes()));
                 out = new ByteArrayOutputStream();
+                size = messageData.getBytes().length;
             } else {
-                in = new FileInputStream(mInputFilename);
+                in = new PositionAwareInputStream(new FileInputStream(mInputFilename));
                 out = new FileOutputStream(mOutputFilename);
+                File file = new File(mInputFilename);
+                size = file.length();
             }
 
             if (mSignedOnly) {
                 data = Apg.verifyText(this, in, out, this);
             } else {
-                data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()),
+                data = Apg.decrypt(this, in, out, size, Apg.getCachedPassPhrase(getSecretKeyId()),
                                    this, mAssumeSymmetricEncryption);
             }
 

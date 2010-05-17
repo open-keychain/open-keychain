@@ -1527,7 +1527,8 @@ public class Apg {
     }
 
     public static Bundle decrypt(Context context,
-                                 InputStream inStream, OutputStream outStream,
+                                 PositionAwareInputStream inStream, OutputStream outStream,
+                                 long dataLength,
                                  String passPhrase, ProgressDialogUpdater progress,
                                  boolean assumeSymmetric)
             throws IOException, GeneralException, PGPException, SignatureException {
@@ -1685,6 +1686,7 @@ public class Apg {
             }
             int n = 0;
             int done = 0;
+            long startPos = inStream.position();
             while ((n = dataIn.read(buffer)) > 0) {
                 out.write(buffer, 0, n);
                 done += n;
@@ -1698,6 +1700,12 @@ public class Apg {
                 }
                 // unknown size, but try to at least have a moving, slowing down progress bar
                 currentProgress = startProgress + (endProgress - startProgress) * done / (done + 100000);
+                if (dataLength - startPos == 0) {
+                    currentProgress = endProgress;
+                } else {
+                    currentProgress = (int)(startProgress + (endProgress - startProgress) *
+                                        (inStream.position() - startPos) / (dataLength - startPos));
+                }
                 progress.setProgress(currentProgress, 100);
             }
 
