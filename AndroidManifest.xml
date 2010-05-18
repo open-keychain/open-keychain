@@ -84,6 +84,12 @@
             </intent-filter>
 
             <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
             </intent-filter>

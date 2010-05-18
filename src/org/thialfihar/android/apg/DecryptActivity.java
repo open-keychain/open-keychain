@@ -177,6 +177,19 @@ public class DecryptActivity extends BaseActivity {
             } catch (IOException e) {
                 // ignore, then
             }
+        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SEND)) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) {
+                extras = new Bundle();
+            }
+            String data = extras.getString(Intent.EXTRA_TEXT);
+            if (data != null) {
+                mMessage.setText(data);
+            }
+            mSubject = extras.getString(Intent.EXTRA_SUBJECT);
+            if (mSubject.startsWith("Fwd: ")) {
+                mSubject = mSubject.substring(5);
+            }
         } else if (intent.getAction() != null && intent.getAction().equals(Apg.Intent.DECRYPT)) {
             Bundle extras = intent.getExtras();
             if (extras == null) {
