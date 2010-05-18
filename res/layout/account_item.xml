@@ -24,12 +24,12 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight">
 
-<TextView
-    android:id="@+id/account_name"
-    android:text="someone@gmail.com"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical"/>
+    <TextView
+        android:id="@+id/accountName"
+        android:text="someone@gmail.com"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

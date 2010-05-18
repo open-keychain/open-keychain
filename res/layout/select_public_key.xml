@@ -21,34 +21,33 @@
     android:layout_height="fill_parent"
     android:fillViewport="true">
 
-<ListView
-    android:id="@+id/list"
-    android:choiceMode="multipleChoice"
-    android:layout_width="fill_parent"
-    android:layout_height="0dip"
-    android:layout_weight="1">
-</ListView>
+    <ListView
+        android:id="@+id/list"
+        android:choiceMode="multipleChoice"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"/>
 
-<LinearLayout
-   android:orientation="horizontal"
-   android:layout_width="fill_parent"
-   android:layout_height="wrap_content"
-   style="@android:style/ButtonBar">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="@android:style/ButtonBar">
 
-<Button
-    android:text="@android:string/ok"
-    android:id="@+id/btn_ok"
-    android:layout_width="0dip"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"/>
+        <Button
+            android:text="@android:string/ok"
+            android:id="@+id/btn_ok"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
-<Button
-    android:text="@android:string/cancel"
-    android:id="@+id/btn_cancel"
-    android:layout_width="0dip"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"/>
+        <Button
+            android:text="@android:string/cancel"
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
 
-</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

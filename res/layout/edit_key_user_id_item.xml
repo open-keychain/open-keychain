@@ -15,82 +15,99 @@
 -->
 
 <org.thialfihar.android.apg.ui.widget.UserIdEditor
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:orientation="vertical"
-  android:paddingLeft="5dip">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="5dip">
 
-<View
-  android:id="@+id/separator"
-  android:layout_width="fill_parent"
-  android:layout_height="1dip"
-  android:background="?android:attr/listDivider"/>
+    <View
+        android:id="@+id/separator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider"/>
 
-<RadioButton
-  android:id="@+id/is_main_user_id" android:text="Main User ID"
-  android:layout_height="wrap_content" android:layout_width="wrap_content"
-  android:layout_marginLeft="20dip"/>
-
-<LinearLayout
-  android:layout_height="wrap_content"
-  android:layout_width="fill_parent"
-  android:orientation="horizontal">
-    <TableLayout
-      android:layout_height="wrap_content"
-      android:layout_width="0dip"
-      android:layout_weight="1"
-      android:layout_marginLeft="16dip">
-        <TableRow>
-            <TextView
-              android:id="@+id/name_label"
-              android:text="Name"
-              android:layout_gravity="center_vertical"
-              android:layout_height="wrap_content"
-              android:layout_width="wrap_content"
-              android:paddingRight="5dip"/>
-            <EditText
-              android:id="@+id/name"
-              android:layout_weight="1"
-              android:layout_height="wrap_content"
-              android:layout_width="fill_parent"/>
-        </TableRow>
-        <TableRow>
-            <TextView
-              android:id="@+id/email_label"
-              android:text="Email"
-              android:layout_gravity="center_vertical"
-              android:layout_height="wrap_content"
-              android:layout_width="wrap_content"
-              android:paddingRight="5dip"/>
-            <EditText
-              android:id="@+id/email"
-              android:layout_weight="1"
-              android:layout_height="wrap_content"
-              android:layout_width="fill_parent"/>
-        </TableRow>
-        <TableRow>
-            <TextView
-              android:id="@+id/comment_label"
-              android:text="Comment"
-              android:layout_gravity="center_vertical"
-              android:layout_height="wrap_content"
-              android:layout_width="wrap_content"
-              android:paddingRight="5dip"/>
-            <EditText
-              android:id="@+id/comment"
-              android:layout_weight="1"
-              android:layout_height="wrap_content"
-              android:layout_width="fill_parent"/>
-        </TableRow>
-    </TableLayout>
-
-    <ImageButton
-        android:id="@+id/edit_delete"
-        android:layout_width="wrap_content"
+    <RadioButton
+        android:id="@+id/isMainUserId"
+        android:text="Main User ID"
         android:layout_height="wrap_content"
-        style="@style/MinusButton"
-        android:layout_gravity="center_vertical"/>
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="20dip"/>
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal">
+
+        <TableLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_marginLeft="16dip">
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_name"
+                    android:text="Name"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingRight="5dip"/>
+
+                <EditText
+                    android:id="@+id/name"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_email"
+                    android:text="Email"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingRight="5dip"/>
+
+                <EditText
+                    android:id="@+id/email"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_comment"
+                    android:text="Comment"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingRight="5dip"/>
+
+                <EditText
+                    android:id="@+id/comment"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"/>
+
+            </TableRow>
+
+        </TableLayout>
+
+        <ImageButton
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/MinusButton"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
 </org.thialfihar.android.apg.ui.widget.UserIdEditor>

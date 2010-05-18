@@ -22,12 +22,12 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight">
 
-<TextView
-    android:id="@+id/user_id"
-    android:text="User ID"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingRight="3dip"/>
+    <TextView
+        android:id="@+id/userId"
+        android:text="User ID"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="3dip"/>
 
 </LinearLayout>

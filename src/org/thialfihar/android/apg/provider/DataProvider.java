@@ -115,14 +115,7 @@ public class DataProvider extends ContentProvider {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            int currentVersion = oldVersion;
-            while (currentVersion < newVersion) {
-                switch (currentVersion) {
-                    default: {
-                        break;
-                    }
-                }
-            }
+            // TODO: upgrade db if necessary, and do that in a clever way
         }
     }
 

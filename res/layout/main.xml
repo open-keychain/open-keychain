@@ -22,40 +22,68 @@
     android:paddingTop="5dip"
     android:fillViewport="true">
 
-<ScrollView
-   android:layout_marginTop="10dip"
-   android:layout_width="fill_parent"
-   android:layout_height="0dip"
-   android:layout_weight="1">
+    <ScrollView
+        android:layout_marginTop="10dip"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-<ListView
-   android:id="@+id/account_list"
-   android:layout_width="fill_parent"
-   android:layout_height="wrap_content">
-</ListView>
+        <ListView
+            android:id="@+id/accounts"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
 
-</ScrollView>
+    </ScrollView>
 
-<LinearLayout
-   android:orientation="horizontal"
-   android:layout_width="fill_parent"
-   android:layout_height="wrap_content"
-   style="@android:style/ButtonBar">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        style="@android:style/ButtonBar">
 
-<Button
-   android:id="@+id/btn_encryptMessage"
-   android:text="@string/btn_encryptMessage"
-   android:layout_width="wrap_content"
-   android:layout_weight="1"
-   android:layout_height="wrap_content"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-<Button
-   android:id="@+id/btn_decryptMessage"
-   android:text="@string/btn_decryptMessage"
-   android:layout_width="wrap_content"
-   android:layout_weight="1"
-   android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/btn_encryptFile"
+                android:text="@string/btn_encryptFile"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
 
-</LinearLayout>
+            <Button
+                android:id="@+id/btn_decryptFile"
+                android:text="@string/btn_decryptFile"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_encryptMessage"
+                android:text="@string/btn_encryptMessage"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/btn_decryptMessage"
+                android:text="@string/btn_decryptMessage"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

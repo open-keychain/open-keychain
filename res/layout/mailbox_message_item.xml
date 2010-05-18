@@ -24,34 +24,34 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:layout_width="fill_parent">
 
-<ImageView
-    android:id="@+id/ic_encrypted"
-    android:src="@drawable/encrypted"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerVertical="true"/>
+    <ImageView
+        android:id="@+id/ic_status"
+        android:src="@drawable/encrypted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"/>
 
-<LinearLayout
-    android:orientation="vertical"
-    android:paddingLeft="5dip"
-    android:layout_weight="1"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    <LinearLayout
+        android:orientation="vertical"
+        android:paddingLeft="5dip"
+        android:layout_weight="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
-<TextView
-    android:id="@+id/subject"
-    android:text="Subject"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/subject"
+            android:text="Subject"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-<TextView
-    android:id="@+id/email_address"
-    android:text="user@somewhere.com"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/emailAddress"
+            android:text="user@somewhere.com"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

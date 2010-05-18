@@ -37,9 +37,9 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MailListActivity extends ListActivity {
-    LayoutInflater minflater = null;
+    LayoutInflater mInflater = null;
 
-    private class Conversation {
+    private static class Conversation {
         public long id;
         public String subject;
         public Vector<Message> messages;
@@ -50,16 +50,18 @@ public class MailListActivity extends ListActivity {
         }
     }
 
-    private class Message {
+    private static class Message {
         public Conversation parent;
         public long id;
         public String subject;
         public String fromAddress;
         public String data;
         public String replyTo;
+        public boolean signedOnly;
 
         public Message(Conversation parent, long id, String subject,
-                       String fromAddress, String replyTo, String data) {
+                       String fromAddress, String replyTo,
+                       String data, boolean signedOnly) {
             this.parent = parent;
             this.id = id;
             this.subject = subject;
@@ -69,6 +71,7 @@ public class MailListActivity extends ListActivity {
             if (this.replyTo == null || this.replyTo.equals("")) {
                 this.replyTo = this.fromAddress;
             }
+            this.signedOnly = signedOnly;
         }
     }
 
@@ -79,7 +82,7 @@ public class MailListActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        minflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         mconversations = new Vector<Conversation>();
         mmessages = new Vector<Message>();
@@ -115,18 +118,26 @@ public class MailListActivity extends ListActivity {
                 int bodyIndex = messageCursor.getColumnIndex("body");
                 String data = messageCursor.getString(bodyIndex);
                 data = Html.fromHtml(data).toString();
+                boolean signedOnly = false;
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
                     data = matcher.group(1);
                 } else {
-                    data = null;
+                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+                    if (matcher.matches()) {
+                        data = matcher.group(1);
+                        signedOnly = true;
+                    } else {
+                        data = null;
+                    }
                 }
                 Message message =
                         new Message(conversation,
                                     messageCursor.getLong(idIndex),
                                     messageCursor.getString(subjectIndex),
                                     messageCursor.getString(fromAddressIndex),
-                                    messageCursor.getString(replyToIndex), data);
+                                    messageCursor.getString(replyToIndex),
+                                    data, signedOnly);
 
                 messages.add(message);
                 mmessages.add(message);
@@ -139,7 +150,7 @@ public class MailListActivity extends ListActivity {
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
-                Intent intent = new Intent(MailListActivity.this, DecryptMessageActivity.class);
+                Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
                 intent.putExtra("data", message.data);
@@ -180,20 +191,25 @@ public class MailListActivity extends ListActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = minflater.inflate(R.layout.mailbox_message_item, null);
+            View view = mInflater.inflate(R.layout.mailbox_message_item, null);
 
             Message message = (Message) getItem(position);
 
             TextView subject = (TextView) view.findViewById(R.id.subject);
-            TextView email = (TextView) view.findViewById(R.id.email_address);
-            ImageView encrypted = (ImageView) view.findViewById(R.id.ic_encrypted);
+            TextView email = (TextView) view.findViewById(R.id.emailAddress);
+            ImageView status = (ImageView) view.findViewById(R.id.ic_status);
 
             subject.setText(message.subject);
             email.setText(message.fromAddress);
             if (message.data != null) {
-                encrypted.setVisibility(View.VISIBLE);
+                if (message.signedOnly) {
+                    status.setImageResource(R.drawable.signed);
+                } else {
+                    status.setImageResource(R.drawable.encrypted);
+                }
+                status.setVisibility(View.VISIBLE);
             } else {
-                encrypted.setVisibility(View.INVISIBLE);
+                status.setVisibility(View.INVISIBLE);
             }
 
             return view;

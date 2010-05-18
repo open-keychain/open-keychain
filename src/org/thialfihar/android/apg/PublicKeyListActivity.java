@@ -27,201 +27,75 @@ import org.thialfihar.android.apg.utils.IterableIterator;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ExpandableListActivity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnKeyListener;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
-public class PublicKeyListActivity extends ExpandableListActivity
-                                   implements Runnable, ProgressDialogUpdater {
-    static final int MENU_DELETE = 1;
-    static final int MENU_EXPORT = 2;
-
-    static final int OPTION_MENU_IMPORT_KEYS = 1;
-    static final int OPTION_MENU_EXPORT_KEYS = 2;
-
-    static final int MESSAGE_PROGRESS_UPDATE = 1;
-    static final int MESSAGE_IMPORT_DONE = 2;
-    static final int MESSAGE_EXPORT_DONE = 3;
-
-    static final int DIALOG_DELETE_KEY = 1;
-    static final int DIALOG_IMPORT_KEYS = 2;
-    static final int DIALOG_IMPORTING = 3;
-    static final int DIALOG_EXPORT_KEYS = 4;
-    static final int DIALOG_EXPORTING = 5;
-    static final int DIALOG_EXPORT_KEY = 6;
-
-    static final int TASK_IMPORT = 1;
-    static final int TASK_EXPORT = 2;
+public class PublicKeyListActivity extends BaseActivity {
+    ExpandableListView mList;
 
     protected int mSelectedItem = -1;
-    protected String mImportFilename = null;
-    protected String mExportFilename = null;
     protected int mTask = 0;
 
-    private ProgressDialog mProgressDialog = null;
-    private Thread mRunningThread = null;
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle data = msg.getData();
-            if (data != null) {
-                int type = data.getInt("type");
-                switch (type) {
-                    case MESSAGE_PROGRESS_UPDATE: {
-                        String message = data.getString("message");
-                        if (mProgressDialog != null) {
-                            if (message != null) {
-                                mProgressDialog.setMessage(message);
-                            }
-                            mProgressDialog.setMax(data.getInt("max"));
-                            mProgressDialog.setProgress(data.getInt("progress"));
-                        }
-                        break;
-                    }
-
-                    case MESSAGE_IMPORT_DONE: {
-                        removeDialog(DIALOG_IMPORTING);
-                        mProgressDialog = null;
-
-                        String error = data.getString("error");
-                        if (error != null) {
-                            Toast.makeText(PublicKeyListActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                        } else {
-                            int added = data.getInt("added");
-                            int updated = data.getInt("updated");
-                            String message;
-                            if (added > 0 && updated > 0) {
-                                message = "Succssfully added " + added + " keys and updated " +
-                                          updated + " keys.";
-                            } else if (added > 0) {
-                                message = "Succssfully added " + added + " keys.";
-                            } else if (updated > 0) {
-                                message = "Succssfully updated " + updated + " keys.";
-                            } else {
-                                message = "No keys added or updated.";
-                            }
-                            Toast.makeText(PublicKeyListActivity.this, message,
-                                           Toast.LENGTH_SHORT).show();
-                        }
-                        refreshList();
-                        break;
-                    }
-
-                    case MESSAGE_EXPORT_DONE: {
-                        removeDialog(DIALOG_EXPORTING);
-                        mProgressDialog = null;
-
-                        String error = data.getString("error");
-                        if (error != null) {
-                            Toast.makeText(PublicKeyListActivity.this,
-                                           "Error: " + data.getString("error"),
-                                           Toast.LENGTH_SHORT).show();
-                        } else {
-                            int exported = data.getInt("exported");
-                            String message;
-                            if (exported == 1) {
-                                message = "Succssfully exported 1 key.";
-                            } else if (exported > 0) {
-                                message = "Succssfully exported " + exported + " keys.";
-                            } else{
-                                message = "No keys exported.";
-                            }
-                            Toast.makeText(PublicKeyListActivity.this, message,
-                                           Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    }
-
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-    };
-
-    public void setProgress(int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
-
-    public void setProgress(String message, int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt("type", MESSAGE_PROGRESS_UPDATE);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
-        msg.setData(data);
-        mHandler.sendMessage(msg);
-    }
+    private String mImportFilename = Constants.path.app_dir + "/pubring.gpg";
+    private String mExportFilename = Constants.path.app_dir + "/pubexport.asc";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.key_list);
 
-        Apg.initialize(this);
-
-        setListAdapter(new PublicKeyListAdapter(this));
-        registerForContextMenu(getExpandableListView());
+        mList = (ExpandableListView) findViewById(R.id.list);
+        mList.setAdapter(new PublicKeyListAdapter(this));
+        registerForContextMenu(mList);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, OPTION_MENU_IMPORT_KEYS, 0, "Import Keys")
+        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, OPTION_MENU_EXPORT_KEYS, 1, "Export Keys")
+        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
                 .setIcon(android.R.drawable.ic_menu_save);
+        menu.add(1, Id.menu.option.preferences, 2, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(1, Id.menu.option.about, 3, R.string.menu_about)
+                .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case OPTION_MENU_IMPORT_KEYS: {
-                showDialog(DIALOG_IMPORT_KEYS);
+            case Id.menu.option.import_keys: {
+                showDialog(Id.dialog.import_keys);
                 return true;
             }
 
-            case OPTION_MENU_EXPORT_KEYS: {
-                showDialog(DIALOG_EXPORT_KEYS);
+            case Id.menu.option.export_keys: {
+                showDialog(Id.dialog.export_keys);
                 return true;
             }
 
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override
@@ -236,8 +110,8 @@ public class PublicKeyListActivity extends ExpandableListActivity
             PGPPublicKeyRing keyRing = Apg.getPublicKeyRings().get(groupPosition);
             String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
             menu.setHeaderTitle(userId);
-            menu.add(0, MENU_EXPORT, 0, "Export Key");
-            menu.add(0, MENU_DELETE, 1, "Delete Key");
+            menu.add(0, Id.menu.export, 0, R.string.menu_exportKey);
+            menu.add(0, Id.menu.delete, 1, R.string.menu_deleteKey);
         }
     }
 
@@ -252,15 +126,15 @@ public class PublicKeyListActivity extends ExpandableListActivity
         }
 
         switch (menuItem.getItemId()) {
-            case MENU_EXPORT: {
+            case Id.menu.export: {
                 mSelectedItem = groupPosition;
-                showDialog(DIALOG_EXPORT_KEY);
+                showDialog(Id.dialog.export_key);
                 return true;
             }
 
-            case MENU_DELETE: {
+            case Id.menu.delete: {
                 mSelectedItem = groupPosition;
-                showDialog(DIALOG_DELETE_KEY);
+                showDialog(Id.dialog.delete_key);
                 return true;
             }
 
@@ -275,167 +149,123 @@ public class PublicKeyListActivity extends ExpandableListActivity
         boolean singleKeyExport = false;
 
         switch (id) {
-            case DIALOG_DELETE_KEY: {
+            case Id.dialog.delete_key: {
                 PGPPublicKeyRing keyRing = Apg.getPublicKeyRings().get(mSelectedItem);
                 String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Warning  ");
-                builder.setMessage("Do you really want to delete the key '" + userId + "'?\n" +
-                                   "You can't undo this!");
+                builder.setTitle(R.string.warning);
+                builder.setMessage(getString(R.string.keyDeletionConfirmation, userId));
                 builder.setIcon(android.R.drawable.ic_dialog_alert);
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.btn_delete,
+                                          new DialogInterface.OnClickListener() {
                                               public void onClick(DialogInterface dialog, int id) {
                                                   deleteKey(mSelectedItem);
                                                   mSelectedItem = -1;
-                                                  removeDialog(DIALOG_DELETE_KEY);
+                                                  removeDialog(Id.dialog.delete_key);
                                               }
                                           });
                 builder.setNegativeButton(android.R.string.cancel,
                                           new DialogInterface.OnClickListener() {
                                               public void onClick(DialogInterface dialog, int id) {
                                                   mSelectedItem = -1;
-                                                  removeDialog(DIALOG_DELETE_KEY);
+                                                  removeDialog(Id.dialog.delete_key);
                                               }
                                           });
                 return builder.create();
             }
 
-            case DIALOG_IMPORT_KEYS: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            case Id.dialog.import_keys: {
+                return FileDialog.build(this, getString(R.string.title_importKeys),
+                                        getString(R.string.specifyFileToImportFrom),
+                                        mImportFilename,
+                                        new FileDialog.OnClickListener() {
 
-                alert.setTitle("Import Keys");
-                alert.setMessage("Please specify which file to import from.");
-
-                final EditText input = new EditText(this);
-                // TODO: default file?
-                input.setText(Environment.getExternalStorageDirectory() + "/pubring.gpg");
-                input.setOnKeyListener(new OnKeyListener() {
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        // TODO: this doesn't actually work yet
-                        // If the event is a key-down event on the "enter"
-                        // button
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                            (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            try {
-                                ((AlertDialog) v.getParent())
-                                        .getButton(AlertDialog.BUTTON_POSITIVE)
-                                        .performClick();
-                            } catch (ClassCastException e) {
-                                // don't do anything if we're not in that dialog
-                            }
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                alert.setView(input);
-
-                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                removeDialog(DIALOG_IMPORT_KEYS);
-                                                mImportFilename = input.getText().toString();
+                                            @Override
+                                            public void onOkClick(String filename) {
+                                                removeDialog(Id.dialog.import_keys);
+                                                mImportFilename = filename;
                                                 importKeys();
                                             }
-                                        });
 
-                alert.setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                removeDialog(DIALOG_IMPORT_KEYS);
+                                            @Override
+                                            public void onCancelClick() {
+                                                removeDialog(Id.dialog.import_keys);
                                             }
-                                        });
-                return alert.create();
+                                        },
+                                        getString(R.string.filemanager_titleOpen),
+                                        getString(R.string.filemanager_btnOpen),
+                                        Id.request.filename);
             }
 
-            case DIALOG_EXPORT_KEY: {
+            case Id.dialog.export_key: {
                 singleKeyExport = true;
-                // break intentionally omitted, to use the DIALOG_EXPORT_KEYS dialog
+                // break intentionally omitted, to use the Id.dialog.export_keys dialog
             }
 
-            case DIALOG_EXPORT_KEYS: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            case Id.dialog.export_keys: {
+                String title = (singleKeyExport ?
+                                    getString(R.string.title_exportKey) :
+                                    getString(R.string.title_exportKeys));
 
-                if (singleKeyExport) {
-                    alert.setTitle("Export Key");
-                } else {
-                    alert.setTitle("Export Keys");
-                    mSelectedItem = -1;
-                }
-                final int thisDialogId = (singleKeyExport ? DIALOG_DELETE_KEY : DIALOG_EXPORT_KEYS);
-                alert.setMessage("Please specify which file to export to.\n" +
-                                 "WARNING! File will be overwritten if it exists.");
+                final int thisDialogId = (singleKeyExport ? Id.dialog.export_key : Id.dialog.export_keys);
 
-                final EditText input = new EditText(this);
-                // TODO: default file?
-                input.setText(Environment.getExternalStorageDirectory() + "/pubexport.asc");
-                alert.setView(input);
+                return FileDialog.build(this, title,
+                                        getString(R.string.specifyFileToExportTo),
+                                        mExportFilename,
+                                        new FileDialog.OnClickListener() {
 
-                alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onOkClick(String filename) {
                                                 removeDialog(thisDialogId);
-                                                mExportFilename = input.getText().toString();
+                                                mExportFilename = filename;
                                                 exportKeys();
                                             }
-                                        });
 
-                alert.setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
+                                            @Override
+                                            public void onCancelClick() {
                                                 removeDialog(thisDialogId);
                                             }
-                                        });
-                return alert.create();
+                                        },
+                                        getString(R.string.filemanager_titleSave),
+                                        getString(R.string.filemanager_btnSave),
+                                        Id.request.filename);
             }
 
-            case DIALOG_IMPORTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("importing...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
-            }
-
-            case DIALOG_EXPORTING: {
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage("exporting...");
-                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                mProgressDialog.setCancelable(false);
-                return mProgressDialog;
+            default: {
+                return super.onCreateDialog(id);
             }
         }
-        return super.onCreateDialog(id);
     }
 
     public void importKeys() {
-        showDialog(DIALOG_IMPORTING);
-        mTask = TASK_IMPORT;
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.importing);
+        mTask = Id.task.import_keys;
+        startThread();
     }
 
     public void exportKeys() {
-        showDialog(DIALOG_EXPORTING);
-        mTask = TASK_EXPORT;
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
+        showDialog(Id.dialog.exporting);
+        mTask = Id.task.export_keys;
+        startThread();
     }
 
+    @Override
     public void run() {
         String error = null;
         Bundle data = new Bundle();
         Message msg = new Message();
 
         String filename = null;
-        if (mTask == TASK_IMPORT) {
+        if (mTask == Id.task.import_keys) {
             filename = mImportFilename;
         } else {
             filename = mExportFilename;
         }
 
         try {
-            if (mTask == TASK_IMPORT) {
-                data = Apg.importKeyRings(this, Apg.TYPE_PUBLIC, filename, this);
+            if (mTask == Id.task.import_keys) {
+                data = Apg.importKeyRings(this, Id.type.public_key, filename, this);
             } else {
                 Vector<Object> keys = new Vector<Object>();
                 if (mSelectedItem == -1) {
@@ -448,7 +278,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
                 data = Apg.exportKeyRings(this, keys, filename, this);
             }
         } catch (FileNotFoundException e) {
-            error = "file '" + filename + "' not found";
+            error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
             error = e.getMessage();
         } catch (PGPException e) {
@@ -457,10 +287,10 @@ public class PublicKeyListActivity extends ExpandableListActivity
             error = e.getMessage();
         }
 
-        if (mTask == TASK_IMPORT) {
-            data.putInt("type", MESSAGE_IMPORT_DONE);
+        if (mTask == Id.task.import_keys) {
+            data.putInt("type", Id.message.import_done);
         } else {
-            data.putInt("type", MESSAGE_EXPORT_DONE);
+            data.putInt("type", Id.message.export_done);
         }
 
         if (error != null) {
@@ -468,7 +298,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
         }
 
         msg.setData(data);
-        mHandler.sendMessage(msg);
+        sendMessage(msg);
     }
 
     private void deleteKey(int index) {
@@ -478,10 +308,77 @@ public class PublicKeyListActivity extends ExpandableListActivity
     }
 
     private void refreshList() {
-        ((PublicKeyListAdapter) getExpandableListAdapter()).notifyDataSetChanged();
+        ((PublicKeyListAdapter) mList.getExpandableListAdapter()).notifyDataSetChanged();
     }
 
-    private class PublicKeyListAdapter extends BaseExpandableListAdapter {
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+
+        Bundle data = msg.getData();
+        if (data != null) {
+            int type = data.getInt("type");
+            switch (type) {
+                case Id.message.import_done: {
+                    removeDialog(Id.dialog.importing);
+
+                    String error = data.getString("error");
+                    if (error != null) {
+                        Toast.makeText(PublicKeyListActivity.this,
+                                       getString(R.string.errorMessage, data.getString("error")),
+                                       Toast.LENGTH_SHORT).show();
+                    } else {
+                        int added = data.getInt("added");
+                        int updated = data.getInt("updated");
+                        String message;
+                        if (added > 0 && updated > 0) {
+                            message = getString(R.string.keysAddedAndUpdated, added, updated);
+                        } else if (added > 0) {
+                            message = getString(R.string.keysAdded, added);
+                        } else if (updated > 0) {
+                            message = getString(R.string.keysUpdated, updated);
+                        } else {
+                            message = getString(R.string.noKeysAddedOrUpdated);
+                        }
+                        Toast.makeText(PublicKeyListActivity.this, message,
+                                       Toast.LENGTH_SHORT).show();
+                    }
+                    refreshList();
+                    break;
+                }
+
+                case Id.message.export_done: {
+                    removeDialog(Id.dialog.exporting);
+
+                    String error = data.getString("error");
+                    if (error != null) {
+                        Toast.makeText(PublicKeyListActivity.this,
+                                       getString(R.string.errorMessage, data.getString("error")),
+                                       Toast.LENGTH_SHORT).show();
+                    } else {
+                        int exported = data.getInt("exported");
+                        String message;
+                        if (exported == 1) {
+                            message = getString(R.string.keyExported);
+                        } else if (exported > 0) {
+                            message = getString(R.string.keysExported);
+                        } else{
+                            message = getString(R.string.noKeysExported);
+                        }
+                        Toast.makeText(PublicKeyListActivity.this, message,
+                                       Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                }
+
+                default: {
+                    break;
+                }
+            }
+        }
+    }
+
+    private static class PublicKeyListAdapter extends BaseExpandableListAdapter {
         private LayoutInflater mInflater;
 
         private class KeyChild {
@@ -581,9 +478,9 @@ public class PublicKeyListActivity extends ExpandableListActivity
                 view = mInflater.inflate(R.layout.key_list_group_item, null);
                 view.setBackgroundResource(android.R.drawable.list_selector_background);
 
-                TextView mainUserId = (TextView) view.findViewById(R.id.main_user_id);
+                TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
                 mainUserId.setText("");
-                TextView mainUserIdRest = (TextView) view.findViewById(R.id.main_user_id_rest);
+                TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
                 mainUserIdRest.setText("");
 
                 String userId = Apg.getMainUserId(key);
@@ -597,7 +494,7 @@ public class PublicKeyListActivity extends ExpandableListActivity
                 }
 
                 if (mainUserId.getText().length() == 0) {
-                    mainUserId.setText(R.string.unknown_user_id);
+                    mainUserId.setText(R.string.unknownUserId);
                 }
 
                 if (mainUserIdRest.getText().length() == 0) {
@@ -625,22 +522,22 @@ public class PublicKeyListActivity extends ExpandableListActivity
                         view = mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
                     }
 
-                    TextView keyId = (TextView) view.findViewById(R.id.key_id);
+                    TextView keyId = (TextView) view.findViewById(R.id.keyId);
                     String keyIdStr = Long.toHexString(key.getKeyID() & 0xffffffffL);
                     while (keyIdStr.length() < 8) {
                         keyIdStr = "0" + keyIdStr;
                     }
                     keyId.setText(keyIdStr);
-                    TextView keyDetails = (TextView) view.findViewById(R.id.key_details);
+                    TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
                     String algorithmStr = Apg.getAlgorithmInfo(key);
                     keyDetails.setText("(" + algorithmStr + ")");
 
-                    ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encrypt_key);
+                    ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
                     if (!Apg.isEncryptionKey(key)) {
                         encryptIcon.setVisibility(View.GONE);
                     }
 
-                    ImageView signIcon = (ImageView) view.findViewById(R.id.ic_sign_key);
+                    ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
                     if (!Apg.isSigningKey(key)) {
                         signIcon.setVisibility(View.GONE);
                     }
@@ -649,12 +546,40 @@ public class PublicKeyListActivity extends ExpandableListActivity
 
                 case KeyChild.USER_ID: {
                     view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-                    TextView userId = (TextView) view.findViewById(R.id.user_id);
+                    TextView userId = (TextView) view.findViewById(R.id.userId);
                     userId.setText(child.userId);
                     break;
                 }
             }
             return view;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Id.request.filename: {
+                if (resultCode == RESULT_OK && data != null) {
+                    String filename = data.getDataString();
+                    if (filename != null) {
+                        // Get rid of URI prefix:
+                        if (filename.startsWith("file://")) {
+                            filename = filename.substring(7);
+                        }
+                        // replace %20 and so on
+                        filename = Uri.decode(filename);
+
+                        FileDialog.setFilename(filename);
+                    }
+
+                }
+                return;
+            }
+
+            default: {
+                break;
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

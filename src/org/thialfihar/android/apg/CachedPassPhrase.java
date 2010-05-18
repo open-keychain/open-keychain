@@ -1,0 +1,39 @@
+package org.thialfihar.android.apg;
+
+public class CachedPassPhrase {
+    public final long timestamp;
+    public final String passPhrase;
+
+    public CachedPassPhrase(long timestamp, String passPhrase) {
+        super();
+        this.timestamp = timestamp;
+        this.passPhrase = passPhrase;
+    }
+
+    public boolean equals(Object other) {
+        if (!(other instanceof CachedPassPhrase)) {
+            return false;
+        }
+
+        CachedPassPhrase o = (CachedPassPhrase) other;
+        if (timestamp != o.timestamp) {
+            return false;
+        }
+
+        if (passPhrase != o.passPhrase) {
+            if (passPhrase == null || o.passPhrase == null) {
+                return false;
+            }
+
+            if (!passPhrase.equals(o.passPhrase)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public String toString() {
+        return "(" + timestamp + ", *******)";
+    }
+}

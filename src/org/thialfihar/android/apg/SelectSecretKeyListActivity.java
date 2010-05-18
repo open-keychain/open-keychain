@@ -25,7 +25,6 @@ import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.utils.IterableIterator;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,7 +37,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class SelectSecretKeyListActivity extends Activity {
+public class SelectSecretKeyListActivity extends BaseActivity {
     protected Vector<PGPSecretKeyRing> mKeyRings;
     protected LayoutInflater mInflater;
     protected Intent mIntent;
@@ -54,8 +53,6 @@ public class SelectSecretKeyListActivity extends Activity {
 
         // fill things
         mIntent = getIntent();
-
-        Apg.initialize(this);
 
         mKeyRings = (Vector<PGPSecretKeyRing>) Apg.getSecretKeyRings().clone();
         Collections.sort(mKeyRings, new Apg.SecretKeySorter());
@@ -137,18 +134,18 @@ public class SelectSecretKeyListActivity extends Activity {
                 }
             }
 
-            TextView mainUserId = (TextView) view.findViewById(R.id.main_user_id);
-            mainUserId.setText(R.string.unknown_user_id);
-            TextView mainUserIdRest = (TextView) view.findViewById(R.id.main_user_id_rest);
+            TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+            mainUserId.setText(R.string.unknownUserId);
+            TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             mainUserIdRest.setText("");
-            TextView keyId = (TextView) view.findViewById(R.id.key_id);
-            keyId.setText("<no key>");
+            TextView keyId = (TextView) view.findViewById(R.id.keyId);
+            keyId.setText(R.string.noKey);
             TextView creation = (TextView) view.findViewById(R.id.creation);
-            creation.setText("");
+            creation.setText(R.string.noDate);
             TextView expiry = (TextView) view.findViewById(R.id.expiry);
-            expiry.setText("");
+            expiry.setText(R.string.noExpiry);
             TextView status = (TextView) view.findViewById(R.id.status);
-            status.setText("???");
+            status.setText(R.string.unknownStatus);
 
             if (key != null) {
                 String userId = Apg.getMainUserId(key);
@@ -174,17 +171,17 @@ public class SelectSecretKeyListActivity extends Activity {
             PGPSecretKey timespanKey = key;
             if (usableKeys.size() > 0) {
                 timespanKey = usableKeys.get(0);
-                status.setText("can sign");
+                status.setText(R.string.canSign);
             } else if (signingKeys.size() > 0) {
                 timespanKey = signingKeys.get(0);
                 Date now = new Date();
                 if (now.compareTo(Apg.getCreationDate(timespanKey)) > 0) {
-                    status.setText("not valid");
+                    status.setText(R.string.notValid);
                 } else {
-                    status.setText("expired");
+                    status.setText(R.string.expired);
                 }
             } else {
-                status.setText("no key");
+                status.setText(R.string.noKey);
             }
 
             creation.setText(DateFormat.getDateInstance().format(Apg.getCreationDate(timespanKey)));

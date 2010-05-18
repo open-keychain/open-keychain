@@ -22,49 +22,51 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:layout_width="fill_parent">
 
-<LinearLayout
-    android:layout_height="wrap_content"
-    android:layout_width="fill_parent"
-    android:orientation="horizontal"
-    android:paddingRight="3dip">
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal"
+        android:paddingRight="3dip">
 
-<TextView
-    android:id="@+id/key_id"
-    android:text="Key ID"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content" android:paddingRight="5dip" android:typeface="monospace"/>
+        <TextView
+            android:id="@+id/keyId"
+            android:text="Key ID"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dip"
+            android:typeface="monospace"/>
 
-<TextView
-    android:id="@+id/key_details"
-    android:text="(RSA, 1024bit)"
-    android:textAppearance="?android:attr/textAppearanceSmall"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/keyDetails"
+            android:text="(RSA, 1024bit)"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
+        <LinearLayout
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingBottom="2dip"
+            android:paddingTop="2dip"
+            android:layout_gravity="center_vertical">
 
-<LinearLayout
-    android:gravity="right"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingBottom="2dip"
-    android:paddingTop="2dip"
-     android:layout_gravity="center_vertical">
+            <ImageView
+                android:id="@+id/ic_encryptKey"
+                android:src="@drawable/encrypted_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-<ImageView
-    android:id="@+id/ic_encrypt_key"
-    android:src="@drawable/encrypted_small"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/ic_signKey"
+                android:src="@drawable/signed_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-<ImageView
-    android:id="@+id/ic_sign_key"
-    android:src="@drawable/signed_small"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
+        </LinearLayout>
 
-</LinearLayout>
+    </LinearLayout>
 
-</LinearLayout>
 </LinearLayout>

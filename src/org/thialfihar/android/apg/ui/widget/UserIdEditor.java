@@ -81,9 +81,9 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         setDrawingCacheEnabled(true);
         setAlwaysDrawnWithCacheEnabled(true);
 
-        mDeleteButton = (ImageButton) findViewById(R.id.edit_delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
-        mIsMainUserId = (RadioButton) findViewById(R.id.is_main_user_id);
+        mIsMainUserId = (RadioButton) findViewById(R.id.isMainUserId);
         mIsMainUserId.setOnClickListener(this);
 
         mName = (EditText) findViewById(R.id.name);
@@ -124,7 +124,8 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         if (email.length() > 0) {
             Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
             if (!emailMatcher.matches()) {
-                throw new InvalidEmailException("invalid email '" + email + "'");
+                throw new InvalidEmailException(
+                        getContext().getString(R.string.error_invalidEmail, email));
             }
         }
 

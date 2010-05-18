@@ -18,21 +18,16 @@ package org.thialfihar.android.apg;
 
 import org.thialfihar.android.apg.provider.Accounts;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.util.Linkify;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,25 +41,11 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MainActivity extends Activity {
-    private static final int DIALOG_NEW_ACCOUNT = 1;
-    private static final int DIALOG_ABOUT = 2;
-    private static final int DIALOG_CHANGE_LOG = 3;
-
-    private static final int OPTION_MENU_ADD_ACCOUNT = 1;
-    private static final int OPTION_MENU_ABOUT = 2;
-    private static final int OPTION_MENU_MANAGE_PUBLIC_KEYS = 3;
-    private static final int OPTION_MENU_MANAGE_SECRET_KEYS = 4;
-
-    private static final int MENU_DELETE_ACCOUNT = 1;
-
-    private static String PREF_SEEN_CHANGE_LOG = "seenChangeLogDialog" + Apg.VERSION;
-
+public class MainActivity extends BaseActivity {
     private ListView mAccounts = null;
 
     @Override
@@ -74,19 +55,43 @@ public class MainActivity extends Activity {
 
         Button encryptMessageButton = (Button) findViewById(R.id.btn_encryptMessage);
         Button decryptMessageButton = (Button) findViewById(R.id.btn_decryptMessage);
-        mAccounts = (ListView) findViewById(R.id.account_list);
+        Button encryptFileButton = (Button) findViewById(R.id.btn_encryptFile);
+        Button decryptFileButton = (Button) findViewById(R.id.btn_decryptFile);
+        mAccounts = (ListView) findViewById(R.id.accounts);
 
         encryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEncryptMessageActivity();
+                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+                intent.setAction(Apg.Intent.ENCRYPT);
+                startActivity(intent);
             }
         });
 
         decryptMessageButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDecryptMessageActivity();
+                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
+                intent.setAction(Apg.Intent.DECRYPT);
+                startActivity(intent);
+            }
+        });
+
+        encryptFileButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+                intent.setAction(Apg.Intent.ENCRYPT_FILE);
+                startActivity(intent);
+            }
+        });
+
+        decryptFileButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
+                intent.setAction(Apg.Intent.DECRYPT_FILE);
+                startActivity(intent);
             }
         });
 
@@ -103,157 +108,106 @@ public class MainActivity extends Activity {
                     cursor.moveToFirst();
                     int nameIndex = cursor.getColumnIndex(Accounts.NAME);
                     String accountName = cursor.getString(nameIndex);
-                    startMailListActivity(accountName);
+                    startActivity(new Intent(MainActivity.this, MailListActivity.class)
+                                        .putExtra("account", accountName));
                 }
             }
         });
         registerForContextMenu(mAccounts);
 
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-        if (!prefs.getBoolean(PREF_SEEN_CHANGE_LOG, false)) {
-            showDialog(DIALOG_CHANGE_LOG);
+        if (!hasSeenChangeLog()) {
+            showDialog(Id.dialog.change_log);
         }
     }
 
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case DIALOG_NEW_ACCOUNT: {
+            case Id.dialog.new_account: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setTitle("Add Account");
-                alert.setMessage("Specify the Google Mail account you want to add.");
+                alert.setTitle(R.string.title_addAccount);
+                alert.setMessage(R.string.specifyGoogleMailAccount);
 
                 final EditText input = new EditText(this);
                 alert.setView(input);
 
                 alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_NEW_ACCOUNT);
-                                                String accountName = "" + input.getText();
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                MainActivity.this.removeDialog(Id.dialog.new_account);
+                                String accountName = "" + input.getText();
 
-                                                Cursor testCursor =
-                                                        managedQuery(Uri.parse("content://gmail-ls/conversations/" +
-                                                                               accountName),
-                                                                     null, null, null, null);
-                                                if (testCursor == null) {
-                                                    Toast.makeText(MainActivity.this,
-                                                                   "Error: account '" + accountName +
-                                                                     "' not found",
-                                                                   Toast.LENGTH_SHORT).show();
-                                                    return;
-                                                }
+                                Cursor testCursor =
+                                        managedQuery(Uri.parse("content://gmail-ls/conversations/" +
+                                                               accountName),
+                                                     null, null, null, null);
+                                if (testCursor == null) {
+                                    Toast.makeText(MainActivity.this,
+                                                   getString(R.string.errorMessage,
+                                                             getString(R.string.error_accountNotFound,
+                                                                       accountName)),
+                                                   Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
 
-                                                ContentValues values = new ContentValues();
-                                                values.put(Accounts.NAME, accountName);
-                                                try {
-                                                    MainActivity.this.getContentResolver()
-                                                                     .insert(Accounts.CONTENT_URI,
-                                                                             values);
-                                                } catch (SQLException e) {
-                                                    Toast.makeText(MainActivity.this,
-                                                                   "Error: failed to add account '" +
-                                                                              accountName + "'",
-                                                                   Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        });
+                                ContentValues values = new ContentValues();
+                                values.put(Accounts.NAME, accountName);
+                                try {
+                                    MainActivity.this.getContentResolver()
+                                                     .insert(Accounts.CONTENT_URI,
+                                                             values);
+                                } catch (SQLException e) {
+                                    Toast.makeText(MainActivity.this,
+                                                   getString(R.string.errorMessage,
+                                                             getString(R.string.error_addingAccountFailed,
+                                                                       accountName)),
+                                                   Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
 
                 alert.setNegativeButton(android.R.string.cancel,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_NEW_ACCOUNT);
+                                                MainActivity.this.removeDialog(Id.dialog.new_account);
                                             }
                                         });
 
                 return alert.create();
             }
 
-            case DIALOG_ABOUT: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                alert.setTitle("About " + Apg.FULL_VERSION);
-                ScrollView scrollView = new ScrollView(this);
-                TextView message = new TextView(this);
-
-                SpannableString info =
-                        new SpannableString("This is an attempt to bring OpenPGP to Android. " +
-                                            "It is far from complete, but more features are " +
-                                            "planned (see website).\n" +
-                                            "\n" +
-                                            "Feel free to send bug reports, suggestions, feature " +
-                                            "requests, feedback, photographs.\n" +
-                                            "\n" +
-                                            "mail: thi@thialfihar.org\n" +
-                                            "site: http://apg.thialfihar.org\n" +
-                                            "\n" +
-                                            "This software is provided \"as is\", without " +
-                                            "warranty of any kind.");
-                Linkify.addLinks(info, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
-                message.setMovementMethod(LinkMovementMethod.getInstance());
-                message.setText(info);
-                // 5dip padding
-                int padding = (int) (10 * getResources().getDisplayMetrics().densityDpi / 160);
-                message.setPadding(padding, padding, padding, padding);
-                message.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                scrollView.addView(message);
-                alert.setView(scrollView);
-
-                alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_ABOUT);
-                                            }
-                });
-
-                return alert.create();
-            }
-
-            case DIALOG_CHANGE_LOG: {
+            case Id.dialog.change_log: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
                 alert.setTitle("Changes " + Apg.FULL_VERSION);
-                ScrollView scrollView = new ScrollView(this);
-                TextView message = new TextView(this);
+                LayoutInflater inflater =
+                    (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.info, null);
+                TextView message = (TextView) layout.findViewById(R.id.message);
 
-                SpannableString info =
-                        new SpannableString("Read the warnings!\n\n" +
-                                            "Changes:\n" +
-                                            " * create/edit keys\n" +
-                                            " * export keys\n" +
-                                            " * GUI more Android-like\n" +
-                                            " * better error handling\n" +
-                                            " * bug fixes, optimizations\n" +
-                                            " * starting with v0.8.0 APG will be open source, see website\n" +
-                                            "\n" +
-                                            "WARNING: be careful editing your existing keys, as they " +
-                                            "WILL be stripped of certificates right now.\n" +
-                                            "WARNING: key creation/editing doesn't support all " +
-                                            "GPG features yet. In particular: " +
-                                            "key cross-certification is NOT supported, so signing " +
-                                            "with those keys will get a warning when the signature is " +
-                                            "checked.\n" +
-                                            "\n" +
-                                            "I hope APG continues to be useful to you, please send " +
-                                            "bug reports, feature wishes, feedback.");
-                message.setText(info);
-                // 5dip padding
-                int padding = (int) (10 * getResources().getDisplayMetrics().densityDpi / 160);
-                message.setPadding(padding, padding, padding, padding);
-                message.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                scrollView.addView(message);
-                alert.setView(scrollView);
+                message.setText("Read the warnings!\n\n" +
+                                "Changes:\n" +
+                                "\n" +
+                                "WARNING: be careful editing your existing keys, as they " +
+                                "WILL be stripped of certificates right now.\n" +
+                                "\n" +
+                                "WARNING: key creation/editing doesn't support all " +
+                                "GPG features yet. In particular: " +
+                                "key cross-certification is NOT supported, so signing " +
+                                "with those keys will get a warning when the signature is " +
+                                "checked.\n" +
+                                "\n" +
+                                "I hope APG continues to be useful to you, please send " +
+                                "bug reports, feature wishes, feedback.");
+                alert.setView(layout);
 
                 alert.setCancelable(false);
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
-                                                MainActivity.this.removeDialog(DIALOG_CHANGE_LOG);
-                                                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-                                                SharedPreferences.Editor editor = prefs.edit();
-                                                editor.putBoolean(PREF_SEEN_CHANGE_LOG, true);
-                                                editor.commit();
+                                                MainActivity.this.removeDialog(Id.dialog.change_log);
+                                                setHasSeenChangeLog(true);
                                             }
                 });
 
@@ -261,21 +215,22 @@ public class MainActivity extends Activity {
             }
 
             default: {
-                break;
+                return super.onCreateDialog(id);
             }
         }
-        return super.onCreateDialog(id);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, OPTION_MENU_MANAGE_PUBLIC_KEYS, 0, R.string.menu_managePublicKeys)
-                .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(0, OPTION_MENU_MANAGE_SECRET_KEYS, 1, R.string.menu_manageSecretKeys)
-                .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(1, OPTION_MENU_ADD_ACCOUNT, 2, R.string.menu_addAccount)
+        menu.add(0, Id.menu.option.create, 0, R.string.menu_addAccount)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(1, OPTION_MENU_ABOUT, 3, R.string.menu_about)
+        menu.add(1, Id.menu.option.manage_public_keys, 1, R.string.menu_managePublicKeys)
+                .setIcon(android.R.drawable.ic_menu_manage);
+        menu.add(1, Id.menu.option.manage_secret_keys, 2, R.string.menu_manageSecretKeys)
+                .setIcon(android.R.drawable.ic_menu_manage);
+        menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences)
+                .setIcon(android.R.drawable.ic_menu_preferences);
+        menu.add(2, Id.menu.option.about, 4, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
@@ -283,41 +238,35 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case OPTION_MENU_ADD_ACCOUNT: {
-                showDialog(DIALOG_NEW_ACCOUNT);
+            case Id.menu.option.create: {
+                showDialog(Id.dialog.new_account);
                 return true;
             }
 
-            case OPTION_MENU_ABOUT: {
-                showDialog(DIALOG_ABOUT);
+            case Id.menu.option.manage_public_keys: {
+                startActivity(new Intent(this, PublicKeyListActivity.class));
                 return true;
             }
 
-            case OPTION_MENU_MANAGE_PUBLIC_KEYS: {
-                startPublicKeyManager();
-                return true;
-            }
-
-            case OPTION_MENU_MANAGE_SECRET_KEYS: {
-                startSecretKeyManager();
+            case Id.menu.option.manage_secret_keys: {
+                startActivity(new Intent(this, SecretKeyListActivity.class));
                 return true;
             }
 
             default: {
-                break;
+                return super.onOptionsItemSelected(item);
             }
         }
-        return false;
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        TextView nameTextView = (TextView) v.findViewById(R.id.account_name);
+        TextView nameTextView = (TextView) v.findViewById(R.id.accountName);
         if (nameTextView != null) {
             menu.setHeaderTitle(nameTextView.getText());
-            menu.add(0, MENU_DELETE_ACCOUNT, 0, "Delete Account");
+            menu.add(0, Id.menu.delete, 0, R.string.menu_deleteAccount);
         }
     }
 
@@ -327,7 +276,7 @@ public class MainActivity extends Activity {
                 (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
 
         switch (menuItem.getItemId()) {
-            case MENU_DELETE_ACCOUNT: {
+            case Id.menu.delete: {
                 Uri uri = Uri.withAppendedPath(Accounts.CONTENT_URI, "" + info.id);
                 this.getContentResolver().delete(uri, null, null);
                 return true;
@@ -339,28 +288,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void startPublicKeyManager() {
-        startActivity(new Intent(this, PublicKeyListActivity.class));
-    }
 
-    public void startSecretKeyManager() {
-        startActivity(new Intent(this, SecretKeyListActivity.class));
-        //startActivity(new Intent(this, EditKeyActivity.class));
-    }
-
-    public void startEncryptMessageActivity() {
-        startActivity(new Intent(this, EncryptMessageActivity.class));
-    }
-
-    public void startDecryptMessageActivity() {
-        startActivity(new Intent(this, DecryptMessageActivity.class));
-    }
-
-    public void startMailListActivity(String account) {
-        startActivity(new Intent(this, MailListActivity.class).putExtra("account", account));
-    }
-
-    private class AccountListAdapter extends CursorAdapter {
+    private static class AccountListAdapter extends CursorAdapter {
         private LayoutInflater minflater;
 
         public AccountListAdapter(Context context, Cursor cursor) {
@@ -380,7 +309,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView nameTextView = (TextView) view.findViewById(R.id.account_name);
+            TextView nameTextView = (TextView) view.findViewById(R.id.accountName);
             int nameIndex = cursor.getColumnIndex(Accounts.NAME);
             final String account = cursor.getString(nameIndex);
             nameTextView.setText(account);

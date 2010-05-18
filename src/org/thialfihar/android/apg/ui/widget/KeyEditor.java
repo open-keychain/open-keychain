@@ -22,8 +22,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.utils.Choice;
 
@@ -65,26 +67,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 }
             };
 
-    public static class AlgorithmChoice extends Choice {
-        public static final int DSA = 1;
-        public static final int ELGAMAL = 2;
-        public static final int RSA = 3;
-
-        public AlgorithmChoice(int id, String name) {
-            super(id, name);
-        }
-    }
-
-    public static class UsageChoice extends Choice {
-        public static final int SIGN_ONLY = 1;
-        public static final int ENCRYPT_ONLY = 2;
-        public static final int SIGN_AND_ENCRYPT = 3;
-
-        public UsageChoice(int id, String name) {
-            super(id, name);
-        }
-    }
-
     public KeyEditor(Context context) {
         super(context);
     }
@@ -99,26 +81,25 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setAlwaysDrawnWithCacheEnabled(true);
 
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
-        mKeyId = (TextView) findViewById(R.id.key_id);
+        mKeyId = (TextView) findViewById(R.id.keyId);
         mCreationDate = (TextView) findViewById(R.id.creation);
         mExpiryDateButton = (Button) findViewById(R.id.expiry);
         mUsage = (Spinner) findViewById(R.id.usage);
-        KeyEditor.UsageChoice choices[] = {
-                new KeyEditor.UsageChoice(KeyEditor.UsageChoice.SIGN_ONLY,
-                                          getResources().getString(R.string.sign_only)),
-                new KeyEditor.UsageChoice(KeyEditor.UsageChoice.ENCRYPT_ONLY,
-                                          getResources().getString(R.string.encrypt_only)),
-                new KeyEditor.UsageChoice(KeyEditor.UsageChoice.SIGN_AND_ENCRYPT,
-                                          getResources().getString(R.string.sign_and_encrypt)),
+        Choice choices[] = {
+                new Choice(Id.choice.usage.sign_only,
+                           getResources().getString(R.string.choice_signOnly)),
+                new Choice(Id.choice.usage.encrypt_only,
+                           getResources().getString(R.string.choice_encryptOnly)),
+                new Choice(Id.choice.usage.sign_and_encrypt,
+                           getResources().getString(R.string.choice_signAndEncrypt)),
         };
-        ArrayAdapter<KeyEditor.UsageChoice> adapter =
-                new ArrayAdapter<KeyEditor.UsageChoice>(getContext(),
-                                                        android.R.layout.simple_spinner_item,
-                                                        choices);
+        ArrayAdapter<Choice> adapter =
+                new ArrayAdapter<Choice>(getContext(),
+                                         android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
-        mDeleteButton = (ImageButton) findViewById(R.id.edit_delete);
+        mDeleteButton = (ImageButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
 
         setExpiryDate(null);
@@ -137,7 +118,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                              date.get(Calendar.MONTH),
                                              date.get(Calendar.DAY_OF_MONTH));
                 dialog.setCancelable(true);
-                dialog.setButton(Dialog.BUTTON_NEGATIVE, "None",
+                dialog.setButton(Dialog.BUTTON_NEGATIVE,
+                                 getContext().getString(R.string.btn_noDate),
                                  new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         setExpiryDate(null);
@@ -169,31 +151,43 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
-        Vector<KeyEditor.UsageChoice> choices = new Vector<KeyEditor.UsageChoice>();
-        choices.add(new KeyEditor.UsageChoice(KeyEditor.UsageChoice.SIGN_ONLY,
-                                              getResources().getString(R.string.sign_only)));
-        if (!mIsMasterKey) {
-            choices.add(new KeyEditor.UsageChoice(KeyEditor.UsageChoice.ENCRYPT_ONLY,
-                                                  getResources().getString(R.string.encrypt_only)));
+        Vector<Choice> choices = new Vector<Choice>();
+        boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
+        if (!isElGamalKey) {
+            choices.add(new Choice(Id.choice.usage.sign_only,
+                                   getResources().getString(R.string.choice_signOnly)));
         }
-        choices.add(new KeyEditor.UsageChoice(KeyEditor.UsageChoice.SIGN_AND_ENCRYPT,
-                                              getResources().getString(R.string.sign_and_encrypt)));
+        if (!mIsMasterKey) {
+            choices.add(new Choice(Id.choice.usage.encrypt_only,
+                                   getResources().getString(R.string.choice_encryptOnly)));
+        }
+        if (!isElGamalKey) {
+            choices.add(new Choice(Id.choice.usage.sign_and_encrypt,
+                                   getResources().getString(R.string.choice_signAndEncrypt)));
+        }
 
-        ArrayAdapter<KeyEditor.UsageChoice> adapter =
-                new ArrayAdapter<KeyEditor.UsageChoice>(getContext(),
-                                                        android.R.layout.simple_spinner_item,
-                                                        choices);
+        ArrayAdapter<Choice> adapter =
+                new ArrayAdapter<Choice>(getContext(),
+                                         android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
+        int selectId = 0;
         if (Apg.isEncryptionKey(key)) {
             if (Apg.isSigningKey(key)) {
-                mUsage.setSelection(2);
+                selectId = Id.choice.usage.sign_and_encrypt;
             } else {
-                mUsage.setSelection(1);
+                selectId = Id.choice.usage.encrypt_only;
             }
         } else {
-            mUsage.setSelection(0);
+            selectId = Id.choice.usage.sign_only;
+        }
+
+        for (int i = 0; i < choices.size(); ++i) {
+            if (choices.get(i).getId() == selectId) {
+                mUsage.setSelection(i);
+                break;
+            }
         }
 
         GregorianCalendar cal = new GregorianCalendar();
@@ -242,7 +236,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
      return mExpiryDate;
     }
 
-    public UsageChoice getUsage() {
-        return (UsageChoice) mUsage.getSelectedItem();
+    public int getUsage() {
+        return ((Choice) mUsage.getSelectedItem()).getId();
     }
 }

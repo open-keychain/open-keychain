@@ -15,99 +15,129 @@
 -->
 
 <org.thialfihar.android.apg.ui.widget.KeyEditor
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:orientation="vertical"
-  android:paddingLeft="5dip">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="5dip">
 
-<View
-  android:id="@+id/separator"
-  android:layout_width="fill_parent"
-  android:layout_height="1dip"
-  android:background="?android:attr/listDivider"/>
+    <View
+        android:id="@+id/separator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider"/>
 
-<LinearLayout
-  android:layout_height="wrap_content"
-  android:layout_width="fill_parent"
-  android:orientation="horizontal">
-    <TableLayout
-      android:layout_height="wrap_content"
-      android:layout_width="0dip"
-      android:layout_weight="1"
-      android:layout_marginLeft="16dip"
-      android:stretchColumns="1">
-        <TableRow>
-            <TextView android:id="@+id/label_key_id" android:text="Key ID"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:layout_gravity="center_vertical"
-                      android:paddingRight="10dip"/>
-            <TextView
-                android:id="@+id/key_id"
-                android:text="00000000 00000000"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:paddingRight="5dip"
-                android:typeface="monospace"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:id="@+id/label_algorithm"
-                      android:text="Algorithm"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:layout_gravity="center_vertical"
-                      android:paddingRight="10dip"/>
-            <TextView android:id="@+id/algorithm"
-                      android:text="Name"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:paddingRight="5dip"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:id="@+id/label_creation"
-                      android:text="Creation"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:layout_gravity="center_vertical"
-                      android:paddingRight="10dip"/>
-            <TextView
-                android:id="@+id/creation"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:id="@+id/label_expiry"
-                      android:text="Expiry"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:layout_gravity="center_vertical"
-                      android:paddingRight="10dip"/>
-            <Button
-                android:id="@+id/expiry"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-        <TableRow>
-            <TextView android:id="@+id/label_usage"
-                      android:text="Usage"
-                      android:layout_height="wrap_content"
-                      android:layout_width="wrap_content"
-                      android:layout_gravity="center_vertical"
-                      android:paddingRight="10dip"/>
-            <Spinner
-                android:id="@+id/usage"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-    </TableLayout>
-
-    <ImageButton
-        android:id="@+id/edit_delete"
-        android:layout_width="wrap_content"
+    <LinearLayout
         android:layout_height="wrap_content"
-        style="@style/MinusButton"
-        android:layout_gravity="center_vertical"/>
+        android:layout_width="fill_parent"
+        android:orientation="horizontal">
 
-</LinearLayout>
+        <TableLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:layout_marginLeft="16dip"
+            android:stretchColumns="1">
+
+            <TableRow>
+
+                <TextView
+                   android:id="@+id/label_keyId"
+                   android:text="Key ID"
+                   android:layout_height="wrap_content"
+                   android:layout_width="wrap_content"
+                   android:layout_gravity="center_vertical"
+                   android:paddingRight="10dip"/>
+
+                <TextView
+                    android:id="@+id/keyId"
+                    android:text="00000000 00000000"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingRight="5dip"
+                    android:typeface="monospace"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_algorithm"
+                    android:text="Algorithm"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"/>
+
+                <TextView
+                    android:id="@+id/algorithm"
+                    android:text="Name"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingRight="5dip"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_creation"
+                    android:text="Creation"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"/>
+
+                <TextView
+                    android:id="@+id/creation"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_expiry"
+                    android:text="Expiry"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"/>
+
+                <Button
+                    android:id="@+id/expiry"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/label_usage"
+                    android:text="Usage"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"/>
+
+                <Spinner
+                    android:id="@+id/usage"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
+            </TableRow>
+
+        </TableLayout>
+
+        <ImageButton
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/MinusButton"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
 </org.thialfihar.android.apg.ui.widget.KeyEditor>
