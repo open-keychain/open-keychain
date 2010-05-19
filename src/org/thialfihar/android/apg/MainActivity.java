@@ -188,10 +188,6 @@ public class MainActivity extends BaseActivity {
 
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
-                                "* pass phrase cache\n" +
-                                "* decrypt emails from k9mail via More -> Forward (alternate)\n" +
-                                "* compression preferences\n" +
-                                "* accurate decrypt progress bar\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
                                 "WILL be stripped of certificates right now.\n" +
