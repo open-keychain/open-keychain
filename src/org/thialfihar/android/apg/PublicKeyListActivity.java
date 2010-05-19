@@ -53,7 +53,7 @@ public class PublicKeyListActivity extends BaseActivity {
     protected int mSelectedItem = -1;
     protected int mTask = 0;
 
-    private String mImportFilename = Constants.path.app_dir + "/pubring.gpg";
+    private String mImportFilename = Constants.path.app_dir + "/";
     private String mExportFilename = Constants.path.app_dir + "/pubexport.asc";
 
     @Override

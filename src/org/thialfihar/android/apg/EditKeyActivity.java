@@ -115,7 +115,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
     }
 
-    public long getMasterKeyId() {
+    private long getMasterKeyId() {
         if (mKeys.getEditors().getChildCount() == 0) {
             return 0;
         }
@@ -243,6 +243,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 newPassPhrase = oldPassPhrase;
             }
             Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
+            Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
         } catch (NoSuchProviderException e) {
             error = e.getMessage();
         } catch (NoSuchAlgorithmException e) {
