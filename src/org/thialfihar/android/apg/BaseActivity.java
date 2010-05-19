@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
