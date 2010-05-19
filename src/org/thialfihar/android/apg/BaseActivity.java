@@ -417,7 +417,7 @@ public class BaseActivity extends Activity
 
     public int getDefaultMessageCompression() {
         return mPreferences.getInt(Constants.pref.default_message_compression,
-                                   CompressionAlgorithmTags.ZLIB);
+                                   Id.choice.compression.zlib);
     }
 
     public void setDefaultMessageCompression(int value) {
@@ -428,7 +428,7 @@ public class BaseActivity extends Activity
 
     public int getDefaultFileCompression() {
         return mPreferences.getInt(Constants.pref.default_file_compression,
-                                   CompressionAlgorithmTags.ZLIB);
+                                   Id.choice.compression.none);
     }
 
     public void setDefaultFileCompression(int value) {

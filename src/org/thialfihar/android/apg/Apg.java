@@ -1329,7 +1329,7 @@ public class Apg {
         if (compression == Id.choice.compression.none) {
             bcpgOut = new BCPGOutputStream(encryptOut);
         } else {
-            compressGen = new PGPCompressedDataGenerator(CompressionAlgorithmTags.ZLIB);
+            compressGen = new PGPCompressedDataGenerator(compression);
             bcpgOut = new BCPGOutputStream(compressGen.open(encryptOut));
         }
         if (signatureKeyId != 0) {
