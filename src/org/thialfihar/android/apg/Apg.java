@@ -691,7 +691,6 @@ public class Apg {
                                         ProgressDialogUpdater progress)
             throws GeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
-        PGPObjectFactory objectFactory = null;
 
         if (type == Id.type.secret_key) {
             progress.setProgress(R.string.progress_importingSecretKeys, 0, 100);
@@ -704,47 +703,48 @@ public class Apg {
         }
 
         FileInputStream fileIn = new FileInputStream(filename);
-        InputStream in = PGPUtil.getDecoderStream(fileIn);
-        objectFactory = new PGPObjectFactory(in);
-
-        Vector<Object> objects = new Vector<Object>();
-        Object obj = objectFactory.nextObject();
-        while (obj != null) {
-            objects.add(obj);
-            obj = objectFactory.nextObject();
-        }
-
+        long fileSize = new File(filename).length();
+        PositionAwareInputStream progressIn = new PositionAwareInputStream(fileIn);
+        // need to have access to the bufferedInput, so we can reuse it for the possible
+        // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
+        // armour blocks
+        BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         int newKeys = 0;
         int oldKeys = 0;
-        for (int i = 0; i < objects.size(); ++i) {
-            progress.setProgress(i * 100 / objects.size(), 100);
-            obj = objects.get(i);
-            PGPPublicKeyRing publicKeyRing;
-            PGPSecretKeyRing secretKeyRing;
-            int retValue;
-
-            if (type == Id.type.secret_key) {
-                if (!(obj instanceof PGPSecretKeyRing)) {
-                    continue;
-                }
-                secretKeyRing = (PGPSecretKeyRing) obj;
-                retValue = saveKeyRing(context, secretKeyRing);
-            } else {
-                if (!(obj instanceof PGPPublicKeyRing)) {
-                    continue;
-                }
-                publicKeyRing = (PGPPublicKeyRing) obj;
-                retValue = saveKeyRing(context, publicKeyRing);
+        while (true) {
+            InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+            PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+            Object obj = objectFactory.nextObject();
+            // if the first is already a null object, then we can stop trying
+            if (obj == null) {
+                break;
             }
+            while (obj != null) {
+                PGPPublicKeyRing publicKeyRing;
+                PGPSecretKeyRing secretKeyRing;
+                // a return value that doesn't match any Id.return_value.* values, in case
+                // saveKeyRing is never called
+                int retValue = 2107;
 
-            if (retValue == Id.return_value.error) {
-                throw new GeneralException(context.getString(R.string.error_savingKeys));
-            }
+                if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
+                    secretKeyRing = (PGPSecretKeyRing) obj;
+                    retValue = saveKeyRing(context, secretKeyRing);
+                } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
+                    publicKeyRing = (PGPPublicKeyRing) obj;
+                    retValue = saveKeyRing(context, publicKeyRing);
+                }
 
-            if (retValue == Id.return_value.updated) {
-                ++oldKeys;
-            } else if (retValue == Id.return_value.ok) {
-                ++newKeys;
+                if (retValue == Id.return_value.error) {
+                    throw new GeneralException(context.getString(R.string.error_savingKeys));
+                }
+
+                if (retValue == Id.return_value.updated) {
+                    ++oldKeys;
+                } else if (retValue == Id.return_value.ok) {
+                    ++newKeys;
+                }
+                progress.setProgress((int)(100 * progressIn.position() / fileSize), 100);
+                obj = objectFactory.nextObject();
             }
         }
 
