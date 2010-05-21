@@ -19,6 +19,7 @@ package org.thialfihar.android.apg;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -711,41 +712,45 @@ public class Apg {
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         int newKeys = 0;
         int oldKeys = 0;
-        while (true) {
-            InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-            PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-            Object obj = objectFactory.nextObject();
-            // if the first is already a null object, then we can stop trying
-            if (obj == null) {
-                break;
+        try {
+            while (true) {
+                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+                Object obj = objectFactory.nextObject();
+                // if the first is already a null object, then we can stop trying
+                if (obj == null) {
+                    break;
+                }
+                while (obj != null) {
+                    PGPPublicKeyRing publicKeyRing;
+                    PGPSecretKeyRing secretKeyRing;
+                    // a return value that doesn't match any Id.return_value.* values, in case
+                    // saveKeyRing is never called
+                    int retValue = 2107;
+
+                    if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
+                        secretKeyRing = (PGPSecretKeyRing) obj;
+                        retValue = saveKeyRing(context, secretKeyRing);
+                    } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
+                        publicKeyRing = (PGPPublicKeyRing) obj;
+                        retValue = saveKeyRing(context, publicKeyRing);
+                    }
+
+                    if (retValue == Id.return_value.error) {
+                        throw new GeneralException(context.getString(R.string.error_savingKeys));
+                    }
+
+                    if (retValue == Id.return_value.updated) {
+                        ++oldKeys;
+                    } else if (retValue == Id.return_value.ok) {
+                        ++newKeys;
+                    }
+                    progress.setProgress((int)(100 * progressIn.position() / fileSize), 100);
+                    obj = objectFactory.nextObject();
+                }
             }
-            while (obj != null) {
-                PGPPublicKeyRing publicKeyRing;
-                PGPSecretKeyRing secretKeyRing;
-                // a return value that doesn't match any Id.return_value.* values, in case
-                // saveKeyRing is never called
-                int retValue = 2107;
-
-                if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
-                    secretKeyRing = (PGPSecretKeyRing) obj;
-                    retValue = saveKeyRing(context, secretKeyRing);
-                } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
-                    publicKeyRing = (PGPPublicKeyRing) obj;
-                    retValue = saveKeyRing(context, publicKeyRing);
-                }
-
-                if (retValue == Id.return_value.error) {
-                    throw new GeneralException(context.getString(R.string.error_savingKeys));
-                }
-
-                if (retValue == Id.return_value.updated) {
-                    ++oldKeys;
-                } else if (retValue == Id.return_value.ok) {
-                    ++newKeys;
-                }
-                progress.setProgress((int)(100 * progressIn.position() / fileSize), 100);
-                obj = objectFactory.nextObject();
-            }
+        } catch (EOFException e) {
+            // nothing to do, we are done
         }
 
         progress.setProgress(R.string.progress_reloadingKeys, 100, 100);
