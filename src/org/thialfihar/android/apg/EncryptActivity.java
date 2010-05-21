@@ -585,17 +585,17 @@ public class EncryptActivity extends BaseActivity {
                 data.putString("message", new String(((ByteArrayOutputStream)out).toByteArray()));
             }
         } catch (IOException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         data.putInt("type", Id.message.done);

@@ -245,15 +245,15 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
             Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         data.putInt("type", Id.message.done);

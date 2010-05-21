@@ -465,7 +465,7 @@ public class Apg {
             } catch (UserIdEditor.NoEmailException e) {
                 throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAnEmailAddress));
             } catch (UserIdEditor.InvalidEmailException e) {
-                throw new Apg.GeneralException(e.getMessage());
+                throw new Apg.GeneralException("" + e);
             }
 
             if (userId.equals("")) {

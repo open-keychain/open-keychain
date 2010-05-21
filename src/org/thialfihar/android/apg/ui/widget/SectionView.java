@@ -310,17 +310,17 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                                     mNewKeySize, passPhrase,
                                     masterKey);
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (InvalidParameterException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (InvalidAlgorithmParameterException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         Message message = new Message();

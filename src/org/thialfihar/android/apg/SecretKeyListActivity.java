@@ -381,11 +381,11 @@ public class SecretKeyListActivity extends BaseActivity implements OnChildClickL
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         if (mTask == Id.task.import_keys) {

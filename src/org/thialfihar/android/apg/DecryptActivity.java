@@ -373,9 +373,9 @@ public class DecryptActivity extends BaseActivity {
                 // look at the file/message again to check whether there's
                 // symmetric encryption data in there
                 if (mDecryptTarget == Id.target.file) {
-                    ((FileInputStream) in).reset();
+                    in = new FileInputStream(mInputFilename);
                 } else {
-                    ((ByteArrayInputStream) in).reset();
+                    in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
                 }
                 if (!Apg.hasSymmetricEncryption(this, in)) {
                     throw new Apg.GeneralException(getString(R.string.error_noKnownEncryptionFound));
@@ -396,9 +396,9 @@ public class DecryptActivity extends BaseActivity {
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
-            error = e.getLocalizedMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getLocalizedMessage();
+            error = "" + e;
         }
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error),
@@ -479,14 +479,13 @@ public class DecryptActivity extends BaseActivity {
                                                               out).toByteArray()));
             }
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (IOException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
-            e.printStackTrace();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         data.putInt("type", Id.message.done);
