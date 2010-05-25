@@ -87,6 +87,11 @@ public final class Id {
         public static final int key = 0x21070004;
     }
 
+    public static final class database {
+        public static final int type_public = 0;
+        public static final int type_secret = 1;
+    }
+
     public static final class choice {
         public static final class algorithm {
             public static final int dsa = 0x21070001;

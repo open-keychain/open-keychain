@@ -34,9 +34,6 @@ import android.text.TextUtils;
 public class DataProvider extends ContentProvider {
     public static final String AUTHORITY = "org.thialfihar.android.apg.provider";
 
-    private static final String DATABASE_NAME = "apg";
-    private static final int DATABASE_VERSION = 1;
-
     private static final int PUBLIC_KEYS = 101;
     private static final int PUBLIC_KEY_ID = 102;
     private static final int PUBLIC_KEY_BY_KEY_ID = 103;
@@ -53,7 +50,7 @@ public class DataProvider extends ContentProvider {
     private static final HashMap<String, String> mSecretKeysProjectionMap;
     private static final HashMap<String, String> mAccountsProjectionMap;
 
-    private DatabaseHelper mdbHelper;
+    private Database mdbHelper;
 
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -85,43 +82,9 @@ public class DataProvider extends ContentProvider {
         mAccountsProjectionMap.put(Accounts.NAME, Accounts.NAME);
     }
 
-    /**
-     * This class helps open, create, and upgrade the database file.
-     */
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + PublicKeys.TABLE_NAME + " (" +
-                       PublicKeys._ID + " " + PublicKeys._ID_type + "," +
-                       PublicKeys.KEY_ID + " " + PublicKeys.KEY_ID_type + ", " +
-                       PublicKeys.KEY_DATA + " " + PublicKeys.KEY_DATA_type + ", " +
-                       PublicKeys.WHO_ID + " " + PublicKeys.WHO_ID_type + ");");
-
-            db.execSQL("CREATE TABLE " + SecretKeys.TABLE_NAME + " (" +
-                       SecretKeys._ID + " " + SecretKeys._ID_type + "," +
-                       SecretKeys.KEY_ID + " " + SecretKeys.KEY_ID_type + ", " +
-                       SecretKeys.KEY_DATA + " " + SecretKeys.KEY_DATA_type + ", " +
-                       SecretKeys.WHO_ID + " " + SecretKeys.WHO_ID_type + ");");
-
-            db.execSQL("CREATE TABLE " + Accounts.TABLE_NAME + " (" +
-                       Accounts._ID + " " + Accounts._ID_type + "," +
-                       Accounts.NAME + " " + Accounts.NAME_type + ");");
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // TODO: upgrade db if necessary, and do that in a clever way
-        }
-    }
-
     @Override
     public boolean onCreate() {
-        mdbHelper = new DatabaseHelper(getContext());
+        mdbHelper = new Database(getContext());
         return true;
     }
 
