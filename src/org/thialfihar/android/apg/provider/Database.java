@@ -2,6 +2,7 @@ package org.thialfihar.android.apg.provider;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Vector;
 
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKey;
@@ -39,6 +40,7 @@ public class Database extends SQLiteOpenHelper {
     public static HashMap<String, String> sUserIdsProjection;
 
     private SQLiteDatabase mCurrentDb = null;
+    private int mStatus = 0;
 
     static {
         sKeyRingsProjection = new HashMap<String, String>();
@@ -196,7 +198,13 @@ public class Database extends SQLiteOpenHelper {
         mCurrentDb = null;
     }
 
-    public void saveKeyRing(PGPPublicKeyRing keyRing) throws IOException, GeneralException {
+    public int saveKeyRing(PGPPublicKeyRing keyRing) throws IOException, GeneralException {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+
         ContentValues values = new ContentValues();
         PGPPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyID();
@@ -206,19 +214,46 @@ public class Database extends SQLiteOpenHelper {
         values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
         long rowId = insertOrUpdateKeyRing(values);
+        int returnValue = mStatus;
 
         if (rowId == -1) {
             throw new GeneralException("saving public key ring " + masterKeyId + " failed");
         }
 
+        Vector<Integer> seenIds = new Vector<Integer>();
         int rank = 0;
         for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            saveKey(rowId, key, rank);
+            seenIds.add(saveKey(rowId, key, rank));
             ++rank;
         }
+
+        String seenIdsStr = "";
+        for (Integer id : seenIds) {
+            if (seenIdsStr.length() > 0) {
+                seenIdsStr += ",";
+            }
+            seenIdsStr += id;
+        }
+        mCurrentDb.delete(Keys.TABLE_NAME,
+                          Keys.KEY_RING_ID + " = ? AND " +
+                          Keys._ID + " NOT IN (" + seenIdsStr + ")",
+                          new String[] { "" + rowId });
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return returnValue;
     }
 
-    public void saveKeyRing(PGPSecretKeyRing keyRing) throws IOException, GeneralException {
+    public int saveKeyRing(PGPSecretKeyRing keyRing) throws IOException, GeneralException {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+
         ContentValues values = new ContentValues();
         PGPSecretKey masterKey = keyRing.getSecretKey();
         long masterKeyId = masterKey.getKeyID();
@@ -228,21 +263,47 @@ public class Database extends SQLiteOpenHelper {
         values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
         long rowId = insertOrUpdateKeyRing(values);
+        int returnValue = mStatus;
 
         if (rowId == -1) {
             throw new GeneralException("saving secret key ring " + masterKeyId + " failed");
         }
 
-        // TODO: delete every related key not saved now
+        Vector<Integer> seenIds = new Vector<Integer>();
         int rank = 0;
         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            saveKey(rowId, key, rank);
+            seenIds.add(saveKey(rowId, key, rank));
             ++rank;
         }
+
+        String seenIdsStr = "";
+        for (Integer id : seenIds) {
+            if (seenIdsStr.length() > 0) {
+                seenIdsStr += ",";
+            }
+            seenIdsStr += id;
+        }
+        mCurrentDb.delete(Keys.TABLE_NAME,
+                          Keys.KEY_RING_ID + " = ? AND " +
+                          Keys._ID + " NOT IN (" + seenIdsStr + ")",
+                          new String[] { "" + rowId });
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return returnValue;
     }
 
-    private void saveKey(long keyRingId, PGPPublicKey key, int rank)
+    private int saveKey(long keyRingId, PGPPublicKey key, int rank)
             throws IOException, GeneralException {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+
         ContentValues values = new ContentValues();
 
         values.put(Keys.KEY_ID, key.getKeyID());
@@ -262,15 +323,41 @@ public class Database extends SQLiteOpenHelper {
             throw new GeneralException("saving public key " + key.getKeyID() + " failed");
         }
 
+        Vector<Integer> seenIds = new Vector<Integer>();
         int userIdRank = 0;
         for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            saveUserId(rowId, userId, userIdRank);
+            seenIds.add(saveUserId(rowId, userId, userIdRank));
             ++userIdRank;
         }
+
+        String seenIdsStr = "";
+        for (Integer id : seenIds) {
+            if (seenIdsStr.length() > 0) {
+                seenIdsStr += ",";
+            }
+            seenIdsStr += id;
+        }
+        mCurrentDb.delete(UserIds.TABLE_NAME,
+                          UserIds.KEY_ID + " = ? AND " +
+                          UserIds._ID + " NOT IN (" + seenIdsStr + ")",
+                          new String[] { "" + rowId });
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return (int)rowId;
     }
 
-    private void saveKey(long keyRingId, PGPSecretKey key, int rank)
+    private int saveKey(long keyRingId, PGPSecretKey key, int rank)
             throws IOException, GeneralException {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+
         ContentValues values = new ContentValues();
 
         values.put(Keys.KEY_ID, key.getPublicKey().getKeyID());
@@ -290,14 +377,34 @@ public class Database extends SQLiteOpenHelper {
             throw new GeneralException("saving secret key " + key.getPublicKey().getKeyID() + " failed");
         }
 
+        Vector<Integer> seenIds = new Vector<Integer>();
         int userIdRank = 0;
         for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            saveUserId(rowId, userId, userIdRank);
+            seenIds.add(saveUserId(rowId, userId, userIdRank));
             ++userIdRank;
         }
+
+        String seenIdsStr = "";
+        for (Integer id : seenIds) {
+            if (seenIdsStr.length() > 0) {
+                seenIdsStr += ",";
+            }
+            seenIdsStr += id;
+        }
+        mCurrentDb.delete(UserIds.TABLE_NAME,
+                          UserIds.KEY_ID + " = ? AND " +
+                          UserIds._ID + " NOT IN (" + seenIdsStr + ")",
+                          new String[] { "" + rowId });
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return (int)rowId;
     }
 
-    private void saveUserId(long keyId, String userId, int rank) throws GeneralException {
+    private int saveUserId(long keyId, String userId, int rank) throws GeneralException {
         ContentValues values = new ContentValues();
 
         values.put(UserIds.KEY_ID, keyId);
@@ -309,17 +416,17 @@ public class Database extends SQLiteOpenHelper {
         if (rowId == -1) {
             throw new GeneralException("saving user id " + userId + " failed");
         }
+
+        return (int)rowId;
     }
 
     private long insertOrUpdateKeyRing(ContentValues values) {
-        boolean grabbedNewDatabase = (mCurrentDb == null);
-        SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        qb.setTables(KeyRings.TABLE_NAME);
-        qb.setProjectionMap(sKeyRingsProjection);
-
-        Cursor c = qb.query(db, new String[] { KeyRings._ID },
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID },
                             KeyRings.MASTER_KEY_ID + " = ? AND " + KeyRings.TYPE + " = ?",
                             new String[] {
                                 values.getAsString(KeyRings.MASTER_KEY_ID),
@@ -329,30 +436,31 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            db.update(KeyRings.TABLE_NAME, values,
-                      KeyRings._ID + " = ?", new String[] { "" + rowId });
+            mCurrentDb.update(KeyRings.TABLE_NAME, values,
+                              KeyRings._ID + " = ?", new String[] { "" + rowId });
+            mStatus = Id.return_value.updated;
         } else {
-            rowId = db.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
+            rowId = mCurrentDb.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
+            mStatus = Id.return_value.ok;
         }
 
         c.close();
 
         if (grabbedNewDatabase) {
-            db.close();
+            mCurrentDb.close();
+            mCurrentDb = null;
         }
 
         return rowId;
     }
 
     private long insertOrUpdateKey(ContentValues values) {
-        boolean grabbedNewDatabase = (mCurrentDb == null);
-        SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        qb.setTables(Keys.TABLE_NAME);
-        qb.setProjectionMap(sKeysProjection);
-
-        Cursor c = qb.query(db, new String[] { Keys._ID },
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
                             Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
                             new String[] {
                                 values.getAsString(Keys.KEY_ID),
@@ -362,30 +470,29 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            db.update(Keys.TABLE_NAME, values,
-                      Keys._ID + " = ?", new String[] { "" + rowId });
+            mCurrentDb.update(Keys.TABLE_NAME, values,
+                              Keys._ID + " = ?", new String[] { "" + rowId });
         } else {
-            rowId = db.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
+            rowId = mCurrentDb.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
         }
 
         c.close();
 
         if (grabbedNewDatabase) {
-            db.close();
+            mCurrentDb.close();
+            mCurrentDb = null;
         }
 
         return rowId;
     }
 
     private long insertOrUpdateUserId(ContentValues values) {
-        boolean grabbedNewDatabase = (mCurrentDb == null);
-        SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        qb.setTables(UserIds.TABLE_NAME);
-        qb.setProjectionMap(sUserIdsProjection);
-
-        Cursor c = qb.query(db, new String[] { UserIds._ID },
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(UserIds.TABLE_NAME, new String[] { UserIds._ID },
                             UserIds.KEY_ID + " = ? AND " + UserIds.USER_ID + " = ?",
                             new String[] {
                                 values.getAsString(UserIds.KEY_ID),
@@ -395,18 +502,167 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            db.update(UserIds.TABLE_NAME, values,
-                      UserIds._ID + " = ?", new String[] { "" + rowId });
+            mCurrentDb.update(UserIds.TABLE_NAME, values,
+                              UserIds._ID + " = ?", new String[] { "" + rowId });
         } else {
-            rowId = db.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
+            rowId = mCurrentDb.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
         }
 
         c.close();
 
         if (grabbedNewDatabase) {
-            db.close();
+            mCurrentDb.close();
+            mCurrentDb = null;
         }
 
         return rowId;
+    }
+
+    public Object getKeyRing(int keyRingId) {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(KeyRings.TABLE_NAME,
+                            new String[] { KeyRings.KEY_RING_DATA, KeyRings.TYPE },
+                            KeyRings._ID + " = ?",
+                            new String[] {
+                                "" + keyRingId,
+                            },
+                            null, null, null);
+        byte[] data = null;
+        Object keyRing = null;
+        if (c != null && c.moveToFirst()) {
+            data = c.getBlob(0);
+            if (data != null) {
+                try {
+                    if (c.getInt(1) == Id.database.type_public) {
+                        keyRing = new PGPPublicKeyRing(data);
+                    } else {
+                        keyRing = new PGPSecretKeyRing(data);
+                    }
+                } catch (IOException e) {
+                    // can't load it, then
+                } catch (PGPException e) {
+                    // can't load it, then
+                }
+            }
+        }
+
+        c.close();
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return keyRing;
+    }
+
+    public byte[] getKeyRingDataFromKeyId(int type, long keyId) {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getReadableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON (" +
+                            KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                            Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + ")",
+                            new String[] { KeyRings.TABLE_NAME + "." + KeyRings.KEY_RING_DATA },
+                            Keys.TABLE_NAME + "." + Keys.KEY_ID + " = ? AND " +
+                            KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
+                            new String[] {
+                                "" + keyId,
+                                "" + type,
+                            },
+                            null, null, null);
+        byte[] data = null;
+        if (c != null && c.moveToFirst()) {
+            data = c.getBlob(0);
+        }
+
+        c.close();
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return data;
+    }
+
+    public byte[] getKeyDataFromKeyId(int type, long keyId) {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getReadableDatabase();
+            grabbedNewDatabase = true;
+        }
+        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys.KEY_DATA },
+                            Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
+                            new String[] {
+                                "" + keyId,
+                                "" + type,
+                            },
+                            null, null, null);
+        byte[] data = null;
+        if (c != null && c.moveToFirst()) {
+            data = c.getBlob(0);
+        }
+
+        c.close();
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+
+        return data;
+    }
+
+    public void deleteKeyRing(int keyRingId) {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        mCurrentDb.delete(KeyRings.TABLE_NAME,
+                          KeyRings._ID + " = ?", new String[] { "" + keyRingId });
+
+        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
+                                    Keys.KEY_RING_ID + " = ?",
+                                    new String[] {
+                                        "" + keyRingId,
+                                    },
+                                    null, null, null);
+        if (c != null && c.moveToFirst()) {
+            do {
+                int keyId = c.getInt(0);
+                deleteKey(keyId);
+            } while (c.moveToNext());
+        }
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
+    }
+
+    public void deleteKey(int keyId) {
+        boolean grabbedNewDatabase = false;
+        if (mCurrentDb == null) {
+            mCurrentDb = getWritableDatabase();
+            grabbedNewDatabase = true;
+        }
+        mCurrentDb.delete(Keys.TABLE_NAME,
+                          Keys._ID + " = ?", new String[] { "" + keyId });
+
+        mCurrentDb.delete(UserIds.TABLE_NAME,
+                          UserIds.KEY_ID + " = ?", new String[] { "" + keyId });
+
+        if (grabbedNewDatabase) {
+            mCurrentDb.close();
+            mCurrentDb = null;
+        }
     }
 }

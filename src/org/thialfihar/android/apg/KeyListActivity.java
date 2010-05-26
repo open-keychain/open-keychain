@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.bouncycastle2.openpgp.PGPException;
+import org.bouncycastle2.openpgp.PGPPublicKeyRing;
+import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
@@ -122,9 +124,18 @@ public class KeyListActivity extends BaseActivity {
 
         switch (id) {
             case Id.dialog.delete_key: {
-                final long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-                // TODO: String userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey(keyRing));
-                String userId = "SOME KEY";
+                final int keyRingId = ((KeyListAdapter) mList.getExpandableListAdapter()).getKeyRingId(mSelectedItem);
+                mSelectedItem = -1;
+                // TODO: better way to do this?
+                String userId = "<unknown>";
+                Object keyRing = Apg.getKeyRing(keyRingId);
+                if (keyRing != null) {
+                    if (keyRing instanceof PGPPublicKeyRing) {
+                        userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey((PGPPublicKeyRing) keyRing));
+                    } else {
+                        userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey((PGPSecretKeyRing) keyRing));
+                    }
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.warning);
@@ -135,7 +146,7 @@ public class KeyListActivity extends BaseActivity {
                 builder.setPositiveButton(R.string.btn_delete,
                                           new DialogInterface.OnClickListener() {
                                               public void onClick(DialogInterface dialog, int id) {
-                                                  deleteKey(keyId);
+                                                  deleteKey(keyRingId);
                                                   removeDialog(Id.dialog.delete_key);
                                               }
                                           });
@@ -184,7 +195,9 @@ public class KeyListActivity extends BaseActivity {
                 final int thisDialogId = (singleKeyExport ? Id.dialog.export_key : Id.dialog.export_keys);
 
                 return FileDialog.build(this, title,
-                                        getString(R.string.specifyFileToExportTo),
+                                        getString(mKeyType == Id.type.public_key ?
+                                                      R.string.specifyFileToExportTo :
+                                                      R.string.specifyFileToExportSecretKeysTo),
                                         mExportFilename,
                                         new FileDialog.OnClickListener() {
                                             @Override
@@ -239,24 +252,17 @@ public class KeyListActivity extends BaseActivity {
             if (mTask == Id.task.import_keys) {
                 data = Apg.importKeyRings(this, mKeyType, filename, this);
             } else {
-                Vector<Object> keys = new Vector<Object>();
-                // TODO
-                /*
+                Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {
-                    for (PGPSecretKeyRing key : Apg.getSecretKeyRings()) {
-                        keys.add(key);
-                    }
+                    keyRingIds = Apg.getKeyRingIds(mKeyType == Id.type.public_key ?
+                                                       Id.database.type_public :
+                                                       Id.database.type_secret);
                 } else {
-                    keys.add(Apg.getSecretKeyRings().get(mSelectedItem));
+                    int keyRingId = ((KeyListAdapter) mList.getExpandableListAdapter()).getKeyRingId(mSelectedItem);
+                    keyRingIds.add(keyRingId);
+                    mSelectedItem = -1;
                 }
-                if (mSelectedItem == -1) {
-                    for (PGPPublicKeyRing key : Apg.getPublicKeyRings()) {
-                        keys.add(key);
-                    }
-                } else {
-                    keys.add(Apg.getPublicKeyRings().get(mSelectedItem));
-                }*/
-                data = Apg.exportKeyRings(this, keys, filename, this);
+                data = Apg.exportKeyRings(this, keyRingIds, filename, this);
             }
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
@@ -282,14 +288,13 @@ public class KeyListActivity extends BaseActivity {
         sendMessage(msg);
     }
 
-    protected void deleteKey(long keyId) {
-        // TODO
-        //PGPPublicKeyRing keyRing = Apg.getPublicKeyRings().get(index);
-        //Apg.deleteKey(this, keyRing);
+    protected void deleteKey(int keyRingId) {
+        Apg.deleteKey(keyRingId);
         refreshList();
     }
 
     protected void refreshList() {
+        ((KeyListAdapter) mList.getExpandableListAdapter()).rebuild(true);
         ((KeyListAdapter) mList.getExpandableListAdapter()).notifyDataSetChanged();
     }
 
@@ -343,7 +348,7 @@ public class KeyListActivity extends BaseActivity {
                         if (exported == 1) {
                             message = getString(R.string.keyExported);
                         } else if (exported > 0) {
-                            message = getString(R.string.keysExported);
+                            message = getString(R.string.keysExported, exported);
                         } else{
                             message = getString(R.string.noKeysExported);
                         }
@@ -417,8 +422,15 @@ public class KeyListActivity extends BaseActivity {
                     new String[] { "" + (mKeyType == Id.type.public_key ?
                                              Id.database.type_public :
                                              Id.database.type_secret) },
-                    null, null, null);
+                    null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
 
+            rebuild(false);
+        }
+
+        public void rebuild(boolean requery) {
+            if (requery) {
+                mCursor.requery();
+            }
             mChildren = new Vector<Vector<KeyChild>>();
             for (int i = 0; i < mCursor.getCount(); ++i) {
                 mChildren.add(null);
@@ -520,6 +532,11 @@ public class KeyListActivity extends BaseActivity {
         public long getGroupId(int position) {
             mCursor.moveToPosition(position);
             return mCursor.getLong(1); // MASTER_KEY_ID
+        }
+
+        public int getKeyRingId(int position) {
+            mCursor.moveToPosition(position);
+            return mCursor.getInt(0); // _ID
         }
 
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView,

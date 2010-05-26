@@ -79,6 +79,8 @@ import org.bouncycastle2.openpgp.PGPSignatureList;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle2.openpgp.PGPUtil;
+import org.thialfihar.android.apg.provider.Database;
+import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.PublicKeys;
 import org.thialfihar.android.apg.provider.SecretKeys;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
@@ -90,6 +92,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -149,6 +152,8 @@ public class Apg {
             new HashMap<Long, CachedPassPhrase>();
     private static String mEditPassPhrase = null;
 
+    private static Database mDatabase = null;
+
     public static class GeneralException extends Exception {
         static final long serialVersionUID = 0xf812773342L;
 
@@ -162,6 +167,12 @@ public class Apg {
 
         public NoAsymmetricEncryptionException() {
             super();
+        }
+    }
+
+    public static void initialize(Context context) {
+        if (mDatabase == null) {
+            mDatabase = new Database(context);
         }
     }
 
@@ -325,7 +336,7 @@ public class Apg {
                                       String oldPassPhrase, String newPassPhrase,
                                       ProgressDialogUpdater progress)
             throws Apg.GeneralException, NoSuchProviderException, PGPException,
-            NoSuchAlgorithmException, SignatureException {
+            NoSuchAlgorithmException, SignatureException, IOException, Database.GeneralException {
 
         progress.setProgress(R.string.progress_buildingKey, 0, 100);
 
@@ -510,8 +521,8 @@ public class Apg {
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
         progress.setProgress(R.string.progress_savingKeyRing, 90, 100);
-        saveKeyRing(context, secretKeyRing);
-        saveKeyRing(context, publicKeyRing);
+        mDatabase.saveKeyRing(secretKeyRing);
+        mDatabase.saveKeyRing(publicKeyRing);
 
         progress.setProgress(R.string.progress_done, 100, 100);
     }
@@ -542,36 +553,6 @@ public class Apg {
             return Id.return_value.updated;
         } else {
             context.getContentResolver().insert(PublicKeys.CONTENT_URI, values);
-            return Id.return_value.ok;
-        }
-    }
-
-    private static int saveKeyRing(Activity context, PGPSecretKeyRing keyRing) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ContentValues values = new ContentValues();
-
-        PGPSecretKey masterKey = getMasterKey(keyRing);
-        if (masterKey == null) {
-            return Id.return_value.no_master_key;
-        }
-
-        try {
-            keyRing.encode(out);
-            out.close();
-        } catch (IOException e) {
-            return Id.return_value.error;
-        }
-
-        values.put(SecretKeys.KEY_ID, masterKey.getKeyID());
-        values.put(SecretKeys.KEY_DATA, out.toByteArray());
-
-        Uri uri = Uri.withAppendedPath(SecretKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
-        Cursor cursor = context.managedQuery(uri, SECRET_KEY_PROJECTION, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            context.getContentResolver().update(uri, values, null, null);
-            return Id.return_value.updated;
-        } else {
-            context.getContentResolver().insert(SecretKeys.CONTENT_URI, values);
             return Id.return_value.ok;
         }
     }
@@ -616,12 +597,18 @@ public class Apg {
                     // saveKeyRing is never called
                     int retValue = 2107;
 
-                    if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
-                        secretKeyRing = (PGPSecretKeyRing) obj;
-                        retValue = saveKeyRing(context, secretKeyRing);
-                    } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
-                        publicKeyRing = (PGPPublicKeyRing) obj;
-                        retValue = saveKeyRing(context, publicKeyRing);
+                    try {
+                        if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
+                            secretKeyRing = (PGPSecretKeyRing) obj;
+                            retValue = mDatabase.saveKeyRing(secretKeyRing);
+                        } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
+                            publicKeyRing = (PGPPublicKeyRing) obj;
+                            retValue = mDatabase.saveKeyRing(publicKeyRing);
+                        }
+                    } catch (IOException e) {
+                        retValue = Id.return_value.error;
+                    } catch (Database.GeneralException e) {
+                        retValue = Id.return_value.error;
                     }
 
                     if (retValue == Id.return_value.error) {
@@ -641,8 +628,6 @@ public class Apg {
             // nothing to do, we are done
         }
 
-        progress.setProgress(R.string.progress_reloadingKeys, 100, 100);
-
         returnData.putInt("added", newKeys);
         returnData.putInt("updated", oldKeys);
 
@@ -651,12 +636,13 @@ public class Apg {
         return returnData;
     }
 
-    public static Bundle exportKeyRings(Activity context, Vector<Object> keys, String filename,
+    public static Bundle exportKeyRings(Activity context, Vector<Integer> keyRingIds,
+                                        String filename,
                                         ProgressDialogUpdater progress)
             throws GeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        if (keys.size() == 1) {
+        if (keyRingIds.size() == 1) {
             progress.setProgress(R.string.progress_exportingKey, 0, 100);
         } else {
             progress.setProgress(R.string.progress_exportingKeys, 0, 100);
@@ -669,9 +655,9 @@ public class Apg {
         ArmoredOutputStream out = new ArmoredOutputStream(fileOut);
 
         int numKeys = 0;
-        for (int i = 0; i < keys.size(); ++i) {
-            progress.setProgress(i * 100 / keys.size(), 100);
-            Object obj = keys.get(i);
+        for (int i = 0; i < keyRingIds.size(); ++i) {
+            progress.setProgress(i * 100 / keyRingIds.size(), 100);
+            Object obj = mDatabase.getKeyRing(keyRingIds.get(i));
             PGPPublicKeyRing publicKeyRing;
             PGPSecretKeyRing secretKeyRing;
 
@@ -988,36 +974,70 @@ public class Apg {
         return algorithmStr + ", " + keySize + "bit";
     }
 
-    public static void deleteKey(Activity context, PGPPublicKeyRing keyRing) {
-        PGPPublicKey masterKey = getMasterKey(keyRing);
-        Uri uri = Uri.withAppendedPath(PublicKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
-        context.getContentResolver().delete(uri, null, null);
+    public static void deleteKey(int keyRingId) {
+        mDatabase.deleteKeyRing(keyRingId);
     }
 
-    public static void deleteKey(Activity context, PGPSecretKeyRing keyRing) {
-        PGPSecretKey masterKey = getMasterKey(keyRing);
-        Uri uri = Uri.withAppendedPath(SecretKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
-        context.getContentResolver().delete(uri, null, null);
+    public static Object getKeyRing(int keyRingId) {
+        return mDatabase.getKeyRing(keyRingId);
     }
 
     public static PGPSecretKeyRing getSecretKeyRing(long keyId) {
-        // TODO
+        byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_secret, keyId);
+        if (data == null) {
+            return null;
+        }
+        try {
+            return new PGPSecretKeyRing(data);
+        } catch (IOException e) {
+            // no good way to handle this, return null
+        } catch (PGPException e) {
+           // no good way to handle this, return null
+        }
         return null;
     }
 
     public static PGPPublicKeyRing getPublicKeyRing(long keyId) {
-     // TODO
+        byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_public, keyId);
+        if (data == null) {
+            return null;
+        }
+        try {
+            return new PGPPublicKeyRing(data);
+        } catch (IOException e) {
+            // no good way to handle this, return null
+        }
         return null;
     }
 
     public static PGPSecretKey getSecretKey(long keyId) {
-        // TODO
-        return null;
+        PGPSecretKeyRing keyRing = getSecretKeyRing(keyId);
+        return keyRing.getSecretKey(keyId);
     }
 
     public static PGPPublicKey getPublicKey(long keyId) {
-     // TODO
-        return null;
+        PGPPublicKeyRing keyRing = getPublicKeyRing(keyId);
+        try {
+            return keyRing.getPublicKey(keyId);
+        } catch (PGPException e) {
+            return null;
+        }
+    }
+
+    public static Vector<Integer> getKeyRingIds(int type) {
+        SQLiteDatabase db = mDatabase.getReadableDatabase();
+        Vector<Integer> keyIds = new Vector<Integer>();
+        Cursor c = db.query(KeyRings.TABLE_NAME,
+                            new String[] { KeyRings._ID },
+                            KeyRings.TYPE + " = ?", new String[] { "" + type },
+                            null, null, null);
+        if (c != null && c.moveToFirst()) {
+            do {
+                keyIds.add(c.getInt(0));
+            } while (c.moveToNext());
+        }
+        db.close();
+        return keyIds;
     }
 
     public static void encrypt(Context context,

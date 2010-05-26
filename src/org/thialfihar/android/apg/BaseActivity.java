@@ -66,6 +66,8 @@ public class BaseActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Apg.initialize(this);
+
         if (mPreferences == null) {
             mPreferences = getPreferences(MODE_PRIVATE);
         }

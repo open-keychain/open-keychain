@@ -54,8 +54,9 @@ public class SelectSecretKeyListActivity extends BaseActivity {
         // fill things
         mIntent = getIntent();
 
-        mKeyRings = (Vector<PGPSecretKeyRing>) Apg.getSecretKeyRings().clone();
-        Collections.sort(mKeyRings, new Apg.SecretKeySorter());
+        mKeyRings = new Vector<PGPSecretKeyRing>();
+        //(Vector<PGPSecretKeyRing>) Apg.getSecretKeyRings().clone();
+        //Collections.sort(mKeyRings, new Apg.SecretKeySorter());
 
         setContentView(R.layout.select_secret_key);
 

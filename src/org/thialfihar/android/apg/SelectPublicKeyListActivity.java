@@ -49,9 +49,9 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         // needed in Android 1.5, where the XML attribute gets ignored
         mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        Vector<PGPPublicKeyRing> keyRings =
-                (Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
-        Collections.sort(keyRings, new Apg.PublicKeySorter());
+        Vector<PGPPublicKeyRing> keyRings = new Vector<PGPPublicKeyRing>();
+                //(Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
+        //Collections.sort(keyRings, new Apg.PublicKeySorter());
         mList.setAdapter(new SelectPublicKeyListAdapter(mList, keyRings));
 
         if (selectedKeyIds != null) {
