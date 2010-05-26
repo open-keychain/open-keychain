@@ -47,7 +47,7 @@ public class AskForSecretKeyPassPhrase {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = Apg.getSecretKey(secretKeyId);
+            secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
                 return null;
             }

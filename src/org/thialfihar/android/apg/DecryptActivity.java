@@ -468,6 +468,7 @@ public class DecryptActivity extends BaseActivity {
             if (mSignedOnly) {
                 data = Apg.verifyText(this, in, out, this);
             } else {
+                // TODO: check the pass phrase, may be null?
                 data = Apg.decrypt(this, in, out, size, Apg.getCachedPassPhrase(getSecretKeyId()),
                                    this, mAssumeSymmetricEncryption);
             }

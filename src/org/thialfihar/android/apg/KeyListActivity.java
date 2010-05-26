@@ -482,7 +482,7 @@ public class KeyListActivity extends BaseActivity {
                          new String[] {
                              UserIds.USER_ID, // 0
                          },
-                         UserIds.KEY_ID + " = ?",
+                         UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0",
                          new String[] { "" + masterKeyId },
                          null, null, UserIds.RANK + " ASC");
 

@@ -577,6 +577,7 @@ public class Database extends SQLiteOpenHelper {
                                 "" + type,
                             },
                             null, null, null);
+
         byte[] data = null;
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);

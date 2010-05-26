@@ -991,8 +991,10 @@ public class Apg {
             return new PGPSecretKeyRing(data);
         } catch (IOException e) {
             // no good way to handle this, return null
+            // TODO: some info?
         } catch (PGPException e) {
-           // no good way to handle this, return null
+            // no good way to handle this, return null
+            // TODO: some info?
         }
         return null;
     }
@@ -1006,17 +1008,24 @@ public class Apg {
             return new PGPPublicKeyRing(data);
         } catch (IOException e) {
             // no good way to handle this, return null
+            // TODO: some info?
         }
         return null;
     }
 
     public static PGPSecretKey getSecretKey(long keyId) {
         PGPSecretKeyRing keyRing = getSecretKeyRing(keyId);
+        if (keyRing == null) {
+            return null;
+        }
         return keyRing.getSecretKey(keyId);
     }
 
     public static PGPPublicKey getPublicKey(long keyId) {
         PGPPublicKeyRing keyRing = getPublicKeyRing(keyId);
+        if (keyRing == null) {
+            return null;
+        }
         try {
             return keyRing.getPublicKey(keyId);
         } catch (PGPException e) {

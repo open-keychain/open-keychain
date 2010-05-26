@@ -16,15 +16,14 @@
 
 package org.thialfihar.android.apg;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
-import org.thialfihar.android.apg.utils.IterableIterator;
+import org.thialfihar.android.apg.provider.Database;
+import org.thialfihar.android.apg.provider.KeyRings;
+import org.thialfihar.android.apg.provider.Keys;
+import org.thialfihar.android.apg.provider.UserIds;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,40 +33,50 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SelectPublicKeyListAdapter extends BaseAdapter {
-    protected Vector<PGPPublicKeyRing> mKeyRings;
     protected LayoutInflater mInflater;
     protected ListView mParent;
+    protected SQLiteDatabase mDatabase;
+    protected Cursor mCursor;
 
-    public SelectPublicKeyListAdapter(ListView parent,
-                                Vector<PGPPublicKeyRing> keyRings) {
-        setKeyRings(keyRings);
+    public SelectPublicKeyListAdapter(ListView parent) {
         mParent = parent;
+        mDatabase = new Database(parent.getContext()).getReadableDatabase();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mCursor = mDatabase.query(
+              KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
+                                    "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                                    Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
+                                    Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
+                                    ") " +
+                                    " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
+                                    "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
+                                    UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
+                                    UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ",
+              new String[] {
+                  KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
+                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
+                  UserIds.TABLE_NAME + "." + UserIds.USER_ID,         // 2
+                  "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
+                      "tmp." + Keys.KEY_RING_ID + " = " +
+                      KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
+                      "tmp." + Keys.CAN_ENCRYPT + " = '1')",          // 3
+              },
+              KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
+              new String[] { "" + Id.database.type_public },
+              null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
     }
 
-    public void setKeyRings(Vector<PGPPublicKeyRing> keyRings) {
-        mKeyRings = keyRings;
-        notifyDataSetChanged();
-    }
-
-    public Vector<PGPPublicKeyRing> getKeyRings() {
-        return mKeyRings;
+    @Override
+    protected void finalize() throws Throwable {
+        mCursor.close();
+        mDatabase.close();
+        super.finalize();
     }
 
     @Override
     public boolean isEnabled(int position) {
-        PGPPublicKeyRing keyRing = mKeyRings.get(position);
-
-        if (Apg.getMasterKey(keyRing) == null) {
-            return false;
-        }
-
-        Vector<PGPPublicKey> encryptKeys = Apg.getUsableEncryptKeys(keyRing);
-        if (encryptKeys.size() == 0) {
-            return false;
-        }
-
-        return true;
+        mCursor.moveToPosition(position);
+        return mCursor.getInt(3) > 0; // CAN_ENCRYPT
     }
 
     @Override
@@ -77,41 +86,26 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mKeyRings.size();
+        return mCursor.getCount();
     }
 
     @Override
     public Object getItem(int position) {
-        return mKeyRings.get(position);
+        return position;
     }
 
     @Override
     public long getItemId(int position) {
-        PGPPublicKeyRing keyRing = mKeyRings.get(position);
-        PGPPublicKey key = Apg.getMasterKey(keyRing);
-        if (key != null) {
-            return key.getKeyID();
-        }
-
-        return 0;
+        mCursor.moveToPosition(position);
+        return mCursor.getLong(1); // MASTER_KEY_ID
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        mCursor.moveToPosition(position);
+
         View view = mInflater.inflate(R.layout.select_public_key_item, null);
         boolean enabled = isEnabled(position);
-
-        PGPPublicKeyRing keyRing = mKeyRings.get(position);
-        PGPPublicKey key = null;
-        for (PGPPublicKey tKey : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (tKey.isMasterKey()) {
-                key = tKey;
-                break;
-            }
-        }
-
-        Vector<PGPPublicKey> encryptKeys = Apg.getEncryptKeys(keyRing);
-        Vector<PGPPublicKey> usableKeys = Apg.getUsableEncryptKeys(keyRing);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknownUserId);
@@ -119,32 +113,32 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
         keyId.setText(R.string.noKey);
-        TextView creation = (TextView) view.findViewById(R.id.creation);
+        /*TextView creation = (TextView) view.findViewById(R.id.creation);
         creation.setText(R.string.noDate);
         TextView expiry = (TextView) view.findViewById(R.id.expiry);
-        expiry.setText(R.string.noExpiry);
+        expiry.setText(R.string.noExpiry);*/
         TextView status = (TextView) view.findViewById(R.id.status);
         status.setText(R.string.unknownStatus);
 
-        if (key != null) {
-            String userId = Apg.getMainUserId(key);
-            if (userId != null) {
-                String chunks[] = userId.split(" <", 2);
-                userId = chunks[0];
-                if (chunks.length > 1) {
-                    mainUserIdRest.setText("<" + chunks[1]);
-                }
-                mainUserId.setText(userId);
+        String userId = mCursor.getString(2); // USER_ID
+        if (userId != null) {
+            String chunks[] = userId.split(" <", 2);
+            userId = chunks[0];
+            if (chunks.length > 1) {
+                mainUserIdRest.setText("<" + chunks[1]);
             }
-
-            keyId.setText("" + Long.toHexString(key.getKeyID() & 0xffffffffL));
+            mainUserId.setText(userId);
         }
+
+        long masterKeyId = mCursor.getLong(1); // MASTER_KEY_ID
+        keyId.setText("" + Long.toHexString(masterKeyId & 0xffffffffL));
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);
         }
 
-        PGPPublicKey timespanKey = key;
+        // TODO: must get this functionality in again
+        /*PGPPublicKey timespanKey = key;
         if (usableKeys.size() > 0) {
             timespanKey = usableKeys.get(0);
             status.setText(R.string.canEncrypt);
@@ -158,13 +152,19 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
             }
         } else {
             status.setText(R.string.noKey);
+        }*/
+        if (enabled) {
+            status.setText(R.string.canEncrypt);
+        } else {
+            status.setText(R.string.noKey);
         }
 
+        /*
         creation.setText(DateFormat.getDateInstance().format(Apg.getCreationDate(timespanKey)));
         Date expiryDate = Apg.getExpiryDate(timespanKey);
         if (expiryDate != null) {
             expiry.setText(DateFormat.getDateInstance().format(expiryDate));
-        }
+        }*/
 
         status.setText(status.getText() + " ");
 
@@ -176,8 +176,8 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         mainUserId.setEnabled(enabled);
         mainUserIdRest.setEnabled(enabled);
         keyId.setEnabled(enabled);
-        creation.setEnabled(enabled);
-        expiry.setEnabled(enabled);
+        //creation.setEnabled(enabled);
+        //expiry.setEnabled(enabled);
         selected.setEnabled(enabled);
         status.setEnabled(enabled);
 
