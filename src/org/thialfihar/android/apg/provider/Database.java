@@ -34,9 +34,9 @@ public class Database extends SQLiteOpenHelper {
 
     public static final String AUTHORITY = "org.thialfihar.android.apg.database";
 
-    private static HashMap<String, String> sKeyRingsProjection;
-    private static HashMap<String, String> sKeysProjection;
-    private static HashMap<String, String> sUserIdsProjection;
+    public static HashMap<String, String> sKeyRingsProjection;
+    public static HashMap<String, String> sKeysProjection;
+    public static HashMap<String, String> sUserIdsProjection;
 
     private SQLiteDatabase mCurrentDb = null;
 
@@ -67,11 +67,11 @@ public class Database extends SQLiteOpenHelper {
         sUserIdsProjection.put(UserIds.RANK, UserIds.RANK);
     }
 
-    Database(Context context) {
+    public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         //getWritableDatabase();
         // force upgrade to test things
-        onUpgrade(getWritableDatabase(), 1, 2);
+        //onUpgrade(getWritableDatabase(), 1, 2);
     }
 
     @Override
@@ -161,6 +161,7 @@ public class Database extends SQLiteOpenHelper {
                             }
                         } while (cursor.moveToNext());
                     }
+                    cursor.close();
 
                     cursor = db.query(SecretKeys.TABLE_NAME,
                                       new String[]{
@@ -182,6 +183,7 @@ public class Database extends SQLiteOpenHelper {
                             }
                         } while (cursor.moveToNext());
                     }
+                    cursor.close();
 
                     break;
                 }
@@ -310,6 +312,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private long insertOrUpdateKeyRing(ContentValues values) {
+        boolean grabbedNewDatabase = (mCurrentDb == null);
         SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -332,10 +335,17 @@ public class Database extends SQLiteOpenHelper {
             rowId = db.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
         }
 
+        c.close();
+
+        if (grabbedNewDatabase) {
+            db.close();
+        }
+
         return rowId;
     }
 
     private long insertOrUpdateKey(ContentValues values) {
+        boolean grabbedNewDatabase = (mCurrentDb == null);
         SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -358,10 +368,17 @@ public class Database extends SQLiteOpenHelper {
             rowId = db.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
         }
 
+        c.close();
+
+        if (grabbedNewDatabase) {
+            db.close();
+        }
+
         return rowId;
     }
 
     private long insertOrUpdateUserId(ContentValues values) {
+        boolean grabbedNewDatabase = (mCurrentDb == null);
         SQLiteDatabase db = mCurrentDb != null ? mCurrentDb : getWritableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -382,6 +399,12 @@ public class Database extends SQLiteOpenHelper {
                       UserIds._ID + " = ?", new String[] { "" + rowId });
         } else {
             rowId = db.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
+        }
+
+        c.close();
+
+        if (grabbedNewDatabase) {
+            db.close();
         }
 
         return rowId;

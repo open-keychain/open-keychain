@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg.provider;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class UserIds implements BaseColumns {
@@ -28,4 +29,14 @@ public class UserIds implements BaseColumns {
     public static final String USER_ID_type = "TEXT";
     public static final String RANK = "c_rank";
     public static final String RANK_type = "INTEGER";
+
+    public static final Uri CONTENT_URI =
+            Uri.parse("content://" + DataProvider.AUTHORITY + "/user_ids");
+    public static final Uri CONTENT_URI_BY_KEY_ID =
+            Uri.parse("content://" + DataProvider.AUTHORITY + "/user_ids/key_id");
+    public static final String CONTENT_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
+    public static final String CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
+    public static final String DEFAULT_SORT_ORDER = _ID + " DESC";
 }

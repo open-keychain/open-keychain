@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -68,7 +69,15 @@ public class BaseActivity extends Activity
         if (mPreferences == null) {
             mPreferences = getPreferences(MODE_PRIVATE);
         }
-        Apg.initialize(this);
+
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File dir = new File(Constants.path.app_dir);
+            if (!dir.exists() && !dir.mkdirs()) {
+                // ignore this for now, it's not crucial
+                // that the directory doesn't exist at this point
+            }
+        }
+
         if (mCacheTimer == null) {
             setPassPhraseCacheTimer();
         }

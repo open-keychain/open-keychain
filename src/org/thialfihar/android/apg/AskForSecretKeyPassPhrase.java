@@ -47,7 +47,7 @@ public class AskForSecretKeyPassPhrase {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
+            secretKey = Apg.getSecretKey(secretKeyId);
             if (secretKey == null) {
                 return null;
             }
@@ -67,28 +67,28 @@ public class AskForSecretKeyPassPhrase {
         final PassPhraseCallbackInterface cb = callback;
         final Activity activity = context;
         alert.setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        activity.removeDialog(Id.dialog.pass_phrase);
-                                        String passPhrase = "" + input.getText();
-                                        long keyId;
-                                        if (secretKey != null) {
-                                            try {
-                                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                                                                            new BouncyCastleProvider());
-                                            } catch (PGPException e) {
-                                                Toast.makeText(activity,
-                                                               R.string.wrongPassPhrase,
-                                                               Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                            keyId = secretKey.getKeyID();
-                                        } else {
-                                            keyId = Id.key.symmetric;
-                                        }
-                                        cb.passPhraseCallback(keyId, passPhrase);
-                                    }
-                                });
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        activity.removeDialog(Id.dialog.pass_phrase);
+                        String passPhrase = "" + input.getText();
+                        long keyId;
+                        if (secretKey != null) {
+                            try {
+                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
+                                                            new BouncyCastleProvider());
+                            } catch (PGPException e) {
+                                Toast.makeText(activity,
+                                               R.string.wrongPassPhrase,
+                                               Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            keyId = secretKey.getKeyID();
+                        } else {
+                            keyId = Id.key.symmetric;
+                        }
+                        cb.passPhraseCallback(keyId, passPhrase);
+                    }
+                });
 
         alert.setNegativeButton(android.R.string.cancel,
                                 new DialogInterface.OnClickListener() {

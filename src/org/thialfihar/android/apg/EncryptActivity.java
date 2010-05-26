@@ -279,7 +279,7 @@ public class EncryptActivity extends BaseActivity {
             long signatureKeyId = extras.getLong("signatureKeyId");
             long encryptionKeyIds[] = extras.getLongArray("encryptionKeyIds");
             if (signatureKeyId != 0) {
-                PGPSecretKeyRing keyRing = Apg.findSecretKeyRing(signatureKeyId);
+                PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(signatureKeyId);
                 PGPSecretKey masterKey = null;
                 if (keyRing != null) {
                     masterKey = Apg.getMasterKey(keyRing);
@@ -295,7 +295,7 @@ public class EncryptActivity extends BaseActivity {
             if (encryptionKeyIds != null) {
                 Vector<Long> goodIds = new Vector<Long>();
                 for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                    PGPPublicKeyRing keyRing = Apg.findPublicKeyRing(encryptionKeyIds[i]);
+                    PGPPublicKeyRing keyRing = Apg.getPublicKeyRing(encryptionKeyIds[i]);
                     PGPPublicKey masterKey = null;
                     if (keyRing == null) {
                         continue;

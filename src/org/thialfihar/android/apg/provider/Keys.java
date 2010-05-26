@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg.provider;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class Keys implements BaseColumns {
@@ -42,4 +43,12 @@ public class Keys implements BaseColumns {
     public static final String KEY_DATA_type = "BLOB";
     public static final String RANK = "c_key_data";
     public static final String RANK_type = "INTEGER";
+
+    public static final Uri CONTENT_URI =
+            Uri.parse("content://" + DataProvider.AUTHORITY + "/keys");
+    public static final String CONTENT_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.key";
+    public static final String CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.key";
+    public static final String DEFAULT_SORT_ORDER = _ID + " DESC";
 }
