@@ -1,5 +1,7 @@
 package org.thialfihar.android.apg;
 
+import java.util.Date;
+
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -24,6 +26,7 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
         mParent = parent;
         mDatabase =  Apg.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        long now = new Date().getTime() / 1000;
         mCursor = mDatabase.query(
               KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
                                     "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
@@ -41,7 +44,16 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
                   "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
                       "tmp." + Keys.KEY_RING_ID + " = " +
                       KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
-                      "tmp." + Keys.CAN_SIGN + " = '1')",             // 3
+                      "tmp." + Keys.IS_REVOKED + " = '0' AND " +
+                      "tmp." + Keys.CAN_SIGN + " = '1')",             // 3,
+                  "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
+                      "tmp." + Keys.KEY_RING_ID + " = " +
+                      KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
+                      "tmp." + Keys.IS_REVOKED + " = '0' AND " +
+                      "tmp." + Keys.CAN_SIGN + " = '1' AND " +
+                      "tmp." + Keys.CREATION + " <= '" + now + "' AND " +
+                      "(tmp." + Keys.EXPIRY + " IS NULL OR " +
+                       "tmp." + Keys.EXPIRY + " >= '" + now + "'))",  // 4
               },
               KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
               new String[] { "" + Id.database.type_secret },
@@ -58,7 +70,7 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
     @Override
     public boolean isEnabled(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getInt(3) > 0; // CAN_SIGN
+        return mCursor.getInt(4) > 0; // valid CAN_SIGN
     }
 
     @Override
@@ -95,10 +107,6 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
         mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
         keyId.setText(R.string.noKey);
-        /*TextView creation = (TextView) view.findViewById(R.id.creation);
-        creation.setText(R.string.noDate);
-        TextView expiry = (TextView) view.findViewById(R.id.expiry);
-        expiry.setText(R.string.noExpiry);*/
         TextView status = (TextView) view.findViewById(R.id.status);
         status.setText(R.string.unknownStatus);
 
@@ -119,34 +127,16 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
             mainUserIdRest.setVisibility(View.GONE);
         }
 
-        // TODO: must get this functionality in again
-        /*PGPSecretKey timespanKey = key;
-        if (usableKeys.size() > 0) {
-            timespanKey = usableKeys.get(0);
-            status.setText(R.string.canSign);
-        } else if (signingKeys.size() > 0) {
-            timespanKey = signingKeys.get(0);
-            Date now = new Date();
-            if (now.compareTo(Apg.getCreationDate(timespanKey)) > 0) {
-                status.setText(R.string.notValid);
-            } else {
-                status.setText(R.string.expired);
-            }
-        } else {
-            status.setText(R.string.noKey);
-        }*/
-
         if (enabled) {
             status.setText(R.string.canSign);
         } else {
-            status.setText(R.string.noKey);
+            if (mCursor.getInt(3) > 0) {
+                // has some CAN_SIGN keys, but col(4) = 0, so must be revoked or expired
+                status.setText(R.string.expired);
+            } else {
+                status.setText(R.string.noKey);
+            }
         }
-
-        /*creation.setText(DateFormat.getDateInstance().format(Apg.getCreationDate(timespanKey)));
-        Date expiryDate = Apg.getExpiryDate(timespanKey);
-        if (expiryDate != null) {
-            expiry.setText(DateFormat.getDateInstance().format(expiryDate));
-        }*/
 
         status.setText(status.getText() + " ");
 
@@ -154,8 +144,6 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
         mainUserId.setEnabled(enabled);
         mainUserIdRest.setEnabled(enabled);
         keyId.setEnabled(enabled);
-        /*creation.setEnabled(enabled);
-        expiry.setEnabled(enabled);*/
         status.setEnabled(enabled);
 
         return view;

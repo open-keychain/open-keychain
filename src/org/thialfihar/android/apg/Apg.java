@@ -88,11 +88,9 @@ import org.thialfihar.android.apg.ui.widget.UserIdEditor;
 import org.thialfihar.android.apg.utils.IterableIterator;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.ViewGroup;
@@ -318,7 +316,6 @@ public class Apg {
             secretKey = (PGPSecretKey) it.next();
         }
 
-
         return secretKey;
     }
 
@@ -454,6 +451,7 @@ public class Apg {
         hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
         hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
 
+        // TODO: this doesn't work quite right yet
         if (keyEditor.getExpiryDate() != null) {
             GregorianCalendar creationDate = new GregorianCalendar();
             creationDate.setTime(getCreationDate(masterKey));
@@ -505,6 +503,7 @@ public class Apg {
             }
             hashedPacketsGen.setKeyFlags(true, keyFlags);
 
+            // TODO: this doesn't work quite right yet
             if (keyEditor.getExpiryDate() != null) {
                 GregorianCalendar creationDate = new GregorianCalendar();
                 creationDate.setTime(getCreationDate(masterKey));
@@ -528,36 +527,6 @@ public class Apg {
         mDatabase.saveKeyRing(publicKeyRing);
 
         progress.setProgress(R.string.progress_done, 100, 100);
-    }
-
-    private static int saveKeyRing(Activity context, PGPPublicKeyRing keyRing) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ContentValues values = new ContentValues();
-
-        PGPPublicKey masterKey = getMasterKey(keyRing);
-        if (masterKey == null) {
-            return Id.return_value.no_master_key;
-        }
-
-        try {
-            keyRing.encode(out);
-            out.close();
-        } catch (IOException e) {
-            return Id.return_value.error;
-        }
-
-        values.put(PublicKeys.KEY_ID, masterKey.getKeyID());
-        values.put(PublicKeys.KEY_DATA, out.toByteArray());
-
-        Uri uri = Uri.withAppendedPath(PublicKeys.CONTENT_URI_BY_KEY_ID, "" + masterKey.getKeyID());
-        Cursor cursor = context.managedQuery(uri, PUBLIC_KEY_PROJECTION, null, null, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            context.getContentResolver().update(uri, values, null, null);
-            return Id.return_value.updated;
-        } else {
-            context.getContentResolver().insert(PublicKeys.CONTENT_URI, values);
-            return Id.return_value.ok;
-        }
     }
 
     public static Bundle importKeyRings(Activity context, int type, String filename,

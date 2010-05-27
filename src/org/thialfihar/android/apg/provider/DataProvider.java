@@ -18,6 +18,8 @@ package org.thialfihar.android.apg.provider;
 
 import java.util.HashMap;
 
+import org.thialfihar.android.apg.Apg;
+
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -82,7 +84,9 @@ public class DataProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mdbHelper = new Database(getContext());
+        //mdbHelper = new Database(getContext());
+        Apg.initialize(getContext());
+        mdbHelper = Apg.getDatabase();
         return true;
     }
 

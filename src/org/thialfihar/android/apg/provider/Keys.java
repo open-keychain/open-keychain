@@ -37,6 +37,12 @@ public class Keys implements BaseColumns {
     public static final String CAN_SIGN_type = "INTEGER";
     public static final String CAN_ENCRYPT = "c_can_encrypt";
     public static final String CAN_ENCRYPT_type = "INTEGER";
+    public static final String IS_REVOKED = "c_is_revoked";
+    public static final String IS_REVOKED_type = "INTEGER";
+    public static final String CREATION = "c_creation";
+    public static final String CREATION_type = "INTEGER";
+    public static final String EXPIRY = "c_expiry";
+    public static final String EXPIRY_type = "INTEGER";
     public static final String KEY_RING_ID = "c_key_ring_id";
     public static final String KEY_RING_ID_type = "INTEGER";
     public static final String KEY_DATA = "c_key_data";

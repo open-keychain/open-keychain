@@ -1,6 +1,7 @@
 package org.thialfihar.android.apg.provider;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -58,6 +59,9 @@ public class Database extends SQLiteOpenHelper {
         sKeysProjection.put(Keys.KEY_SIZE, Keys.KEY_SIZE);
         sKeysProjection.put(Keys.CAN_SIGN, Keys.CAN_SIGN);
         sKeysProjection.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
+        sKeysProjection.put(Keys.IS_REVOKED, Keys.IS_REVOKED);
+        sKeysProjection.put(Keys.CREATION, Keys.CREATION);
+        sKeysProjection.put(Keys.EXPIRY, Keys.EXPIRY);
         sKeysProjection.put(Keys.KEY_DATA, Keys.KEY_DATA);
         sKeysProjection.put(Keys.RANK, Keys.RANK);
 
@@ -70,9 +74,9 @@ public class Database extends SQLiteOpenHelper {
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mDb = getWritableDatabase();
         // force upgrade to test things
         //onUpgrade(getWritableDatabase(), 1, 2);
+        mDb = getWritableDatabase();
     }
 
     @Override
@@ -99,6 +103,9 @@ public class Database extends SQLiteOpenHelper {
                    Keys.KEY_SIZE + " " + Keys.KEY_SIZE_type + ", " +
                    Keys.CAN_SIGN + " " + Keys.CAN_SIGN_type + ", " +
                    Keys.CAN_ENCRYPT + " " + Keys.CAN_ENCRYPT_type + ", " +
+                   Keys.IS_REVOKED + " " + Keys.IS_REVOKED_type + ", " +
+                   Keys.CREATION + " " + Keys.CREATION_type + ", " +
+                   Keys.EXPIRY + " " + Keys.EXPIRY_type + ", " +
                    Keys.KEY_RING_ID + " " + Keys.KEY_RING_ID_type + ", " +
                    Keys.KEY_DATA + " " + Keys.KEY_DATA_type +
                    Keys.RANK + " " + Keys.RANK_type + ");");
@@ -140,6 +147,9 @@ public class Database extends SQLiteOpenHelper {
                                Keys.KEY_SIZE + " " + Keys.KEY_SIZE_type + ", " +
                                Keys.CAN_SIGN + " " + Keys.CAN_SIGN_type + ", " +
                                Keys.CAN_ENCRYPT + " " + Keys.CAN_ENCRYPT_type + ", " +
+                               Keys.IS_REVOKED + " " + Keys.IS_REVOKED_type + ", " +
+                               Keys.CREATION + " " + Keys.CREATION_type + ", " +
+                               Keys.EXPIRY + " " + Keys.EXPIRY_type + ", " +
                                Keys.KEY_RING_ID + " " + Keys.KEY_RING_ID_type + ", " +
                                Keys.KEY_DATA + " " + Keys.KEY_DATA_type +
                                Keys.RANK + " " + Keys.RANK_type + ");");
@@ -239,6 +249,7 @@ public class Database extends SQLiteOpenHelper {
                           Keys._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
 
+        mDb.setTransactionSuccessful();
         mDb.endTransaction();
         return returnValue;
     }
@@ -279,6 +290,7 @@ public class Database extends SQLiteOpenHelper {
                           Keys._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
 
+        mDb.setTransactionSuccessful();
         mDb.endTransaction();
         return returnValue;
     }
@@ -294,6 +306,12 @@ public class Database extends SQLiteOpenHelper {
         values.put(Keys.KEY_SIZE, key.getBitStrength());
         values.put(Keys.CAN_SIGN, Apg.isSigningKey(key));
         values.put(Keys.CAN_ENCRYPT, Apg.isEncryptionKey(key));
+        values.put(Keys.IS_REVOKED, key.isRevoked());
+        values.put(Keys.CREATION, Apg.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = Apg.getExpiryDate(key);
+        if (expiryDate != null) {
+            values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
+        }
         values.put(Keys.KEY_RING_ID, keyRingId);
         values.put(Keys.KEY_DATA, key.getEncoded());
         values.put(Keys.RANK, rank);
@@ -337,6 +355,12 @@ public class Database extends SQLiteOpenHelper {
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
         values.put(Keys.CAN_SIGN, Apg.isSigningKey(key));
         values.put(Keys.CAN_ENCRYPT, Apg.isEncryptionKey(key));
+        values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
+        values.put(Keys.CREATION, Apg.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = Apg.getExpiryDate(key);
+        if (expiryDate != null) {
+            values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
+        }
         values.put(Keys.KEY_RING_ID, keyRingId);
         values.put(Keys.KEY_DATA, key.getEncoded());
         values.put(Keys.RANK, rank);
@@ -539,6 +563,7 @@ public class Database extends SQLiteOpenHelper {
         }
         c.close();
 
+        mDb.setTransactionSuccessful();
         mDb.endTransaction();
     }
 
