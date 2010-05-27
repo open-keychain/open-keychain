@@ -200,7 +200,10 @@ public class Database extends SQLiteOpenHelper {
                             }
                         } while (cursor.moveToNext());
                     }
-                    cursor.close();
+
+                    if (cursor != null) {
+                        cursor.close();
+                    }
 
                     break;
                 }
@@ -427,7 +430,10 @@ public class Database extends SQLiteOpenHelper {
             rowId = mDb.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
             mStatus = Id.return_value.ok;
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return rowId;
     }
@@ -465,11 +471,14 @@ public class Database extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
             mDb.update(UserIds.TABLE_NAME, values,
-                              UserIds._ID + " = ?", new String[] { "" + rowId });
+                       UserIds._ID + " = ?", new String[] { "" + rowId });
         } else {
             rowId = mDb.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return rowId;
     }
@@ -500,7 +509,10 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return keyRing;
     }
@@ -522,7 +534,10 @@ public class Database extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return data;
     }
@@ -539,7 +554,10 @@ public class Database extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return data;
     }
@@ -561,7 +579,10 @@ public class Database extends SQLiteOpenHelper {
                 deleteKey(keyId);
             } while (c.moveToNext());
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         mDb.setTransactionSuccessful();
         mDb.endTransaction();

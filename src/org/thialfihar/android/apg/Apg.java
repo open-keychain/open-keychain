@@ -1017,7 +1017,10 @@ public class Apg {
                 keyIds.add(c.getInt(0));
             } while (c.moveToNext());
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return keyIds;
     }

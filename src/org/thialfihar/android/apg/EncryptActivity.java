@@ -755,6 +755,7 @@ public class EncryptActivity extends BaseActivity {
                     EncryptActivity.this.
                             startActivity(Intent.createChooser(emailIntent,
                                                                getString(R.string.title_sendEmail)));
+                    break;
                 }
 
                 case Id.target.file: {
