@@ -178,7 +178,10 @@ public class Database extends SQLiteOpenHelper {
                             }
                         } while (cursor.moveToNext());
                     }
-                    cursor.close();
+
+                    if (cursor != null) {
+                        cursor.close();
+                    }
 
                     cursor = db.query(SecretKeys.TABLE_NAME,
                                       new String[]{
@@ -454,7 +457,10 @@ public class Database extends SQLiteOpenHelper {
         } else {
             rowId = mDb.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
         }
-        c.close();
+
+        if (c != null) {
+            c.close();
+        }
 
         return rowId;
     }
