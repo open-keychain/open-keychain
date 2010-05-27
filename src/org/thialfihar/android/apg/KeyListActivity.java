@@ -23,7 +23,6 @@ import java.util.Vector;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
-import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -51,6 +50,7 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 public class KeyListActivity extends BaseActivity {
     protected ExpandableListView mList;
+    protected KeyListAdapter mListAdapter;
 
     protected int mSelectedItem = -1;
     protected int mTask = 0;
@@ -66,7 +66,8 @@ public class KeyListActivity extends BaseActivity {
         setContentView(R.layout.key_list);
 
         mList = (ExpandableListView) findViewById(R.id.list);
-        mList.setAdapter(new KeyListAdapter(this));
+        mListAdapter = new KeyListAdapter(this);
+        mList.setAdapter(mListAdapter);
         registerForContextMenu(mList);
     }
 
@@ -124,7 +125,7 @@ public class KeyListActivity extends BaseActivity {
 
         switch (id) {
             case Id.dialog.delete_key: {
-                final int keyRingId = ((KeyListAdapter) mList.getExpandableListAdapter()).getKeyRingId(mSelectedItem);
+                final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
                 mSelectedItem = -1;
                 // TODO: better way to do this?
                 String userId = "<unknown>";
@@ -258,7 +259,7 @@ public class KeyListActivity extends BaseActivity {
                                                        Id.database.type_public :
                                                        Id.database.type_secret);
                 } else {
-                    int keyRingId = ((KeyListAdapter) mList.getExpandableListAdapter()).getKeyRingId(mSelectedItem);
+                    int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
                     keyRingIds.add(keyRingId);
                     mSelectedItem = -1;
                 }
@@ -294,8 +295,8 @@ public class KeyListActivity extends BaseActivity {
     }
 
     protected void refreshList() {
-        ((KeyListAdapter) mList.getExpandableListAdapter()).rebuild(true);
-        ((KeyListAdapter) mList.getExpandableListAdapter()).notifyDataSetChanged();
+        mListAdapter.rebuild(true);
+        mListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -402,7 +403,7 @@ public class KeyListActivity extends BaseActivity {
 
         public KeyListAdapter(Context context) {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mDatabase = new Database(context).getReadableDatabase();
+            mDatabase = Apg.getDatabase().db();
             mCursor = mDatabase.query(
                     KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
                                           "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
@@ -420,11 +421,16 @@ public class KeyListActivity extends BaseActivity {
                     },
                     KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
                     new String[] { "" + (mKeyType == Id.type.public_key ?
-                                             Id.database.type_public :
-                                             Id.database.type_secret) },
+                                             Id.database.type_public : Id.database.type_secret) },
                     null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
 
             rebuild(false);
+        }
+
+        @Override
+        protected void finalize() throws Throwable {
+            mCursor.deactivate();
+            super.finalize();
         }
 
         public void rebuild(boolean requery) {
@@ -435,13 +441,6 @@ public class KeyListActivity extends BaseActivity {
             for (int i = 0; i < mCursor.getCount(); ++i) {
                 mChildren.add(null);
             }
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            mCursor.close();
-            mDatabase.close();
-            super.finalize();
         }
 
         protected Vector<KeyChild> getChildrenOfGroup(int groupPosition) {
@@ -496,8 +495,6 @@ public class KeyListActivity extends BaseActivity {
             mChildren.set(groupPosition, children);
             return children;
         }
-
-
 
         @Override
         public boolean hasStableIds() {

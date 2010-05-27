@@ -18,7 +18,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.util.Log;
 
 public class Database extends SQLiteOpenHelper {
@@ -39,7 +38,7 @@ public class Database extends SQLiteOpenHelper {
     public static HashMap<String, String> sKeysProjection;
     public static HashMap<String, String> sUserIdsProjection;
 
-    private SQLiteDatabase mCurrentDb = null;
+    private SQLiteDatabase mDb = null;
     private int mStatus = 0;
 
     static {
@@ -71,9 +70,15 @@ public class Database extends SQLiteOpenHelper {
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        //getWritableDatabase();
+        mDb = getWritableDatabase();
         // force upgrade to test things
         //onUpgrade(getWritableDatabase(), 1, 2);
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        mDb.close();
+        super.finalize();
     }
 
     @Override
@@ -111,7 +116,7 @@ public class Database extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        mCurrentDb = db;
+        mDb = db;
         for (int version = oldVersion; version < newVersion; ++version) {
             switch (version) {
                 case 1: { // upgrade 1 to 2
@@ -195,16 +200,11 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
         }
-        mCurrentDb = null;
+        mDb = null;
     }
 
     public int saveKeyRing(PGPPublicKeyRing keyRing) throws IOException, GeneralException {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-
+        mDb.beginTransaction();
         ContentValues values = new ContentValues();
         PGPPublicKey masterKey = keyRing.getPublicKey();
         long masterKeyId = masterKey.getKeyID();
@@ -234,26 +234,17 @@ public class Database extends SQLiteOpenHelper {
             }
             seenIdsStr += id;
         }
-        mCurrentDb.delete(Keys.TABLE_NAME,
+        mDb.delete(Keys.TABLE_NAME,
                           Keys.KEY_RING_ID + " = ? AND " +
                           Keys._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
 
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
-
+        mDb.endTransaction();
         return returnValue;
     }
 
     public int saveKeyRing(PGPSecretKeyRing keyRing) throws IOException, GeneralException {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-
+        mDb.beginTransaction();
         ContentValues values = new ContentValues();
         PGPSecretKey masterKey = keyRing.getSecretKey();
         long masterKeyId = masterKey.getKeyID();
@@ -283,27 +274,17 @@ public class Database extends SQLiteOpenHelper {
             }
             seenIdsStr += id;
         }
-        mCurrentDb.delete(Keys.TABLE_NAME,
+        mDb.delete(Keys.TABLE_NAME,
                           Keys.KEY_RING_ID + " = ? AND " +
                           Keys._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
 
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
-
+        mDb.endTransaction();
         return returnValue;
     }
 
     private int saveKey(long keyRingId, PGPPublicKey key, int rank)
             throws IOException, GeneralException {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-
         ContentValues values = new ContentValues();
 
         values.put(Keys.KEY_ID, key.getKeyID());
@@ -337,27 +318,16 @@ public class Database extends SQLiteOpenHelper {
             }
             seenIdsStr += id;
         }
-        mCurrentDb.delete(UserIds.TABLE_NAME,
+        mDb.delete(UserIds.TABLE_NAME,
                           UserIds.KEY_ID + " = ? AND " +
                           UserIds._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return (int)rowId;
     }
 
     private int saveKey(long keyRingId, PGPSecretKey key, int rank)
             throws IOException, GeneralException {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-
         ContentValues values = new ContentValues();
 
         values.put(Keys.KEY_ID, key.getPublicKey().getKeyID());
@@ -391,15 +361,10 @@ public class Database extends SQLiteOpenHelper {
             }
             seenIdsStr += id;
         }
-        mCurrentDb.delete(UserIds.TABLE_NAME,
+        mDb.delete(UserIds.TABLE_NAME,
                           UserIds.KEY_ID + " = ? AND " +
                           UserIds._ID + " NOT IN (" + seenIdsStr + ")",
                           new String[] { "" + rowId });
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return (int)rowId;
     }
@@ -421,12 +386,7 @@ public class Database extends SQLiteOpenHelper {
     }
 
     private long insertOrUpdateKeyRing(ContentValues values) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID },
+        Cursor c = mDb.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID },
                             KeyRings.MASTER_KEY_ID + " = ? AND " + KeyRings.TYPE + " = ?",
                             new String[] {
                                 values.getAsString(KeyRings.MASTER_KEY_ID),
@@ -436,31 +396,20 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            mCurrentDb.update(KeyRings.TABLE_NAME, values,
+            mDb.update(KeyRings.TABLE_NAME, values,
                               KeyRings._ID + " = ?", new String[] { "" + rowId });
             mStatus = Id.return_value.updated;
         } else {
-            rowId = mCurrentDb.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
+            rowId = mDb.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
             mStatus = Id.return_value.ok;
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return rowId;
     }
 
     private long insertOrUpdateKey(ContentValues values) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
+        Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
                             Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
                             new String[] {
                                 values.getAsString(Keys.KEY_ID),
@@ -470,29 +419,18 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            mCurrentDb.update(Keys.TABLE_NAME, values,
+            mDb.update(Keys.TABLE_NAME, values,
                               Keys._ID + " = ?", new String[] { "" + rowId });
         } else {
-            rowId = mCurrentDb.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
+            rowId = mDb.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return rowId;
     }
 
     private long insertOrUpdateUserId(ContentValues values) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(UserIds.TABLE_NAME, new String[] { UserIds._ID },
+        Cursor c = mDb.query(UserIds.TABLE_NAME, new String[] { UserIds._ID },
                             UserIds.KEY_ID + " = ? AND " + UserIds.USER_ID + " = ?",
                             new String[] {
                                 values.getAsString(UserIds.KEY_ID),
@@ -502,29 +440,18 @@ public class Database extends SQLiteOpenHelper {
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
-            mCurrentDb.update(UserIds.TABLE_NAME, values,
+            mDb.update(UserIds.TABLE_NAME, values,
                               UserIds._ID + " = ?", new String[] { "" + rowId });
         } else {
-            rowId = mCurrentDb.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
+            rowId = mDb.insert(UserIds.TABLE_NAME, UserIds.USER_ID, values);
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return rowId;
     }
 
     public Object getKeyRing(int keyRingId) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(KeyRings.TABLE_NAME,
+        Cursor c = mDb.query(KeyRings.TABLE_NAME,
                             new String[] { KeyRings.KEY_RING_DATA, KeyRings.TYPE },
                             KeyRings._ID + " = ?",
                             new String[] {
@@ -549,24 +476,13 @@ public class Database extends SQLiteOpenHelper {
                 }
             }
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return keyRing;
     }
 
     public byte[] getKeyRingDataFromKeyId(int type, long keyId) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getReadableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON (" +
+        Cursor c = mDb.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON (" +
                             KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + ")",
                             new String[] { KeyRings.TABLE_NAME + "." + KeyRings.KEY_RING_DATA },
@@ -582,24 +498,13 @@ public class Database extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return data;
     }
 
     public byte[] getKeyDataFromKeyId(int type, long keyId) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getReadableDatabase();
-            grabbedNewDatabase = true;
-        }
-        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys.KEY_DATA },
+        Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys.KEY_DATA },
                             Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
                             new String[] {
                                 "" + keyId,
@@ -610,27 +515,17 @@ public class Database extends SQLiteOpenHelper {
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);
         }
-
         c.close();
-
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
 
         return data;
     }
 
     public void deleteKeyRing(int keyRingId) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        mCurrentDb.delete(KeyRings.TABLE_NAME,
+        mDb.beginTransaction();
+        mDb.delete(KeyRings.TABLE_NAME,
                           KeyRings._ID + " = ?", new String[] { "" + keyRingId });
 
-        Cursor c = mCurrentDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
+        Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
                                     Keys.KEY_RING_ID + " = ?",
                                     new String[] {
                                         "" + keyRingId,
@@ -642,28 +537,20 @@ public class Database extends SQLiteOpenHelper {
                 deleteKey(keyId);
             } while (c.moveToNext());
         }
+        c.close();
 
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
+        mDb.endTransaction();
     }
 
-    public void deleteKey(int keyId) {
-        boolean grabbedNewDatabase = false;
-        if (mCurrentDb == null) {
-            mCurrentDb = getWritableDatabase();
-            grabbedNewDatabase = true;
-        }
-        mCurrentDb.delete(Keys.TABLE_NAME,
+    private void deleteKey(int keyId) {
+        mDb.delete(Keys.TABLE_NAME,
                           Keys._ID + " = ?", new String[] { "" + keyId });
 
-        mCurrentDb.delete(UserIds.TABLE_NAME,
+        mDb.delete(UserIds.TABLE_NAME,
                           UserIds.KEY_ID + " = ?", new String[] { "" + keyId });
+    }
 
-        if (grabbedNewDatabase) {
-            mCurrentDb.close();
-            mCurrentDb = null;
-        }
+    public SQLiteDatabase db() {
+        return mDb;
     }
 }

@@ -16,11 +16,7 @@
 
 package org.thialfihar.android.apg;
 
-import java.util.Collections;
 import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 
 import android.content.Intent;
 import android.os.Bundle;

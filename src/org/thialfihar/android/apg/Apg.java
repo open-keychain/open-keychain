@@ -82,7 +82,6 @@ import org.bouncycastle2.openpgp.PGPUtil;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.PublicKeys;
-import org.thialfihar.android.apg.provider.SecretKeys;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
@@ -174,6 +173,10 @@ public class Apg {
         if (mDatabase == null) {
             mDatabase = new Database(context);
         }
+    }
+
+    public static Database getDatabase() {
+        return mDatabase;
     }
 
     public static void setEditPassPhrase(String passPhrase) {
@@ -1034,7 +1037,7 @@ public class Apg {
     }
 
     public static Vector<Integer> getKeyRingIds(int type) {
-        SQLiteDatabase db = mDatabase.getReadableDatabase();
+        SQLiteDatabase db = mDatabase.db();
         Vector<Integer> keyIds = new Vector<Integer>();
         Cursor c = db.query(KeyRings.TABLE_NAME,
                             new String[] { KeyRings._ID },
@@ -1045,7 +1048,8 @@ public class Apg {
                 keyIds.add(c.getInt(0));
             } while (c.moveToNext());
         }
-        db.close();
+        c.close();
+
         return keyIds;
     }
 
