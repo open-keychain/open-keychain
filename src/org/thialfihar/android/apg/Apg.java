@@ -81,7 +81,6 @@ import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle2.openpgp.PGPUtil;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
-import org.thialfihar.android.apg.provider.PublicKeys;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
@@ -131,19 +130,6 @@ public class Apg {
     public static Pattern PGP_SIGNED_MESSAGE =
         Pattern.compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
                         Pattern.DOTALL);
-
-    public static final String PUBLIC_KEY_PROJECTION[] =
-            new String[] {
-                    PublicKeys._ID,
-                    PublicKeys.KEY_ID,
-                    PublicKeys.KEY_DATA,
-                    PublicKeys.WHO_ID, };
-    public static final String SECRET_KEY_PROJECTION[] =
-            new String[] {
-                    PublicKeys._ID,
-                    PublicKeys.KEY_ID,
-                    PublicKeys.KEY_DATA,
-                    PublicKeys.WHO_ID, };
 
     private static HashMap<Long, CachedPassPhrase> mPassPhraseCache =
             new HashMap<Long, CachedPassPhrase>();

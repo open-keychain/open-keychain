@@ -424,13 +424,8 @@ public class KeyListActivity extends BaseActivity {
                                              Id.database.type_public : Id.database.type_secret) },
                     null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
 
+            startManagingCursor(mCursor);
             rebuild(false);
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            mCursor.deactivate();
-            super.finalize();
         }
 
         public void rebuild(boolean requery) {

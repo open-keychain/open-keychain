@@ -36,7 +36,7 @@ public class SelectSecretKeyListActivity extends BaseActivity {
         setContentView(R.layout.select_secret_key);
 
         mList = (ListView) findViewById(R.id.list);
-        mListAdapter = new SelectSecretKeyListAdapter(mList);
+        mListAdapter = new SelectSecretKeyListAdapter(this, mList);
         mList.setAdapter(mListAdapter);
 
         mList.setOnItemClickListener(new OnItemClickListener() {

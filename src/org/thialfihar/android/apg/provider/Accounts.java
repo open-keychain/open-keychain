@@ -16,7 +16,12 @@
 
 package org.thialfihar.android.apg.provider;
 
-public class Accounts extends Accounts1 {
-    private Accounts() {
-    }
+import android.provider.BaseColumns;
+
+public class Accounts implements BaseColumns {
+    public static final String TABLE_NAME = "accounts";
+
+    public static final String _ID_type = "INTEGER PRIMARY KEY";
+    public static final String NAME = "c_name";
+    public static final String NAME_type = "TEXT";
 }

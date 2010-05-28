@@ -160,13 +160,13 @@ public class Database extends SQLiteOpenHelper {
                                UserIds.USER_ID + " " + UserIds.USER_ID_type + "," +
                                UserIds.RANK + " " + UserIds.RANK_type + ");");
 
-                    Cursor cursor = db.query(PublicKeys.TABLE_NAME,
+                    Cursor cursor = db.query("public_keys",
                                              new String[]{
-                                                 PublicKeys.KEY_DATA,
+                                                 "c_key_data",
                                              }, null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
-                            byte[] data = cursor.getBlob(cursor.getColumnIndex(PublicKeys.KEY_DATA));
+                            byte[] data = cursor.getBlob(0);
                             try {
                                 PGPPublicKeyRing keyRing = new PGPPublicKeyRing(data);
                                 saveKeyRing(keyRing);
@@ -183,13 +183,13 @@ public class Database extends SQLiteOpenHelper {
                         cursor.close();
                     }
 
-                    cursor = db.query(SecretKeys.TABLE_NAME,
+                    cursor = db.query("secret_keys",
                                       new String[]{
-                                          SecretKeys.KEY_DATA,
+                                          "c_key_data",
                                       }, null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
-                            byte[] data = cursor.getBlob(cursor.getColumnIndex(SecretKeys.KEY_DATA));
+                            byte[] data = cursor.getBlob(0);
                             try {
                                 PGPSecretKeyRing keyRing = new PGPSecretKeyRing(data);
                                 saveKeyRing(keyRing);

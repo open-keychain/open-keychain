@@ -6,6 +6,7 @@ import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,7 +23,7 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
     protected SQLiteDatabase mDatabase;
     protected Cursor mCursor;
 
-    public SelectSecretKeyListAdapter(ListView parent) {
+    public SelectSecretKeyListAdapter(Activity activity, ListView parent) {
         mParent = parent;
         mDatabase =  Apg.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,13 +59,8 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
               KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
               new String[] { "" + Id.database.type_secret },
               null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
-    }
 
-    @Override
-    protected void finalize() throws Throwable {
-        // TODO: this doesn't seem to work...
-        mCursor.close();
-        super.finalize();
+        activity.startManagingCursor(mCursor);
     }
 
     @Override

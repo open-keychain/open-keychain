@@ -106,10 +106,6 @@
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
-        <provider
-            android:name="org.thialfihar.android.apg.provider.DataProvider"
-            android:authorities="org.thialfihar.android.apg.provider" />
-
     </application>
     <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5" />
 

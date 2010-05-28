@@ -45,7 +45,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         // needed in Android 1.5, where the XML attribute gets ignored
         mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        SelectPublicKeyListAdapter adapter = new SelectPublicKeyListAdapter(mList);
+        SelectPublicKeyListAdapter adapter = new SelectPublicKeyListAdapter(this, mList);
         mList.setAdapter(adapter);
 
         if (selectedKeyIds != null) {

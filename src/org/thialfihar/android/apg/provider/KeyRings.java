@@ -16,7 +16,6 @@
 
 package org.thialfihar.android.apg.provider;
 
-import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class KeyRings implements BaseColumns {
@@ -31,14 +30,4 @@ public class KeyRings implements BaseColumns {
     public static final String WHO_ID_type = "INTEGER";
     public static final String KEY_RING_DATA = "c_key_ring_data";
     public static final String KEY_RING_DATA_type = "BLOB";
-
-    public static final Uri CONTENT_URI =
-            Uri.parse("content://" + DataProvider.AUTHORITY + "/key_ring");
-    public static final Uri CONTENT_URI_BY_KEY_ID =
-            Uri.parse("content://" + DataProvider.AUTHORITY + "/key_ring/key_id");
-    public static final String CONTENT_TYPE =
-            "vnd.android.cursor.dir/vnd.thialfihar.apg.key_ring";
-    public static final String CONTENT_ITEM_TYPE =
-            "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
-    public static final String DEFAULT_SORT_ORDER = _ID + " DESC";
 }
