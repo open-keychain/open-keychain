@@ -160,17 +160,14 @@ public class Database extends SQLiteOpenHelper {
                                UserIds.USER_ID + " " + UserIds.USER_ID_type + "," +
                                UserIds.RANK + " " + UserIds.RANK_type + ");");
 
-                    Cursor cursor = db.query("public_keys",
-                                             new String[]{
-                                                 "c_key_data",
-                                             }, null, null, null, null, null);
+                    Cursor cursor = db.query("public_keys", new String[] { "c_key_data" },
+                                             null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
                             byte[] data = cursor.getBlob(0);
                             try {
                                 PGPPublicKeyRing keyRing = new PGPPublicKeyRing(data);
                                 saveKeyRing(keyRing);
-                                Log.e("good", "imported " + keyRing);
                             } catch (IOException e) {
                                 Log.e("apg.db.upgrade", "key import failed: " + e);
                             } catch (GeneralException e) {
@@ -183,17 +180,14 @@ public class Database extends SQLiteOpenHelper {
                         cursor.close();
                     }
 
-                    cursor = db.query("secret_keys",
-                                      new String[]{
-                                          "c_key_data",
-                                      }, null, null, null, null, null);
+                    cursor = db.query("secret_keys", new String[]{ "c_key_data" },
+                                      null, null, null, null, null);
                     if (cursor != null && cursor.moveToFirst()) {
                         do {
                             byte[] data = cursor.getBlob(0);
                             try {
                                 PGPSecretKeyRing keyRing = new PGPSecretKeyRing(data);
                                 saveKeyRing(keyRing);
-                                Log.e("good", "imported " + keyRing);
                             } catch (IOException e) {
                                 Log.e("apg.db.upgrade", "key import failed: " + e);
                             } catch (PGPException e) {
@@ -207,6 +201,9 @@ public class Database extends SQLiteOpenHelper {
                     if (cursor != null) {
                         cursor.close();
                     }
+
+                    db.execSQL("DROP TABLE IF EXISTS public_keys;");
+                    db.execSQL("DROP TABLE IF EXISTS secret_keys;");
 
                     break;
                 }
