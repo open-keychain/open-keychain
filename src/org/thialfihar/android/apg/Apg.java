@@ -305,7 +305,7 @@ public class Apg {
         return secretKey;
     }
 
-    private static long getNumDatesBetween(GregorianCalendar first, GregorianCalendar second) {
+    private static long getNumDaysBetween(GregorianCalendar first, GregorianCalendar second) {
         GregorianCalendar tmp = new GregorianCalendar();
         tmp.setTime(first.getTime());
         long numDays = (second.getTimeInMillis() - first.getTimeInMillis()) / 1000 / 86400;
@@ -442,7 +442,7 @@ public class Apg {
             GregorianCalendar creationDate = new GregorianCalendar();
             creationDate.setTime(getCreationDate(masterKey));
             GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-            long numDays = getNumDatesBetween(creationDate, expiryDate);
+            long numDays = getNumDaysBetween(creationDate, expiryDate);
             if (numDays <= 0) {
                 throw new GeneralException(context.getString(R.string.error_expiryMustComeAfterCreation));
             }
@@ -494,7 +494,7 @@ public class Apg {
                 GregorianCalendar creationDate = new GregorianCalendar();
                 creationDate.setTime(getCreationDate(masterKey));
                 GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-                long numDays = getNumDatesBetween(creationDate, expiryDate);
+                long numDays = getNumDaysBetween(creationDate, expiryDate);
                 if (numDays <= 0) {
                     throw new GeneralException(context.getString(R.string.error_expiryMustComeAfterCreation));
                 }
