@@ -648,6 +648,9 @@ public class Apg {
     }
 
     public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
+        if (keyRing == null) {
+            return null;
+        }
         for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
             if (key.isMasterKey()) {
                 return key;
@@ -658,6 +661,9 @@ public class Apg {
     }
 
     public static PGPSecretKey getMasterKey(PGPSecretKeyRing keyRing) {
+        if (keyRing == null) {
+            return null;
+        }
         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
             if (key.isMasterKey()) {
                 return key;

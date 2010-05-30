@@ -25,6 +25,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -42,6 +43,7 @@ public class AskForSecretKeyPassPhrase {
         alert.setTitle(R.string.title_authentification);
 
         final PGPSecretKey secretKey;
+        final Activity activity = context;
 
         if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
             secretKey = null;
@@ -49,7 +51,16 @@ public class AskForSecretKeyPassPhrase {
         } else {
             secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
-                return null;
+                alert.setTitle(R.string.title_keyNotFound);
+                alert.setMessage(context.getString(R.string.keyNotFound, secretKeyId));
+                alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.removeDialog(Id.dialog.pass_phrase);
+                    }
+                });
+                alert.setCancelable(false);
+                return alert.create();
             }
             String userId = Apg.getMainUserIdSafe(context, secretKey);
             alert.setMessage(context.getString(R.string.passPhraseFor, userId));
@@ -65,7 +76,6 @@ public class AskForSecretKeyPassPhrase {
         alert.setView(view);
 
         final PassPhraseCallbackInterface cb = callback;
-        final Activity activity = context;
         alert.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
