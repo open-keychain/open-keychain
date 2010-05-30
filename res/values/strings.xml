@@ -38,6 +38,7 @@
     <string name="title_importKeys">Import Keys</string>
     <string name="title_exportKey">Export Key</string>
     <string name="title_exportKeys">Export Keys</string>
+    <string name="title_keyNotFound">Key Not Found</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
@@ -174,6 +175,7 @@
     <string name="keysExported">Succssfully exported %s keys.</string>
     <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
+    <string name="keyNotFound">Couldn't find key %08X.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
