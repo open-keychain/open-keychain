@@ -276,13 +276,13 @@ public class KeyListActivity extends BaseActivity {
         }
 
         if (mTask == Id.task.import_keys) {
-            data.putInt("type", Id.message.import_done);
+            data.putInt(Apg.EXTRA_STATUS, Id.message.import_done);
         } else {
-            data.putInt("type", Id.message.export_done);
+            data.putInt(Apg.EXTRA_STATUS, Id.message.export_done);
         }
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -305,15 +305,15 @@ public class KeyListActivity extends BaseActivity {
 
         Bundle data = msg.getData();
         if (data != null) {
-            int type = data.getInt("type");
+            int type = data.getInt(Apg.EXTRA_STATUS);
             switch (type) {
                 case Id.message.import_done: {
                     removeDialog(Id.dialog.importing);
 
-                    String error = data.getString("error");
+                    String error = data.getString(Apg.EXTRA_ERROR);
                     if (error != null) {
                         Toast.makeText(KeyListActivity.this,
-                                       getString(R.string.errorMessage, data.getString("error")),
+                                       getString(R.string.errorMessage, error),
                                        Toast.LENGTH_SHORT).show();
                     } else {
                         int added = data.getInt("added");
@@ -338,10 +338,10 @@ public class KeyListActivity extends BaseActivity {
                 case Id.message.export_done: {
                     removeDialog(Id.dialog.exporting);
 
-                    String error = data.getString("error");
+                    String error = data.getString(Apg.EXTRA_ERROR);
                     if (error != null) {
                         Toast.makeText(KeyListActivity.this,
-                                       getString(R.string.errorMessage, data.getString("error")),
+                                       getString(R.string.errorMessage, error),
                                        Toast.LENGTH_SHORT).show();
                     } else {
                         int exported = data.getInt("exported");

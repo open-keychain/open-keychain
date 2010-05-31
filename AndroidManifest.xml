@@ -92,6 +92,9 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
             </intent-filter>
 
         </activity>

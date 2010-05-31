@@ -273,11 +273,11 @@ public class EncryptActivity extends BaseActivity {
             if (extras == null) {
                 extras = new Bundle();
             }
-            String data = extras.getString("data");
-            mSendTo = extras.getString("sendTo");
-            mSubject = extras.getString("subject");
-            long signatureKeyId = extras.getLong("signatureKeyId");
-            long encryptionKeyIds[] = extras.getLongArray("encryptionKeyIds");
+            String data = extras.getString(Apg.EXTRA_DATA);
+            mSendTo = extras.getString(Apg.EXTRA_SEND_TO);
+            mSubject = extras.getString(Apg.EXTRA_SUBJECT);
+            long signatureKeyId = extras.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
+            long encryptionKeyIds[] = extras.getLongArray(Apg.EXTRA_ENCRYPTION_KEY_IDS);
             if (signatureKeyId != 0) {
                 PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(signatureKeyId);
                 PGPSecretKey masterKey = null;
@@ -582,7 +582,8 @@ public class EncryptActivity extends BaseActivity {
 
             out.close();
             if (mEncryptTarget != Id.target.file) {
-                data.putString("message", new String(((ByteArrayOutputStream)out).toByteArray()));
+                data.putByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE,
+                                  ((ByteArrayOutputStream)out).toByteArray());
             }
         } catch (IOException e) {
             error = "" + e;
@@ -598,10 +599,10 @@ public class EncryptActivity extends BaseActivity {
             error = "" + e;
         }
 
-        data.putInt("type", Id.message.done);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -645,7 +646,7 @@ public class EncryptActivity extends BaseActivity {
 
     private void selectPublicKeys() {
         Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
-        intent.putExtra("selection", mEncryptionKeyIds);
+        intent.putExtra(Apg.EXTRA_SELECTION, mEncryptionKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -702,7 +703,7 @@ public class EncryptActivity extends BaseActivity {
             case Id.request.public_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    mEncryptionKeyIds = bundle.getLongArray("selection");
+                    mEncryptionKeyIds = bundle.getLongArray(Apg.EXTRA_SELECTION);
                 }
                 updateView();
                 break;
@@ -723,14 +724,13 @@ public class EncryptActivity extends BaseActivity {
         removeDialog(Id.dialog.encrypting);
 
         Bundle data = msg.getData();
-        String error = data.getString("error");
+        String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(EncryptActivity.this,
-                           getString(R.string.errorMessage, data.getString("error")),
-                           Toast.LENGTH_SHORT).show();
+                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;
         } else {
-            String message = data.getString("message");
+            String message = Strings.fromUTF8ByteArray(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
             switch (mEncryptTarget) {
                 case Id.target.clipboard: {
                     ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);

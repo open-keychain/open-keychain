@@ -292,7 +292,7 @@ public class BaseActivity extends Activity
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    setSecretKeyId(bundle.getLong("selectedKeyId"));
+                    setSecretKeyId(bundle.getLong(Apg.EXTRA_KEY_ID));
                 } else {
                     setSecretKeyId(Id.key.none);
                 }
@@ -314,9 +314,9 @@ public class BaseActivity extends Activity
     public void setProgress(int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt("type", Id.message.progress_update);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
+        data.putInt(Apg.EXTRA_PROGRESS, progress);
+        data.putInt(Apg.EXTRA_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -324,10 +324,10 @@ public class BaseActivity extends Activity
     public void setProgress(String message, int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt("type", Id.message.progress_update);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
+        data.putString(Apg.EXTRA_MESSAGE, message);
+        data.putInt(Apg.EXTRA_PROGRESS, progress);
+        data.putInt(Apg.EXTRA_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -338,16 +338,16 @@ public class BaseActivity extends Activity
             return;
         }
 
-        int type = data.getInt("type");
+        int type = data.getInt(Apg.EXTRA_STATUS);
         switch (type) {
             case Id.message.progress_update: {
-                String message = data.getString("message");
+                String message = data.getString(Apg.EXTRA_MESSAGE);
                 if (mProgressDialog != null) {
                     if (message != null) {
                         mProgressDialog.setMessage(message);
                     }
-                    mProgressDialog.setMax(data.getInt("max"));
-                    mProgressDialog.setProgress(data.getInt("progress"));
+                    mProgressDialog.setMax(data.getInt(Apg.EXTRA_MAX));
+                    mProgressDialog.setProgress(data.getInt(Apg.EXTRA_PROGRESS));
                 }
                 break;
             }

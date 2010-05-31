@@ -38,7 +38,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         mIntent = getIntent();
         long selectedKeyIds[] = null;
         if (mIntent.getExtras() != null) {
-            selectedKeyIds = mIntent.getExtras().getLongArray("selection");
+            selectedKeyIds = mIntent.getExtras().getLongArray(Apg.EXTRA_SELECTION);
         }
 
         mList = (ListView) findViewById(R.id.list);
@@ -96,7 +96,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         for (int i = 0; i < vector.size(); ++i) {
             selectedKeyIds[i] = vector.get(i);
         }
-        data.putExtra("selection", selectedKeyIds);
+        data.putExtra(Apg.EXTRA_SELECTION, selectedKeyIds);
         setResult(RESULT_OK, data);
         finish();
     }

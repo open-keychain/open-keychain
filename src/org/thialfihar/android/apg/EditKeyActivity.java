@@ -71,7 +71,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Intent intent = getIntent();
         long keyId = 0;
         if (intent.getExtras() != null) {
-            keyId = intent.getExtras().getLong("keyId");
+            keyId = intent.getExtras().getLong(Apg.EXTRA_KEY_ID);
         }
 
         if (keyId != 0) {
@@ -262,10 +262,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             error = "" + e;
         }
 
-        data.putInt("type", Id.message.done);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -279,11 +279,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Bundle data = msg.getData();
         removeDialog(Id.dialog.saving);
 
-        String error = data.getString("error");
+        String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(EditKeyActivity.this,
-                           getString(R.string.errorMessage, data.getString("error")),
-                           Toast.LENGTH_SHORT).show();
+                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);

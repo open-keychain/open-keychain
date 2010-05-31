@@ -100,7 +100,29 @@ public class Apg {
         public static final String ENCRYPT = "org.thialfihar.android.apg.intent.ENCRYPT";
         public static final String DECRYPT_FILE = "org.thialfihar.android.apg.intent.DECRYPT_FILE";
         public static final String ENCRYPT_FILE = "org.thialfihar.android.apg.intent.ENCRYPT_FILE";
+        public static final String DECRYPT_AND_RETURN = "org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN";
     }
+
+    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_STATUS = "status";
+    public static final String EXTRA_ERROR = "error";
+    public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
+    public static final String EXTRA_ENCRYPTED_MESSAGE = "decryptedMessage";
+    public static final String EXTRA_SIGNATURE = "signature";
+    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
+    public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
+    public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
+    public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
+    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_REPLY_TO = "replyTo";
+    public static final String EXTRA_SEND_TO = "sendTo";
+    public static final String EXTRA_SUBJECT = "subject";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
+    public static final String EXTRA_SELECTION = "selection";
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String EXTRA_PROGRESS = "progress";
+    public static final String EXTRA_MAX = "max";
+    public static final String EXTRA_ACCOUNT = "account";
 
     public static String VERSION = "1.0.0";
     public static String FULL_VERSION = "APG v" + VERSION;
@@ -1410,7 +1432,7 @@ public class Apg {
 
         if (dataChunk instanceof PGPOnePassSignatureList) {
             progress.setProgress(R.string.progress_processingSignature, currentProgress, 100);
-            returnData.putBoolean("signature", true);
+            returnData.putBoolean(EXTRA_SIGNATURE, true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
@@ -1428,17 +1450,17 @@ public class Apg {
                     if (sigKeyRing != null) {
                         userId = getMainUserId(getMasterKey(sigKeyRing));
                     }
-                    returnData.putString("signatureUserId", userId);
+                    returnData.putString(EXTRA_SIGNATURE_USER_ID, userId);
                     break;
                 }
             }
 
-            returnData.putLong("signatureKeyId", signatureKeyId);
+            returnData.putLong(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
 
             if (signature != null) {
                 signature.initVerify(signatureKey, new BouncyCastleProvider());
             } else {
-                returnData.putBoolean("signatureUnknown", true);
+                returnData.putBoolean(EXTRA_SIGNATURE_UNKNOWN, true);
             }
 
             dataChunk = plainFact.nextObject();
@@ -1470,7 +1492,7 @@ public class Apg {
                     try {
                         signature.update(buffer, 0, n);
                     } catch (SignatureException e) {
-                        returnData.putBoolean("signatureSuccess", false);
+                        returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, false);
                         signature = null;
                     }
                 }
@@ -1490,9 +1512,9 @@ public class Apg {
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = (PGPSignature) signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
-                    returnData.putBoolean("signatureSuccess", true);
+                    returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, true);
                 } else {
-                    returnData.putBoolean("signatureSuccess", false);
+                    returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, false);
                 }
             }
         }
@@ -1545,7 +1567,7 @@ public class Apg {
         byte[] clearText = out.toByteArray();
         outStream.write(clearText);
 
-        returnData.putBoolean("signature", true);
+        returnData.putBoolean(EXTRA_SIGNATURE, true);
 
         progress.setProgress(R.string.progress_processingSignature, 60, 100);
         PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
@@ -1572,15 +1594,15 @@ public class Apg {
                 if (sigKeyRing != null) {
                     userId = getMainUserId(getMasterKey(sigKeyRing));
                 }
-                returnData.putString("signatureUserId", userId);
+                returnData.putString(EXTRA_SIGNATURE_USER_ID, userId);
                 break;
             }
         }
 
-        returnData.putLong("signatureKeyId", signatureKeyId);
+        returnData.putLong(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
 
         if (signature == null) {
-            returnData.putBoolean("signatureUnknown", true);
+            returnData.putBoolean(EXTRA_SIGNATURE_UNKNOWN, true);
             progress.setProgress(R.string.progress_done, 100, 100);
             return returnData;
         }
@@ -1605,7 +1627,7 @@ public class Apg {
             while (lookAhead != -1);
         }
 
-        returnData.putBoolean("signatureSuccess", signature.verify());
+        returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, signature.verify());
 
         progress.setProgress(R.string.progress_done, 100, 100);
         return returnData;

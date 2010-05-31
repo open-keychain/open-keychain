@@ -76,7 +76,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     }
                 }
 
-                String error = data.getString("error");
+                String error = data.getString(Apg.EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(getContext(),
                                    getContext().getString(R.string.errorMessage, error),
@@ -327,7 +327,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         Bundle data = new Bundle();
         data.putBoolean("closeProgressDialog", true);
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         } else {
             data.putBoolean("gotNewKey", true);
         }
