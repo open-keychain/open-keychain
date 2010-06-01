@@ -35,7 +35,6 @@ import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.bouncycastle2.util.Strings;
-import org.openintents.intents.FileManager;
 import org.thialfihar.android.apg.Apg.GeneralException;
 import org.thialfihar.android.apg.utils.Choice;
 
@@ -354,18 +353,17 @@ public class EncryptActivity extends BaseActivity {
     private void openFile() {
         String filename = mFilename.getText().toString();
 
-        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-
-        intent.putExtra(FileManager.EXTRA_TITLE, R.string.filemanager_titleEncrypt);
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
+        intent.setType("*/*");
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 

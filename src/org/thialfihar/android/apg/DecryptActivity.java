@@ -32,9 +32,7 @@ import java.util.regex.Matcher;
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.util.Strings;
-import org.openintents.intents.FileManager;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -296,18 +294,17 @@ public class DecryptActivity extends BaseActivity {
     private void openFile() {
         String filename = mFilename.getText().toString();
 
-        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-
-        intent.putExtra(FileManager.EXTRA_TITLE, getString(R.string.filemanager_titleDecrypt));
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
+        intent.setType("*/*");
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -16,8 +16,6 @@
 
 package org.thialfihar.android.apg;
 
-import org.openintents.intents.FileManager;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -48,6 +46,8 @@ public class FileDialog {
                                     String defaultFile, OnClickListener onClickListener,
                                     String fileManagerTitle, String fileManagerButton,
                                     int requestCode) {
+        // TODO: fileManagerTitle and fileManagerButton are deprecated, no use for them right now,
+        // but maybe the Intent now used will someday support them again, so leaving them in
         LayoutInflater inflater =
             (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
@@ -102,18 +102,17 @@ public class FileDialog {
     private static void openFile() {
         String filename = mFilename.getText().toString();
 
-        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-
-        intent.putExtra(FileManager.EXTRA_TITLE, mFileManagerTitle);
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, mFileManagerButton);
+        intent.setType("*/*");
 
         try {
             mActivity.startActivityForResult(intent, mRequestCode);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(mActivity, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 }
