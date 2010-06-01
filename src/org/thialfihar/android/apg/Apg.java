@@ -101,6 +101,9 @@ public class Apg {
         public static final String DECRYPT_FILE = "org.thialfihar.android.apg.intent.DECRYPT_FILE";
         public static final String ENCRYPT_FILE = "org.thialfihar.android.apg.intent.ENCRYPT_FILE";
         public static final String DECRYPT_AND_RETURN = "org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN";
+        public static final String ENCRYPT_AND_RETURN = "org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN";
+        public static final String SELECT_PUBLIC_KEYS = "org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS";
+        public static final String SELECT_SECRET_KEY = "org.thialfihar.android.apg.intent.SELECT_SECRET_KEY";
     }
 
     public static final String EXTRA_DATA = "data";
@@ -150,8 +153,8 @@ public class Apg {
                             Pattern.DOTALL);
 
     public static Pattern PGP_SIGNED_MESSAGE =
-        Pattern.compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
-                        Pattern.DOTALL);
+            Pattern.compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+                            Pattern.DOTALL);
 
     private static HashMap<Long, CachedPassPhrase> mPassPhraseCache =
             new HashMap<Long, CachedPassPhrase>();
@@ -1330,6 +1333,9 @@ public class Apg {
                                  String passPhrase, ProgressDialogUpdater progress,
                                  boolean assumeSymmetric)
             throws IOException, GeneralException, PGPException, SignatureException {
+        if (passPhrase == null) {
+            passPhrase = "";
+        }
         Bundle returnData = new Bundle();
         InputStream in = PGPUtil.getDecoderStream(inStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);

@@ -53,12 +53,28 @@
         <activity
             android:name=".SelectPublicKeyListActivity"
             android:label="@string/title_selectRecipients"
-            android:configChanges="keyboardHidden|orientation|keyboard"/>
+            android:configChanges="keyboardHidden|orientation|keyboard">
+
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".SelectSecretKeyListActivity"
             android:label="@string/title_selectSignature"
-            android:configChanges="keyboardHidden|orientation|keyboard"/>
+            android:configChanges="keyboardHidden|orientation|keyboard">
+
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_SECRET_KEY" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".EncryptActivity"
@@ -68,6 +84,9 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
             </intent-filter>
 
         </activity>
