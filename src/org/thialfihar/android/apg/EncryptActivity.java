@@ -346,7 +346,7 @@ public class EncryptActivity extends BaseActivity {
         if (mMessage.getText().length() > 0 &&
             ((mEncryptionKeyIds != null &&
               mEncryptionKeyIds.length > 0) ||
-             getSecretKeyId() > 0)) {
+             getSecretKeyId() != 0)) {
             encryptClicked();
         }
     }
@@ -467,7 +467,7 @@ public class EncryptActivity extends BaseActivity {
                 return;
             }
         } else {
-            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+            boolean encryptIt = (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0);
             // for now require at least one form of encryption for files
             if (!encryptIt && mEncryptTarget == Id.target.file) {
                 Toast.makeText(this, R.string.selectEncryptionKey, Toast.LENGTH_SHORT).show();
@@ -537,7 +537,7 @@ public class EncryptActivity extends BaseActivity {
             } else {
                 encryptionKeyIds = mEncryptionKeyIds;
                 signatureKeyId = getSecretKeyId();
-                signOnly = mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0;
+                signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
             }
 
             if (mEncryptTarget == Id.target.file) {
@@ -558,7 +558,9 @@ public class EncryptActivity extends BaseActivity {
             } else {
                 String message = mMessage.getText().toString();
 
-                if (signOnly) {
+                if (signOnly &&
+                    !(mIntent != null &&
+                      mIntent.getAction().equals(Apg.Intent.ENCRYPT_AND_RETURN))) {
                     // fix the message a bit, trailing spaces and newlines break stuff,
                     // because GMail sends as HTML and such things fuck up the signature,
                     // TODO: things like "<" and ">" also fuck up the signature

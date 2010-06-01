@@ -248,9 +248,9 @@ public class Database extends SQLiteOpenHelper {
             seenIdsStr += id;
         }
         mDb.delete(Keys.TABLE_NAME,
-                          Keys.KEY_RING_ID + " = ? AND " +
-                          Keys._ID + " NOT IN (" + seenIdsStr + ")",
-                          new String[] { "" + rowId });
+                   Keys.KEY_RING_ID + " = ? AND " +
+                   Keys._ID + " NOT IN (" + seenIdsStr + ")",
+                   new String[] { "" + rowId });
 
         mDb.setTransactionSuccessful();
         mDb.endTransaction();
@@ -289,9 +289,9 @@ public class Database extends SQLiteOpenHelper {
             seenIdsStr += id;
         }
         mDb.delete(Keys.TABLE_NAME,
-                          Keys.KEY_RING_ID + " = ? AND " +
-                          Keys._ID + " NOT IN (" + seenIdsStr + ")",
-                          new String[] { "" + rowId });
+                   Keys.KEY_RING_ID + " = ? AND " +
+                   Keys._ID + " NOT IN (" + seenIdsStr + ")",
+                   new String[] { "" + rowId });
 
         mDb.setTransactionSuccessful();
         mDb.endTransaction();
@@ -340,9 +340,9 @@ public class Database extends SQLiteOpenHelper {
             seenIdsStr += id;
         }
         mDb.delete(UserIds.TABLE_NAME,
-                          UserIds.KEY_ID + " = ? AND " +
-                          UserIds._ID + " NOT IN (" + seenIdsStr + ")",
-                          new String[] { "" + rowId });
+                   UserIds.KEY_ID + " = ? AND " +
+                   UserIds._ID + " NOT IN (" + seenIdsStr + ")",
+                   new String[] { "" + rowId });
 
         return (int)rowId;
     }

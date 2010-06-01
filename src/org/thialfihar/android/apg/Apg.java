@@ -81,6 +81,8 @@ import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle2.openpgp.PGPUtil;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
+import org.thialfihar.android.apg.provider.Keys;
+import org.thialfihar.android.apg.provider.UserIds;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
@@ -116,6 +118,7 @@ public class Apg {
     public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
     public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
+    public static final String EXTRA_USER_ID = "userId";
     public static final String EXTRA_KEY_ID = "keyId";
     public static final String EXTRA_REPLY_TO = "replyTo";
     public static final String EXTRA_SEND_TO = "sendTo";
@@ -1040,6 +1043,41 @@ public class Apg {
         }
 
         return keyIds;
+    }
+
+    public static String getMainUserId(long keyId, int type) {
+        SQLiteDatabase db = mDatabase.db();
+        Cursor c = db.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON (" +
+                            KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                            Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + ") " +
+                            " INNER JOIN " + Keys.TABLE_NAME + " AS masterKey ON (" +
+                            KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                            "masterKey." + Keys.KEY_RING_ID + " AND " +
+                            "masterKey." + Keys.IS_MASTER_KEY + " = '1') " +
+                            " INNER JOIN " + UserIds.TABLE_NAME + " ON (" +
+                            UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " = " +
+                            "masterKey." + Keys._ID + " AND " +
+                            UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0')",
+                            new String[] { UserIds.USER_ID },
+                             Keys.TABLE_NAME + "." + Keys.KEY_ID + " = ? AND " +
+                             KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
+                             new String[] {
+                                 "" + keyId,
+                                 "" + type,
+                             },
+                             null, null, null);
+        String userId = "";
+        if (c != null && c.moveToFirst()) {
+            do {
+                userId = c.getString(0);
+            } while (c.moveToNext());
+        }
+
+        if (c != null) {
+            c.close();
+        }
+
+        return userId;
     }
 
     public static void encrypt(Context context,
