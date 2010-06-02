@@ -67,6 +67,7 @@ public class EncryptActivity extends BaseActivity {
 
     private long mEncryptionKeyIds[] = null;
 
+    private boolean mReturnResult = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
     private Button mEncryptButton = null;
@@ -266,14 +267,18 @@ public class EncryptActivity extends BaseActivity {
         });
 
         mIntent = getIntent();
-        if (mIntent.getAction() != null &&
-            (mIntent.getAction().equals(Apg.Intent.ENCRYPT) ||
-             mIntent.getAction().equals(Apg.Intent.ENCRYPT_FILE) ||
-             mIntent.getAction().equals(Apg.Intent.ENCRYPT_AND_RETURN))) {
+        if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
+            Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction()) ||
+            Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
+
+            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+                mReturnResult = true;
+            }
+
             String data = extras.getString(Apg.EXTRA_DATA);
             mSendTo = extras.getString(Apg.EXTRA_SEND_TO);
             mSubject = extras.getString(Apg.EXTRA_SUBJECT);
@@ -319,8 +324,8 @@ public class EncryptActivity extends BaseActivity {
                 }
             }
 
-            if (mIntent.getAction().equals(Apg.Intent.ENCRYPT) ||
-                mIntent.getAction().equals(Apg.Intent.ENCRYPT_AND_RETURN)) {
+            if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
+                Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
                 if (data != null) {
                     mMessage.setText(data);
                 }
@@ -329,7 +334,7 @@ public class EncryptActivity extends BaseActivity {
                 while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                     mSource.showNext();
                 }
-            } else if (mIntent.getAction().equals(Apg.Intent.ENCRYPT_FILE)) {
+            } else if (Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
                 while (mSource.getCurrentView().getId() != R.id.sourceFile) {
@@ -556,9 +561,7 @@ public class EncryptActivity extends BaseActivity {
             } else {
                 String message = mMessage.getText().toString();
 
-                if (signOnly &&
-                    !(mIntent != null &&
-                      mIntent.getAction().equals(Apg.Intent.ENCRYPT_AND_RETURN))) {
+                if (signOnly && mReturnResult) {
                     // fix the message a bit, trailing spaces and newlines break stuff,
                     // because GMail sends as HTML and such things fuck up the signature,
                     // TODO: things like "<" and ">" also fuck up the signature
@@ -751,8 +754,7 @@ public class EncryptActivity extends BaseActivity {
             }
 
             case Id.target.email: {
-                if (mIntent.getAction() != null &&
-                    mIntent.getAction().equals(Apg.Intent.ENCRYPT_AND_RETURN)) {
+                if (mReturnResult) {
                     Intent intent = new Intent();
                     intent.putExtras(data);
                     setResult(RESULT_OK, intent);

@@ -58,6 +58,7 @@ public class DecryptActivity extends BaseActivity {
 
     private Intent mIntent;
 
+    private boolean mReturnResult = false;
     private String mReplyTo = null;
     private String mSubject = null;
     private boolean mSignedOnly = false;
@@ -160,7 +161,7 @@ public class DecryptActivity extends BaseActivity {
         }
 
         mIntent = getIntent();
-        if (mIntent.getAction() != null && mIntent.getAction().equals(Intent.ACTION_VIEW)) {
+        if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
             Uri uri = mIntent.getData();
             try {
                 InputStream attachment = getContentResolver().openInputStream(uri);
@@ -178,7 +179,7 @@ public class DecryptActivity extends BaseActivity {
             } catch (IOException e) {
                 // ignore, then
             }
-        } else if (mIntent.getAction() != null && mIntent.getAction().equals(Intent.ACTION_SEND)) {
+        } else if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
@@ -191,7 +192,7 @@ public class DecryptActivity extends BaseActivity {
             if (mSubject.startsWith("Fwd: ")) {
                 mSubject = mSubject.substring(5);
             }
-        } else if (mIntent.getAction() != null && mIntent.getAction().equals(Apg.Intent.DECRYPT)) {
+        } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
@@ -217,13 +218,13 @@ public class DecryptActivity extends BaseActivity {
             }
             mReplyTo = extras.getString(Apg.EXTRA_REPLY_TO);
             mSubject = extras.getString(Apg.EXTRA_SUBJECT);
-        } else if (mIntent.getAction() != null && mIntent.getAction().equals(Apg.Intent.DECRYPT_FILE)) {
+        } else if (Apg.Intent.DECRYPT_FILE.equals(mIntent.getAction())) {
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
             while (mSource.getCurrentView().getId() != R.id.sourceFile) {
                 mSource.showNext();
             }
-        } else if (mIntent.getAction() != null && mIntent.getAction().equals(Apg.Intent.DECRYPT_AND_RETURN)) {
+        } else if (Apg.Intent.DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
@@ -249,6 +250,7 @@ public class DecryptActivity extends BaseActivity {
             }
             mReplyTo = extras.getString(Apg.EXTRA_REPLY_TO);
             mSubject = extras.getString(Apg.EXTRA_SUBJECT);
+            mReturnResult = true;
         }
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
@@ -588,8 +590,7 @@ public class DecryptActivity extends BaseActivity {
             mSignatureLayout.setVisibility(View.VISIBLE);
         }
 
-        if (mIntent.getAction() != null &&
-            mIntent.getAction().equals(Apg.Intent.DECRYPT_AND_RETURN)) {
+        if (mReturnResult) {
             Intent intent = new Intent();
             intent.putExtras(data);
             setResult(RESULT_OK, intent);
