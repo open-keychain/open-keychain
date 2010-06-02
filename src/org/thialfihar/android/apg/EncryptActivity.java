@@ -364,7 +364,8 @@ public class EncryptActivity extends BaseActivity {
             mEncryptButton.setText(R.string.btn_encrypt);
         }
 
-        if (mMessage.getText().length() > 0 &&
+        if (mReturnResult &&
+            mMessage.getText().length() > 0 &&
             ((mEncryptionKeyIds != null &&
               mEncryptionKeyIds.length > 0) ||
              getSecretKeyId() != 0)) {
@@ -760,9 +761,9 @@ public class EncryptActivity extends BaseActivity {
                            getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;
         }
-        String message = Strings.fromUTF8ByteArray(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
         switch (mEncryptTarget) {
             case Id.target.clipboard: {
+                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
                 ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 clip.setText(message);
                 Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
@@ -779,6 +780,7 @@ public class EncryptActivity extends BaseActivity {
                     return;
                 }
 
+                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
                 Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
                 emailIntent.setType("text/plain; charset=utf-8");
                 emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);

@@ -188,7 +188,7 @@ public class DecryptActivity extends BaseActivity {
                 mMessage.setText(data);
             }
             mSubject = extras.getString(Intent.EXTRA_SUBJECT);
-            if (mSubject.startsWith("Fwd: ")) {
+            if (mSubject != null && mSubject.startsWith("Fwd: ")) {
                 mSubject = mSubject.substring(5);
             }
         } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
@@ -247,8 +247,6 @@ public class DecryptActivity extends BaseActivity {
                     }
                 }
             }
-            mReplyTo = extras.getString(Apg.EXTRA_REPLY_TO);
-            mSubject = extras.getString(Apg.EXTRA_SUBJECT);
             mReturnResult = true;
         }
 
