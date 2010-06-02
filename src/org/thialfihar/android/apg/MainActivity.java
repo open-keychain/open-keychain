@@ -191,11 +191,11 @@ public class MainActivity extends BaseActivity {
 
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
-                                "* support of other file managers (including ASTRO)\n" +
+                                "* support of other file managers (e.g. ASTRO)\n" +
+                                "* more k9mail integration, k9mail beta builds coming soon on k9mail or APG website\n" +
+                                "* Slovenian translation (thanks, 359)\n" +
                                 "* new database, much faster, less memory usage\n" +
                                 "* defined Intents and content provider for other apps\n" +
-                                "* more k9mail integration, see k9mail website for beta build\n" +
-                                "* Slovenian translation (thanks, 359)\n" +
                                 "* bugfixes\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
