@@ -31,7 +31,6 @@ import java.util.regex.Matcher;
 
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.util.Strings;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
