@@ -389,9 +389,9 @@ public class Database extends SQLiteOpenHelper {
             seenIdsStr += id;
         }
         mDb.delete(UserIds.TABLE_NAME,
-                          UserIds.KEY_ID + " = ? AND " +
-                          UserIds._ID + " NOT IN (" + seenIdsStr + ")",
-                          new String[] { "" + rowId });
+                   UserIds.KEY_ID + " = ? AND " +
+                   UserIds._ID + " NOT IN (" + seenIdsStr + ")",
+                   new String[] { "" + rowId });
 
         return (int)rowId;
     }
@@ -414,17 +414,17 @@ public class Database extends SQLiteOpenHelper {
 
     private long insertOrUpdateKeyRing(ContentValues values) {
         Cursor c = mDb.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID },
-                            KeyRings.MASTER_KEY_ID + " = ? AND " + KeyRings.TYPE + " = ?",
-                            new String[] {
-                                values.getAsString(KeyRings.MASTER_KEY_ID),
-                                values.getAsString(KeyRings.TYPE),
-                            },
-                            null, null, null);
+                             KeyRings.MASTER_KEY_ID + " = ? AND " + KeyRings.TYPE + " = ?",
+                             new String[] {
+                                 values.getAsString(KeyRings.MASTER_KEY_ID),
+                                 values.getAsString(KeyRings.TYPE),
+                             },
+                             null, null, null);
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
             mDb.update(KeyRings.TABLE_NAME, values,
-                              KeyRings._ID + " = ?", new String[] { "" + rowId });
+                       KeyRings._ID + " = ?", new String[] { "" + rowId });
             mStatus = Id.return_value.updated;
         } else {
             rowId = mDb.insert(KeyRings.TABLE_NAME, KeyRings.WHO_ID, values);
@@ -440,17 +440,17 @@ public class Database extends SQLiteOpenHelper {
 
     private long insertOrUpdateKey(ContentValues values) {
         Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
-                            Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
-                            new String[] {
-                                values.getAsString(Keys.KEY_ID),
-                                values.getAsString(Keys.TYPE),
-                            },
-                            null, null, null);
+                             Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
+                             new String[] {
+                                 values.getAsString(Keys.KEY_ID),
+                                 values.getAsString(Keys.TYPE),
+                             },
+                             null, null, null);
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
             mDb.update(Keys.TABLE_NAME, values,
-                              Keys._ID + " = ?", new String[] { "" + rowId });
+                       Keys._ID + " = ?", new String[] { "" + rowId });
         } else {
             rowId = mDb.insert(Keys.TABLE_NAME, Keys.KEY_DATA, values);
         }
@@ -464,12 +464,12 @@ public class Database extends SQLiteOpenHelper {
 
     private long insertOrUpdateUserId(ContentValues values) {
         Cursor c = mDb.query(UserIds.TABLE_NAME, new String[] { UserIds._ID },
-                            UserIds.KEY_ID + " = ? AND " + UserIds.USER_ID + " = ?",
-                            new String[] {
-                                values.getAsString(UserIds.KEY_ID),
-                                values.getAsString(UserIds.USER_ID),
-                            },
-                            null, null, null);
+                             UserIds.KEY_ID + " = ? AND " + UserIds.USER_ID + " = ?",
+                             new String[] {
+                                 values.getAsString(UserIds.KEY_ID),
+                                 values.getAsString(UserIds.USER_ID),
+                             },
+                             null, null, null);
         long rowId = -1;
         if (c != null && c.moveToFirst()) {
             rowId = c.getLong(0);
@@ -488,12 +488,12 @@ public class Database extends SQLiteOpenHelper {
 
     public Object getKeyRing(int keyRingId) {
         Cursor c = mDb.query(KeyRings.TABLE_NAME,
-                            new String[] { KeyRings.KEY_RING_DATA, KeyRings.TYPE },
-                            KeyRings._ID + " = ?",
-                            new String[] {
-                                "" + keyRingId,
-                            },
-                            null, null, null);
+                             new String[] { KeyRings.KEY_RING_DATA, KeyRings.TYPE },
+                             KeyRings._ID + " = ?",
+                             new String[] {
+                                 "" + keyRingId,
+                             },
+                             null, null, null);
         byte[] data = null;
         Object keyRing = null;
         if (c != null && c.moveToFirst()) {
@@ -522,16 +522,16 @@ public class Database extends SQLiteOpenHelper {
 
     public byte[] getKeyRingDataFromKeyId(int type, long keyId) {
         Cursor c = mDb.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON (" +
-                            KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
-                            Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + ")",
-                            new String[] { KeyRings.TABLE_NAME + "." + KeyRings.KEY_RING_DATA },
-                            Keys.TABLE_NAME + "." + Keys.KEY_ID + " = ? AND " +
-                            KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
-                            new String[] {
-                                "" + keyId,
-                                "" + type,
-                            },
-                            null, null, null);
+                             KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + ")",
+                             new String[] { KeyRings.TABLE_NAME + "." + KeyRings.KEY_RING_DATA },
+                             Keys.TABLE_NAME + "." + Keys.KEY_ID + " = ? AND " +
+                             KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
+                             new String[] {
+                                 "" + keyId,
+                                 "" + type,
+                             },
+                             null, null, null);
 
         byte[] data = null;
         if (c != null && c.moveToFirst()) {
@@ -547,12 +547,12 @@ public class Database extends SQLiteOpenHelper {
 
     public byte[] getKeyDataFromKeyId(int type, long keyId) {
         Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys.KEY_DATA },
-                            Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
-                            new String[] {
-                                "" + keyId,
-                                "" + type,
-                            },
-                            null, null, null);
+                             Keys.KEY_ID + " = ? AND " + Keys.TYPE + " = ?",
+                             new String[] {
+                                 "" + keyId,
+                                 "" + type,
+                             },
+                             null, null, null);
         byte[] data = null;
         if (c != null && c.moveToFirst()) {
             data = c.getBlob(0);
@@ -568,13 +568,13 @@ public class Database extends SQLiteOpenHelper {
     public void deleteKeyRing(int keyRingId) {
         mDb.beginTransaction();
         mDb.delete(KeyRings.TABLE_NAME,
-                          KeyRings._ID + " = ?", new String[] { "" + keyRingId });
+                   KeyRings._ID + " = ?", new String[] { "" + keyRingId });
 
         Cursor c = mDb.query(Keys.TABLE_NAME, new String[] { Keys._ID },
-                                    Keys.KEY_RING_ID + " = ?",
-                                    new String[] {
-                                        "" + keyRingId,
-                                    },
+                             Keys.KEY_RING_ID + " = ?",
+                             new String[] {
+                                 "" + keyRingId,
+                             },
                                     null, null, null);
         if (c != null && c.moveToFirst()) {
             do {
@@ -593,10 +593,10 @@ public class Database extends SQLiteOpenHelper {
 
     private void deleteKey(int keyId) {
         mDb.delete(Keys.TABLE_NAME,
-                          Keys._ID + " = ?", new String[] { "" + keyId });
+                   Keys._ID + " = ?", new String[] { "" + keyId });
 
         mDb.delete(UserIds.TABLE_NAME,
-                          UserIds.KEY_ID + " = ?", new String[] { "" + keyId });
+                   UserIds.KEY_ID + " = ?", new String[] { "" + keyId });
     }
 
     public SQLiteDatabase db() {

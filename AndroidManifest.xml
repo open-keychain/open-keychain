@@ -128,9 +128,20 @@
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
+        <provider
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+            android:name="org.thialfihar.android.apg.provider.DataProvider"
+            android:authorities="org.thialfihar.android.apg.provider"/>
+
     </application>
     <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5" />
 
-<uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+                android:protectionLevel="dangerous"
+                android:label="@string/permission_read_key_details_label"
+                android:description="@string/permission_read_key_details_description"/>
+
+    <uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 </manifest>

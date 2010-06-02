@@ -239,5 +239,9 @@
     <string name="progress_decompressingData">decompressing data...</string>
     <string name="progress_verifyingIntegrity">verifying integrity...</string>
 
+    <!-- permission strings -->
+    <string name="permission_read_key_details_label">Read key details from APG.</string>
+    <string name="permission_read_key_details_description">Read of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
+
 </resources>
 
