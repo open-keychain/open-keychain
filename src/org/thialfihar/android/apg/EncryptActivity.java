@@ -347,6 +347,23 @@ public class EncryptActivity extends BaseActivity {
         updateSource();
         updateMode();
 
+        if (mReturnResult) {
+            mSourcePrevious.setClickable(false);
+            mSourcePrevious.setEnabled(false);
+            mSourcePrevious.setVisibility(View.INVISIBLE);
+
+            mSourceNext.setClickable(false);
+            mSourceNext.setEnabled(false);
+            mSourceNext.setVisibility(View.INVISIBLE);
+
+            mSourceLabel.setClickable(false);
+            mSourceLabel.setEnabled(false);
+
+            mEncryptToClipboardButton.setEnabled(false);
+            mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
+            mEncryptButton.setText(R.string.btn_encrypt);
+        }
+
         if (mMessage.getText().length() > 0 &&
             ((mEncryptionKeyIds != null &&
               mEncryptionKeyIds.length > 0) ||

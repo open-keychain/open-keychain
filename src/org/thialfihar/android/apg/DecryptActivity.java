@@ -285,12 +285,25 @@ public class DecryptActivity extends BaseActivity {
         });
         mReplyButton.setVisibility(View.INVISIBLE);
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
-            mMessage.getText().length() > 0) {
-            mDecryptButton.performClick();
+        if (mReturnResult) {
+            mSourcePrevious.setClickable(false);
+            mSourcePrevious.setEnabled(false);
+            mSourcePrevious.setVisibility(View.INVISIBLE);
+
+            mSourceNext.setClickable(false);
+            mSourceNext.setEnabled(false);
+            mSourceNext.setVisibility(View.INVISIBLE);
+
+            mSourceLabel.setClickable(false);
+            mSourceLabel.setEnabled(false);
         }
 
         updateSource();
+
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
+            mMessage.getText().length() > 0) {
+             mDecryptButton.performClick();
+        }
     }
 
     private void openFile() {
