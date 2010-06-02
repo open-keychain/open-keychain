@@ -171,7 +171,7 @@ public class DecryptActivity extends BaseActivity {
                     byteOut.write(bytes, 0, length);
                 }
                 byteOut.close();
-                String data = Strings.fromUTF8ByteArray(byteOut.toByteArray());
+                String data = new String(byteOut.toByteArray());
                 mMessage.setText(data);
             } catch (FileNotFoundException e) {
                 // ignore, then
@@ -542,8 +542,10 @@ public class DecryptActivity extends BaseActivity {
         Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
         switch (mDecryptTarget) {
             case Id.target.message: {
-                String decryptedMessage = Strings.fromUTF8ByteArray(data.getByteArray(Apg.EXTRA_DECRYPTED_MESSAGE));
+                String decryptedMessage =
+                        new String(data.getByteArray(Apg.EXTRA_DECRYPTED_MESSAGE));
                 mMessage.setText(decryptedMessage);
+                mMessage.setHorizontallyScrolling(false);
                 mReplyButton.setVisibility(View.VISIBLE);
                 break;
             }
