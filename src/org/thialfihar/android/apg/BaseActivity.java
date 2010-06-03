@@ -368,7 +368,14 @@ public class BaseActivity extends Activity
     }
 
     public int getPassPhraseCacheTtl() {
-        return mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 300);
+        int ttl = mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 180);
+        // fix the value if it was set to "never" in previous versions, which currently is not
+        // supported
+        if (ttl == 0) {
+            ttl = 180;
+            setPassPhraseCacheTtl(ttl);
+        }
+        return ttl;
     }
 
     public void setPassPhraseCacheTtl(int value) {
@@ -377,7 +384,7 @@ public class BaseActivity extends Activity
         editor.commit();
 
         Intent intent = new Intent(this, Service.class);
-        intent.putExtra(Service.EXTRA_TTL, getPassPhraseCacheTtl());
+        intent.putExtra(Service.EXTRA_TTL, value);
         startService(intent);
     }
 
