@@ -130,7 +130,7 @@ public class Apg {
     public static final String EXTRA_MAX = "max";
     public static final String EXTRA_ACCOUNT = "account";
 
-    public static String VERSION = "1.0.0";
+    public static String VERSION = "1.0.1";
     public static String FULL_VERSION = "APG v" + VERSION;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS =
