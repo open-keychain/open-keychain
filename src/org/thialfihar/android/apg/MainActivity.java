@@ -191,8 +191,8 @@ public class MainActivity extends BaseActivity {
 
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
+                                "* k9mail integration, k9mail beta build is available on the k9mail website\n" +
                                 "* support of other file managers (e.g. ASTRO)\n" +
-                                "* more k9mail integration, k9mail beta builds coming soon on k9mail or APG website\n" +
                                 "* Slovenian translation (thanks, 359)\n" +
                                 "* new database, much faster, less memory usage\n" +
                                 "* defined Intents and content provider for other apps\n" +
