@@ -225,19 +225,30 @@ public class Apg {
         return cpp.passPhrase;
     }
 
-    public static void cleanUpCache(int ttl) {
+    public static int cleanUpCache(int ttl, int initialDelay) {
+        int delay = initialDelay;
+        long realTtl = ttl * 1000;
         long now = new Date().getTime();
-
         Vector<Long> oldKeys = new Vector<Long>();
         for (Map.Entry<Long, CachedPassPhrase> pair : mPassPhraseCache.entrySet()) {
-            if ((now - pair.getValue().timestamp) >= 1000 * ttl) {
+            long lived = now - pair.getValue().timestamp;
+            if (lived >= realTtl) {
                 oldKeys.add(pair.getKey());
+            } else {
+                // see, whether the remaining time for this cache entry improves our
+                // check delay
+                long nextCheck = realTtl - lived + 1000;
+                if (nextCheck < delay) {
+                    delay = (int)nextCheck;
+                }
             }
         }
 
         for (long keyId : oldKeys) {
             mPassPhraseCache.remove(keyId);
         }
+
+        return delay;
     }
 
     public static PGPSecretKey createKey(Context context,

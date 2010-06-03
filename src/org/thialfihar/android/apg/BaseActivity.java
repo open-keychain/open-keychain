@@ -17,8 +17,6 @@
 package org.thialfihar.android.apg;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
@@ -53,8 +51,6 @@ public class BaseActivity extends Activity
     private String mDeleteFile = null;
     protected static SharedPreferences mPreferences = null;
 
-    private static Timer mCacheTimer = new Timer();
-
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -80,29 +76,9 @@ public class BaseActivity extends Activity
             }
         }
 
-        if (mCacheTimer == null) {
-            setPassPhraseCacheTimer();
-        }
-    }
-
-    private void setPassPhraseCacheTimer() {
-        if (mCacheTimer != null) {
-            mCacheTimer.cancel();
-            mCacheTimer = null;
-        }
-        int ttl = getPassPhraseCacheTtl();
-        if (ttl == 0) {
-            // no timer needed
-            return;
-        }
-        // check every ttl/2 seconds, which shouldn't be heavy on the device (even if ttl = 15),
-        // and makes sure the longest a pass phrase survives int the cache is 1.5 * ttl
-        mCacheTimer = new Timer();
-        mCacheTimer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                Apg.cleanUpCache(BaseActivity.this.getPassPhraseCacheTtl());
-            }
-        }, 0, ttl * 1000 / 2);
+        Intent intent = new Intent(this, Service.class);
+        intent.putExtra(Service.EXTRA_TTL, getPassPhraseCacheTtl());
+        startService(intent);
     }
 
     @Override
@@ -400,7 +376,9 @@ public class BaseActivity extends Activity
         editor.putInt(Constants.pref.pass_phrase_cache_ttl, value);
         editor.commit();
 
-        setPassPhraseCacheTimer();
+        Intent intent = new Intent(this, Service.class);
+        intent.putExtra(Service.EXTRA_TTL, getPassPhraseCacheTtl());
+        startService(intent);
     }
 
     public int getDefaultEncryptionAlgorithm() {

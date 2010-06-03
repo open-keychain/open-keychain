@@ -128,6 +128,8 @@
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
+        <service android:name=".Service" />
+
         <provider
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
             android:name="org.thialfihar.android.apg.provider.DataProvider"
