@@ -54,7 +54,9 @@ public class Service extends android.app.Service {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
 
-        mPassPhraseCacheTtl = intent.getIntExtra(EXTRA_TTL, 15);
+        if (intent != null) {
+            mPassPhraseCacheTtl = intent.getIntExtra(EXTRA_TTL, 15);
+        }
         if (mPassPhraseCacheTtl < 15) {
             mPassPhraseCacheTtl = 15;
         }
