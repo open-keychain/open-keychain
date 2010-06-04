@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity {
         mAccounts.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
-                String accountName = (String) mAccounts.getSelectedItem();
+                String accountName = (String) mAccounts.getItemAtPosition(index);
                 startActivity(new Intent(MainActivity.this, MailListActivity.class)
                                         .putExtra(Apg.EXTRA_ACCOUNT, accountName));
             }
