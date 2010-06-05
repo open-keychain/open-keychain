@@ -72,6 +72,7 @@ public class DataProvider extends ContentProvider {
     private static final String USER_ID_CONTENT_ITEM_TYPE =
             "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
 
+    public static final String _ID = "_id";
     public static final String MASTER_KEY_ID = "master_key_id";
     public static final String KEY_ID = "key_id";
     public static final String USER_ID = "user_id";
@@ -117,6 +118,7 @@ public class DataProvider extends ContentProvider {
         // TODO: implement the others, then use them for the lists
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         HashMap<String, String> projectionMap = new HashMap<String, String>();
+
         int match = mUriMatcher.match(uri);
         int type;
         switch (match) {
@@ -148,6 +150,15 @@ public class DataProvider extends ContentProvider {
         qb.appendWhere(KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = " + type);
 
         switch (match) {
+            case PUBLIC_KEY_RING_ID:
+            case SECRET_KEY_RING_ID: {
+                qb.appendWhere(" AND " +
+                               KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+
+                // break omitted intentionally
+            }
+
             case PUBLIC_KEY_RINGS:
             case SECRET_KEY_RINGS: {
                 qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
@@ -160,34 +171,17 @@ public class DataProvider extends ContentProvider {
                              UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
                              UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
 
+                projectionMap.put(_ID,
+                                  KeyRings.TABLE_NAME + "." + KeyRings._ID);
                 projectionMap.put(MASTER_KEY_ID,
                                   KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
                 projectionMap.put(USER_ID,
                                   UserIds.TABLE_NAME + "." + UserIds.USER_ID);
 
-                break;
-            }
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
+                }
 
-            case PUBLIC_KEY_RING_ID:
-            case SECRET_KEY_RING_ID: {
-                qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
-                             "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
-                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
-                             Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
-                             ") " +
-                             " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
-                             "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
-                             UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
-                             UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
-
-                projectionMap.put(MASTER_KEY_ID,
-                                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
-                projectionMap.put(USER_ID,
-                                  UserIds.TABLE_NAME + "." + UserIds.USER_ID);
-
-                qb.appendWhere(" AND " +
-                               KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
                 break;
             }
 
@@ -207,6 +201,8 @@ public class DataProvider extends ContentProvider {
                              UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
                              UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
 
+                projectionMap.put(_ID,
+                                  KeyRings.TABLE_NAME + "." + KeyRings._ID);
                 projectionMap.put(MASTER_KEY_ID,
                                   KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
                 projectionMap.put(USER_ID,

@@ -79,6 +79,7 @@ import org.bouncycastle2.openpgp.PGPSignatureList;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle2.openpgp.PGPUtil;
+import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
@@ -92,6 +93,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.ViewGroup;
@@ -129,6 +131,18 @@ public class Apg {
     public static final String EXTRA_PROGRESS = "progress";
     public static final String EXTRA_MAX = "max";
     public static final String EXTRA_ACCOUNT = "account";
+
+    public static final String AUTHORITY = DataProvider.AUTHORITY;
+
+    public static final Uri CONTENT_URI_SECRET_KEY_RINGS =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/secret/");
+    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/secret/key_id/");
+
+    public static final Uri CONTENT_URI_PUBLIC_KEY_RINGS =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/public/");
+    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/public/key_id/");
 
     public static String VERSION = "1.0.1";
     public static String FULL_VERSION = "APG v" + VERSION;

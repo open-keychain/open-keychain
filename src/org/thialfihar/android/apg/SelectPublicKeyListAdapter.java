@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,14 +40,20 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
     protected ListView mParent;
     protected SQLiteDatabase mDatabase;
     protected Cursor mCursor;
+    protected String mSearchString;
+    protected Activity mActivity;
 
-    public SelectPublicKeyListAdapter(Activity activity, ListView parent) {
+    public SelectPublicKeyListAdapter(Activity activity, ListView parent,
+                                      String searchString, long selectedKeyIds[]) {
+        mSearchString = searchString;
+
+        mActivity = activity;
         mParent = parent;
         mDatabase =  Apg.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         long now = new Date().getTime() / 1000;
-        mCursor = mDatabase.query(
-              KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
                                     "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
                                     Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
                                     Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
@@ -54,7 +61,36 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
                                     " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
                                     "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
                                     UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
-                                    UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ",
+                                    UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
+
+        if (searchString != null && searchString.trim().length() > 0) {
+            String[] chunks = searchString.trim().split(" +");
+            qb.appendWhere("(EXISTS (SELECT tmp." + UserIds._ID + " FROM " +
+                                    UserIds.TABLE_NAME + " AS tmp WHERE " +
+                                    "tmp." + UserIds.KEY_ID + " = " +
+                                    Keys.TABLE_NAME + "." + Keys._ID);
+            for (int i = 0; i < chunks.length; ++i) {
+                qb.appendWhere(" AND tmp." + UserIds.USER_ID + " LIKE ");
+                qb.appendWhereEscapeString("%" + chunks[i] + "%");
+            }
+            qb.appendWhere("))");
+
+            if (selectedKeyIds != null && selectedKeyIds.length > 0) {
+                qb.appendWhere(" OR ");
+
+                qb.appendWhere("(" + KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID +
+                               " IN (");
+                for (int i = 0; i < selectedKeyIds.length; ++i) {
+                    if (i != 0) {
+                        qb.appendWhere(", ");
+                    }
+                    qb.appendWhereEscapeString("" + selectedKeyIds[i]);
+                }
+                qb.appendWhere("))");
+            }
+        }
+
+        mCursor = qb.query(mDatabase,
               new String[] {
                   KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
                   KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
@@ -78,6 +114,13 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
               null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
 
         activity.startManagingCursor(mCursor);
+    }
+
+    public void cleanup() {
+        if (mCursor != null) {
+            mActivity.stopManagingCursor(mCursor);
+            mCursor.close();
+        }
     }
 
     @Override

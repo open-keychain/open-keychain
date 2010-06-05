@@ -18,50 +18,32 @@ package org.thialfihar.android.apg;
 
 import java.util.Vector;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class SelectPublicKeyListActivity extends BaseActivity {
-    protected Intent mIntent;
     protected ListView mList;
+    protected SelectPublicKeyListAdapter mListAdapter;
+    protected View mFilterLayout;
+    protected Button mClearFilterButton;
+    protected TextView mFilterInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_public_key);
 
-        // fill things
-        mIntent = getIntent();
-        long selectedKeyIds[] = null;
-        if (mIntent.getExtras() != null) {
-            selectedKeyIds = mIntent.getExtras().getLongArray(Apg.EXTRA_SELECTION);
-        }
-
         mList = (ListView) findViewById(R.id.list);
         // needed in Android 1.5, where the XML attribute gets ignored
         mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        SelectPublicKeyListAdapter adapter = new SelectPublicKeyListAdapter(this, mList);
-        mList.setAdapter(adapter);
-
-        if (selectedKeyIds != null) {
-            for (int i = 0; i < adapter.getCount(); ++i) {
-                long keyId = adapter.getItemId(i);
-                for (int j = 0; j < selectedKeyIds.length; ++j) {
-                    if (keyId == selectedKeyIds[j]) {
-                        mList.setItemChecked(i, true);
-                        break;
-                    }
-                }
-            }
-        }
-
         Button okButton = (Button) findViewById(R.id.btn_ok);
-
         okButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,13 +52,85 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         });
 
         Button cancelButton = (Button) findViewById(R.id.btn_cancel);
-
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 cancelClicked();
             }
         });
+
+        mFilterLayout = (View) findViewById(R.id.layout_filter);
+        mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
+        mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
+
+        mClearFilterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleIntent(new Intent());
+            }
+        });
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        String searchString = null;
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            searchString = intent.getStringExtra(SearchManager.QUERY);
+            if (searchString != null && searchString.trim().length() == 0) {
+                searchString = null;
+            }
+        }
+
+        long selectedKeyIds[] = null;
+        if (getIntent().getExtras() != null) {
+            selectedKeyIds = getIntent().getExtras().getLongArray(Apg.EXTRA_SELECTION);
+        }
+
+        if (selectedKeyIds == null) {
+            Vector<Long> vector = new Vector<Long>();
+            for (int i = 0; i < mList.getCount(); ++i) {
+                if (mList.isItemChecked(i)) {
+                    vector.add(mList.getItemIdAtPosition(i));
+                }
+            }
+            selectedKeyIds = new long[vector.size()];
+            for (int i = 0; i < vector.size(); ++i) {
+                selectedKeyIds[i] = vector.get(i);
+            }
+        }
+
+        if (searchString == null) {
+            mFilterLayout.setVisibility(View.GONE);
+        } else {
+            mFilterLayout.setVisibility(View.VISIBLE);
+            mFilterInfo.setText(getString(R.string.filterInfo, searchString));
+        }
+
+        if (mListAdapter != null) {
+            mListAdapter.cleanup();
+        }
+
+        mListAdapter = new SelectPublicKeyListAdapter(this, mList, searchString, selectedKeyIds);
+        mList.setAdapter(mListAdapter);
+
+        if (selectedKeyIds != null) {
+            for (int i = 0; i < mListAdapter.getCount(); ++i) {
+                long keyId = mListAdapter.getItemId(i);
+                for (int j = 0; j < selectedKeyIds.length; ++j) {
+                    if (keyId == selectedKeyIds[j]) {
+                        mList.setItemChecked(i, true);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     private void cancelClicked() {

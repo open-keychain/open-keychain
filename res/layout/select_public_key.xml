@@ -21,6 +21,8 @@
     android:layout_height="fill_parent"
     android:fillViewport="true">
 
+    <include android:id="@+id/layout_filter" layout="@layout/filter_info"/>
+
     <ListView
         android:id="@+id/list"
         android:choiceMode="multipleChoice"

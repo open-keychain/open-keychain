@@ -14,15 +14,18 @@
      limitations under the License.
 -->
 
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fillViewport="true">
+    android:orientation="vertical">
+
+    <include android:id="@+id/layout_filter" layout="@layout/filter_info"/>
 
     <ExpandableListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent"
+        android:isScrollContainer="true"/>
 
-</ScrollView>
+</LinearLayout>

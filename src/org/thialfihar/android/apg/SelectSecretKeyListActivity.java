@@ -16,16 +16,23 @@
 
 package org.thialfihar.android.apg;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class SelectSecretKeyListActivity extends BaseActivity {
     protected ListView mList;
     protected SelectSecretKeyListAdapter mListAdapter;
+    protected View mFilterLayout;
+    protected Button mClearFilterButton;
+    protected TextView mFilterInfo;
 
     protected long mSelectedKeyId = 0;
 
@@ -36,8 +43,6 @@ public class SelectSecretKeyListActivity extends BaseActivity {
         setContentView(R.layout.select_secret_key);
 
         mList = (ListView) findViewById(R.id.list);
-        mListAdapter = new SelectSecretKeyListAdapter(this, mList);
-        mList.setAdapter(mListAdapter);
 
         mList.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -48,5 +53,48 @@ public class SelectSecretKeyListActivity extends BaseActivity {
                 finish();
             }
         });
+
+        mFilterLayout = (View) findViewById(R.id.layout_filter);
+        mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
+        mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
+
+        mClearFilterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleIntent(new Intent());
+            }
+        });
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        String searchString = null;
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            searchString = intent.getStringExtra(SearchManager.QUERY);
+            if (searchString != null && searchString.trim().length() == 0) {
+                searchString = null;
+            }
+        }
+
+        if (searchString == null) {
+            mFilterLayout.setVisibility(View.GONE);
+        } else {
+            mFilterLayout.setVisibility(View.VISIBLE);
+            mFilterInfo.setText(getString(R.string.filterInfo, searchString));
+        }
+
+        if (mListAdapter != null) {
+            mListAdapter.cleanup();
+        }
+
+        mListAdapter = new SelectSecretKeyListAdapter(this, mList, searchString);
+        mList.setAdapter(mListAdapter);
     }
 }

@@ -66,8 +66,8 @@ public class GeneralActivity extends BaseActivity {
         Vector<Choice> choices = new Vector<Choice>();
 
         if (containsKeys) {
-            choices.add(new Choice(Id.choice.action.import_public, getString(R.string.action_import_public)));
-            choices.add(new Choice(Id.choice.action.import_secret, getString(R.string.action_import_secret)));
+            choices.add(new Choice(Id.choice.action.import_public, getString(R.string.action_importPublic)));
+            choices.add(new Choice(Id.choice.action.import_secret, getString(R.string.action_importSecret)));
         }
 
         if (isEncrypted) {
