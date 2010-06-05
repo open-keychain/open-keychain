@@ -72,6 +72,8 @@ public class KeyListActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.key_list);
 
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+
         mList = (ExpandableListView) findViewById(R.id.list);
         registerForContextMenu(mList);
 

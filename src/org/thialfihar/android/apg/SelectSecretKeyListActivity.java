@@ -19,6 +19,7 @@ package org.thialfihar.android.apg;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -39,6 +40,8 @@ public class SelectSecretKeyListActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         setContentView(R.layout.select_secret_key);
 
@@ -96,5 +99,12 @@ public class SelectSecretKeyListActivity extends BaseActivity {
 
         mListAdapter = new SelectSecretKeyListAdapter(this, mList, searchString);
         mList.setAdapter(mListAdapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, Id.menu.option.search, 0, R.string.menu_search)
+                .setIcon(android.R.drawable.ic_menu_search);
+        return true;
     }
 }

@@ -79,6 +79,7 @@
     <string name="menu_deleteKey">Izbriši ključ</string>
     <string name="menu_createKey">Ustvari ključ</string>
     <string name="menu_editKey">Uredi ključ</string>
+    <string name="menu_search">Search</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Podpiši</string>

@@ -33,6 +33,7 @@ public final class Id {
             public static final int import_keys = 0x21070006;
             public static final int export_keys = 0x21070007;
             public static final int preferences = 0x21070008;
+            public static final int search = 0x21070009;
         }
     }
 

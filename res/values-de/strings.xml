@@ -79,6 +79,7 @@
     <string name="menu_deleteKey">Delete Key</string>
     <string name="menu_createKey">Create Key</string>
     <string name="menu_editKey">Edit Key</string>
+    <string name="menu_search">Search</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Sign</string>

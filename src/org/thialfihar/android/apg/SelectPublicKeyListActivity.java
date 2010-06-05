@@ -21,6 +21,7 @@ import java.util.Vector;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -38,6 +39,8 @@ public class SelectPublicKeyListActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_public_key);
+
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         mList = (ListView) findViewById(R.id.list);
         // needed in Android 1.5, where the XML attribute gets ignored
@@ -153,5 +156,12 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         data.putExtra(Apg.EXTRA_SELECTION, selectedKeyIds);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, Id.menu.option.search, 0, R.string.menu_search)
+                .setIcon(android.R.drawable.ic_menu_search);
+        return true;
     }
 }

@@ -37,9 +37,11 @@ public class PublicKeyListActivity extends KeyListActivity {
                 .setIcon(android.R.drawable.ic_menu_add);
         menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
                 .setIcon(android.R.drawable.ic_menu_save);
-        menu.add(1, Id.menu.option.preferences, 2, R.string.menu_preferences)
+        menu.add(1, Id.menu.option.search, 2, R.string.menu_search)
+                .setIcon(android.R.drawable.ic_menu_search);
+        menu.add(1, Id.menu.option.preferences, 3, R.string.menu_preferences)
                 .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(1, Id.menu.option.about, 3, R.string.menu_about)
+        menu.add(1, Id.menu.option.about, 4, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }

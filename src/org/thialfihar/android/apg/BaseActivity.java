@@ -103,6 +103,11 @@ public class BaseActivity extends Activity
                 return true;
             }
 
+            case Id.menu.option.search: {
+                startSearch("", false, null, false);
+                return true;
+            }
+
             default: {
                 break;
             }

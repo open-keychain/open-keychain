@@ -45,9 +45,11 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
                 .setIcon(android.R.drawable.ic_menu_save);
         menu.add(1, Id.menu.option.create, 2, R.string.menu_createKey)
                 .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences)
+        menu.add(3, Id.menu.option.search, 3, R.string.menu_search)
+                .setIcon(android.R.drawable.ic_menu_search);
+        menu.add(3, Id.menu.option.preferences, 4, R.string.menu_preferences)
                 .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(2, Id.menu.option.about, 4, R.string.menu_about)
+        menu.add(3, Id.menu.option.about, 5, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
     }
