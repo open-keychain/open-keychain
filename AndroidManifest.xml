@@ -97,18 +97,6 @@
             android:configChanges="keyboardHidden|orientation|keyboard">
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
@@ -116,6 +104,20 @@
                 <data android:mimeType="text/*"/>
             </intent-filter>
 
+        </activity>
+
+        <activity
+            android:name=".GeneralActivity"
+            android:label="@string/app_name"
+            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:theme="@android:style/Theme.Dialog">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="*/*"/>
+            </intent-filter>
         </activity>
 
         <activity
