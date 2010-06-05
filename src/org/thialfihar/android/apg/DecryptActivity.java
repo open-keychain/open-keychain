@@ -31,8 +31,6 @@ import java.util.regex.Matcher;
 
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.util.Strings;
-import org.openintents.intents.FileManager;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -57,6 +55,9 @@ import android.widget.ViewFlipper;
 public class DecryptActivity extends BaseActivity {
     private long mSignatureKeyId = 0;
 
+    private Intent mIntent;
+
+    private boolean mReturnResult = false;
     private String mReplyTo = null;
     private String mSubject = null;
     private boolean mSignedOnly = false;
@@ -158,9 +159,9 @@ public class DecryptActivity extends BaseActivity {
             mSource.showNext();
         }
 
-        Intent intent = getIntent();
-        if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)) {
-            Uri uri = intent.getData();
+        mIntent = getIntent();
+        if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
+            Uri uri = mIntent.getData();
             try {
                 InputStream attachment = getContentResolver().openInputStream(uri);
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -170,15 +171,15 @@ public class DecryptActivity extends BaseActivity {
                     byteOut.write(bytes, 0, length);
                 }
                 byteOut.close();
-                String data = Strings.fromUTF8ByteArray(byteOut.toByteArray());
+                String data = new String(byteOut.toByteArray());
                 mMessage.setText(data);
             } catch (FileNotFoundException e) {
                 // ignore, then
             } catch (IOException e) {
                 // ignore, then
             }
-        } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SEND)) {
-            Bundle extras = intent.getExtras();
+        } else if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
+            Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
@@ -187,15 +188,15 @@ public class DecryptActivity extends BaseActivity {
                 mMessage.setText(data);
             }
             mSubject = extras.getString(Intent.EXTRA_SUBJECT);
-            if (mSubject.startsWith("Fwd: ")) {
+            if (mSubject != null && mSubject.startsWith("Fwd: ")) {
                 mSubject = mSubject.substring(5);
             }
-        } else if (intent.getAction() != null && intent.getAction().equals(Apg.Intent.DECRYPT)) {
-            Bundle extras = intent.getExtras();
+        } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
+            Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
-            String data = extras.getString("data");
+            String data = extras.getString(Apg.EXTRA_DATA);
             if (data != null) {
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
@@ -214,14 +215,39 @@ public class DecryptActivity extends BaseActivity {
                     }
                 }
             }
-            mReplyTo = extras.getString("replyTo");
-            mSubject = extras.getString("subject");
-        } else if (intent.getAction() != null && intent.getAction().equals(Apg.Intent.DECRYPT_FILE)) {
+            mReplyTo = extras.getString(Apg.EXTRA_REPLY_TO);
+            mSubject = extras.getString(Apg.EXTRA_SUBJECT);
+        } else if (Apg.Intent.DECRYPT_FILE.equals(mIntent.getAction())) {
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
             while (mSource.getCurrentView().getId() != R.id.sourceFile) {
                 mSource.showNext();
             }
+        } else if (Apg.Intent.DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
+            Bundle extras = mIntent.getExtras();
+            if (extras == null) {
+                extras = new Bundle();
+            }
+            String data = extras.getString(Apg.EXTRA_DATA);
+            if (data != null) {
+                Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
+                if (matcher.matches()) {
+                    data = matcher.group(1);
+                    // replace non breakable spaces
+                    data = data.replaceAll("\\xa0", " ");
+                    mMessage.setText(data);
+                } else {
+                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+                    if (matcher.matches()) {
+                        data = matcher.group(1);
+                        // replace non breakable spaces
+                        data = data.replaceAll("\\xa0", " ");
+                        mMessage.setText(data);
+                        mDecryptButton.setText(R.string.btn_verify);
+                    }
+                }
+            }
+            mReturnResult = true;
         }
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
@@ -256,29 +282,41 @@ public class DecryptActivity extends BaseActivity {
         });
         mReplyButton.setVisibility(View.INVISIBLE);
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
-            mMessage.getText().length() > 0) {
-            mDecryptButton.performClick();
+        if (mReturnResult) {
+            mSourcePrevious.setClickable(false);
+            mSourcePrevious.setEnabled(false);
+            mSourcePrevious.setVisibility(View.INVISIBLE);
+
+            mSourceNext.setClickable(false);
+            mSourceNext.setEnabled(false);
+            mSourceNext.setVisibility(View.INVISIBLE);
+
+            mSourceLabel.setClickable(false);
+            mSourceLabel.setEnabled(false);
         }
 
         updateSource();
+
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
+            mMessage.getText().length() > 0) {
+             mDecryptButton.performClick();
+        }
     }
 
     private void openFile() {
         String filename = mFilename.getText().toString();
 
-        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-
-        intent.putExtra(FileManager.EXTRA_TITLE, getString(R.string.filemanager_titleDecrypt));
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
+        intent.setType("*/*");
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -373,9 +411,9 @@ public class DecryptActivity extends BaseActivity {
                 // look at the file/message again to check whether there's
                 // symmetric encryption data in there
                 if (mDecryptTarget == Id.target.file) {
-                    ((FileInputStream) in).reset();
+                    in = new FileInputStream(mInputFilename);
                 } else {
-                    ((ByteArrayInputStream) in).reset();
+                    in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
                 }
                 if (!Apg.hasSymmetricEncryption(this, in)) {
                     throw new Apg.GeneralException(getString(R.string.error_noKnownEncryptionFound));
@@ -396,9 +434,9 @@ public class DecryptActivity extends BaseActivity {
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
         } catch (IOException e) {
-            error = e.getLocalizedMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getLocalizedMessage();
+            error = "" + e;
         }
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error),
@@ -412,12 +450,11 @@ public class DecryptActivity extends BaseActivity {
         String data = mMessage.getText().toString();
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
-        intent.putExtra("data", data);
-        intent.putExtra("subject", "Re: " + mSubject);
-        intent.putExtra("sendTo", mReplyTo);
-        intent.putExtra("eyId", mSignatureKeyId);
-        intent.putExtra("signatureKeyId", getSecretKeyId());
-        intent.putExtra("encryptionKeyIds", new long[] { mSignatureKeyId });
+        intent.putExtra(Apg.EXTRA_DATA, data);
+        intent.putExtra(Apg.EXTRA_SUBJECT, "Re: " + mSubject);
+        intent.putExtra(Apg.EXTRA_SEND_TO, mReplyTo);
+        intent.putExtra(Apg.EXTRA_SIGNATURE_KEY_ID, getSecretKeyId());
+        intent.putExtra(Apg.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
         startActivity(intent);
     }
 
@@ -474,25 +511,23 @@ public class DecryptActivity extends BaseActivity {
 
             out.close();
             if (mDecryptTarget == Id.target.message) {
-                data.putString("decryptedMessage",
-                               Strings.fromUTF8ByteArray(((ByteArrayOutputStream)
-                                                              out).toByteArray()));
+                data.putByteArray(Apg.EXTRA_DECRYPTED_MESSAGE,
+                                  ((ByteArrayOutputStream) out).toByteArray());
             }
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (IOException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
-            e.printStackTrace();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
-        data.putInt("type", Id.message.done);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -509,20 +544,20 @@ public class DecryptActivity extends BaseActivity {
         mSignatureLayout.setVisibility(View.GONE);
         mReplyButton.setVisibility(View.INVISIBLE);
 
-        String error = data.getString("error");
+        String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(DecryptActivity.this,
-                           getString(R.string.errorMessage,
-                                     data.getString("error")),
-                           Toast.LENGTH_SHORT).show();
+                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;
         }
 
         Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
         switch (mDecryptTarget) {
             case Id.target.message: {
-                String decryptedMessage = data.getString("decryptedMessage");
+                String decryptedMessage =
+                        new String(data.getByteArray(Apg.EXTRA_DECRYPTED_MESSAGE));
                 mMessage.setText(decryptedMessage);
+                mMessage.setHorizontallyScrolling(false);
                 mReplyButton.setVisibility(View.VISIBLE);
                 break;
             }
@@ -541,9 +576,9 @@ public class DecryptActivity extends BaseActivity {
             }
         }
 
-        if (data.getBoolean("signature")) {
-            String userId = data.getString("signatureUserId");
-            mSignatureKeyId = data.getLong("signatureKeyId");
+        if (data.getBoolean(Apg.EXTRA_SIGNATURE)) {
+            String userId = data.getString(Apg.EXTRA_SIGNATURE_USER_ID);
+            mSignatureKeyId = data.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
             mUserIdRest.setText("id: " + Long.toHexString(mSignatureKeyId & 0xffffffffL));
             if (userId == null) {
                 userId = getResources().getString(R.string.unknownUserId);
@@ -555,14 +590,21 @@ public class DecryptActivity extends BaseActivity {
             }
             mUserId.setText(userId);
 
-            if (data.getBoolean("signatureSuccess")) {
+            if (data.getBoolean(Apg.EXTRA_SIGNATURE_SUCCESS)) {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-            } else if (data.getBoolean("signatureUnknown")) {
+            } else if (data.getBoolean(Apg.EXTRA_SIGNATURE_UNKNOWN)) {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
             } else {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
             }
             mSignatureLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (mReturnResult) {
+            Intent intent = new Intent();
+            intent.putExtras(data);
+            setResult(RESULT_OK, intent);
+            finish();
         }
     }
 

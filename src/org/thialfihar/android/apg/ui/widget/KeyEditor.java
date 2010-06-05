@@ -233,7 +233,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public GregorianCalendar getExpiryDate() {
-     return mExpiryDate;
+        return mExpiryDate;
     }
 
     public int getUsage() {

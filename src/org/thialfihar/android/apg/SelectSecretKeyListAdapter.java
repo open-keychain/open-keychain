@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.thialfihar.android.apg;
 
 import java.util.Date;
@@ -30,17 +14,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectPublicKeyListAdapter extends BaseAdapter {
+public class SelectSecretKeyListAdapter extends BaseAdapter {
     protected LayoutInflater mInflater;
     protected ListView mParent;
     protected SQLiteDatabase mDatabase;
     protected Cursor mCursor;
 
-    public SelectPublicKeyListAdapter(Activity activity, ListView parent) {
+    public SelectSecretKeyListAdapter(Activity activity, ListView parent) {
         mParent = parent;
         mDatabase =  Apg.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -63,18 +46,18 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
                       "tmp." + Keys.KEY_RING_ID + " = " +
                       KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
                       "tmp." + Keys.IS_REVOKED + " = '0' AND " +
-                      "tmp." + Keys.CAN_ENCRYPT + " = '1')",          // 3
+                      "tmp." + Keys.CAN_SIGN + " = '1')",             // 3,
                   "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
                       "tmp." + Keys.KEY_RING_ID + " = " +
                       KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
                       "tmp." + Keys.IS_REVOKED + " = '0' AND " +
-                      "tmp." + Keys.CAN_ENCRYPT + " = '1' AND " +
+                      "tmp." + Keys.CAN_SIGN + " = '1' AND " +
                       "tmp." + Keys.CREATION + " <= '" + now + "' AND " +
                       "(tmp." + Keys.EXPIRY + " IS NULL OR " +
                        "tmp." + Keys.EXPIRY + " >= '" + now + "'))",  // 4
               },
               KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
-              new String[] { "" + Id.database.type_public },
+              new String[] { "" + Id.database.type_secret },
               null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
 
         activity.startManagingCursor(mCursor);
@@ -83,7 +66,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
     @Override
     public boolean isEnabled(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getInt(4) > 0; // valid CAN_ENCRYPT
+        return mCursor.getInt(4) > 0; // valid CAN_SIGN
     }
 
     @Override
@@ -111,7 +94,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         mCursor.moveToPosition(position);
 
-        View view = mInflater.inflate(R.layout.select_public_key_item, null);
+        View view = mInflater.inflate(R.layout.select_secret_key_item, null);
         boolean enabled = isEnabled(position);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
@@ -141,10 +124,10 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         }
 
         if (enabled) {
-            status.setText(R.string.canEncrypt);
+            status.setText(R.string.canSign);
         } else {
             if (mCursor.getInt(3) > 0) {
-                // has some CAN_ENCRYPT keys, but col(4) = 0, so must be revoked or expired
+                // has some CAN_SIGN keys, but col(4) = 0, so must be revoked or expired
                 status.setText(R.string.expired);
             } else {
                 status.setText(R.string.noKey);
@@ -153,15 +136,10 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
 
         status.setText(status.getText() + " ");
 
-        CheckBox selected = (CheckBox) view.findViewById(R.id.selected);
-
-        selected.setChecked(mParent.isItemChecked(position));
-
         view.setEnabled(enabled);
         mainUserId.setEnabled(enabled);
         mainUserIdRest.setEnabled(enabled);
         keyId.setEnabled(enabled);
-        selected.setEnabled(enabled);
         status.setEnabled(enabled);
 
         return view;

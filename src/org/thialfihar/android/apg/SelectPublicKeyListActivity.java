@@ -16,11 +16,7 @@
 
 package org.thialfihar.android.apg;
 
-import java.util.Collections;
 import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -42,27 +38,21 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         mIntent = getIntent();
         long selectedKeyIds[] = null;
         if (mIntent.getExtras() != null) {
-            selectedKeyIds = mIntent.getExtras().getLongArray("selection");
+            selectedKeyIds = mIntent.getExtras().getLongArray(Apg.EXTRA_SELECTION);
         }
 
         mList = (ListView) findViewById(R.id.list);
         // needed in Android 1.5, where the XML attribute gets ignored
         mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-        Vector<PGPPublicKeyRing> keyRings =
-                (Vector<PGPPublicKeyRing>) Apg.getPublicKeyRings().clone();
-        Collections.sort(keyRings, new Apg.PublicKeySorter());
-        mList.setAdapter(new SelectPublicKeyListAdapter(mList, keyRings));
+        SelectPublicKeyListAdapter adapter = new SelectPublicKeyListAdapter(this, mList);
+        mList.setAdapter(adapter);
 
         if (selectedKeyIds != null) {
-            for (int i = 0; i < keyRings.size(); ++i) {
-                PGPPublicKeyRing keyRing = keyRings.get(i);
-                PGPPublicKey key = Apg.getMasterKey(keyRing);
-                if (key == null) {
-                    continue;
-                }
+            for (int i = 0; i < adapter.getCount(); ++i) {
+                long keyId = adapter.getItemId(i);
                 for (int j = 0; j < selectedKeyIds.length; ++j) {
-                    if (key.getKeyID() == selectedKeyIds[j]) {
+                    if (keyId == selectedKeyIds[j]) {
                         mList.setItemChecked(i, true);
                         break;
                     }
@@ -106,7 +96,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         for (int i = 0; i < vector.size(); ++i) {
             selectedKeyIds[i] = vector.get(i);
         }
-        data.putExtra("selection", selectedKeyIds);
+        data.putExtra(Apg.EXTRA_SELECTION, selectedKeyIds);
         setResult(RESULT_OK, data);
         finish();
     }

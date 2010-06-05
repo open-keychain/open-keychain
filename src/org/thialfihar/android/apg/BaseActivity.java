@@ -17,10 +17,7 @@
 package org.thialfihar.android.apg;
 
 import java.io.File;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
@@ -33,6 +30,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -53,8 +51,6 @@ public class BaseActivity extends Activity
     private String mDeleteFile = null;
     protected static SharedPreferences mPreferences = null;
 
-    private static Timer mCacheTimer = new Timer();
-
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -66,33 +62,23 @@ public class BaseActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Apg.initialize(this);
+
         if (mPreferences == null) {
             mPreferences = getPreferences(MODE_PRIVATE);
         }
-        Apg.initialize(this);
-        if (mCacheTimer == null) {
-            setPassPhraseCacheTimer();
-        }
-    }
 
-    private void setPassPhraseCacheTimer() {
-        if (mCacheTimer != null) {
-            mCacheTimer.cancel();
-            mCacheTimer = null;
-        }
-        int ttl = getPassPhraseCacheTtl();
-        if (ttl == 0) {
-            // no timer needed
-            return;
-        }
-        // check every ttl/2 seconds, which shouldn't be heavy on the device (even if ttl = 15),
-        // and makes sure the longest a pass phrase survives int the cache is 1.5 * ttl
-        mCacheTimer = new Timer();
-        mCacheTimer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                Apg.cleanUpCache(BaseActivity.this.getPassPhraseCacheTtl());
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File dir = new File(Constants.path.app_dir);
+            if (!dir.exists() && !dir.mkdirs()) {
+                // ignore this for now, it's not crucial
+                // that the directory doesn't exist at this point
             }
-        }, 0, ttl * 1000 / 2);
+        }
+
+        Intent intent = new Intent(this, Service.class);
+        intent.putExtra(Service.EXTRA_TTL, getPassPhraseCacheTtl());
+        startService(intent);
     }
 
     @Override
@@ -282,7 +268,7 @@ public class BaseActivity extends Activity
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    setSecretKeyId(bundle.getLong("selectedKeyId"));
+                    setSecretKeyId(bundle.getLong(Apg.EXTRA_KEY_ID));
                 } else {
                     setSecretKeyId(Id.key.none);
                 }
@@ -304,9 +290,9 @@ public class BaseActivity extends Activity
     public void setProgress(int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt("type", Id.message.progress_update);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
+        data.putInt(Apg.EXTRA_PROGRESS, progress);
+        data.putInt(Apg.EXTRA_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -314,10 +300,10 @@ public class BaseActivity extends Activity
     public void setProgress(String message, int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt("type", Id.message.progress_update);
-        data.putString("message", message);
-        data.putInt("progress", progress);
-        data.putInt("max", max);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
+        data.putString(Apg.EXTRA_MESSAGE, message);
+        data.putInt(Apg.EXTRA_PROGRESS, progress);
+        data.putInt(Apg.EXTRA_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -328,16 +314,16 @@ public class BaseActivity extends Activity
             return;
         }
 
-        int type = data.getInt("type");
+        int type = data.getInt(Apg.EXTRA_STATUS);
         switch (type) {
             case Id.message.progress_update: {
-                String message = data.getString("message");
+                String message = data.getString(Apg.EXTRA_MESSAGE);
                 if (mProgressDialog != null) {
                     if (message != null) {
                         mProgressDialog.setMessage(message);
                     }
-                    mProgressDialog.setMax(data.getInt("max"));
-                    mProgressDialog.setProgress(data.getInt("progress"));
+                    mProgressDialog.setMax(data.getInt(Apg.EXTRA_MAX));
+                    mProgressDialog.setProgress(data.getInt(Apg.EXTRA_PROGRESS));
                 }
                 break;
             }
@@ -382,7 +368,14 @@ public class BaseActivity extends Activity
     }
 
     public int getPassPhraseCacheTtl() {
-        return mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 300);
+        int ttl = mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 180);
+        // fix the value if it was set to "never" in previous versions, which currently is not
+        // supported
+        if (ttl == 0) {
+            ttl = 180;
+            setPassPhraseCacheTtl(ttl);
+        }
+        return ttl;
     }
 
     public void setPassPhraseCacheTtl(int value) {
@@ -390,7 +383,9 @@ public class BaseActivity extends Activity
         editor.putInt(Constants.pref.pass_phrase_cache_ttl, value);
         editor.commit();
 
-        setPassPhraseCacheTimer();
+        Intent intent = new Intent(this, Service.class);
+        intent.putExtra(Service.EXTRA_TTL, value);
+        startService(intent);
     }
 
     public int getDefaultEncryptionAlgorithm() {
@@ -417,7 +412,7 @@ public class BaseActivity extends Activity
 
     public int getDefaultMessageCompression() {
         return mPreferences.getInt(Constants.pref.default_message_compression,
-                                   CompressionAlgorithmTags.ZLIB);
+                                   Id.choice.compression.zlib);
     }
 
     public void setDefaultMessageCompression(int value) {
@@ -428,7 +423,7 @@ public class BaseActivity extends Activity
 
     public int getDefaultFileCompression() {
         return mPreferences.getInt(Constants.pref.default_file_compression,
-                                   CompressionAlgorithmTags.ZLIB);
+                                   Id.choice.compression.none);
     }
 
     public void setDefaultFileCompression(int value) {

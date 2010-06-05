@@ -38,10 +38,12 @@
     <string name="title_importKeys">Import Keys</string>
     <string name="title_exportKey">Export Key</string>
     <string name="title_exportKeys">Export Keys</string>
+    <string name="title_keyNotFound">Key Not Found</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>
+    <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
@@ -92,6 +94,9 @@
     <string name="label_hashAlgorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
     <string name="label_symmetric">Pass Phrase</string>
+    <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
+    <string name="label_messageCompression">Message Compression</string>
+    <string name="label_fileCompression">File Compression</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -108,9 +113,16 @@
     <string name="notValid">not valid</string>
 
     <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
+    <string name="choice_none">None</string>
     <string name="choice_signOnly">Sign only</string>
     <string name="choice_encryptOnly">Encrypt only</string>
     <string name="choice_signAndEncrypt">Sign and Encrypt</string>
+    <string name="choice_15secs">15 secs</string>
+    <string name="choice_1min">1 min</string>
+    <string name="choice_3mins">3 mins</string>
+    <string name="choice_5mins">5 mins</string>
+    <string name="choice_10mins">10 mins</string>
+    <string name="choice_untilQuit">until quit</string>
 
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
@@ -133,7 +145,7 @@
     <string name="usingClipboardContent">Using clipboard content.</string>
     <string name="keySaved">Key saved.</string>
     <string name="setAPassPhrase">Set a pass phrase via the option menu first.</string>
-    <string name="oiFilemanagerNotInstalled">OI File Manager not installed.</string>
+    <string name="noFilemanagerInstalled">No compatible file manager installed.</string>
     <string name="passPhrasesDoNotMatch">The pass phrases didn't match.</string>
     <string name="passPhraseMustNotBeEmpty">Empty pass phrases are not allowed.</string>
     <string name="passPhraseForSymmetricEncryption">Pass phrase for symmetric encryption:</string>
@@ -150,19 +162,20 @@
     <string name="specifyFileToEncryptTo">Please specify which file to encrypt to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToDecryptTo">Please specify which file to decrypt to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyGoogleMailAccount">Specify the Google Mail account you want to add.</string>
-    <string name="specifyFileToImportFrom">Please specify which file to import from.</string>
+    <string name="specifyFileToImportFrom">Please specify which file to import keys from. (.asc or .gpg)</string>
     <string name="specifyFileToExportTo">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
     <string name="keyDeletionConfirmation">Do you really want to delete the key '%s'?\nYou can't undo this!</string>
     <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key '%s'?\nYou can't undo this!</string>
-    <string name="keysAddedAndUpdated">Succssfully added %s keys and updated %s keys."</string>
-    <string name="keysAdded">Succssfully added %s keys.</string>
-    <string name="keysUpdated">Succssfully updated %s keys.</string>
+    <string name="keysAddedAndUpdated">Succssfully added %s key(s) and updated %s key(s)."</string>
+    <string name="keysAdded">Succssfully added %s key(s).</string>
+    <string name="keysUpdated">Succssfully updated %s key(s).</string>
     <string name="noKeysAddedOrUpdated">No keys added or updated.</string>
     <string name="keyExported">Succssfully exported 1 key.</string>
     <string name="keysExported">Succssfully exported %s keys.</string>
     <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
+    <string name="keyNotFound">Couldn't find key %08X.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
@@ -227,4 +240,3 @@
     <string name="progress_verifyingIntegrity">verifying integrity...</string>
 
 </resources>
-

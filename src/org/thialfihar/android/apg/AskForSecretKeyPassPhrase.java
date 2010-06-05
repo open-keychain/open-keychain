@@ -25,6 +25,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -42,14 +43,24 @@ public class AskForSecretKeyPassPhrase {
         alert.setTitle(R.string.title_authentification);
 
         final PGPSecretKey secretKey;
+        final Activity activity = context;
 
         if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = Apg.getMasterKey(Apg.findSecretKeyRing(secretKeyId));
+            secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
-                return null;
+                alert.setTitle(R.string.title_keyNotFound);
+                alert.setMessage(context.getString(R.string.keyNotFound, secretKeyId));
+                alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.removeDialog(Id.dialog.pass_phrase);
+                    }
+                });
+                alert.setCancelable(false);
+                return alert.create();
             }
             String userId = Apg.getMainUserIdSafe(context, secretKey);
             alert.setMessage(context.getString(R.string.passPhraseFor, userId));
@@ -65,30 +76,29 @@ public class AskForSecretKeyPassPhrase {
         alert.setView(view);
 
         final PassPhraseCallbackInterface cb = callback;
-        final Activity activity = context;
         alert.setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        activity.removeDialog(Id.dialog.pass_phrase);
-                                        String passPhrase = "" + input.getText();
-                                        long keyId;
-                                        if (secretKey != null) {
-                                            try {
-                                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                                                                            new BouncyCastleProvider());
-                                            } catch (PGPException e) {
-                                                Toast.makeText(activity,
-                                                               R.string.wrongPassPhrase,
-                                                               Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                            keyId = secretKey.getKeyID();
-                                        } else {
-                                            keyId = Id.key.symmetric;
-                                        }
-                                        cb.passPhraseCallback(keyId, passPhrase);
-                                    }
-                                });
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        activity.removeDialog(Id.dialog.pass_phrase);
+                        String passPhrase = "" + input.getText();
+                        long keyId;
+                        if (secretKey != null) {
+                            try {
+                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
+                                                            new BouncyCastleProvider());
+                            } catch (PGPException e) {
+                                Toast.makeText(activity,
+                                               R.string.wrongPassPhrase,
+                                               Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            keyId = secretKey.getKeyID();
+                        } else {
+                            keyId = Id.key.symmetric;
+                        }
+                        cb.passPhraseCallback(keyId, passPhrase);
+                    }
+                });
 
         alert.setNegativeButton(android.R.string.cancel,
                                 new DialogInterface.OnClickListener() {

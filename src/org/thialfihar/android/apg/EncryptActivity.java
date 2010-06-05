@@ -35,7 +35,6 @@ import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
 import org.bouncycastle2.util.Strings;
-import org.openintents.intents.FileManager;
 import org.thialfihar.android.apg.Apg.GeneralException;
 import org.thialfihar.android.apg.utils.Choice;
 
@@ -62,11 +61,13 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 public class EncryptActivity extends BaseActivity {
+    private Intent mIntent = null;
     private String mSubject = null;
     private String mSendTo = null;
 
     private long mEncryptionKeyIds[] = null;
 
+    private boolean mReturnResult = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
     private Button mEncryptButton = null;
@@ -265,21 +266,26 @@ public class EncryptActivity extends BaseActivity {
             }
         });
 
-        Intent intent = getIntent();
-        if (intent.getAction() != null &&
-            (intent.getAction().equals(Apg.Intent.ENCRYPT) ||
-             intent.getAction().equals(Apg.Intent.ENCRYPT_FILE))) {
-            Bundle extras = intent.getExtras();
+        mIntent = getIntent();
+        if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
+            Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction()) ||
+            Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+            Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
-            String data = extras.getString("data");
-            mSendTo = extras.getString("sendTo");
-            mSubject = extras.getString("subject");
-            long signatureKeyId = extras.getLong("signatureKeyId");
-            long encryptionKeyIds[] = extras.getLongArray("encryptionKeyIds");
+
+            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+                mReturnResult = true;
+            }
+
+            String data = extras.getString(Apg.EXTRA_DATA);
+            mSendTo = extras.getString(Apg.EXTRA_SEND_TO);
+            mSubject = extras.getString(Apg.EXTRA_SUBJECT);
+            long signatureKeyId = extras.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
+            long encryptionKeyIds[] = extras.getLongArray(Apg.EXTRA_ENCRYPTION_KEY_IDS);
             if (signatureKeyId != 0) {
-                PGPSecretKeyRing keyRing = Apg.findSecretKeyRing(signatureKeyId);
+                PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(signatureKeyId);
                 PGPSecretKey masterKey = null;
                 if (keyRing != null) {
                     masterKey = Apg.getMasterKey(keyRing);
@@ -295,7 +301,7 @@ public class EncryptActivity extends BaseActivity {
             if (encryptionKeyIds != null) {
                 Vector<Long> goodIds = new Vector<Long>();
                 for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                    PGPPublicKeyRing keyRing = Apg.findPublicKeyRing(encryptionKeyIds[i]);
+                    PGPPublicKeyRing keyRing = Apg.getPublicKeyRing(encryptionKeyIds[i]);
                     PGPPublicKey masterKey = null;
                     if (keyRing == null) {
                         continue;
@@ -318,7 +324,8 @@ public class EncryptActivity extends BaseActivity {
                 }
             }
 
-            if (intent.getAction().equals(Apg.Intent.ENCRYPT)) {
+            if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
+                Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
                 if (data != null) {
                     mMessage.setText(data);
                 }
@@ -327,7 +334,7 @@ public class EncryptActivity extends BaseActivity {
                 while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                     mSource.showNext();
                 }
-            } else if (intent.getAction().equals(Apg.Intent.ENCRYPT_FILE)) {
+            } else if (Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
                 while (mSource.getCurrentView().getId() != R.id.sourceFile) {
@@ -339,23 +346,47 @@ public class EncryptActivity extends BaseActivity {
         updateView();
         updateSource();
         updateMode();
+
+        if (mReturnResult) {
+            mSourcePrevious.setClickable(false);
+            mSourcePrevious.setEnabled(false);
+            mSourcePrevious.setVisibility(View.INVISIBLE);
+
+            mSourceNext.setClickable(false);
+            mSourceNext.setEnabled(false);
+            mSourceNext.setVisibility(View.INVISIBLE);
+
+            mSourceLabel.setClickable(false);
+            mSourceLabel.setEnabled(false);
+
+            mEncryptToClipboardButton.setEnabled(false);
+            mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
+            mEncryptButton.setText(R.string.btn_encrypt);
+        }
+
+        if (mReturnResult &&
+            mMessage.getText().length() > 0 &&
+            ((mEncryptionKeyIds != null &&
+              mEncryptionKeyIds.length > 0) ||
+             getSecretKeyId() != 0)) {
+            encryptClicked();
+        }
     }
 
     private void openFile() {
         String filename = mFilename.getText().toString();
 
-        Intent intent = new Intent(FileManager.ACTION_PICK_FILE);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-
-        intent.putExtra(FileManager.EXTRA_TITLE, R.string.filemanager_titleEncrypt);
-        intent.putExtra(FileManager.EXTRA_BUTTON_TEXT, R.string.filemanager_btnOpen);
+        intent.setType("*/*");
 
         try {
             startActivityForResult(intent, Id.request.filename);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(this, R.string.oiFilemanagerNotInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -457,7 +488,7 @@ public class EncryptActivity extends BaseActivity {
                 return;
             }
         } else {
-            boolean encryptIt = mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0;
+            boolean encryptIt = (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0);
             // for now require at least one form of encryption for files
             if (!encryptIt && mEncryptTarget == Id.target.file) {
                 Toast.makeText(this, R.string.selectEncryptionKey, Toast.LENGTH_SHORT).show();
@@ -527,7 +558,7 @@ public class EncryptActivity extends BaseActivity {
             } else {
                 encryptionKeyIds = mEncryptionKeyIds;
                 signatureKeyId = getSecretKeyId();
-                signOnly = mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0;
+                signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
             }
 
             if (mEncryptTarget == Id.target.file) {
@@ -548,7 +579,7 @@ public class EncryptActivity extends BaseActivity {
             } else {
                 String message = mMessage.getText().toString();
 
-                if (signOnly) {
+                if (signOnly && mReturnResult) {
                     // fix the message a bit, trailing spaces and newlines break stuff,
                     // because GMail sends as HTML and such things fuck up the signature,
                     // TODO: things like "<" and ">" also fuck up the signature
@@ -582,26 +613,27 @@ public class EncryptActivity extends BaseActivity {
 
             out.close();
             if (mEncryptTarget != Id.target.file) {
-                data.putString("message", new String(((ByteArrayOutputStream)out).toByteArray()));
+                data.putByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE,
+                                  ((ByteArrayOutputStream)out).toByteArray());
             }
         } catch (IOException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
-        data.putInt("type", Id.message.done);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -645,7 +677,7 @@ public class EncryptActivity extends BaseActivity {
 
     private void selectPublicKeys() {
         Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
-        intent.putExtra("selection", mEncryptionKeyIds);
+        intent.putExtra(Apg.EXTRA_SELECTION, mEncryptionKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -702,7 +734,7 @@ public class EncryptActivity extends BaseActivity {
             case Id.request.public_keys: {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    mEncryptionKeyIds = bundle.getLongArray("selection");
+                    mEncryptionKeyIds = bundle.getLongArray(Apg.EXTRA_SELECTION);
                 }
                 updateView();
                 break;
@@ -723,53 +755,61 @@ public class EncryptActivity extends BaseActivity {
         removeDialog(Id.dialog.encrypting);
 
         Bundle data = msg.getData();
-        String error = data.getString("error");
+        String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(EncryptActivity.this,
-                           getString(R.string.errorMessage, data.getString("error")),
-                           Toast.LENGTH_SHORT).show();
+                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;
-        } else {
-            String message = data.getString("message");
-            switch (mEncryptTarget) {
-                case Id.target.clipboard: {
-                    ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                    clip.setText(message);
-                    Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
-                                   Toast.LENGTH_SHORT).show();
-                    break;
+        }
+        switch (mEncryptTarget) {
+            case Id.target.clipboard: {
+                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
+                ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                clip.setText(message);
+                Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
+                               Toast.LENGTH_SHORT).show();
+                break;
+            }
+
+            case Id.target.email: {
+                if (mReturnResult) {
+                    Intent intent = new Intent();
+                    intent.putExtras(data);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                    return;
                 }
 
-                case Id.target.email: {
-                    Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-                    emailIntent.setType("text/plain; charset=utf-8");
-                    emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
-                    if (mSubject != null) {
-                        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                                             mSubject);
-                    }
-                    if (mSendTo != null) {
-                        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                             new String[] { mSendTo });
-                    }
-                    EncryptActivity.this.
-                            startActivity(Intent.createChooser(emailIntent,
-                                                               getString(R.string.title_sendEmail)));
+                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
+                Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                emailIntent.setType("text/plain; charset=utf-8");
+                emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+                if (mSubject != null) {
+                    emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                                         mSubject);
                 }
+                if (mSendTo != null) {
+                    emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+                                         new String[] { mSendTo });
+                }
+                EncryptActivity.this.
+                        startActivity(Intent.createChooser(emailIntent,
+                                                           getString(R.string.title_sendEmail)));
+                break;
+            }
 
-                case Id.target.file: {
-                    Toast.makeText(this, R.string.encryptionSuccessful, Toast.LENGTH_SHORT).show();
-                    if (mDeleteAfter.isChecked()) {
-                        setDeleteFile(mInputFilename);
-                        showDialog(Id.dialog.delete_file);
-                    }
-                    break;
+            case Id.target.file: {
+                Toast.makeText(this, R.string.encryptionSuccessful, Toast.LENGTH_SHORT).show();
+                if (mDeleteAfter.isChecked()) {
+                    setDeleteFile(mInputFilename);
+                    showDialog(Id.dialog.delete_file);
                 }
+                break;
+            }
 
-                default: {
-                    // shouldn't happen
-                    break;
-                }
+            default: {
+                // shouldn't happen
+                break;
             }
         }
     }

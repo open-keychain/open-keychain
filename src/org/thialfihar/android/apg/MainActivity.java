@@ -47,6 +47,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends BaseActivity {
     private ListView mAccounts = null;
+    private AccountListAdapter mListAdapter = null;
+    private Cursor mAccountCursor;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -95,22 +97,22 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        Cursor accountCursor = managedQuery(Accounts.CONTENT_URI, null, null, null, null);
+        mAccountCursor =
+                Apg.getDatabase().db().query(Accounts.TABLE_NAME,
+                                             new String[] {
+                                                 Accounts._ID,
+                                                 Accounts.NAME,
+                                             }, null, null, null, null, Accounts.NAME + " ASC");
+        startManagingCursor(mAccountCursor);
 
-        mAccounts.setAdapter(new AccountListAdapter(this, accountCursor));
+        mListAdapter = new AccountListAdapter(this, mAccountCursor);
+        mAccounts.setAdapter(mListAdapter);
         mAccounts.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
-                Cursor cursor =
-                        managedQuery(Uri.withAppendedPath(Accounts.CONTENT_URI, "" + id), null,
-                                     null, null, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    int nameIndex = cursor.getColumnIndex(Accounts.NAME);
-                    String accountName = cursor.getString(nameIndex);
-                    startActivity(new Intent(MainActivity.this, MailListActivity.class)
-                                        .putExtra("account", accountName));
-                }
+                String accountName = (String) mAccounts.getItemAtPosition(index);
+                startActivity(new Intent(MainActivity.this, MailListActivity.class)
+                                        .putExtra(Apg.EXTRA_ACCOUNT, accountName));
             }
         });
         registerForContextMenu(mAccounts);
@@ -154,9 +156,10 @@ public class MainActivity extends BaseActivity {
                                 ContentValues values = new ContentValues();
                                 values.put(Accounts.NAME, accountName);
                                 try {
-                                    MainActivity.this.getContentResolver()
-                                                     .insert(Accounts.CONTENT_URI,
-                                                             values);
+                                    Apg.getDatabase().db().insert(Accounts.TABLE_NAME,
+                                                                  Accounts.NAME, values);
+                                    mAccountCursor.requery();
+                                    mListAdapter.notifyDataSetChanged();
                                 } catch (SQLException e) {
                                     Toast.makeText(MainActivity.this,
                                                    getString(R.string.errorMessage,
@@ -188,6 +191,12 @@ public class MainActivity extends BaseActivity {
 
                 message.setText("Read the warnings!\n\n" +
                                 "Changes:\n" +
+                                "* k9mail integration, k9mail beta build is available on the k9mail website\n" +
+                                "* support of other file managers (e.g. ASTRO)\n" +
+                                "* Slovenian translation (thanks, 359)\n" +
+                                "* new database, much faster, less memory usage\n" +
+                                "* defined Intents and content provider for other apps\n" +
+                                "* bugfixes\n" +
                                 "\n" +
                                 "WARNING: be careful editing your existing keys, as they " +
                                 "WILL be stripped of certificates right now.\n" +
@@ -277,8 +286,11 @@ public class MainActivity extends BaseActivity {
 
         switch (menuItem.getItemId()) {
             case Id.menu.delete: {
-                Uri uri = Uri.withAppendedPath(Accounts.CONTENT_URI, "" + info.id);
-                this.getContentResolver().delete(uri, null, null);
+                Apg.getDatabase().db().delete(Accounts.TABLE_NAME,
+                                              Accounts._ID + " = ?",
+                                              new String[] { "" + info.id });
+                mAccountCursor.requery();
+                mListAdapter.notifyDataSetChanged();
                 return true;
             }
 
@@ -295,6 +307,13 @@ public class MainActivity extends BaseActivity {
         public AccountListAdapter(Context context, Cursor cursor) {
             super(context, cursor);
             minflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public Object getItem(int position) {
+            Cursor c = getCursor();
+            c.moveToPosition(position);
+            return c.getString(c.getColumnIndex(Accounts.NAME));
         }
 
         @Override

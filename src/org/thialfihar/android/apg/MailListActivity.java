@@ -87,7 +87,7 @@ public class MailListActivity extends ListActivity {
         mconversations = new Vector<Conversation>();
         mmessages = new Vector<Message>();
 
-        String account = getIntent().getExtras().getString("account");
+        String account = getIntent().getExtras().getString(Apg.EXTRA_ACCOUNT);
         // TODO: what if account is null?
         Uri uri = Uri.parse("content://gmail-ls/conversations/" + account);
         Cursor cursor =
@@ -153,9 +153,9 @@ public class MailListActivity extends ListActivity {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
-                intent.putExtra("data", message.data);
-                intent.putExtra("subject", message.subject);
-                intent.putExtra("replyTo", message.replyTo);
+                intent.putExtra(Apg.EXTRA_DATA, message.data);
+                intent.putExtra(Apg.EXTRA_SUBJECT, message.subject);
+                intent.putExtra(Apg.EXTRA_REPLY_TO, message.replyTo);
                 startActivity(intent);
             }
         });

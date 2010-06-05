@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -24,6 +25,7 @@ import java.util.Vector;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.utils.IterableIterator;
@@ -69,7 +71,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Intent intent = getIntent();
         long keyId = 0;
         if (intent.getExtras() != null) {
-            keyId = intent.getExtras().getLong("keyId");
+            keyId = intent.getExtras().getLong(Apg.EXTRA_KEY_ID);
         }
 
         if (keyId != 0) {
@@ -115,7 +117,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
     }
 
-    public long getMasterKeyId() {
+    private long getMasterKeyId() {
         if (mKeys.getEditors().getChildCount() == 0) {
             return 0;
         }
@@ -243,22 +245,27 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 newPassPhrase = oldPassPhrase;
             }
             Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
+            Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (SignatureException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
+        } catch (Database.GeneralException e) {
+            error = "" + e;
+        } catch (IOException e) {
+            error = "" + e;
         }
 
-        data.putInt("type", Id.message.done);
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -272,11 +279,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         Bundle data = msg.getData();
         removeDialog(Id.dialog.saving);
 
-        String error = data.getString("error");
+        String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(EditKeyActivity.this,
-                           getString(R.string.errorMessage, data.getString("error")),
-                           Toast.LENGTH_SHORT).show();
+                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
             setResult(RESULT_OK);

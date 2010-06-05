@@ -76,7 +76,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     }
                 }
 
-                String error = data.getString("error");
+                String error = data.getString(Apg.EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(getContext(),
                                    getContext().getString(R.string.errorMessage, error),
@@ -310,24 +310,24 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                                     mNewKeySize, passPhrase,
                                     masterKey);
         } catch (NoSuchProviderException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (NoSuchAlgorithmException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (PGPException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (InvalidParameterException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (InvalidAlgorithmParameterException e) {
-            error = e.getMessage();
+            error = "" + e;
         } catch (Apg.GeneralException e) {
-            error = e.getMessage();
+            error = "" + e;
         }
 
         Message message = new Message();
         Bundle data = new Bundle();
         data.putBoolean("closeProgressDialog", true);
         if (error != null) {
-            data.putString("error", error);
+            data.putString(Apg.EXTRA_ERROR, error);
         } else {
             data.putBoolean("gotNewKey", true);
         }

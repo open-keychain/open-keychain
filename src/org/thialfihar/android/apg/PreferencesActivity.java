@@ -50,7 +50,6 @@ public class PreferencesActivity extends BaseActivity {
                 new Choice(180, getString(R.string.choice_3mins)),
                 new Choice(300, getString(R.string.choice_5mins)),
                 new Choice(600, getString(R.string.choice_10mins)),
-                new Choice(0, getString(R.string.choice_untilQuit)),
         };
         ArrayAdapter<Choice> adapter =
                 new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);

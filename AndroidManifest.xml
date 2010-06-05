@@ -17,7 +17,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
-    android:versionName="0.9.5" android:versionCode="10">
+    android:versionCode="15" android:versionName="1.0.1">
 
     <application
         android:icon="@drawable/icon"
@@ -53,12 +53,28 @@
         <activity
             android:name=".SelectPublicKeyListActivity"
             android:label="@string/title_selectRecipients"
-            android:configChanges="keyboardHidden|orientation|keyboard"/>
+            android:configChanges="keyboardHidden|orientation|keyboard">
+
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".SelectSecretKeyListActivity"
             android:label="@string/title_selectSignature"
-            android:configChanges="keyboardHidden|orientation|keyboard"/>
+            android:configChanges="keyboardHidden|orientation|keyboard">
+
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_SECRET_KEY" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+
+        </activity>
 
         <activity
             android:name=".EncryptActivity"
@@ -68,6 +84,9 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
             </intent-filter>
 
         </activity>
@@ -92,6 +111,9 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/*"/>
             </intent-filter>
 
         </activity>
@@ -106,13 +128,22 @@
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
+        <service android:name=".Service" />
+
         <provider
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
             android:name="org.thialfihar.android.apg.provider.DataProvider"
-            android:authorities="org.thialfihar.android.apg.provider" />
+            android:authorities="org.thialfihar.android.apg.provider"/>
 
     </application>
     <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5" />
 
-<uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
+    <permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+                android:protectionLevel="dangerous"
+                android:label="@string/permission_read_key_details_label"
+                android:description="@string/permission_read_key_details_description"/>
+
+    <uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 </manifest>

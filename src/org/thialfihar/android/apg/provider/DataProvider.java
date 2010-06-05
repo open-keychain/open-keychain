@@ -18,15 +18,12 @@ package org.thialfihar.android.apg.provider;
 
 import java.util.HashMap;
 
+import org.thialfihar.android.apg.Id;
+
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -34,153 +31,190 @@ import android.text.TextUtils;
 public class DataProvider extends ContentProvider {
     public static final String AUTHORITY = "org.thialfihar.android.apg.provider";
 
-    private static final String DATABASE_NAME = "apg";
-    private static final int DATABASE_VERSION = 1;
+    private static final int PUBLIC_KEY_RINGS = 101;
+    private static final int PUBLIC_KEY_RING_ID = 102;
+    private static final int PUBLIC_KEY_RING_BY_KEY_ID = 103;
+    private static final int PUBLIC_KEY_RING_KEYS = 111;
+    private static final int PUBLIC_KEY_RING_KEY_RANK = 112;
+    private static final int PUBLIC_KEY_RING_USER_IDS = 121;
+    private static final int PUBLIC_KEY_RING_USER_ID_RANK = 122;
 
-    private static final int PUBLIC_KEYS = 101;
-    private static final int PUBLIC_KEY_ID = 102;
-    private static final int PUBLIC_KEY_BY_KEY_ID = 103;
+    private static final int SECRET_KEY_RINGS = 201;
+    private static final int SECRET_KEY_RING_ID = 202;
+    private static final int SECRET_KEY_RING_BY_KEY_ID = 203;
+    private static final int SECRET_KEY_RING_KEYS = 211;
+    private static final int SECRET_KEY_RING_KEY_RANK = 212;
+    private static final int SECRET_KEY_RING_USER_IDS = 221;
+    private static final int SECRET_KEY_RING_USER_ID_RANK = 222;
 
-    private static final int SECRET_KEYS = 201;
-    private static final int SECRET_KEY_ID = 202;
-    private static final int SECRET_KEY_BY_KEY_ID = 203;
+    private static final String PUBLIC_KEY_RING_CONTENT_DIR_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.public.key_ring";
+    private static final String PUBLIC_KEY_RING_CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.public.key_ring";
 
-    private static final int ACCOUNTS = 301;
-    private static final int ACCOUNT_ID = 302;
+    private static final String PUBLIC_KEY_CONTENT_DIR_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.public.key";
+    private static final String PUBLIC_KEY_CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.public.key";
+
+    private static final String SECRET_KEY_RING_CONTENT_DIR_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.secret.key_ring";
+    private static final String SECRET_KEY_RING_CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.secret.key_ring";
+
+    private static final String SECRET_KEY_CONTENT_DIR_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.secret.key";
+    private static final String SECRET_KEY_CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.secret.key";
+
+    private static final String USER_ID_CONTENT_DIR_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
+    private static final String USER_ID_CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
+
+    public static final String MASTER_KEY_ID = "master_key_id";
+    public static final String KEY_ID = "key_id";
+    public static final String USER_ID = "user_id";
 
     private static final UriMatcher mUriMatcher;
-    private static final HashMap<String, String> mPublicKeysProjectionMap;
-    private static final HashMap<String, String> mSecretKeysProjectionMap;
-    private static final HashMap<String, String> mAccountsProjectionMap;
 
-    private DatabaseHelper mdbHelper;
+    private Database mDb;
 
     static {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "public_keys", PUBLIC_KEYS);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "public_keys/#", PUBLIC_KEY_ID);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "public_keys/key_id/*", PUBLIC_KEY_BY_KEY_ID);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/key_id/*", PUBLIC_KEY_RING_BY_KEY_ID);
 
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "secret_keys", SECRET_KEYS);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "secret_keys/#", SECRET_KEY_ID);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "secret_keys/key_id/*", SECRET_KEY_BY_KEY_ID);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/*/keys", PUBLIC_KEY_RING_KEYS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/*/keys/#", PUBLIC_KEY_RING_KEY_RANK);
 
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "accounts", ACCOUNTS);
-        mUriMatcher.addURI(DataProvider.AUTHORITY, "accounts/#", ACCOUNT_ID);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/*/user_ids", PUBLIC_KEY_RING_USER_IDS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/*/user_ids/#", PUBLIC_KEY_RING_USER_ID_RANK);
 
-        mPublicKeysProjectionMap = new HashMap<String, String>();
-        mPublicKeysProjectionMap.put(PublicKeys._ID, PublicKeys._ID);
-        mPublicKeysProjectionMap.put(PublicKeys.KEY_ID, PublicKeys.KEY_ID);
-        mPublicKeysProjectionMap.put(PublicKeys.KEY_DATA, PublicKeys.KEY_DATA);
-        mPublicKeysProjectionMap.put(PublicKeys.WHO_ID, PublicKeys.WHO_ID);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public", PUBLIC_KEY_RINGS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/public/*", PUBLIC_KEY_RING_ID);
 
-        mSecretKeysProjectionMap = new HashMap<String, String>();
-        mSecretKeysProjectionMap.put(PublicKeys._ID, PublicKeys._ID);
-        mSecretKeysProjectionMap.put(PublicKeys.KEY_ID, PublicKeys.KEY_ID);
-        mSecretKeysProjectionMap.put(PublicKeys.KEY_DATA, PublicKeys.KEY_DATA);
-        mSecretKeysProjectionMap.put(PublicKeys.WHO_ID, PublicKeys.WHO_ID);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/key_id/*", SECRET_KEY_RING_BY_KEY_ID);
 
-        mAccountsProjectionMap = new HashMap<String, String>();
-        mAccountsProjectionMap.put(Accounts._ID, Accounts._ID);
-        mAccountsProjectionMap.put(Accounts.NAME, Accounts.NAME);
-    }
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*/keys", SECRET_KEY_RING_KEYS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*/keys/#", SECRET_KEY_RING_KEY_RANK);
 
-    /**
-     * This class helps open, create, and upgrade the database file.
-     */
-    private static class DatabaseHelper extends SQLiteOpenHelper {
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*/user_ids", SECRET_KEY_RING_USER_IDS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*/user_ids/#", SECRET_KEY_RING_USER_ID_RANK);
 
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + PublicKeys.TABLE_NAME + " (" +
-                       PublicKeys._ID + " " + PublicKeys._ID_type + "," +
-                       PublicKeys.KEY_ID + " " + PublicKeys.KEY_ID_type + ", " +
-                       PublicKeys.KEY_DATA + " " + PublicKeys.KEY_DATA_type + ", " +
-                       PublicKeys.WHO_ID + " " + PublicKeys.WHO_ID_type + ");");
-
-            db.execSQL("CREATE TABLE " + SecretKeys.TABLE_NAME + " (" +
-                       SecretKeys._ID + " " + SecretKeys._ID_type + "," +
-                       SecretKeys.KEY_ID + " " + SecretKeys.KEY_ID_type + ", " +
-                       SecretKeys.KEY_DATA + " " + SecretKeys.KEY_DATA_type + ", " +
-                       SecretKeys.WHO_ID + " " + SecretKeys.WHO_ID_type + ");");
-
-            db.execSQL("CREATE TABLE " + Accounts.TABLE_NAME + " (" +
-                       Accounts._ID + " " + Accounts._ID_type + "," +
-                       Accounts.NAME + " " + Accounts.NAME_type + ");");
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            // TODO: upgrade db if necessary, and do that in a clever way
-        }
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret", SECRET_KEY_RINGS);
+        mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*", SECRET_KEY_RING_ID);
     }
 
     @Override
     public boolean onCreate() {
-        mdbHelper = new DatabaseHelper(getContext());
+        mDb = new Database(getContext());
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
+        // TODO: implement the others, then use them for the lists
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        HashMap<String, String> projectionMap = new HashMap<String, String>();
+        int match = mUriMatcher.match(uri);
+        int type;
+        switch (match) {
+            case PUBLIC_KEY_RINGS:
+            case PUBLIC_KEY_RING_ID:
+            case PUBLIC_KEY_RING_BY_KEY_ID:
+            case PUBLIC_KEY_RING_KEYS:
+            case PUBLIC_KEY_RING_KEY_RANK:
+            case PUBLIC_KEY_RING_USER_IDS:
+            case PUBLIC_KEY_RING_USER_ID_RANK:
+                type = Id.database.type_public;
+                break;
 
-        switch (mUriMatcher.match(uri)) {
-            case PUBLIC_KEYS: {
-                qb.setTables(PublicKeys.TABLE_NAME);
-                qb.setProjectionMap(mPublicKeysProjectionMap);
+            case SECRET_KEY_RINGS:
+            case SECRET_KEY_RING_ID:
+            case SECRET_KEY_RING_BY_KEY_ID:
+            case SECRET_KEY_RING_KEYS:
+            case SECRET_KEY_RING_KEY_RANK:
+            case SECRET_KEY_RING_USER_IDS:
+            case SECRET_KEY_RING_USER_ID_RANK:
+                type = Id.database.type_secret;
+                break;
+
+            default: {
+                throw new IllegalArgumentException("Unknown URI " + uri);
+            }
+        }
+
+        qb.appendWhere(KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = " + type);
+
+        switch (match) {
+            case PUBLIC_KEY_RINGS:
+            case SECRET_KEY_RINGS: {
+                qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
+                             "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
+                             Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
+                             ") " +
+                             " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
+                             "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
+                             UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
+                             UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
+
+                projectionMap.put(MASTER_KEY_ID,
+                                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
+                projectionMap.put(USER_ID,
+                                  UserIds.TABLE_NAME + "." + UserIds.USER_ID);
+
                 break;
             }
 
-            case PUBLIC_KEY_ID: {
-                qb.setTables(PublicKeys.TABLE_NAME);
-                qb.setProjectionMap(mPublicKeysProjectionMap);
-                qb.appendWhere(PublicKeys._ID + "=" + uri.getPathSegments().get(1));
+            case PUBLIC_KEY_RING_ID:
+            case SECRET_KEY_RING_ID: {
+                qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
+                             "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
+                             Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
+                             ") " +
+                             " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
+                             "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
+                             UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
+                             UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
+
+                projectionMap.put(MASTER_KEY_ID,
+                                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
+                projectionMap.put(USER_ID,
+                                  UserIds.TABLE_NAME + "." + UserIds.USER_ID);
+
+                qb.appendWhere(" AND " +
+                               KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
                 break;
             }
 
-            case PUBLIC_KEY_BY_KEY_ID: {
-                qb.setTables(PublicKeys.TABLE_NAME);
-                qb.setProjectionMap(mPublicKeysProjectionMap);
-                qb.appendWhere(PublicKeys.KEY_ID + "=" + uri.getPathSegments().get(2));
-                break;
-            }
+            case SECRET_KEY_RING_BY_KEY_ID:
+            case PUBLIC_KEY_RING_BY_KEY_ID: {
+                qb.setTables(Keys.TABLE_NAME + " AS tmp INNER JOIN " +
+                             KeyRings.TABLE_NAME + " ON (" +
+                             KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                             "tmp." + Keys.KEY_RING_ID + ")" +
+                             " INNER JOIN " + Keys.TABLE_NAME + " ON " +
+                             "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
+                             Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
+                             Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
+                             ") " +
+                             " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
+                             "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
+                             UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
+                             UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
 
-            case SECRET_KEYS: {
-                qb.setTables(SecretKeys.TABLE_NAME);
-                qb.setProjectionMap(mSecretKeysProjectionMap);
-                break;
-            }
+                projectionMap.put(MASTER_KEY_ID,
+                                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID);
+                projectionMap.put(USER_ID,
+                                  UserIds.TABLE_NAME + "." + UserIds.USER_ID);
 
-            case SECRET_KEY_ID: {
-                qb.setTables(SecretKeys.TABLE_NAME);
-                qb.setProjectionMap(mSecretKeysProjectionMap);
-                qb.appendWhere(SecretKeys._ID + "=" + uri.getPathSegments().get(1));
-                break;
-            }
+                qb.appendWhere(" AND tmp." + Keys.KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(3));
 
-            case SECRET_KEY_BY_KEY_ID: {
-                qb.setTables(SecretKeys.TABLE_NAME);
-                qb.setProjectionMap(mSecretKeysProjectionMap);
-                qb.appendWhere(SecretKeys.KEY_ID + "=" + uri.getPathSegments().get(2));
-                break;
-            }
-
-            case ACCOUNTS: {
-                qb.setTables(Accounts.TABLE_NAME);
-                qb.setProjectionMap(mAccountsProjectionMap);
-                break;
-            }
-
-            case ACCOUNT_ID: {
-                qb.setTables(Accounts.TABLE_NAME);
-                qb.setProjectionMap(mAccountsProjectionMap);
-                qb.appendWhere(Accounts._ID + "=" + uri.getPathSegments().get(1));
                 break;
             }
 
@@ -189,20 +223,20 @@ public class DataProvider extends ContentProvider {
             }
         }
 
+        qb.setProjectionMap(projectionMap);
+
         // If no sort order is specified use the default
         String orderBy;
         if (TextUtils.isEmpty(sortOrder)) {
-            orderBy = PublicKeys.DEFAULT_SORT_ORDER;
+            orderBy = null;
         } else {
             orderBy = sortOrder;
         }
 
-        // Get the database and run the query
-        SQLiteDatabase db = mdbHelper.getReadableDatabase();
-        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+        //System.out.println(qb.buildQuery(projection, selection, selectionArgs, null, null, sortOrder, null).replace("WHERE", "WHERE\n"));
+        Cursor c = qb.query(mDb.db(), projection, selection, selectionArgs, null, null, orderBy);
 
-        // Tell the cursor what uri to watch, so it knows when its source data
-        // changes
+        // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);
         return c;
     }
@@ -210,278 +244,68 @@ public class DataProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         switch (mUriMatcher.match(uri)) {
-            case PUBLIC_KEYS: {
-                return PublicKeys.CONTENT_TYPE;
-            }
+            case PUBLIC_KEY_RINGS:
+                return PUBLIC_KEY_RING_CONTENT_DIR_TYPE;
 
-            case PUBLIC_KEY_ID: {
-                return PublicKeys.CONTENT_ITEM_TYPE;
-            }
+            case PUBLIC_KEY_RING_ID:
+                return PUBLIC_KEY_RING_CONTENT_ITEM_TYPE;
 
-            case PUBLIC_KEY_BY_KEY_ID: {
-                return PublicKeys.CONTENT_ITEM_TYPE;
-            }
+            case PUBLIC_KEY_RING_BY_KEY_ID:
+                return PUBLIC_KEY_RING_CONTENT_ITEM_TYPE;
 
-            case SECRET_KEYS: {
-                return SecretKeys.CONTENT_TYPE;
-            }
+            case PUBLIC_KEY_RING_KEYS:
+                return PUBLIC_KEY_CONTENT_DIR_TYPE;
 
-            case SECRET_KEY_ID: {
-                return SecretKeys.CONTENT_ITEM_TYPE;
-            }
+            case PUBLIC_KEY_RING_KEY_RANK:
+                return PUBLIC_KEY_CONTENT_ITEM_TYPE;
 
-            case SECRET_KEY_BY_KEY_ID: {
-                return SecretKeys.CONTENT_ITEM_TYPE;
-            }
+            case PUBLIC_KEY_RING_USER_IDS:
+                return USER_ID_CONTENT_DIR_TYPE;
 
-            case ACCOUNTS: {
-                return Accounts.CONTENT_TYPE;
-            }
+            case PUBLIC_KEY_RING_USER_ID_RANK:
+                return USER_ID_CONTENT_ITEM_TYPE;
 
-            case ACCOUNT_ID: {
-                return Accounts.CONTENT_ITEM_TYPE;
-            }
+            case SECRET_KEY_RINGS:
+                return SECRET_KEY_RING_CONTENT_DIR_TYPE;
 
-            default: {
+            case SECRET_KEY_RING_ID:
+                return SECRET_KEY_RING_CONTENT_ITEM_TYPE;
+
+            case SECRET_KEY_RING_BY_KEY_ID:
+                return SECRET_KEY_RING_CONTENT_ITEM_TYPE;
+
+            case SECRET_KEY_RING_KEYS:
+                return SECRET_KEY_CONTENT_DIR_TYPE;
+
+            case SECRET_KEY_RING_KEY_RANK:
+                return SECRET_KEY_CONTENT_ITEM_TYPE;
+
+            case SECRET_KEY_RING_USER_IDS:
+                return USER_ID_CONTENT_DIR_TYPE;
+
+            case SECRET_KEY_RING_USER_ID_RANK:
+                return USER_ID_CONTENT_ITEM_TYPE;
+
+            default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
-            }
         }
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues initialValues) {
-        switch (mUriMatcher.match(uri)) {
-            case PUBLIC_KEYS: {
-                ContentValues values;
-                if (initialValues != null) {
-                    values = new ContentValues(initialValues);
-                } else {
-                    values = new ContentValues();
-                }
-
-                if (!values.containsKey(PublicKeys.WHO_ID)) {
-                    values.put(PublicKeys.WHO_ID, "");
-                }
-
-                SQLiteDatabase db = mdbHelper.getWritableDatabase();
-                long rowId = db.insert(PublicKeys.TABLE_NAME, PublicKeys.WHO_ID, values);
-                if (rowId > 0) {
-                    Uri transferUri = ContentUris.withAppendedId(PublicKeys.CONTENT_URI, rowId);
-                    getContext().getContentResolver().notifyChange(transferUri, null);
-                    return transferUri;
-                }
-
-                throw new SQLException("Failed to insert row into " + uri);
-            }
-
-            case SECRET_KEYS: {
-                ContentValues values;
-                if (initialValues != null) {
-                    values = new ContentValues(initialValues);
-                } else {
-                    values = new ContentValues();
-                }
-
-                if (!values.containsKey(SecretKeys.WHO_ID)) {
-                    values.put(SecretKeys.WHO_ID, "");
-                }
-
-                SQLiteDatabase db = mdbHelper.getWritableDatabase();
-                long rowId = db.insert(SecretKeys.TABLE_NAME, SecretKeys.WHO_ID, values);
-                if (rowId > 0) {
-                    Uri transferUri = ContentUris.withAppendedId(SecretKeys.CONTENT_URI, rowId);
-                    getContext().getContentResolver().notifyChange(transferUri, null);
-                    return transferUri;
-                }
-
-                throw new SQLException("Failed to insert row into " + uri);
-            }
-
-            case ACCOUNTS: {
-                ContentValues values;
-                if (initialValues != null) {
-                    values = new ContentValues(initialValues);
-                } else {
-                    values = new ContentValues();
-                }
-
-                SQLiteDatabase db = mdbHelper.getWritableDatabase();
-                long rowId = db.insert(Accounts.TABLE_NAME, null, values);
-                if (rowId > 0) {
-                    Uri transferUri = ContentUris.withAppendedId(Accounts.CONTENT_URI, rowId);
-                    getContext().getContentResolver().notifyChange(transferUri, null);
-                    return transferUri;
-                }
-
-                throw new SQLException("Failed to insert row into " + uri);
-            }
-
-            default: {
-                throw new IllegalArgumentException("Unknown URI " + uri);
-            }
-        }
+        // not supported
+        return null;
     }
 
     @Override
     public int delete(Uri uri, String where, String[] whereArgs) {
-        SQLiteDatabase db = mdbHelper.getWritableDatabase();
-        int count;
-        switch (mUriMatcher.match(uri)) {
-            case PUBLIC_KEYS: {
-                count = db.delete(PublicKeys.TABLE_NAME, where, whereArgs);
-                break;
-            }
-
-            case PUBLIC_KEY_ID: {
-                String publicKeyId = uri.getPathSegments().get(1);
-                count = db.delete(PublicKeys.TABLE_NAME,
-                                  PublicKeys._ID + "=" + publicKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case PUBLIC_KEY_BY_KEY_ID: {
-                String publicKeyKeyId = uri.getPathSegments().get(2);
-                count = db.delete(PublicKeys.TABLE_NAME,
-                                  PublicKeys.KEY_ID + "=" + publicKeyKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case SECRET_KEYS: {
-                count = db.delete(SecretKeys.TABLE_NAME, where, whereArgs);
-                break;
-            }
-
-            case SECRET_KEY_ID: {
-                String secretKeyId = uri.getPathSegments().get(1);
-                count = db.delete(SecretKeys.TABLE_NAME,
-                                  SecretKeys._ID + "=" + secretKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case SECRET_KEY_BY_KEY_ID: {
-                String secretKeyKeyId = uri.getPathSegments().get(2);
-                count = db.delete(SecretKeys.TABLE_NAME,
-                                  SecretKeys.KEY_ID + "=" + secretKeyKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case ACCOUNTS: {
-                count = db.delete(Accounts.TABLE_NAME, where, whereArgs);
-                break;
-            }
-
-            case ACCOUNT_ID: {
-                String accountId = uri.getPathSegments().get(1);
-                count = db.delete(Accounts.TABLE_NAME,
-                                  Accounts._ID + "=" + accountId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            default: {
-                throw new IllegalArgumentException("Unknown URI " + uri);
-            }
-        }
-
-        getContext().getContentResolver().notifyChange(uri, null);
-        return count;
+        // not supported
+        return 0;
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
-        SQLiteDatabase db = mdbHelper.getWritableDatabase();
-        int count;
-        switch (mUriMatcher.match(uri)) {
-            case PUBLIC_KEYS: {
-                count = db.update(PublicKeys.TABLE_NAME, values, where, whereArgs);
-                break;
-            }
-
-            case PUBLIC_KEY_ID: {
-                String publicKeyId = uri.getPathSegments().get(1);
-
-                count = db.update(PublicKeys.TABLE_NAME, values,
-                                  PublicKeys._ID + "=" + publicKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case PUBLIC_KEY_BY_KEY_ID: {
-                String publicKeyKeyId = uri.getPathSegments().get(2);
-
-                count = db.update(PublicKeys.TABLE_NAME, values,
-                                  PublicKeys.KEY_ID + "=" + publicKeyKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case SECRET_KEYS: {
-                count = db.update(SecretKeys.TABLE_NAME, values, where, whereArgs);
-                break;
-            }
-
-            case SECRET_KEY_ID: {
-                String secretKeyId = uri.getPathSegments().get(1);
-
-                count = db.update(SecretKeys.TABLE_NAME, values,
-                                  SecretKeys._ID + "=" + secretKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case SECRET_KEY_BY_KEY_ID: {
-                String secretKeyKeyId = uri.getPathSegments().get(2);
-
-                count = db.update(SecretKeys.TABLE_NAME, values,
-                                  SecretKeys.KEY_ID + "=" + secretKeyKeyId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            case ACCOUNTS: {
-                count = db.update(Accounts.TABLE_NAME, values, where, whereArgs);
-                break;
-            }
-
-            case ACCOUNT_ID: {
-                String accountId = uri.getPathSegments().get(1);
-
-                count = db.update(Accounts.TABLE_NAME, values,
-                                  Accounts._ID + "=" + accountId +
-                                          (!TextUtils.isEmpty(where) ?
-                                                   " AND (" + where + ')' : ""),
-                                  whereArgs);
-                break;
-            }
-
-            default: {
-                throw new IllegalArgumentException("Unknown URI " + uri);
-            }
-        }
-
-        getContext().getContentResolver().notifyChange(uri, null);
-        return count;
+        // not supported
+        return 0;
     }
 }
