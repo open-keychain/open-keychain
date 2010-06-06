@@ -139,11 +139,15 @@ public class Apg {
             Uri.parse("content://" + AUTHORITY + "/key_rings/secret/");
     public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID =
             Uri.parse("content://" + AUTHORITY + "/key_rings/secret/key_id/");
+    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_EMAILS =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/secret/emails/");
 
     public static final Uri CONTENT_URI_PUBLIC_KEY_RINGS =
             Uri.parse("content://" + AUTHORITY + "/key_rings/public/");
     public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID =
             Uri.parse("content://" + AUTHORITY + "/key_rings/public/key_id/");
+    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS =
+            Uri.parse("content://" + AUTHORITY + "/key_rings/public/emails/");
 
     public static String VERSION = "1.0.1";
     public static String FULL_VERSION = "APG v" + VERSION;
