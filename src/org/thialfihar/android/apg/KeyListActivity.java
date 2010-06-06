@@ -16,8 +16,14 @@
 
 package org.thialfihar.android.apg;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Vector;
 
 import org.bouncycastle2.openpgp.PGPException;
@@ -65,6 +71,8 @@ public class KeyListActivity extends BaseActivity {
     protected String mImportFilename = Constants.path.app_dir + "/";
     protected String mExportFilename = Constants.path.app_dir + "/";
 
+    protected String mImportData;
+
     protected int mKeyType = Id.type.public_key;
 
     @Override
@@ -89,6 +97,16 @@ public class KeyListActivity extends BaseActivity {
         });
 
         handleIntent(getIntent());
+
+        Intent intent = getIntent();
+        if (Apg.Intent.IMPORT.equals(intent.getAction())) {
+            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
+                mImportFilename = intent.getDataString().replace("file://", "");
+            } else {
+                mImportData = intent.getStringExtra(Apg.EXTRA_TEXT);
+            }
+            importKeys();
+        }
     }
 
     @Override
@@ -291,16 +309,26 @@ public class KeyListActivity extends BaseActivity {
         Bundle data = new Bundle();
         Message msg = new Message();
 
-        String filename = null;
-        if (mTask == Id.task.import_keys) {
-            filename = mImportFilename;
-        } else {
-            filename = mExportFilename;
-        }
-
         try {
+            InputStream importInputStream = null;
+            OutputStream exportOutputStream = null;
+            long size = 0;
             if (mTask == Id.task.import_keys) {
-                data = Apg.importKeyRings(this, mKeyType, filename, this);
+                if (mImportData != null) {
+                    byte[] bytes = mImportData.getBytes();
+                    size = bytes.length;
+                    importInputStream = new ByteArrayInputStream(bytes);
+                } else {
+                    File file = new File(mImportFilename);
+                    size = file.length();
+                    importInputStream = new FileInputStream(file);
+                }
+            } else {
+                exportOutputStream = new FileOutputStream(mExportFilename);
+            }
+
+            if (mTask == Id.task.import_keys) {
+                data = Apg.importKeyRings(this, mKeyType, importInputStream, size, this);
             } else {
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {
@@ -312,7 +340,7 @@ public class KeyListActivity extends BaseActivity {
                     keyRingIds.add(keyRingId);
                     mSelectedItem = -1;
                 }
-                data = Apg.exportKeyRings(this, keyRingIds, filename, this);
+                data = Apg.exportKeyRings(this, keyRingIds, exportOutputStream, this);
             }
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
@@ -323,6 +351,8 @@ public class KeyListActivity extends BaseActivity {
         } catch (Apg.GeneralException e) {
             error = "" + e;
         }
+
+        mImportData = null;
 
         if (mTask == Id.task.import_keys) {
             data.putInt(Apg.EXTRA_STATUS, Id.message.import_done);

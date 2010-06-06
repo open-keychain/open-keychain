@@ -144,10 +144,24 @@ public class GeneralActivity extends BaseActivity {
             }
 
             case Id.choice.action.import_public: {
+                intent.setClass(this, PublicKeyListActivity.class);
+                intent.setAction(Apg.Intent.IMPORT);
+                if (mDataString != null) {
+                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                } else if (mDataUri != null) {
+                    intent.setDataAndType(mDataUri, mIntent.getType());
+                }
                 break;
             }
 
             case Id.choice.action.import_secret: {
+                intent.setClass(this, SecretKeyListActivity.class);
+                intent.setAction(Apg.Intent.IMPORT);
+                if (mDataString != null) {
+                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                } else if (mDataUri != null) {
+                    intent.setDataAndType(mDataUri, mIntent.getType());
+                }
                 break;
             }
 
