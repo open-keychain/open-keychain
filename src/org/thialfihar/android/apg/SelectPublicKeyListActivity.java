@@ -92,9 +92,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         }
 
         long selectedKeyIds[] = null;
-        if (getIntent().getExtras() != null) {
-            selectedKeyIds = getIntent().getExtras().getLongArray(Apg.EXTRA_SELECTION);
-        }
+        selectedKeyIds = intent.getLongArrayExtra(Apg.EXTRA_SELECTION);
 
         if (selectedKeyIds == null) {
             Vector<Long> vector = new Vector<Long>();

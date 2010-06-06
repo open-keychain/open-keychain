@@ -25,6 +25,7 @@ import org.thialfihar.android.apg.provider.UserIds;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.view.LayoutInflater;
@@ -63,6 +64,19 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
                                     UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
                                     UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
 
+        String inIdList = null;
+
+        if (selectedKeyIds != null && selectedKeyIds.length > 0) {
+            inIdList = KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID + " IN (";
+            for (int i = 0; i < selectedKeyIds.length; ++i) {
+                if (i != 0) {
+                    inIdList += ", ";
+                }
+                inIdList += DatabaseUtils.sqlEscapeString("" + selectedKeyIds[i]);
+            }
+            inIdList += ")";
+        }
+
         if (searchString != null && searchString.trim().length() > 0) {
             String[] chunks = searchString.trim().split(" +");
             qb.appendWhere("(EXISTS (SELECT tmp." + UserIds._ID + " FROM " +
@@ -75,19 +89,14 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
             }
             qb.appendWhere("))");
 
-            if (selectedKeyIds != null && selectedKeyIds.length > 0) {
-                qb.appendWhere(" OR ");
-
-                qb.appendWhere("(" + KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID +
-                               " IN (");
-                for (int i = 0; i < selectedKeyIds.length; ++i) {
-                    if (i != 0) {
-                        qb.appendWhere(", ");
-                    }
-                    qb.appendWhereEscapeString("" + selectedKeyIds[i]);
-                }
-                qb.appendWhere("))");
+            if (inIdList != null) {
+                qb.appendWhere(" OR (" + inIdList + ")");
             }
+        }
+
+        String orderBy = UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
+        if (inIdList != null) {
+            orderBy = inIdList + " DESC, " + orderBy;
         }
 
         mCursor = qb.query(mDatabase,
@@ -111,7 +120,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
               },
               KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
               new String[] { "" + Id.database.type_public },
-              null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
+              null, null, orderBy);
 
         activity.startManagingCursor(mCursor);
     }
