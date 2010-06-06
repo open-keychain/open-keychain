@@ -126,7 +126,7 @@
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
+                <data android:mimeType="*/*"/>
             </intent-filter>
 
         </activity>
@@ -141,7 +141,7 @@
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
+                <data android:mimeType="*/*"/>
             </intent-filter>
 
         </activity>

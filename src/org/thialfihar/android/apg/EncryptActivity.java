@@ -279,7 +279,7 @@ public class EncryptActivity extends BaseActivity {
                 mReturnResult = true;
             }
 
-            String data = extras.getString(Apg.EXTRA_DATA);
+            String data = extras.getString(Apg.EXTRA_TEXT);
             mSendTo = extras.getString(Apg.EXTRA_SEND_TO);
             mSubject = extras.getString(Apg.EXTRA_SUBJECT);
             long signatureKeyId = extras.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
@@ -335,6 +335,11 @@ public class EncryptActivity extends BaseActivity {
                     mSource.showNext();
                 }
             } else if (Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
+                if ("file".equals(mIntent.getScheme())) {
+                    mInputFilename = mIntent.getDataString().replace("file://", "");
+                    mFilename.setText(mInputFilename);
+                    guessOutputFilename();
+                }
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
                 while (mSource.getCurrentView().getId() != R.id.sourceFile) {
@@ -403,6 +408,7 @@ public class EncryptActivity extends BaseActivity {
                 mSourceLabel.setText(R.string.label_file);
                 mEncryptButton.setText(R.string.btn_encrypt);
                 mEncryptToClipboardButton.setEnabled(false);
+                mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
                 break;
             }
 
@@ -410,6 +416,7 @@ public class EncryptActivity extends BaseActivity {
                 mSourceLabel.setText(R.string.label_message);
                 mEncryptButton.setText(R.string.btn_send);
                 mEncryptToClipboardButton.setEnabled(true);
+                mEncryptToClipboardButton.setVisibility(View.VISIBLE);
                 break;
             }
 

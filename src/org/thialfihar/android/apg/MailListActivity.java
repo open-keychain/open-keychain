@@ -153,7 +153,7 @@ public class MailListActivity extends ListActivity {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
-                intent.putExtra(Apg.EXTRA_DATA, message.data);
+                intent.putExtra(Apg.EXTRA_TEXT, message.data);
                 intent.putExtra(Apg.EXTRA_SUBJECT, message.subject);
                 intent.putExtra(Apg.EXTRA_REPLY_TO, message.replyTo);
                 startActivity(intent);

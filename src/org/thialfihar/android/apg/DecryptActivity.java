@@ -178,25 +178,12 @@ public class DecryptActivity extends BaseActivity {
             } catch (IOException e) {
                 // ignore, then
             }
-        } else if (Intent.ACTION_SEND.equals(mIntent.getAction())) {
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                extras = new Bundle();
-            }
-            String data = extras.getString(Intent.EXTRA_TEXT);
-            if (data != null) {
-                mMessage.setText(data);
-            }
-            mSubject = extras.getString(Intent.EXTRA_SUBJECT);
-            if (mSubject != null && mSubject.startsWith("Fwd: ")) {
-                mSubject = mSubject.substring(5);
-            }
         } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
-            String data = extras.getString(Apg.EXTRA_DATA);
+            String data = extras.getString(Apg.EXTRA_TEXT);
             if (data != null) {
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
@@ -218,6 +205,11 @@ public class DecryptActivity extends BaseActivity {
             mReplyTo = extras.getString(Apg.EXTRA_REPLY_TO);
             mSubject = extras.getString(Apg.EXTRA_SUBJECT);
         } else if (Apg.Intent.DECRYPT_FILE.equals(mIntent.getAction())) {
+            if ("file".equals(mIntent.getScheme())) {
+                mInputFilename = mIntent.getDataString().replace("file://", "");
+                mFilename.setText(mInputFilename);
+                guessOutputFilename();
+            }
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
             while (mSource.getCurrentView().getId() != R.id.sourceFile) {
@@ -228,7 +220,7 @@ public class DecryptActivity extends BaseActivity {
             if (extras == null) {
                 extras = new Bundle();
             }
-            String data = extras.getString(Apg.EXTRA_DATA);
+            String data = extras.getString(Apg.EXTRA_TEXT);
             if (data != null) {
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
@@ -450,7 +442,7 @@ public class DecryptActivity extends BaseActivity {
         String data = mMessage.getText().toString();
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
-        intent.putExtra(Apg.EXTRA_DATA, data);
+        intent.putExtra(Apg.EXTRA_TEXT, data);
         intent.putExtra(Apg.EXTRA_SUBJECT, "Re: " + mSubject);
         intent.putExtra(Apg.EXTRA_SEND_TO, mReplyTo);
         intent.putExtra(Apg.EXTRA_SIGNATURE_KEY_ID, getSecretKeyId());

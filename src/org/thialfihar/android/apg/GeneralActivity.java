@@ -2,6 +2,7 @@ package org.thialfihar.android.apg;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
 
@@ -24,6 +25,8 @@ public class GeneralActivity extends BaseActivity {
     private ArrayAdapter<Choice> mAdapter;
     private ListView mList;
     private Button mCancelButton;
+    private String mDataString;
+    private Uri mDataUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,48 +36,57 @@ public class GeneralActivity extends BaseActivity {
 
         mIntent = getIntent();
 
-        boolean isEncrypted = false;
-        boolean containsKeys = false;
-
         InputStream inStream = null;
         {
-            byte[] data = mIntent.getByteArrayExtra(Intent.EXTRA_TEXT);
+            String data = mIntent.getStringExtra(Intent.EXTRA_TEXT);
             if (data != null) {
-                inStream = new ByteArrayInputStream(data);
+                mDataString = data;
+                inStream = new ByteArrayInputStream(data.getBytes());
             }
         }
 
         if (inStream == null) {
             Uri data = mIntent.getData();
             if (data != null) {
+                mDataUri = data;
                 try {
                     inStream = getContentResolver().openInputStream(data);
                 } catch (FileNotFoundException e) {
                     // didn't work
-                    Toast.makeText(this, "failed to open stream", Toast.LENGTH_SHORT);
+                    Toast.makeText(this, "failed to open stream", Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
         if (inStream == null) {
-            Toast.makeText(this, "no data found", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "no data found", Toast.LENGTH_SHORT).show();
             finish();
             return;
+        }
+
+        int contentType = Id.content.unknown;
+        try {
+            contentType = Apg.getStreamContent(this, inStream);
+            inStream.close();
+        } catch (IOException e) {
+            // just means that there's no PGP data in there
         }
 
         mList = (ListView) findViewById(R.id.options);
         Vector<Choice> choices = new Vector<Choice>();
 
-        if (containsKeys) {
-            choices.add(new Choice(Id.choice.action.import_public, getString(R.string.action_importPublic)));
-            choices.add(new Choice(Id.choice.action.import_secret, getString(R.string.action_importSecret)));
+        if (contentType == Id.content.keys) {
+            choices.add(new Choice(Id.choice.action.import_public,
+                                   getString(R.string.action_importPublic)));
+            choices.add(new Choice(Id.choice.action.import_secret,
+                                   getString(R.string.action_importSecret)));
         }
 
-        if (isEncrypted) {
+        if (contentType == Id.content.encrypted_data) {
             choices.add(new Choice(Id.choice.action.decrypt, getString(R.string.action_decrypt)));
         }
 
-        if (!containsKeys && !isEncrypted) {
+        if (contentType == Id.content.unknown) {
             choices.add(new Choice(Id.choice.action.encrypt, getString(R.string.action_encrypt)));
         }
 
@@ -107,17 +119,27 @@ public class GeneralActivity extends BaseActivity {
         switch (id) {
             case Id.choice.action.encrypt: {
                 intent.setClass(this, EncryptActivity.class);
-                if (mIntent.hasExtra(Intent.EXTRA_TEXT)) {
-                    intent.putExtra(Intent.EXTRA_TEXT, mIntent.getByteArrayExtra(Intent.EXTRA_TEXT));
-                } else if (mIntent.getData() != null) {
-                    intent.setData(mIntent.getData());
-                    intent.setType(mIntent.getType());
+                if (mDataString != null) {
+                    intent.setAction(Apg.Intent.ENCRYPT);
+                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                } else if (mDataUri != null) {
+                    intent.setAction(Apg.Intent.ENCRYPT_FILE);
+                    intent.setDataAndType(mDataUri, mIntent.getType());
                 }
 
                 break;
             }
 
             case Id.choice.action.decrypt: {
+                intent.setClass(this, DecryptActivity.class);
+                if (mDataString != null) {
+                    intent.setAction(Apg.Intent.DECRYPT);
+                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                } else if (mDataUri != null) {
+                    intent.setAction(Apg.Intent.DECRYPT_FILE);
+                    intent.setDataAndType(mDataUri, mIntent.getType());
+                }
+
                 break;
             }
 

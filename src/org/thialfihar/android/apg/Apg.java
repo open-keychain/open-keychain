@@ -110,6 +110,7 @@ public class Apg {
         public static final String SELECT_SECRET_KEY = "org.thialfihar.android.apg.intent.SELECT_SECRET_KEY";
     }
 
+    public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_ERROR = "error";
@@ -1700,6 +1701,23 @@ public class Apg {
 
         progress.setProgress(R.string.progress_done, 100, 100);
         return returnData;
+    }
+
+    public static int getStreamContent(Context context, InputStream inStream)
+            throws IOException {
+        InputStream in = PGPUtil.getDecoderStream(inStream);
+        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+        Object object = pgpF.nextObject();
+        while (object != null) {
+            if (object instanceof PGPPublicKeyRing ||
+                object instanceof PGPSecretKeyRing) {
+                return Id.content.keys;
+            } else if (object instanceof PGPEncryptedDataList) {
+                return Id.content.encrypted_data;
+            }
+        }
+
+        return Id.content.unknown;
     }
 
     // taken from ClearSignedFileProcessor in BC

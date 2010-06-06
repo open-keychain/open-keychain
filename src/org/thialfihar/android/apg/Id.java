@@ -139,4 +139,10 @@ public final class Id {
         public static final int none = 0;
         public static final int symmetric = -1;
     }
+
+    public static final class content {
+        public static final int unknown = 0;
+        public static final int encrypted_data = 1;
+        public static final int keys = 2;
+    }
 }
