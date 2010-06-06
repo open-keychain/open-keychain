@@ -81,7 +81,6 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
             </intent-filter>
 
             <intent-filter>
@@ -103,7 +102,6 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.SELECT_SECRET_KEY" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/*"/>
             </intent-filter>
 
             <intent-filter>

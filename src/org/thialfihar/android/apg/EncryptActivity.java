@@ -620,8 +620,8 @@ public class EncryptActivity extends BaseActivity {
 
             out.close();
             if (mEncryptTarget != Id.target.file) {
-                data.putByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE,
-                                  ((ByteArrayOutputStream)out).toByteArray());
+                data.putString(Apg.EXTRA_ENCRYPTED_MESSAGE,
+                               new String(((ByteArrayOutputStream)out).toByteArray()));
             }
         } catch (IOException e) {
             error = "" + e;
@@ -770,7 +770,7 @@ public class EncryptActivity extends BaseActivity {
         }
         switch (mEncryptTarget) {
             case Id.target.clipboard: {
-                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
+                String message = data.getString(Apg.EXTRA_ENCRYPTED_MESSAGE);
                 ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                 clip.setText(message);
                 Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
@@ -787,7 +787,7 @@ public class EncryptActivity extends BaseActivity {
                     return;
                 }
 
-                String message = new String(data.getByteArray(Apg.EXTRA_ENCRYPTED_MESSAGE));
+                String message = data.getString(Apg.EXTRA_ENCRYPTED_MESSAGE);
                 Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
                 emailIntent.setType("text/plain; charset=utf-8");
                 emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);

@@ -503,8 +503,8 @@ public class DecryptActivity extends BaseActivity {
 
             out.close();
             if (mDecryptTarget == Id.target.message) {
-                data.putByteArray(Apg.EXTRA_DECRYPTED_MESSAGE,
-                                  ((ByteArrayOutputStream) out).toByteArray());
+                data.putString(Apg.EXTRA_DECRYPTED_MESSAGE,
+                               new String(((ByteArrayOutputStream) out).toByteArray()));
             }
         } catch (PGPException e) {
             error = "" + e;
@@ -546,8 +546,7 @@ public class DecryptActivity extends BaseActivity {
         Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
         switch (mDecryptTarget) {
             case Id.target.message: {
-                String decryptedMessage =
-                        new String(data.getByteArray(Apg.EXTRA_DECRYPTED_MESSAGE));
+                String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
                 mMessage.setText(decryptedMessage);
                 mMessage.setHorizontallyScrolling(false);
                 mReplyButton.setVisibility(View.VISIBLE);
