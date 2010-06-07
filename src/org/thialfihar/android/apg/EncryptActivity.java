@@ -684,7 +684,23 @@ public class EncryptActivity extends BaseActivity {
 
     private void selectPublicKeys() {
         Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
-        intent.putExtra(Apg.EXTRA_SELECTION, mEncryptionKeyIds);
+        Vector<Long> keyIds = new Vector<Long>();
+        if (getSecretKeyId() != 0) {
+            keyIds.add(getSecretKeyId());
+        }
+        if (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) {
+            for (int i = 0; i < mEncryptionKeyIds.length; ++i) {
+                keyIds.add(mEncryptionKeyIds[i]);
+            }
+        }
+        long [] initialKeyIds = null;
+        if (keyIds.size() > 0) {
+            initialKeyIds = new long[keyIds.size()];
+            for (int i = 0; i < keyIds.size(); ++i) {
+                initialKeyIds[i] = keyIds.get(i);
+            }
+        }
+        intent.putExtra(Apg.EXTRA_SELECTION, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
