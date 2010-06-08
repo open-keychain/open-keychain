@@ -24,7 +24,7 @@ public final class Constants {
     }
 
     public static final class pref {
-        public static final String has_seen_change_log = "seenChangeLogDialog" + Apg.VERSION;
+        public static final String has_seen_change_log = "seenChangeLogDialog";
         public static final String default_encryption_algorithm = "defaultEncryptionAlgorithm";
         public static final String default_hash_algorithm = "defaultHashAlgorithm";
         public static final String default_ascii_armour = "defaultAsciiArmour";

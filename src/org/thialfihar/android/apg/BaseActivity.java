@@ -157,7 +157,7 @@ public class BaseActivity extends Activity
             case Id.dialog.about: {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setTitle("About " + Apg.FULL_VERSION);
+                alert.setTitle("About " + Apg.getFullVersion(this));
 
                 LayoutInflater inflater =
                         (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -448,12 +448,13 @@ public class BaseActivity extends Activity
     }
 
     public boolean hasSeenChangeLog() {
-        return mPreferences.getBoolean(Constants.pref.has_seen_change_log, false);
+        return mPreferences.getBoolean(Constants.pref.has_seen_change_log + Apg.getVersion(this),
+                                       false);
     }
 
     public void setHasSeenChangeLog(boolean value) {
         SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(Constants.pref.has_seen_change_log, value);
+        editor.putBoolean(Constants.pref.has_seen_change_log + Apg.getVersion(this), value);
         editor.commit();
     }
 

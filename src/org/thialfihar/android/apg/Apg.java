@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -91,14 +92,18 @@ import org.thialfihar.android.apg.utils.IterableIterator;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class Apg {
+    private static final String mApgPackageName = "org.thialfihar.android.apg";
+
     public static class Intent {
         public static final String DECRYPT = "org.thialfihar.android.apg.intent.DECRYPT";
         public static final String ENCRYPT = "org.thialfihar.android.apg.intent.ENCRYPT";
@@ -150,8 +155,8 @@ public class Apg {
     public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS =
             Uri.parse("content://" + AUTHORITY + "/key_rings/public/emails/");
 
-    public static String VERSION = "1.0.1";
-    public static String FULL_VERSION = "APG v" + VERSION;
+    private static String VERSION = null;
+    private static String FULL_VERSION = null;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS =
             new int[] {
@@ -1830,5 +1835,31 @@ public class Apg {
         }
 
         return nlBytes;
+    }
+
+    public static String getVersion(Context context) {
+        if (VERSION != null) {
+            return VERSION;
+        }
+        List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(0);
+        for (int i = 0; i < packs.size(); ++i) {
+            PackageInfo p = packs.get(i);
+            if (!p.packageName.equals(mApgPackageName)) {
+                continue;
+            }
+
+            VERSION = p.versionName;
+            return VERSION;
+        }
+
+        // unpossible!
+        return "0.0.0";
+    }
+
+    public static String getFullVersion(Context context) {
+        if (FULL_VERSION == null) {
+            FULL_VERSION = "APG v" + getVersion(context);
+        }
+        return FULL_VERSION;
     }
 }
