@@ -510,6 +510,7 @@ public class KeyListActivity extends BaseActivity {
                 qb.appendWhere(")");
             }
 
+<<<<<<< HEAD
             String query = qb.buildQuery(new String[] {
                         KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
                         KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
@@ -520,6 +521,8 @@ public class KeyListActivity extends BaseActivity {
                                              Id.database.type_public : Id.database.type_secret) },
                     null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC", null);
 
+=======
+>>>>>>> 1.0.x
             mCursor = qb.query(mDatabase,
                     new String[] {
                         KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
