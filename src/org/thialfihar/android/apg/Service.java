@@ -14,9 +14,6 @@ public class Service extends android.app.Service {
     private Handler mCacheHandler = new Handler();
     private Runnable mCacheTask = new Runnable() {
         public void run() {
-            // TODO: I suppose we could read out the time left until the first cache entry
-            // expiration, then use that for the timer...
-
             // check every ttl/2 seconds, which shouldn't be heavy on the device (even if ttl = 15),
             // and makes sure the longest a pass phrase survives in the cache is 1.5 * ttl
             int delay = mPassPhraseCacheTtl * 1000 / 2;
