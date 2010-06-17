@@ -167,8 +167,8 @@
     <string name="specifyFileToImportFrom">Določite iz katere datoteke želite uvoziti ključe. (.asc ali .gpg)</string>
     <string name="specifyFileToExportTo">Določite v katero datoteko želite izvoziti.\nPOZOR! Če ta datoteka že obstaja, bo prepisana.</string>
     <string name="specifyFileToExportSecretKeysTo">Določite v katero datoteko želite izvoziti.\nPOZOR! Izvozili boste ZASEBNI ključ.\nPOZOR! Če ta datoteka že obstaja, bo prepisana.</string>
-    <string name="keyDeletionConfirmation">Ali zares želite izbrisati ključ '%s'?\nTega ne boste mogli popraviti!</string>
-    <string name="secretKeyDeletionConfirmation">Ali zares želite izbrisati ZASEBNI ključ '%s'?\nTega ne boste mogli popraviti!</string>
+    <string name="keyDeletionConfirmation">Ali zares želite izbrisati ključ \'%s\'?\nTega ne boste mogli popraviti!</string>
+    <string name="secretKeyDeletionConfirmation">Ali zares želite izbrisati ZASEBNI ključ \'%s\'?\nTega ne boste mogli popraviti!</string>
     <string name="keysAddedAndUpdated">Uspešno dodani ključi: %s. Uspešno posodobljeni ključi: %s."</string>
     <string name="keysAdded">Uspešno dodani ključi: %s.</string>
     <string name="keysUpdated">Uspešno posodobljeni ključi: %s.</string>
@@ -181,14 +181,14 @@
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
-    <string name="error_fileDeleteFailed">izbris '%s' ni uspel</string>
+    <string name="error_fileDeleteFailed">izbris \'%s\' ni uspel</string>
     <string name="error_fileNotFound">ne najdem datoteke</string>
     <string name="error_noSecretKeyFound">najden ni bil noben ustrezen zasebni kluč</string>
     <string name="error_noKnownEncryptionFound">najdena ni bila nobena poznana vrsta enkripcije</string>
     <string name="error_externalStorageNotReady">zunanji pomnilnik ni pripravljen</string>
-    <string name="error_accountNotFound">račun '%s' ni najden</string>
-    <string name="error_addingAccountFailed">dodajanje računa '%s' ni uspelo</string>
-    <string name="error_invalidEmail">neveljaven e-naslov '%s'</string>
+    <string name="error_accountNotFound">račun \'%s\' ni najden</string>
+    <string name="error_addingAccountFailed">dodajanje računa \'%s\' ni uspelo</string>
+    <string name="error_invalidEmail">neveljaven e-naslov \'%s\'</string>
     <string name="error_keySizeMinimum512bit">velikost ključa mora biti vsaj 512bit</string>
     <string name="error_masterKeyMustNotBeElGamal">statični ključ ne more biti ključ ElGamal</string>
     <string name="error_unknownAlgorithmChoice">neznana izbira algoritma</string>

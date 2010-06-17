@@ -167,8 +167,8 @@
     <string name="specifyFileToImportFrom">Angiv hvilken fil du ønsker at importere nøgler fra. (.asc eller .gpg)</string>
     <string name="specifyFileToExportTo">Angiv hvilken fil der skal eksporteres til.\nADVARSEL! Filen vil blive overskrevet hvis den allerede eksisterer.</string>
     <string name="specifyFileToExportSecretKeysTo">Angiv hvilken fil der skal eksporteres til.\nADVARSEL! Du er ved at eksportere PRIVATE nøgler.\nADVARSEL! Filen vil blive overskrevet hvis den allerede eksisterer.</string>
-    <string name="keyDeletionConfirmation">Ønsker du at slette '%s'-nøglen?\nDu kan ikke fortryde denne handling!</string>
-    <string name="secretKeyDeletionConfirmation">Ønsker du at slette den PRIVATE nøgle, '%s'?\nDu kan ikke fortryde denne handling!</string>
+    <string name="keyDeletionConfirmation">Ønsker du at slette \'%s\'-nøglen?\nDu kan ikke fortryde denne handling!</string>
+    <string name="secretKeyDeletionConfirmation">Ønsker du at slette den PRIVATE nøgle, \'%s\'?\nDu kan ikke fortryde denne handling!</string>
     <string name="keysAddedAndUpdated">Tilføjelse af %s nøgle(r) og opdatering af %s nøgle(r) lykkedes."</string>
     <string name="keysAdded">Tilføjelse af %s nøgle(r) lykkedes.</string>
     <string name="keysUpdated">Opdatring af %s nøgle(r) lykkedes.</string>
@@ -181,14 +181,14 @@
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
-    <string name="error_fileDeleteFailed">'%s' kunne ikke slettes</string>
+    <string name="error_fileDeleteFailed">\'%s\' kunne ikke slettes</string>
     <string name="error_fileNotFound">filen findes ikke</string>
     <string name="error_noSecretKeyFound">ingen egnet privat nøgle fundet</string>
     <string name="error_noKnownEncryptionFound">ingen kendt krypterings måde fundet</string>
     <string name="error_externalStorageNotReady">ekstern storage er ikke parat</string>
-    <string name="error_accountNotFound">'%s'-kontoen blev ikke fundet</string>
-    <string name="error_addingAccountFailed">'%s'-kontoen kunne ikke tilføjes</string>
-    <string name="error_invalidEmail">ugyldig email '%s'</string>
+    <string name="error_accountNotFound">\'%s\'-kontoen blev ikke fundet</string>
+    <string name="error_addingAccountFailed">\'%s\'-kontoen kunne ikke tilføjes</string>
+    <string name="error_invalidEmail">ugyldig email \'%s\'</string>
     <string name="error_keySizeMinimum512bit">nøgle størrelsen skal være på mindst 512bit</string>
     <string name="error_masterKeyMustNotBeElGamal">hoved nøglen kan ikke være en ElGamal nøgle</string>
     <string name="error_unknownAlgorithmChoice">ukendt algoritme valg</string>

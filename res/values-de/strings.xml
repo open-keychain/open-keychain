@@ -148,7 +148,7 @@
     <string name="keySaved">Key saved.</string>
     <string name="setAPassPhrase">Set a pass phrase via the option menu first.</string>
     <string name="noFilemanagerInstalled">No compatible file manager installed.</string>
-    <string name="passPhrasesDoNotMatch">The pass phrases didn't match.</string>
+    <string name="passPhrasesDoNotMatch">The pass phrases didn\'t match.</string>
     <string name="passPhraseMustNotBeEmpty">Empty pass phrases are not allowed.</string>
     <string name="passPhraseForSymmetricEncryption">Pass phrase for symmetric encryption:</string>
     <string name="passPhraseFor">Pass phrase for %s:</string>
@@ -167,8 +167,8 @@
     <string name="specifyFileToImportFrom">Please specify which file to import keys from. (.asc or .gpg)</string>
     <string name="specifyFileToExportTo">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="keyDeletionConfirmation">Do you really want to delete the key '%s'?\nYou can't undo this!</string>
-    <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key '%s'?\nYou can't undo this!</string>
+    <string name="keyDeletionConfirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
     <string name="keysAddedAndUpdated">Succssfully added %s key(s) and updated %s key(s)."</string>
     <string name="keysAdded">Succssfully added %s key(s).</string>
     <string name="keysUpdated">Succssfully updated %s key(s).</string>
@@ -177,18 +177,18 @@
     <string name="keysExported">Succssfully exported %s keys.</string>
     <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
-    <string name="keyNotFound">Couldn't find key %08X.</string>
+    <string name="keyNotFound">Couldn\'t find key %08X.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
-    <string name="error_fileDeleteFailed">deleting '%s' failed</string>
+    <string name="error_fileDeleteFailed">deleting \'%s\' failed</string>
     <string name="error_fileNotFound">file not found</string>
     <string name="error_noSecretKeyFound">no suitable secret key found</string>
     <string name="error_noKnownEncryptionFound">no known kind of encryption found</string>
     <string name="error_externalStorageNotReady">external storage not ready</string>
-    <string name="error_accountNotFound">account '%s' not found</string>
-    <string name="error_addingAccountFailed">adding account '%s' failed</string>
-    <string name="error_invalidEmail">invalid email '%s'</string>
+    <string name="error_accountNotFound">account \'%s\' not found</string>
+    <string name="error_addingAccountFailed">adding account \'%s\' failed</string>
+    <string name="error_invalidEmail">invalid email \'%s\'</string>
     <string name="error_keySizeMinimum512bit">key size must be at least 512bit</string>
     <string name="error_masterKeyMustNotBeElGamal">the master key cannot be an ElGamal key</string>
     <string name="error_unknownAlgorithmChoice">unknown algorithm choice</string>
@@ -204,7 +204,7 @@
     <string name="error_noSignatureKey">no signature key given</string>
     <string name="error_invalidData">not valid encryption data</string>
     <string name="error_corruptData">corrupt data</string>
-    <string name="error_noSymmetricEncryptionPacket">couldn't find a packet with symmetric encryption</string>
+    <string name="error_noSymmetricEncryptionPacket">couldn\'t find a packet with symmetric encryption</string>
     <string name="error_wrongPassPhrase">wrong pass phrase</string>
     <string name="error_savingKeys">error saving some key(s)</string>
 
