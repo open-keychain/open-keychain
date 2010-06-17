@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity {
         });
         registerForContextMenu(mAccounts);
 
-        if (!hasSeenChangeLog()) {
+        if (!mPreferences.hasSeenChangeLog(Apg.getVersion(this))) {
             showDialog(Id.dialog.change_log);
         }
     }
@@ -216,9 +216,10 @@ public class MainActivity extends BaseActivity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int id) {
                                                 MainActivity.this.removeDialog(Id.dialog.change_log);
-                                                setHasSeenChangeLog(true);
+                                                mPreferences.setHasSeenChangeLog(
+                                                        Apg.getVersion(MainActivity.this), true);
                                             }
-                });
+                                        });
 
                 return alert.create();
             }

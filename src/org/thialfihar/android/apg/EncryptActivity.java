@@ -213,7 +213,7 @@ public class EncryptActivity extends BaseActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mFileCompression.setAdapter(adapter);
 
-        int defaultFileCompression = getDefaultFileCompression();
+        int defaultFileCompression = mPreferences.getDefaultFileCompression();
         for (int i = 0; i < choices.length; ++i) {
             if (choices[i].getId() == defaultFileCompression) {
                 mFileCompression.setSelection(i);
@@ -224,7 +224,7 @@ public class EncryptActivity extends BaseActivity {
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
 
         mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
-        mAsciiArmour.setChecked(getDefaultAsciiArmour());
+        mAsciiArmour.setChecked(mPreferences.getDefaultAsciiArmour());
         mAsciiArmour.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -607,18 +607,19 @@ public class EncryptActivity extends BaseActivity {
 
                 size = byteData.length;
                 useAsciiArmour = true;
-                compressionId = getDefaultMessageCompression();
+                compressionId = mPreferences.getDefaultMessageCompression();
             }
 
             if (signOnly) {
                 Apg.signText(this, in, out, getSecretKeyId(),
                              Apg.getCachedPassPhrase(getSecretKeyId()),
-                             getDefaultHashAlgorithm(), this);
+                             mPreferences.getDefaultHashAlgorithm(), this);
             } else {
                 Apg.encrypt(this, in, out, size, useAsciiArmour,
                             encryptionKeyIds, signatureKeyId,
                             Apg.getCachedPassPhrase(signatureKeyId), this,
-                            getDefaultEncryptionAlgorithm(), getDefaultHashAlgorithm(),
+                            mPreferences.getDefaultEncryptionAlgorithm(),
+                            mPreferences.getDefaultHashAlgorithm(),
                             compressionId, passPhrase);
             }
 

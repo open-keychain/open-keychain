@@ -18,9 +18,6 @@ package org.thialfihar.android.apg;
 
 import java.io.File;
 
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
-import org.bouncycastle2.openpgp.PGPEncryptedData;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -28,7 +25,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -49,7 +45,8 @@ public class BaseActivity extends Activity
 
     private long mSecretKeyId = 0;
     private String mDeleteFile = null;
-    protected static SharedPreferences mPreferences = null;
+
+    protected Preferences mPreferences;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -62,11 +59,9 @@ public class BaseActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Apg.initialize(this);
+        mPreferences = Preferences.getPreferences(this);
 
-        if (mPreferences == null) {
-            mPreferences = getPreferences(MODE_PRIVATE);
-        }
+        Apg.initialize(this);
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File dir = new File(Constants.path.app_dir);
@@ -76,9 +71,13 @@ public class BaseActivity extends Activity
             }
         }
 
-        Intent intent = new Intent(this, Service.class);
-        intent.putExtra(Service.EXTRA_TTL, getPassPhraseCacheTtl());
-        startService(intent);
+        startCacheService(this, mPreferences);
+    }
+
+    public static void startCacheService(Activity activity, Preferences preferences) {
+        Intent intent = new Intent(activity, Service.class);
+        intent.putExtra(Service.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
+        activity.startService(intent);
     }
 
     @Override
@@ -370,92 +369,6 @@ public class BaseActivity extends Activity
 
     public long getSecretKeyId() {
         return mSecretKeyId;
-    }
-
-    public int getPassPhraseCacheTtl() {
-        int ttl = mPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 180);
-        // fix the value if it was set to "never" in previous versions, which currently is not
-        // supported
-        if (ttl == 0) {
-            ttl = 180;
-            setPassPhraseCacheTtl(ttl);
-        }
-        return ttl;
-    }
-
-    public void setPassPhraseCacheTtl(int value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.pass_phrase_cache_ttl, value);
-        editor.commit();
-
-        Intent intent = new Intent(this, Service.class);
-        intent.putExtra(Service.EXTRA_TTL, value);
-        startService(intent);
-    }
-
-    public int getDefaultEncryptionAlgorithm() {
-        return mPreferences.getInt(Constants.pref.default_encryption_algorithm,
-                                   PGPEncryptedData.AES_256);
-    }
-
-    public void setDefaultEncryptionAlgorithm(int value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.default_encryption_algorithm, value);
-        editor.commit();
-    }
-
-    public int getDefaultHashAlgorithm() {
-        return mPreferences.getInt(Constants.pref.default_hash_algorithm,
-                                   HashAlgorithmTags.SHA256);
-    }
-
-    public void setDefaultHashAlgorithm(int value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.default_hash_algorithm, value);
-        editor.commit();
-    }
-
-    public int getDefaultMessageCompression() {
-        return mPreferences.getInt(Constants.pref.default_message_compression,
-                                   Id.choice.compression.zlib);
-    }
-
-    public void setDefaultMessageCompression(int value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.default_message_compression, value);
-        editor.commit();
-    }
-
-    public int getDefaultFileCompression() {
-        return mPreferences.getInt(Constants.pref.default_file_compression,
-                                   Id.choice.compression.none);
-    }
-
-    public void setDefaultFileCompression(int value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putInt(Constants.pref.default_file_compression, value);
-        editor.commit();
-    }
-
-    public boolean getDefaultAsciiArmour() {
-        return mPreferences.getBoolean(Constants.pref.default_ascii_armour, false);
-    }
-
-    public void setDefaultAsciiArmour(boolean value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(Constants.pref.default_ascii_armour, value);
-        editor.commit();
-    }
-
-    public boolean hasSeenChangeLog() {
-        return mPreferences.getBoolean(Constants.pref.has_seen_change_log + Apg.getVersion(this),
-                                       false);
-    }
-
-    public void setHasSeenChangeLog(boolean value) {
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(Constants.pref.has_seen_change_log + Apg.getVersion(this), value);
-        editor.commit();
     }
 
     protected void setDeleteFile(String deleteFile) {

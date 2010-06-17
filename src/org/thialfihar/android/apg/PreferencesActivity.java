@@ -18,202 +18,157 @@ package org.thialfihar.android.apg;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
-import org.thialfihar.android.apg.utils.Choice;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
 
-public class PreferencesActivity extends BaseActivity {
-    private Spinner mPassPhraseCacheTtl = null;
-    private Spinner mEncryptionAlgorithm = null;
-    private Spinner mHashAlgorithm = null;
-    private Spinner mMessageCompression = null;
-    private Spinner mFileCompression = null;
-    private CheckBox mAsciiArmour = null;
+public class PreferencesActivity extends PreferenceActivity {
+    private IntegerListPreference mPassPhraseCacheTtl = null;
+    private IntegerListPreference mEncryptionAlgorithm = null;
+    private IntegerListPreference mHashAlgorithm = null;
+    private IntegerListPreference mMessageCompression = null;
+    private IntegerListPreference mFileCompression = null;
+    private CheckBoxPreference mAsciiArmour = null;
+    private Preferences mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.preferences);
 
-        mPassPhraseCacheTtl = (Spinner) findViewById(R.id.passPhraseCacheTtl);
+        mPreferences = Preferences.getPreferences(this);
 
-        Choice choices[] = {
-                new Choice(15, getString(R.string.choice_15secs)),
-                new Choice(60, getString(R.string.choice_1min)),
-                new Choice(180, getString(R.string.choice_3mins)),
-                new Choice(300, getString(R.string.choice_5mins)),
-                new Choice(600, getString(R.string.choice_10mins)),
-        };
-        ArrayAdapter<Choice> adapter =
-                new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mPassPhraseCacheTtl.setAdapter(adapter);
+        addPreferencesFromResource(R.xml.apg_preferences);
 
-        int passPhraseCache = getPassPhraseCacheTtl();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == passPhraseCache) {
-                mPassPhraseCacheTtl.setSelection(i);
-                break;
-            }
-        }
-
-        mPassPhraseCacheTtl.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setPassPhraseCacheTtl(((Choice) mPassPhraseCacheTtl.getSelectedItem()).getId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-                // nothing to do
+        mPassPhraseCacheTtl = (IntegerListPreference) findPreference(Constants.pref.pass_phrase_cache_ttl);
+        mPassPhraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
+        mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
+        mPassPhraseCacheTtl.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mPassPhraseCacheTtl.setValue(newValue.toString());
+                mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
+                mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
+                BaseActivity.startCacheService(PreferencesActivity.this, mPreferences);
+                return false;
             }
         });
 
-        mEncryptionAlgorithm = (Spinner) findViewById(R.id.encryptionAlgorithm);
-        choices = new Choice[] {
-                new Choice(PGPEncryptedData.AES_128, "AES 128"),
-                new Choice(PGPEncryptedData.AES_192, "AES 192"),
-                new Choice(PGPEncryptedData.AES_256, "AES 256"),
-                new Choice(PGPEncryptedData.BLOWFISH, "Blowfish"),
-                new Choice(PGPEncryptedData.TWOFISH, "Twofish"),
-                new Choice(PGPEncryptedData.CAST5, "CAST5"),
-                new Choice(PGPEncryptedData.DES, "DES"),
-                new Choice(PGPEncryptedData.TRIPLE_DES, "Triple DES"),
-                new Choice(PGPEncryptedData.IDEA, "IDEA"),
+        mEncryptionAlgorithm = (IntegerListPreference) findPreference(Constants.pref.default_encryption_algorithm);
+        int valueIds[] = {
+                PGPEncryptedData.AES_128, PGPEncryptedData.AES_192, PGPEncryptedData.AES_256,
+                PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH, PGPEncryptedData.CAST5,
+                PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES, PGPEncryptedData.IDEA,
         };
-        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mEncryptionAlgorithm.setAdapter(adapter);
-
-        int defaultEncryptionAlgorithm = getDefaultEncryptionAlgorithm();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == defaultEncryptionAlgorithm) {
-                mEncryptionAlgorithm.setSelection(i);
-                break;
-            }
+        String entries[] = {
+                "AES-128", "AES-192", "AES-256",
+                "Blowfish", "Twofish", "CAST5",
+                "DES", "Triple DES", "IDEA",
+        };
+        String values[] = new String[valueIds.length];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = "" + valueIds[i];
         }
-
-        mEncryptionAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setDefaultEncryptionAlgorithm(((Choice) mEncryptionAlgorithm.getSelectedItem()).getId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-                // nothing to do
+        mEncryptionAlgorithm.setEntries(entries);
+        mEncryptionAlgorithm.setEntryValues(values);
+        mEncryptionAlgorithm.setValue("" + mPreferences.getDefaultEncryptionAlgorithm());
+        mEncryptionAlgorithm.setSummary(mEncryptionAlgorithm.getEntry());
+        mEncryptionAlgorithm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mEncryptionAlgorithm.setValue(newValue.toString());
+                mEncryptionAlgorithm.setSummary(mEncryptionAlgorithm.getEntry());
+                mPreferences.setDefaultEncryptionAlgorithm(Integer.parseInt(newValue.toString()));
+                return false;
             }
         });
 
-        mHashAlgorithm = (Spinner) findViewById(R.id.hashAlgorithm);
-        choices = new Choice[] {
-                new Choice(HashAlgorithmTags.MD5, "MD5"),
-                new Choice(HashAlgorithmTags.RIPEMD160, "RIPEMD160"),
-                new Choice(HashAlgorithmTags.SHA1, "SHA1"),
-                new Choice(HashAlgorithmTags.SHA224, "SHA224"),
-                new Choice(HashAlgorithmTags.SHA256, "SHA256"),
-                new Choice(HashAlgorithmTags.SHA384, "SHA384"),
-                new Choice(HashAlgorithmTags.SHA512, "SHA512"),
+        mHashAlgorithm = (IntegerListPreference) findPreference(Constants.pref.default_hash_algorithm);
+        valueIds = new int[] {
+                HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160, HashAlgorithmTags.SHA1,
+                HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256, HashAlgorithmTags.SHA384,
+                HashAlgorithmTags.SHA512,
         };
-        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mHashAlgorithm.setAdapter(adapter);
-
-        int defaultHashAlgorithm = getDefaultHashAlgorithm();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == defaultHashAlgorithm) {
-                mHashAlgorithm.setSelection(i);
-                break;
-            }
+        entries = new String[] {
+                "MD5", "RIPEMD-160", "SHA-1",
+                "SHA-224", "SHA-256", "SHA-384",
+                "SHA-512",
+        };
+        values = new String[valueIds.length];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = "" + valueIds[i];
         }
-
-        mHashAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setDefaultHashAlgorithm(((Choice) mHashAlgorithm.getSelectedItem()).getId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-                // nothing to do
+        mHashAlgorithm.setEntries(entries);
+        mHashAlgorithm.setEntryValues(values);
+        mHashAlgorithm.setValue("" + mPreferences.getDefaultHashAlgorithm());
+        mHashAlgorithm.setSummary(mHashAlgorithm.getEntry());
+        mHashAlgorithm.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mHashAlgorithm.setValue(newValue.toString());
+                mHashAlgorithm.setSummary(mHashAlgorithm.getEntry());
+                mPreferences.setDefaultHashAlgorithm(Integer.parseInt(newValue.toString()));
+                return false;
             }
         });
 
-        mMessageCompression = (Spinner) findViewById(R.id.messageCompression);
-        choices = new Choice[] {
-                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
-                new Choice(Id.choice.compression.zip, "ZIP"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2"),
-                new Choice(Id.choice.compression.zlib, "ZLIB"),
+        mMessageCompression = (IntegerListPreference) findPreference(Constants.pref.default_message_compression);
+        valueIds = new int[] {
+                Id.choice.compression.none, Id.choice.compression.zip,
+                Id.choice.compression.bzip2, Id.choice.compression.zlib,
         };
-        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mMessageCompression.setAdapter(adapter);
-
-        int defaultMessageCompression = getDefaultMessageCompression();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == defaultMessageCompression) {
-                mMessageCompression.setSelection(i);
-                break;
-            }
+        entries = new String[] {
+                getString(R.string.choice_none), "ZIP",
+                "BZIP2", "ZLIB",
+        };
+        values = new String[valueIds.length];
+        for (int i = 0; i < values.length; ++i) {
+            values[i] = "" + valueIds[i];
         }
-
-        mMessageCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setDefaultMessageCompression(((Choice) mMessageCompression.getSelectedItem()).getId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-                // nothing to do
+        mMessageCompression.setEntries(entries);
+        mMessageCompression.setEntryValues(values);
+        mMessageCompression.setValue("" + mPreferences.getDefaultMessageCompression());
+        mMessageCompression.setSummary(mMessageCompression.getEntry());
+        mMessageCompression.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mMessageCompression.setValue(newValue.toString());
+                mMessageCompression.setSummary(mMessageCompression.getEntry());
+                mPreferences.setDefaultMessageCompression(Integer.parseInt(newValue.toString()));
+                return false;
             }
         });
 
-        mFileCompression = (Spinner) findViewById(R.id.fileCompression);
-        choices = new Choice[] {
-                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
-                new Choice(Id.choice.compression.zip, "ZIP"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2"),
-                new Choice(Id.choice.compression.zlib, "ZLIB"),
-        };
-        adapter = new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mFileCompression.setAdapter(adapter);
-
-        int defaultFileCompression = getDefaultFileCompression();
-        for (int i = 0; i < choices.length; ++i) {
-            if (choices[i].getId() == defaultFileCompression) {
-                mFileCompression.setSelection(i);
-                break;
-            }
-        }
-
-        mFileCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapter, View view, int index, long id) {
-                setDefaultFileCompression(((Choice) mFileCompression.getSelectedItem()).getId());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapter) {
-                // nothing to do
+        mFileCompression = (IntegerListPreference) findPreference(Constants.pref.default_file_compression);
+        mFileCompression.setEntries(entries);
+        mFileCompression.setEntryValues(values);
+        mFileCompression.setValue("" + mPreferences.getDefaultFileCompression());
+        mFileCompression.setSummary(mFileCompression.getEntry());
+        mFileCompression.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mFileCompression.setValue(newValue.toString());
+                mFileCompression.setSummary(mFileCompression.getEntry());
+                mPreferences.setDefaultFileCompression(Integer.parseInt(newValue.toString()));
+                return false;
             }
         });
 
-        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
-        mAsciiArmour.setChecked(getDefaultAsciiArmour());
-        mAsciiArmour.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setDefaultAsciiArmour(mAsciiArmour.isChecked());
+        mAsciiArmour = (CheckBoxPreference) findPreference(Constants.pref.default_ascii_armour);
+        mAsciiArmour.setChecked(mPreferences.getDefaultAsciiArmour());
+        mAsciiArmour.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mAsciiArmour.setChecked((Boolean)newValue);
+                mPreferences.setDefaultAsciiArmour((Boolean)newValue);
+                return false;
             }
         });
     }

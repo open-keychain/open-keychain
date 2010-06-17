@@ -510,19 +510,6 @@ public class KeyListActivity extends BaseActivity {
                 qb.appendWhere(")");
             }
 
-<<<<<<< HEAD
-            String query = qb.buildQuery(new String[] {
-                        KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
-                        KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
-                        UserIds.TABLE_NAME + "." + UserIds.USER_ID,         // 2
-                    },
-                    KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
-                    new String[] { "" + (mKeyType == Id.type.public_key ?
-                                             Id.database.type_public : Id.database.type_secret) },
-                    null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC", null);
-
-=======
->>>>>>> 1.0.x
             mCursor = qb.query(mDatabase,
                     new String[] {
                         KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
