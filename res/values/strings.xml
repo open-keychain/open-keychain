@@ -169,12 +169,12 @@
     <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
     <string name="keyDeletionConfirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
-    <string name="keysAddedAndUpdated">Succssfully added %s key(s) and updated %s key(s)."</string>
-    <string name="keysAdded">Succssfully added %s key(s).</string>
-    <string name="keysUpdated">Succssfully updated %s key(s).</string>
+    <string name="keysAddedAndUpdated">Successfully added %s key(s) and updated %s key(s)."</string>
+    <string name="keysAdded">Successfully added %s key(s).</string>
+    <string name="keysUpdated">Successfully updated %s key(s).</string>
     <string name="noKeysAddedOrUpdated">No keys added or updated.</string>
-    <string name="keyExported">Succssfully exported 1 key.</string>
-    <string name="keysExported">Succssfully exported %s keys.</string>
+    <string name="keyExported">Successfully exported 1 key.</string>
+    <string name="keysExported">Successfully exported %s keys.</string>
     <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
     <string name="keyNotFound">Couldn\'t find key %08X.</string>
@@ -243,7 +243,7 @@
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>
-    <string name="permission_read_key_details_description">Read of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
+    <string name="permission_read_key_details_description">Read key details of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
 
     <!-- action strings -->
     <string name="action_encrypt">Encrypt</string>
