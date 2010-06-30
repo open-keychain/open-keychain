@@ -368,14 +368,14 @@
             android:text="@string/btn_encryptToClipboard"
             android:layout_weight="1"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"/>
+            android:layout_height="fill_parent"/>
 
         <Button
             android:id="@+id/btn_encrypt"
             android:text="@string/btn_encrypt"
             android:layout_weight="1"
             android:layout_width="0dip"
-            android:layout_height="wrap_content"/>
+            android:layout_height="fill_parent"/>
 
     </LinearLayout>
 

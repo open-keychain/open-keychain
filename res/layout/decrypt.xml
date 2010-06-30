@@ -199,15 +199,15 @@
         <Button
             android:id="@+id/btn_reply"
             android:text="@string/btn_reply"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
             android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btn_decrypt"
             android:text="@string/btn_decrypt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_height="fill_parent"
             android:layout_weight="1"/>
 
     </LinearLayout>

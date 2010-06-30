@@ -23,21 +23,18 @@
     <string name="title_mailInbox">Posteingang</string>
     <string name="title_managePublicKeys">Öffentliche Schlüssel verwalten</string>
     <string name="title_manageSecretKeys">Private Schlüssel verwalten</string>
-
     <string name="title_selectRecipients">Empfänger auswählen</string>
     <string name="title_selectSignature">Signatur auswählen</string>
     <string name="title_encrypt">Verschlüsseln</string>
     <string name="title_decrypt">Entschlüsseln</string>
     <string name="title_authentification">Authentifizierung</string>
     <string name="title_createKey">Schlüssel erzeugen</string>
-
     <string name="title_editKey">Schlüssel bearbeiten</string>
     <string name="title_preferences">Einstellungen</string>
     <string name="title_changePassPhrase">Passwort ändern</string>
     <string name="title_setPassPhrase">Passwort wählen</string>
     <string name="title_sendEmail">"Mail senden ..."</string>
     <string name="title_encryptToFile">In eine Datei verschlüsseln</string>
-
     <string name="title_decryptToFile">In eine Datei entschlüsseln</string>
     <string name="title_addAccount">Konto hinzufügen</string>
     <string name="title_importKeys">Schlüssel importieren</string>
@@ -59,14 +56,12 @@
     <string name="btn_decrypt">Entschlüsseln</string>
     <string name="btn_verify">Verifizieren</string>
     <string name="btn_selectEncryptKeys">Empfänger auswählen</string>
-
     <string name="btn_reply">Antworten</string>
     <string name="btn_encryptMessage">Nachricht verschlüsseln</string>
     <string name="btn_decryptMessage">Nachricht entschlüsseln</string>
     <string name="btn_encryptFile">Datei verschlüsseln</string>
     <string name="btn_decryptFile">Datei entschlüsseln</string>
     <string name="btn_save">Speichern</string>
-
     <string name="btn_doNotSave">Abbrechen</string>
     <string name="btn_delete">Löschen</string>
     <string name="btn_noDate">Niemals</string>
@@ -74,21 +69,18 @@
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">Über</string>
-
     <string name="menu_addAccount">GMail-Konto hinzufügen</string>
     <string name="menu_deleteAccount">Konto entfernen</string>
     <string name="menu_managePublicKeys">Öffentliche Schlüssel verwalten</string>
     <string name="menu_manageSecretKeys">Private Schlüssel verwalten</string>
     <string name="menu_preferences">Einstellungen</string>
     <string name="menu_changePassPhrase">Passwort ändern</string>
-
     <string name="menu_setPassPhrase">Passwort wählen</string>
     <string name="menu_importKeys">Schlüssel importieren</string>
     <string name="menu_exportKeys">Mehrere Schlüssel exportieren</string>
     <string name="menu_exportKey">Einzelnen Schlüssel exportieren</string>
     <string name="menu_deleteKey">Einzelnen Schlüssel löschen</string>
     <string name="menu_createKey">Schlüssel erzeugen</string>
-
     <string name="menu_editKey">Schlüssel bearbeiten</string>
     <string name="menu_search">Suche</string>
 
@@ -96,21 +88,18 @@
     <string name="label_sign">Signieren</string>
     <string name="label_message">Nachricht</string>
     <string name="label_file">Datei</string>
-
     <string name="label_passPhrase">Passwort</string>
     <string name="label_passPhraseAgain">Wiederholen</string>
     <string name="label_algorithm">Algorithmus</string>
     <string name="label_asciiArmour">ASCII Armor</string>
     <string name="label_selectPublicKeys">Öffentliche(r) Schlüssel</string>
-    <string name="label_deleteAfterEncryption">Nach erfolgter Verschlüsselung löschen</string>
-
-    <string name="label_deleteAfterDecryption">Nach erfolgter Entschlüsselung löschen</string>
+    <string name="label_deleteAfterEncryption">Nach Verschlüsselung löschen</string>
+    <string name="label_deleteAfterDecryption">Nach Entschlüsselung löschen</string>
     <string name="label_encryptionAlgorithm">Verschlüsselungs-Algorithmus</string>
     <string name="label_hashAlgorithm">Hash-Algorithmus</string>
     <string name="label_asymmetric">Öffentlicher Schlüssel</string>
     <string name="label_symmetric">Passwort</string>
     <string name="label_passPhraseCacheTtl">Passwort-Cache</string>
-
     <string name="label_messageCompression">Nachrichten-Kompression</string>
     <string name="label_fileCompression">Datei-Kompression</string>
 
