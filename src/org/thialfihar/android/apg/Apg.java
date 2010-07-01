@@ -1718,6 +1718,7 @@ public class Apg {
             } else if (object instanceof PGPEncryptedDataList) {
                 return Id.content.encrypted_data;
             }
+            object = pgpF.nextObject();
         }
 
         return Id.content.unknown;
