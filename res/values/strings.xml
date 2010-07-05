@@ -255,5 +255,10 @@
     <string name="hint_secretKeys">Search Secret Keys</string>
     <string name="filterInfo">Filter: \"%s\"</string>
 
+    <!-- misc -->
+    <string name="fast">fast</string>
+    <string name="slow">slow</string>
+    <string name="very_slow">very slow</string>
+
 </resources>
 

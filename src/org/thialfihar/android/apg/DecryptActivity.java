@@ -209,6 +209,10 @@ public class DecryptActivity extends BaseActivity {
                 mInputFilename = mIntent.getDataString().replace("file://", "");
                 mFilename.setText(mInputFilename);
                 guessOutputFilename();
+            } else if ("content".equals(mIntent.getScheme())) {
+                mInputFilename = mIntent.getDataString();
+                mFilename.setText(mInputFilename);
+                guessOutputFilename();
             }
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
@@ -363,12 +367,14 @@ public class DecryptActivity extends BaseActivity {
                 return;
             }
 
-            File file = new File(mInputFilename);
-            if (!file.exists() || !file.isFile()) {
-                Toast.makeText(this, getString(R.string.errorMessage,
-                                               getString(R.string.error_fileNotFound)),
-                               Toast.LENGTH_SHORT).show();
-                return;
+            if (mInputFilename.startsWith("file")) {
+                File file = new File(mInputFilename);
+                if (!file.exists() || !file.isFile()) {
+                    Toast.makeText(this, getString(R.string.errorMessage,
+                                                   getString(R.string.error_fileNotFound)),
+                                   Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         }
 
@@ -388,7 +394,11 @@ public class DecryptActivity extends BaseActivity {
         try {
             InputStream in;
             if (mDecryptTarget == Id.target.file) {
-                in = new FileInputStream(mInputFilename);
+                if (mInputFilename.startsWith("file")) {
+                    in = new FileInputStream(mInputFilename);
+                } else {
+                    in = getContentResolver().openInputStream(Uri.parse(mInputFilename));
+                }
             } else {
                 in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
             }
@@ -403,7 +413,11 @@ public class DecryptActivity extends BaseActivity {
                 // look at the file/message again to check whether there's
                 // symmetric encryption data in there
                 if (mDecryptTarget == Id.target.file) {
-                    in = new FileInputStream(mInputFilename);
+                    if (mInputFilename.startsWith("file")) {
+                        in = new FileInputStream(mInputFilename);
+                    } else {
+                        in = getContentResolver().openInputStream(Uri.parse(mInputFilename));
+                    }
                 } else {
                     in = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
                 }
@@ -488,10 +502,22 @@ public class DecryptActivity extends BaseActivity {
                 out = new ByteArrayOutputStream();
                 size = messageData.getBytes().length;
             } else {
-                in = new PositionAwareInputStream(new FileInputStream(mInputFilename));
+                if (mInputFilename.startsWith("content")) {
+                    InputStream tmp = getContentResolver().openInputStream(Uri.parse(mInputFilename));
+                    size = 0;
+                    long n = 0;
+                    byte dummy[] = new byte[0x10000];
+                    while ((n = tmp.read(dummy)) > 0) {
+                        size += n;
+                    }
+                    in = new PositionAwareInputStream(
+                            getContentResolver().openInputStream(Uri.parse(mInputFilename)));
+                } else {
+                    in = new PositionAwareInputStream(new FileInputStream(mInputFilename));
+                    File file = new File(mInputFilename);
+                    size = file.length();
+                }
                 out = new FileOutputStream(mOutputFilename);
-                File file = new File(mInputFilename);
-                size = file.length();
             }
 
             if (mSignedOnly) {

@@ -278,4 +278,9 @@
     <string name="hint_secretKeys">Private Schlüssel suchen</string>
     <string name="filterInfo">Filter: \"%s\"</string>
 
+    <!-- misc -->
+    <string name="fast">schnell</string>
+    <string name="slow">langsam</string>
+    <string name="very_slow">sehr langsam</string>
+
 </resources>

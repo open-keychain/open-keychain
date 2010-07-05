@@ -203,10 +203,11 @@ public class EncryptActivity extends BaseActivity {
 
         mFileCompression = (Spinner) findViewById(R.id.fileCompression);
         Choice[] choices = new Choice[] {
-                new Choice(Id.choice.compression.none, getString(R.string.choice_none)),
-                new Choice(Id.choice.compression.zip, "ZIP"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2"),
-                new Choice(Id.choice.compression.zlib, "ZLIB"),
+                new Choice(Id.choice.compression.none, getString(R.string.choice_none) +
+                                                       " (" + getString(R.string.fast) + ")"),
+                new Choice(Id.choice.compression.zip, "ZIP (" + getString(R.string.fast) + ")"),
+                new Choice(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.fast) + ")"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.very_slow) + ")"),
         };
         ArrayAdapter<Choice> adapter =
                 new ArrayAdapter<Choice>(this, android.R.layout.simple_spinner_item, choices);
@@ -470,12 +471,14 @@ public class EncryptActivity extends BaseActivity {
                 return;
             }
 
-            File file = new File(mInputFilename);
-            if (!file.exists() || !file.isFile()) {
-                Toast.makeText(this, getString(R.string.errorMessage,
-                                               getString(R.string.error_fileNotFound)),
-                               Toast.LENGTH_SHORT).show();
-                return;
+            if (!mInputFilename.startsWith("content")) {
+                File file = new File(mInputFilename);
+                if (!file.exists() || !file.isFile()) {
+                    Toast.makeText(this, getString(R.string.errorMessage,
+                                                   getString(R.string.error_fileNotFound)),
+                                   Toast.LENGTH_SHORT).show();
+                    return;
+                }
             }
         }
 
@@ -576,11 +579,22 @@ public class EncryptActivity extends BaseActivity {
                     }
                 }
 
-                in = new FileInputStream(mInputFilename);
+                if (mInputFilename.startsWith("content")) {
+                    in = getContentResolver().openInputStream(Uri.parse(mInputFilename));
+                    size = 0;
+                    long n = 0;
+                    byte dummy[] = new byte[0x10000];
+                    while ((n = in.read(dummy)) > 0) {
+                        size += n;
+                    }
+                    in = getContentResolver().openInputStream(Uri.parse(mInputFilename));
+                } else {
+                    in = new FileInputStream(mInputFilename);
+                    File file = new File(mInputFilename);
+                    size = file.length();
+                }
                 out = new FileOutputStream(mOutputFilename);
 
-                File file = new File(mInputFilename);
-                size = file.length();
                 useAsciiArmour = mAsciiArmour.isChecked();
                 compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
             } else {

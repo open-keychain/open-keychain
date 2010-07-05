@@ -18,6 +18,7 @@ package org.thialfihar.android.apg;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
+import org.thialfihar.android.apg.utils.Choice;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -118,12 +119,16 @@ public class PreferencesActivity extends PreferenceActivity {
 
         mMessageCompression = (IntegerListPreference) findPreference(Constants.pref.default_message_compression);
         valueIds = new int[] {
-                Id.choice.compression.none, Id.choice.compression.zip,
-                Id.choice.compression.bzip2, Id.choice.compression.zlib,
+                Id.choice.compression.none,
+                Id.choice.compression.zip,
+                Id.choice.compression.zlib,
+                Id.choice.compression.bzip2,
         };
         entries = new String[] {
-                getString(R.string.choice_none), "ZIP",
-                "BZIP2", "ZLIB",
+                getString(R.string.choice_none) + " (" + getString(R.string.fast) + ")",
+                "ZIP (" + getString(R.string.fast) + ")",
+                "ZLIB (" + getString(R.string.fast) + ")",
+                "BZIP2 (" + getString(R.string.very_slow) + ")",
         };
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
