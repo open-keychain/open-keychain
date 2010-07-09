@@ -18,7 +18,6 @@ package org.thialfihar.android.apg;
 
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
-import org.thialfihar.android.apg.utils.Choice;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;

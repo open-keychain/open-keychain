@@ -48,15 +48,15 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 public class KeyListActivity extends BaseActivity {
     protected ExpandableListView mList;
@@ -328,7 +328,7 @@ public class KeyListActivity extends BaseActivity {
             }
 
             if (mTask == Id.task.import_keys) {
-                data = Apg.importKeyRings(this, mKeyType, importInputStream, size, this);
+                data = Apg.importKeyRings(this, mKeyType, new InputData(importInputStream, size), this);
             } else {
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {

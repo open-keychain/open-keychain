@@ -117,7 +117,9 @@ public class Apg {
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_ERROR = "error";
     public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
+    public static final String EXTRA_DECRYPTED_DATA = "decryptedData";
     public static final String EXTRA_ENCRYPTED_MESSAGE = "encryptedMessage";
+    public static final String EXTRA_ENCRYPTED_DATA = "encryptedData";
     public static final String EXTRA_RESULT_URI = "resultUri";
     public static final String EXTRA_SIGNATURE = "signature";
     public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
@@ -135,6 +137,8 @@ public class Apg {
     public static final String EXTRA_PROGRESS = "progress";
     public static final String EXTRA_MAX = "max";
     public static final String EXTRA_ACCOUNT = "account";
+    public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
+    public static final String EXTRA_BINARY = "binary";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
@@ -576,7 +580,7 @@ public class Apg {
     }
 
     public static Bundle importKeyRings(Activity context, int type,
-                                        InputStream inStream, long dataLength,
+                                        InputData data,
                                         ProgressDialogUpdater progress)
             throws GeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
@@ -591,7 +595,7 @@ public class Apg {
             throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
 
-        PositionAwareInputStream progressIn = new PositionAwareInputStream(inStream);
+        PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
         // need to have access to the bufferedInput, so we can reuse it for the possible
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
         // armour blocks
@@ -637,7 +641,7 @@ public class Apg {
                     } else if (retValue == Id.return_value.ok) {
                         ++newKeys;
                     }
-                    progress.setProgress((int)(100 * progressIn.position() / dataLength), 100);
+                    progress.setProgress((int)(100 * progressIn.position() / data.getSize()), 100);
                     obj = objectFactory.nextObject();
                 }
             }
@@ -1110,8 +1114,7 @@ public class Apg {
     }
 
     public static void encrypt(Context context,
-                               InputStream inStream, OutputStream outStream,
-                               long dataLength,
+                               InputData data, OutputStream outStream,
                                boolean armored,
                                long encryptionKeyIds[], long signatureKeyId,
                                String signaturePassPhrase,
@@ -1213,14 +1216,15 @@ public class Apg {
         long done = 0;
         int n = 0;
         byte[] buffer = new byte[1 << 16];
-        while ((n = inStream.read(buffer)) > 0) {
+        InputStream in = data.getInputStream();
+        while ((n = in.read(buffer)) > 0) {
             pOut.write(buffer, 0, n);
             if (signatureKeyId != 0) {
                 signatureGenerator.update(buffer, 0, n);
             }
             done += n;
-            if (dataLength != 0) {
-                progress.setProgress((int) (20 + (95 - 20) * done / dataLength), 100);
+            if (data.getSize() != 0) {
+                progress.setProgress((int) (20 + (95 - 20) * done / data.getSize()), 100);
             }
         }
 
@@ -1242,7 +1246,7 @@ public class Apg {
     }
 
     public static void signText(Context context,
-                                InputStream inStream, OutputStream outStream,
+                                InputData data, OutputStream outStream,
                                 long signatureKeyId, String signaturePassPhrase,
                                 int hashAlgorithm,
                                 ProgressDialogUpdater progress)
@@ -1294,6 +1298,7 @@ public class Apg {
         armorOut.beginClearText(hashAlgorithm);
 
         ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
+        InputStream inStream = data.getInputStream();
         int lookAhead = readInputLine(lineOut, inStream);
 
         processLine(armorOut, signatureGenerator, lineOut.toByteArray());
@@ -1319,9 +1324,9 @@ public class Apg {
         progress.setProgress(R.string.progress_done, 100, 100);
     }
 
-    public static long getDecryptionKeyId(Context context, InputStream inStream)
+    public static long getDecryptionKeyId(Context context, InputData data)
             throws GeneralException, NoAsymmetricEncryptionException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(inStream);
+        InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -1365,9 +1370,9 @@ public class Apg {
         return secretKey.getKeyID();
     }
 
-    public static boolean hasSymmetricEncryption(Context context, InputStream inStream)
+    public static boolean hasSymmetricEncryption(Context context, InputData data)
             throws GeneralException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(inStream);
+        InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -1395,8 +1400,7 @@ public class Apg {
     }
 
     public static Bundle decrypt(Context context,
-                                 PositionAwareInputStream inStream, OutputStream outStream,
-                                 long dataLength,
+                                 InputData data, OutputStream outStream,
                                  String passPhrase, ProgressDialogUpdater progress,
                                  boolean assumeSymmetric)
             throws IOException, GeneralException, PGPException, SignatureException {
@@ -1404,7 +1408,7 @@ public class Apg {
             passPhrase = "";
         }
         Bundle returnData = new Bundle();
-        InputStream in = PGPUtil.getDecoderStream(inStream);
+        InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -1557,7 +1561,7 @@ public class Apg {
             }
             int n = 0;
             int done = 0;
-            long startPos = inStream.position();
+            long startPos = data.getStreamPosition();
             while ((n = dataIn.read(buffer)) > 0) {
                 out.write(buffer, 0, n);
                 done += n;
@@ -1571,11 +1575,11 @@ public class Apg {
                 }
                 // unknown size, but try to at least have a moving, slowing down progress bar
                 currentProgress = startProgress + (endProgress - startProgress) * done / (done + 100000);
-                if (dataLength - startPos == 0) {
+                if (data.getSize() - startPos == 0) {
                     currentProgress = endProgress;
                 } else {
                     currentProgress = (int)(startProgress + (endProgress - startProgress) *
-                                        (inStream.position() - startPos) / (dataLength - startPos));
+                                        (data.getStreamPosition() - startPos) / (data.getSize() - startPos));
                 }
                 progress.setProgress(currentProgress, 100);
             }
@@ -1609,13 +1613,13 @@ public class Apg {
     }
 
     public static Bundle verifyText(Context context,
-                                    InputStream inStream, OutputStream outStream,
+                                    InputData data, OutputStream outStream,
                                     ProgressDialogUpdater progress)
             throws IOException, GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArmoredInputStream aIn = new ArmoredInputStream(inStream);
+        ArmoredInputStream aIn = new ArmoredInputStream(data.getInputStream());
 
         progress.setProgress(R.string.progress_done, 0, 100);
 

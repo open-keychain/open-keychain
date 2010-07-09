@@ -135,6 +135,13 @@ public final class Id {
         public static final int message = 0x21070004;
     }
 
+    public static final class mode {
+        public static final int undefined = 0x21070001;
+        public static final int byte_array = 0x21070002;
+        public static final int file = 0x21070003;
+        public static final int stream = 0x21070004;
+    }
+
     public static final class key {
         public static final int none = 0;
         public static final int symmetric = -1;

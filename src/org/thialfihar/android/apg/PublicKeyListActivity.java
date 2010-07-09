@@ -18,9 +18,9 @@ package org.thialfihar.android.apg;
 
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ExpandableListView;
 
 public class PublicKeyListActivity extends KeyListActivity {
