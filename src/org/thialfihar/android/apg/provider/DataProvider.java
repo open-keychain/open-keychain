@@ -16,6 +16,8 @@
 
 package org.thialfihar.android.apg.provider;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 import org.thialfihar.android.apg.Id;
@@ -27,6 +29,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
 public class DataProvider extends ContentProvider {
@@ -49,6 +52,8 @@ public class DataProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_KEY_RANK = 212;
     private static final int SECRET_KEY_RING_USER_ID = 221;
     private static final int SECRET_KEY_RING_USER_ID_RANK = 222;
+
+    private static final int DATA_STREAM = 301;
 
     private static final String PUBLIC_KEY_RING_CONTENT_DIR_TYPE =
             "vnd.android.cursor.dir/vnd.thialfihar.apg.public.key_ring";
@@ -109,6 +114,8 @@ public class DataProvider extends ContentProvider {
 
         mUriMatcher.addURI(AUTHORITY, "key_rings/secret", SECRET_KEY_RING);
         mUriMatcher.addURI(AUTHORITY, "key_rings/secret/*", SECRET_KEY_RING_ID);
+
+        mUriMatcher.addURI(AUTHORITY, "data/*", DATA_STREAM);
     }
 
     @Override
@@ -359,5 +366,16 @@ public class DataProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
         // not supported
         return 0;
+    }
+
+    @Override
+    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        int match = mUriMatcher.match(uri);
+        if (match != DATA_STREAM) {
+            throw new FileNotFoundException();
+        }
+        String fileName = uri.getPathSegments().get(1);
+        File file = new File(getContext().getFilesDir().getAbsolutePath(), fileName);
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
     }
 }

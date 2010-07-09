@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
+import org.thialfihar.android.apg.provider.DataProvider;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -85,6 +86,8 @@ public class DecryptActivity extends BaseActivity {
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
+
+    private Uri mContentUri = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -220,26 +223,29 @@ public class DecryptActivity extends BaseActivity {
                 mSource.showNext();
             }
         } else if (Apg.Intent.DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                extras = new Bundle();
-            }
-            String data = extras.getString(Apg.EXTRA_TEXT);
-            if (data != null) {
-                Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
-                if (matcher.matches()) {
-                    data = matcher.group(1);
-                    // replace non breakable spaces
-                    data = data.replaceAll("\\xa0", " ");
-                    mMessage.setText(data);
-                } else {
-                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+            mContentUri = mIntent.getData();
+            if (mContentUri == null) {
+                Bundle extras = mIntent.getExtras();
+                if (extras == null) {
+                    extras = new Bundle();
+                }
+                String data = extras.getString(Apg.EXTRA_TEXT);
+                if (data != null) {
+                    Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
                     if (matcher.matches()) {
                         data = matcher.group(1);
                         // replace non breakable spaces
                         data = data.replaceAll("\\xa0", " ");
                         mMessage.setText(data);
-                        mDecryptButton.setText(R.string.btn_verify);
+                    } else {
+                        matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+                        if (matcher.matches()) {
+                            data = matcher.group(1);
+                            // replace non breakable spaces
+                            data = data.replaceAll("\\xa0", " ");
+                            mMessage.setText(data);
+                            mDecryptButton.setText(R.string.btn_verify);
+                        }
                     }
                 }
             }
@@ -393,7 +399,9 @@ public class DecryptActivity extends BaseActivity {
         String error = null;
         try {
             InputStream in;
-            if (mDecryptTarget == Id.target.file) {
+            if (mContentUri != null) {
+                in = getContentResolver().openInputStream(mContentUri);
+            } else if (mDecryptTarget == Id.target.file) {
                 if (mInputFilename.startsWith("file")) {
                     in = new FileInputStream(mInputFilename);
                 } else {
@@ -412,7 +420,9 @@ public class DecryptActivity extends BaseActivity {
                 setSecretKeyId(Id.key.symmetric);
                 // look at the file/message again to check whether there's
                 // symmetric encryption data in there
-                if (mDecryptTarget == Id.target.file) {
+                if (mContentUri != null) {
+                    in = getContentResolver().openInputStream(mContentUri);
+                } else if (mDecryptTarget == Id.target.file) {
                     if (mInputFilename.startsWith("file")) {
                         in = new FileInputStream(mInputFilename);
                     } else {
@@ -494,22 +504,32 @@ public class DecryptActivity extends BaseActivity {
         try {
             PositionAwareInputStream in = null;
             OutputStream out = null;
+            String randomString = null;
             long size = 0;
 
-            if (mDecryptTarget == Id.target.message) {
+            if (mContentUri != null) {
+                in = new PositionAwareInputStream(getContentResolver().openInputStream(mContentUri));
+                size = Apg.getLengthOfStream(getContentResolver().openInputStream(mContentUri));
+                try {
+                    while (true) {
+                        randomString = Apg.generateRandomString(32);
+                        if (randomString == null) {
+                            throw new Apg.GeneralException("couldn't generate random file name");
+                        }
+                        this.openFileInput(randomString).close();
+                    }
+                } catch (FileNotFoundException e) {
+                    // found a name that isn't used yet
+                }
+                out = openFileOutput(randomString, MODE_PRIVATE);
+            } else if (mDecryptTarget == Id.target.message) {
                 String messageData = mMessage.getText().toString();
                 in = new PositionAwareInputStream(new ByteArrayInputStream(messageData.getBytes()));
                 out = new ByteArrayOutputStream();
                 size = messageData.getBytes().length;
             } else {
                 if (mInputFilename.startsWith("content")) {
-                    InputStream tmp = getContentResolver().openInputStream(Uri.parse(mInputFilename));
-                    size = 0;
-                    long n = 0;
-                    byte dummy[] = new byte[0x10000];
-                    while ((n = tmp.read(dummy)) > 0) {
-                        size += n;
-                    }
+                    size = Apg.getLengthOfStream(getContentResolver().openInputStream(Uri.parse(mInputFilename)));
                     in = new PositionAwareInputStream(
                             getContentResolver().openInputStream(Uri.parse(mInputFilename)));
                 } else {
@@ -528,7 +548,10 @@ public class DecryptActivity extends BaseActivity {
             }
 
             out.close();
-            if (mDecryptTarget == Id.target.message) {
+
+            if (randomString != null) {
+                data.putString(Apg.EXTRA_RESULT_URI, "content://" + DataProvider.AUTHORITY + "/data/" + randomString);
+            } else if (mDecryptTarget == Id.target.message) {
                 data.putString(Apg.EXTRA_DECRYPTED_MESSAGE,
                                new String(((ByteArrayOutputStream) out).toByteArray()));
             }
@@ -570,6 +593,14 @@ public class DecryptActivity extends BaseActivity {
         }
 
         Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
+        if (mReturnResult) {
+            Intent intent = new Intent();
+            intent.putExtras(data);
+            setResult(RESULT_OK, intent);
+            finish();
+            return;
+        }
+
         switch (mDecryptTarget) {
             case Id.target.message: {
                 String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
@@ -615,13 +646,6 @@ public class DecryptActivity extends BaseActivity {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
             }
             mSignatureLayout.setVisibility(View.VISIBLE);
-        }
-
-        if (mReturnResult) {
-            Intent intent = new Intent();
-            intent.putExtras(data);
-            setResult(RESULT_OK, intent);
-            finish();
         }
     }
 

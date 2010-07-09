@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -118,7 +117,8 @@ public class Apg {
     public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_ERROR = "error";
     public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
-    public static final String EXTRA_ENCRYPTED_MESSAGE = "decryptedMessage";
+    public static final String EXTRA_ENCRYPTED_MESSAGE = "encryptedMessage";
+    public static final String EXTRA_RESULT_URI = "resultUri";
     public static final String EXTRA_SIGNATURE = "signature";
     public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
     public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
@@ -1850,5 +1850,44 @@ public class Apg {
 
     public static String getFullVersion(Context context) {
         return "APG v" + getVersion(context);
+    }
+
+    public static String generateRandomString(int length) {
+        SecureRandom random = new SecureRandom();
+        /*
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG", new BouncyCastleProvider());
+        } catch (NoSuchAlgorithmException e) {
+            // TODO: need to handle this case somehow
+            return null;
+        }*/
+        byte bytes[] = new byte[length];
+        random.nextBytes(bytes);
+        String result = "";
+        for (int i = 0; i < length; ++i) {
+            int v = ((int)bytes[i] + 256) % 64;
+            if (v < 10) {
+                result += (char)((int)'0' + v);
+            } else if (v < 36) {
+                result += (char)((int)'A' + v - 10);
+            } else if (v < 62) {
+                result += (char)((int)'a' + v - 36);
+            } else if (v == 62) {
+                result += '_';
+            } else if (v == 63) {
+                result += '.';
+            }
+        }
+        return result;
+    }
+
+    static long getLengthOfStream(InputStream in) throws IOException {
+        long size = 0;
+        long n = 0;
+        byte dummy[] = new byte[0x10000];
+        while ((n = in.read(dummy)) > 0) {
+            size += n;
+        }
+        return size;
     }
 }
