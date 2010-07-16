@@ -52,6 +52,7 @@ public class SelectSecretKeyListActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent data = new Intent();
                 data.putExtra(Apg.EXTRA_KEY_ID, id);
+                data.putExtra(Apg.EXTRA_USER_ID, (String)mList.getItemAtPosition(position));
                 setResult(RESULT_OK, data);
                 finish();
             }

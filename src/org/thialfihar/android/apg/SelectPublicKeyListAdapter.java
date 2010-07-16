@@ -150,7 +150,8 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return position;
+        mCursor.moveToPosition(position);
+        return mCursor.getString(2); // USER_ID
     }
 
     @Override

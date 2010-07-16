@@ -127,6 +127,7 @@ public class Apg {
     public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String EXTRA_USER_ID = "userId";
+    public static final String EXTRA_USER_IDS = "userIds";
     public static final String EXTRA_KEY_ID = "keyId";
     public static final String EXTRA_REPLY_TO = "replyTo";
     public static final String EXTRA_SEND_TO = "sendTo";

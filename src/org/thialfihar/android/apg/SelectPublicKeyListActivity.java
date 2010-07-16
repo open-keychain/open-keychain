@@ -141,17 +141,21 @@ public class SelectPublicKeyListActivity extends BaseActivity {
 
     private void okClicked() {
         Intent data = new Intent();
-        Vector<Long> vector = new Vector<Long>();
+        Vector<Long> keys = new Vector<Long>();
+        Vector<String> userIds = new Vector<String>();
         for (int i = 0; i < mList.getCount(); ++i) {
             if (mList.isItemChecked(i)) {
-                vector.add(mList.getItemIdAtPosition(i));
+                keys.add(mList.getItemIdAtPosition(i));
+                userIds.add((String) mList.getItemAtPosition(i));
             }
         }
-        long selectedKeyIds[] = new long[vector.size()];
-        for (int i = 0; i < vector.size(); ++i) {
-            selectedKeyIds[i] = vector.get(i);
+        long selectedKeyIds[] = new long[keys.size()];
+        for (int i = 0; i < keys.size(); ++i) {
+            selectedKeyIds[i] = keys.get(i);
         }
+        String userIdArray[] = new String[0];
         data.putExtra(Apg.EXTRA_SELECTION, selectedKeyIds);
+        data.putExtra(Apg.EXTRA_USER_IDS, userIds.toArray(userIdArray));
         setResult(RESULT_OK, data);
         finish();
     }
