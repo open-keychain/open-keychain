@@ -40,7 +40,7 @@ public class AskForSecretKeyPassPhrase {
                                       PassPhraseCallbackInterface callback) {
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
-        alert.setTitle(R.string.title_authentification);
+        alert.setTitle(R.string.title_authentication);
 
         final PGPSecretKey secretKey;
         final Activity activity = context;

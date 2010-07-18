@@ -27,7 +27,7 @@
     <string name="title_selectSignature">Signatur auswählen</string>
     <string name="title_encrypt">Verschlüsseln</string>
     <string name="title_decrypt">Entschlüsseln</string>
-    <string name="title_authentification">Authentifizierung</string>
+    <string name="title_authentication">Passwort</string>
     <string name="title_createKey">Schlüssel erzeugen</string>
     <string name="title_editKey">Schlüssel bearbeiten</string>
     <string name="title_preferences">Einstellungen</string>
@@ -158,9 +158,8 @@
     <string name="noFilemanagerInstalled">Kein kompatibler Dateimanager installiert.</string>
     <string name="passPhrasesDoNotMatch">Passwörter stimmen nicht überein.</string>
     <string name="passPhraseMustNotBeEmpty">Leere Passwörter sind unzulässig.</string>
-
-    <string name="passPhraseForSymmetricEncryption">Passwort für symmetrische Verschlüsselung:</string>
-    <string name="passPhraseFor">Passwort für %s:</string>
+    <string name="passPhraseForSymmetricEncryption">Symmetrische Verschlüsselung.</string>
+    <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Soll\n%s wirklich gelöscht werden?</string>
     <string name="fileDeleteSuccessful">Erfolgreich gelöscht.</string>
     <string name="noFileSelected">Zuerst eine Datei auswählen.</string>

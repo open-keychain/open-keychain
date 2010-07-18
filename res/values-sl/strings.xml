@@ -27,7 +27,7 @@
     <string name="title_selectSignature">Izberi podpis</string>
     <string name="title_encrypt">Šifriraj</string>
     <string name="title_decrypt">Dešifriraj</string>
-    <string name="title_authentification">Avtentikacija</string>
+    <string name="title_authentication">Geslo</string>
     <string name="title_createKey">Ustvari ključ</string>
     <string name="title_editKey">Uredi ključ</string>
     <string name="title_preferences">Nastavitve</string>
@@ -152,8 +152,8 @@
     <string name="noFilemanagerInstalled">Nameščen ni noben združljiv upravitelj datotek.</string>
     <string name="passPhrasesDoNotMatch">Gesli se ne ujemata.</string>
     <string name="passPhraseMustNotBeEmpty">Prazna gesla niso dovoljena.</string>
-    <string name="passPhraseForSymmetricEncryption">Geslo za simetrično enkripcijo:</string>
-    <string name="passPhraseFor">Geslo za %s:</string>
+    <string name="passPhraseForSymmetricEncryption">Simetrično enkripcijo.</string>
+    <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Ali ste prepričani, da želite izbrisati\n%s?</string>
     <string name="fileDeleteSuccessful">Uspešno izbrisano.</string>
     <string name="noFileSelected">Najprej izberite datoteko.</string>

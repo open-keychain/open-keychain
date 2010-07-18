@@ -25,7 +25,7 @@
     <string name="title_selectSignature">Select Signature</string>
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
-    <string name="title_authentification">Authentification</string>
+    <string name="title_authentication">Pass Phrase</string>
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
     <string name="title_preferences">Preferences</string>
@@ -150,8 +150,8 @@
     <string name="noFilemanagerInstalled">No compatible file manager installed.</string>
     <string name="passPhrasesDoNotMatch">The pass phrases didn\'t match.</string>
     <string name="passPhraseMustNotBeEmpty">Empty pass phrases are not allowed.</string>
-    <string name="passPhraseForSymmetricEncryption">Pass phrase for symmetric encryption:</string>
-    <string name="passPhraseFor">Pass phrase for %s:</string>
+    <string name="passPhraseForSymmetricEncryption">Symmetric encryption.</string>
+    <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Are you sure you want to delete\n%s?</string>
     <string name="fileDeleteSuccessful">Successfully deleted.</string>
     <string name="noFileSelected">Select a file first.</string>

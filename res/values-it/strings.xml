@@ -27,7 +27,7 @@
     <string name="title_selectSignature">Seleziona Firma</string>
     <string name="title_encrypt">Critta</string>
     <string name="title_decrypt">Decritta</string>
-    <string name="title_authentification">Autenticazione</string>
+    <string name="title_authentication">Pass Phrase</string>
     <string name="title_createKey">Crea Chiave</string>
     <string name="title_editKey">Modifica Chiave</string>
     <string name="title_preferences">Preferenze</string>
@@ -152,8 +152,8 @@
     <string name="noFilemanagerInstalled">Nessun file manager compatibile installato.</string>
     <string name="passPhrasesDoNotMatch">La Pass Phrase non è corretta</string>
     <string name="passPhraseMustNotBeEmpty">La Pass Phrases non può essere vuota.</string>
-    <string name="passPhraseForSymmetricEncryption">Pass Phrase per la crittazione simmetrica:</string>
-    <string name="passPhraseFor">Pass Phrase per %s:</string>
+    <string name="passPhraseForSymmetricEncryption">Crittazione simmetrica.</string>
+    <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Sei sicuro di procedere con la cancellazione di\n%s?</string>
     <string name="fileDeleteSuccessful">Cancellazione eseguita..</string>
     <string name="noFileSelected">Selezionare un file.</string>

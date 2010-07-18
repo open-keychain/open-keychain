@@ -25,7 +25,7 @@
     <string name="title_selectSignature">Vælg Signatur</string>
     <string name="title_encrypt">Kryptér</string>
     <string name="title_decrypt">Afkryptér</string>
-    <string name="title_authentification">Autentificering</string>
+    <string name="title_authentication">Kodeord</string>
     <string name="title_createKey">Opret Nøgle</string>
     <string name="title_editKey">Redigér Nøgle</string>
     <string name="title_preferences">Indstillinger</string>
@@ -150,8 +150,8 @@
     <string name="noFilemanagerInstalled">Der er ikke installeret en kompatibel fil håndtering.</string>
     <string name="passPhrasesDoNotMatch">Kodeordet matchede ikke.</string>
     <string name="passPhraseMustNotBeEmpty">Et tomt kodeord er ikke tilladt.</string>
-    <string name="passPhraseForSymmetricEncryption">Kodeord til symmetrisk kryptering:</string>
-    <string name="passPhraseFor">Kodeord til %s:</string>
+    <string name="passPhraseForSymmetricEncryption">Symmetrisk kryptering.</string>
+    <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Er du sikker på at du vil slette \n%s?</string>
     <string name="fileDeleteSuccessful">Filen er slettet.</string>
     <string name="noFileSelected">Vælg en fil først.</string>
