@@ -99,6 +99,7 @@
     <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
     <string name="label_messageCompression">Message Compression</string>
     <string name="label_fileCompression">File Compression</string>
+    <string name="label_language">Language</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -114,7 +115,7 @@
     <string name="expired">expired</string>
     <string name="notValid">not valid</string>
 
-    <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
+    <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>
     <string name="choice_signOnly">Sign only</string>
     <string name="choice_encryptOnly">Encrypt only</string>
@@ -125,6 +126,7 @@
     <string name="choice_5mins">5 mins</string>
     <string name="choice_10mins">10 mins</string>
     <string name="choice_untilQuit">until quit</string>
+    <string name="choice_language_system">System default</string>
 
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>

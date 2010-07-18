@@ -23,6 +23,16 @@ public class Preferences {
         mSharedPreferences = context.getSharedPreferences("APG.main", Context.MODE_PRIVATE);
     }
 
+    public String getLanguage() {
+        return mSharedPreferences.getString(Constants.pref.language, "");
+    }
+
+    public void setLanguage(String value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(Constants.pref.language, value);
+        editor.commit();
+    }
+
     public int getPassPhraseCacheTtl() {
         int ttl = mSharedPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 180);
         // fix the value if it was set to "never" in previous versions, which currently is not

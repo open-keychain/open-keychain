@@ -16,15 +16,21 @@
 
 package org.thialfihar.android.apg;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Vector;
+
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
 public class PreferencesActivity extends PreferenceActivity {
+    private ListPreference mLanguage = null;
     private IntegerListPreference mPassPhraseCacheTtl = null;
     private IntegerListPreference mEncryptionAlgorithm = null;
     private IntegerListPreference mHashAlgorithm = null;
@@ -35,11 +41,40 @@ public class PreferencesActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPreferences = Preferences.getPreferences(this);
+        BaseActivity.setLanguage(this, mPreferences.getLanguage());
         super.onCreate(savedInstanceState);
 
-        mPreferences = Preferences.getPreferences(this);
-
         addPreferencesFromResource(R.xml.apg_preferences);
+
+        mLanguage = (ListPreference) findPreference(Constants.pref.language);
+        Vector<CharSequence> entryVector = new Vector<CharSequence>(Arrays.asList(mLanguage.getEntries()));
+        Vector<CharSequence> entryValueVector = new Vector<CharSequence>(Arrays.asList(mLanguage.getEntryValues()));
+        String supportedLanguages[] = getResources().getStringArray(R.array.supported_languages);
+        HashSet<String> supportedLanguageSet = new HashSet<String>(Arrays.asList(supportedLanguages));
+        for (int i = entryVector.size() - 1; i > -1; --i)
+        {
+            if (!supportedLanguageSet.contains(entryValueVector.get(i)))
+            {
+                entryVector.remove(i);
+                entryValueVector.remove(i);
+            }
+        }
+        CharSequence dummy[] = new CharSequence[0];
+        mLanguage.setEntries(entryVector.toArray(dummy));
+        mLanguage.setEntryValues(entryValueVector.toArray(dummy));
+        mLanguage.setValue(mPreferences.getLanguage());
+        mLanguage.setSummary(mLanguage.getEntry());
+        mLanguage.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mLanguage.setValue(newValue.toString());
+                mLanguage.setSummary(mLanguage.getEntry());
+                mPreferences.setLanguage(newValue.toString());
+                return false;
+            }
+        });
 
         mPassPhraseCacheTtl = (IntegerListPreference) findPreference(Constants.pref.pass_phrase_cache_ttl);
         mPassPhraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());

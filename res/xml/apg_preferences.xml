@@ -20,6 +20,13 @@
     <PreferenceCategory
         android:title="@string/section_general">
 
+        <ListPreference
+            android:key="language"
+            android:title="@string/label_language"
+            android:entries="@array/language_entries"
+            android:entryValues="@array/language_values"
+            android:dialogTitle="@string/label_language" />
+
         <org.thialfihar.android.apg.IntegerListPreference
             android:persistent="false"
             android:key="passPhraseCacheTtl"

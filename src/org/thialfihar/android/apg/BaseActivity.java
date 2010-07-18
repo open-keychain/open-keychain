@@ -17,6 +17,7 @@
 package org.thialfihar.android.apg;
 
 import java.io.File;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -60,6 +62,7 @@ public class BaseActivity extends Activity
         super.onCreate(savedInstanceState);
 
         mPreferences = Preferences.getPreferences(this);
+        setLanguage(this, mPreferences.getLanguage());
 
         Apg.initialize(this);
 
@@ -377,5 +380,22 @@ public class BaseActivity extends Activity
 
     protected String getDeleteFile() {
         return mDeleteFile;
+    }
+
+    public static void setLanguage(Context context, String language)
+    {
+        Locale locale;
+        if (language == null || language.equals(""))
+        {
+            locale = Locale.getDefault();
+        }
+        else
+        {
+            locale = new Locale(language);
+        }
+        Configuration config = new Configuration();
+        config.locale = locale;
+        context.getResources().updateConfiguration(config,
+                context.getResources().getDisplayMetrics());
     }
 }

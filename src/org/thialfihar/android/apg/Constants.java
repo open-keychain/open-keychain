@@ -31,5 +31,6 @@ public final class Constants {
         public static final String default_message_compression = "defaultMessageCompression";
         public static final String default_file_compression = "defaultFileCompression";
         public static final String pass_phrase_cache_ttl = "passPhraseCacheTtl";
+        public static final String language = "language";
     }
 }

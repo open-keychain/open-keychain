@@ -80,6 +80,9 @@ public class MailListActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Preferences prefs = Preferences.getPreferences(this);
+        BaseActivity.setLanguage(this, prefs.getLanguage());
+
         super.onCreate(savedInstanceState);
 
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
