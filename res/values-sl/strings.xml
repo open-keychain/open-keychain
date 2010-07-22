@@ -101,6 +101,7 @@
     <string name="label_passPhraseCacheTtl">Predpomnilnik gesel</string>
     <string name="label_messageCompression">Zgoščevanje sporočil</string>
     <string name="label_fileCompression">Zgoščevanje datotek</string>
+    <string name="label_language">Jezik</string>
 
     <string name="noKeysSelected">Izberi</string>
     <string name="oneKeySelected">1 izbran</string>
@@ -116,7 +117,7 @@
     <string name="expired">potečeno</string>
     <string name="notValid">neveljavno</string>
 
-    <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
+    <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">Brez</string>
     <string name="choice_signOnly">Samo podpis</string>
     <string name="choice_encryptOnly">Samo šifriranje</string>
@@ -127,6 +128,7 @@
     <string name="choice_5mins">5 min</string>
     <string name="choice_10mins">10 min</string>
     <string name="choice_untilQuit">do izhoda</string>
+    <string name="choice_language_system">Sistemsko nastavljeno</string>
 
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
@@ -152,7 +154,7 @@
     <string name="noFilemanagerInstalled">Nameščen ni noben združljiv upravitelj datotek.</string>
     <string name="passPhrasesDoNotMatch">Gesli se ne ujemata.</string>
     <string name="passPhraseMustNotBeEmpty">Prazna gesla niso dovoljena.</string>
-    <string name="passPhraseForSymmetricEncryption">Simetrično enkripcijo.</string>
+    <string name="passPhraseForSymmetricEncryption">Simetrična enkripcija.</string>
     <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Ali ste prepričani, da želite izbrisati\n%s?</string>
     <string name="fileDeleteSuccessful">Uspešno izbrisano.</string>
