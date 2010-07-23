@@ -65,6 +65,8 @@
     <string name="btn_delete">Izbriši</string>
     <string name="btn_noDate">Brez</string>
     <string name="btn_clearFilter">Umakni filtriranje</string>
+    <string name="btn_changePassPhrase">Spremeni geslo</string>
+    <string name="btn_setPassPhrase">Določi geslo</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">O programu</string>
@@ -73,8 +75,6 @@
     <string name="menu_managePublicKeys">Upravljanje javnih ključev</string>
     <string name="menu_manageSecretKeys">Upravljanje zasebnih ključev</string>
     <string name="menu_preferences">Nastavitve</string>
-    <string name="menu_changePassPhrase">Spremeni geslo</string>
-    <string name="menu_setPassPhrase">Določi geslo</string>
     <string name="menu_importKeys">Uvozi ključe</string>
     <string name="menu_exportKeys">Izvozi ključe</string>
     <string name="menu_exportKey">Izvozi ključ</string>
@@ -150,7 +150,7 @@
     <string name="wrongPassPhrase">Napačno geslo.</string>
     <string name="usingClipboardContent">Uporabljam vsebino odložišča.</string>
     <string name="keySaved">Ključ shranjen.</string>
-    <string name="setAPassPhrase">Najprej preko menija možnosti določite geslo.</string>
+    <string name="setAPassPhrase">Najprej določite geslo.</string>
     <string name="noFilemanagerInstalled">Nameščen ni noben združljiv upravitelj datotek.</string>
     <string name="passPhrasesDoNotMatch">Gesli se ne ujemata.</string>
     <string name="passPhraseMustNotBeEmpty">Prazna gesla niso dovoljena.</string>

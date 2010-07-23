@@ -60,6 +60,8 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
+    private Button mChangePassPhrase;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +92,14 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             }
         }
 
+        mChangePassPhrase = (Button) findViewById(R.id.btn_change_pass_phrase);
+        mChangePassPhrase.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(Id.dialog.new_pass_phrase);
+            }
+        });
+
         mSaveButton = (Button) findViewById(R.id.btn_save);
         mDiscardButton = (Button) findViewById(R.id.btn_discard);
 
@@ -114,6 +124,8 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             mCurrentPassPhrase = "";
         }
 
+        updatePassPhraseButtonText();
+
         Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
     }
 
@@ -131,28 +143,11 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.new_pass_phrase, 0,
-                 (havePassPhrase() ? R.string.menu_changePassPhrase : R.string.menu_setPassPhrase))
-                .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, Id.menu.option.preferences, 1, R.string.menu_preferences)
+        menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
                 .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(0, Id.menu.option.about, 2, R.string.menu_about)
+        menu.add(0, Id.menu.option.about, 1, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case Id.menu.option.new_pass_phrase: {
-                showDialog(Id.dialog.new_pass_phrase);
-                return true;
-            }
-
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
-        }
     }
 
     @Override
@@ -194,6 +189,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                                                 }
 
                                                 mNewPassPhrase = passPhrase1;
+                                                updatePassPhraseButtonText();
                                             }
                                         });
 
@@ -288,5 +284,10 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             setResult(RESULT_OK);
             finish();
         }
+    }
+
+    private void updatePassPhraseButtonText() {
+        mChangePassPhrase.setText(
+                havePassPhrase() ? R.string.btn_changePassPhrase : R.string.btn_setPassPhrase);
     }
 }

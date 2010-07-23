@@ -63,6 +63,8 @@
     <string name="btn_delete">Slet</string>
     <string name="btn_noDate">Ingen</string>
     <string name="btn_clearFilter">Ryd Filter</string>
+    <string name="btn_changePassPhrase">Skift Kodeord</string>
+    <string name="btn_setPassPhrase">Sæt Kodeord</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">Om APG</string>
@@ -71,8 +73,6 @@
     <string name="menu_managePublicKeys">Administrér Offentlige Nøgler</string>
     <string name="menu_manageSecretKeys">Administrér Private Nøgler</string>
     <string name="menu_preferences">Indstillinger</string>
-    <string name="menu_changePassPhrase">Skift Kodeord</string>
-    <string name="menu_setPassPhrase">Sæt Kodeord</string>
     <string name="menu_importKeys">Importér Nøgler</string>
     <string name="menu_exportKeys">Eksportér Nøgler</string>
     <string name="menu_exportKey">Eksportér Nøgle</string>
@@ -146,7 +146,7 @@
     <string name="wrongPassPhrase">Forkert kodeord.</string>
     <string name="usingClipboardContent">Bruger clipboardets indhold.</string>
     <string name="keySaved">Nøgle gemt.</string>
-    <string name="setAPassPhrase">Sæt et kodeord via Indstillinger først.</string>
+    <string name="setAPassPhrase">Sæt et kodeord først.</string>
     <string name="noFilemanagerInstalled">Der er ikke installeret en kompatibel fil håndtering.</string>
     <string name="passPhrasesDoNotMatch">Kodeordet matchede ikke.</string>
     <string name="passPhraseMustNotBeEmpty">Et tomt kodeord er ikke tilladt.</string>

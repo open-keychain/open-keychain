@@ -59,7 +59,8 @@
                     android:id="@+id/name"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"/>
+                    android:layout_width="fill_parent"
+                    android:inputType="textPersonName|textCapWords"/>
 
             </TableRow>
 
@@ -77,7 +78,8 @@
                     android:id="@+id/email"
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"/>
+                    android:layout_width="fill_parent"
+                    android:inputType="textEmailAddress"/>
 
             </TableRow>
 

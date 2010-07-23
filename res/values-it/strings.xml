@@ -65,6 +65,8 @@
     <string name="btn_delete">Cancella</string>
     <string name="btn_noDate">Nessuno</string>
     <string name="btn_clearFilter">Cancella Filtro</string>
+    <string name="btn_changePassPhrase">Cambia Pass Phrase</string>
+    <string name="btn_setPassPhrase">Imposta Pass Phrase</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">Informazioni</string>
@@ -73,8 +75,6 @@
     <string name="menu_managePublicKeys">Gestisci Chiavi Pubbliche</string>
     <string name="menu_manageSecretKeys">Gestisci Chiavi Private</string>
     <string name="menu_preferences">Impostazioni</string>
-    <string name="menu_changePassPhrase">Cambia Pass Phrase</string>
-    <string name="menu_setPassPhrase">Imposta Pass Phrase</string>
     <string name="menu_importKeys">Importa Chiavi</string>
     <string name="menu_exportKeys">Esporta Chiavi</string>
     <string name="menu_exportKey">Esporta Chiave</string>
@@ -148,7 +148,7 @@
     <string name="wrongPassPhrase">Pass Phrase errata.</string>
     <string name="usingClipboardContent">Utilizza il contenuto della clipboard.</string>
     <string name="keySaved">Chiave salvata..</string>
-    <string name="setAPassPhrase">Imposta prima una Pass Phrase tramite il menù Opzioni.</string>
+    <string name="setAPassPhrase">Imposta prima una Pass Phrase.</string>
     <string name="noFilemanagerInstalled">Nessun file manager compatibile installato.</string>
     <string name="passPhrasesDoNotMatch">La Pass Phrase non è corretta</string>
     <string name="passPhraseMustNotBeEmpty">La Pass Phrases non può essere vuota.</string>

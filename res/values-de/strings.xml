@@ -66,6 +66,8 @@
     <string name="btn_delete">Löschen</string>
     <string name="btn_noDate">Niemals</string>
     <string name="btn_clearFilter">Filter zurücksetzen</string>
+    <string name="btn_changePassPhrase">Passwort ändern</string>
+    <string name="btn_setPassPhrase">Passwort wählen</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">Über</string>
@@ -74,8 +76,6 @@
     <string name="menu_managePublicKeys">Öffentliche Schlüssel verwalten</string>
     <string name="menu_manageSecretKeys">Private Schlüssel verwalten</string>
     <string name="menu_preferences">Einstellungen</string>
-    <string name="menu_changePassPhrase">Passwort ändern</string>
-    <string name="menu_setPassPhrase">Passwort wählen</string>
     <string name="menu_importKeys">Schlüssel importieren</string>
     <string name="menu_exportKeys">Mehrere Schlüssel exportieren</string>
     <string name="menu_exportKey">Einzelnen Schlüssel exportieren</string>
@@ -154,7 +154,7 @@
 
     <string name="usingClipboardContent">Zwischenablage wird verwendet.</string>
     <string name="keySaved">Schlüssel gespeichert.</string>
-    <string name="setAPassPhrase">Zuerst über Auswahlmenü Passwort festlegen.</string>
+    <string name="setAPassPhrase">Zuerst Passwort festlegen.</string>
     <string name="noFilemanagerInstalled">Kein kompatibler Dateimanager installiert.</string>
     <string name="passPhrasesDoNotMatch">Passwörter stimmen nicht überein.</string>
     <string name="passPhraseMustNotBeEmpty">Leere Passwörter sind unzulässig.</string>

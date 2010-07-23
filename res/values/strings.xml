@@ -63,6 +63,8 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_noDate">None</string>
     <string name="btn_clearFilter">Clear Filter</string>
+    <string name="btn_changePassPhrase">Change Pass Phrase</string>
+    <string name="btn_setPassPhrase">Set Pass Phrase</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">About</string>
@@ -71,8 +73,6 @@
     <string name="menu_managePublicKeys">Manage Public Keys</string>
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
     <string name="menu_preferences">Settings</string>
-    <string name="menu_changePassPhrase">Change Pass Phrase</string>
-    <string name="menu_setPassPhrase">Set Pass Phrase</string>
     <string name="menu_importKeys">Import Keys</string>
     <string name="menu_exportKeys">Export Keys</string>
     <string name="menu_exportKey">Export Key</string>
@@ -148,7 +148,7 @@
     <string name="wrongPassPhrase">Wrong pass phrase.</string>
     <string name="usingClipboardContent">Using clipboard content.</string>
     <string name="keySaved">Key saved.</string>
-    <string name="setAPassPhrase">Set a pass phrase via the option menu first.</string>
+    <string name="setAPassPhrase">Set a pass phrase first.</string>
     <string name="noFilemanagerInstalled">No compatible file manager installed.</string>
     <string name="passPhrasesDoNotMatch">The pass phrases didn\'t match.</string>
     <string name="passPhraseMustNotBeEmpty">Empty pass phrases are not allowed.</string>
