@@ -545,8 +545,7 @@ public class DecryptActivity extends BaseActivity {
 
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
-            Toast.makeText(DecryptActivity.this,
-                           getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;
         }
 

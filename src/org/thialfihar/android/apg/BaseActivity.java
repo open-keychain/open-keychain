@@ -17,6 +17,8 @@
 package org.thialfihar.android.apg;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -44,6 +46,7 @@ public class BaseActivity extends Activity
 
     private ProgressDialog mProgressDialog = null;
     private Thread mRunningThread = null;
+    private Thread mDeletingThread = null;
 
     private long mSecretKeyId = 0;
     private String mDeleteFile = null;
@@ -149,6 +152,11 @@ public class BaseActivity extends Activity
                 return mProgressDialog;
             }
 
+            case Id.dialog.deleting: {
+                mProgressDialog.setMessage(this.getString(R.string.progress_initializing));
+                return mProgressDialog;
+            }
+
             default: {
                 break;
             }
@@ -235,19 +243,30 @@ public class BaseActivity extends Activity
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 removeDialog(Id.dialog.delete_file);
-                                File file = new File(getDeleteFile());
-                                String msg = "";
-                                if (file.delete()) {
-                                    msg = BaseActivity.this.getString(
-                                            R.string.fileDeleteSuccessful);
-                                } else {
-                                    msg = BaseActivity.this.getString(
-                                            R.string.errorMessage,
-                                            BaseActivity.this.getString(
-                                                    R.string.error_fileDeleteFailed, file));
-                                }
-                                Toast.makeText(BaseActivity.this,
-                                               msg, Toast.LENGTH_SHORT).show();
+                                final File file = new File(getDeleteFile());
+                                showDialog(Id.dialog.deleting);
+                                mDeletingThread = new Thread(new Runnable() {
+                                   @Override
+                                    public void run() {
+                                       Bundle data = new Bundle();
+                                       data.putInt(Apg.EXTRA_STATUS, Id.message.delete_done);
+                                       try {
+                                           Apg.deleteFileSecurely(BaseActivity.this, file, BaseActivity.this);
+                                       } catch (FileNotFoundException e) {
+                                           data.putString(Apg.EXTRA_ERROR,
+                                                          BaseActivity.this.getString(
+                                                             R.string.error_fileNotFound, file));
+                                       } catch (IOException e) {
+                                           data.putString(Apg.EXTRA_ERROR,
+                                                          BaseActivity.this.getString(
+                                                             R.string.error_fileDeleteFailed, file));
+                                       }
+                                       Message msg = new Message();
+                                       msg.setData(data);
+                                       sendMessage(msg);
+                                    }
+                                });
+                                mDeletingThread.start();
                             }
                         });
                 alert.setNegativeButton(android.R.string.cancel,
@@ -335,8 +354,14 @@ public class BaseActivity extends Activity
                 break;
             }
 
-            case Id.message.import_done: // intentionall no break
-            case Id.message.export_done: // intentionall no break
+            case Id.message.delete_done: {
+                mProgressDialog = null;
+                deleteDoneCallback(msg);
+                break;
+            }
+
+            case Id.message.import_done: // intentionally no break
+            case Id.message.export_done: // intentionally no break
             case Id.message.done: {
                 mProgressDialog = null;
                 doneCallback(msg);
@@ -347,6 +372,22 @@ public class BaseActivity extends Activity
 
     public void doneCallback(Message msg) {
 
+    }
+
+    public void deleteDoneCallback(Message msg) {
+        removeDialog(Id.dialog.deleting);
+        mDeletingThread = null;
+
+        Bundle data = msg.getData();
+        String error = data.getString(Apg.EXTRA_ERROR);
+        String message;
+        if (error != null) {
+            message = getString(R.string.errorMessage, error);
+        } else {
+            message = getString(R.string.fileDeleteSuccessful);
+        }
+
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public void passPhraseCallback(long keyId, String passPhrase) {

@@ -46,6 +46,7 @@ public final class Id {
         public static final int export_done = 0x21070006;
         public static final int create_key = 0x21070007;
         public static final int edit_key = 0x21070008;
+        public static final int delete_done = 0x21070009;
     }
 
     public static final class request {
@@ -74,6 +75,7 @@ public final class Id {
         public static final int change_log = 0x21070010;
         public static final int output_filename = 0x21070011;
         public static final int delete_file = 0x21070012;
+        public static final int deleting = 0x21070013;
     }
 
     public static final class task {

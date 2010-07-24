@@ -20,10 +20,12 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
@@ -1894,5 +1896,25 @@ public class Apg {
             size += n;
         }
         return size;
+    }
+
+    static void deleteFileSecurely(Context context, File file, ProgressDialogUpdater progress)
+            throws FileNotFoundException, IOException {
+        long length = file.length();
+        SecureRandom random = new SecureRandom();
+        RandomAccessFile raf = new RandomAccessFile(file, "rws");
+        raf.seek(0);
+        raf.getFilePointer();
+        byte[] data = new byte[1 << 16];
+        int pos = 0;
+        String msg = context.getString(R.string.progress_deletingSecurely, file.getName());
+        while (pos < length) {
+            progress.setProgress(msg, (int)(100 * pos / length), 100);
+            random.nextBytes(data);
+            raf.write(data);
+            pos += data.length;
+        }
+        raf.close();
+        file.delete();
     }
 }

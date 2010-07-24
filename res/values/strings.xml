@@ -242,6 +242,7 @@
     <string name="progress_findingKey">finding key...</string>
     <string name="progress_decompressingData">decompressing data...</string>
     <string name="progress_verifyingIntegrity">verifying integrity...</string>
+    <string name="progress_deletingSecurely">deleting \'%s\' securely...</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>
