@@ -50,7 +50,7 @@
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_encryptToClipboard">Šifriraj v odložišče</string>
-    <string name="btn_send">Šifriraj in pošlji</string>
+    <string name="btn_encryptAndEmail">Šifriraj in pošlji</string>
     <string name="btn_encrypt">Šifriraj</string>
     <string name="btn_decrypt">Dešifriraj</string>
     <string name="btn_verify">Overi</string>

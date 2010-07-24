@@ -48,7 +48,7 @@
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_encryptToClipboard">Kryptér Til Clipboard</string>
-    <string name="btn_send">Kryptér Og Mail</string>
+    <string name="btn_encryptAndEmail">Kryptér Og Mail</string>
     <string name="btn_encrypt">Kryptér</string>
     <string name="btn_decrypt">Afkryptér</string>
     <string name="btn_verify">Bekræft</string>

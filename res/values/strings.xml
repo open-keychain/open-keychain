@@ -48,9 +48,12 @@
     <string name="section_defaults">Defaults</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
+    <string name="btn_signToClipboard">Sign To Clipboard</string>
     <string name="btn_encryptToClipboard">Encrypt To Clipboard</string>
-    <string name="btn_send">Encrypt And Email</string>
+    <string name="btn_encryptAndEmail">Encrypt And Email</string>
+    <string name="btn_signAndEmail">Sign And Email</string>
     <string name="btn_encrypt">Encrypt</string>
+    <string name="btn_sign">Sign</string>
     <string name="btn_decrypt">Decrypt</string>
     <string name="btn_verify">Verify</string>
     <string name="btn_selectEncryptKeys">Select Recipients</string>

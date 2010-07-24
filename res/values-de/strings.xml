@@ -51,7 +51,7 @@
     <!-- btn_lowerCase: capitalized words, no punctuation -->
 
     <string name="btn_encryptToClipboard">In die Zwischenablage verschlüsseln</string>
-    <string name="btn_send">Verschlüsseln und per Mail senden</string>
+    <string name="btn_encryptAndEmail">Verschlüsseln und per Mail senden</string>
     <string name="btn_encrypt">Verschlüsseln</string>
     <string name="btn_decrypt">Entschlüsseln</string>
     <string name="btn_verify">Verifizieren</string>

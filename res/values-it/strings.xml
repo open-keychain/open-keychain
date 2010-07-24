@@ -50,7 +50,7 @@
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_encryptToClipboard">Critta su Clipboard</string>
-    <string name="btn_send">Critta ed invia per mail</string>
+    <string name="btn_encryptAndEmail">Critta ed invia per mail</string>
     <string name="btn_encrypt">Critta</string>
     <string name="btn_decrypt">Decritta</string>
     <string name="btn_verify">Verifica</string>
