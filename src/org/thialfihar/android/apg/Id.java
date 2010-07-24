@@ -34,6 +34,7 @@ public final class Id {
             public static final int export_keys = 0x21070007;
             public static final int preferences = 0x21070008;
             public static final int search = 0x21070009;
+            public static final int help = 0x21070010;
         }
     }
 
@@ -76,6 +77,7 @@ public final class Id {
         public static final int output_filename = 0x21070011;
         public static final int delete_file = 0x21070012;
         public static final int deleting = 0x21070013;
+        public static final int help = 0x21070014;
     }
 
     public static final class task {

@@ -113,4 +113,14 @@ public class Preferences {
         editor.putBoolean(Constants.pref.has_seen_change_log + version, value);
         editor.commit();
     }
+
+    public boolean hasSeenHelp() {
+        return mSharedPreferences.getBoolean(Constants.pref.has_seen_help, false);
+    }
+
+    public void setHasSeenHelp(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.pref.has_seen_help, value);
+        editor.commit();
+    }
 }
