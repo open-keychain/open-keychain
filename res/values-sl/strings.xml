@@ -249,6 +249,11 @@
     <string name="progress_findingKey">iščem ključ...</string>
     <string name="progress_decompressingData">raztezam podatke...</string>
     <string name="progress_verifyingIntegrity">overovljam integriteto...</string>
+    <string name="progress_deletingSecurely">varno brišem \'%s\'...</string>
+
+    <!-- permission strings -->
+    <string name="permission_read_key_details_label">Preverite podrobnosti ključev v APG.</string>
+    <string name="permission_read_key_details_description">Preverite podrobnosti javnih in zasebnih ključev shranjenih v APG, kot so identiteta ključev in identiteta uporabnikov. Samih ključev NI MOGOČE preveriti.</string>
 
     <!-- action strings -->
     <string name="action_encrypt">Šifriraj</string>
