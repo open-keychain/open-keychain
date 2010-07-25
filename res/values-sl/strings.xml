@@ -41,6 +41,7 @@
     <string name="title_exportKey">Izvozi ključ</string>
     <string name="title_exportKeys">Izvozi ključe</string>
     <string name="title_keyNotFound">Ključ ni bil najden</string>
+    <string name="title_help">Kako začeti</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">Uporabniške identitete</string>
@@ -49,9 +50,12 @@
     <string name="section_defaults">Privzete nastavitve</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
-    <string name="btn_encryptToClipboard">Šifriraj v odložišče</string>
+    <string name="btn_signToClipboard">Podpiši in kopiraj v odložišče</string>
+    <string name="btn_encryptToClipboard">Šifriraj in kopiraj v odložišče</string>
     <string name="btn_encryptAndEmail">Šifriraj in pošlji</string>
+    <string name="btn_signAndEmail">Podpiši in pošlji</string>
     <string name="btn_encrypt">Šifriraj</string>
+    <string name="btn_sign">Podpiši</string>
     <string name="btn_decrypt">Dešifriraj</string>
     <string name="btn_verify">Overi</string>
     <string name="btn_selectEncryptKeys">Izberi prejemnike</string>
@@ -82,6 +86,7 @@
     <string name="menu_createKey">Ustvari ključ</string>
     <string name="menu_editKey">Uredi ključ</string>
     <string name="menu_search">Išči</string>
+    <string name="menu_help">Pomoč</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Podpiši</string>
@@ -259,5 +264,14 @@
     <string name="fast">hiter</string>
     <string name="slow">počasen</string>
     <string name="very_slow">zelo počasen</string>
+
+    <!-- texts -->
+    <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
+    <string name="text_help"> Za boljšo integracijo namestite program K-9 Mail, ki omogoča način PGP/INLINE in neposredno šifriranje/dešifriranje e-pošte.
+    \n\nZaželjeno je, da namestite programa OI File Manager ali ASTRO, ki omogočata iskanje, izbiro in vnos datotek v APG.
+    \n\nZa začetek potrebujete nekaj ključev. Lahko jih uvozite s klikom na menija \"Upravljanje javnih ključev\" in \"Upravljanje zasebnih ključev\" ali jih ustvarite v meniju \"Upravljanje zasebnih ključev\".
+    \n\nPreko menija \"Dodaj račun\" lahko dodate vaše GMail račune in tako poenostavite dešifriranje e-pošte prejete nanje.
+    \n\Da bi odkrili dodatne funkcije in zmožnosti programa APG, se sprehodite skozi njegove menije.
+    </string>
 
 </resources>
