@@ -18,19 +18,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingLeft="5dip"
     android:paddingRight="5dip">
 
-    <EditText
-        android:id="@+id/input"
-        android:layout_width="0dip"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/btn_browse"
-        android:src="@drawable/ic_launcher_folder_small"
+        <EditText
+            android:id="@+id/input"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/btn_browse"
+            android:src="@drawable/ic_launcher_folder_small"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/checkbox"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"/>
 

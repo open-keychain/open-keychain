@@ -72,6 +72,7 @@ public class KeyListActivity extends BaseActivity {
     protected String mExportFilename = Constants.path.app_dir + "/";
 
     protected String mImportData;
+    protected boolean mDeleteAfterImport = false;
 
     protected int mKeyType = Id.type.public_key;
 
@@ -234,8 +235,9 @@ public class KeyListActivity extends BaseActivity {
                                         new FileDialog.OnClickListener() {
 
                                             @Override
-                                            public void onOkClick(String filename) {
+                                            public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(Id.dialog.import_keys);
+                                                mDeleteAfterImport = checked;
                                                 mImportFilename = filename;
                                                 importKeys();
                                             }
@@ -247,6 +249,7 @@ public class KeyListActivity extends BaseActivity {
                                         },
                                         getString(R.string.filemanager_titleOpen),
                                         getString(R.string.filemanager_btnOpen),
+                                        getString(R.string.label_deleteAfterImport),
                                         Id.request.filename);
             }
 
@@ -269,7 +272,7 @@ public class KeyListActivity extends BaseActivity {
                                         mExportFilename,
                                         new FileDialog.OnClickListener() {
                                             @Override
-                                            public void onOkClick(String filename) {
+                                            public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(thisDialogId);
                                                 mExportFilename = filename;
                                                 exportKeys();
@@ -282,6 +285,7 @@ public class KeyListActivity extends BaseActivity {
                                         },
                                         getString(R.string.filemanager_titleSave),
                                         getString(R.string.filemanager_btnSave),
+                                        null,
                                         Id.request.filename);
             }
 
@@ -409,6 +413,11 @@ public class KeyListActivity extends BaseActivity {
                         }
                         Toast.makeText(KeyListActivity.this, message,
                                        Toast.LENGTH_SHORT).show();
+                        // everything went well, so now delete, if that was turned on
+                        if (mDeleteAfterImport) {
+                            setDeleteFile(mImportFilename);
+                            showDialog(Id.dialog.delete_file);
+                        }
                     }
                     refreshList();
                     break;

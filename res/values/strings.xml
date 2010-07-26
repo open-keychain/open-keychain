@@ -97,6 +97,7 @@
     <string name="label_selectPublicKeys">Public Key(s)</string>
     <string name="label_deleteAfterEncryption">Delete After Encryption</string>
     <string name="label_deleteAfterDecryption">Delete After Decryption</string>
+    <string name="label_deleteAfterImport">Delete After Import</string>
     <string name="label_encryptionAlgorithm">Encryption Algorithm</string>
     <string name="label_hashAlgorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>

@@ -659,9 +659,8 @@ public class DecryptActivity extends BaseActivity {
                                         getString(R.string.specifyFileToDecryptTo),
                                         mOutputFilename,
                                         new FileDialog.OnClickListener() {
-
                                             @Override
-                                            public void onOkClick(String filename) {
+                                            public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(Id.dialog.output_filename);
                                                 mOutputFilename = filename;
                                                 decryptStart();
@@ -674,6 +673,7 @@ public class DecryptActivity extends BaseActivity {
                                         },
                                         getString(R.string.filemanager_titleSave),
                                         getString(R.string.filemanager_btnSave),
+                                        null,
                                         Id.request.output_filename);
             }
 

@@ -275,12 +275,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.create, 0, R.string.menu_addAccount)
-                .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(1, Id.menu.option.manage_public_keys, 1, R.string.menu_managePublicKeys)
+        menu.add(0, Id.menu.option.manage_public_keys, 0, R.string.menu_managePublicKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
-        menu.add(1, Id.menu.option.manage_secret_keys, 2, R.string.menu_manageSecretKeys)
+        menu.add(0, Id.menu.option.manage_secret_keys, 1, R.string.menu_manageSecretKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
+        menu.add(1, Id.menu.option.create, 2, R.string.menu_addAccount)
+        .setIcon(android.R.drawable.ic_menu_add);
         menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences)
                 .setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(2, Id.menu.option.about, 4, R.string.menu_about)

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 public class FileDialog {
     private static EditText mFilename;
     private static ImageButton mBrowse;
+    private static CheckBox mCheckBox;
     private static Activity mActivity;
     private static String mFileManagerTitle;
     private static String mFileManagerButton;
@@ -39,12 +41,13 @@ public class FileDialog {
 
     public static interface OnClickListener {
         public void onCancelClick();
-        public void onOkClick(String filename);
+        public void onOkClick(String filename, boolean checkbox);
     }
 
     public static AlertDialog build(Activity activity, String title, String message,
                                     String defaultFile, OnClickListener onClickListener,
                                     String fileManagerTitle, String fileManagerButton,
+                                    String checkboxText,
                                     int requestCode) {
         // TODO: fileManagerTitle and fileManagerButton are deprecated, no use for them right now,
         // but maybe the Intent now used will someday support them again, so leaving them in
@@ -70,6 +73,15 @@ public class FileDialog {
         mFileManagerTitle = fileManagerTitle;
         mFileManagerButton = fileManagerButton;
         mRequestCode = requestCode;
+        mCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+        if (checkboxText == null) {
+            mCheckBox.setEnabled(false);
+            mCheckBox.setVisibility(View.GONE);
+        } else {
+            mCheckBox.setEnabled(true);
+            mCheckBox.setVisibility(View.VISIBLE);
+            mCheckBox.setText(checkboxText);
+        }
 
         alert.setView(view);
 
@@ -77,7 +89,12 @@ public class FileDialog {
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        clickListener.onOkClick(mFilename.getText().toString());
+                                        boolean checked = false;
+                                        if (mCheckBox.isEnabled()) {
+                                            checked = mCheckBox.isChecked();
+                                        }
+                                        clickListener.onOkClick(mFilename.getText().toString(),
+                                                                checked);
                                     }
                                 });
 
