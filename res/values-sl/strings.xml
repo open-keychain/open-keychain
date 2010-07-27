@@ -99,6 +99,7 @@
     <string name="label_selectPublicKeys">Javni ključ(i)</string>
     <string name="label_deleteAfterEncryption">Po šifriranju izbriši</string>
     <string name="label_deleteAfterDecryption">Po dešifriranju izbriši</string>
+    <string name="label_deleteAfterImport">Po uvozu izbriši</string>
     <string name="label_encryptionAlgorithm">Šifrirni algoritem</string>
     <string name="label_hashAlgorithm">Hash algoritem</string>
     <string name="label_asymmetric">Javni ključ</string>
