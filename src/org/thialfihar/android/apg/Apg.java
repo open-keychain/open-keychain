@@ -78,6 +78,7 @@ import org.bouncycastle2.openpgp.PGPSignatureList;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle2.openpgp.PGPUtil;
+import org.bouncycastle2.openpgp.PGPV3SignatureGenerator;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -1123,6 +1124,7 @@ public class Apg {
                                String signaturePassPhrase,
                                ProgressDialogUpdater progress,
                                int symmetricAlgorithm, int hashAlgorithm, int compression,
+                               boolean forceV3Signature,
                                String passPhrase)
             throws IOException, GeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
@@ -1165,7 +1167,6 @@ public class Apg {
                                                                new BouncyCastleProvider());
         }
 
-        PGPSignatureGenerator signatureGenerator = null;
         progress.setProgress(R.string.progress_preparingStreams, 5, 100);
         // encrypt and compress input file content
         PGPEncryptedDataGenerator cPk =
@@ -1184,18 +1185,29 @@ public class Apg {
         }
         encryptOut = cPk.open(out, new byte[1 << 16]);
 
+        PGPSignatureGenerator signatureGenerator = null;
+        PGPV3SignatureGenerator signatureV3Generator = null;
+
         if (signatureKeyId != 0) {
             progress.setProgress(R.string.progress_preparingSignature, 10, 100);
-            signatureGenerator =
-                    new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
-                                              hashAlgorithm,
-                                              new BouncyCastleProvider());
-            signatureGenerator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
-            String userId = getMainUserId(getMasterKey(signingKeyRing));
+            if (forceV3Signature) {
+                signatureV3Generator =
+                    new PGPV3SignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                                hashAlgorithm,
+                                                new BouncyCastleProvider());
+                signatureV3Generator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
+            } else {
+                signatureGenerator =
+                        new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                                  hashAlgorithm,
+                                                  new BouncyCastleProvider());
+                signatureGenerator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
 
-            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            spGen.setSignerUserID(false, userId);
-            signatureGenerator.setHashedSubpackets(spGen.generate());
+                String userId = getMainUserId(getMasterKey(signingKeyRing));
+                PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+                spGen.setSignerUserID(false, userId);
+                signatureGenerator.setHashedSubpackets(spGen.generate());
+            }
         }
 
         PGPCompressedDataGenerator compressGen = null;
@@ -1207,7 +1219,11 @@ public class Apg {
             bcpgOut = new BCPGOutputStream(compressGen.open(encryptOut));
         }
         if (signatureKeyId != 0) {
-            signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
+            if (forceV3Signature) {
+                signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
+            } else {
+                signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
+            }
         }
 
         PGPLiteralDataGenerator literalGen = new PGPLiteralDataGenerator();
@@ -1223,7 +1239,11 @@ public class Apg {
         while ((n = in.read(buffer)) > 0) {
             pOut.write(buffer, 0, n);
             if (signatureKeyId != 0) {
-                signatureGenerator.update(buffer, 0, n);
+                if (forceV3Signature) {
+                    signatureV3Generator.update(buffer, 0, n);
+                } else {
+                    signatureGenerator.update(buffer, 0, n);
+                }
             }
             done += n;
             if (data.getSize() != 0) {
@@ -1235,7 +1255,11 @@ public class Apg {
 
         if (signatureKeyId != 0) {
             progress.setProgress(R.string.progress_generatingSignature, 95, 100);
-            signatureGenerator.generate().encode(pOut);
+            if (forceV3Signature) {
+                signatureV3Generator.generate().encode(pOut);
+            } else {
+                signatureGenerator.generate().encode(pOut);
+            }
         }
         if (compressGen != null) {
             compressGen.close();
@@ -1252,6 +1276,7 @@ public class Apg {
                                 InputData data, OutputStream outStream,
                                 long signatureKeyId, String signaturePassPhrase,
                                 int hashAlgorithm,
+                                boolean forceV3Signature,
                                 ProgressDialogUpdater progress)
             throws GeneralException, PGPException, IOException, NoSuchAlgorithmException,
             SignatureException {
@@ -1281,20 +1306,30 @@ public class Apg {
                 signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                              new BouncyCastleProvider());
 
-        PGPSignatureGenerator signatureGenerator = null;
         progress.setProgress(R.string.progress_preparingStreams, 0, 100);
 
         progress.setProgress(R.string.progress_preparingSignature, 30, 100);
-        signatureGenerator =
-                new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
-                                          hashAlgorithm,
-                                          new BouncyCastleProvider());
-        signatureGenerator.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
-        String userId = getMainUserId(getMasterKey(signingKeyRing));
 
-        PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-        spGen.setSignerUserID(false, userId);
-        signatureGenerator.setHashedSubpackets(spGen.generate());
+        PGPSignatureGenerator signatureGenerator = null;
+        PGPV3SignatureGenerator signatureV3Generator = null;
+        if (forceV3Signature) {
+            signatureV3Generator =
+                new PGPV3SignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                            hashAlgorithm,
+                                            new BouncyCastleProvider());
+            signatureV3Generator.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
+        } else {
+            signatureGenerator =
+                    new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                              hashAlgorithm,
+                                              new BouncyCastleProvider());
+            signatureGenerator.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
+
+            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            String userId = getMainUserId(getMasterKey(signingKeyRing));
+            spGen.setSignerUserID(false, userId);
+            signatureGenerator.setHashedSubpackets(spGen.generate());
+        }
 
         progress.setProgress(R.string.progress_signing, 40, 100);
 
@@ -1304,16 +1339,29 @@ public class Apg {
         InputStream inStream = data.getInputStream();
         int lookAhead = readInputLine(lineOut, inStream);
 
-        processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+        if (forceV3Signature) {
+            processLine(armorOut, signatureV3Generator, lineOut.toByteArray());
+        } else {
+            processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+        }
 
         if (lookAhead != -1) {
             do {
                 lookAhead = readInputLine(lineOut, lookAhead, inStream);
 
-                signatureGenerator.update((byte)'\r');
-                signatureGenerator.update((byte)'\n');
+                if (forceV3Signature) {
+                    signatureV3Generator.update((byte)'\r');
+                    signatureV3Generator.update((byte)'\n');
+                } else {
+                    signatureGenerator.update((byte)'\r');
+                    signatureGenerator.update((byte)'\n');
+                }
 
-                processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+                if (forceV3Signature) {
+                    processLine(armorOut, signatureV3Generator, lineOut.toByteArray());
+                } else {
+                    processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+                }
             }
             while (lookAhead != -1);
         }
@@ -1321,7 +1369,11 @@ public class Apg {
         armorOut.endClearText();
 
         BCPGOutputStream bOut = new BCPGOutputStream(armorOut);
-        signatureGenerator.generate().encode(bOut);
+        if (forceV3Signature) {
+            signatureV3Generator.generate().encode(bOut);
+        } else {
+            signatureGenerator.generate().encode(bOut);
+        }
         armorOut.close();
 
         progress.setProgress(R.string.progress_done, 100, 100);
@@ -1801,6 +1853,16 @@ public class Apg {
 
         aOut.write(line, 0, line.length);
     }
+
+    private static void processLine(OutputStream aOut, PGPV3SignatureGenerator sGen, byte[] line)
+        throws SignatureException, IOException {
+        int length = getLengthWithoutWhiteSpace(line);
+        if (length > 0) {
+            sGen.update(line, 0, length);
+        }
+
+        aOut.write(line, 0, line.length);
+}
 
     private static int getLengthWithoutSeparator(byte[] line) {
         int end = line.length - 1;

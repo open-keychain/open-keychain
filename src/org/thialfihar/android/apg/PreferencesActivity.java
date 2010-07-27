@@ -37,6 +37,7 @@ public class PreferencesActivity extends PreferenceActivity {
     private IntegerListPreference mMessageCompression = null;
     private IntegerListPreference mFileCompression = null;
     private CheckBoxPreference mAsciiArmour = null;
+    private CheckBoxPreference mForceV3Signatures = null;
     private Preferences mPreferences;
 
     @Override
@@ -207,6 +208,18 @@ public class PreferencesActivity extends PreferenceActivity {
             {
                 mAsciiArmour.setChecked((Boolean)newValue);
                 mPreferences.setDefaultAsciiArmour((Boolean)newValue);
+                return false;
+            }
+        });
+
+        mForceV3Signatures = (CheckBoxPreference) findPreference(Constants.pref.force_v3_signatures);
+        mForceV3Signatures.setChecked(mPreferences.getForceV3Signatures());
+        mForceV3Signatures.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            public boolean onPreferenceChange(Preference preference, Object newValue)
+            {
+                mForceV3Signatures.setChecked((Boolean)newValue);
+                mPreferences.setForceV3Signatures((Boolean)newValue);
                 return false;
             }
         });

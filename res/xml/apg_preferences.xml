@@ -66,4 +66,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/section_advanced">
+
+        <CheckBoxPreference
+            android:persistent="false"
+            android:key="forceV3Signatures"
+            android:title="@string/label_forceV3Signature" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

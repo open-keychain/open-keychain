@@ -46,6 +46,7 @@
     <string name="section_keys">Keys</string>
     <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
+    <string name="section_advanced">Advanced</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_signToClipboard">Sign To Clipboard</string>
@@ -106,6 +107,7 @@
     <string name="label_messageCompression">Message Compression</string>
     <string name="label_fileCompression">File Compression</string>
     <string name="label_language">Language</string>
+    <string name="label_forceV3Signature">Force V3 Signatures</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>

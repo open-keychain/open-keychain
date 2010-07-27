@@ -619,16 +619,15 @@ public class EncryptActivity extends BaseActivity {
         String error = null;
         Bundle data = new Bundle();
         Message msg = new Message();
-        fillDataSource();
-        fillDataDestination();
+
         try {
             InputData in;
             OutputStream out;
             boolean useAsciiArmour = true;
             long encryptionKeyIds[] = null;
             long signatureKeyId = 0;
-            boolean signOnly = false;
             int compressionId = 0;
+            boolean signOnly = false;
 
             String passPhrase = null;
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
@@ -641,6 +640,9 @@ public class EncryptActivity extends BaseActivity {
                 signatureKeyId = getSecretKeyId();
                 signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
             }
+
+            fillDataSource(signOnly && !mReturnResult);
+            fillDataDestination();
 
             // streams
             in = mDataSource.getInputData(this, true);
@@ -661,14 +663,18 @@ public class EncryptActivity extends BaseActivity {
             if (signOnly) {
                 Apg.signText(this, in, out, getSecretKeyId(),
                              Apg.getCachedPassPhrase(getSecretKeyId()),
-                             mPreferences.getDefaultHashAlgorithm(), this);
+                             mPreferences.getDefaultHashAlgorithm(),
+                             mPreferences.getForceV3Signatures(),
+                             this);
             } else {
                 Apg.encrypt(this, in, out, useAsciiArmour,
                             encryptionKeyIds, signatureKeyId,
                             Apg.getCachedPassPhrase(signatureKeyId), this,
                             mPreferences.getDefaultEncryptionAlgorithm(),
                             mPreferences.getDefaultHashAlgorithm(),
-                            compressionId, passPhrase);
+                            compressionId,
+                            mPreferences.getForceV3Signatures(),
+                            passPhrase);
             }
 
             out.close();
@@ -930,7 +936,7 @@ public class EncryptActivity extends BaseActivity {
         return super.onCreateDialog(id);
     }
 
-    protected void fillDataSource() {
+    protected void fillDataSource(boolean fixContent) {
         mDataSource = new DataSource();
         if (mContentUri != null) {
             mDataSource.setUri(mContentUri);
@@ -940,7 +946,19 @@ public class EncryptActivity extends BaseActivity {
             if (mData != null) {
                 mDataSource.setData(mData);
             } else {
-                mDataSource.setText(mMessage.getText().toString());
+                String message = mMessage.getText().toString();
+                if (fixContent) {
+                    // fix the message a bit, trailing spaces and newlines break stuff,
+                    // because GMail sends as HTML and such things fuck up the
+                    // signature,
+                    // TODO: things like "<" and ">" also fuck up the signature
+                    message = message.replaceAll(" +\n", "\n");
+                    message = message.replaceAll("\n\n+", "\n\n");
+                    message = message.replaceFirst("^\n+", "");
+                    // make sure there'll be exactly one newline at the end
+                    message = message.replaceFirst("\n*$", "\n");
+                }
+                mDataSource.setText(message);
             }
         }
     }

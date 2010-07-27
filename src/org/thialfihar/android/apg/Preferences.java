@@ -103,6 +103,16 @@ public class Preferences {
         editor.commit();
     }
 
+    public boolean getForceV3Signatures() {
+        return mSharedPreferences.getBoolean(Constants.pref.force_v3_signatures, false);
+    }
+
+    public void setForceV3Signatures(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.pref.force_v3_signatures, value);
+        editor.commit();
+    }
+
     public boolean hasSeenChangeLog(String version) {
         return mSharedPreferences.getBoolean(Constants.pref.has_seen_change_log + version,
                                        false);
