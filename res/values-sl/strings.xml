@@ -48,6 +48,7 @@
     <string name="section_keys">Ključi</string>
     <string name="section_general">Splošno</string>
     <string name="section_defaults">Privzete nastavitve</string>
+    <string name="section_advanced">Napredno</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_signToClipboard">Podpiši in kopiraj v odložišče</string>
@@ -108,6 +109,7 @@
     <string name="label_messageCompression">Zgoščevanje sporočil</string>
     <string name="label_fileCompression">Zgoščevanje datotek</string>
     <string name="label_language">Jezik</string>
+    <string name="label_forceV3Signature">Vsili podpis V3 </string>
 
     <string name="noKeysSelected">Izberi</string>
     <string name="oneKeySelected">1 izbran</string>
