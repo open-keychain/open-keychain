@@ -168,7 +168,7 @@
     <string name="specifyGoogleMailAccount">Specificare l\'acconto Google Mail che si vuole aggiungere.</string>
     <string name="specifyFileToImportFrom">Specificare il file da cui importare le chiavi (.asc or .gpg).</string>
     <string name="specifyFileToExportTo">Specificare il file per l\'esportazione.\nATTENZIONE! Se il file esiste, sarà sovrascritto.</string>
-    <string name="specifyFileToExportSecretKeysTo">Specificare il file per l'\esportazione.\nATTENZIONE! Stai esportando la chiave privata.\nATTENZIONE! Se il file esiste, sarà sovrascritto.</string>
+    <string name="specifyFileToExportSecretKeysTo">Specificare il file per l\'esportazione.\nATTENZIONE! Stai esportando la chiave privata.\nATTENZIONE! Se il file esiste, sarà sovrascritto.</string>
     <string name="keyDeletionConfirmation">Confermi la cancellazione della chiave \'%s\'?\nL\'operazione è irreversibile!</string>
     <string name="secretKeyDeletionConfirmation">Confermi la cancellazione della chiave PRIVATA \'%s\'?\nL\'operazione è irreversibile!</string>
     <string name="keysAddedAndUpdated">Sono state correttamente inserite %s chiavi ed aggiornate %s chiavi."</string>
