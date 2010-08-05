@@ -140,8 +140,12 @@ public class MainActivity extends BaseActivity {
                 alert.setTitle(R.string.title_addAccount);
                 alert.setMessage(R.string.specifyGoogleMailAccount);
 
-                final EditText input = new EditText(this);
-                alert.setView(input);
+                LayoutInflater inflater =
+                        (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = (View) inflater.inflate(R.layout.add_account_dialog, null);
+
+                final EditText input = (EditText) view.findViewById(R.id.input);
+                alert.setView(view);
 
                 alert.setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
@@ -149,15 +153,23 @@ public class MainActivity extends BaseActivity {
                                 MainActivity.this.removeDialog(Id.dialog.new_account);
                                 String accountName = "" + input.getText();
 
-                                Cursor testCursor =
-                                        managedQuery(Uri.parse("content://gmail-ls/conversations/" +
-                                                               accountName),
-                                                     null, null, null, null);
-                                if (testCursor == null) {
+                                try {
+                                    Cursor testCursor =
+                                            managedQuery(Uri.parse("content://gmail-ls/conversations/" +
+                                                                   accountName),
+                                                         null, null, null, null);
+                                    if (testCursor == null) {
+                                        Toast.makeText(MainActivity.this,
+                                                       getString(R.string.errorMessage,
+                                                                 getString(R.string.error_accountNotFound,
+                                                                           accountName)),
+                                                       Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                } catch (SecurityException e) {
                                     Toast.makeText(MainActivity.this,
                                                    getString(R.string.errorMessage,
-                                                             getString(R.string.error_accountNotFound,
-                                                                       accountName)),
+                                                             getString(R.string.error_accountReadingNotAllowed)),
                                                    Toast.LENGTH_SHORT).show();
                                     return;
                                 }

@@ -17,7 +17,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
-    android:versionCode="19" android:versionName="1.0.5">
+    android:versionCode="20" android:versionName="1.0.6">
 
     <application
         android:icon="@drawable/icon"
@@ -198,6 +198,7 @@
                 android:description="@string/permission_read_key_details_description"/>
 
     <uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
+    <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
 

@@ -197,6 +197,7 @@
     <string name="error_noKnownEncryptionFound">no known kind of encryption found</string>
     <string name="error_externalStorageNotReady">external storage not ready</string>
     <string name="error_accountNotFound">account \'%s\' not found</string>
+    <string name="error_accountReadingNotAllowed">no permission to read the account</string>
     <string name="error_addingAccountFailed">adding account \'%s\' failed</string>
     <string name="error_invalidEmail">invalid email \'%s\'</string>
     <string name="error_keySizeMinimum512bit">key size must be at least 512bit</string>
