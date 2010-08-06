@@ -199,6 +199,7 @@
     <string name="error_noKnownEncryptionFound">najdena ni bila nobena poznana vrsta enkripcije</string>
     <string name="error_externalStorageNotReady">zunanji pomnilnik ni pripravljen</string>
     <string name="error_accountNotFound">račun \'%s\' ni najden</string>
+    <string name="error_accountReadingNotAllowed">brez dovoljenja za branje računa</string>
     <string name="error_addingAccountFailed">dodajanje računa \'%s\' ni uspelo</string>
     <string name="error_invalidEmail">neveljaven e-naslov \'%s\'</string>
     <string name="error_keySizeMinimum512bit">velikost ključa mora biti vsaj 512bit</string>
