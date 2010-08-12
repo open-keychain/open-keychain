@@ -318,7 +318,7 @@ public class BaseActivity extends Activity
         Bundle data = new Bundle();
         data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
         data.putInt(Apg.EXTRA_PROGRESS, progress);
-        data.putInt(Apg.EXTRA_MAX, max);
+        data.putInt(Apg.EXTRA_PROGRESS_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -329,7 +329,7 @@ public class BaseActivity extends Activity
         data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
         data.putString(Apg.EXTRA_MESSAGE, message);
         data.putInt(Apg.EXTRA_PROGRESS, progress);
-        data.putInt(Apg.EXTRA_MAX, max);
+        data.putInt(Apg.EXTRA_PROGRESS_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -348,7 +348,7 @@ public class BaseActivity extends Activity
                     if (message != null) {
                         mProgressDialog.setMessage(message);
                     }
-                    mProgressDialog.setMax(data.getInt(Apg.EXTRA_MAX));
+                    mProgressDialog.setMax(data.getInt(Apg.EXTRA_PROGRESS_MAX));
                     mProgressDialog.setProgress(data.getInt(Apg.EXTRA_PROGRESS));
                 }
                 break;

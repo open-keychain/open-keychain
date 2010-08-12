@@ -117,7 +117,6 @@ public class Apg {
 
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_STATUS = "status";
     public static final String EXTRA_ERROR = "error";
     public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
     public static final String EXTRA_DECRYPTED_DATA = "decryptedData";
@@ -138,11 +137,13 @@ public class Apg {
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
     public static final String EXTRA_MESSAGE = "message";
-    public static final String EXTRA_PROGRESS = "progress";
-    public static final String EXTRA_MAX = "max";
-    public static final String EXTRA_ACCOUNT = "account";
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
+
+    public static final String EXTRA_PROGRESS = "progress";
+    public static final String EXTRA_PROGRESS_MAX = "max";
+    public static final String EXTRA_ACCOUNT = "account";
+    public static final String EXTRA_STATUS = "status";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
