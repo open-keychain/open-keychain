@@ -17,6 +17,7 @@
 package org.thialfihar.android.apg;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
@@ -1336,35 +1338,33 @@ public class Apg {
 
         armorOut.beginClearText(hashAlgorithm);
 
-        ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
         InputStream inStream = data.getInputStream();
-        int lookAhead = readInputLine(lineOut, inStream);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
+
+        final byte[] newline = "\r\n".getBytes("UTF-8");
 
         if (forceV3Signature) {
-            processLine(armorOut, signatureV3Generator, lineOut.toByteArray());
+            processLine(reader.readLine(), armorOut, signatureV3Generator);
         } else {
-            processLine(armorOut, signatureGenerator, lineOut.toByteArray());
+            processLine(reader.readLine(), armorOut, signatureGenerator);
         }
 
-        if (lookAhead != -1) {
-            do {
-                lookAhead = readInputLine(lineOut, lookAhead, inStream);
+        while (true) {
+            final String line = reader.readLine();
 
-                if (forceV3Signature) {
-                    signatureV3Generator.update((byte)'\r');
-                    signatureV3Generator.update((byte)'\n');
-                } else {
-                    signatureGenerator.update((byte)'\r');
-                    signatureGenerator.update((byte)'\n');
-                }
-
-                if (forceV3Signature) {
-                    processLine(armorOut, signatureV3Generator, lineOut.toByteArray());
-                } else {
-                    processLine(armorOut, signatureGenerator, lineOut.toByteArray());
-                }
+            if (line == null) {
+                armorOut.write(newline);
+                break;
             }
-            while (lookAhead != -1);
+
+            armorOut.write(newline);
+            if (forceV3Signature) {
+                signatureV3Generator.update(newline);
+                processLine(line, armorOut, signatureV3Generator);
+            } else {
+                signatureGenerator.update(newline);
+                processLine(line, armorOut, signatureGenerator);
+            }
         }
 
         armorOut.endClearText();
@@ -1784,7 +1784,65 @@ public class Apg {
         return Id.content.unknown;
     }
 
+    private static void processLine(final String pLine,
+                                    final ArmoredOutputStream pArmoredOutput,
+                                    final PGPSignatureGenerator pSignatureGenerator)
+            throws IOException, SignatureException {
+
+        if (pLine == null) {
+            return;
+        }
+
+        final char[] chars = pLine.toCharArray();
+        int len = chars.length;
+
+        while (len > 0) {
+            if (!Character.isWhitespace(chars[len - 1])) {
+                break;
+            }
+            len--;
+        }
+
+        final byte[] data = pLine.substring(0, len).getBytes("UTF-8");
+
+        pArmoredOutput.write(data);
+        pSignatureGenerator.update(data);
+    }
+
+    private static void processLine(final String pLine,
+                                    final ArmoredOutputStream pArmoredOutput,
+                                    final PGPV3SignatureGenerator pSignatureGenerator)
+            throws IOException, SignatureException {
+
+        if (pLine == null) {
+            return;
+        }
+
+        final char[] chars = pLine.toCharArray();
+        int len = chars.length;
+
+        while (len > 0) {
+            if (!Character.isWhitespace(chars[len - 1])) {
+                break;
+            }
+            len--;
+        }
+
+        final byte[] data = pLine.substring(0, len).getBytes("UTF-8");
+
+        pArmoredOutput.write(data);
+        pSignatureGenerator.update(data);
+    }
+
     // taken from ClearSignedFileProcessor in BC
+    private static void processLine(PGPSignature sig, byte[] line)
+        throws SignatureException, IOException {
+        int length = getLengthWithoutWhiteSpace(line);
+        if (length > 0) {
+            sig.update(line, 0, length);
+        }
+    }
+
     private static int readInputLine(ByteArrayOutputStream bOut, InputStream fIn)
         throws IOException {
         bOut.reset();
@@ -1836,34 +1894,6 @@ public class Apg {
 
         return lookAhead;
     }
-
-    private static void processLine(PGPSignature sig, byte[] line)
-        throws SignatureException, IOException {
-        int length = getLengthWithoutWhiteSpace(line);
-        if (length > 0) {
-            sig.update(line, 0, length);
-        }
-    }
-
-    private static void processLine(OutputStream aOut, PGPSignatureGenerator sGen, byte[] line)
-        throws SignatureException, IOException {
-        int length = getLengthWithoutWhiteSpace(line);
-        if (length > 0) {
-            sGen.update(line, 0, length);
-        }
-
-        aOut.write(line, 0, line.length);
-    }
-
-    private static void processLine(OutputStream aOut, PGPV3SignatureGenerator sGen, byte[] line)
-        throws SignatureException, IOException {
-        int length = getLengthWithoutWhiteSpace(line);
-        if (length > 0) {
-            sGen.update(line, 0, length);
-        }
-
-        aOut.write(line, 0, line.length);
-}
 
     private static int getLengthWithoutSeparator(byte[] line) {
         int end = line.length - 1;
