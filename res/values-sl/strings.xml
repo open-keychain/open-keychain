@@ -273,15 +273,9 @@
     <string name="filterInfo">Filter: \"%s\"</string>
 
     <!-- misc -->
-<<<<<<< HEAD
     <string name="fast">hitro</string>
     <string name="slow">počasi</string>
     <string name="very_slow">zelo počasi</string>
-=======
-    <string name="fast">hiter</string>
-    <string name="slow">počasen</string>
-    <string name="very_slow">zelo počasen</string>
->>>>>>> 1.0.x
 
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
@@ -289,11 +283,7 @@
     \n\nZaželjeno je, da namestite programa OI File Manager ali ASTRO, ki omogočata iskanje, izbiro in vnos datotek v APG.
     \n\nZa začetek potrebujete nekaj ključev. Lahko jih uvozite s klikom na menija \"Upravljanje javnih ključev\" in \"Upravljanje zasebnih ključev\" ali jih ustvarite v meniju \"Upravljanje zasebnih ključev\".
     \n\nPreko menija \"Dodaj račun\" lahko dodate vaše GMail račune in tako poenostavite dešifriranje e-pošte prejete nanje.
-<<<<<<< HEAD
     \n\nDa bi odkrili dodatne funkcije in zmožnosti programa APG, se sprehodite skozi njegove menije.
-=======
-    \n\Da bi odkrili dodatne funkcije in zmožnosti programa APG, se sprehodite skozi njegove menije.
->>>>>>> 1.0.x
     </string>
 
 </resources>
