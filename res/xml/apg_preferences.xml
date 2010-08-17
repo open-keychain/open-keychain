@@ -27,7 +27,7 @@
             android:entryValues="@array/language_values"
             android:dialogTitle="@string/label_language" />
 
-        <org.thialfihar.android.apg.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
             android:key="passPhraseCacheTtl"
             android:entries="@array/pass_phrase_cache_ttl_entries"
@@ -44,22 +44,22 @@
     <PreferenceCategory
         android:title="@string/section_defaults">
 
-        <org.thialfihar.android.apg.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
             android:key="defaultEncryptionAlgorithm"
             android:title="@string/label_encryptionAlgorithm" />
 
-        <org.thialfihar.android.apg.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
             android:key="defaultHashAlgorithm"
             android:title="@string/label_hashAlgorithm" />
 
-        <org.thialfihar.android.apg.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
             android:key="defaultMessageCompression"
             android:title="@string/label_messageCompression" />
 
-        <org.thialfihar.android.apg.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
             android:key="defaultFileCompression"
             android:title="@string/label_fileCompression" />

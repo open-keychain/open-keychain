@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.ui.widget;
 
 import android.content.Context;
 import android.preference.ListPreference;
