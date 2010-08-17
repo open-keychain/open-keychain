@@ -194,6 +194,7 @@
     <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
     <string name="keyNotFound">Couldn\'t find key %08X.</string>
+    <string name="keysFound">Found %s key(s).</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->

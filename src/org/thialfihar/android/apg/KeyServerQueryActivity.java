@@ -1,11 +1,12 @@
 package org.thialfihar.android.apg;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Vector;
 
+import org.thialfihar.android.apg.KeyServer.InsufficientQuery;
 import org.thialfihar.android.apg.KeyServer.KeyInfo;
+import org.thialfihar.android.apg.KeyServer.QueryException;
+import org.thialfihar.android.apg.KeyServer.TooManyResponses;
 
 import android.app.Activity;
 import android.content.Context;
@@ -65,14 +66,13 @@ public class KeyServerQueryActivity extends BaseActivity {
                 search(query);
             }
         });
-
-        mQuery.setText("cartman");
     }
 
     private void search(String query) {
         showDialog(Id.dialog.querying);
         mQueryType = Id.query.search;
         mQueryString = query;
+        mAdapter.setKeys(new Vector<KeyInfo>());
         startThread();
     }
 
@@ -90,16 +90,18 @@ public class KeyServerQueryActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            HkpKeyServer server = new HkpKeyServer("198.128.3.63");//"pool.sks-keyservers.net");
+            HkpKeyServer server = new HkpKeyServer("pool.sks-keyservers.net");
             if (mQueryType == Id.query.search) {
                 mSearchResult = server.search(mQueryString);
             } else if (mQueryType == Id.query.get) {
                 mKeyData = server.get(mQueryId);
             }
-        } catch (MalformedURLException e) {
+        } catch (QueryException e) {
             error = "" + e;
-        } catch (IOException e) {
-            error = "" + e;
+        } catch (InsufficientQuery e) {
+            error = "Insufficient query.";
+        } catch (TooManyResponses e) {
+            error = "Too many responses.";
         }
 
         data.putInt(Apg.EXTRA_STATUS, Id.message.done);
@@ -127,6 +129,7 @@ public class KeyServerQueryActivity extends BaseActivity {
 
         if (mQueryType == Id.query.search) {
             if (mSearchResult != null) {
+                Toast.makeText(this, getString(R.string.keysFound, mSearchResult.size()), Toast.LENGTH_SHORT).show();
                 mAdapter.setKeys(mSearchResult);
             }
         } else if (mQueryType == Id.query.get) {

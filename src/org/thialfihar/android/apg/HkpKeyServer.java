@@ -3,10 +3,13 @@ package org.thialfihar.android.apg;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
@@ -16,6 +19,25 @@ import java.util.regex.Pattern;
 import android.text.Html;
 
 public class HkpKeyServer extends KeyServer {
+    private static class HttpError extends Exception {
+        private static final long serialVersionUID = 1718783705229428893L;
+        private int mCode;
+        private String mData;
+
+        public HttpError(int code, String data) {
+            super("" + code + ": " + data);
+            mCode = code;
+            mData = data;
+        }
+
+        public int getCode() {
+            return mCode;
+        }
+
+        public String getData() {
+            return mData;
+        }
+    }
     private String mHost;
     private short mPort = 11371;
 
@@ -36,29 +58,90 @@ public class HkpKeyServer extends KeyServer {
         mPort = port;
     }
 
-    @Override
-    List<KeyInfo> search(String query)
-            throws MalformedURLException, IOException {
-        Vector<KeyInfo> results = new Vector<KeyInfo>();
-
-        String url = "http://" + mHost + ":" + mPort + "/pks/lookup?op=index&search=" +
-                     URLEncoder.encode(query, "utf8");
-        URL realUrl = new URL(url);
-        URLConnection conn = realUrl.openConnection();
-        InputStream is = conn.getInputStream();
+    static private String readAll(InputStream in, String encoding)
+            throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
 
         byte buffer[] = new byte[1 << 16];
         int n = 0;
-        while ((n = is.read(buffer)) != -1) {
+        while ((n = in.read(buffer)) != -1) {
             raw.write(buffer, 0, n);
         }
 
-        String encoding = conn.getContentEncoding();
         if (encoding == null) {
             encoding = "utf8";
         }
-        String data = raw.toString(encoding);
+        return raw.toString(encoding);
+    }
+
+    private String query(String request)
+            throws QueryException, HttpError {
+        InetAddress ips[];
+        try {
+            ips = InetAddress.getAllByName(mHost);
+        } catch (UnknownHostException e) {
+            throw new QueryException(e.toString());
+        }
+        for (int i = 5; i < ips.length; ++i) {
+            try {
+                String url = "http://" + ips[i].getHostAddress() + ":" + mPort + request;
+                URL realUrl = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
+                conn.connect();
+                int response = conn.getResponseCode();
+                if (response >= 200 && response < 300) {
+                    return readAll(conn.getInputStream(), conn.getContentEncoding());
+                }
+                else {
+                    String data = readAll(conn.getErrorStream(), conn.getContentEncoding());
+                    throw new HttpError(response, data);
+                }
+            } catch (MalformedURLException e) {
+                // nothing to do, try next IP
+            } catch (IOException e) {
+                // nothing to do, try next IP
+            }
+        }
+
+        throw new QueryException("querying server(s) for '" + mHost + "' failed");
+    }
+
+    @Override
+    List<KeyInfo> search(String query)
+            throws QueryException, TooManyResponses, InsufficientQuery {
+        Vector<KeyInfo> results = new Vector<KeyInfo>();
+
+        if (query.length() < 3) {
+            throw new InsufficientQuery();
+        }
+
+        String encodedQuery;
+        try {
+            encodedQuery = URLEncoder.encode(query, "utf8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+        String request = "/pks/lookup?op=index&search=" + encodedQuery;
+
+        String data = null;
+        try {
+            data = query(request);
+        } catch (HttpError e) {
+            if (e.getCode() == 404) {
+                return results;
+            } else {
+                System.out.println(e.getData());
+                if (e.getData().toLowerCase().contains("no keys found")) {
+                    return results;
+                } else if (e.getData().toLowerCase().contains("too many")) {
+                    throw new TooManyResponses();
+                } else if (e.getData().toLowerCase().contains("insufficient")) {
+                    throw new InsufficientQuery();
+                }
+            }
+            throw new QueryException("querying server(s) for '" + mHost + "' failed");
+        }
+
         Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
             KeyInfo info = new KeyInfo();
@@ -94,21 +177,15 @@ public class HkpKeyServer extends KeyServer {
 
     @Override
     String get(long keyId)
-            throws MalformedURLException, IOException {
-        String url = "http://" + mHost + ":" + mPort +
-                     "/pks/lookup?op=get&search=0x" + Apg.keyToHex(keyId);
-        URL realUrl = new URL(url);
-        URLConnection conn = realUrl.openConnection();
-        InputStream is = conn.getInputStream();
-        ByteArrayOutputStream raw = new ByteArrayOutputStream();
+            throws QueryException {
+        String request = "/pks/lookup?op=get&search=0x" + Apg.keyToHex(keyId);
 
-        byte buffer[] = new byte[1 << 16];
-        int n = 0;
-        while ((n = is.read(buffer)) != -1) {
-            raw.write(buffer, 0, n);
+        String data = null;
+        try {
+            data = query(request);
+        } catch (HttpError e) {
+            throw new QueryException("not found");
         }
-
-        String data = raw.toString();
         Matcher matcher = Apg.PGP_PUBLIC_KEY.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);
