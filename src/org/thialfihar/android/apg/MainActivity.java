@@ -292,12 +292,14 @@ public class MainActivity extends BaseActivity {
         menu.add(0, Id.menu.option.manage_secret_keys, 1, R.string.menu_manageSecretKeys)
                 .setIcon(android.R.drawable.ic_menu_manage);
         menu.add(1, Id.menu.option.create, 2, R.string.menu_addAccount)
-        .setIcon(android.R.drawable.ic_menu_add);
+                .setIcon(android.R.drawable.ic_menu_add);
         menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences)
                 .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(2, Id.menu.option.about, 4, R.string.menu_about)
+        menu.add(2, Id.menu.option.key_server, 4, R.string.menu_keyServer)
+                .setIcon(android.R.drawable.ic_menu_search);
+        menu.add(3, Id.menu.option.about, 5, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add(22, Id.menu.option.help, 4, R.string.menu_help)
+        menu.add(3, Id.menu.option.help, 6, R.string.menu_help)
                 .setIcon(android.R.drawable.ic_menu_help);
         return true;
     }
@@ -322,6 +324,11 @@ public class MainActivity extends BaseActivity {
 
             case Id.menu.option.help: {
                 showDialog(Id.dialog.help);
+                return true;
+            }
+
+            case Id.menu.option.key_server: {
+                startActivity(new Intent(this, KeyServerQueryActivity.class));
                 return true;
             }
 

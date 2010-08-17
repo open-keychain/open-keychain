@@ -1,0 +1,246 @@
+package org.thialfihar.android.apg;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Vector;
+
+import org.thialfihar.android.apg.KeyServer.KeyInfo;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class KeyServerQueryActivity extends BaseActivity {
+    private ListView mList;
+    private EditText mQuery;
+    private Button mSearch;
+    private KeyInfoListAdapter mAdapter;
+
+    private int mQueryType;
+    private String mQueryString;
+    private long mQueryId;
+    private volatile List<KeyInfo> mSearchResult;
+    private volatile String mKeyData;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.key_server_query_layout);
+
+        mQuery = (EditText) findViewById(R.id.query);
+        mSearch = (Button) findViewById(R.id.btn_search);
+        mList = (ListView) findViewById(R.id.list);
+        mAdapter = new KeyInfoListAdapter(this);
+        mList.setAdapter(mAdapter);
+
+        mList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long keyId) {
+                get(keyId);
+            }
+        });
+
+        mSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = mQuery.getText().toString();
+                search(query);
+            }
+        });
+
+        mQuery.setText("cartman");
+    }
+
+    private void search(String query) {
+        showDialog(Id.dialog.querying);
+        mQueryType = Id.query.search;
+        mQueryString = query;
+        startThread();
+    }
+
+    private void get(long keyId) {
+        showDialog(Id.dialog.querying);
+        mQueryType = Id.query.get;
+        mQueryId = keyId;
+        startThread();
+    }
+
+    @Override
+    public void run() {
+        String error = null;
+        Bundle data = new Bundle();
+        Message msg = new Message();
+
+        try {
+            HkpKeyServer server = new HkpKeyServer("198.128.3.63");//"pool.sks-keyservers.net");
+            if (mQueryType == Id.query.search) {
+                mSearchResult = server.search(mQueryString);
+            } else if (mQueryType == Id.query.get) {
+                mKeyData = server.get(mQueryId);
+            }
+        } catch (MalformedURLException e) {
+            error = "" + e;
+        } catch (IOException e) {
+            error = "" + e;
+        }
+
+        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
+
+        if (error != null) {
+            data.putString(Apg.EXTRA_ERROR, error);
+        }
+
+        msg.setData(data);
+        sendMessage(msg);
+    }
+
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+
+        removeDialog(Id.dialog.querying);
+
+        Bundle data = msg.getData();
+        String error = data.getString(Apg.EXTRA_ERROR);
+        if (error != null) {
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (mQueryType == Id.query.search) {
+            if (mSearchResult != null) {
+                mAdapter.setKeys(mSearchResult);
+            }
+        } else if (mQueryType == Id.query.get) {
+            if (mKeyData != null) {
+                Intent intent = new Intent(this, PublicKeyListActivity.class);
+                intent.setAction(Apg.Intent.IMPORT);
+                intent.putExtra(Apg.EXTRA_TEXT, mKeyData);
+                startActivity(intent);
+            }
+        }
+    }
+
+    public class KeyInfoListAdapter extends BaseAdapter {
+        protected LayoutInflater mInflater;
+        protected Activity mActivity;
+        protected List<KeyInfo> mKeys;
+
+        public KeyInfoListAdapter(Activity activity) {
+            mActivity = activity;
+            mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mKeys = new Vector<KeyInfo>();
+        }
+
+        public void setKeys(List<KeyInfo> keys) {
+            mKeys = keys;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
+        public int getCount() {
+            return mKeys.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mKeys.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return mKeys.get(position).keyId;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            KeyInfo keyInfo = mKeys.get(position);
+
+            View view = mInflater.inflate(R.layout.key_server_query_result_item, null);
+
+            TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+            mainUserId.setText(R.string.unknownUserId);
+            TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+            mainUserIdRest.setText("");
+            TextView keyId = (TextView) view.findViewById(R.id.keyId);
+            keyId.setText(R.string.noKey);
+            TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
+            algorithm.setText("");
+            TextView status = (TextView) view.findViewById(R.id.status);
+            status.setText("");
+
+            String userId = keyInfo.userIds.get(0);
+            if (userId != null) {
+                String chunks[] = userId.split(" <", 2);
+                userId = chunks[0];
+                if (chunks.length > 1) {
+                    mainUserIdRest.setText("<" + chunks[1]);
+                }
+                mainUserId.setText(userId);
+            }
+
+            keyId.setText(Apg.getFingerPrint(keyInfo.keyId));
+
+            if (mainUserIdRest.getText().length() == 0) {
+                mainUserIdRest.setVisibility(View.GONE);
+            }
+
+            algorithm.setText("" + keyInfo.size + "/" + keyInfo.algorithm);
+
+            if (keyInfo.revoked != null) {
+                status.setText("revoked");
+            } else {
+                status.setVisibility(View.GONE);
+            }
+
+            LinearLayout ll = (LinearLayout) view.findViewById(R.id.list);
+            if (keyInfo.userIds.size() == 1) {
+                ll.setVisibility(View.GONE);
+            } else {
+                boolean first = true;
+                boolean second = true;
+                for (String uid : keyInfo.userIds) {
+                    if (first) {
+                        first = false;
+                        continue;
+                    }
+                    if (!second) {
+                        View sep = new View(mActivity);
+                        sep.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 1));
+                        sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
+                        ll.addView(sep);
+                    }
+                    TextView uidView = (TextView) mInflater.inflate(R.layout.key_server_query_result_user_id, null);
+                    uidView.setText(uid);
+                    ll.addView(uidView);
+                    second = false;
+                }
+            }
+
+            return view;
+        }
+    }
+}

@@ -584,7 +584,7 @@ public class DecryptActivity extends BaseActivity {
         if (data.getBoolean(Apg.EXTRA_SIGNATURE)) {
             String userId = data.getString(Apg.EXTRA_SIGNATURE_USER_ID);
             mSignatureKeyId = data.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
-            mUserIdRest.setText("id: " + Long.toHexString(mSignatureKeyId & 0xffffffffL));
+            mUserIdRest.setText("id: " + Apg.getFingerPrint(mSignatureKeyId));
             if (userId == null) {
                 userId = getResources().getString(R.string.unknownUserId);
             }

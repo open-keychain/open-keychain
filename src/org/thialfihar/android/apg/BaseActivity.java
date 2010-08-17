@@ -157,6 +157,13 @@ public class BaseActivity extends Activity
                 return mProgressDialog;
             }
 
+            case Id.dialog.querying: {
+                mProgressDialog.setMessage(this.getString(R.string.progress_querying));
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.setCancelable(false);
+                return mProgressDialog;
+            }
+
             default: {
                 break;
             }
@@ -362,6 +369,7 @@ public class BaseActivity extends Activity
 
             case Id.message.import_done: // intentionally no break
             case Id.message.export_done: // intentionally no break
+            case Id.message.query_done: // intentionally no break
             case Id.message.done: {
                 mProgressDialog = null;
                 doneCallback(msg);

@@ -178,6 +178,11 @@
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <activity
+            android:name=".KeyServerQueryActivity"
+            android:label="@string/title_keyServerQuery"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+
+        <activity
             android:name=".PreferencesActivity"
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
@@ -201,5 +206,6 @@
     <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
 </manifest>

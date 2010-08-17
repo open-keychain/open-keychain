@@ -710,10 +710,7 @@ public class KeyListActivity extends BaseActivity {
                     }
 
                     TextView keyId = (TextView) view.findViewById(R.id.keyId);
-                    String keyIdStr = Long.toHexString(child.keyId & 0xffffffffL);
-                    while (keyIdStr.length() < 8) {
-                        keyIdStr = "0" + keyIdStr;
-                    }
+                    String keyIdStr = Apg.getFingerPrint(child.keyId);
                     keyId.setText(keyIdStr);
                     TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
                     String algorithmStr = Apg.getAlgorithmInfo(child.algorithm, child.keySize);

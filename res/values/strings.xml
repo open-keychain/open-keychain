@@ -40,6 +40,7 @@
     <string name="title_exportKeys">Export Keys</string>
     <string name="title_keyNotFound">Key Not Found</string>
     <string name="title_help">Getting Started</string>
+    <string name="title_keyServerQuery">Query Key Server</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
@@ -70,6 +71,7 @@
     <string name="btn_clearFilter">Clear Filter</string>
     <string name="btn_changePassPhrase">Change Pass Phrase</string>
     <string name="btn_setPassPhrase">Set Pass Phrase</string>
+    <string name="btn_search">Search</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">About</string>
@@ -86,6 +88,7 @@
     <string name="menu_editKey">Edit Key</string>
     <string name="menu_search">Search</string>
     <string name="menu_help">Help</string>
+    <string name="menu_keyServer">Key Server</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Sign</string>
@@ -255,6 +258,7 @@
     <string name="progress_decompressingData">decompressing data...</string>
     <string name="progress_verifyingIntegrity">verifying integrity...</string>
     <string name="progress_deletingSecurely">deleting \'%s\' securely...</string>
+    <string name="progress_querying">querying...</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>

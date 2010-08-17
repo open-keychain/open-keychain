@@ -191,6 +191,10 @@ public class Apg {
             Pattern.compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
                             Pattern.DOTALL);
 
+    public static Pattern PGP_PUBLIC_KEY =
+            Pattern.compile(".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
+                            Pattern.DOTALL);
+
     private static HashMap<Long, CachedPassPhrase> mPassPhraseCache =
             new HashMap<Long, CachedPassPhrase>();
     private static String mEditPassPhrase = null;
@@ -1004,6 +1008,25 @@ public class Apg {
             }
         }
         return algorithmStr + ", " + keySize + "bit";
+    }
+
+    public static String getFingerPrint(long keyId) {
+        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase();
+        while (fingerPrint.length() < 8) {
+            fingerPrint = "0" + fingerPrint;
+        }
+        return fingerPrint;
+    }
+
+    public static String keyToHex(long keyId) {
+        return getFingerPrint(keyId >> 32) + getFingerPrint(keyId);
+    }
+
+    public static long keyFromHex(String data) {
+        int len = data.length();
+        String s2 = data.substring(len - 8);
+        String s1 = data.substring(0, len - 8);
+        return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
     }
 
     public static void deleteKey(int keyRingId) {

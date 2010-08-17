@@ -35,6 +35,7 @@ public final class Id {
             public static final int preferences = 0x21070008;
             public static final int search = 0x21070009;
             public static final int help = 0x21070010;
+            public static final int key_server = 0x21070011;
         }
     }
 
@@ -48,6 +49,7 @@ public final class Id {
         public static final int create_key = 0x21070007;
         public static final int edit_key = 0x21070008;
         public static final int delete_done = 0x21070009;
+        public static final int query_done = 0x21070010;
     }
 
     public static final class request {
@@ -78,6 +80,7 @@ public final class Id {
         public static final int delete_file = 0x21070012;
         public static final int deleting = 0x21070013;
         public static final int help = 0x21070014;
+        public static final int querying = 0x21070015;
     }
 
     public static final class task {
@@ -155,5 +158,10 @@ public final class Id {
         public static final int unknown = 0;
         public static final int encrypted_data = 1;
         public static final int keys = 2;
+    }
+
+    public static final class query {
+        public static final int search = 0x21070001;
+        public static final int get = 0x21070002;
     }
 }
