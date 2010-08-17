@@ -34,6 +34,11 @@
             android:entryValues="@array/pass_phrase_cache_ttl_values"
             android:title="@string/label_passPhraseCacheTtl" />
 
+        <PreferenceScreen
+            android:persistent="false"
+            android:key="keyServers"
+            android:title="@string/label_keyServers" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

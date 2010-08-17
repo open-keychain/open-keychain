@@ -141,6 +141,7 @@ public class Apg {
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
+    public static final String EXTRA_KEY_SERVERS = "keyServers";
 
     public static final String EXTRA_PROGRESS = "progress";
     public static final String EXTRA_PROGRESS_MAX = "max";

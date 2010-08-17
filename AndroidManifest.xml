@@ -187,6 +187,11 @@
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
+        <activity
+            android:name=".KeyServerPreferenceActivity"
+            android:label="@string/title_keyServerPreference"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+
         <service android:name=".Service" />
 
         <provider

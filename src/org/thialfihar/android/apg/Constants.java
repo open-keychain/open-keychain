@@ -34,5 +34,10 @@ public final class Constants {
         public static final String pass_phrase_cache_ttl = "passPhraseCacheTtl";
         public static final String language = "language";
         public static final String force_v3_signatures = "forceV3Signatures";
+        public static final String key_servers = "keyServers";
+    }
+
+    public static final class defaults {
+        public static final String key_servers = "pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu";
     }
 }

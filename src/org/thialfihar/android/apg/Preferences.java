@@ -1,5 +1,7 @@
 package org.thialfihar.android.apg;
 
+import java.util.Vector;
+
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
@@ -131,6 +133,37 @@ public class Preferences {
     public void setHasSeenHelp(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.pref.has_seen_help, value);
+        editor.commit();
+    }
+
+    public String[] getKeyServers() {
+        String rawData = mSharedPreferences.getString(Constants.pref.key_servers,
+                                                      Constants.defaults.key_servers);
+        Vector<String> servers = new Vector<String>();
+        String chunks[] = rawData.split(",");
+        for (int i = 0; i < chunks.length; ++i) {
+            String tmp = chunks[i].trim();
+            if (tmp.length() > 0) {
+                servers.add(tmp);
+            }
+        }
+        return servers.toArray(chunks);
+    }
+
+    public void setKeyServers(String[] value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        String rawData = "";
+        for (int i = 0; i < value.length; ++i) {
+            String tmp = value[i].trim();
+            if (tmp.length() == 0) {
+                continue;
+            }
+            if (!"".equals(rawData)) {
+                rawData += ",";
+            }
+            rawData += tmp;
+        }
+        editor.putString(Constants.pref.key_servers, rawData);
         editor.commit();
     }
 }

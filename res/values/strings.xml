@@ -29,6 +29,7 @@
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
     <string name="title_preferences">Preferences</string>
+    <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Pass Phrase</string>
     <string name="title_setPassPhrase">Set Pass Phrase</string>
     <string name="title_sendEmail">"Send Mail..."</string>
@@ -111,6 +112,7 @@
     <string name="label_fileCompression">File Compression</string>
     <string name="label_language">Language</string>
     <string name="label_forceV3Signature">Force V3 Signatures</string>
+    <string name="label_keyServers">Key Servers</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -125,6 +127,7 @@
     <string name="canSign">can sign</string>
     <string name="expired">expired</string>
     <string name="notValid">not valid</string>
+    <string name="nKeyServers">%s key server(s)</string>
 
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>

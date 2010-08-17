@@ -57,6 +57,7 @@ public final class Id {
         public static final int secret_keys = 0x21070002;
         public static final int filename = 0x21070003;
         public static final int output_filename = 0x21070004;
+        public static final int key_server_preference = 0x21070005;
     }
 
     public static final class dialog {

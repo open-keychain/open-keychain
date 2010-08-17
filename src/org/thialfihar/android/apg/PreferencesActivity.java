@@ -23,11 +23,13 @@ import java.util.Vector;
 import org.bouncycastle2.bcpg.HashAlgorithmTags;
 import org.bouncycastle2.openpgp.PGPEncryptedData;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 
 public class PreferencesActivity extends PreferenceActivity {
     private ListPreference mLanguage = null;
@@ -38,6 +40,7 @@ public class PreferencesActivity extends PreferenceActivity {
     private IntegerListPreference mFileCompression = null;
     private CheckBoxPreference mAsciiArmour = null;
     private CheckBoxPreference mForceV3Signatures = null;
+    private PreferenceScreen mKeyServerPreference = null;
     private Preferences mPreferences;
 
     @Override
@@ -223,6 +226,39 @@ public class PreferencesActivity extends PreferenceActivity {
                 return false;
             }
         });
+
+        mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.key_servers);
+        String servers[] = mPreferences.getKeyServers();
+        mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers, servers.length));
+        mKeyServerPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(PreferencesActivity.this,
+                                           KeyServerPreferenceActivity.class);
+                intent.putExtra(Apg.EXTRA_KEY_SERVERS, mPreferences.getKeyServers());
+                startActivityForResult(intent, Id.request.key_server_preference);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Id.request.key_server_preference: {
+                if (resultCode == RESULT_CANCELED || data == null) {
+                    return;
+                }
+                String servers[] = data.getStringArrayExtra(Apg.EXTRA_KEY_SERVERS);
+                mPreferences.setKeyServers(servers);
+                mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers, servers.length));
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+            }
+        }
     }
 }
 
