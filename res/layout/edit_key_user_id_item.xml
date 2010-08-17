@@ -29,7 +29,7 @@
 
     <RadioButton
         android:id="@+id/isMainUserId"
-        android:text="Main User ID"
+        android:text="@string/label_mainUserId"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginLeft="20dip"/>
@@ -49,7 +49,7 @@
 
                 <TextView
                     android:id="@+id/label_name"
-                    android:text="Name"
+                    android:text="@string/label_name"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
 
                 <TextView
                     android:id="@+id/label_email"
-                    android:text="Email"
+                    android:text="@string/label_email"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
 
                 <TextView
                     android:id="@+id/label_comment"
-                    android:text="Comment"
+                    android:text="@string/label_comment"
                     android:layout_gravity="center_vertical"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"

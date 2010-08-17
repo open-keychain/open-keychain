@@ -113,6 +113,15 @@
     <string name="label_language">Language</string>
     <string name="label_forceV3Signature">Force V3 Signatures</string>
     <string name="label_keyServers">Key Servers</string>
+    <string name="label_keyId">Key ID</string>
+    <string name="label_creation">Creation</string>
+    <string name="label_expiry">Expiry</string>
+    <string name="label_usage">Usage</string>
+    <string name="label_keySize">Key Size</string>
+    <string name="label_mainUserId">Main User ID</string>
+    <string name="label_name">Name</string>
+    <string name="label_comment">Comment</string>
+    <string name="label_email">Email</string>
 
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
@@ -263,6 +272,7 @@
     <string name="progress_verifyingIntegrity">verifying integrity...</string>
     <string name="progress_deletingSecurely">deleting \'%s\' securely...</string>
     <string name="progress_querying">querying...</string>
+    <string name="progress_queryingServer">querying %s...</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>

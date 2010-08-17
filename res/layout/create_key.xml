@@ -29,7 +29,7 @@
             <TableRow>
 
                 <TextView android:id="@+id/label_algorithm"
-                          android:text="Algorithm"
+                          android:text="@string/label_algorithm"
                           android:layout_height="wrap_content"
                           android:layout_width="wrap_content"
                           android:layout_gravity="center_vertical"
@@ -45,7 +45,7 @@
             <TableRow>
 
                 <TextView android:id="@+id/label_size"
-                          android:text="Key Size"
+                          android:text="@string/label_keySize"
                           android:layout_height="wrap_content"
                           android:layout_width="wrap_content"
                           android:layout_gravity="center_vertical"

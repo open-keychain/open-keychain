@@ -43,7 +43,7 @@
 
                 <TextView
                    android:id="@+id/label_keyId"
-                   android:text="Key ID"
+                   android:text="@string/label_keyId"
                    android:layout_height="wrap_content"
                    android:layout_width="wrap_content"
                    android:layout_gravity="center_vertical"
@@ -63,7 +63,7 @@
 
                 <TextView
                     android:id="@+id/label_algorithm"
-                    android:text="Algorithm"
+                    android:text="@string/label_algorithm"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -82,7 +82,7 @@
 
                 <TextView
                     android:id="@+id/label_creation"
-                    android:text="Creation"
+                    android:text="@string/label_creation"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -99,7 +99,7 @@
 
                 <TextView
                     android:id="@+id/label_expiry"
-                    android:text="Expiry"
+                    android:text="@string/label_expiry"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -116,7 +116,7 @@
 
                 <TextView
                     android:id="@+id/label_usage"
-                    android:text="Usage"
+                    android:text="@string/label_usage"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:layout_gravity="center_vertical"

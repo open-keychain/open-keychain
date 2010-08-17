@@ -9,6 +9,8 @@ import org.thialfihar.android.apg.KeyServer.QueryException;
 import org.thialfihar.android.apg.KeyServer.TooManyResponses;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,12 +21,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +37,7 @@ public class KeyServerQueryActivity extends BaseActivity {
     private EditText mQuery;
     private Button mSearch;
     private KeyInfoListAdapter mAdapter;
+    private Spinner mKeyServer;
 
     private int mQueryType;
     private String mQueryString;
@@ -51,6 +56,19 @@ public class KeyServerQueryActivity extends BaseActivity {
         mList = (ListView) findViewById(R.id.list);
         mAdapter = new KeyInfoListAdapter(this);
         mList.setAdapter(mAdapter);
+
+        mKeyServer = (Spinner) findViewById(R.id.keyServer);
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(this,
+                                         android.R.layout.simple_spinner_item,
+                                         mPreferences.getKeyServers());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mKeyServer.setAdapter(adapter);
+        if (adapter.getCount() > 0) {
+            mKeyServer.setSelection(0);
+        } else {
+            mSearch.setEnabled(false);
+        }
 
         mList.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -83,6 +101,13 @@ public class KeyServerQueryActivity extends BaseActivity {
         startThread();
     }
 
+    protected Dialog onCreateDialog(int id) {
+        ProgressDialog progress = (ProgressDialog) super.onCreateDialog(id);
+        progress.setMessage(this.getString(R.string.progress_queryingServer,
+                                           (String)mKeyServer.getSelectedItem()));
+        return progress;
+    }
+
     @Override
     public void run() {
         String error = null;
@@ -90,7 +115,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            HkpKeyServer server = new HkpKeyServer("pool.sks-keyservers.net");
+            HkpKeyServer server = new HkpKeyServer((String)mKeyServer.getSelectedItem());
             if (mQueryType == Id.query.search) {
                 mSearchResult = server.search(mQueryString);
             } else if (mQueryType == Id.query.get) {
