@@ -102,7 +102,7 @@ public class KeyListActivity extends BaseActivity {
         Intent intent = getIntent();
         if (Apg.Intent.IMPORT.equals(intent.getAction())) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = intent.getDataString().replace("file://", "");
+                mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
             } else {
                 mImportData = intent.getStringExtra(Apg.EXTRA_TEXT);
             }

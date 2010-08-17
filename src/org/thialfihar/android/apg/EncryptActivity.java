@@ -349,7 +349,7 @@ public class EncryptActivity extends BaseActivity {
                 }
             } else if (Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
                 if ("file".equals(mIntent.getScheme())) {
-                    mInputFilename = mIntent.getDataString().replace("file://", "");
+                    mInputFilename = Uri.decode(mIntent.getDataString().replace("file://", ""));
                     mFilename.setText(mInputFilename);
                     guessOutputFilename();
                 }

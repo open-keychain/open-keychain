@@ -50,7 +50,7 @@ public class DataSource {
         if (mContentUri != null) {
             if (mContentUri.getScheme().equals("file")) {
                 // get the rest after "file://"
-                String path = mContentUri.toString().substring(6);
+                String path = Uri.decode(mContentUri.toString().substring(7));
                 if (path.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
                     if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                         throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));

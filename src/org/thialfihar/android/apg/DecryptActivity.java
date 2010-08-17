@@ -217,7 +217,7 @@ public class DecryptActivity extends BaseActivity {
         } else if (Apg.Intent.DECRYPT_FILE.equals(mIntent.getAction())) {
             mInputFilename = mIntent.getDataString();
             if ("file".equals(mIntent.getScheme())) {
-                mInputFilename = mInputFilename.substring(6);
+                mInputFilename = Uri.decode(mInputFilename.substring(7));
             }
             mFilename.setText(mInputFilename);
             guessOutputFilename();
