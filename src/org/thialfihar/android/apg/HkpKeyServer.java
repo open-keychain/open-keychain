@@ -87,6 +87,8 @@ public class HkpKeyServer extends KeyServer {
                 String url = "http://" + ips[i].getHostAddress() + ":" + mPort + request;
                 URL realUrl = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
+                conn.setConnectTimeout(5000);
+                conn.setReadTimeout(25000);
                 conn.connect();
                 int response = conn.getResponseCode();
                 if (response >= 200 && response < 300) {
