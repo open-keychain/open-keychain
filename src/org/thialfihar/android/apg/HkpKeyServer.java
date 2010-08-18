@@ -82,7 +82,7 @@ public class HkpKeyServer extends KeyServer {
         } catch (UnknownHostException e) {
             throw new QueryException(e.toString());
         }
-        for (int i = 5; i < ips.length; ++i) {
+        for (int i = 0; i < ips.length; ++i) {
             try {
                 String url = "http://" + ips[i].getHostAddress() + ":" + mPort + request;
                 URL realUrl = new URL(url);

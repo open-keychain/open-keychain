@@ -91,7 +91,7 @@ public class PublicKeyListActivity extends KeyListActivity {
                 }
 
                 Intent intent = new Intent(this, KeyServerQueryActivity.class);
-                intent.setAction(Apg.Intent.LOOK_UP_KEY_ID);
+                intent.setAction(Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN);
                 intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
                 startActivityForResult(intent, Id.request.look_up_key_id);
                 return true;

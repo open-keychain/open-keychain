@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
+import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 
 import android.app.Dialog;
@@ -276,6 +277,21 @@ public class DecryptActivity extends BaseActivity {
         }
 
         mSignatureLayout.setVisibility(View.GONE);
+        mSignatureLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSignatureKeyId == 0) {
+                    return;
+                }
+                PGPPublicKeyRing key = Apg.getPublicKeyRing(mSignatureKeyId);
+                if (key != null) {
+                    Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
+                    intent.setAction(Apg.Intent.LOOK_UP_KEY_ID);
+                    intent.putExtra(Apg.EXTRA_KEY_ID, mSignatureKeyId);
+                    startActivity(intent);
+                }
+            }
+        });
 
         mDecryptButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -599,6 +615,7 @@ public class DecryptActivity extends BaseActivity {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
             } else if (data.getBoolean(Apg.EXTRA_SIGNATURE_UNKNOWN)) {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                Toast.makeText(this, R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG).show();
             } else {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
             }

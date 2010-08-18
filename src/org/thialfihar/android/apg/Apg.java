@@ -116,6 +116,7 @@ public class Apg {
         public static final String SELECT_SECRET_KEY = "org.thialfihar.android.apg.intent.SELECT_SECRET_KEY";
         public static final String IMPORT = "org.thialfihar.android.apg.intent.IMPORT";
         public static final String LOOK_UP_KEY_ID = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID";
+        public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
     }
 
     public static final String EXTRA_TEXT = "text";
