@@ -1959,6 +1959,20 @@ public class Apg {
         return nlBytes;
     }
 
+    public static boolean isReleaseVersion(Context context) {
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(mApgPackageName, 0);
+            if (pi.versionCode % 100 == 99) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NameNotFoundException e) {
+            // unpossible!
+            return false;
+        }
+    }
+
     public static String getVersion(Context context) {
         if (VERSION != null) {
             return VERSION;

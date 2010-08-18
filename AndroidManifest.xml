@@ -17,7 +17,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
-    android:versionCode="21" android:versionName="1.0.7">
+    android:versionCode="10800" android:versionName="1.0.8 beta 00">
 
     <application
         android:icon="@drawable/icon"

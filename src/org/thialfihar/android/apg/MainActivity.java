@@ -126,7 +126,7 @@ public class MainActivity extends BaseActivity {
             showDialog(Id.dialog.help);
         }
 
-        if (!mPreferences.hasSeenChangeLog(Apg.getVersion(this))) {
+        if (Apg.isReleaseVersion(this) && !mPreferences.hasSeenChangeLog(Apg.getVersion(this))) {
             showDialog(Id.dialog.change_log);
         }
     }
