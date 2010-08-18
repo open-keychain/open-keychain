@@ -98,16 +98,6 @@ public class KeyListActivity extends BaseActivity {
         });
 
         handleIntent(getIntent());
-
-        Intent intent = getIntent();
-        if (Apg.Intent.IMPORT.equals(intent.getAction())) {
-            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
-            } else {
-                mImportData = intent.getStringExtra(Apg.EXTRA_TEXT);
-            }
-            importKeys();
-        }
     }
 
     @Override
@@ -116,7 +106,7 @@ public class KeyListActivity extends BaseActivity {
         handleIntent(intent);
     }
 
-    private void handleIntent(Intent intent) {
+    protected void handleIntent(Intent intent) {
         String searchString = null;
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             searchString = intent.getStringExtra(SearchManager.QUERY);
@@ -137,6 +127,15 @@ public class KeyListActivity extends BaseActivity {
         }
         mListAdapter = new KeyListAdapter(this, searchString);
         mList.setAdapter(mListAdapter);
+
+        if (Apg.Intent.IMPORT.equals(intent.getAction())) {
+            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
+                mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
+            } else {
+                mImportData = intent.getStringExtra(Apg.EXTRA_TEXT);
+            }
+            importKeys();
+        }
     }
 
     @Override
