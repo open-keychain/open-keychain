@@ -125,7 +125,8 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
         updatePassPhraseButtonText();
 
-        Toast.makeText(this, "Warning: Key editing is still kind of beta.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.warningMessage, getString(R.string.keyEditingIsBeta)),
+                       Toast.LENGTH_LONG).show();
     }
 
     private long getMasterKeyId() {
