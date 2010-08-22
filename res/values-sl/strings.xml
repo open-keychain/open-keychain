@@ -31,6 +31,7 @@
     <string name="title_createKey">Ustvari ključ</string>
     <string name="title_editKey">Uredi ključ</string>
     <string name="title_preferences">Nastavitve</string>
+    <string name="title_keyServerPreference">Nastavitve strežnikov s ključi</string>
     <string name="title_changePassPhrase">Spremeni geslo</string>
     <string name="title_setPassPhrase">Določi geslo</string>
     <string name="title_sendEmail">"Pošlji e-pošto..."</string>
@@ -42,6 +43,7 @@
     <string name="title_exportKeys">Izvozi ključe</string>
     <string name="title_keyNotFound">Ključ ni bil najden</string>
     <string name="title_help">Kako začeti</string>
+    <string name="title_keyServerQuery">Iskanje po strežnikih s ključi</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">Uporabniške identitete</string>
@@ -72,6 +74,7 @@
     <string name="btn_clearFilter">Umakni filtriranje</string>
     <string name="btn_changePassPhrase">Spremeni geslo</string>
     <string name="btn_setPassPhrase">Določi geslo</string>
+    <string name="btn_search">Išči</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">O programu</string>
@@ -88,6 +91,8 @@
     <string name="menu_editKey">Uredi ključ</string>
     <string name="menu_search">Išči</string>
     <string name="menu_help">Pomoč</string>
+    <string name="menu_keyServer">Strežnik s ključi</string>
+    <string name="menu_updateKey">Posodobi</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Podpiši</string>
@@ -110,6 +115,16 @@
     <string name="label_fileCompression">Zgoščevanje datotek</string>
     <string name="label_language">Jezik</string>
     <string name="label_forceV3Signature">Vsili podpis V3 </string>
+    <string name="label_keyServers">Strežniki s ključi</string>
+    <string name="label_keyId">Identiteta ključa</string>
+    <string name="label_creation">Izdelava</string>
+    <string name="label_expiry">Pretek</string>
+    <string name="label_usage">Uporaba</string>
+    <string name="label_keySize">Velikost ključa</string>
+    <string name="label_mainUserId">Glavna uporabniška identiteta</string>
+    <string name="label_name">Ime</string>
+    <string name="label_comment">Komentar</string>
+    <string name="label_email">E-pošta</string>
 
     <string name="noKeysSelected">Izberi</string>
     <string name="oneKeySelected">1 izbran</string>
@@ -124,6 +139,7 @@
     <string name="canSign">lahko podpiše</string>
     <string name="expired">potečeno</string>
     <string name="notValid">neveljavno</string>
+    <string name="nKeyServers">%s strežnik(i) s ključi</string>
 
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">Brez</string>
@@ -193,6 +209,8 @@
     <string name="noKeysExported">Noben ključ ni bil izvožen.</string>
     <string name="keyCreationElGamalInfo">Opomba: le podključi podpirajo ElGamal. Za ElGamal bo uporabljena velikost najbližja 1536, 2048, 3072, 4096, ali 8192.</string>
     <string name="keyNotFound">Ne najdem ključa %08X.</string>
+    <string name="keysFound">Najdeni ključi: %s</string>
+    <string name="unknownSignatureKeyTouchToLookUp">Neznan podpis, za ogled pritisni.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
@@ -202,7 +220,7 @@
     <string name="error_noKnownEncryptionFound">najdena ni bila nobena poznana vrsta enkripcije</string>
     <string name="error_externalStorageNotReady">zunanji pomnilnik ni pripravljen</string>
     <string name="error_accountNotFound">račun \'%s\' ni najden</string>
-    <string name="error_accountReadingNotAllowed">brez dovoljenja za branje računa</string>
+    <string name="error_accountReadingNotAllowed">branje računa ni dovoljeno</string>
     <string name="error_addingAccountFailed">dodajanje računa \'%s\' ni uspelo</string>
     <string name="error_invalidEmail">neveljaven e-naslov \'%s\'</string>
     <string name="error_keySizeMinimum512bit">velikost ključa mora biti vsaj 512bit</string>
@@ -257,6 +275,7 @@
     <string name="progress_decompressingData">raztezam podatke...</string>
     <string name="progress_verifyingIntegrity">overovljam integriteto...</string>
     <string name="progress_deletingSecurely">varno brišem \'%s\'...</string>
+    <string name="progress_queryingServer">poizvedujem na %s...</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Preverite podrobnosti ključev v APG.</string>
