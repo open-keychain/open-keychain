@@ -211,6 +211,7 @@
     <string name="keyNotFound">Ne najdem ključa %08X.</string>
     <string name="keysFound">Najdeni ključi: %s</string>
     <string name="unknownSignatureKeyTouchToLookUp">Neznan podpis, za ogled pritisni.</string>
+    <string name="keyEditingIsBeta">Urejanje ključev je še vedno v precej testni fazi.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
