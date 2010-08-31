@@ -372,11 +372,11 @@ public class MainActivity extends BaseActivity {
 
 
     private static class AccountListAdapter extends CursorAdapter {
-        private LayoutInflater minflater;
+        private LayoutInflater mInflater;
 
         public AccountListAdapter(Context context, Cursor cursor) {
             super(context, cursor);
-            minflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
@@ -393,7 +393,7 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            return minflater.inflate(R.layout.account_item, null);
+            return mInflater.inflate(R.layout.account_item, null);
         }
 
         @Override
