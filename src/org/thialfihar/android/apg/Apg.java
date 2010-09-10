@@ -101,6 +101,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class Apg {
     private static final String mApgPackageName = "org.thialfihar.android.apg";
@@ -616,6 +617,7 @@ public class Apg {
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         int newKeys = 0;
         int oldKeys = 0;
+        int badKeys = 0;
         try {
             while (true) {
                 InputStream in = PGPUtil.getDecoderStream(bufferedInput);
@@ -635,7 +637,22 @@ public class Apg {
                     try {
                         if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
                             secretKeyRing = (PGPSecretKeyRing) obj;
-                            retValue = mDatabase.saveKeyRing(secretKeyRing);
+                            boolean save = true;
+                            try {
+                                PGPPrivateKey testKey = secretKeyRing.getSecretKey()
+                                        .extractPrivateKey(new char[] {}, new BouncyCastleProvider());
+                                if (testKey == null) {
+                                    // this is bad, something is very wrong... likely a
+                                    // --export-secret-subkeys export
+                                    retValue = Id.return_value.bad;
+                                    save = false;
+                                }
+                            } catch (PGPException e) {
+                                // all good if this fails, we likely didn't use the right password
+                            }
+                            if (save) {
+                                retValue = mDatabase.saveKeyRing(secretKeyRing);
+                            }
                         } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
                             publicKeyRing = (PGPPublicKeyRing) obj;
                             retValue = mDatabase.saveKeyRing(publicKeyRing);
@@ -654,6 +671,8 @@ public class Apg {
                         ++oldKeys;
                     } else if (retValue == Id.return_value.ok) {
                         ++newKeys;
+                    } else if (retValue == Id.return_value.bad) {
+                        ++badKeys;
                     }
                     progress.setProgress((int)(100 * progressIn.position() / data.getSize()), 100);
                     obj = objectFactory.nextObject();
@@ -665,6 +684,7 @@ public class Apg {
 
         returnData.putInt("added", newKeys);
         returnData.putInt("updated", oldKeys);
+        returnData.putInt("bad", badKeys);
 
         progress.setProgress(R.string.progress_done, 100, 100);
 
@@ -1194,6 +1214,9 @@ public class Apg {
             progress.setProgress(R.string.progress_extractingSignatureKey, 0, 100);
             signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                                                new BouncyCastleProvider());
+            if (signaturePrivateKey == null) {
+                throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
+            }
         }
 
         progress.setProgress(R.string.progress_preparingStreams, 5, 100);
@@ -1334,13 +1357,16 @@ public class Apg {
         signaturePrivateKey =
                 signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
                                              new BouncyCastleProvider());
-
+        if (signaturePrivateKey == null) {
+            throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
+        }
         progress.setProgress(R.string.progress_preparingStreams, 0, 100);
 
         progress.setProgress(R.string.progress_preparingSignature, 30, 100);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
+
         if (forceV3Signature) {
             signatureV3Generator =
                 new PGPV3SignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
@@ -1566,6 +1592,9 @@ public class Apg {
                                                          new BouncyCastleProvider());
             } catch (PGPException e) {
                 throw new PGPException(context.getString(R.string.error_wrongPassPhrase));
+            }
+            if (privateKey == null) {
+                throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
             }
             currentProgress += 5;
             progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);

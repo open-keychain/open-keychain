@@ -136,6 +136,7 @@ public final class Id {
         public static final int error = -1;
         public static final int no_master_key = -2;
         public static final int updated = 1;
+        public static final int bad = -3;
     }
 
     public static final class target {

@@ -210,6 +210,7 @@
     <string name="keysFound">Found %s key(s).</string>
     <string name="unknownSignatureKeyTouchToLookUp">Unknown signature, touch to look up key.</string>
     <string name="keyEditingIsBeta">Key editing is still kind of beta.</string>
+    <string name="badKeysEncountered">%s bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
@@ -240,6 +241,7 @@
     <string name="error_noSymmetricEncryptionPacket">couldn\'t find a packet with symmetric encryption</string>
     <string name="error_wrongPassPhrase">wrong pass phrase</string>
     <string name="error_savingKeys">error saving some key(s)</string>
+    <string name="error_couldNotExtractPrivateKey">could not extract private key</string>
 
     <!-- progress_lowerCase: lowercase, phrases, usually ending in '...' -->
     <string name="progress_done">done.</string>

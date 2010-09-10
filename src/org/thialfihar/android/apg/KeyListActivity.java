@@ -400,6 +400,7 @@ public class KeyListActivity extends BaseActivity {
                     } else {
                         int added = data.getInt("added");
                         int updated = data.getInt("updated");
+                        int bad = data.getInt("bad");
                         String message;
                         if (added > 0 && updated > 0) {
                             message = getString(R.string.keysAddedAndUpdated, added, updated);
@@ -412,8 +413,23 @@ public class KeyListActivity extends BaseActivity {
                         }
                         Toast.makeText(KeyListActivity.this, message,
                                        Toast.LENGTH_SHORT).show();
-                        // everything went well, so now delete, if that was turned on
-                        if (mDeleteAfterImport) {
+                        if (bad > 0) {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                            alert.setIcon(android.R.drawable.ic_dialog_alert);
+                            alert.setTitle(R.string.warning);
+                            alert.setMessage(this.getString(R.string.badKeysEncountered, bad));
+
+                            alert.setPositiveButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            alert.setCancelable(true);
+                            alert.create().show();
+                        } else if (mDeleteAfterImport) {
+                            // everything went well, so now delete, if that was turned on
                             setDeleteFile(mImportFilename);
                             showDialog(Id.dialog.delete_file);
                         }

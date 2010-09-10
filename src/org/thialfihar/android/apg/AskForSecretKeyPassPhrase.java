@@ -18,7 +18,9 @@ package org.thialfihar.android.apg;
 
 import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
+import org.bouncycastle2.openpgp.PGPPrivateKey;
 import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.thialfihar.android.apg.Apg.GeneralException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -84,8 +86,14 @@ public class AskForSecretKeyPassPhrase {
                         long keyId;
                         if (secretKey != null) {
                             try {
-                                secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                                                            new BouncyCastleProvider());
+                                PGPPrivateKey testKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
+                                                                                    new BouncyCastleProvider());
+                                if (testKey == null) {
+                                    Toast.makeText(activity,
+                                                   R.string.error_couldNotExtractPrivateKey,
+                                                   Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
                             } catch (PGPException e) {
                                 Toast.makeText(activity,
                                                R.string.wrongPassPhrase,
