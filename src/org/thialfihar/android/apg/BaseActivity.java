@@ -45,7 +45,7 @@ public class BaseActivity extends Activity
                           AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
 
     private ProgressDialog mProgressDialog = null;
-    private Thread mRunningThread = null;
+    private PausableThread mRunningThread = null;
     private Thread mDeletingThread = null;
 
     private long mSecretKeyId = 0;
@@ -256,7 +256,7 @@ public class BaseActivity extends Activity
                                    @Override
                                     public void run() {
                                        Bundle data = new Bundle();
-                                       data.putInt(Apg.EXTRA_STATUS, Id.message.delete_done);
+                                       data.putInt(Constants.extras.status, Id.message.delete_done);
                                        try {
                                            Apg.deleteFileSecurely(BaseActivity.this, file, BaseActivity.this);
                                        } catch (FileNotFoundException e) {
@@ -323,9 +323,9 @@ public class BaseActivity extends Activity
     public void setProgress(int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
-        data.putInt(Apg.EXTRA_PROGRESS, progress);
-        data.putInt(Apg.EXTRA_PROGRESS_MAX, max);
+        data.putInt(Constants.extras.status, Id.message.progress_update);
+        data.putInt(Constants.extras.progress, progress);
+        data.putInt(Constants.extras.progress_max, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -333,10 +333,10 @@ public class BaseActivity extends Activity
     public void setProgress(String message, int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt(Apg.EXTRA_STATUS, Id.message.progress_update);
-        data.putString(Apg.EXTRA_MESSAGE, message);
-        data.putInt(Apg.EXTRA_PROGRESS, progress);
-        data.putInt(Apg.EXTRA_PROGRESS_MAX, max);
+        data.putInt(Constants.extras.status, Id.message.progress_update);
+        data.putString(Constants.extras.message, message);
+        data.putInt(Constants.extras.progress, progress);
+        data.putInt(Constants.extras.progress_max, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -347,16 +347,16 @@ public class BaseActivity extends Activity
             return;
         }
 
-        int type = data.getInt(Apg.EXTRA_STATUS);
+        int type = data.getInt(Constants.extras.status);
         switch (type) {
             case Id.message.progress_update: {
-                String message = data.getString(Apg.EXTRA_MESSAGE);
+                String message = data.getString(Constants.extras.message);
                 if (mProgressDialog != null) {
                     if (message != null) {
                         mProgressDialog.setMessage(message);
                     }
-                    mProgressDialog.setMax(data.getInt(Apg.EXTRA_PROGRESS_MAX));
-                    mProgressDialog.setProgress(data.getInt(Apg.EXTRA_PROGRESS));
+                    mProgressDialog.setMax(data.getInt(Constants.extras.progress_max));
+                    mProgressDialog.setProgress(data.getInt(Constants.extras.progress));
                 }
                 break;
             }
@@ -373,6 +373,10 @@ public class BaseActivity extends Activity
             case Id.message.done: {
                 mProgressDialog = null;
                 doneCallback(msg);
+                break;
+            }
+
+            default: {
                 break;
             }
         }
@@ -406,8 +410,16 @@ public class BaseActivity extends Activity
         mHandler.sendMessage(msg);
     }
 
+    public PausableThread getRunningThread() {
+        return mRunningThread;
+    }
+
+    public Handler getHandler() {
+        return mHandler;
+    }
+
     public void startThread() {
-        mRunningThread = new Thread(this);
+        mRunningThread = new PausableThread(this);
         mRunningThread.start();
     }
 

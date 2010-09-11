@@ -51,6 +51,7 @@ public final class Id {
         public static final int edit_key = 0x21070008;
         public static final int delete_done = 0x21070009;
         public static final int query_done = 0x21070010;
+        public static final int unknown_signature_key = 0x21070011;
     }
 
     public static final class request {

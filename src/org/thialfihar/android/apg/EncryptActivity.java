@@ -701,7 +701,7 @@ public class EncryptActivity extends BaseActivity {
             error = "" + e;
         }
 
-        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
+        data.putInt(Constants.extras.status, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);

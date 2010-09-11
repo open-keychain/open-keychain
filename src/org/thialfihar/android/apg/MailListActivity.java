@@ -39,6 +39,8 @@ import android.widget.TextView;
 public class MailListActivity extends ListActivity {
     LayoutInflater mInflater = null;
 
+    public static final String EXTRA_ACCOUNT = "account";
+
     private static class Conversation {
         public long id;
         public String subject;
@@ -90,7 +92,7 @@ public class MailListActivity extends ListActivity {
         mConversations = new Vector<Conversation>();
         mMessages = new Vector<Message>();
 
-        String account = getIntent().getExtras().getString(Apg.EXTRA_ACCOUNT);
+        String account = getIntent().getExtras().getString(EXTRA_ACCOUNT);
         // TODO: what if account is null?
         Uri uri = Uri.parse("content://gmail-ls/conversations/" + account);
         Cursor cursor =

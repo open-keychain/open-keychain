@@ -258,7 +258,7 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             error = "" + e;
         }
 
-        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
+        data.putInt(Constants.extras.status, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);

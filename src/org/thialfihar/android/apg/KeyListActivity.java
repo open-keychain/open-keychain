@@ -358,9 +358,9 @@ public class KeyListActivity extends BaseActivity {
         mImportData = null;
 
         if (mTask == Id.task.import_keys) {
-            data.putInt(Apg.EXTRA_STATUS, Id.message.import_done);
+            data.putInt(Constants.extras.status, Id.message.import_done);
         } else {
-            data.putInt(Apg.EXTRA_STATUS, Id.message.export_done);
+            data.putInt(Constants.extras.status, Id.message.export_done);
         }
 
         if (error != null) {
@@ -387,7 +387,7 @@ public class KeyListActivity extends BaseActivity {
 
         Bundle data = msg.getData();
         if (data != null) {
-            int type = data.getInt(Apg.EXTRA_STATUS);
+            int type = data.getInt(Constants.extras.status);
             switch (type) {
                 case Id.message.import_done: {
                     removeDialog(Id.dialog.importing);

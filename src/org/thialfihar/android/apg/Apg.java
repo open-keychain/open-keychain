@@ -100,8 +100,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class Apg {
     private static final String mApgPackageName = "org.thialfihar.android.apg";
@@ -141,15 +141,9 @@ public class Apg {
     public static final String EXTRA_SUBJECT = "subject";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
-    public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
     public static final String EXTRA_KEY_SERVERS = "keyServers";
-
-    public static final String EXTRA_PROGRESS = "progress";
-    public static final String EXTRA_PROGRESS_MAX = "max";
-    public static final String EXTRA_ACCOUNT = "account";
-    public static final String EXTRA_STATUS = "status";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
@@ -1725,7 +1719,8 @@ public class Apg {
 
     public static Bundle verifyText(Context context,
                                     InputData data, OutputStream outStream,
-                                    ProgressDialogUpdater progress)
+                                    ProgressDialogUpdater progress,
+                                    PausableThread thread, Handler handler)
             throws IOException, GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
 

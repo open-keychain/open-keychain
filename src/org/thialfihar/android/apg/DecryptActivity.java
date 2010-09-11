@@ -509,7 +509,7 @@ public class DecryptActivity extends BaseActivity {
             OutputStream out = mDataDestination.getOutputStream(this);
 
             if (mSignedOnly) {
-                data = Apg.verifyText(this, in, out, this);
+                data = Apg.verifyText(this, in, out, this, getRunningThread(), getHandler());
             } else {
                 data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()),
                                    this, mAssumeSymmetricEncryption);
@@ -539,7 +539,7 @@ public class DecryptActivity extends BaseActivity {
             error = "" + e;
         }
 
-        data.putInt(Apg.EXTRA_STATUS, Id.message.done);
+        data.putInt(Constants.extras.status, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);
@@ -547,6 +547,19 @@ public class DecryptActivity extends BaseActivity {
 
         msg.setData(data);
         sendMessage(msg);
+    }
+
+    public void handlerCallback(Message msg) {
+        Bundle data = msg.getData();
+        if (data == null) {
+            return;
+        }
+
+        if (data.getInt(Constants.extras.status) == Id.message.unknown_signature_key) {
+
+        }
+
+        super.handlerCallback(msg);
     }
 
     @Override

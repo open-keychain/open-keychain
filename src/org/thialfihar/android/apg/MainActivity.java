@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
                 String accountName = (String) mAccounts.getItemAtPosition(index);
                 startActivity(new Intent(MainActivity.this, MailListActivity.class)
-                                        .putExtra(Apg.EXTRA_ACCOUNT, accountName));
+                                        .putExtra(MailListActivity.EXTRA_ACCOUNT, accountName));
             }
         });
         registerForContextMenu(mAccounts);

@@ -132,7 +132,6 @@ public class HkpKeyServer extends KeyServer {
             if (e.getCode() == 404) {
                 return results;
             } else {
-                System.out.println(e.getData());
                 if (e.getData().toLowerCase().contains("no keys found")) {
                     return results;
                 } else if (e.getData().toLowerCase().contains("too many")) {

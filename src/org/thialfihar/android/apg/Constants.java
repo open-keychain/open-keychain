@@ -40,4 +40,11 @@ public final class Constants {
     public static final class defaults {
         public static final String key_servers = "pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu";
     }
+
+    public static final class extras {
+        public static final String progress = "progress";
+        public static final String progress_max = "max";
+        public static final String status = "status";
+        public static final String message = "message";
+    }
 }
