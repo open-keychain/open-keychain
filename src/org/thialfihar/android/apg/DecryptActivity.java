@@ -31,8 +31,10 @@ import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -91,6 +93,8 @@ public class DecryptActivity extends BaseActivity {
 
     private DataSource mDataSource = null;
     private DataDestination mDataDestination = null;
+
+    private long mUnknownSignatureKeyId = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -509,7 +513,7 @@ public class DecryptActivity extends BaseActivity {
             OutputStream out = mDataDestination.getOutputStream(this);
 
             if (mSignedOnly) {
-                data = Apg.verifyText(this, in, out, this, getRunningThread(), getHandler());
+                data = Apg.verifyText(this, in, out, this);
             } else {
                 data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()),
                                    this, mAssumeSymmetricEncryption);
@@ -549,6 +553,7 @@ public class DecryptActivity extends BaseActivity {
         sendMessage(msg);
     }
 
+    @Override
     public void handlerCallback(Message msg) {
         Bundle data = msg.getData();
         if (data == null) {
@@ -556,7 +561,9 @@ public class DecryptActivity extends BaseActivity {
         }
 
         if (data.getInt(Constants.extras.status) == Id.message.unknown_signature_key) {
-
+            mUnknownSignatureKeyId = data.getLong(Constants.extras.key_id);
+            showDialog(Id.dialog.lookup_unknown_key);
+            return;
         }
 
         super.handlerCallback(msg);
@@ -673,6 +680,14 @@ public class DecryptActivity extends BaseActivity {
                 return;
             }
 
+            case Id.request.look_up_key_id: {
+                PausableThread thread = getRunningThread();
+                if (thread != null && thread.isPaused()) {
+                    thread.unpause();
+                }
+                return;
+            }
+
             default: {
                 break;
             }
@@ -705,6 +720,39 @@ public class DecryptActivity extends BaseActivity {
                                         getString(R.string.filemanager_btnSave),
                                         null,
                                         Id.request.output_filename);
+            }
+
+            case Id.dialog.lookup_unknown_key: {
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                alert.setIcon(android.R.drawable.ic_dialog_alert);
+                alert.setTitle(R.string.title_unknownSignatureKey);
+                alert.setMessage(getString(R.string.lookupUnknownKey, Apg.getFingerPrint(mUnknownSignatureKeyId)));
+
+                alert.setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                removeDialog(Id.dialog.lookup_unknown_key);
+                                                Intent intent = new Intent(DecryptActivity.this,
+                                                                           KeyServerQueryActivity.class);
+                                                intent.setAction(Apg.Intent.LOOK_UP_KEY_ID);
+                                                intent.putExtra(Apg.EXTRA_KEY_ID, mUnknownSignatureKeyId);
+                                                startActivityForResult(intent, Id.request.look_up_key_id);
+                                            }
+                                        });
+                alert.setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                removeDialog(Id.dialog.lookup_unknown_key);
+                                                PausableThread thread = getRunningThread();
+                                                if (thread != null && thread.isPaused()) {
+                                                    thread.unpause();
+                                                }
+                                            }
+                                        });
+                alert.setCancelable(true);
+
+                return alert.create();
             }
 
             default: {

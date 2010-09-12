@@ -100,7 +100,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
+import android.os.Message;
 import android.view.ViewGroup;
 
 public class Apg {
@@ -1717,10 +1717,9 @@ public class Apg {
         return returnData;
     }
 
-    public static Bundle verifyText(Context context,
+    public static Bundle verifyText(BaseActivity context,
                                     InputData data, OutputStream outStream,
-                                    ProgressDialogUpdater progress,
-                                    PausableThread thread, Handler handler)
+                                    ProgressDialogUpdater progress)
             throws IOException, GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
 
@@ -1768,6 +1767,19 @@ public class Apg {
             if (signatureKeyId == 0) {
                 signatureKeyId = signature.getKeyID();
             }
+            if (signatureKey == null) {
+                Bundle pauseData = new Bundle();
+                pauseData.putInt(Constants.extras.status, Id.message.unknown_signature_key);
+                pauseData.putLong(Constants.extras.key_id, signatureKeyId);
+                Message msg = new Message();
+                msg.setData(pauseData);
+                context.sendMessage(msg);
+                // pause here
+                context.getRunningThread().pause();
+                // see whether the key was found in the meantime
+                signatureKey = getPublicKey(signature.getKeyID());
+            }
+
             if (signatureKey == null) {
                 signature = null;
             } else {

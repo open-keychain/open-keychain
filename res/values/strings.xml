@@ -42,6 +42,7 @@
     <string name="title_keyNotFound">Key Not Found</string>
     <string name="title_help">Getting Started</string>
     <string name="title_keyServerQuery">Query Key Server</string>
+    <string name="title_unknownSignatureKey">Unknown Signature Key</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
@@ -211,6 +212,7 @@
     <string name="unknownSignatureKeyTouchToLookUp">Unknown signature, touch to look up key.</string>
     <string name="keyEditingIsBeta">Key editing is still kind of beta.</string>
     <string name="badKeysEncountered">%s bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
+    <string name="lookupUnknownKey">Unknown key %s, do you want to try finding it on a keyserver?</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->

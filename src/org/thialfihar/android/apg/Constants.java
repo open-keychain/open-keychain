@@ -46,5 +46,6 @@ public final class Constants {
         public static final String progress_max = "max";
         public static final String status = "status";
         public static final String message = "message";
+        public static final String key_id = "keyId";
     }
 }

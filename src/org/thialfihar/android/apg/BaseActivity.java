@@ -414,10 +414,6 @@ public class BaseActivity extends Activity
         return mRunningThread;
     }
 
-    public Handler getHandler() {
-        return mHandler;
-    }
-
     public void startThread() {
         mRunningThread = new PausableThread(this);
         mRunningThread.start();

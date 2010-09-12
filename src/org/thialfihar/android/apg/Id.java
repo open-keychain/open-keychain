@@ -85,6 +85,7 @@ public final class Id {
         public static final int deleting = 0x21070013;
         public static final int help = 0x21070014;
         public static final int querying = 0x21070015;
+        public static final int lookup_unknown_key = 0x21070016;
     }
 
     public static final class task {
