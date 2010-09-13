@@ -31,6 +31,7 @@
     <string name="title_createKey">Crea Chiave</string>
     <string name="title_editKey">Modifica Chiave</string>
     <string name="title_preferences">Preferenze</string>
+    <string name="title_keyServerPreference">Preferenze Key Server</string>
     <string name="title_changePassPhrase">Cambia Pass Phrase</string>
     <string name="title_setPassPhrase">Imposta Pass Phrase</string>
     <string name="title_sendEmail">"Invia mail..."</string>
@@ -41,17 +42,24 @@
     <string name="title_exportKey">Esporta Chiave</string>
     <string name="title_exportKeys">Esporta Chiavi</string>
     <string name="title_keyNotFound">Chiave non trovata</string>
+    <string name="title_help">Guida</string>
+    <string name="title_keyServerQuery">Query Key Server</string>
+    <string name="title_unknownSignatureKey">Firma chiave sconosciuta</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Chiavi</string>
     <string name="section_general">Generale</string>
     <string name="section_defaults">Defaults</string>
+    <string name="section_advanced">Avanzate</string>
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
+    <string name="btn_signToClipboard">Firma su Clipboard</string>
     <string name="btn_encryptToClipboard">Critta su Clipboard</string>
     <string name="btn_encryptAndEmail">Critta ed invia per mail</string>
+    <string name="btn_signAndEmail">Firma ed invia per mail</string>
     <string name="btn_encrypt">Critta</string>
+    <string name="btn_sign">Firma</string>
     <string name="btn_decrypt">Decritta</string>
     <string name="btn_verify">Verifica</string>
     <string name="btn_selectEncryptKeys">Seleziona i Destinatari</string>
@@ -67,6 +75,7 @@
     <string name="btn_clearFilter">Cancella Filtro</string>
     <string name="btn_changePassPhrase">Cambia Pass Phrase</string>
     <string name="btn_setPassPhrase">Imposta Pass Phrase</string>
+    <string name="btn_search">Cerca</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">Informazioni</string>
@@ -82,6 +91,9 @@
     <string name="menu_createKey">Crea Chiave</string>
     <string name="menu_editKey">Modifica Chiave</string>
     <string name="menu_search">Cerca</string>
+    <string name="menu_help">Aiuto</string>
+    <string name="menu_keyServer">Key Server</string>
+    <string name="menu_updateKey">Aggiorna</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Firma</string>
@@ -94,6 +106,7 @@
     <string name="label_selectPublicKeys">Chiavi Pubbliche</string>
     <string name="label_deleteAfterEncryption">Cancella dopo la crittazione</string>
     <string name="label_deleteAfterDecryption">Cancella dopo la decrittazione</string>
+    <string name="label_deleteAfterImport">Cancella dopo l\'importazione</string>
     <string name="label_encryptionAlgorithm">Algoritmo di Crittazione</string>
     <string name="label_hashAlgorithm">Algoritmo di Hash</string>
     <string name="label_asymmetric">Chiave Pubblica</string>
@@ -101,6 +114,18 @@
     <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
     <string name="label_messageCompression">Compressione Messaggio</string>
     <string name="label_fileCompression">Compressione File</string>
+    <string name="label_language">Lingua</string>
+    <string name="label_forceV3Signature">Forza l\'uso di firme V3</string>
+    <string name="label_keyServers">Key Servers</string>
+    <string name="label_keyId">ID chiave</string>
+    <string name="label_creation">Creazione</string>
+    <string name="label_expiry">Scadenza</string>
+    <string name="label_usage">Utilizzo</string>
+    <string name="label_keySize">Dimensione chiave</string>
+    <string name="label_mainUserId">User ID principale</string>
+    <string name="label_name">Nome</string>
+    <string name="label_comment">Commento</string>
+    <string name="label_email">Email</string>
 
     <string name="noKeysSelected">Seleziona</string>
     <string name="oneKeySelected">1 Selezionato</string>
@@ -115,6 +140,7 @@
     <string name="canSign">firma consentita</string>
     <string name="expired">scaduto</string>
     <string name="notValid">non valido</string>
+    <string name="nKeyServers">%s key server(s)</string>
 
     <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
     <string name="choice_none">Nessuno</string>
@@ -130,6 +156,7 @@
     <string name="choice_40mins">40 min</string>
     <string name="choice_60mins">60 min</string>
     <string name="choice_untilQuit">tutta la sessione</string>
+    <string name="choice_language_system">Default di sistema</string>
 
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
@@ -183,6 +210,11 @@
     <string name="noKeysExported">Nessuna chiave è stata esportata.</string>
     <string name="keyCreationElGamalInfo">Nota: solo le sotto-chiavi supportano ElGamal, e per ElGamal sarà utilizzata la dimensione più vicina a 1536, 2048, 3072, 4096, oppure 8192.</string>
     <string name="keyNotFound">Non è stato possibile trovare la chiave %08X.</string>
+    <string name="keysFound">Trovate %s chiavi.</string>
+    <string name="unknownSignatureKeyTouchToLookUp">Firma sconosciuta, premi per controllare la chiave.</string>
+    <string name="keyEditingIsBeta">L\'editing delle chiavi è una funzionalità ancora in fase beta.</string>
+    <string name="badKeysEncountered">%s chiavi segrete ignorate. Se hai esportato le chiavi con l\'opzione\n --export-secret-subkeys\nprovare ad utilizzare il parametro\n --export-secret-keys\n.</string>
+    <string name="lookupUnknownKey">La chiave %s è sconosciuta; si desidera provare a cercarla su un keyserver?</string>
 
     <!-- error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found" -->
@@ -212,6 +244,7 @@
     <string name="error_noSymmetricEncryptionPacket">non è stato possibile trovare pacchetto con crittazione simmetrica</string>
     <string name="error_wrongPassPhrase">Pass Phrase errata</string>
     <string name="error_savingKeys">errore durante il salvataggio di alcune chiavi</string>
+    <string name="error_couldNotExtractPrivateKey">non è stato possibile estrarre la chiave privata</string>
 
     <!-- progress_lowerCase: lowercase, phrases, usually ending in '...' -->
     <string name="progress_done">eseguito.</string>
@@ -245,6 +278,9 @@
     <string name="progress_findingKey">ricerca chiave in corso...</string>
     <string name="progress_decompressingData">decompressione dei dati in corso...</string>
     <string name="progress_verifyingIntegrity">verifica integrità dati in corso...</string>
+    <string name="progress_deletingSecurely">rimozione sicura di \'%s\'...</string>
+    <string name="progress_querying">interrogazione in corso...</string>
+    <string name="progress_queryingServer">interrogazione di %s in corso...</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Accesso in lettura ai dettagli della chiave da APG.</string>
@@ -259,6 +295,20 @@
     <string name="hint_publicKeys">Cerca Chiavi Pubbliche</string>
     <string name="hint_secretKeys">Cerca Chiavi Private</string>
     <string name="filterInfo">Filtra: \"%s\"</string>
+
+    <!-- misc -->
+    <string name="fast">veloce</string>
+    <string name="slow">lenta</string>
+    <string name="very_slow">molto lenta</string>
+
+    <!-- texts -->
+    <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
+    <string name="text_help">Per una migliore integrazione, si consiglia di installare K-9 Mail; questo applicativo supporta infatti APG e consente di crittare/decrittare direttamente le mail.
+\n\nPer poter utilizzare il bottone \"sfoglia\" per la selezione dei file su APG, si consiglia di installare OI File Manager oppure ASTRO.
+\n\nCome prima cosa, è necessario disporre di una o più chiavi. E\' possibile importare chiavi esistenti tramite l\'opzione \"Manage Public Keys\" e \"Manage Secret Keys\", oppure crearne una nuova tramite l\'opzione \"Manage Secret Keys\".
+\n\nE' possibile aggiungere un account GMail tramite l\'opzione \"Aggiungi Acconto GMail\"; questo semplifica il processo di decrittaggio delle mail ricevute sulla propria casella di posta su GMail.
+\n\nProva e controlla le opzioni dei vari menù per esplorare e conoscere tutte le funzionalità di APG.
+    </string>
 
 </resources>
 
