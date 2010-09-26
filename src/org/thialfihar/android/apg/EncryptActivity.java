@@ -381,7 +381,7 @@ public class EncryptActivity extends BaseActivity {
         updateButtons();
 
         if (mReturnResult &&
-            mMessage.getText().length() > 0 &&
+            (mMessage.getText().length() > 0 || mData != null) &&
             ((mEncryptionKeyIds != null &&
               mEncryptionKeyIds.length > 0) ||
              getSecretKeyId() != 0)) {
