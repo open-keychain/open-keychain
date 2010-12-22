@@ -305,7 +305,7 @@
     <string name="text_help">Per una migliore integrazione, si consiglia di installare K-9 Mail; questo applicativo supporta infatti APG e consente di crittare/decrittare direttamente le mail.
 \n\nPer poter utilizzare il bottone \"sfoglia\" per la selezione dei file su APG, si consiglia di installare OI File Manager oppure ASTRO.
 \n\nCome prima cosa, è necessario disporre di una o più chiavi. E\' possibile importare chiavi esistenti tramite l\'opzione \"Manage Public Keys\" e \"Manage Secret Keys\", oppure crearne una nuova tramite l\'opzione \"Manage Secret Keys\".
-\n\nE' possibile aggiungere un account GMail tramite l\'opzione \"Aggiungi Acconto GMail\"; questo semplifica il processo di decrittaggio delle mail ricevute sulla propria casella di posta su GMail.
+\n\nE\' possibile aggiungere un account GMail tramite l\'opzione \"Aggiungi Acconto GMail\"; questo semplifica il processo di decrittaggio delle mail ricevute sulla propria casella di posta su GMail.
 \n\nProva e controlla le opzioni dei vari menù per esplorare e conoscere tutte le funzionalità di APG.
     </string>
 
