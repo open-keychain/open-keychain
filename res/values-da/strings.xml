@@ -126,6 +126,10 @@
     <string name="choice_10mins">10 min</string>
     <string name="choice_20mins">20 min</string>
     <string name="choice_40mins">40 min</string>
+    <string name="choice_1hour">1 timer</string>
+    <string name="choice_2hours">2 timer</string>
+    <string name="choice_4hours">4 timer</string>
+    <string name="choice_8hours">8 timer</string>
     <string name="choice_untilQuit">Indtil slut</string>
 
     <string name="dsa">DSA</string>
