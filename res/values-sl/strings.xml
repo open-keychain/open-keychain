@@ -199,7 +199,7 @@
     <string name="specifyFileToExportSecretKeysTo">Določite v katero datoteko želite izvoziti.\nPOZOR! Izvozili boste ZASEBNI ključ.\nPOZOR! Če ta datoteka že obstaja, bo prepisana.</string>
     <string name="keyDeletionConfirmation">Ali zares želite izbrisati ključ \'%s\'?\nTega ne boste mogli popraviti!</string>
     <string name="secretKeyDeletionConfirmation">Ali zares želite izbrisati ZASEBNI ključ \'%s\'?\nTega ne boste mogli popraviti!</string>
-    <string name="keysAddedAndUpdated">Uspešno dodani ključi: %s. Uspešno posodobljeni ključi: %s."</string>
+    <string name="keysAddedAndUpdated">Uspešno dodani ključi: %1$s. Uspešno posodobljeni ključi: %2$s."</string>
     <string name="keysAdded">Uspešno dodani ključi: %s.</string>
     <string name="keysUpdated">Uspešno posodobljeni ključi: %s.</string>
     <string name="noKeysAddedOrUpdated">Noben ključ ni bil dodan ali posodobljen.</string>

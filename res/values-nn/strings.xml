@@ -204,7 +204,7 @@
     <string name="specifyFileToExportSecretKeysTo">Vennligst angi hvilken fil  du vil eksportere til.\nADVARSEL! Du er på vei til p eksportere HEMMELIGE nøkkler.\nADVARSEL! Filen vil bli overskrevet, hvis den eksisterer.</string>
     <string name="keyDeletionConfirmation">Vil du virkelig slette nøkkelen? \'%s\'?\nDu kan ikke gjøre om dette!</string>
     <string name="secretKeyDeletionConfirmation">Vil du virkelig slette den HEMMELIGE nøkkelen? \'%s\'?\nDu kan ikke gjøre om dette!</string>
-    <string name="keysAddedAndUpdated">Lykktes å legge til %s nøkkel(er) og oppdatere %s nøkkel(er)."</string>
+    <string name="keysAddedAndUpdated">Lykktes å legge til %1$s nøkkel(er) og oppdatere %2$s nøkkel(er)."</string>
     <string name="keysAdded">Lykktes å legge til %s nøkkel(er).</string>
     <string name="keysUpdated">Lykktes å oppdatere %s nøkkel(er).</string>
     <string name="noKeysAddedOrUpdated">Ingen nøkler lagt til eller oppdatert.</string>

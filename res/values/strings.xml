@@ -202,7 +202,7 @@
     <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
     <string name="keyDeletionConfirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
-    <string name="keysAddedAndUpdated">Successfully added %s key(s) and updated %s key(s)."</string>
+    <string name="keysAddedAndUpdated">Successfully added %1$s key(s) and updated %2$s key(s).</string>
     <string name="keysAdded">Successfully added %s key(s).</string>
     <string name="keysUpdated">Successfully updated %s key(s).</string>
     <string name="noKeysAddedOrUpdated">No keys added or updated.</string>

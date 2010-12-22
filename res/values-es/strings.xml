@@ -197,7 +197,7 @@
     <string name="specifyFileToExportSecretKeysTo">Por favor, indica el fichero al que exportar.\nADVERTENCIA! Estás a punto de exportar las llaves PRIVADAS.\nADVERTENCIA! El fichero se sobre-escribirá si ya existe.</string>
     <string name="keyDeletionConfirmation">¿Realmente quieres borrar la llave \'%s\'?\nNo puede deshacerse!</string>
     <string name="secretKeyDeletionConfirmation">¿Realmente quieres borrar la llave SECRETA \'%s\'?\nNo puede deshacerse!</string>
-    <string name="keysAddedAndUpdated">Se han añadido %s llave(s) y actualizado %s llave(s) de forma correcta."</string>
+    <string name="keysAddedAndUpdated">Se han añadido %1$s llave(s) y actualizado %2$s llave(s) de forma correcta."</string>
     <string name="keysAdded">Se ha(n) añadido %s llave(s) de forma correcta.</string>
     <string name="keysUpdated">Se ha(n) actualizado %s llave(s) de forma correcta.</string>
     <string name="noKeysAddedOrUpdated">No se ha añadido ni actualizado ninguna llave.</string>

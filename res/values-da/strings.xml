@@ -175,7 +175,7 @@
     <string name="specifyFileToExportSecretKeysTo">Angiv hvilken fil der skal eksporteres til.\nADVARSEL! Du er ved at eksportere PRIVATE nøgler.\nADVARSEL! Filen vil blive overskrevet hvis den allerede eksisterer.</string>
     <string name="keyDeletionConfirmation">Ønsker du at slette \'%s\'-nøglen?\nDu kan ikke fortryde denne handling!</string>
     <string name="secretKeyDeletionConfirmation">Ønsker du at slette den PRIVATE nøgle, \'%s\'?\nDu kan ikke fortryde denne handling!</string>
-    <string name="keysAddedAndUpdated">Tilføjelse af %s nøgle(r) og opdatering af %s nøgle(r) lykkedes."</string>
+    <string name="keysAddedAndUpdated">Tilføjelse af %1$s nøgle(r) og opdatering af %2$s nøgle(r) lykkedes."</string>
     <string name="keysAdded">Tilføjelse af %s nøgle(r) lykkedes.</string>
     <string name="keysUpdated">Opdatring af %s nøgle(r) lykkedes.</string>
     <string name="noKeysAddedOrUpdated">Ingen nøgler blev tilføjet eller opdateret.</string>

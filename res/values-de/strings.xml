@@ -185,7 +185,7 @@
     <string name="keyDeletionConfirmation">Soll der Schlüssel \'%s\' wirklich gelöscht werden?\nDiese Aktion lässt sich nicht rückgängig machen!</string>
 
     <string name="secretKeyDeletionConfirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDiese Aktion lässt sich nicht rückgängig machen!</string>
-    <string name="keysAddedAndUpdated">Erfolgreich %s Schlüssel hinzugefügt und %s Schlüssel aktualisiert."</string>
+    <string name="keysAddedAndUpdated">Erfolgreich %1$s Schlüssel hinzugefügt und %2$s Schlüssel aktualisiert.</string>
     <string name="keysAdded">Erfolgreich %s Schlüssel hinzugefügt.</string>
     <string name="keysUpdated">Erfolgreich %s Schlüssel aktualisiert.</string>
     <string name="noKeysAddedOrUpdated">Keine Schlüssel hinzugefügt oder aktualisiert.</string>
