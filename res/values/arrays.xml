@@ -24,7 +24,10 @@
         <item>@string/choice_10mins</item>
         <item>@string/choice_20mins</item>
         <item>@string/choice_40mins</item>
-        <item>@string/choice_60mins</item>
+        <item>@string/choice_1hour</item>
+        <item>@string/choice_2hours</item>
+        <item>@string/choice_4hours</item>
+        <item>@string/choice_8hours</item>
     </string-array>
 
     <string-array name="pass_phrase_cache_ttl_values">
@@ -36,6 +39,9 @@
         <item>1200</item>
         <item>2400</item>
         <item>3600</item>
+        <item>7200</item>
+        <item>14400</item>
+        <item>28800</item>
     </string-array>
 
     <string-array name="language_entries">

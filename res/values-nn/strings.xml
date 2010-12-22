@@ -16,7 +16,7 @@
      Author: Sander Danielsen <thelugal@gmail.com>
      Norsk, Bokmål
 
-     Send gjerne en e-post med spørsmål eller kommentarer. Kom gjerne med forslag til bedre 
+     Send gjerne en e-post med spørsmål eller kommentarer. Kom gjerne med forslag til bedre
      oversettelser!
 
 -->
@@ -32,7 +32,7 @@
     <string name="title_selectSignature">SVelg Signatur</string>
     <string name="title_encrypt">Krypter</string>
     <string name="title_decrypt">Dekrypter</string>
-    <string name="title_authentication">Passord</string>   
+    <string name="title_authentication">Passord</string>
     <string name="title_createKey">Lag Nøkkel</string>
     <string name="title_editKey">Rediger Nøkkel</string>
     <string name="title_preferences">Egenskaper</string>
@@ -115,7 +115,7 @@
     <string name="label_hashAlgorithm">Hash Algoritme</string>
     <string name="label_asymmetric">Offentlig Nøkkel</string>
     <string name="label_symmetric">Passord</string>
-    <string name="label_passPhraseCacheTtl">Passord Mellomlager</string> 
+    <string name="label_passPhraseCacheTtl">Passord Mellomlager</string>
     <string name="label_messageCompression">Melding komprimering</string>
     <string name="label_fileCompression">Fil Komprimering</string>
     <string name="label_language">Språk</string>
@@ -138,12 +138,12 @@
     <string name="none">&lt;ingen&gt;</string>
     <string name="noKey">&lt;ingen nøkkel&gt;</string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;utløper ikke&gt;</string> 
+    <string name="noExpiry">&lt;utløper ikke&gt;</string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">kan kryptere</string>
     <string name="canSign">kan signere</string>
     <string name="expired">utløpt</string>
-    <string name="notValid">ugyldig</string> 
+    <string name="notValid">ugyldig</string>
     <string name="nKeyServers">%s nøkkelserver(e)</string>
 
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
@@ -158,7 +158,6 @@
     <string name="choice_10mins">10 min</string>
     <string name="choice_20mins">20 min</string>
     <string name="choice_40mins">40 min</string>
-    <string name="choice_60mins">60 min</string>
     <string name="choice_untilQuit">til avsluttning</string>
     <string name="choice_language_system">System </string>
 
@@ -223,7 +222,7 @@
     <string name="error_fileDeleteFailed">sletting \'%s\' mislyktes</string>
     <string name="error_fileNotFound">finner ikke fil</string>
     <string name="error_noSecretKeyFound">finner ingen passende hemmelig nøkkel</string>
-    <string name="error_noKnownEncryptionFound">ingen kjente krypteringsmåter funnet</string> 
+    <string name="error_noKnownEncryptionFound">ingen kjente krypteringsmåter funnet</string>
     <string name="error_externalStorageNotReady">ekstern lagringsplass ikke klar</string>
     <string name="error_accountNotFound">finner ikke kontoen - \'%s\'</string>
     <string name="error_accountReadingNotAllowed">ikke tillatelse til  lese konto</string>

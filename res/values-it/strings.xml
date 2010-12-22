@@ -154,7 +154,6 @@
     <string name="choice_10mins">10 min</string>
     <string name="choice_20mins">20 min</string>
     <string name="choice_40mins">40 min</string>
-    <string name="choice_60mins">60 min</string>
     <string name="choice_untilQuit">tutta la sessione</string>
     <string name="choice_language_system">Default di sistema</string>
 

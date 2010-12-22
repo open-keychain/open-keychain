@@ -152,7 +152,10 @@
     <string name="choice_10mins">10 mins</string>
     <string name="choice_20mins">20 mins</string>
     <string name="choice_40mins">40 mins</string>
-    <string name="choice_60mins">60 mins</string>
+    <string name="choice_1hour">1 hour</string>
+    <string name="choice_2hours">2 hours</string>
+    <string name="choice_4hours">4 hours</string>
+    <string name="choice_8hours">8 hours</string>
     <string name="choice_untilQuit">until quit</string>
     <string name="choice_language_system">System default</string>
 

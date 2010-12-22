@@ -132,7 +132,10 @@
     <string name="choice_10mins">10 Min.</string>
     <string name="choice_20mins">20 Min.</string>
     <string name="choice_40mins">40 Min.</string>
-    <string name="choice_60mins">60 Min.</string>
+    <string name="choice_1hour">1 Std.</string>
+    <string name="choice_2hours">2 Std.</string>
+    <string name="choice_4hours">4 Std.</string>
+    <string name="choice_8hours">8 Std.</string>
     <string name="choice_untilQuit">Bis Programmende</string>
 
     <string name="dsa">DSA</string>
