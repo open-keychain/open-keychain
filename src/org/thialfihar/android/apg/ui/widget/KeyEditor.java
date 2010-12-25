@@ -141,8 +141,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         mAlgorithm.setText(Apg.getAlgorithmInfo(key));
-        String keyId1Str = Apg.getFingerPrint(key.getKeyID());
-        String keyId2Str = Apg.getFingerPrint(key.getKeyID() >> 32);
+        String keyId1Str = Apg.getSmallFingerPrint(key.getKeyID());
+        String keyId2Str = Apg.getSmallFingerPrint(key.getKeyID() >> 32);
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
         Vector<Choice> choices = new Vector<Choice>();

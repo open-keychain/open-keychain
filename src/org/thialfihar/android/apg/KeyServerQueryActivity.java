@@ -253,7 +253,7 @@ public class KeyServerQueryActivity extends BaseActivity {
                 mainUserId.setText(userId);
             }
 
-            keyId.setText(Apg.getFingerPrint(keyInfo.keyId));
+            keyId.setText(Apg.getSmallFingerPrint(keyInfo.keyId));
 
             if (mainUserIdRest.getText().length() == 0) {
                 mainUserIdRest.setVisibility(View.GONE);

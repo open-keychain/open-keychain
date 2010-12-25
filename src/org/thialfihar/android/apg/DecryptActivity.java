@@ -620,7 +620,7 @@ public class DecryptActivity extends BaseActivity {
         if (data.getBoolean(Apg.EXTRA_SIGNATURE)) {
             String userId = data.getString(Apg.EXTRA_SIGNATURE_USER_ID);
             mSignatureKeyId = data.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
-            mUserIdRest.setText("id: " + Apg.getFingerPrint(mSignatureKeyId));
+            mUserIdRest.setText("id: " + Apg.getSmallFingerPrint(mSignatureKeyId));
             if (userId == null) {
                 userId = getResources().getString(R.string.unknownUserId);
             }
@@ -727,7 +727,7 @@ public class DecryptActivity extends BaseActivity {
 
                 alert.setIcon(android.R.drawable.ic_dialog_alert);
                 alert.setTitle(R.string.title_unknownSignatureKey);
-                alert.setMessage(getString(R.string.lookupUnknownKey, Apg.getFingerPrint(mUnknownSignatureKeyId)));
+                alert.setMessage(getString(R.string.lookupUnknownKey, Apg.getSmallFingerPrint(mUnknownSignatureKeyId)));
 
                 alert.setPositiveButton(android.R.string.ok,
                                         new DialogInterface.OnClickListener() {

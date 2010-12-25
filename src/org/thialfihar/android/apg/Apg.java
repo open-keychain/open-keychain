@@ -1031,6 +1031,34 @@ public class Apg {
     }
 
     public static String getFingerPrint(long keyId) {
+        PGPPublicKey key = Apg.getPublicKey(keyId);
+        if (key == null) {
+            PGPSecretKey secretKey = Apg.getSecretKey(keyId);
+            if (secretKey == null) {
+                return "";
+            }
+            key = secretKey.getPublicKey();
+        }
+
+        String fingerPrint = "";
+        byte fp[] = key.getFingerprint();
+        for (int i = 0; i < fp.length; ++i) {
+            if (i != 0 && i % 10 == 0) {
+                fingerPrint += "  ";
+            } else if (i != 0 && i % 2 == 0) {
+                fingerPrint += " ";
+            }
+            String chunk = Integer.toHexString((((int)fp[i]) + 256) % 256).toUpperCase();
+            while (chunk.length() < 2) {
+                chunk = "0" + chunk;
+            }
+            fingerPrint += chunk;
+        }
+
+        return fingerPrint;
+    }
+
+    public static String getSmallFingerPrint(long keyId) {
         String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase();
         while (fingerPrint.length() < 8) {
             fingerPrint = "0" + fingerPrint;
@@ -1039,7 +1067,7 @@ public class Apg {
     }
 
     public static String keyToHex(long keyId) {
-        return getFingerPrint(keyId >> 32) + getFingerPrint(keyId);
+        return getSmallFingerPrint(keyId >> 32) + getSmallFingerPrint(keyId);
     }
 
     public static long keyFromHex(String data) {

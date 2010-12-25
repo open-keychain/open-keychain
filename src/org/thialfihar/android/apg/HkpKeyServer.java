@@ -149,7 +149,7 @@ public class HkpKeyServer extends KeyServer {
             info.size = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
             info.keyId = Apg.keyFromHex(matcher.group(3));
-            info.fingerPrint = Apg.getFingerPrint(info.keyId);
+            info.fingerPrint = Apg.getSmallFingerPrint(info.keyId);
             String chunks[] = matcher.group(4).split("-");
             info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
                                               Integer.parseInt(chunks[1]),

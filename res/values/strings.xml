@@ -139,6 +139,7 @@
     <string name="expired">expired</string>
     <string name="notValid">not valid</string>
     <string name="nKeyServers">%s key server(s)</string>
+    <string name="fingerprint">fingerprint</string>
 
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>

@@ -187,7 +187,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         }
 
         long masterKeyId = mCursor.getLong(1); // MASTER_KEY_ID
-        keyId.setText(Apg.getFingerPrint(masterKeyId));
+        keyId.setText(Apg.getSmallFingerPrint(masterKeyId));
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);

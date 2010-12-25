@@ -479,6 +479,7 @@ public class KeyListActivity extends BaseActivity {
         private class KeyChild {
             public static final int KEY = 0;
             public static final int USER_ID = 1;
+            public static final int FINGER_PRINT = 2;
 
             public int type;
             public String userId;
@@ -488,9 +489,11 @@ public class KeyListActivity extends BaseActivity {
             public int keySize;
             public boolean canSign;
             public boolean canEncrypt;
+            public String fingerPrint;
 
             public KeyChild(long keyId, boolean isMasterKey, int algorithm, int keySize,
                             boolean canSign, boolean canEncrypt) {
+                this.type = KEY;
                 this.keyId = keyId;
                 this.isMasterKey = isMasterKey;
                 this.algorithm = algorithm;
@@ -502,6 +505,11 @@ public class KeyListActivity extends BaseActivity {
             public KeyChild(String userId) {
                 type = USER_ID;
                 this.userId = userId;
+            }
+
+            public KeyChild(String fingerPrint, boolean isFingerPrint) {
+                type = FINGER_PRINT;
+                this.fingerPrint = fingerPrint;
             }
         }
 
@@ -604,18 +612,21 @@ public class KeyListActivity extends BaseActivity {
                     new String[] { mCursor.getString(0) },
                     null, null, Keys.RANK + " ASC");
 
-            long masterKeyId = -1;
+            int masterKeyId = -1;
+            long fingerPrintId = -1;
             for (int i = 0; i < c.getCount(); ++i) {
                 c.moveToPosition(i);
                 children.add(new KeyChild(c.getLong(1), c.getInt(2) == 1, c.getInt(3), c.getInt(4),
                                           c.getInt(5) == 1, c.getInt(6) == 1));
                 if (i == 0) {
                     masterKeyId = c.getInt(0);
+                    fingerPrintId = c.getLong(1);
                 }
             }
             c.close();
 
             if (masterKeyId != -1) {
+                children.insertElementAt(new KeyChild(Apg.getFingerPrint(fingerPrintId), true), 0);
                 c = mDatabase.query(UserIds.TABLE_NAME,
                          new String[] {
                              UserIds.USER_ID, // 0
@@ -725,7 +736,7 @@ public class KeyListActivity extends BaseActivity {
                     }
 
                     TextView keyId = (TextView) view.findViewById(R.id.keyId);
-                    String keyIdStr = Apg.getFingerPrint(child.keyId);
+                    String keyIdStr = Apg.getSmallFingerPrint(child.keyId);
                     keyId.setText(keyIdStr);
                     TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
                     String algorithmStr = Apg.getAlgorithmInfo(child.algorithm, child.keySize);
@@ -747,6 +758,14 @@ public class KeyListActivity extends BaseActivity {
                     view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
                     TextView userId = (TextView) view.findViewById(R.id.userId);
                     userId.setText(child.userId);
+                    break;
+                }
+
+                case KeyChild.FINGER_PRINT: {
+                    view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
+                    TextView userId = (TextView) view.findViewById(R.id.userId);
+                    userId.setText(getString(R.string.fingerprint) + ":\n" +
+                                   child.fingerPrint.replace("  ", "\n"));
                     break;
                 }
             }
