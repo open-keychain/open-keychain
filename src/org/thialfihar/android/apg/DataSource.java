@@ -24,6 +24,8 @@ public class DataSource {
 
     public void setUri(Uri uri) {
         mContentUri = uri;
+        mText = null;
+        mData = null;
     }
 
     public void setUri(String uri) {
@@ -37,11 +39,13 @@ public class DataSource {
     public void setText(String text) {
         mText = text;
         mData = null;
+        mContentUri = null;
     }
 
     public void setData(byte[] data) {
         mData = data;
         mText = null;
+        mContentUri = null;
     }
 
     public boolean isText() {
@@ -49,7 +53,7 @@ public class DataSource {
     }
 
     public boolean isBinary() {
-        return mData != null;
+        return mData != null || mContentUri != null;
     }
 
     public InputData getInputData(Context context, boolean withSize)
