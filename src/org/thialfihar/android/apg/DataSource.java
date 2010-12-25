@@ -36,10 +36,20 @@ public class DataSource {
 
     public void setText(String text) {
         mText = text;
+        mData = null;
     }
 
     public void setData(byte[] data) {
         mData = data;
+        mText = null;
+    }
+
+    public boolean isText() {
+        return mText != null;
+    }
+
+    public boolean isBinary() {
+        return mData != null;
     }
 
     public InputData getInputData(Context context, boolean withSize)

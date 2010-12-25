@@ -124,6 +124,7 @@
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
+                <action android:name="org.thialfihar.android.apg.intent.GENERATE_SIGNATURE" />
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>

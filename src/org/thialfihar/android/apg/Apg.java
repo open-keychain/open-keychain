@@ -118,6 +118,7 @@ public class Apg {
         public static final String IMPORT = "org.thialfihar.android.apg.intent.IMPORT";
         public static final String LOOK_UP_KEY_ID = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID";
         public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
+        public static final String GENERATE_SIGNATURE = "org.thialfihar.android.apg.intent.GENERATE_SIGNATURE";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -133,6 +134,8 @@ public class Apg {
     public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
     public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
+    public static final String EXTRA_SIGNATURE_DATA = "signatureData";
+    public static final String EXTRA_SIGNATURE_TEXT = "signatureText";
     public static final String EXTRA_USER_ID = "userId";
     public static final String EXTRA_USER_IDS = "userIds";
     public static final String EXTRA_KEY_ID = "keyId";
@@ -1426,6 +1429,127 @@ public class Apg {
         progress.setProgress(R.string.progress_done, 100, 100);
     }
 
+    public static void generateSignature(Context context,
+                                         InputData data, OutputStream outStream,
+                                         boolean armored, boolean binary,
+                                         long signatureKeyId, String signaturePassPhrase,
+                                         int hashAlgorithm,
+                                         boolean forceV3Signature,
+                                         ProgressDialogUpdater progress)
+            throws GeneralException, PGPException, IOException, NoSuchAlgorithmException,
+            SignatureException {
+        Security.addProvider(new BouncyCastleProvider());
+
+        ArmoredOutputStream armorOut = null;
+        OutputStream out = null;
+        if (armored) {
+            armorOut = new ArmoredOutputStream(outStream);
+            armorOut.setHeader("Version", getFullVersion(context));
+            out = armorOut;
+        } else {
+            out = outStream;
+        }
+
+        PGPSecretKey signingKey = null;
+        PGPSecretKeyRing signingKeyRing = null;
+        PGPPrivateKey signaturePrivateKey = null;
+
+        if (signatureKeyId == 0) {
+            throw new GeneralException(context.getString(R.string.error_noSignatureKey));
+        }
+
+        signingKeyRing = getSecretKeyRing(signatureKeyId);
+        signingKey = getSigningKey(signatureKeyId);
+        if (signingKey == null) {
+            throw new GeneralException(context.getString(R.string.error_signatureFailed));
+        }
+
+        if (signaturePassPhrase == null) {
+            throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
+        }
+        signaturePrivateKey =
+                signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
+                                             new BouncyCastleProvider());
+        if (signaturePrivateKey == null) {
+            throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
+        }
+        progress.setProgress(R.string.progress_preparingStreams, 0, 100);
+
+        progress.setProgress(R.string.progress_preparingSignature, 30, 100);
+
+        PGPSignatureGenerator signatureGenerator = null;
+        PGPV3SignatureGenerator signatureV3Generator = null;
+
+        int type = PGPSignature.CANONICAL_TEXT_DOCUMENT;
+        if (binary) {
+            type = PGPSignature.BINARY_DOCUMENT;
+        }
+
+        if (forceV3Signature) {
+            signatureV3Generator =
+                new PGPV3SignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                            hashAlgorithm,
+                                            new BouncyCastleProvider());
+            signatureV3Generator.initSign(type, signaturePrivateKey);
+        } else {
+            signatureGenerator =
+                    new PGPSignatureGenerator(signingKey.getPublicKey().getAlgorithm(),
+                                              hashAlgorithm,
+                                              new BouncyCastleProvider());
+            signatureGenerator.initSign(type, signaturePrivateKey);
+
+            PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+            String userId = getMainUserId(getMasterKey(signingKeyRing));
+            spGen.setSignerUserID(false, userId);
+            signatureGenerator.setHashedSubpackets(spGen.generate());
+        }
+
+        progress.setProgress(R.string.progress_signing, 40, 100);
+
+        InputStream inStream = data.getInputStream();
+        if (binary) {
+            byte[] buffer = new byte[1 << 16];
+            int n = 0;
+            while ((n = inStream.read(buffer)) > 0) {
+                if (forceV3Signature) {
+                    signatureV3Generator.update(buffer, 0, n);
+                } else {
+                    signatureGenerator.update(buffer, 0, n);
+                }
+            }
+        } else {
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
+            final byte[] newline = "\r\n".getBytes("UTF-8");
+
+            while (true) {
+                final String line = reader.readLine();
+
+                if (line == null) {
+                    break;
+                }
+
+                if (forceV3Signature) {
+                    processLine(line, null, signatureV3Generator);
+                    signatureV3Generator.update(newline);
+                } else {
+                    processLine(line, null, signatureGenerator);
+                    signatureGenerator.update(newline);
+                }
+            }
+        }
+
+        BCPGOutputStream bOut = new BCPGOutputStream(out);
+        if (forceV3Signature) {
+            signatureV3Generator.generate().encode(bOut);
+        } else {
+            signatureGenerator.generate().encode(bOut);
+        }
+        out.close();
+        outStream.close();
+
+        progress.setProgress(R.string.progress_done, 100, 100);
+    }
+
     public static long getDecryptionKeyId(Context context, InputData data)
             throws GeneralException, NoAsymmetricEncryptionException, IOException {
         InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
@@ -1867,7 +1991,9 @@ public class Apg {
 
         final byte[] data = pLine.substring(0, len).getBytes("UTF-8");
 
-        pArmoredOutput.write(data);
+        if (pArmoredOutput != null) {
+            pArmoredOutput.write(data);
+        }
         pSignatureGenerator.update(data);
     }
 
@@ -1892,7 +2018,9 @@ public class Apg {
 
         final byte[] data = pLine.substring(0, len).getBytes("UTF-8");
 
-        pArmoredOutput.write(data);
+        if (pArmoredOutput != null) {
+            pArmoredOutput.write(data);
+        }
         pSignatureGenerator.update(data);
     }
 

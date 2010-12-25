@@ -101,10 +101,14 @@ public class EncryptActivity extends BaseActivity {
     private DataSource mDataSource = null;
     private DataDestination mDataDestination = null;
 
+    private boolean mGenerateSignature = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encrypt);
+
+        mGenerateSignature = false;
 
         mSource = (ViewFlipper) findViewById(R.id.source);
         mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
@@ -271,15 +275,23 @@ public class EncryptActivity extends BaseActivity {
         mIntent = getIntent();
         if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
             Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction()) ||
-            Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+            Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction()) ||
+            Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
             mContentUri = mIntent.getData();
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
 
-            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction()) ||
+                Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 mReturnResult = true;
+            }
+
+            if (Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+                mGenerateSignature = true;
+                mOverrideAsciiArmour = true;
+                mAsciiArmourDemand = false;
             }
 
             if (extras.containsKey(Apg.EXTRA_ASCII_ARMOUR)) {
@@ -338,7 +350,8 @@ public class EncryptActivity extends BaseActivity {
             }
 
             if (Apg.Intent.ENCRYPT.equals(mIntent.getAction()) ||
-                Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+                Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction()) ||
+                Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 if (textData != null) {
                     mMessage.setText(textData);
                 }
@@ -660,7 +673,14 @@ public class EncryptActivity extends BaseActivity {
                 useAsciiArmour = mAsciiArmourDemand;
             }
 
-            if (signOnly) {
+            if (mGenerateSignature) {
+               Apg.generateSignature(this, in, out, useAsciiArmour, mDataSource.isBinary(),
+                                     getSecretKeyId(),
+                                     Apg.getCachedPassPhrase(getSecretKeyId()),
+                                     mPreferences.getDefaultHashAlgorithm(),
+                                     mPreferences.getForceV3Signatures(),
+                                     this);
+            } else if (signOnly) {
                 Apg.signText(this, in, out, getSecretKeyId(),
                              Apg.getCachedPassPhrase(getSecretKeyId()),
                              mPreferences.getDefaultHashAlgorithm(),
@@ -680,11 +700,19 @@ public class EncryptActivity extends BaseActivity {
             out.close();
             if (mEncryptTarget != Id.target.file) {
                 if (useAsciiArmour) {
-                    data.putString(Apg.EXTRA_ENCRYPTED_MESSAGE,
-                                   new String(((ByteArrayOutputStream)out).toByteArray()));
+                    String extraData = new String(((ByteArrayOutputStream)out).toByteArray());
+                    if (mGenerateSignature) {
+                        data.putString(Apg.EXTRA_SIGNATURE_TEXT, extraData);
+                    } else {
+                        data.putString(Apg.EXTRA_ENCRYPTED_MESSAGE, extraData);
+                    }
                 } else {
-                    data.putByteArray(Apg.EXTRA_ENCRYPTED_DATA,
-                                      ((ByteArrayOutputStream)out).toByteArray());
+                    byte extraData[] = ((ByteArrayOutputStream)out).toByteArray();
+                    if (mGenerateSignature) {
+                        data.putByteArray(Apg.EXTRA_SIGNATURE_DATA, extraData);
+                    } else {
+                        data.putByteArray(Apg.EXTRA_ENCRYPTED_DATA, extraData);
+                    }
                 }
             }
         } catch (IOException e) {
