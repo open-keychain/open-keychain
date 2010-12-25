@@ -328,7 +328,7 @@ public class DecryptActivity extends BaseActivity {
         updateSource();
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
-            (mMessage.getText().length() > 0 || mData != null)) {
+            (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
              mDecryptButton.performClick();
         }
     }
