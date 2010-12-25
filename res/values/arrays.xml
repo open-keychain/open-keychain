@@ -71,7 +71,7 @@
         <item>Magyar</item>
         <item>Malti</item>
         <item>Nederlands</item>
-        <item>Norsk</item>
+        <item>Norsk bokmål</item>
         <item>Pyccĸий</item>
         <item>Română</item>
         <item>Slovenčina</item>
@@ -148,7 +148,7 @@
         <item>hu</item>
         <item>mt</item>
         <item>nl</item>
-        <item>no</item>
+        <item>nb</item>
         <item>ru</item>
         <item>ro</item>
         <item>sk</item>
@@ -205,6 +205,7 @@
         <item>en</item>
         <item>es</item>
         <item>it</item>
+        <item>nb</item>
         <item>sl</item>
     </string-array>
 
