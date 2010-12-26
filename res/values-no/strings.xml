@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+cho<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -158,6 +158,10 @@
     <string name="choice_10mins">10 min</string>
     <string name="choice_20mins">20 min</string>
     <string name="choice_40mins">40 min</string>
+    <string name="choice_1hour">1 time</string>
+    <string name="choice_2hours">2 timer</string>
+    <string name="choice_4hours">4 timer</string>
+    <string name="choice_8hours">8 timer</string>
     <string name="choice_untilQuit">til avsluttning</string>
     <string name="choice_language_system">System </string>
 
