@@ -141,6 +141,7 @@
     <string name="expired">scaduto</string>
     <string name="notValid">non valido</string>
     <string name="nKeyServers">%s key server(s)</string>
+    <string name="fingerprint">fingerprint</string>
 
     <!-- choice_lowerCase: capitalized firwst word, no punctuation -->
     <string name="choice_none">Nessuno</string>
@@ -154,6 +155,10 @@
     <string name="choice_10mins">10 min</string>
     <string name="choice_20mins">20 min</string>
     <string name="choice_40mins">40 min</string>
+    <string name="choice_1hour">1 ora</string>
+    <string name="choice_2hours">2 ore</string>
+    <string name="choice_4hours">4 ore</string>
+    <string name="choice_8hours">8 ore</string>
     <string name="choice_untilQuit">tutta la sessione</string>
     <string name="choice_language_system">Default di sistema</string>
 
@@ -223,6 +228,7 @@
     <string name="error_noKnownEncryptionFound">non è stato trovato nessun tipo di crittazione valido</string>
     <string name="error_externalStorageNotReady">la scheda di memoria non è pronta o non è utilizzabile</string>
     <string name="error_accountNotFound">acconto \'%s\' non trovato</string>
+    <string name="error_accountReadingNotAllowed">accesso in lettura all'\account negato</string>
     <string name="error_addingAccountFailed">non è stato possibile aggiungere l\'acconto \'%s\'</string>
     <string name="error_invalidEmail">mail non valida \'%s\'</string>
     <string name="error_keySizeMinimum512bit">la dimensione della chiave deve essere almeno di 512bit</string>
