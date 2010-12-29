@@ -228,7 +228,7 @@
     <string name="error_noKnownEncryptionFound">non è stato trovato nessun tipo di crittazione valido</string>
     <string name="error_externalStorageNotReady">la scheda di memoria non è pronta o non è utilizzabile</string>
     <string name="error_accountNotFound">acconto \'%s\' non trovato</string>
-    <string name="error_accountReadingNotAllowed">accesso in lettura all'\account negato</string>
+    <string name="error_accountReadingNotAllowed">accesso in lettura all\'account negato</string>
     <string name="error_addingAccountFailed">non è stato possibile aggiungere l\'acconto \'%s\'</string>
     <string name="error_invalidEmail">mail non valida \'%s\'</string>
     <string name="error_keySizeMinimum512bit">la dimensione della chiave deve essere almeno di 512bit</string>
