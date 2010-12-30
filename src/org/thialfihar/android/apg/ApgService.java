@@ -21,8 +21,7 @@ public class ApgService extends Service {
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
         public String encrypt_with_passphrase(String msg, String passphrase) {
-            Preferences mPreferences = Preferences
-                    .getPreferences(getApplicationContext());
+            Preferences mPreferences = Preferences.getPreferences(getBaseContext(), true);
             InputStream inStream = new ByteArrayInputStream(msg.getBytes());
             InputData in = new InputData(inStream, 9999);
             OutputStream out = new ByteArrayOutputStream();
@@ -41,7 +40,8 @@ public class ApgService extends Service {
                         null, // progress
                         mPreferences.getDefaultEncryptionAlgorithm(),
                         mPreferences.getDefaultHashAlgorithm(),
-                        Id.choice.compression.none, false, // mPreferences.getForceV3Signatures(),
+                        Id.choice.compression.none, // compression
+                        false, // mPreferences.getForceV3Signatures(),
                         passphrase // passPhrase
                         );
             } catch (Exception e) {
