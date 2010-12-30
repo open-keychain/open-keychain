@@ -12,9 +12,13 @@ public class Preferences {
     private static Preferences mPreferences;
     private SharedPreferences mSharedPreferences;
 
-    public static synchronized Preferences getPreferences(Context context)
+    public static synchronized Preferences getPreferences(Context context) {
+        return getPreferences(context, false);
+    }
+    
+    public static synchronized Preferences getPreferences(Context context, boolean force_new)
     {
-        if (mPreferences == null) {
+        if (mPreferences == null || force_new) {
             mPreferences = new Preferences(context);
         }
         return mPreferences;
