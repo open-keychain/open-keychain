@@ -102,7 +102,6 @@ public class ApgCon {
     }
 
     public boolean call(String function, Map<retKey, Object> return_map, String... function_params) {
-        return_map.put(retKey.ERROR, null);
 
         if (!initialize()) {
             return_map.put(retKey.ERROR, error.CANNOT_BIND_TO_APG);
