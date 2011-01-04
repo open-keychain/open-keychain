@@ -4,6 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.content.Intent;
 import android.os.IBinder;
@@ -20,7 +24,10 @@ public class ApgService extends Service {
 
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
-        public String encrypt_with_passphrase(String msg, String passphrase) {
+        public String encrypt_with_passphrase(List<String> args) {
+            String msg = args.remove(0);
+            String passphrase = args.remove(0);
+
             Preferences mPreferences = Preferences.getPreferences(getBaseContext(), true);
             InputStream inStream = new ByteArrayInputStream(msg.getBytes());
             InputData in = new InputData(inStream, 9999);
@@ -29,17 +36,16 @@ public class ApgService extends Service {
 
             Apg.initialize(getApplicationContext());
             try {
-                Apg.encrypt(
-                        getApplicationContext(),
-                        in,
-                        out,
+                Apg.encrypt(getApplicationContext(), // context
+                        in, // input stream
+                        out, // output stream
                         true, // armored
                         enc_keys, // encryption keys
                         0, // signature key
                         null, // signature passphrase
                         null, // progress
-                        mPreferences.getDefaultEncryptionAlgorithm(),
-                        mPreferences.getDefaultHashAlgorithm(),
+                        mPreferences.getDefaultEncryptionAlgorithm(), // encryption
+                        mPreferences.getDefaultHashAlgorithm(), // hash
                         Id.choice.compression.none, // compression
                         false, // mPreferences.getForceV3Signatures(),
                         passphrase // passPhrase
@@ -53,12 +59,13 @@ public class ApgService extends Service {
             return out.toString();
         }
 
-        public String decrypt_with_passphrase(String encrypted_msg,
-                String passphrase) {
-            InputStream inStream = new ByteArrayInputStream(encrypted_msg
-                    .getBytes());
+        public String decrypt_with_passphrase(List<String> args) {
+            String encrypted_msg = args.remove(0);
+            String passphrase = args.remove(0);
+
+            InputStream inStream = new ByteArrayInputStream(encrypted_msg.getBytes());
             InputData in = new InputData(inStream, 9999); // XXX what size in
-                                                          // second parameter?
+            // second parameter?
             OutputStream out = new ByteArrayOutputStream();
             try {
                 Apg.decrypt(getApplicationContext(), in, out, passphrase, null, // progress
