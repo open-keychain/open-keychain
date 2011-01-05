@@ -4,12 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,11 +21,45 @@ public class ApgService extends Service {
         return mBinder;
     }
 
+    private enum error {
+        ARGUMENTS_MISSING,
+        APG_FAILURE
+    }
+
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
-        public String encrypt_with_passphrase(List<String> args) {
-            String msg = args.remove(0);
-            String passphrase = args.remove(0);
+        public boolean encrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
+            ArrayList<String> errors = new ArrayList<String>();
+            ArrayList<String> warnings = new ArrayList<String>();
+
+            pReturn.putStringArrayList("ERRORS", errors);
+            pReturn.putStringArrayList("WARNINGS", warnings);
+
+            String msg = pArgs.getString("MSG");
+            pArgs.remove("MSG");
+
+            String passphrase = pArgs.getString("SYM_KEY");
+            pArgs.remove("SYM_KEY");
+
+            if (msg == null) {
+                errors.add("Message to encrypt (MSG) missing");
+            }
+
+            if (passphrase == null) {
+                errors.add("Symmetric key (SYM_KEY) missing");
+            }
+
+            if (!pArgs.isEmpty()) {
+                Iterator<String> iter = pArgs.keySet().iterator();
+                while (iter.hasNext()) {
+                    warnings.add("Unknown key: " + iter.next());
+                }
+            }
+
+            if (errors.size() != 0) {
+                pReturn.putInt("ERROR", error.ARGUMENTS_MISSING.ordinal());
+                return false;
+            }
 
             Preferences mPreferences = Preferences.getPreferences(getBaseContext(), true);
             InputStream inStream = new ByteArrayInputStream(msg.getBytes());
@@ -52,16 +85,50 @@ public class ApgService extends Service {
                         );
             } catch (Exception e) {
                 Log.d(TAG, "Exception in encrypt");
-                e.printStackTrace();
-                return null;
+                errors.add("Internal failure in APG when encrypting: " + e.getMessage());
+
+                pReturn.putInt("ERROR", error.APG_FAILURE.ordinal());
+                return false;
             }
+
             Log.d(TAG, "Encrypted");
-            return out.toString();
+            pReturn.putString("RESULT", out.toString());
+            return true;
         }
 
-        public String decrypt_with_passphrase(List<String> args) {
-            String encrypted_msg = args.remove(0);
-            String passphrase = args.remove(0);
+        public boolean decrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
+            ArrayList<String> errors = new ArrayList<String>();
+            ArrayList<String> warnings = new ArrayList<String>();
+
+            pReturn.putStringArrayList("ERRORS", errors);
+            pReturn.putStringArrayList("WARNINGS", warnings);
+
+            String encrypted_msg = pArgs.getString("MSG");
+            pArgs.remove("MSG");
+            
+            String passphrase = pArgs.getString("SYM_KEY");
+            pArgs.remove("SYM_KEY");
+
+            if (encrypted_msg == null) {
+                errors.add("Message to decrypt (MSG) missing");
+            }
+
+            if (passphrase == null) {
+                errors.add("Symmetric key (SYM_KEY) missing");
+            }
+
+            if (!pArgs.isEmpty()) {
+                Iterator<String> iter = pArgs.keySet().iterator();
+                while (iter.hasNext()) {
+                    warnings.add("Unknown key: " + iter.next());
+                }
+            }
+
+            if (errors.size() != 0) {
+                pReturn.putStringArrayList("ERROR", errors);
+                pReturn.putInt("ERROR", error.ARGUMENTS_MISSING.ordinal());
+                return false;
+            }
 
             InputStream inStream = new ByteArrayInputStream(encrypted_msg.getBytes());
             InputData in = new InputData(inStream, 9999); // XXX what size in
@@ -73,11 +140,15 @@ public class ApgService extends Service {
                         );
             } catch (Exception e) {
                 Log.d(TAG, "Exception in decrypt");
-                e.printStackTrace();
-                return null;
+                errors.add("Internal failure in APG when decrypting: " + e.getMessage());
+
+                pReturn.putInt("ERROR", error.APG_FAILURE.ordinal());
+                pReturn.putStringArrayList("ERROR", errors);
+                return false;
             }
 
-            return out.toString();
+            pReturn.putString("RESULT", out.toString());
+            return true;
         }
     };
 }

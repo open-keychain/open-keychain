@@ -1,14 +1,14 @@
 package org.thialfihar.android.apg.utils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.thialfihar.android.apg.IApgService;
@@ -25,6 +25,11 @@ public class ApgCon {
 
     private final Context mContext;
 
+    private Bundle result = new Bundle();
+    private Bundle args = new Bundle();
+    private ArrayList<String> error_list = new ArrayList<String>();
+    private ArrayList<String> warning_list = new ArrayList<String>();
+
     /** Remote service for decrypting and encrypting data */
     private IApgService apgService = null;
 
@@ -40,13 +45,6 @@ public class ApgCon {
             apgService = null;
         }
     };
-
-    /** Possible fields which are returned to the application */
-    public static enum retKey {
-        ERROR, // error enum, see below
-        ERROR_DESC, // human readable description
-        RESULT, // if everything went fine, result
-    }
 
     public static enum error {
         GENERIC, // no special type
@@ -101,35 +99,78 @@ public class ApgCon {
         return true;
     }
 
-    public boolean call(String function, Map<retKey, Object> return_map, String... function_params) {
+    public boolean call(String function) {
+        return this.call(function, args, result);
+    }
+
+    public boolean call(String function, Bundle pArgs) {
+        return this.call(function, pArgs, result);
+    }
+
+    public boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
         if (!initialize()) {
-            return_map.put(retKey.ERROR, error.CANNOT_BIND_TO_APG);
+            error_list.add("CLASS: Cannot bind to ApgService");
+            pReturn.putInt("CLASS_ERROR", error.CANNOT_BIND_TO_APG.ordinal());
             return false;
         }
 
         if (function == null || function.length() == 0) {
-            return_map.put(retKey.ERROR, error.CALL_MISSING);
+            error_list.add("CLASS: Function to call missing");
+            pReturn.putInt("CLASS_ERROR", error.CALL_MISSING.ordinal());
             return false;
         }
 
         try {
-            List<String> params_list = Arrays.asList(function_params);
-            return_map.put(retKey.RESULT, IApgService.class.getMethod(function, List.class).invoke(apgService, params_list));
+            Boolean ret = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(apgService, pArgs, pReturn);
+            error_list = new ArrayList<String>(pReturn.getStringArrayList("ERRORS"));
+            warning_list = new ArrayList<String>(pReturn.getStringArrayList("WARNINGS"));
+            return ret;
         } catch (NoSuchMethodException e) {
             Log.d(TAG, e.getMessage());
-            return_map.put(retKey.ERROR, error.CALL_NOT_KNOWN);
-            return_map.put(retKey.ERROR_DESC, e.getMessage());
+            error_list.add("CLASS: " + e.getMessage());
+            pReturn.putInt("CLASS_ERROR", error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (Exception e) {
             Log.d(TAG, e.getMessage());
-            return_map.put(retKey.ERROR, error.GENERIC);
-            return_map.put(retKey.ERROR_DESC, e.getMessage());
+            error_list.add("CLASS: " + e.getMessage());
+            pReturn.putInt("CLASS_ERROR", error.GENERIC.ordinal());
             return false;
         }
 
-        return true;
+    }
 
+    public void set_arg(String key, String val) {
+        args.putString(key, val);
+    }
+    
+    public void set_arg(String key, boolean val) {
+        args.putBoolean(key, val);
+    }
+
+    public Object get_arg(String key) {
+        return args.get(key);
+    }
+
+    public String get_next_error() {
+        String bla = "abc";
+        return error_list.remove(0);
+    }
+
+    public boolean has_next_error() {
+        return error_list.size() != 0;
+    }
+
+    public String get_next_warning() {
+        return warning_list.remove(0);
+    }
+
+    public boolean has_next_warning() {
+        return warning_list.size() != 0;
+    }
+
+    public String get_result() {
+        return result.getString("RESULT");
     }
 
     private void disconnect() {
