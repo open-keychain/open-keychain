@@ -50,9 +50,9 @@ public class ApgService extends Service {
             }
 
             if (!pArgs.isEmpty()) {
-                Iterator<String> iter = pArgs.keySet().iterator();
-                while (iter.hasNext()) {
-                    warnings.add("Unknown key: " + iter.next());
+                Iterator<String> _iter = pArgs.keySet().iterator();
+                while (_iter.hasNext()) {
+                    warnings.add("Unknown key: " + _iter.next());
                 }
             }
 
@@ -61,24 +61,24 @@ public class ApgService extends Service {
                 return false;
             }
 
-            Preferences mPreferences = Preferences.getPreferences(getBaseContext(), true);
-            InputStream inStream = new ByteArrayInputStream(msg.getBytes());
-            InputData in = new InputData(inStream, 9999);
-            OutputStream out = new ByteArrayOutputStream();
-            long enc_keys[] = {};
+            Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
+            InputStream _inStream = new ByteArrayInputStream(msg.getBytes());
+            InputData _in = new InputData(_inStream, 9999);
+            OutputStream _out = new ByteArrayOutputStream();
+            long _enc_keys[] = {};
 
             Apg.initialize(getApplicationContext());
             try {
                 Apg.encrypt(getApplicationContext(), // context
-                        in, // input stream
-                        out, // output stream
+                        _in, // input stream
+                        _out, // output stream
                         true, // armored
-                        enc_keys, // encryption keys
+                        _enc_keys, // encryption keys
                         0, // signature key
                         null, // signature passphrase
                         null, // progress
-                        mPreferences.getDefaultEncryptionAlgorithm(), // encryption
-                        mPreferences.getDefaultHashAlgorithm(), // hash
+                        _mPreferences.getDefaultEncryptionAlgorithm(), // encryption
+                        _mPreferences.getDefaultHashAlgorithm(), // hash
                         Id.choice.compression.none, // compression
                         false, // mPreferences.getForceV3Signatures(),
                         passphrase // passPhrase
@@ -92,7 +92,7 @@ public class ApgService extends Service {
             }
 
             Log.d(TAG, "Encrypted");
-            pReturn.putString("RESULT", out.toString());
+            pReturn.putString("RESULT", _out.toString());
             return true;
         }
 
@@ -105,7 +105,7 @@ public class ApgService extends Service {
 
             String encrypted_msg = pArgs.getString("MSG");
             pArgs.remove("MSG");
-            
+
             String passphrase = pArgs.getString("SYM_KEY");
             pArgs.remove("SYM_KEY");
 
