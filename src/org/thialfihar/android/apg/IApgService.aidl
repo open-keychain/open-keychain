@@ -14,11 +14,16 @@ interface IApgService {
      * Bundle params:
      *   (optional/required) TYPE "STRING KEY" = EXPLANATION
      *
-     *   (required) String "MSG"      = Message to encrypt
-     *   (required) String "SYM_KEY"  = Symmetric key to use
+     *   (required) String  "MSG"             = Message to encrypt
+     *   (required) String  "SYM_KEY"         = Symmetric key to use
+     *   (optional) int     "ENCRYPTION_ALGO" = Encryption Algorithm
+     *   (optional) int     "HASH_ALGO"       = Hash Algorithm
+     *   (optional) Boolean "ARMORED"         = Armor output
+     *   (optional) Boolean "FORCE_V3_SIG"    = Force V3 Signatures
+     *   (optional) int     "COMPRESSION"     = Compression to use
      *
      * Bundle return_vals (in addition to the ERRORS/WARNINGS above):
-     *   String "RESULT"              = Encrypted MSG
+     *              String  "RESULT"          = Encrypted MSG
      */
     boolean encrypt_with_passphrase(in Bundle params, out Bundle return_vals);
 
