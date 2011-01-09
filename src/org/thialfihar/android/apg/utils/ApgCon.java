@@ -149,6 +149,14 @@ public class ApgCon {
     public void set_arg(String key, boolean val) {
         args.putBoolean(key, val);
     }
+    
+    public void set_arg(String key, int val) {
+        args.putInt(key, val);
+    }
+    
+    public void clear_args() {
+        args.clear();
+    }
 
     public Object get_arg(String key) {
         return args.get(key);
