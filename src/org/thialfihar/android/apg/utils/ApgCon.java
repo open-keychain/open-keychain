@@ -8,7 +8,6 @@ import android.content.ServiceConnection;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
 
 import org.thialfihar.android.apg.IApgService;
