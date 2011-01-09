@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import android.content.Intent;
@@ -13,7 +14,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class ApgService extends Service {
-    static String TAG = "ApgService";
+    final static String TAG = "ApgService";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -26,21 +27,89 @@ public class ApgService extends Service {
         APG_FAILURE
     }
 
+    /** a map from ApgService parameters to function calls to get the default */
+    static final HashMap<String, String> FUNCTIONS_DEFAULTS = new HashMap<String, String>();
+    static {
+        FUNCTIONS_DEFAULTS.put("ENCRYPTION_ALGO", "getDefaultEncryptionAlgorithm");
+        FUNCTIONS_DEFAULTS.put("HASH_ALGO", "getDefaultHashAlgorithm");
+        FUNCTIONS_DEFAULTS.put("ARMORED", "getDefaultAsciiArmour");
+        FUNCTIONS_DEFAULTS.put("FORCE_V3_SIG", "getForceV3Signatures");
+        FUNCTIONS_DEFAULTS.put("COMPRESSION", "getDefaultMessageCompression");
+    }
+
+    /**
+     * Add default arguments if missing
+     * 
+     * @param args
+     *            the bundle to add default parameters to if missing
+     * 
+     */
+    private void add_defaults(Bundle args) {
+        Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
+
+        Iterator<String> _iter = FUNCTIONS_DEFAULTS.keySet().iterator();
+        while (_iter.hasNext()) {
+            String _current_key = _iter.next();
+            if (!args.containsKey(_current_key)) {
+                String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_key);
+                try {
+                    @SuppressWarnings("unchecked")
+                    Class _ret_type = Preferences.class.getMethod(_current_function_name).getReturnType();
+                    if (_ret_type == String.class) {
+                        args.putString(_current_key, (String) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                    } else if (_ret_type == boolean.class) {
+                        args.putBoolean(_current_key, (Boolean) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                    } else if (_ret_type == int.class) {
+                        args.putInt(_current_key, (Integer) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                    } else {
+                        Log.e(TAG, "Unknown return type " + _ret_type.toString() + " for default option");
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in add_defaults " + e.getMessage());
+                }
+            }
+        }
+    }
+
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
         public boolean encrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
+
             ArrayList<String> errors = new ArrayList<String>();
             ArrayList<String> warnings = new ArrayList<String>();
 
             pReturn.putStringArrayList("ERRORS", errors);
             pReturn.putStringArrayList("WARNINGS", warnings);
 
-            String msg = pArgs.getString("MSG");
-            pArgs.remove("MSG");
+            Bundle _my_args = new Bundle(pArgs);
 
-            String passphrase = pArgs.getString("SYM_KEY");
-            pArgs.remove("SYM_KEY");
+            /* add default values if missing */
+            add_defaults(_my_args);
 
+            /* required args */
+            String msg = _my_args.getString("MSG");
+            _my_args.remove("MSG");
+
+            String passphrase = _my_args.getString("SYM_KEY");
+            _my_args.remove("SYM_KEY");
+
+            /* optional args */
+            Boolean armored = _my_args.getBoolean("ARMORED");
+            _my_args.remove("ARMORED");
+
+            int encryption_algorithm = _my_args.getInt("ENCRYPTION_ALGO");
+            _my_args.remove("ENCRYPTION_ALGO");
+
+            int hash_algorithm = _my_args.getInt("HASH_ALGO");
+            _my_args.remove("HASH_ALGO");
+
+            int compression = _my_args.getInt("COMPRESSION");
+            _my_args.remove("COMPRESSION");
+
+            Boolean force_v3_signatures = _my_args.getBoolean("FORCE_V3_SIG");
+            _my_args.remove("FORCE_V3_SIG");
+
+            /* check required args */
             if (msg == null) {
                 errors.add("Message to encrypt (MSG) missing");
             }
@@ -49,38 +118,38 @@ public class ApgService extends Service {
                 errors.add("Symmetric key (SYM_KEY) missing");
             }
 
-            if (!pArgs.isEmpty()) {
-                Iterator<String> _iter = pArgs.keySet().iterator();
+            /* check for unknown args and add to warning */
+            if (!_my_args.isEmpty()) {
+                Iterator<String> _iter = _my_args.keySet().iterator();
                 while (_iter.hasNext()) {
                     warnings.add("Unknown key: " + _iter.next());
                 }
             }
 
+            /* return if errors happened */
             if (errors.size() != 0) {
                 pReturn.putInt("ERROR", error.ARGUMENTS_MISSING.ordinal());
                 return false;
             }
 
-            Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
             InputStream _inStream = new ByteArrayInputStream(msg.getBytes());
             InputData _in = new InputData(_inStream, 9999);
             OutputStream _out = new ByteArrayOutputStream();
-            long _enc_keys[] = {};
 
             Apg.initialize(getApplicationContext());
             try {
                 Apg.encrypt(getApplicationContext(), // context
                         _in, // input stream
                         _out, // output stream
-                        true, // armored
-                        _enc_keys, // encryption keys
+                        armored, // armored
+                        new long[0], // encryption keys
                         0, // signature key
                         null, // signature passphrase
                         null, // progress
-                        _mPreferences.getDefaultEncryptionAlgorithm(), // encryption
-                        _mPreferences.getDefaultHashAlgorithm(), // hash
-                        Id.choice.compression.none, // compression
-                        false, // mPreferences.getForceV3Signatures(),
+                        encryption_algorithm, // encryption
+                        hash_algorithm, // hash
+                        compression, // compression
+                        force_v3_signatures, // mPreferences.getForceV3Signatures(),
                         passphrase // passPhrase
                         );
             } catch (Exception e) {
