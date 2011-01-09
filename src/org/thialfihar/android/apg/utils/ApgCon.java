@@ -20,14 +20,14 @@ import org.thialfihar.android.apg.IApgService;
  */
 public class ApgCon {
 
-    private String TAG = "ApgCon";
+    private final static String TAG = "ApgCon";
 
     private final Context mContext;
 
-    private Bundle result = new Bundle();
-    private Bundle args = new Bundle();
-    private ArrayList<String> error_list = new ArrayList<String>();
-    private ArrayList<String> warning_list = new ArrayList<String>();
+    private final Bundle result = new Bundle();
+    private final Bundle args = new Bundle();
+    private final ArrayList<String> error_list = new ArrayList<String>();
+    private final ArrayList<String> warning_list = new ArrayList<String>();
 
     /** Remote service for decrypting and encrypting data */
     private IApgService apgService = null;
@@ -108,6 +108,9 @@ public class ApgCon {
 
     public boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
+        error_list.clear();
+        warning_list.clear();
+
         if (!initialize()) {
             error_list.add("CLASS: Cannot bind to ApgService");
             pReturn.putInt("CLASS_ERROR", error.CANNOT_BIND_TO_APG.ordinal());
@@ -122,8 +125,8 @@ public class ApgCon {
 
         try {
             Boolean ret = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(apgService, pArgs, pReturn);
-            error_list = new ArrayList<String>(pReturn.getStringArrayList("ERRORS"));
-            warning_list = new ArrayList<String>(pReturn.getStringArrayList("WARNINGS"));
+            error_list.addAll(pReturn.getStringArrayList("ERRORS"));
+            warning_list.addAll(pReturn.getStringArrayList("WARNINGS"));
             return ret;
         } catch (NoSuchMethodException e) {
             Log.d(TAG, e.getMessage());
@@ -142,7 +145,7 @@ public class ApgCon {
     public void set_arg(String key, String val) {
         args.putString(key, val);
     }
-    
+
     public void set_arg(String key, boolean val) {
         args.putBoolean(key, val);
     }
@@ -152,7 +155,10 @@ public class ApgCon {
     }
 
     public String get_next_error() {
-        return error_list.remove(0);
+        if (error_list.size() != 0)
+            return error_list.remove(0);
+        else
+            return null;
     }
 
     public boolean has_next_error() {
@@ -160,7 +166,10 @@ public class ApgCon {
     }
 
     public String get_next_warning() {
-        return warning_list.remove(0);
+        if (warning_list.size() != 0)
+            return warning_list.remove(0);
+        else
+            return null;
     }
 
     public boolean has_next_warning() {
