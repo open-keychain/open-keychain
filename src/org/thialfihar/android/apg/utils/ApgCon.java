@@ -153,7 +153,6 @@ public class ApgCon {
     }
 
     public String get_next_error() {
-        String bla = "abc";
         return error_list.remove(0);
     }
 
