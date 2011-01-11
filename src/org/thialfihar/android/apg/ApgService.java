@@ -205,7 +205,10 @@ public class ApgService extends Service {
         while (_iter.hasNext()) {
             String _cur_key = _iter.next();
             try {
-                arg.valueOf(_cur_key);
+                arg _cur_arg = arg.valueOf(_cur_key);
+                if( !all_args.contains(_cur_arg)) {
+                    pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
+                }
             } catch (Exception e) {
                 pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
             }
