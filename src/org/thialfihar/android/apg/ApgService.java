@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +38,34 @@ public class ApgService extends Service {
         FUNCTIONS_DEFAULTS.put("COMPRESSION", "getDefaultMessageCompression");
     }
 
+    /** a map the default functions to their return types */
+    static final HashMap<String, Class> FUNCTIONS_DEFAULTS_TYPES = new HashMap<String, Class>();
+    static {
+        try {
+            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultEncryptionAlgorithm", Preferences.class.getMethod("getDefaultEncryptionAlgorithm").getReturnType());
+            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultHashAlgorithm", Preferences.class.getMethod("getDefaultHashAlgorithm").getReturnType());
+            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultAsciiArmour", Preferences.class.getMethod("getDefaultAsciiArmour").getReturnType());
+            FUNCTIONS_DEFAULTS_TYPES.put("getForceV3Signatures", Preferences.class.getMethod("getForceV3Signatures").getReturnType());
+            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultMessageCompression", Preferences.class.getMethod("getDefaultMessageCompression").getReturnType());
+        } catch (Exception e) {
+            Log.e(TAG, "Function default exception: " + e.getMessage());
+        }
+    }
+
+    /** a map the default function names to their method */
+    static final HashMap<String, Method> FUNCTIONS_DEFAULTS_METHODS = new HashMap<String, Method>();
+    static {
+        try {
+            FUNCTIONS_DEFAULTS_METHODS.put("getDefaultEncryptionAlgorithm", Preferences.class.getMethod("getDefaultEncryptionAlgorithm"));
+            FUNCTIONS_DEFAULTS_METHODS.put("getDefaultHashAlgorithm", Preferences.class.getMethod("getDefaultHashAlgorithm"));
+            FUNCTIONS_DEFAULTS_METHODS.put("getDefaultAsciiArmour", Preferences.class.getMethod("getDefaultAsciiArmour"));
+            FUNCTIONS_DEFAULTS_METHODS.put("getForceV3Signatures", Preferences.class.getMethod("getForceV3Signatures"));
+            FUNCTIONS_DEFAULTS_METHODS.put("getDefaultMessageCompression", Preferences.class.getMethod("getDefaultMessageCompression"));
+        } catch (Exception e) {
+            Log.e(TAG, "Function method exception: " + e.getMessage());
+        }
+    }
+
     /**
      * Add default arguments if missing
      * 
@@ -54,13 +83,13 @@ public class ApgService extends Service {
                 String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_key);
                 try {
                     @SuppressWarnings("unchecked")
-                    Class _ret_type = Preferences.class.getMethod(_current_function_name).getReturnType();
+                    Class _ret_type = FUNCTIONS_DEFAULTS_TYPES.get(_current_function_name);
                     if (_ret_type == String.class) {
-                        args.putString(_current_key, (String) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                        args.putString(_current_key, (String) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
                     } else if (_ret_type == boolean.class) {
-                        args.putBoolean(_current_key, (Boolean) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                        args.putBoolean(_current_key, (Boolean) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
                     } else if (_ret_type == int.class) {
-                        args.putInt(_current_key, (Integer) Preferences.class.getMethod(_current_function_name).invoke(_mPreferences));
+                        args.putInt(_current_key, (Integer) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
                     } else {
                         Log.e(TAG, "Unknown return type " + _ret_type.toString() + " for default option");
                     }
@@ -133,7 +162,8 @@ public class ApgService extends Service {
             }
 
             InputStream _inStream = new ByteArrayInputStream(msg.getBytes());
-            InputData _in = new InputData(_inStream, 9999);
+            InputData _in = new InputData(_inStream, 0); // XXX Size second
+            // param?
             OutputStream _out = new ByteArrayOutputStream();
 
             Apg.initialize(getApplicationContext());
@@ -200,7 +230,7 @@ public class ApgService extends Service {
             }
 
             InputStream inStream = new ByteArrayInputStream(encrypted_msg.getBytes());
-            InputData in = new InputData(inStream, 9999); // XXX what size in
+            InputData in = new InputData(inStream, 0); // XXX what size in
             // second parameter?
             OutputStream out = new ByteArrayOutputStream();
             try {
