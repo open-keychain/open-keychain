@@ -134,7 +134,7 @@ public class ApgCon {
             pReturn.putInt("CLASS_ERROR", error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (Exception e) {
-            Log.d(TAG, e.getMessage());
+            Log.d(TAG, ""+e.getMessage());
             error_list.add("CLASS: " + e.getMessage());
             pReturn.putInt("CLASS_ERROR", error.GENERIC.ordinal());
             return false;
