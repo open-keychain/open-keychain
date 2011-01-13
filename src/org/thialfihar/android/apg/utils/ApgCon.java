@@ -53,35 +53,34 @@ public class ApgCon {
     }
 
     public ApgCon(Context ctx) {
-        Log.d(TAG, "EncryptionService created");
+        Log.v(TAG, "EncryptionService created");
         mContext = ctx;
     }
 
     /** try to connect to the apg service */
     private boolean connect() {
-        Log.d(TAG, "trying to bind the apgService to context");
+        Log.v(TAG, "trying to bind the apgService to context");
 
         if (apgService != null) {
-            Log.d(TAG, "allready connected");
+            Log.v(TAG, "allready connected");
             return true;
         }
 
         try {
             mContext.bindService(new Intent(IApgService.class.getName()), apgConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
-            Log.d(TAG, "could not bind APG service");
+            Log.v(TAG, "could not bind APG service");
             return false;
         }
 
         int wait_count = 0;
         while (apgService == null && wait_count++ < 15) {
-            Log.d(TAG, "sleeping 1 second to wait for apg");
+            Log.v(TAG, "sleeping 1 second to wait for apg");
             android.os.SystemClock.sleep(1000);
         }
-        ;
 
         if (wait_count >= 15) {
-            Log.d(TAG, "slept waiting for nothing!");
+            Log.v(TAG, "slept waiting for nothing!");
             return false;
         }
 
@@ -91,7 +90,7 @@ public class ApgCon {
     private boolean initialize() {
         if (apgService == null) {
             if (!connect()) {
-                Log.d(TAG, "connection to apg service failed");
+                Log.v(TAG, "connection to apg service failed");
                 return false;
             }
         }
@@ -129,12 +128,12 @@ public class ApgCon {
             warning_list.addAll(pReturn.getStringArrayList("WARNINGS"));
             return ret;
         } catch (NoSuchMethodException e) {
-            Log.d(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
             error_list.add("CLASS: " + e.getMessage());
             pReturn.putInt("CLASS_ERROR", error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (Exception e) {
-            Log.d(TAG, ""+e.getMessage());
+            Log.e(TAG, "" + e.getMessage());
             error_list.add("CLASS: " + e.getMessage());
             pReturn.putInt("CLASS_ERROR", error.GENERIC.ordinal());
             return false;
@@ -146,14 +145,30 @@ public class ApgCon {
         args.putString(key, val);
     }
 
+    public void set_arg(String key, String vals[]) {
+        ArrayList<String> list = new ArrayList<String>();
+        for (String val : vals) {
+            list.add(val);
+        }
+        args.putStringArrayList(key, list);
+    }
+
     public void set_arg(String key, boolean val) {
         args.putBoolean(key, val);
     }
-    
+
     public void set_arg(String key, int val) {
         args.putInt(key, val);
     }
-    
+
+    public void set_arg(String key, int vals[]) {
+        ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int val : vals) {
+            list.add(val);
+        }
+        args.putIntegerArrayList(key, list);
+    }
+
     public void clear_args() {
         args.clear();
     }
@@ -188,8 +203,22 @@ public class ApgCon {
         return result.getString("RESULT");
     }
 
-    private void disconnect() {
-        Log.d(TAG, "disconnecting apgService");
+    public void clear_errors() {
+        error_list.clear();
+    }
+
+    public void clear_warnings() {
+        warning_list.clear();
+    }
+
+    public void reset() {
+        clear_errors();
+        clear_warnings();
+        clear_args();
+    }
+
+    public void disconnect() {
+        Log.v(TAG, "disconnecting apgService");
         if (apgService != null) {
             mContext.unbindService(apgConnection);
             apgService = null;
