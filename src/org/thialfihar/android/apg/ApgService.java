@@ -6,12 +6,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.thialfihar.android.apg.provider.KeyRings;
+import org.thialfihar.android.apg.provider.Keys;
+import org.thialfihar.android.apg.provider.UserIds;
+
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -28,7 +35,8 @@ public class ApgService extends Service {
     /** error status */
     private enum error {
         ARGUMENTS_MISSING,
-        APG_FAILURE
+        APG_FAILURE,
+        NO_MATCHING_SECRET_KEY
     }
 
     /** all arguments that can be passed by calling application */
@@ -46,10 +54,11 @@ public class ApgService extends Service {
 
     /** all things that might be returned */
     private enum ret {
-        ERRORS,
-        WARNINGS,
-        ERROR,
+        ERRORS, // string array list with errors
+        WARNINGS, // string array list with warnings
+        ERROR, // numeric error
         RESULT
+        // en-/decrypted test
     }
 
     /** required arguments for each AIDL function */
@@ -59,12 +68,16 @@ public class ApgService extends Service {
         args.add(arg.SYM_KEY);
         args.add(arg.MSG);
         FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_passphrase", args);
-        FUNCTIONS_REQUIRED_ARGS.put("decrypt_with_passphrase", args);
 
         args = new HashSet<arg>();
         args.add(arg.PUBLIC_KEYS);
         args.add(arg.MSG);
         FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_public_key", args);
+
+        args = new HashSet<arg>();
+        args.add(arg.MSG);
+        FUNCTIONS_REQUIRED_ARGS.put("decrypt", args);
+
     }
 
     /** optional arguments for each AIDL function */
@@ -78,7 +91,11 @@ public class ApgService extends Service {
         args.add(arg.COMPRESSION);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_passphrase", args);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_public_key", args);
-        FUNCTIONS_OPTIONAL_ARGS.put("decrypt_with_passphrase", args);
+
+        args = new HashSet<arg>();
+        args.add(arg.SYM_KEY);
+        args.add(arg.PUBLIC_KEYS);
+        FUNCTIONS_OPTIONAL_ARGS.put("decrypt", args);
     }
 
     /** a map from ApgService parameters to function calls to get the default */
@@ -120,20 +137,70 @@ public class ApgService extends Service {
     }
 
     /**
+     * maps fingerprints or user ids of keys to master keys in database
+     * 
+     * @param search_keys
+     *            a list of keys (fingerprints or user ids) to look for in
+     *            database
+     * @return an array of master keys
+     */
+    private static long[] get_master_key(ArrayList<String> search_keys) {
+
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME
+                + "." + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME
+                + " ON " + "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "."
+                + UserIds.RANK + " = '0') ");
+
+        String orderBy = UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
+
+        long now = new Date().getTime() / 1000;
+        Cursor mCursor = qb.query(Apg.getDatabase().db(), new String[] {
+                KeyRings.TABLE_NAME + "." + KeyRings._ID, // 0
+                KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
+                UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 2
+                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME
+                        + "." + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND " + "tmp." + Keys.CAN_ENCRYPT + " = '1')", // 3
+                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME
+                        + "." + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND " + "tmp." + Keys.CAN_ENCRYPT + " = '1' AND " + "tmp."
+                        + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY + " IS NULL OR " + "tmp." + Keys.EXPIRY + " >= '" + now + "'))", // 4
+        }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] { "" + Id.database.type_public }, null, null, orderBy);
+
+        ArrayList<Long> _master_keys = new ArrayList<Long>();
+        while (mCursor.moveToNext()) {
+            long _cur_mkey = mCursor.getLong(1);
+            String _cur_user = mCursor.getString(2);
+            Log.d(TAG, "current master key: " + _cur_mkey + " from " + _cur_user);
+            if (search_keys.contains(Apg.getSmallFingerPrint(_cur_mkey)) || search_keys.contains(_cur_user)) {
+                Log.d(TAG, "master key found for: " + Apg.getSmallFingerPrint(_cur_mkey));
+                _master_keys.add(_cur_mkey);
+            }
+        }
+        mCursor.close();
+
+        long[] _master_longs = new long[_master_keys.size()];
+        int i = 0;
+        for (Long _key : _master_keys) {
+            _master_longs[i++] = _key;
+        }
+        return _master_longs;
+    }
+
+    /**
      * Add default arguments if missing
      * 
      * @param args
      *            the bundle to add default parameters to if missing
      * 
      */
-    private void add_default_arguments(Bundle args) {
+    private void add_default_arguments(String call, Bundle args) {
         Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
 
         Iterator<arg> _iter = FUNCTIONS_DEFAULTS.keySet().iterator();
         while (_iter.hasNext()) {
             arg _current_arg = _iter.next();
             String _current_key = _current_arg.name();
-            if (!args.containsKey(_current_key)) {
+            if (!args.containsKey(_current_key) && FUNCTIONS_OPTIONAL_ARGS.get(call).contains(_current_arg)) {
                 String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_arg);
                 try {
                     Class<?> _ret_type = FUNCTIONS_DEFAULTS_TYPES.get(_current_function_name);
@@ -201,101 +268,123 @@ public class ApgService extends Service {
         HashSet<arg> all_args = new HashSet<arg>(FUNCTIONS_REQUIRED_ARGS.get(function));
         all_args.addAll(FUNCTIONS_OPTIONAL_ARGS.get(function));
 
+        ArrayList<String> _unknown_args = new ArrayList<String>();
         Iterator<String> _iter = pArgs.keySet().iterator();
         while (_iter.hasNext()) {
             String _cur_key = _iter.next();
             try {
                 arg _cur_arg = arg.valueOf(_cur_key);
-                if( !all_args.contains(_cur_arg)) {
+                if (!all_args.contains(_cur_arg)) {
                     pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
+                    _unknown_args.add(_cur_key);
                 }
             } catch (Exception e) {
                 pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
+                _unknown_args.add(_cur_key);
             }
-
         }
+
+        // remove unknown arguments so our bundle has just what we need
+        for (String _arg : _unknown_args) {
+            pArgs.remove(_arg);
+        }
+    }
+
+    private boolean prepare_args(String call, Bundle pArgs, Bundle pReturn) {
+        Apg.initialize(getBaseContext());
+
+        /* add default return values for all functions */
+        add_default_returns(pReturn);
+
+        /* add default arguments if missing */
+        add_default_arguments(call, pArgs);
+        Log.d(TAG, "add_default_arguments");
+
+        /* check for required arguments */
+        check_required_args(call, pArgs, pReturn);
+        Log.d(TAG, "check_required_args");
+
+        /* check for unknown arguments and add to warning if found */
+        check_unknown_args(call, pArgs, pReturn);
+        Log.d(TAG, "check_unknown_args");
+
+        /* return if errors happened */
+        if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
+            pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.ordinal());
+            return false;
+        }
+        Log.d(TAG, "error return");
+
+        return true;
+    }
+
+    private boolean encrypt(Bundle pArgs, Bundle pReturn) {
+
+        long _pub_master_keys[] = {};
+        if (pArgs.containsKey(arg.PUBLIC_KEYS.name())) {
+            ArrayList<String> _list = pArgs.getStringArrayList(arg.PUBLIC_KEYS.name());
+            ArrayList<String> _pub_keys = new ArrayList<String>();
+            Log.d(TAG, "Long size: " + _list.size());
+            Iterator<String> _iter = _list.iterator();
+            while (_iter.hasNext()) {
+                _pub_keys.add(_iter.next());
+            }
+            _pub_master_keys = get_master_key(_pub_keys);
+        }
+
+        InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
+        InputData _in = new InputData(_inStream, 0); // XXX Size second
+        // param?
+
+        OutputStream _out = new ByteArrayOutputStream();
+        try {
+            Apg.encrypt(getBaseContext(), // context
+                    _in, // input stream
+                    _out, // output stream
+                    pArgs.getBoolean(arg.ARMORED.name()), // armored
+                    _pub_master_keys, // encryption keys
+                    0, // signature key
+                    null, // signature passphrase
+                    null, // progress
+                    pArgs.getInt(arg.ENCRYPTION_ALGO.name()), // encryption
+                    pArgs.getInt(arg.HASH_ALGO.name()), // hash
+                    pArgs.getInt(arg.COMPRESSION.name()), // compression
+                    pArgs.getBoolean(arg.FORCE_V3_SIG.name()), // mPreferences.getForceV3Signatures(),
+                    pArgs.getString(arg.SYM_KEY.name()) // passPhrase
+                    );
+        } catch (Exception e) {
+            Log.d(TAG, "Exception in encrypt");
+            pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when encrypting: " + e.getMessage());
+
+            pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
+            return false;
+        }
+        Log.d(TAG, "Encrypted");
+        pReturn.putString(ret.RESULT.name(), _out.toString());
+        return true;
     }
 
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
-        public boolean encrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
-            /* add default return values for all functions */
-            add_default_returns(pReturn);
-
-            /* add default arguments if missing */
-            add_default_arguments(pArgs);
-            Log.d(TAG, "add_default_arguments");
-
-            /* check for required arguments */
-            check_required_args("encrypt_with_passphrase", pArgs, pReturn);
-            Log.d(TAG, "check_required_args");
-
-            /* check for unknown arguments and add to warning if found */
-            check_unknown_args("encrypt_with_passphrase", pArgs, pReturn);
-            Log.d(TAG, "check_unknown_args");
-
-            /* return if errors happened */
-            if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
-                pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.ordinal());
+        public boolean encrypt_with_public_key(Bundle pArgs, Bundle pReturn) {
+            if (!prepare_args("encrypt_with_public_key", pArgs, pReturn)) {
                 return false;
             }
-            Log.d(TAG, "error return");
 
-            InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
-            InputData _in = new InputData(_inStream, 0); // XXX Size second
-            // param?
-            OutputStream _out = new ByteArrayOutputStream();
-
-            Apg.initialize(getApplicationContext());
-            try {
-                Apg.encrypt(getApplicationContext(), // context
-                        _in, // input stream
-                        _out, // output stream
-                        pArgs.getBoolean(arg.ARMORED.name()), // armored
-                        new long[0], // encryption keys
-                        0, // signature key
-                        null, // signature passphrase
-                        null, // progress
-                        pArgs.getInt(arg.ENCRYPTION_ALGO.name()), // encryption
-                        pArgs.getInt(arg.HASH_ALGO.name()), // hash
-                        pArgs.getInt(arg.COMPRESSION.name()), // compression
-                        pArgs.getBoolean(arg.FORCE_V3_SIG.name()), // mPreferences.getForceV3Signatures(),
-                        pArgs.getString(arg.SYM_KEY.name()) // passPhrase
-                        );
-            } catch (Exception e) {
-                Log.d(TAG, "Exception in encrypt");
-                pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure in APG when encrypting: " + e.getMessage());
-
-                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
-                return false;
-            }
-            Log.d(TAG, "Encrypted");
-            pReturn.putString(ret.RESULT.name(), _out.toString());
-            return true;
+            return encrypt(pArgs, pReturn);
         }
 
-        public boolean decrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
-            /* add default return values for all functions */
-            add_default_returns(pReturn);
+        public boolean encrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
+            if (!prepare_args("encrypt_with_passphrase", pArgs, pReturn)) {
+                return false;
+            }
 
-            /* add default arguments if missing */
-            add_default_arguments(pArgs);
-            Log.d(TAG, "add_default_arguments");
+            return encrypt(pArgs, pReturn);
 
+        }
 
-            /* check required args */
-            check_required_args("decrypt_with_passphrase", pArgs, pReturn);
-            Log.d(TAG, "check_required_args");
-
-
-            /* check for unknown args and add to warning */
-            check_unknown_args("decrypt_with_passphrase", pArgs, pReturn);
-            Log.d(TAG, "check_unknown_args");
-
-            
-            /* return if errors happened */
-            if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
-                pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.ordinal());
+        public boolean decrypt(Bundle pArgs, Bundle pReturn) {
+            if (!prepare_args("decrypt", pArgs, pReturn)) {
                 return false;
             }
 
@@ -304,14 +393,19 @@ public class ApgService extends Service {
             // second parameter?
             OutputStream out = new ByteArrayOutputStream();
             try {
-                Apg.decrypt(getApplicationContext(), in, out, pArgs.getString(arg.SYM_KEY.name()), null, // progress
-                        true // symmetric
+                Apg.decrypt(getBaseContext(), in, out, pArgs.getString(arg.SYM_KEY.name()), null, // progress
+                        pArgs.getString(arg.SYM_KEY.name()) != null // symmetric
                         );
             } catch (Exception e) {
                 Log.d(TAG, "Exception in decrypt");
-                pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure in APG when decrypting: " + e.getMessage());
-
-                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
+                if (e.getMessage() == getBaseContext().getString(R.string.error_noSecretKeyFound)) {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt: " + e.getMessage());
+                    pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.ordinal());
+                } else {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when decrypting: " + e.getMessage());
+                    e.printStackTrace();
+                    pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
+                }
                 return false;
             }
 
