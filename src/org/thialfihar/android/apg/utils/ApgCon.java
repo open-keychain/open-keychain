@@ -210,11 +210,16 @@ public class ApgCon {
     public void clear_warnings() {
         warning_list.clear();
     }
+    
+    public void clear_result() {
+        result.clear();
+    }
 
     public void reset() {
         clear_errors();
         clear_warnings();
         clear_args();
+        clear_result();
     }
 
     public void disconnect() {
