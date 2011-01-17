@@ -147,6 +147,9 @@ public class ApgService extends Service {
      * @return master key if found, or 0
      */
     private static long get_master_key(String search_key) {
+        if (search_key == null || search_key.length() != 8) {
+            return 0;
+        }
         ArrayList<String> tmp = new ArrayList<String>();
         tmp.add(search_key);
         long[] _keys = get_master_key(tmp);
