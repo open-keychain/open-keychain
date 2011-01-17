@@ -48,8 +48,9 @@ public class ApgService extends Service {
         HASH_ALGO, // hash algorithm
         ARMORED, // whether to armor output
         FORCE_V3_SIG, // whether to force v3 signature
-        COMPRESSION
-        // what compression to use for encrypted output
+        COMPRESSION, // what compression to use for encrypted output
+        SIGNATURE_KEY, // key for signing
+        PRIVATE_KEY_PASS, // passphrase for encrypted private key
     }
 
     /** all things that might be returned */
@@ -57,8 +58,7 @@ public class ApgService extends Service {
         ERRORS, // string array list with errors
         WARNINGS, // string array list with warnings
         ERROR, // numeric error
-        RESULT
-        // en-/decrypted test
+        RESULT, // en-/decrypted test
     }
 
     /** required arguments for each AIDL function */
@@ -89,12 +89,15 @@ public class ApgService extends Service {
         args.add(arg.ARMORED);
         args.add(arg.FORCE_V3_SIG);
         args.add(arg.COMPRESSION);
+        args.add(arg.PRIVATE_KEY_PASS);
+        args.add(arg.SIGNATURE_KEY);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_passphrase", args);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_public_key", args);
 
         args = new HashSet<arg>();
         args.add(arg.SYM_KEY);
         args.add(arg.PUBLIC_KEYS);
+        args.add(arg.PRIVATE_KEY_PASS);
         FUNCTIONS_OPTIONAL_ARGS.put("decrypt", args);
     }
 
@@ -137,6 +140,23 @@ public class ApgService extends Service {
     }
 
     /**
+     * maps a fingerprint or user id of a key to as master key in database
+     * 
+     * @param search_key
+     *            fingerprint or user id to search for
+     * @return master key if found, or 0
+     */
+    private static long get_master_key(String search_key) {
+        ArrayList<String> tmp = new ArrayList<String>();
+        tmp.add(search_key);
+        long[] _keys = get_master_key(tmp);
+        if (_keys.length > 0)
+            return _keys[0];
+        else
+            return 0;
+    }
+
+    /**
      * maps fingerprints or user ids of keys to master keys in database
      * 
      * @param search_keys
@@ -164,7 +184,9 @@ public class ApgService extends Service {
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME
                         + "." + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND " + "tmp." + Keys.CAN_ENCRYPT + " = '1' AND " + "tmp."
                         + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY + " IS NULL OR " + "tmp." + Keys.EXPIRY + " >= '" + now + "'))", // 4
-        }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] { "" + Id.database.type_public }, null, null, orderBy);
+        }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] {
+            "" + Id.database.type_public
+        }, null, null, orderBy);
 
         ArrayList<Long> _master_keys = new ArrayList<Long>();
         while (mCursor.moveToNext()) {
@@ -191,7 +213,6 @@ public class ApgService extends Service {
      * 
      * @param args
      *            the bundle to add default parameters to if missing
-     * 
      */
     private void add_default_arguments(String call, Bundle args) {
         Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
@@ -333,8 +354,7 @@ public class ApgService extends Service {
         }
 
         InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
-        InputData _in = new InputData(_inStream, 0); // XXX Size second
-        // param?
+        InputData _in = new InputData(_inStream, 0); // XXX Size second param?
 
         OutputStream _out = new ByteArrayOutputStream();
         try {
@@ -343,8 +363,8 @@ public class ApgService extends Service {
                     _out, // output stream
                     pArgs.getBoolean(arg.ARMORED.name()), // armored
                     _pub_master_keys, // encryption keys
-                    0, // signature key
-                    null, // signature passphrase
+                    get_master_key(pArgs.getString(arg.SIGNATURE_KEY.name())), // signature key
+                    pArgs.getString(arg.PRIVATE_KEY_PASS.name()), // signature passphrase
                     null, // progress
                     pArgs.getInt(arg.ENCRYPTION_ALGO.name()), // encryption
                     pArgs.getInt(arg.HASH_ALGO.name()), // hash
@@ -388,12 +408,14 @@ public class ApgService extends Service {
                 return false;
             }
 
+            String _passphrase = pArgs.getString(arg.SYM_KEY.name()) != null ? pArgs.getString(arg.SYM_KEY.name()) : pArgs.getString(arg.PRIVATE_KEY_PASS
+                    .name());
+
             InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
-            InputData in = new InputData(inStream, 0); // XXX what size in
-            // second parameter?
+            InputData in = new InputData(inStream, 0); // XXX what size in second parameter?
             OutputStream out = new ByteArrayOutputStream();
             try {
-                Apg.decrypt(getBaseContext(), in, out, pArgs.getString(arg.SYM_KEY.name()), null, // progress
+                Apg.decrypt(getBaseContext(), in, out, _passphrase, null, // progress
                         pArgs.getString(arg.SYM_KEY.name()) != null // symmetric
                         );
             } catch (Exception e) {
