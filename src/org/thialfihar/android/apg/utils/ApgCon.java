@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -15,12 +17,12 @@ import org.thialfihar.android.apg.IApgService;
 /**
  * This class can be used by other projects to simplify connecting to the
  * APG-Service. Kind of wrapper of for AIDL.
- * 
  * It is not used in this project.
  */
 public class ApgCon {
 
     private final static String TAG = "ApgCon";
+    private final static int api_version = 1; // aidl api-version it expects
 
     private final Context mContext;
 
@@ -55,6 +57,35 @@ public class ApgCon {
     public ApgCon(Context ctx) {
         Log.v(TAG, "EncryptionService created");
         mContext = ctx;
+
+        try {
+            ServiceInfo apg_services[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
+                    PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
+            if (apg_services == null) {
+                Log.e(TAG, "Could not fetch services");
+            } else {
+                boolean apg_service_found = false;
+                for (ServiceInfo inf : apg_services) {
+                    Log.v(TAG, "Found service of APG: " + inf.name);
+                    if (inf.name.equals("org.thialfihar.android.apg.ApgService")) {
+                        apg_service_found = true;
+                        if (inf.metaData == null) {
+                            Log.w(TAG, "Could not determine ApgService API");
+                            Log.w(TAG, "This probably won't work!");
+                        } else if (inf.metaData.getInt("api_version") != api_version) {
+                            Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
+                            Log.w(TAG, "This probably won't work!");
+                        }
+                    }
+                }
+
+                if (!apg_service_found) {
+                    Log.e(TAG, "Could not find APG with AIDL interface, this probably won't work");
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Could not find APG, is it installed?");
+        }
     }
 
     /** try to connect to the apg service */
@@ -210,7 +241,7 @@ public class ApgCon {
     public void clear_warnings() {
         warning_list.clear();
     }
-    
+
     public void clear_result() {
         result.clear();
     }
