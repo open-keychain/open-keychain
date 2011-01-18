@@ -24,7 +24,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 public class ApgService extends Service {
-    final static String TAG = "ApgService";
+    private final static String TAG = "ApgService";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -322,22 +322,22 @@ public class ApgService extends Service {
 
         /* add default arguments if missing */
         add_default_arguments(call, pArgs);
-        Log.d(TAG, "add_default_arguments");
+        Log.v(TAG, "add_default_arguments");
 
         /* check for required arguments */
         check_required_args(call, pArgs, pReturn);
-        Log.d(TAG, "check_required_args");
+        Log.v(TAG, "check_required_args");
 
         /* check for unknown arguments and add to warning if found */
         check_unknown_args(call, pArgs, pReturn);
-        Log.d(TAG, "check_unknown_args");
+        Log.v(TAG, "check_unknown_args");
 
         /* return if errors happened */
         if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
             pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.ordinal());
             return false;
         }
-        Log.d(TAG, "error return");
+        Log.v(TAG, "error return");
 
         return true;
     }
@@ -348,7 +348,7 @@ public class ApgService extends Service {
         if (pArgs.containsKey(arg.PUBLIC_KEYS.name())) {
             ArrayList<String> _list = pArgs.getStringArrayList(arg.PUBLIC_KEYS.name());
             ArrayList<String> _pub_keys = new ArrayList<String>();
-            Log.d(TAG, "Long size: " + _list.size());
+            Log.v(TAG, "Long size: " + _list.size());
             Iterator<String> _iter = _list.iterator();
             while (_iter.hasNext()) {
                 _pub_keys.add(_iter.next());
@@ -376,13 +376,13 @@ public class ApgService extends Service {
                     pArgs.getString(arg.SYM_KEY.name()) // passPhrase
                     );
         } catch (Exception e) {
-            Log.d(TAG, "Exception in encrypt");
+            Log.e(TAG, "Exception in encrypt");
             pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when encrypting: " + e.getMessage());
 
             pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
             return false;
         }
-        Log.d(TAG, "Encrypted");
+        Log.v(TAG, "Encrypted");
         pReturn.putString(ret.RESULT.name(), _out.toString());
         return true;
     }
@@ -422,13 +422,12 @@ public class ApgService extends Service {
                         pArgs.getString(arg.SYM_KEY.name()) != null // symmetric
                         );
             } catch (Exception e) {
-                Log.d(TAG, "Exception in decrypt");
+                Log.e(TAG, "Exception in decrypt");
                 if (e.getMessage() == getBaseContext().getString(R.string.error_noSecretKeyFound)) {
                     pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt: " + e.getMessage());
                     pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.ordinal());
                 } else {
                     pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when decrypting: " + e.getMessage());
-                    e.printStackTrace();
                     pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
                 }
                 return false;
