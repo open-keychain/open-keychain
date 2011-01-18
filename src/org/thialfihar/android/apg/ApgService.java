@@ -41,16 +41,16 @@ public class ApgService extends Service {
 
     /** all arguments that can be passed by calling application */
     private enum arg {
-        MSG, // message to encrypt or to decrypt
-        SYM_KEY, // key for symmetric en/decryption
+        MESSAGE, // message to encrypt or to decrypt
+        SYMMETRIC_PASSPHRASE, // key for symmetric en/decryption
         PUBLIC_KEYS, // public keys for encryption
-        ENCRYPTION_ALGO, // encryption algorithm
-        HASH_ALGO, // hash algorithm
-        ARMORED, // whether to armor output
-        FORCE_V3_SIG, // whether to force v3 signature
+        ENCRYPTION_ALGORYTHM, // encryption algorithm
+        HASH_ALGORYTHM, // hash algorithm
+        ARMORED_OUTPUT, // whether to armor output
+        FORCE_V3_SIGNATURE, // whether to force v3 signature
         COMPRESSION, // what compression to use for encrypted output
         SIGNATURE_KEY, // key for signing
-        PRIVATE_KEY_PASS, // passphrase for encrypted private key
+        PRIVATE_KEY_PASSPHRASE // passphrase for encrypted private key
     }
 
     /** all things that might be returned */
@@ -58,24 +58,24 @@ public class ApgService extends Service {
         ERRORS, // string array list with errors
         WARNINGS, // string array list with warnings
         ERROR, // numeric error
-        RESULT, // en-/decrypted test
+        RESULT // en-/decrypted
     }
 
     /** required arguments for each AIDL function */
     private static final HashMap<String, Set<arg>> FUNCTIONS_REQUIRED_ARGS = new HashMap<String, Set<arg>>();
     static {
         HashSet<arg> args = new HashSet<arg>();
-        args.add(arg.SYM_KEY);
-        args.add(arg.MSG);
+        args.add(arg.SYMMETRIC_PASSPHRASE);
+        args.add(arg.MESSAGE);
         FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_passphrase", args);
 
         args = new HashSet<arg>();
         args.add(arg.PUBLIC_KEYS);
-        args.add(arg.MSG);
+        args.add(arg.MESSAGE);
         FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_public_key", args);
 
         args = new HashSet<arg>();
-        args.add(arg.MSG);
+        args.add(arg.MESSAGE);
         FUNCTIONS_REQUIRED_ARGS.put("decrypt", args);
 
     }
@@ -84,30 +84,30 @@ public class ApgService extends Service {
     private static final HashMap<String, Set<arg>> FUNCTIONS_OPTIONAL_ARGS = new HashMap<String, Set<arg>>();
     static {
         HashSet<arg> args = new HashSet<arg>();
-        args.add(arg.ENCRYPTION_ALGO);
-        args.add(arg.HASH_ALGO);
-        args.add(arg.ARMORED);
-        args.add(arg.FORCE_V3_SIG);
+        args.add(arg.ENCRYPTION_ALGORYTHM);
+        args.add(arg.HASH_ALGORYTHM);
+        args.add(arg.ARMORED_OUTPUT);
+        args.add(arg.FORCE_V3_SIGNATURE);
         args.add(arg.COMPRESSION);
-        args.add(arg.PRIVATE_KEY_PASS);
+        args.add(arg.PRIVATE_KEY_PASSPHRASE);
         args.add(arg.SIGNATURE_KEY);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_passphrase", args);
         FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_public_key", args);
 
         args = new HashSet<arg>();
-        args.add(arg.SYM_KEY);
+        args.add(arg.SYMMETRIC_PASSPHRASE);
         args.add(arg.PUBLIC_KEYS);
-        args.add(arg.PRIVATE_KEY_PASS);
+        args.add(arg.PRIVATE_KEY_PASSPHRASE);
         FUNCTIONS_OPTIONAL_ARGS.put("decrypt", args);
     }
 
     /** a map from ApgService parameters to function calls to get the default */
     private static final HashMap<arg, String> FUNCTIONS_DEFAULTS = new HashMap<arg, String>();
     static {
-        FUNCTIONS_DEFAULTS.put(arg.ENCRYPTION_ALGO, "getDefaultEncryptionAlgorithm");
-        FUNCTIONS_DEFAULTS.put(arg.HASH_ALGO, "getDefaultHashAlgorithm");
-        FUNCTIONS_DEFAULTS.put(arg.ARMORED, "getDefaultAsciiArmour");
-        FUNCTIONS_DEFAULTS.put(arg.FORCE_V3_SIG, "getForceV3Signatures");
+        FUNCTIONS_DEFAULTS.put(arg.ENCRYPTION_ALGORYTHM, "getDefaultEncryptionAlgorithm");
+        FUNCTIONS_DEFAULTS.put(arg.HASH_ALGORYTHM, "getDefaultHashAlgorithm");
+        FUNCTIONS_DEFAULTS.put(arg.ARMORED_OUTPUT, "getDefaultAsciiArmour");
+        FUNCTIONS_DEFAULTS.put(arg.FORCE_V3_SIGNATURE, "getForceV3Signatures");
         FUNCTIONS_DEFAULTS.put(arg.COMPRESSION, "getDefaultMessageCompression");
     }
 
@@ -356,7 +356,7 @@ public class ApgService extends Service {
             _pub_master_keys = get_master_key(_pub_keys);
         }
 
-        InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
+        InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
         InputData _in = new InputData(_inStream, 0); // XXX Size second param?
 
         OutputStream _out = new ByteArrayOutputStream();
@@ -364,16 +364,16 @@ public class ApgService extends Service {
             Apg.encrypt(getBaseContext(), // context
                     _in, // input stream
                     _out, // output stream
-                    pArgs.getBoolean(arg.ARMORED.name()), // armored
+                    pArgs.getBoolean(arg.ARMORED_OUTPUT.name()), // ARMORED_OUTPUT
                     _pub_master_keys, // encryption keys
                     get_master_key(pArgs.getString(arg.SIGNATURE_KEY.name())), // signature key
-                    pArgs.getString(arg.PRIVATE_KEY_PASS.name()), // signature passphrase
+                    pArgs.getString(arg.PRIVATE_KEY_PASSPHRASE.name()), // signature passphrase
                     null, // progress
-                    pArgs.getInt(arg.ENCRYPTION_ALGO.name()), // encryption
-                    pArgs.getInt(arg.HASH_ALGO.name()), // hash
+                    pArgs.getInt(arg.ENCRYPTION_ALGORYTHM.name()), // encryption
+                    pArgs.getInt(arg.HASH_ALGORYTHM.name()), // hash
                     pArgs.getInt(arg.COMPRESSION.name()), // compression
-                    pArgs.getBoolean(arg.FORCE_V3_SIG.name()), // mPreferences.getForceV3Signatures(),
-                    pArgs.getString(arg.SYM_KEY.name()) // passPhrase
+                    pArgs.getBoolean(arg.FORCE_V3_SIGNATURE.name()), // mPreferences.getForceV3Signatures(),
+                    pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) // passPhrase
                     );
         } catch (Exception e) {
             Log.e(TAG, "Exception in encrypt");
@@ -411,15 +411,15 @@ public class ApgService extends Service {
                 return false;
             }
 
-            String _passphrase = pArgs.getString(arg.SYM_KEY.name()) != null ? pArgs.getString(arg.SYM_KEY.name()) : pArgs.getString(arg.PRIVATE_KEY_PASS
+            String _passphrase = pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null ? pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) : pArgs.getString(arg.PRIVATE_KEY_PASSPHRASE
                     .name());
 
-            InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MSG.name()).getBytes());
+            InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
             InputData in = new InputData(inStream, 0); // XXX what size in second parameter?
             OutputStream out = new ByteArrayOutputStream();
             try {
                 Apg.decrypt(getBaseContext(), in, out, _passphrase, null, // progress
-                        pArgs.getString(arg.SYM_KEY.name()) != null // symmetric
+                        pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
                         );
             } catch (Exception e) {
                 Log.e(TAG, "Exception in decrypt");
