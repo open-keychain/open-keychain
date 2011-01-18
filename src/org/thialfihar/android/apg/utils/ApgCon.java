@@ -75,6 +75,8 @@ public class ApgCon {
                         } else if (inf.metaData.getInt("api_version") != api_version) {
                             Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
                             Log.w(TAG, "This probably won't work!");
+                        } else {
+                            Log.v(TAG, "Found api_version "+api_version+", everything should work");
                         }
                     }
                 }
