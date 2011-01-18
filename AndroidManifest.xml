@@ -199,6 +199,7 @@
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.IApgService"/>
             </intent-filter>
+            <meta-data android:name="api_version" android:value="1" />
         </service>  
         <provider
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
