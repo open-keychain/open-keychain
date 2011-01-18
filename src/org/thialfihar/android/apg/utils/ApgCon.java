@@ -59,6 +59,7 @@ public class ApgCon {
         mContext = ctx;
 
         try {
+            Log.v(TAG, "Searching for the right APG version");
             ServiceInfo apg_services[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
                     PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
             if (apg_services == null) {
