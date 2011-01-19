@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -21,10 +22,41 @@ import org.thialfihar.android.apg.IApgService;
  */
 public class ApgCon {
 
+    public class call_async extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... arg) {
+            Log.d(TAG, "Async execution starting");
+            call(arg[0]);
+            return null;
+        }
+
+        protected void onPostExecute(Void result) {
+            Log.d(TAG, "Async execution finished");
+            async_running = false;
+            if (callback_object != null && callback_method != null) {
+                try {
+                    callback_object.getClass().getMethod(callback_method).invoke(callback_object);
+                    Log.d(TAG, "Callback executed");
+                } catch (NoSuchMethodException e) {
+                    Log.w(TAG, "Exception in callback: Method '" + callback_method + "' not found");
+                    warning_list.add("LOCAL: Could not execute callback, method '" + callback_method + "' not found");
+                } catch (Exception e) {
+                    Log.w(TAG, "Exception on callback: " + e.getMessage());
+                    warning_list.add("LOCAL: Could not execute callback");
+                }
+            }
+        }
+
+    }
+
     private final static String TAG = "ApgCon";
     private final static int api_version = 1; // aidl api-version it expects
 
     private final Context mContext;
+    private boolean async_running = false;
+    private Object callback_object;
+    private String callback_method;
 
     private final Bundle result = new Bundle();
     private final Bundle args = new Bundle();
@@ -77,7 +109,7 @@ public class ApgCon {
                             Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
                             Log.w(TAG, "This probably won't work!");
                         } else {
-                            Log.v(TAG, "Found api_version "+api_version+", everything should work");
+                            Log.v(TAG, "Found api_version " + api_version + ", everything should work");
                         }
                     }
                 }
@@ -121,6 +153,14 @@ public class ApgCon {
         return true;
     }
 
+    public void disconnect() {
+        Log.v(TAG, "disconnecting apgService");
+        if (apgService != null) {
+            mContext.unbindService(apgConnection);
+            apgService = null;
+        }
+    }
+
     private boolean initialize() {
         if (apgService == null) {
             if (!connect()) {
@@ -135,6 +175,11 @@ public class ApgCon {
         return this.call(function, args, result);
     }
 
+    public void call_async(String function) {
+        async_running = true;
+        new call_async().execute(function);
+    }
+
     public boolean call(String function, Bundle pArgs) {
         return this.call(function, pArgs, result);
     }
@@ -145,14 +190,14 @@ public class ApgCon {
         warning_list.clear();
 
         if (!initialize()) {
-            error_list.add("CLASS: Cannot bind to ApgService");
-            pReturn.putInt("CLASS_ERROR", error.CANNOT_BIND_TO_APG.ordinal());
+            error_list.add("LOCAL: Cannot bind to ApgService");
+            pReturn.putInt("LOCAL_ERROR", error.CANNOT_BIND_TO_APG.ordinal());
             return false;
         }
 
         if (function == null || function.length() == 0) {
-            error_list.add("CLASS: Function to call missing");
-            pReturn.putInt("CLASS_ERROR", error.CALL_MISSING.ordinal());
+            error_list.add("LOCAL: Function to call missing");
+            pReturn.putInt("LOCAL_ERROR", error.CALL_MISSING.ordinal());
             return false;
         }
 
@@ -163,13 +208,13 @@ public class ApgCon {
             return ret;
         } catch (NoSuchMethodException e) {
             Log.e(TAG, e.getMessage());
-            error_list.add("CLASS: " + e.getMessage());
-            pReturn.putInt("CLASS_ERROR", error.CALL_NOT_KNOWN.ordinal());
+            error_list.add("LOCAL: " + e.getMessage());
+            pReturn.putInt("LOCAL_ERROR", error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (Exception e) {
             Log.e(TAG, "" + e.getMessage());
-            error_list.add("CLASS: " + e.getMessage());
-            pReturn.putInt("CLASS_ERROR", error.GENERIC.ordinal());
+            error_list.add("LOCAL: " + e.getMessage());
+            pReturn.putInt("LOCAL_ERROR", error.GENERIC.ordinal());
             return false;
         }
 
@@ -184,7 +229,11 @@ public class ApgCon {
         for (String val : vals) {
             list.add(val);
         }
-        args.putStringArrayList(key, list);
+        set_arg(key, list);
+    }
+
+    public void set_arg(String key, ArrayList<String> vals) {
+        args.putStringArrayList(key, vals);
     }
 
     public void set_arg(String key, boolean val) {
@@ -249,19 +298,93 @@ public class ApgCon {
         result.clear();
     }
 
+    /**
+     * Set a callback object and method
+     * 
+     * <p>After an async execution is finished, obj.meth() will be called. You can
+     * use this in order to get notified, when encrypting/decrypting of long
+     * data finishes and do not have to poll {@link #is_running()} in your
+     * thread. Note, that if the call of the method fails for whatever reason,
+     * you won't get notified in any way - so you still should check
+     * {@link #is_running()} from time to time.</p>
+     * 
+     * <p>It produces a warning fetchable with {@link #get_next_warning()} when the callback fails.</p>
+     * 
+     * <pre>
+     * <code>
+     * .... your class ...
+     * public void callback() {
+     *   // do something after encryption finished
+     * }
+     * 
+     * public void encrypt() {
+     *   ApgCon mEnc = new ApgCon(context);
+     *   // set parameters
+     *   mEnc.set_arg(key, value);
+     *   ...
+     *   
+     *   // set callback object and method 
+     *   mEnc.set_callback( this, "callback" );
+     *   
+     *   // start asynchronous call
+     *   mEnc.call_async( call );
+     *   
+     *   // when the call_async finishes, the method "callback()" will be called automatically
+     * }
+     * </code>
+     * </pre>
+     * 
+     * @param obj
+     *            The object, which has the public method meth
+     * @param meth
+     *            Method to call on the object obj
+     */
+    public void set_callback(Object obj, String meth) {
+        set_callback_object(obj);
+        set_callback_method(meth);
+    }
+
+    /**
+     * Set a callback object
+     * 
+     * @param obj
+     *            a object to call back after async execution
+     * @see #set_callback(Object, String)
+     */
+    public void set_callback_object(Object obj) {
+        callback_object = obj;
+    }
+
+    /**
+     * Set a callback method
+     * 
+     * @param meth
+     *            a method to call on a callback object after async execution
+     * @see #set_callback(Object, String)
+     */
+    public void set_callback_method(String meth) {
+        callback_method = meth;
+    }
+
+    public void clear_callback_object() {
+        callback_object = null;
+    }
+
+    public void clear_callback_method() {
+        callback_method = null;
+    }
+
+    public boolean is_running() {
+        return async_running;
+    }
+
     public void reset() {
         clear_errors();
         clear_warnings();
         clear_args();
         clear_result();
-    }
-
-    public void disconnect() {
-        Log.v(TAG, "disconnecting apgService");
-        if (apgService != null) {
-            mContext.unbindService(apgConnection);
-            apgService = null;
-        }
+        clear_callback_object();
+        clear_callback_method();
     }
 
 }
