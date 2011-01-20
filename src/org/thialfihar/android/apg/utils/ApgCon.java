@@ -27,7 +27,7 @@ public class ApgCon {
     /**
      * Put stacktraces into the log?
      */
-    private final boolean stacktraces = true;
+    private final static boolean stacktraces = true;
 
     private class call_async extends AsyncTask<String, Void, Void> {
 
