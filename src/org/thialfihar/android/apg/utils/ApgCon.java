@@ -45,7 +45,7 @@ public class ApgCon {
                     warning_list.add("(LOCAL) Could not execute callback, method '" + callback_method + "' not found");
                 } catch (Exception e) {
                     Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage());
-                    warning_list.add("(LOCAL) Could not execute callback");
+                    warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
                 }
             }
         }
@@ -304,7 +304,7 @@ public class ApgCon {
             local_error = error.CALL_NOT_KNOWN;
             return false;
         } catch (Exception e) {
-            Log.e(TAG, "" + e.getMessage());
+            Log.e(TAG,  "Generic error (" + e.getClass() + "): " + e.getMessage());
             error_list.add("(LOCAL) Generic error (" + e.getClass() + "): " + e.getMessage());
             local_error = error.GENERIC;
             return false;
@@ -525,7 +525,7 @@ public class ApgCon {
             return -1;
         }
     }
-    
+
     public void clear_remote_error() {
         result.remove(ret.ERROR.name());
     }
