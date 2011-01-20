@@ -150,13 +150,13 @@ public class ApgService extends Service {
      *            fingerprint or user id to search for
      * @return master key if found, or 0
      */
-    private static long get_master_key(String search_key) {
+    private static long get_master_key(String search_key, Bundle pReturn) {
         if (search_key == null || search_key.length() != 8) {
             return 0;
         }
         ArrayList<String> tmp = new ArrayList<String>();
         tmp.add(search_key);
-        long[] _keys = get_master_key(tmp);
+        long[] _keys = get_master_key(tmp, pReturn);
         if (_keys.length > 0)
             return _keys[0];
         else
@@ -171,7 +171,7 @@ public class ApgService extends Service {
      *            database
      * @return an array of master keys
      */
-    private static long[] get_master_key(ArrayList<String> search_keys) {
+    private static long[] get_master_key(ArrayList<String> search_keys, Bundle pReturn) {
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME
@@ -200,15 +200,15 @@ public class ApgService extends Service {
         while (mCursor.moveToNext()) {
             long _cur_mkey = mCursor.getLong(1);
             String _cur_user = mCursor.getString(2);
-            
+
             String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
-            Log.v(TAG, "current user: "+_cur_user+" ("+_cur_fprint+")");
+            Log.v(TAG, "current user: " + _cur_user + " (" + _cur_fprint + ")");
             if (search_keys.contains(_cur_fprint) || search_keys.contains(_cur_user)) {
                 Log.v(TAG, "master key found for: " + _cur_fprint);
                 _master_keys.add(_cur_mkey);
                 search_keys.remove(_cur_fprint);
             } else {
-                Log.v(TAG, "Installed key "+_cur_fprint+" is not in the list of public keys to encrypt with");
+                Log.v(TAG, "Installed key " + _cur_fprint + " is not in the list of public keys to encrypt with");
             }
         }
         mCursor.close();
@@ -218,15 +218,17 @@ public class ApgService extends Service {
         for (Long _key : _master_keys) {
             _master_longs[i++] = _key;
         }
-        
-        if( i == 0) {
-            Log.e(TAG, "Found no public key to encrypt with, APG will error out");
+
+        if (i == 0) {
+            Log.w(TAG, "Found not one public key");
+            pReturn.getStringArrayList(ret.WARNINGS.name()).add("Searched for public key(s) but found not one");
         }
-        
-        for( String _key : search_keys) {
-            Log.w(TAG, "Cannot encrypt with key "+_key+": cannot find it in APG");
+
+        for (String _key : search_keys) {
+            Log.w(TAG, "Searched for key " + _key + " but cannot find it in APG");
+            pReturn.getStringArrayList(ret.WARNINGS.name()).add("Searched for key " + _key + " but cannot find it in APG");
         }
-        
+
         return _master_longs;
     }
 
@@ -372,7 +374,7 @@ public class ApgService extends Service {
             while (_iter.hasNext()) {
                 _pub_keys.add(_iter.next());
             }
-            _pub_master_keys = get_master_key(_pub_keys);
+            _pub_master_keys = get_master_key(_pub_keys, pReturn);
         }
 
         InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
@@ -385,7 +387,7 @@ public class ApgService extends Service {
                     _out, // output stream
                     pArgs.getBoolean(arg.ARMORED_OUTPUT.name()), // ARMORED_OUTPUT
                     _pub_master_keys, // encryption keys
-                    get_master_key(pArgs.getString(arg.SIGNATURE_KEY.name())), // signature key
+                    get_master_key(pArgs.getString(arg.SIGNATURE_KEY.name()), pReturn), // signature key
                     pArgs.getString(arg.PRIVATE_KEY_PASSPHRASE.name()), // signature passphrase
                     null, // progress
                     pArgs.getInt(arg.ENCRYPTION_ALGORYTHM.name()), // encryption
