@@ -17,10 +17,20 @@ import android.util.Log;
 import org.thialfihar.android.apg.IApgService;
 
 /**
- * This class can be used by other projects to simplify connecting to the
- * APG-Service. Kind of wrapper of for AIDL.
+ * A APG-AIDL-Wrapper
  * 
+ * <p>
+ * This class can be used by other projects to simplify connecting to the
+ * APG-AIDL-Service. Kind of wrapper of for AIDL.
+ * </p>
+ * 
+ * <p>
  * It is not used in this project.
+ * </p>
+ * 
+ * @author Markus Doits <markus.doits@googlemail.com>
+ * @version 0.9
+ * 
  */
 public class ApgCon {
 
@@ -81,7 +91,6 @@ public class ApgCon {
     private final Bundle args = new Bundle();
     private final ArrayList<String> error_list = new ArrayList<String>();
     private final ArrayList<String> warning_list = new ArrayList<String>();
-    private error local_error;
 
     /** Remote service for decrypting and encrypting data */
     private IApgService apgService = null;
@@ -99,21 +108,44 @@ public class ApgCon {
         }
     };
 
+    /**
+     * Different types of local errors
+     * 
+     * @author markus
+     * 
+     */
     public static enum error {
-        GENERIC, // no special type
-        CANNOT_BIND_TO_APG, // connection to apg service not possible
-        CALL_MISSING, // function to call not provided
-        CALL_NOT_KNOWN, // apg service does not know what to do
-        APG_NOT_FOUND, // could not find APG installed
-        APG_AIDL_MISSING, // found APG but without AIDL interface
+        /**
+         * generic error
+         */
+        GENERIC,
+        /**
+         * connection to apg service not possible
+         */
+        CANNOT_BIND_TO_APG,
+        /**
+         * function to call not provided
+         */
+        CALL_MISSING,
+        /**
+         * apg service does not know what to do
+         */
+        CALL_NOT_KNOWN,
+        /**
+         * could not find APG being installed
+         */
+        APG_NOT_FOUND,
+        /**
+         * found APG but without AIDL interface
+         */
+        APG_AIDL_MISSING
     }
 
-    public static enum ret {
+    private static enum ret {
         ERROR, // returned from AIDL
         RESULT, // returned from AIDL
         WARNINGS, // mixed AIDL and LOCAL
         ERRORS, // mixed AIDL and LOCAL
-        LOCAL_ERROR, // LOCAL error
     }
 
     /**
@@ -160,7 +192,7 @@ public class ApgCon {
                 if (!apg_service_found) {
                     Log.e(TAG, "Could not find APG with AIDL interface, this probably won't work");
                     error_list.add("(LOCAL) Could not find APG with AIDL interface, this probably won't work");
-                    local_error = error.APG_AIDL_MISSING;
+                    result.putInt(ret.ERROR.name(), error.APG_AIDL_MISSING.ordinal());
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -168,7 +200,7 @@ public class ApgCon {
                 e.printStackTrace();
             Log.e(TAG, "Could not find APG, is it installed?");
             error_list.add("(LOCAL) Could not find APG, is it installed?");
-            local_error = error.APG_NOT_FOUND;
+            result.putInt(ret.ERROR.name(), error.APG_NOT_FOUND.ordinal());
         }
     }
 
@@ -297,18 +329,15 @@ public class ApgCon {
 
     private boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
-        error_list.clear();
-        warning_list.clear();
-
         if (!initialize()) {
             error_list.add("(LOCAL) Cannot bind to ApgService");
-            local_error = error.CANNOT_BIND_TO_APG;
+            result.putInt(ret.ERROR.name(), error.CANNOT_BIND_TO_APG.ordinal());
             return false;
         }
 
         if (function == null || function.length() == 0) {
             error_list.add("(LOCAL) Function to call missing");
-            local_error = error.CALL_MISSING;
+            result.putInt(ret.ERROR.name(), error.CALL_MISSING.ordinal());
             return false;
         }
 
@@ -324,7 +353,7 @@ public class ApgCon {
                 e.printStackTrace();
             Log.e(TAG, "Remote call not known (" + function + "): " + e.getMessage());
             error_list.add("(LOCAL) Remote call not known (" + function + "): " + e.getMessage());
-            local_error = error.CALL_NOT_KNOWN;
+            result.putInt(ret.ERROR.name(), error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (InvocationTargetException e) {
             if (stacktraces)
@@ -338,7 +367,7 @@ public class ApgCon {
                 e.printStackTrace();
             Log.e(TAG, "Generic error (" + e.getClass() + "): " + e.getMessage());
             error_list.add("(LOCAL) Generic error (" + e.getClass() + "): " + e.getMessage());
-            local_error = error.GENERIC;
+            result.putInt(ret.ERROR.name(), error.GENERIC.ordinal());
             return false;
         }
 
@@ -515,51 +544,22 @@ public class ApgCon {
     }
 
     /**
-     * Returns the type of error happened
+     * Get the numeric representation of the last error
      * 
      * <p>
-     * Currently, two error types are possible:
-     * <ul>
-     * <li>ret.LOCAL_ERROR: An error that happened on the caller site. This
-     * might be something like connection to AIDL not possible or the funciton
-     * call not know by AIDL. This means, the instance is not set up correctly
-     * or prerequisites to use APG with AIDL are not met.</li>
-     * <li>ret.ERROR: Connection to APG was successful, and the call started but
-     * failed. Mostly this is because of wrong or missing parameters for APG.</li>
-     * </ul>
+     * Values <100 mean the error happened locally, values >=100 mean the error
+     * happened at the remote side (APG). See the IApgService.aidl (or get the
+     * human readable description with {@link #get_next_error()}) for what
+     * errors >=100 mean.
      * </p>
      * 
-     * @return the type of error that happend: ret.LOCAL_ERROR or ret.ERROR, or
-     *         null if none happend
+     * @return the id of the error that happened
      */
-    public ret get_error_type() {
-        if (local_error != null) {
-            return ret.LOCAL_ERROR;
-        } else if (result.containsKey(ret.ERROR.name())) {
-            return ret.ERROR;
-        } else {
-            return null;
-        }
-    }
-
-    public error get_local_error() {
-        return local_error;
-    }
-
-    public void clear_local_error() {
-        local_error = null;
-    }
-
-    public int get_remote_error() {
-        if (result.containsKey(ret.ERROR.name())) {
+    public int get_error() {
+        if (result.containsKey(ret.ERROR.name()))
             return result.getInt(ret.ERROR.name());
-        } else {
+        else
             return -1;
-        }
-    }
-
-    public void clear_remote_error() {
-        result.remove(ret.ERROR.name());
     }
 
     /**
@@ -630,7 +630,6 @@ public class ApgCon {
     public void clear_errors() {
         error_list.clear();
         result.remove(ret.ERROR.name());
-        clear_local_error();
     }
 
     /**

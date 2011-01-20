@@ -38,7 +38,11 @@ public class ApgService extends Service {
         APG_FAILURE,
         NO_MATCHING_SECRET_KEY,
         PRIVATE_KEY_PASSPHRASE_WRONG,
-        PRIVATE_KEY_PASSPHRASE_MISSING
+        PRIVATE_KEY_PASSPHRASE_MISSING;
+        
+        public int shifted_ordinal() {
+            return ordinal() + 100;
+        }
     }
 
     /** all arguments that can be passed by calling application */
@@ -355,7 +359,7 @@ public class ApgService extends Service {
 
         /* return if errors happened */
         if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
-            pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.ordinal());
+            pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.shifted_ordinal());
             return false;
         }
         Log.v(TAG, "error return");
@@ -401,13 +405,13 @@ public class ApgService extends Service {
             String _msg = e.getMessage();
             if (_msg.equals(getBaseContext().getString(R.string.error_noSignaturePassPhrase))) {
                 pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " missing): " + _msg);
-                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_MISSING.ordinal());
+                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_MISSING.shifted_ordinal());
             } else if (_msg.equals(getBaseContext().getString(R.string.error_couldNotExtractPrivateKey))) {
                 pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " probably wrong): " + _msg);
-                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.ordinal());
+                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shifted_ordinal());
             } else {
                 pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when encrypting: " + e.getMessage());
-                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
+                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shifted_ordinal());
             }
             return false;
         }
@@ -455,13 +459,13 @@ public class ApgService extends Service {
                 String _msg = e.getMessage();
                 if (_msg.equals(getBaseContext().getString(R.string.error_noSecretKeyFound))) {
                     pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt: " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.ordinal());
+                    pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.shifted_ordinal());
                 } else if (_msg.equals(getBaseContext().getString(R.string.error_wrongPassPhrase))) {
                     pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " wrong/missing): " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.ordinal());
+                    pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shifted_ordinal());
                 } else {
                     pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when decrypting: " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.ordinal());
+                    pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shifted_ordinal());
                 }
                 return false;
             }

@@ -5,8 +5,13 @@ interface IApgService {
     /* All functions fill the return_vals Bundle with the following keys:
      *
      * ArrayList<String> "WARNINGS"  = Warnings, if any
-     * ArrayList<String> "ERRORS"    = Human readable error descriptions, why function call failed
-     * int "ERROR"                   = Numeric representation of error
+     * ArrayList<String> "ERRORS"    = Human readable error descriptions, if any
+     * int "ERROR"                   = Numeric representation of error, if any, starting with 100
+     *                                  100: Required argument missing
+     *                                  101: Generic failure of APG
+     *                                  102: No matching private key found
+     *                                  103: Private key's passphrase wrong
+     *                                  104: Private key's passphrase missing
      */
 
     /* Encryption function's arguments
