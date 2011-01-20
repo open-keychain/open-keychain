@@ -385,6 +385,7 @@ public class ApgService extends Service {
         InputData _in = new InputData(_inStream, 0); // XXX Size second param?
 
         OutputStream _out = new ByteArrayOutputStream();
+        Log.v(TAG, "About to encrypt");
         try {
             Apg.encrypt(getBaseContext(), // context
                     _in, // input stream
@@ -450,6 +451,7 @@ public class ApgService extends Service {
             InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
             InputData in = new InputData(inStream, 0); // XXX what size in second parameter?
             OutputStream out = new ByteArrayOutputStream();
+            Log.v(TAG, "About to decrypt");
             try {
                 Apg.decrypt(getBaseContext(), in, out, _passphrase, null, // progress
                         pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
@@ -469,6 +471,7 @@ public class ApgService extends Service {
                 }
                 return false;
             }
+            Log.v(TAG, "Decrypted");
 
             pReturn.putString(ret.RESULT.name(), out.toString());
             return true;
