@@ -195,13 +195,14 @@ public class ApgService extends Service {
             "" + Id.database.type_public
         }, null, null, orderBy);
 
+        Log.v(TAG, "going through installed user keys");
         ArrayList<Long> _master_keys = new ArrayList<Long>();
         while (mCursor.moveToNext()) {
             long _cur_mkey = mCursor.getLong(1);
             String _cur_user = mCursor.getString(2);
             
             String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
-            Log.d(TAG, "current master key: " + _cur_mkey + " from " + _cur_user);
+            Log.v(TAG, "current user: "+_cur_user+" ("+_cur_fprint+")");
             if (search_keys.contains(_cur_fprint) || search_keys.contains(_cur_user)) {
                 Log.v(TAG, "master key found for: " + _cur_fprint);
                 _master_keys.add(_cur_mkey);
