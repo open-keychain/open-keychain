@@ -199,10 +199,15 @@ public class ApgService extends Service {
         while (mCursor.moveToNext()) {
             long _cur_mkey = mCursor.getLong(1);
             String _cur_user = mCursor.getString(2);
+            
+            String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
             Log.d(TAG, "current master key: " + _cur_mkey + " from " + _cur_user);
-            if (search_keys.contains(Apg.getSmallFingerPrint(_cur_mkey)) || search_keys.contains(_cur_user)) {
-                Log.d(TAG, "master key found for: " + Apg.getSmallFingerPrint(_cur_mkey));
+            if (search_keys.contains(_cur_fprint) || search_keys.contains(_cur_user)) {
+                Log.v(TAG, "master key found for: " + _cur_fprint);
                 _master_keys.add(_cur_mkey);
+                search_keys.remove(_cur_fprint);
+            } else {
+                Log.v(TAG, "Installed key "+_cur_fprint+" is not in the list of public keys to encrypt with");
             }
         }
         mCursor.close();
@@ -212,6 +217,15 @@ public class ApgService extends Service {
         for (Long _key : _master_keys) {
             _master_longs[i++] = _key;
         }
+        
+        if( i == 0) {
+            Log.e(TAG, "Found no public key to encrypt with, APG will error out");
+        }
+        
+        for( String _key : search_keys) {
+            Log.w(TAG, "Cannot encrypt with key "+_key+": cannot find it in APG");
+        }
+        
         return _master_longs;
     }
 
