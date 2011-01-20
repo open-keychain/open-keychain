@@ -42,7 +42,7 @@ interface IApgService {
      *      String  "SIGNATURE_KEY"             = Key to sign with
      *      
      *  (optional)
-     *      String  "SIGNATURE_KEY_PASSPHRASE"  = Passphrase for signing key
+     *      String  "PRIVATE_KEY_PASSPHRASE"    = Passphrase for signing key
      *
      * Bundle return_vals (in addition to the ERRORS/WARNINGS above):
      *      String  "RESULT"                    = Encrypted message
