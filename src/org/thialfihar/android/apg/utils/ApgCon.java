@@ -18,11 +18,12 @@ import org.thialfihar.android.apg.IApgService;
 /**
  * This class can be used by other projects to simplify connecting to the
  * APG-Service. Kind of wrapper of for AIDL.
+ * 
  * It is not used in this project.
  */
 public class ApgCon {
 
-    public class call_async extends AsyncTask<String, Void, Void> {
+    private class call_async extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... arg) {
@@ -86,6 +87,17 @@ public class ApgCon {
         CALL_NOT_KNOWN, // apg service does not know what to do
     }
 
+    /**
+     * Constructor
+     * 
+     * <p>
+     * Creates a new ApgCon object and searches for the right APG version on
+     * initialization. If not found, errors are printed to the error log.
+     * </p>
+     * 
+     * @param ctx
+     *            the running context
+     */
     public ApgCon(Context ctx) {
         Log.v(TAG, "EncryptionService created");
         mContext = ctx;
@@ -153,6 +165,20 @@ public class ApgCon {
         return true;
     }
 
+    /**
+     * Disconnects ApgCon from Apg
+     * 
+     * <p>
+     * This should be called whenever all work with APG is done (e.g. everything
+     * you wanted to encrypt is encrypted), since connections with AIDL should
+     * not be upheld indefinitely.
+     * <p>
+     * 
+     * <p>
+     * Also, if you destroy you end using your ApgCon-instance, this must be
+     * called or else the connection to APG is leaked
+     * </p>
+     */
     public void disconnect() {
         Log.v(TAG, "disconnecting apgService");
         if (apgService != null) {
@@ -171,20 +197,66 @@ public class ApgCon {
         return true;
     }
 
+    /**
+     * Calls a function from APG's AIDL-interface
+     * 
+     * <p>
+     * After you have set up everything with {@link #set_arg(String, String)}
+     * (and variants), you can call a function from the AIDL-interface. This
+     * will
+     * <ul>
+     * <li>start connection to the remote interface (if not already connected)</li>
+     * <li>call the passed function with all set up parameters synchronously</li>
+     * <li>set up everything to retrieve the result and/or warnings/errors</li>
+     * </ul>
+     * </p>
+     * 
+     * <p>
+     * Note your thread will be blocked during execution - if you want to call
+     * the function asynchronously, see {@link #call_async(String)}.
+     * </p>
+     * 
+     * @param function
+     *            a remote function to call
+     * @return true, if call successful (= no errors), else false
+     * 
+     * @see #call_async(String)
+     * @see #set_arg(String, String)
+     */
     public boolean call(String function) {
         return this.call(function, args, result);
     }
 
+    /**
+     * Calls a function from remote interface asynchronously
+     * 
+     * <p>
+     * This does exactly the same as {@link #call(String)}, but asynchronously.
+     * While connection to APG and work are done in background, your thread can
+     * go on executing.
+     * <p>
+     * 
+     * <p>
+     * To see whether the task is finished, you have to possibilities:
+     * <ul>
+     * <li>In your thread, poll {@link #is_running()}</li>
+     * <li>Supply a callback with {@link #set_callback(Object, String)}</li>
+     * </ul>
+     * </p>
+     * 
+     * @param function
+     *            a remote function to call
+     * 
+     * @see #call(String)
+     * @see #is_running()
+     * @see #set_callback(Object, String)
+     */
     public void call_async(String function) {
         async_running = true;
         new call_async().execute(function);
     }
 
-    public boolean call(String function, Bundle pArgs) {
-        return this.call(function, pArgs, result);
-    }
-
-    public boolean call(String function, Bundle pArgs, Bundle pReturn) {
+    private boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
         error_list.clear();
         warning_list.clear();
@@ -220,30 +292,106 @@ public class ApgCon {
 
     }
 
+    /**
+     * Set a string argument for APG
+     * 
+     * <p>
+     * This defines a string argument for APG's AIDL-interface.
+     * </p>
+     * 
+     * <p>
+     * To know what key-value-pairs are possible (or required), take a look into
+     * the IApgService.aidl
+     * </p>
+     * 
+     * <p>
+     * Note, that the parameters are not deleted after a call, so you have to
+     * reset ({@link #clear_args()}) them manually if you want to.
+     * </p>
+     * 
+     * 
+     * @param key
+     *            the key
+     * @param val
+     *            the value
+     * 
+     * @see #clear_args()
+     */
     public void set_arg(String key, String val) {
         args.putString(key, val);
     }
 
+    /**
+     * Set a string-array argument for APG
+     * 
+     * <p>
+     * If the AIDL-parameter is an {@literal ArrayList<String>}, you have to use
+     * this function.
+     * </p>
+     * 
+     * <code>
+     * <pre>
+     * set_arg("a key", new String[]{ "entry 1", "entry 2" });
+     * </pre>
+     * </code>
+     * 
+     * @param key
+     *            the key
+     * @param vals
+     *            the value
+     * 
+     * @see #set_arg(String, String)
+     */
     public void set_arg(String key, String vals[]) {
         ArrayList<String> list = new ArrayList<String>();
         for (String val : vals) {
             list.add(val);
         }
-        set_arg(key, list);
+        args.putStringArrayList(key, list);
     }
 
-    public void set_arg(String key, ArrayList<String> vals) {
-        args.putStringArrayList(key, vals);
-    }
-
+    /**
+     * Set up a boolean argument for APG
+     * 
+     * @param key
+     *            the key
+     * @param vals
+     *            the value
+     * 
+     * @see #set_arg(String, String)
+     */
     public void set_arg(String key, boolean val) {
         args.putBoolean(key, val);
     }
 
+    /**
+     * Set up a int argument for APG
+     * 
+     * @param key
+     *            the key
+     * @param vals
+     *            the value
+     * 
+     * @see #set_arg(String, String)
+     */
     public void set_arg(String key, int val) {
         args.putInt(key, val);
     }
 
+    /**
+     * Set up a int-array argument for APG
+     * <p>
+     * If the AIDL-parameter is an {@literal ArrayList<Integer>}, you have to
+     * use this function.
+     * </p>
+     * 
+     * @param key
+     *            the key
+     * @param vals
+     *            the value
+     * 
+     * @see #set_arg(String, String)
+     */
     public void set_arg(String key, int vals[]) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         for (int val : vals) {
@@ -252,14 +400,50 @@ public class ApgCon {
         args.putIntegerArrayList(key, list);
     }
 
+    /**
+     * Clears all arguments
+     * 
+     * <p>
+     * Anything the has been set up with the various
+     * {@link #set_arg(String, String)} functions, is cleared.
+     * </p>
+     * <p>
+     * Note, that any warning, error, callback, result etc. is not cleared with
+     * this.
+     * </p>
+     * 
+     * @see #reset()
+     */
     public void clear_args() {
         args.clear();
     }
 
+    /**
+     * Return the object associated with the key
+     * 
+     * @param key
+     *            the object's key you want to return
+     * @return an object at position key, or null if not set
+     */
     public Object get_arg(String key) {
         return args.get(key);
     }
 
+    /**
+     * Iterates through the errors
+     * 
+     * <p>
+     * With this method, you can iterate through all errors. The errors are only
+     * returned once and deleted immediately afterwards, so you can only return
+     * each error once.
+     * </p>
+     * 
+     * @return a human readable description of a error that happened, or null if
+     *         no more errors
+     * 
+     * @see #has_next_error()
+     * @see #clear_errors()
+     */
     public String get_next_error() {
         if (error_list.size() != 0)
             return error_list.remove(0);
@@ -267,10 +451,32 @@ public class ApgCon {
             return null;
     }
 
+    /**
+     * Check, if there are any new errors
+     * 
+     * @return true, if there are unreturned errors, false otherwise
+     * 
+     * @see #get_next_error()
+     */
     public boolean has_next_error() {
         return error_list.size() != 0;
     }
 
+    /**
+     * Iterates through the warnings
+     * 
+     * <p>
+     * With this method, you can iterate through all warnings. The warnings are
+     * only returned once and deleted immediately afterwards, so you can only
+     * return each warning once.
+     * </p>
+     * 
+     * @return a human readable description of a warning that happened, or null
+     *         if no more warnings
+     * 
+     * @see #has_next_warning()
+     * @see #clear_warnings()
+     */
     public String get_next_warning() {
         if (warning_list.size() != 0)
             return warning_list.remove(0);
@@ -278,22 +484,68 @@ public class ApgCon {
             return null;
     }
 
+    /**
+     * Check, if there are any new warnings
+     * 
+     * @return true, if there are unreturned warnings, false otherwise
+     * 
+     * @see #get_next_warning()
+     */
     public boolean has_next_warning() {
         return warning_list.size() != 0;
     }
 
+    /**
+     * Get the result
+     * 
+     * <p>
+     * This gets your result. After doing anything with APG, you get the output
+     * with this function
+     * </p>
+     * <p>
+     * Note, that when your last remote call is unsuccessful, the result will
+     * still have the same value like the last successful call (or null, if no
+     * call was successful). To ensure you do not work with old call's results,
+     * either be sure to {@link #reset()} (or at least {@link #clear_result()})
+     * your instance before each new call or always check that
+     * {@link #has_next_error()} is false.
+     * </p>
+     * 
+     * @return the result of the last {@link #call(String)} or
+     *         {@link #call_asinc(String)}.
+     * 
+     * @see #reset()
+     * @see #clear_result()
+     */
     public String get_result() {
         return result.getString("RESULT");
     }
 
+    /**
+     * Clears all unfetched errors
+     * 
+     * @see #get_next_error()
+     * @see #has_next_error()
+     */
     public void clear_errors() {
         error_list.clear();
     }
 
+    /**
+     * Clears all unfetched warnings
+     * 
+     * @see #get_next_warning()
+     * @see #has_next_warning()
+     */
     public void clear_warnings() {
         warning_list.clear();
     }
 
+    /**
+     * Clears the last result
+     * 
+     * @see #get_result()
+     */
     public void clear_result() {
         result.clear();
     }
@@ -301,14 +553,19 @@ public class ApgCon {
     /**
      * Set a callback object and method
      * 
-     * <p>After an async execution is finished, obj.meth() will be called. You can
+     * <p>
+     * After an async execution is finished, obj.meth() will be called. You can
      * use this in order to get notified, when encrypting/decrypting of long
      * data finishes and do not have to poll {@link #is_running()} in your
      * thread. Note, that if the call of the method fails for whatever reason,
      * you won't get notified in any way - so you still should check
-     * {@link #is_running()} from time to time.</p>
+     * {@link #is_running()} from time to time.
+     * </p>
      * 
-     * <p>It produces a warning fetchable with {@link #get_next_warning()} when the callback fails.</p>
+     * <p>
+     * It produces a warning fetchable with {@link #get_next_warning()} when the
+     * callback fails.
+     * </p>
      * 
      * <pre>
      * <code>
@@ -366,18 +623,67 @@ public class ApgCon {
         callback_method = meth;
     }
 
+    /**
+     * Clears any callback object
+     * 
+     * @see #set_callback(Object, String)
+     */
     public void clear_callback_object() {
         callback_object = null;
     }
 
+    /**
+     * Clears any callback method
+     * 
+     * @see #set_callback(Object, String)
+     */
     public void clear_callback_method() {
         callback_method = null;
     }
 
+    /**
+     * Clears any callback method and object
+     * 
+     * @see #set_callback(Object, String)
+     */
+    public void clear_callback() {
+        clear_callback_object();
+        clear_callback_method();
+    }
+
+    /**
+     * Checks, whether an async execution is running
+     * 
+     * <p>
+     * If you started something with {@link #call_async(String)}, this will
+     * return true if the task is still running
+     * </p>
+     * 
+     * @return true, if an async task is still running, false otherwise
+     * 
+     * @see #call_async(String)
+     */
     public boolean is_running() {
         return async_running;
     }
 
+    /**
+     * Completely resets your instance
+     * 
+     * <p>
+     * This currently resets everything in this instance. Errors, warnings,
+     * results, callbacks, ... are removed. Any connection to the remote
+     * interface is upheld, though.
+     * </p>
+     * 
+     * <p>
+     * Note, that when an async execution ({@link #call_async(String)}) is
+     * running, it's result, warnings etc. will still be evaluated (which might
+     * be not what you want). Also mind, that any callback you set is also
+     * reseted, so on finishing the async execution any defined callback will
+     * NOT BE TRIGGERED.
+     * </p>
+     */
     public void reset() {
         clear_errors();
         clear_warnings();
