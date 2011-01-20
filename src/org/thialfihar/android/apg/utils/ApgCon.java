@@ -24,6 +24,11 @@ import org.thialfihar.android.apg.IApgService;
  */
 public class ApgCon {
 
+    /**
+     * Put stacktraces into the log?
+     */
+    private final boolean stacktraces = true;
+
     private class call_async extends AsyncTask<String, Void, Void> {
 
         @Override
@@ -42,14 +47,20 @@ public class ApgCon {
                     callback_object.getClass().getMethod(callback_method).invoke(callback_object);
                     Log.d(TAG, "Callback executed");
                 } catch (NoSuchMethodException e) {
+                    if (stacktraces)
+                        e.printStackTrace();
                     Log.w(TAG, "Exception in callback: Method '" + callback_method + "' not found");
                     warning_list.add("(LOCAL) Could not execute callback, method '" + callback_method + "()' not found");
                 } catch (InvocationTargetException e) {
+                    if (stacktraces)
+                        e.printStackTrace();
                     Throwable orig = e.getTargetException();
                     Log.w(TAG, "Exception of type '" + orig.getClass() + "' in callback's method '" + callback_method + "()':" + orig.getMessage());
                     warning_list.add("(LOCAL) Exception of type '" + orig.getClass() + "' in callback's method '" + callback_method + "()':"
                             + orig.getMessage());
                 } catch (Exception e) {
+                    if (stacktraces)
+                        e.printStackTrace();
                     Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage());
                     warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
                 }
@@ -153,6 +164,8 @@ public class ApgCon {
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
+            if (stacktraces)
+                e.printStackTrace();
             Log.e(TAG, "Could not find APG, is it installed?");
             error_list.add("(LOCAL) Could not find APG, is it installed?");
             local_error = error.APG_NOT_FOUND;
@@ -171,6 +184,8 @@ public class ApgCon {
         try {
             mContext.bindService(new Intent(IApgService.class.getName()), apgConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
+            if (stacktraces)
+                e.printStackTrace();
             Log.v(TAG, "could not bind APG service");
             return false;
         }
@@ -305,16 +320,22 @@ public class ApgCon {
             pReturn.remove(ret.WARNINGS.name());
             return success;
         } catch (NoSuchMethodException e) {
+            if (stacktraces)
+                e.printStackTrace();
             Log.e(TAG, "Remote call not known (" + function + "): " + e.getMessage());
             error_list.add("(LOCAL) Remote call not known (" + function + "): " + e.getMessage());
             local_error = error.CALL_NOT_KNOWN;
             return false;
         } catch (InvocationTargetException e) {
+            if (stacktraces)
+                e.printStackTrace();
             Throwable orig = e.getTargetException();
-            Log.w(TAG, "Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "':" + orig.getMessage());
-            error_list.add("(LOCAL) Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "':" + orig.getMessage());
+            Log.w(TAG, "Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "': " + orig.getMessage());
+            error_list.add("(LOCAL) Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "': " + orig.getMessage());
             return false;
         } catch (Exception e) {
+            if (stacktraces)
+                e.printStackTrace();
             Log.e(TAG, "Generic error (" + e.getClass() + "): " + e.getMessage());
             error_list.add("(LOCAL) Generic error (" + e.getClass() + "): " + e.getMessage());
             local_error = error.GENERIC;
