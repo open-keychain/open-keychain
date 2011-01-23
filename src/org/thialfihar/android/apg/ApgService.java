@@ -380,6 +380,7 @@ public class ApgService extends Service {
 
         /* return if errors happened */
         if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
+            Log.v(TAG, "Errors after preparing, not executing "+call);
             pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.shifted_ordinal());
             return false;
         }
@@ -460,6 +461,7 @@ public class ApgService extends Service {
             ArrayList<String> fprints = new ArrayList<String>();
             ArrayList<String> ids = new ArrayList<String>();
             while (mCursor.moveToNext()) {
+                Log.v(TAG, "adding key "+Apg.getSmallFingerPrint(mCursor.getLong(0)));
                 fprints.add(Apg.getSmallFingerPrint(mCursor.getLong(0)));
                 ids.add(mCursor.getString(1));
             }

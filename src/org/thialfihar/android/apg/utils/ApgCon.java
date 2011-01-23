@@ -345,8 +345,6 @@ public class ApgCon {
             Boolean success = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(apgService, pArgs, pReturn);
             error_list.addAll(pReturn.getStringArrayList(ret.ERRORS.name()));
             warning_list.addAll(pReturn.getStringArrayList(ret.WARNINGS.name()));
-            pReturn.remove(ret.ERRORS.name());
-            pReturn.remove(ret.WARNINGS.name());
             return success;
         } catch (NoSuchMethodException e) {
             if (stacktraces)
