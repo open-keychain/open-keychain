@@ -29,7 +29,7 @@ import org.thialfihar.android.apg.IApgService;
  * </p>
  * 
  * @author Markus Doits <markus.doits@googlemail.com>
- * @version 0.9
+ * @version 0.9.1
  * 
  */
 public class ApgCon {
@@ -87,6 +87,7 @@ public class ApgCon {
     private final static int api_version = 1; // aidl api-version it expects
 
     private final Context mContext;
+    private final error connection_status;
     private boolean async_running = false;
     private Object callback_object;
     private String callback_method;
@@ -121,6 +122,7 @@ public class ApgCon {
      * 
      */
     public static enum error {
+        NO_ERROR,
         /**
          * generic error
          */
@@ -144,7 +146,8 @@ public class ApgCon {
         /**
          * found APG but without AIDL interface
          */
-        APG_AIDL_MISSING
+        APG_AIDL_MISSING,
+        APG_API_MISSMATCH
     }
 
     private static enum ret {
@@ -169,12 +172,14 @@ public class ApgCon {
         Log.v(TAG, "EncryptionService created");
         mContext = ctx;
 
+        error tmp_connection_status = null;
         try {
             Log.v(TAG, "Searching for the right APG version");
             ServiceInfo apg_services[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
                     PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
             if (apg_services == null) {
                 Log.e(TAG, "Could not fetch services");
+                tmp_connection_status = error.GENERIC;
             } else {
                 boolean apg_service_found = false;
                 for (ServiceInfo inf : apg_services) {
@@ -185,12 +190,15 @@ public class ApgCon {
                             Log.w(TAG, "Could not determine ApgService API");
                             Log.w(TAG, "This probably won't work!");
                             warning_list.add("(LOCAL) Could not determine ApgService API");
+                            tmp_connection_status = error.APG_API_MISSMATCH;
                         } else if (inf.metaData.getInt("api_version") != api_version) {
                             Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
                             Log.w(TAG, "This probably won't work!");
                             warning_list.add("(LOCAL) Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
+                            tmp_connection_status = error.APG_API_MISSMATCH;
                         } else {
                             Log.v(TAG, "Found api_version " + api_version + ", everything should work");
+                            tmp_connection_status = error.NO_ERROR;
                         }
                     }
                 }
@@ -199,6 +207,7 @@ public class ApgCon {
                     Log.e(TAG, "Could not find APG with AIDL interface, this probably won't work");
                     error_list.add("(LOCAL) Could not find APG with AIDL interface, this probably won't work");
                     result.putInt(ret.ERROR.name(), error.APG_AIDL_MISSING.ordinal());
+                    tmp_connection_status = error.APG_NOT_FOUND;
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
@@ -207,7 +216,10 @@ public class ApgCon {
             Log.e(TAG, "Could not find APG, is it installed?");
             error_list.add("(LOCAL) Could not find APG, is it installed?");
             result.putInt(ret.ERROR.name(), error.APG_NOT_FOUND.ordinal());
+            tmp_connection_status = error.APG_NOT_FOUND;
         }
+        
+        connection_status = tmp_connection_status;
     }
 
     /** try to connect to the apg service */
@@ -647,6 +659,10 @@ public class ApgCon {
      */
     public Bundle get_result_bundle() {
         return result;
+    }
+    
+    public error get_connection_status() {
+        return connection_status;
     }
 
     /**
