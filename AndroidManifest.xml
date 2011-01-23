@@ -195,7 +195,12 @@
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <service android:name=".Service" />
-        <service android:name=".ApgService" android:enabled="true" android:exported="true" android:process=":remote" >
+        <service
+            android:name=".ApgService"
+            android:enabled="true" android:exported="true"
+            android:process=":remote"
+            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+            >
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.IApgService"/>
             </intent-filter>
