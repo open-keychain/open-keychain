@@ -327,10 +327,6 @@ public class ApgCon {
         new call_async().execute(function);
     }
 
-    public boolean call(String function, Bundle pReturn) {
-        return call(function, args, pReturn);
-    }
-
     private boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
         if (!initialize()) {
@@ -603,8 +599,8 @@ public class ApgCon {
      * Get the result
      * 
      * <p>
-     * This gets your result. After doing anything with APG, you get the output
-     * with this function
+     * This gets your result. After doing an encryption or decryption with APG,
+     * you get the output with this function.
      * </p>
      * <p>
      * Note, that when your last remote call is unsuccessful, the result will
@@ -620,9 +616,33 @@ public class ApgCon {
      * 
      * @see #reset()
      * @see #clear_result()
+     * @see #get_result_bundle()
      */
     public String get_result() {
         return result.getString(ret.RESULT.name());
+    }
+
+    /**
+     * Get the result bundle
+     * 
+     * <p>
+     * Unlike {@link #get_result()}, which only returns any en-/decrypted
+     * message, this function returns the complete information that was returned
+     * by Apg. This also includes the "RESULT", but additionally the warnings,
+     * errors and any other information.
+     * </p>
+     * <p>
+     * For warnings and errors it is suggested to use the functions that are
+     * provided here, namely {@link #get_error()}, {@link #get_next_error()},
+     * {@link #get_next_Warning()} etc.), but if any call returns something non
+     * standard, you have access to the complete result bundle to extract the
+     * information.
+     * </p>
+     * 
+     * @return the complete result-bundle of the last call to apg
+     */
+    public Bundle get_result_bundle() {
+        return result;
     }
 
     /**
