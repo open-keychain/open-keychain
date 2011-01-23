@@ -1,7 +1,7 @@
 package org.thialfihar.android.apg;
 
 interface IApgService {
-
+    
     /* All functions fill the return_vals Bundle with the following keys:
      *
      * ArrayList<String> "WARNINGS"  = Warnings, if any
@@ -14,7 +14,12 @@ interface IApgService {
      *                                  104: Private key's passphrase missing
      */
 
-    /* Encryption function's arguments
+    /* *******************************************************
+     * Encrypting and decrypting 
+     * ********************************************************/
+
+
+    /* All encryption function's arguments
      *
      * Bundle params' keys:
      *  (optional/required) 
@@ -82,5 +87,27 @@ interface IApgService {
      * Bundle return_vals:
      *   String     "RESULT"                    = Decrypted message
      */
-        boolean decrypt(in Bundle params, out Bundle return_vals);
+    
+    boolean decrypt(in Bundle params, out Bundle return_vals);
+    
+    
+    /* *******************************************************
+     * Get key information 
+     * ********************************************************/
+    
+    /* Get info about all available keys
+     * 
+     * Bundle params:
+     *  (required)
+     *      int "KEY_TYPE"                      = info about what type of keys to return
+     *                                              0: public keys
+     *                                              1: private keys
+     *      
+     *  Returns:
+     *      StringArrayList "FINGERPRINTS"      = Short fingerprints of keys
+     *      
+     *      StringArrayList "USER_IDS"          = User ids of corrosponding fingerprints (order is the same)
+     */
+    boolean get_keys(in Bundle params, out Bundle return_vals);
+
 }

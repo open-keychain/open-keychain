@@ -327,6 +327,10 @@ public class ApgCon {
         new call_async().execute(function);
     }
 
+    public boolean call(String function, Bundle pReturn) {
+        return call(function, args, pReturn);
+    }
+
     private boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
         if (!initialize()) {

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
@@ -38,7 +37,7 @@ public class ApgService extends Service {
         NO_MATCHING_SECRET_KEY,
         PRIVATE_KEY_PASSPHRASE_WRONG,
         PRIVATE_KEY_PASSPHRASE_MISSING;
-        
+
         public int shifted_ordinal() {
             return ordinal() + 100;
         }
@@ -55,8 +54,8 @@ public class ApgService extends Service {
         FORCE_V3_SIGNATURE, // whether to force v3 signature
         COMPRESSION, // what compression to use for encrypted output
         SIGNATURE_KEY, // key for signing
-        PRIVATE_KEY_PASSPHRASE
-        // passphrase for encrypted private key
+        PRIVATE_KEY_PASSPHRASE, // passphrase for encrypted private key
+        KEY_TYPE, // type of key (private or public)
     }
 
     /** all things that might be returned */
@@ -64,12 +63,13 @@ public class ApgService extends Service {
         ERRORS, // string array list with errors
         WARNINGS, // string array list with warnings
         ERROR, // numeric error
-        RESULT
-        // en-/decrypted
+        RESULT, // en-/decrypted
+        FINGERPRINTS, // fingerprints of keys
+        USER_IDS, // user ids
     }
 
     /** required arguments for each AIDL function */
-    private static final HashMap<String, Set<arg>> FUNCTIONS_REQUIRED_ARGS = new HashMap<String, Set<arg>>();
+    private static final HashMap<String, HashSet<arg>> FUNCTIONS_REQUIRED_ARGS = new HashMap<String, HashSet<arg>>();
     static {
         HashSet<arg> args = new HashSet<arg>();
         args.add(arg.SYMMETRIC_PASSPHRASE);
@@ -85,10 +85,14 @@ public class ApgService extends Service {
         args.add(arg.MESSAGE);
         FUNCTIONS_REQUIRED_ARGS.put("decrypt", args);
 
+        args = new HashSet<arg>();
+        args.add(arg.KEY_TYPE);
+        FUNCTIONS_REQUIRED_ARGS.put("get_keys", args);
+
     }
 
     /** optional arguments for each AIDL function */
-    private static final HashMap<String, Set<arg>> FUNCTIONS_OPTIONAL_ARGS = new HashMap<String, Set<arg>>();
+    private static final HashMap<String, HashSet<arg>> FUNCTIONS_OPTIONAL_ARGS = new HashMap<String, HashSet<arg>>();
     static {
         HashSet<arg> args = new HashSet<arg>();
         args.add(arg.ENCRYPTION_ALGORYTHM);
@@ -166,6 +170,26 @@ public class ApgService extends Service {
             return 0;
     }
 
+    private static Cursor get_key_entries(HashMap<String, Object> params) {
+        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME
+                + "." + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME
+                + " ON " + "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "."
+                + UserIds.RANK + " = '0') ");
+
+        String orderBy = params.containsKey("order_by") ? (String) params.get("order_by") : UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
+
+        String type_val[] = null;
+        String type_where = null;
+        if (params.containsKey("key_type")) {
+            type_where = KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?";
+            type_val = new String[] {
+                "" + params.get("key_type")
+            };
+        }
+        return qb.query(Apg.getDatabase().db(), (String[]) params.get("columns"), type_where, type_val, null, null, orderBy);
+    }
+
     /**
      * maps fingerprints or user ids of keys to master keys in database
      * 
@@ -176,20 +200,14 @@ public class ApgService extends Service {
      */
     private static long[] get_master_key(ArrayList<String> search_keys, Bundle pReturn) {
 
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME
-                + "." + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME
-                + " ON " + "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "."
-                + UserIds.RANK + " = '0') ");
-
-        String orderBy = UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
-
-        Cursor mCursor = qb.query(Apg.getDatabase().db(), new String[] {
+        HashMap<String, Object> qParams = new HashMap<String, Object>();
+        qParams.put("columns", new String[] {
                 KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 0
                 UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 1
-        }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] {
-            "" + Id.database.type_public
-        }, null, null, orderBy);
+        });
+        qParams.put("key_type", Id.database.type_public);
+
+        Cursor mCursor = get_key_entries(qParams);
 
         Log.v(TAG, "going through installed user keys");
         ArrayList<Long> _master_keys = new ArrayList<Long>();
@@ -235,27 +253,30 @@ public class ApgService extends Service {
      *            the bundle to add default parameters to if missing
      */
     private void add_default_arguments(String call, Bundle args) {
-        Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
+        // check whether there are optional elements defined for that call
+        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(call)) {
+            Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
 
-        Iterator<arg> _iter = FUNCTIONS_DEFAULTS.keySet().iterator();
-        while (_iter.hasNext()) {
-            arg _current_arg = _iter.next();
-            String _current_key = _current_arg.name();
-            if (!args.containsKey(_current_key) && FUNCTIONS_OPTIONAL_ARGS.get(call).contains(_current_arg)) {
-                String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_arg);
-                try {
-                    Class<?> _ret_type = FUNCTIONS_DEFAULTS_TYPES.get(_current_function_name);
-                    if (_ret_type == String.class) {
-                        args.putString(_current_key, (String) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
-                    } else if (_ret_type == boolean.class) {
-                        args.putBoolean(_current_key, (Boolean) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
-                    } else if (_ret_type == int.class) {
-                        args.putInt(_current_key, (Integer) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
-                    } else {
-                        Log.e(TAG, "Unknown return type " + _ret_type.toString() + " for default option");
+            Iterator<arg> _iter = FUNCTIONS_DEFAULTS.keySet().iterator();
+            while (_iter.hasNext()) {
+                arg _current_arg = _iter.next();
+                String _current_key = _current_arg.name();
+                if (!args.containsKey(_current_key) && FUNCTIONS_OPTIONAL_ARGS.get(call).contains(_current_arg)) {
+                    String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_arg);
+                    try {
+                        Class<?> _ret_type = FUNCTIONS_DEFAULTS_TYPES.get(_current_function_name);
+                        if (_ret_type == String.class) {
+                            args.putString(_current_key, (String) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
+                        } else if (_ret_type == boolean.class) {
+                            args.putBoolean(_current_key, (Boolean) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
+                        } else if (_ret_type == int.class) {
+                            args.putInt(_current_key, (Integer) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
+                        } else {
+                            Log.e(TAG, "Unknown return type " + _ret_type.toString() + " for default option");
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Exception in add_default_arguments " + e.getMessage());
                     }
-                } catch (Exception e) {
-                    Log.e(TAG, "Exception in add_default_arguments " + e.getMessage());
                 }
             }
         }
@@ -286,11 +307,13 @@ public class ApgService extends Service {
      *            the bundle to write errors to
      */
     private void check_required_args(String function, Bundle pArgs, Bundle pReturn) {
-        Iterator<arg> _iter = FUNCTIONS_REQUIRED_ARGS.get(function).iterator();
-        while (_iter.hasNext()) {
-            String _cur_arg = _iter.next().name();
-            if (!pArgs.containsKey(_cur_arg)) {
-                pReturn.getStringArrayList(ret.ERRORS.name()).add("Argument missing: " + _cur_arg);
+        if (FUNCTIONS_REQUIRED_ARGS.containsKey(function)) {
+            Iterator<arg> _iter = FUNCTIONS_REQUIRED_ARGS.get(function).iterator();
+            while (_iter.hasNext()) {
+                String _cur_arg = _iter.next().name();
+                if (!pArgs.containsKey(_cur_arg)) {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Argument missing: " + _cur_arg);
+                }
             }
         }
     }
@@ -306,8 +329,14 @@ public class ApgService extends Service {
      *            the bundle to write warnings to
      */
     private void check_unknown_args(String function, Bundle pArgs, Bundle pReturn) {
-        HashSet<arg> all_args = new HashSet<arg>(FUNCTIONS_REQUIRED_ARGS.get(function));
-        all_args.addAll(FUNCTIONS_OPTIONAL_ARGS.get(function));
+
+        HashSet<arg> all_args = new HashSet<arg>();
+        if (FUNCTIONS_REQUIRED_ARGS.containsKey(function)) {
+            all_args.addAll(FUNCTIONS_REQUIRED_ARGS.get(function));
+        }
+        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(function)) {
+            all_args.addAll(FUNCTIONS_OPTIONAL_ARGS.get(function));
+        }
 
         ArrayList<String> _unknown_args = new ArrayList<String>();
         Iterator<String> _iter = pArgs.keySet().iterator();
@@ -415,6 +444,32 @@ public class ApgService extends Service {
 
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
+        public boolean get_keys(Bundle pArgs, Bundle pReturn) {
+
+            prepare_args("get_keys", pArgs, pReturn);
+
+            HashMap<String, Object> qParams = new HashMap<String, Object>();
+            qParams.put("columns", new String[] {
+                    KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 0
+                    UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 1
+            });
+
+            qParams.put("key_type", pArgs.getInt(arg.KEY_TYPE.name()));
+
+            Cursor mCursor = get_key_entries(qParams);
+            ArrayList<String> fprints = new ArrayList<String>();
+            ArrayList<String> ids = new ArrayList<String>();
+            while (mCursor.moveToNext()) {
+                fprints.add(Apg.getSmallFingerPrint(mCursor.getLong(0)));
+                ids.add(mCursor.getString(1));
+            }
+            mCursor.close();
+
+            pReturn.putStringArrayList(ret.FINGERPRINTS.name(), fprints);
+            pReturn.putStringArrayList(ret.USER_IDS.name(), ids);
+            return true;
+        }
+
         public boolean encrypt_with_public_key(Bundle pArgs, Bundle pReturn) {
             if (!prepare_args("encrypt_with_public_key", pArgs, pReturn)) {
                 return false;
@@ -468,5 +523,6 @@ public class ApgService extends Service {
             pReturn.putString(ret.RESULT.name(), out.toString());
             return true;
         }
+
     };
 }
