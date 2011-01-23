@@ -54,7 +54,11 @@ public class ApgCon {
             if (callback_object != null && callback_method != null) {
                 try {
                     Log.d(TAG, "About to execute callback");
-                    callback_object.getClass().getMethod(callback_method).invoke(callback_object);
+                    if (callback_return_self) {
+                        callback_object.getClass().getMethod(callback_method, ApgCon.class).invoke(callback_object, get_self());
+                    } else {
+                        callback_object.getClass().getMethod(callback_method).invoke(callback_object);
+                    }
                     Log.d(TAG, "Callback executed");
                 } catch (NoSuchMethodException e) {
                     if (stacktraces)
@@ -86,6 +90,8 @@ public class ApgCon {
     private boolean async_running = false;
     private Object callback_object;
     private String callback_method;
+    public static final boolean default_callback_return_self = false;
+    private boolean callback_return_self = default_callback_return_self;
 
     private final Bundle result = new Bundle();
     private final Bundle args = new Bundle();
@@ -718,10 +724,38 @@ public class ApgCon {
      *            The object, which has the public method meth
      * @param meth
      *            Method to call on the object obj
+     * 
+     * @see #set_callback(Object, String, boolean)
      */
     public void set_callback(Object obj, String meth) {
+        set_callback(obj, meth, default_callback_return_self);
+    }
+
+    /**
+     * Set a callback and whether to return self as a additional parameter
+     * 
+     * <p>
+     * This does the same as {@link #set_callback(Object, String)} with one
+     * Additionally parameter return_self.
+     * </p>
+     * <p>
+     * The additional parameter controls, whether to return itself as a
+     * parameter to the callback method meth (in order to go on working after
+     * async execution has finished). This means, your callback method must have
+     * one parameter of the type ApgCon.
+     * </p>
+     * 
+     * @param obj
+     *            The object, which has the public method meth
+     * @param meth
+     *            Method to call on the object obj
+     * @param return_self
+     *            Whether to return itself as an parameter to meth
+     */
+    public void set_callback(Object obj, String meth, boolean return_self) {
         set_callback_object(obj);
         set_callback_method(meth);
+        set_callback_return_self(return_self);
     }
 
     /**
@@ -747,6 +781,17 @@ public class ApgCon {
     }
 
     /**
+     * Set whether to return self on callback
+     * 
+     * @param arg
+     *            set results as param for callback method
+     * @see #set_callback(Object, String)
+     */
+    public void set_callback_return_self(boolean arg) {
+        callback_return_self = arg;
+    }
+
+    /**
      * Clears any callback object
      * 
      * @see #set_callback(Object, String)
@@ -765,13 +810,24 @@ public class ApgCon {
     }
 
     /**
-     * Clears any callback method and object
+     * Sets to default value of whether to return self on callback
+     * 
+     * @see #set_callback(Object, String, boolean)
+     * @see #default_callback_return_self
+     */
+    public void clear_callback_return_self() {
+        callback_return_self = default_callback_return_self;
+    }
+
+    /**
+     * Clears anything related to callback
      * 
      * @see #set_callback(Object, String)
      */
     public void clear_callback() {
         clear_callback_object();
         clear_callback_method();
+        clear_callback_return_self();
     }
 
     /**
@@ -785,6 +841,7 @@ public class ApgCon {
      * @return true, if an async task is still running, false otherwise
      * 
      * @see #call_async(String)
+     * 
      */
     public boolean is_running() {
         return async_running;
@@ -811,9 +868,12 @@ public class ApgCon {
         clear_errors();
         clear_warnings();
         clear_args();
-        clear_callback_object();
-        clear_callback_method();
+        clear_callback();
         result.clear();
+    }
+
+    public ApgCon get_self() {
+        return this;
     }
 
 }
