@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -185,16 +184,9 @@ public class ApgService extends Service {
 
         String orderBy = UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
 
-        long now = new Date().getTime() / 1000;
         Cursor mCursor = qb.query(Apg.getDatabase().db(), new String[] {
-                KeyRings.TABLE_NAME + "." + KeyRings._ID, // 0
-                KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
-                UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 2
-                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME
-                        + "." + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND " + "tmp." + Keys.CAN_ENCRYPT + " = '1')", // 3
-                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME
-                        + "." + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND " + "tmp." + Keys.CAN_ENCRYPT + " = '1' AND " + "tmp."
-                        + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY + " IS NULL OR " + "tmp." + Keys.EXPIRY + " >= '" + now + "'))", // 4
+                KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 0
+                UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 1
         }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] {
             "" + Id.database.type_public
         }, null, null, orderBy);
@@ -202,8 +194,8 @@ public class ApgService extends Service {
         Log.v(TAG, "going through installed user keys");
         ArrayList<Long> _master_keys = new ArrayList<Long>();
         while (mCursor.moveToNext()) {
-            long _cur_mkey = mCursor.getLong(1);
-            String _cur_user = mCursor.getString(2);
+            long _cur_mkey = mCursor.getLong(0);
+            String _cur_user = mCursor.getString(1);
 
             String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
             Log.v(TAG, "current user: " + _cur_user + " (" + _cur_fprint + ")");
