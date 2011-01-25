@@ -1,9 +1,7 @@
 package org.thialfihar.android.apg.utils;
 
-import android.os.Bundle;
-
 public interface ApgConInterface {
     public static interface OnCallFinishListener {
-        public abstract void onCallFinish(Bundle result);
+        public abstract void onCallFinish(android.os.Bundle result);
     }
 }
