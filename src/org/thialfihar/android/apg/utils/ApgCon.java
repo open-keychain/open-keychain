@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.thialfihar.android.apg.IApgService;
+import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
 
 /**
  * A APG-AIDL-Wrapper
@@ -29,7 +30,7 @@ import org.thialfihar.android.apg.IApgService;
  * </p>
  * 
  * @author Markus Doits <markus.doits@googlemail.com>
- * @version 0.9.1
+ * @version 0.9.9
  * 
  */
 public class ApgCon {
@@ -43,31 +44,10 @@ public class ApgCon {
             return null;
         }
 
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Void res) {
             Log.d(TAG, "Async execution finished");
             async_running = false;
-            if (callback_object != null && callback_method != null) {
-                try {
-                    Log.d(TAG, "About to execute callback");
-                    if (callback_return_self) {
-                        callback_object.getClass().getMethod(callback_method, ApgCon.class).invoke(callback_object, get_self());
-                    } else {
-                        callback_object.getClass().getMethod(callback_method).invoke(callback_object);
-                    }
-                    Log.d(TAG, "Callback executed");
-                } catch (NoSuchMethodException e) {
-                    Log.w(TAG, "Exception in callback: Method '" + callback_method + "' not found", e);
-                    warning_list.add("(LOCAL) Could not execute callback, method '" + callback_method + "()' not found");
-                } catch (InvocationTargetException e) {
-                    Throwable orig = e.getTargetException();
-                    Log.w(TAG, "Exception of type '" + orig.getClass() + "' in callback's method '" + callback_method + "()':" + orig.getMessage(), orig);
-                    warning_list.add("(LOCAL) Exception of type '" + orig.getClass() + "' in callback's method '" + callback_method + "()':"
-                            + orig.getMessage());
-                } catch (Exception e) {
-                    Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage(), e);
-                    warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
-                }
-            }
+
         }
 
     }
@@ -78,10 +58,7 @@ public class ApgCon {
     private final Context mContext;
     private final error connection_status;
     private boolean async_running = false;
-    private Object callback_object;
-    private String callback_method;
-    public static final boolean default_callback_return_self = false;
-    private boolean callback_return_self = default_callback_return_self;
+    private OnCallFinishListener onCallFinishListener;
 
     private final Bundle result = new Bundle();
     private final Bundle args = new Bundle();
@@ -205,7 +182,7 @@ public class ApgCon {
             result.putInt(ret.ERROR.name(), error.APG_NOT_FOUND.ordinal());
             tmp_connection_status = error.APG_NOT_FOUND;
         }
-        
+
         connection_status = tmp_connection_status;
     }
 
@@ -282,6 +259,7 @@ public class ApgCon {
      * <li>start connection to the remote interface (if not already connected)</li>
      * <li>call the passed function with all set up parameters synchronously</li>
      * <li>set up everything to retrieve the result and/or warnings/errors</li>
+     * <li>call the callback if provided
      * </ul>
      * </p>
      * 
@@ -296,9 +274,21 @@ public class ApgCon {
      * 
      * @see #call_async(String)
      * @see #set_arg(String, String)
+     * @see #set_onCallFinishListener(OnCallFinishListener)
      */
     public boolean call(String function) {
-        return this.call(function, args, result);
+        boolean success = this.call(function, args, result);
+        if (onCallFinishListener != null) {
+            try {
+                Log.d(TAG, "About to execute callback");
+                onCallFinishListener.onCallFinish(result);
+                Log.d(TAG, "Callback executed");
+            } catch (Exception e) {
+                Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage(), e);
+                warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
+            }
+        }
+        return success;
     }
 
     /**
@@ -314,7 +304,7 @@ public class ApgCon {
      * To see whether the task is finished, you have to possibilities:
      * <ul>
      * <li>In your thread, poll {@link #is_running()}</li>
-     * <li>Supply a callback with {@link #set_callback(Object, String)}</li>
+     * <li>Supply a callback with {@link #set_onCallFinishListener(OnCallFinishListener)}</li>
      * </ul>
      * </p>
      * 
@@ -323,7 +313,7 @@ public class ApgCon {
      * 
      * @see #call(String)
      * @see #is_running()
-     * @see #set_callback(Object, String)
+     * @see #set_onCallFinishListener(OnCallFinishListener)
      */
     public void call_async(String function) {
         async_running = true;
@@ -484,7 +474,7 @@ public class ApgCon {
      * {@link #set_arg(String, String)} functions, is cleared.
      * </p>
      * <p>
-     * Note, that any warning, error, callback, result etc. is not cleared with
+     * Note, that any warning, error, callback, result, etc. is not cleared with
      * this.
      * </p>
      * 
@@ -639,7 +629,7 @@ public class ApgCon {
     public Bundle get_result_bundle() {
         return result;
     }
-    
+
     public error get_connection_status() {
         return connection_status;
     }
@@ -675,154 +665,23 @@ public class ApgCon {
     }
 
     /**
-     * Set a callback object and method
-     * 
-     * <p>
-     * After an async execution is finished, obj.meth() will be called. You can
-     * use this in order to get notified, when encrypting/decrypting of long
-     * data finishes and do not have to poll {@link #is_running()} in your
-     * thread. Note, that if the call of the method fails for whatever reason,
-     * you won't get notified in any way - so you still should check
-     * {@link #is_running()} from time to time.
-     * </p>
-     * 
-     * <p>
-     * It produces a warning fetchable with {@link #get_next_warning()} when the
-     * callback fails.
-     * </p>
-     * 
-     * <pre>
-     * <code>
-     * .... your class ...
-     * public void callback() {
-     *   // do something after encryption finished
-     * }
-     * 
-     * public void encrypt() {
-     *   ApgCon mEnc = new ApgCon(context);
-     *   // set parameters
-     *   mEnc.set_arg(key, value);
-     *   ...
-     *   
-     *   // set callback object and method 
-     *   mEnc.set_callback( this, "callback" );
-     *   
-     *   // start asynchronous call
-     *   mEnc.call_async( call );
-     *   
-     *   // when the call_async finishes, the method "callback()" will be called automatically
-     * }
-     * </code>
-     * </pre>
-     * 
-     * @param obj
-     *            The object, which has the public method meth
-     * @param meth
-     *            Method to call on the object obj
-     * 
-     * @see #set_callback(Object, String, boolean)
-     */
-    public void set_callback(Object obj, String meth) {
-        set_callback(obj, meth, default_callback_return_self);
-    }
-
-    /**
-     * Set a callback and whether to return self as a additional parameter
-     * 
-     * <p>
-     * This does the same as {@link #set_callback(Object, String)} with one
-     * Additionally parameter return_self.
-     * </p>
-     * <p>
-     * The additional parameter controls, whether to return itself as a
-     * parameter to the callback method meth (in order to go on working after
-     * async execution has finished). This means, your callback method must have
-     * one parameter of the type ApgCon.
-     * </p>
-     * 
-     * @param obj
-     *            The object, which has the public method meth
-     * @param meth
-     *            Method to call on the object obj
-     * @param return_self
-     *            Whether to return itself as an parameter to meth
-     */
-    public void set_callback(Object obj, String meth, boolean return_self) {
-        set_callback_object(obj);
-        set_callback_method(meth);
-        set_callback_return_self(return_self);
-    }
-
-    /**
-     * Set a callback object
+     * Set a callback listener when call to AIDL finishes
      * 
      * @param obj
      *            a object to call back after async execution
-     * @see #set_callback(Object, String)
+     * @see ApgConInterface
      */
-    public void set_callback_object(Object obj) {
-        callback_object = obj;
-    }
-
-    /**
-     * Set a callback method
-     * 
-     * @param meth
-     *            a method to call on a callback object after async execution
-     * @see #set_callback(Object, String)
-     */
-    public void set_callback_method(String meth) {
-        callback_method = meth;
-    }
-
-    /**
-     * Set whether to return self on callback
-     * 
-     * @param arg
-     *            set results as param for callback method
-     * @see #set_callback(Object, String)
-     */
-    public void set_callback_return_self(boolean arg) {
-        callback_return_self = arg;
+    public void set_onCallFinishListener(OnCallFinishListener lis) {
+        onCallFinishListener = lis;
     }
 
     /**
      * Clears any callback object
      * 
-     * @see #set_callback(Object, String)
+     * @see #set_onCallFinishListener(OnCallFinishListener)
      */
-    public void clear_callback_object() {
-        callback_object = null;
-    }
-
-    /**
-     * Clears any callback method
-     * 
-     * @see #set_callback(Object, String)
-     */
-    public void clear_callback_method() {
-        callback_method = null;
-    }
-
-    /**
-     * Sets to default value of whether to return self on callback
-     * 
-     * @see #set_callback(Object, String, boolean)
-     * @see #default_callback_return_self
-     */
-    public void clear_callback_return_self() {
-        callback_return_self = default_callback_return_self;
-    }
-
-    /**
-     * Clears anything related to callback
-     * 
-     * @see #set_callback(Object, String)
-     */
-    public void clear_callback() {
-        clear_callback_object();
-        clear_callback_method();
-        clear_callback_return_self();
+    public void clear_onCallFinishListener() {
+        onCallFinishListener = null;
     }
 
     /**
@@ -855,7 +714,7 @@ public class ApgCon {
      * Note, that when an async execution ({@link #call_async(String)}) is
      * running, it's result, warnings etc. will still be evaluated (which might
      * be not what you want). Also mind, that any callback you set is also
-     * reseted, so on finishing the async execution any defined callback will
+     * reseted, so on finishing the execution any before defined callback will
      * NOT BE TRIGGERED.
      * </p>
      */
@@ -863,12 +722,8 @@ public class ApgCon {
         clear_errors();
         clear_warnings();
         clear_args();
-        clear_callback();
+        clear_onCallFinishListener();
         result.clear();
-    }
-
-    public ApgCon get_self() {
-        return this;
     }
 
 }
