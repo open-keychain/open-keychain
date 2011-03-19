@@ -18,6 +18,7 @@ package org.thialfihar.android.apg;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
@@ -30,6 +31,7 @@ import org.bouncycastle2.openpgp.PGPPublicKey;
 import org.bouncycastle2.openpgp.PGPPublicKeyRing;
 import org.bouncycastle2.openpgp.PGPSecretKey;
 import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.utils.Choice;
 
 import android.app.Dialog;
@@ -699,21 +701,30 @@ public class EncryptActivity extends BaseActivity {
 
             out.close();
             if (mEncryptTarget != Id.target.file) {
-                if (useAsciiArmour) {
-                    String extraData = new String(((ByteArrayOutputStream)out).toByteArray());
-                    if (mGenerateSignature) {
-                        data.putString(Apg.EXTRA_SIGNATURE_TEXT, extraData);
-                    } else {
-                        data.putString(Apg.EXTRA_ENCRYPTED_MESSAGE, extraData);
-                    }
-                } else {
-                    byte extraData[] = ((ByteArrayOutputStream)out).toByteArray();
-                    if (mGenerateSignature) {
-                        data.putByteArray(Apg.EXTRA_SIGNATURE_DATA, extraData);
-                    } else {
-                        data.putByteArray(Apg.EXTRA_ENCRYPTED_DATA, extraData);
-                    }
-                }
+            	
+            	if(out instanceof ByteArrayOutputStream) {
+            		if (useAsciiArmour) {
+                    	String extraData = new String(((ByteArrayOutputStream)out).toByteArray());
+                    	if (mGenerateSignature) {
+                        	data.putString(Apg.EXTRA_SIGNATURE_TEXT, extraData);
+                    	} else {
+                    		data.putString(Apg.EXTRA_ENCRYPTED_MESSAGE, extraData);
+                    	}
+                	} else {
+                    	byte extraData[] = ((ByteArrayOutputStream)out).toByteArray();
+                    	if (mGenerateSignature) {
+                        	data.putByteArray(Apg.EXTRA_SIGNATURE_DATA, extraData);
+                    	} else {
+                    		data.putByteArray(Apg.EXTRA_ENCRYPTED_DATA, extraData);
+                    	}
+                	}
+				} else if(out instanceof FileOutputStream) {
+					String fileName = mDataDestination.getStreamFilename();
+					String uri = "content://" + DataProvider.AUTHORITY + "/data/" + fileName;
+					data.putString(Apg.EXTRA_RESULT_URI, uri);
+				} else {
+					throw new Apg.GeneralException("No output-data found.");
+				}
             }
         } catch (IOException e) {
             error = "" + e;
