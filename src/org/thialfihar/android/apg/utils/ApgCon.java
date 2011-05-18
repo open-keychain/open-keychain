@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2011 Markus Doits <markus.doits@googlemail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.thialfihar.android.apg.utils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,18 +50,20 @@ import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
  * 
  */
 public class ApgCon {
+    private static final boolean LOCAL_LOGV = true;
+    private static final boolean LOCAL_LOGD = true;
 
     private class call_async extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... arg) {
-            Log.d(TAG, "Async execution starting");
+            if( LOCAL_LOGD ) Log.d(TAG, "Async execution starting");
             call(arg[0]);
             return null;
         }
 
         protected void onPostExecute(Void res) {
-            Log.d(TAG, "Async execution finished");
+            if( LOCAL_LOGD ) Log.d(TAG, "Async execution finished");
             async_running = false;
 
         }
@@ -71,12 +89,12 @@ public class ApgCon {
     /** Set apgService accordingly to connection status */
     private ServiceConnection apgConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d(TAG, "IApgService bound to apgService");
+            if( LOCAL_LOGD ) Log.d(TAG, "IApgService bound to apgService");
             apgService = IApgService.Stub.asInterface(service);
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            Log.d(TAG, "IApgService disconnected");
+            if( LOCAL_LOGD ) Log.d(TAG, "IApgService disconnected");
             apgService = null;
         }
     };
@@ -135,12 +153,12 @@ public class ApgCon {
      *            the running context
      */
     public ApgCon(Context ctx) {
-        Log.v(TAG, "EncryptionService created");
+        if( LOCAL_LOGV ) Log.v(TAG, "EncryptionService created");
         mContext = ctx;
 
         error tmp_connection_status = null;
         try {
-            Log.v(TAG, "Searching for the right APG version");
+            if( LOCAL_LOGV ) Log.v(TAG, "Searching for the right APG version");
             ServiceInfo apg_services[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
                     PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
             if (apg_services == null) {
@@ -149,7 +167,7 @@ public class ApgCon {
             } else {
                 boolean apg_service_found = false;
                 for (ServiceInfo inf : apg_services) {
-                    Log.v(TAG, "Found service of APG: " + inf.name);
+                    if( LOCAL_LOGV ) Log.v(TAG, "Found service of APG: " + inf.name);
                     if (inf.name.equals("org.thialfihar.android.apg.ApgService")) {
                         apg_service_found = true;
                         if (inf.metaData == null) {
@@ -163,7 +181,7 @@ public class ApgCon {
                             warning_list.add("(LOCAL) Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
                             tmp_connection_status = error.APG_API_MISSMATCH;
                         } else {
-                            Log.v(TAG, "Found api_version " + api_version + ", everything should work");
+                            if( LOCAL_LOGV ) Log.v(TAG, "Found api_version " + api_version + ", everything should work");
                             tmp_connection_status = error.NO_ERROR;
                         }
                     }
@@ -188,10 +206,10 @@ public class ApgCon {
 
     /** try to connect to the apg service */
     private boolean connect() {
-        Log.v(TAG, "trying to bind the apgService to context");
+        if( LOCAL_LOGV ) Log.v(TAG, "trying to bind the apgService to context");
 
         if (apgService != null) {
-            Log.v(TAG, "allready connected");
+            if( LOCAL_LOGV ) Log.v(TAG, "allready connected");
             return true;
         }
 
@@ -204,12 +222,12 @@ public class ApgCon {
 
         int wait_count = 0;
         while (apgService == null && wait_count++ < 15) {
-            Log.v(TAG, "sleeping 1 second to wait for apg");
+            if( LOCAL_LOGV ) Log.v(TAG, "sleeping 1 second to wait for apg");
             android.os.SystemClock.sleep(1000);
         }
 
         if (wait_count >= 15) {
-            Log.v(TAG, "slept waiting for nothing!");
+            if( LOCAL_LOGV ) Log.v(TAG, "slept waiting for nothing!");
             return false;
         }
 
@@ -231,7 +249,7 @@ public class ApgCon {
      * </p>
      */
     public void disconnect() {
-        Log.v(TAG, "disconnecting apgService");
+        if( LOCAL_LOGV ) Log.v(TAG, "disconnecting apgService");
         if (apgService != null) {
             mContext.unbindService(apgConnection);
             apgService = null;
@@ -241,7 +259,7 @@ public class ApgCon {
     private boolean initialize() {
         if (apgService == null) {
             if (!connect()) {
-                Log.v(TAG, "connection to apg service failed");
+                if( LOCAL_LOGV ) Log.v(TAG, "connection to apg service failed");
                 return false;
             }
         }
@@ -280,9 +298,9 @@ public class ApgCon {
         boolean success = this.call(function, args, result);
         if (onCallFinishListener != null) {
             try {
-                Log.d(TAG, "About to execute callback");
+                if( LOCAL_LOGD ) Log.d(TAG, "About to execute callback");
                 onCallFinishListener.onCallFinish(result);
-                Log.d(TAG, "Callback executed");
+                if( LOCAL_LOGD ) Log.d(TAG, "Callback executed");
             } catch (Exception e) {
                 Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage(), e);
                 warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
