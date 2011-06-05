@@ -46,14 +46,19 @@ import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
  * </p>
  * 
  * @author Markus Doits <markus.doits@googlemail.com>
- * @version 0.9.9
+ * @version 1.0rc1
  * 
  */
 public class ApgCon {
     private static final boolean LOCAL_LOGV = true;
     private static final boolean LOCAL_LOGD = true;
 
-    private class call_async extends AsyncTask<String, Void, Void> {
+    private final static String TAG = "ApgCon";
+    private final static int API_VERSION = 1; // aidl api-version it expects
+    
+    public int secondsToWaitForConnection = 15;
+
+    private class CallAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... arg) {
@@ -64,48 +69,46 @@ public class ApgCon {
 
         protected void onPostExecute(Void res) {
             if( LOCAL_LOGD ) Log.d(TAG, "Async execution finished");
-            async_running = false;
+            mAsyncRunning = false;
 
         }
 
     }
 
-    private final static String TAG = "ApgCon";
-    private final static int api_version = 1; // aidl api-version it expects
 
     private final Context mContext;
-    private final error connection_status;
-    private boolean async_running = false;
-    private OnCallFinishListener onCallFinishListener;
+    private final error mConnectionStatus;
+    private boolean mAsyncRunning = false;
+    private OnCallFinishListener mOnCallFinishListener;
 
-    private final Bundle result = new Bundle();
-    private final Bundle args = new Bundle();
-    private final ArrayList<String> error_list = new ArrayList<String>();
-    private final ArrayList<String> warning_list = new ArrayList<String>();
+    private final Bundle mResult = new Bundle();
+    private final Bundle mArgs = new Bundle();
+    private final ArrayList<String> mErrorList = new ArrayList<String>();
+    private final ArrayList<String> mWarningList = new ArrayList<String>();
 
     /** Remote service for decrypting and encrypting data */
-    private IApgService apgService = null;
+    private IApgService mApgService = null;
 
     /** Set apgService accordingly to connection status */
-    private ServiceConnection apgConnection = new ServiceConnection() {
+    private ServiceConnection mApgConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             if( LOCAL_LOGD ) Log.d(TAG, "IApgService bound to apgService");
-            apgService = IApgService.Stub.asInterface(service);
+            mApgService = IApgService.Stub.asInterface(service);
         }
 
         public void onServiceDisconnected(ComponentName className) {
             if( LOCAL_LOGD ) Log.d(TAG, "IApgService disconnected");
-            apgService = null;
+            mApgService = null;
         }
     };
-
+    
     /**
      * Different types of local errors
-     * 
-     * @author markus
-     * 
      */
     public static enum error {
+        /**
+         * no error
+         */
         NO_ERROR,
         /**
          * generic error
@@ -131,6 +134,9 @@ public class ApgCon {
          * found APG but without AIDL interface
          */
         APG_AIDL_MISSING,
+        /**
+         * found APG but with wrong API
+         */
         APG_API_MISSMATCH
     }
 
@@ -156,77 +162,78 @@ public class ApgCon {
         if( LOCAL_LOGV ) Log.v(TAG, "EncryptionService created");
         mContext = ctx;
 
-        error tmp_connection_status = null;
+        error tmpError = null;
         try {
             if( LOCAL_LOGV ) Log.v(TAG, "Searching for the right APG version");
-            ServiceInfo apg_services[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
+            ServiceInfo apgServices[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
                     PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
-            if (apg_services == null) {
+            if (apgServices == null) {
                 Log.e(TAG, "Could not fetch services");
-                tmp_connection_status = error.GENERIC;
+                tmpError = error.GENERIC;
             } else {
-                boolean apg_service_found = false;
-                for (ServiceInfo inf : apg_services) {
+                boolean apgServiceFound = false;
+                for (ServiceInfo inf : apgServices) {
                     if( LOCAL_LOGV ) Log.v(TAG, "Found service of APG: " + inf.name);
                     if (inf.name.equals("org.thialfihar.android.apg.ApgService")) {
-                        apg_service_found = true;
+                        apgServiceFound = true;
                         if (inf.metaData == null) {
                             Log.w(TAG, "Could not determine ApgService API");
                             Log.w(TAG, "This probably won't work!");
-                            warning_list.add("(LOCAL) Could not determine ApgService API");
-                            tmp_connection_status = error.APG_API_MISSMATCH;
-                        } else if (inf.metaData.getInt("api_version") != api_version) {
-                            Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
+                            mWarningList.add("(LOCAL) Could not determine ApgService API");
+                            tmpError = error.APG_API_MISSMATCH;
+                        } else if (inf.metaData.getInt("api_version") != API_VERSION) {
+                            Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
                             Log.w(TAG, "This probably won't work!");
-                            warning_list.add("(LOCAL) Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + api_version);
-                            tmp_connection_status = error.APG_API_MISSMATCH;
+                            mWarningList.add("(LOCAL) Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
+                            tmpError = error.APG_API_MISSMATCH;
                         } else {
-                            if( LOCAL_LOGV ) Log.v(TAG, "Found api_version " + api_version + ", everything should work");
-                            tmp_connection_status = error.NO_ERROR;
+                            if( LOCAL_LOGV ) Log.v(TAG, "Found api_version " + API_VERSION + ", everything should work");
+                            tmpError = error.NO_ERROR;
                         }
                     }
                 }
 
-                if (!apg_service_found) {
+                if (!apgServiceFound) {
                     Log.e(TAG, "Could not find APG with AIDL interface, this probably won't work");
-                    error_list.add("(LOCAL) Could not find APG with AIDL interface, this probably won't work");
-                    result.putInt(ret.ERROR.name(), error.APG_AIDL_MISSING.ordinal());
-                    tmp_connection_status = error.APG_NOT_FOUND;
+                    mErrorList.add("(LOCAL) Could not find APG with AIDL interface, this probably won't work");
+                    mResult.putInt(ret.ERROR.name(), error.APG_AIDL_MISSING.ordinal());
+                    tmpError = error.APG_NOT_FOUND;
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Could not find APG, is it installed?", e);
-            error_list.add("(LOCAL) Could not find APG, is it installed?");
-            result.putInt(ret.ERROR.name(), error.APG_NOT_FOUND.ordinal());
-            tmp_connection_status = error.APG_NOT_FOUND;
+            mErrorList.add("(LOCAL) Could not find APG, is it installed?");
+            mResult.putInt(ret.ERROR.name(), error.APG_NOT_FOUND.ordinal());
+            tmpError = error.APG_NOT_FOUND;
         }
+        
+        mConnectionStatus = tmpError;
 
-        connection_status = tmp_connection_status;
     }
 
     /** try to connect to the apg service */
     private boolean connect() {
         if( LOCAL_LOGV ) Log.v(TAG, "trying to bind the apgService to context");
 
-        if (apgService != null) {
+        if (mApgService != null) {
             if( LOCAL_LOGV ) Log.v(TAG, "allready connected");
             return true;
         }
 
         try {
-            mContext.bindService(new Intent(IApgService.class.getName()), apgConnection, Context.BIND_AUTO_CREATE);
+            mContext.bindService(new Intent(IApgService.class.getName()), mApgConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             Log.e(TAG, "could not bind APG service", e);
             return false;
         }
 
-        int wait_count = 0;
-        while (apgService == null && wait_count++ < 15) {
+        int waitCount = 0;
+        while (mApgService == null && waitCount++ < secondsToWaitForConnection) {
             if( LOCAL_LOGV ) Log.v(TAG, "sleeping 1 second to wait for apg");
             android.os.SystemClock.sleep(1000);
         }
 
-        if (wait_count >= 15) {
+        if (waitCount >= secondsToWaitForConnection) {
             if( LOCAL_LOGV ) Log.v(TAG, "slept waiting for nothing!");
             return false;
         }
@@ -250,14 +257,14 @@ public class ApgCon {
      */
     public void disconnect() {
         if( LOCAL_LOGV ) Log.v(TAG, "disconnecting apgService");
-        if (apgService != null) {
-            mContext.unbindService(apgConnection);
-            apgService = null;
+        if (mApgService != null) {
+            mContext.unbindService(mApgConnection);
+            mApgService = null;
         }
     }
 
     private boolean initialize() {
-        if (apgService == null) {
+        if (mApgService == null) {
             if (!connect()) {
                 if( LOCAL_LOGV ) Log.v(TAG, "connection to apg service failed");
                 return false;
@@ -270,40 +277,40 @@ public class ApgCon {
      * Calls a function from APG's AIDL-interface
      * 
      * <p>
-     * After you have set up everything with {@link #set_arg(String, String)}
+     * After you have set up everything with {@link #setArg(String, String)}
      * (and variants), you can call a function from the AIDL-interface. This
      * will
      * <ul>
      * <li>start connection to the remote interface (if not already connected)</li>
      * <li>call the passed function with all set up parameters synchronously</li>
-     * <li>set up everything to retrieve the result and/or warnings/errors</li>
+     * <li>set up everything to retrieve the mResult and/or warnings/errors</li>
      * <li>call the callback if provided
      * </ul>
      * </p>
      * 
      * <p>
      * Note your thread will be blocked during execution - if you want to call
-     * the function asynchronously, see {@link #call_async(String)}.
+     * the function asynchronously, see {@link #callAsync(String)}.
      * </p>
      * 
      * @param function
      *            a remote function to call
      * @return true, if call successful (= no errors), else false
      * 
-     * @see #call_async(String)
-     * @see #set_arg(String, String)
-     * @see #set_onCallFinishListener(OnCallFinishListener)
+     * @see #callAsync(String)
+     * @see #setArg(String, String)
+     * @see #setOnCallFinishListener(OnCallFinishListener)
      */
     public boolean call(String function) {
-        boolean success = this.call(function, args, result);
-        if (onCallFinishListener != null) {
+        boolean success = this.call(function, mArgs, mResult);
+        if (mOnCallFinishListener != null) {
             try {
                 if( LOCAL_LOGD ) Log.d(TAG, "About to execute callback");
-                onCallFinishListener.onCallFinish(result);
+                mOnCallFinishListener.onCallFinish(mResult);
                 if( LOCAL_LOGD ) Log.d(TAG, "Callback executed");
             } catch (Exception e) {
                 Log.w(TAG, "Exception on callback: (" + e.getClass() + ") " + e.getMessage(), e);
-                warning_list.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
+                mWarningList.add("(LOCAL) Could not execute callback (" + e.getClass() + "): " + e.getMessage());
             }
         }
         return success;
@@ -321,8 +328,8 @@ public class ApgCon {
      * <p>
      * To see whether the task is finished, you have to possibilities:
      * <ul>
-     * <li>In your thread, poll {@link #is_running()}</li>
-     * <li>Supply a callback with {@link #set_onCallFinishListener(OnCallFinishListener)}</li>
+     * <li>In your thread, poll {@link #isRunning()}</li>
+     * <li>Supply a callback with {@link #setOnCallFinishListener(OnCallFinishListener)}</li>
      * </ul>
      * </p>
      * 
@@ -330,47 +337,47 @@ public class ApgCon {
      *            a remote function to call
      * 
      * @see #call(String)
-     * @see #is_running()
-     * @see #set_onCallFinishListener(OnCallFinishListener)
+     * @see #isRunning()
+     * @see #setOnCallFinishListener(OnCallFinishListener)
      */
-    public void call_async(String function) {
-        async_running = true;
-        new call_async().execute(function);
+    public void callAsync(String function) {
+        mAsyncRunning = true;
+        new CallAsync().execute(function);
     }
 
     private boolean call(String function, Bundle pArgs, Bundle pReturn) {
 
         if (!initialize()) {
-            error_list.add("(LOCAL) Cannot bind to ApgService");
-            result.putInt(ret.ERROR.name(), error.CANNOT_BIND_TO_APG.ordinal());
+            mErrorList.add("(LOCAL) Cannot bind to ApgService");
+            mResult.putInt(ret.ERROR.name(), error.CANNOT_BIND_TO_APG.ordinal());
             return false;
         }
 
         if (function == null || function.length() == 0) {
-            error_list.add("(LOCAL) Function to call missing");
-            result.putInt(ret.ERROR.name(), error.CALL_MISSING.ordinal());
+            mErrorList.add("(LOCAL) Function to call missing");
+            mResult.putInt(ret.ERROR.name(), error.CALL_MISSING.ordinal());
             return false;
         }
 
         try {
-            Boolean success = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(apgService, pArgs, pReturn);
-            error_list.addAll(pReturn.getStringArrayList(ret.ERRORS.name()));
-            warning_list.addAll(pReturn.getStringArrayList(ret.WARNINGS.name()));
+            Boolean success = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(mApgService, pArgs, pReturn);
+            mErrorList.addAll(pReturn.getStringArrayList(ret.ERRORS.name()));
+            mWarningList.addAll(pReturn.getStringArrayList(ret.WARNINGS.name()));
             return success;
         } catch (NoSuchMethodException e) {
             Log.e(TAG, "Remote call not known (" + function + "): " + e.getMessage(), e);
-            error_list.add("(LOCAL) Remote call not known (" + function + "): " + e.getMessage());
-            result.putInt(ret.ERROR.name(), error.CALL_NOT_KNOWN.ordinal());
+            mErrorList.add("(LOCAL) Remote call not known (" + function + "): " + e.getMessage());
+            mResult.putInt(ret.ERROR.name(), error.CALL_NOT_KNOWN.ordinal());
             return false;
         } catch (InvocationTargetException e) {
             Throwable orig = e.getTargetException();
             Log.w(TAG, "Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "': " + orig.getMessage(), orig);
-            error_list.add("(LOCAL) Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "': " + orig.getMessage());
+            mErrorList.add("(LOCAL) Exception of type '" + orig.getClass() + "' on AIDL call '" + function + "': " + orig.getMessage());
             return false;
         } catch (Exception e) {
             Log.e(TAG, "Generic error (" + e.getClass() + "): " + e.getMessage(), e);
-            error_list.add("(LOCAL) Generic error (" + e.getClass() + "): " + e.getMessage());
-            result.putInt(ret.ERROR.name(), error.GENERIC.ordinal());
+            mErrorList.add("(LOCAL) Generic error (" + e.getClass() + "): " + e.getMessage());
+            mResult.putInt(ret.ERROR.name(), error.GENERIC.ordinal());
             return false;
         }
 
@@ -390,7 +397,7 @@ public class ApgCon {
      * 
      * <p>
      * Note, that the parameters are not deleted after a call, so you have to
-     * reset ({@link #clear_args()}) them manually if you want to.
+     * reset ({@link #clearArgs()}) them manually if you want to.
      * </p>
      * 
      * 
@@ -399,10 +406,10 @@ public class ApgCon {
      * @param val
      *            the value
      * 
-     * @see #clear_args()
+     * @see #clearArgs()
      */
-    public void set_arg(String key, String val) {
-        args.putString(key, val);
+    public void setArg(String key, String val) {
+        mArgs.putString(key, val);
     }
 
     /**
@@ -415,7 +422,7 @@ public class ApgCon {
      * 
      * <code>
      * <pre>
-     * set_arg("a key", new String[]{ "entry 1", "entry 2" });
+     * setArg("a key", new String[]{ "entry 1", "entry 2" });
      * </pre>
      * </code>
      * 
@@ -424,14 +431,14 @@ public class ApgCon {
      * @param vals
      *            the value
      * 
-     * @see #set_arg(String, String)
+     * @see #setArg(String, String)
      */
-    public void set_arg(String key, String vals[]) {
+    public void setArg(String key, String vals[]) {
         ArrayList<String> list = new ArrayList<String>();
         for (String val : vals) {
             list.add(val);
         }
-        args.putStringArrayList(key, list);
+        mArgs.putStringArrayList(key, list);
     }
 
     /**
@@ -442,10 +449,10 @@ public class ApgCon {
      * @param vals
      *            the value
      * 
-     * @see #set_arg(String, String)
+     * @see #setArg(String, String)
      */
-    public void set_arg(String key, boolean val) {
-        args.putBoolean(key, val);
+    public void setArg(String key, boolean val) {
+        mArgs.putBoolean(key, val);
     }
 
     /**
@@ -456,10 +463,10 @@ public class ApgCon {
      * @param vals
      *            the value
      * 
-     * @see #set_arg(String, String)
+     * @see #setArg(String, String)
      */
-    public void set_arg(String key, int val) {
-        args.putInt(key, val);
+    public void setArg(String key, int val) {
+        mArgs.putInt(key, val);
     }
 
     /**
@@ -474,14 +481,14 @@ public class ApgCon {
      * @param vals
      *            the value
      * 
-     * @see #set_arg(String, String)
+     * @see #setArg(String, String)
      */
-    public void set_arg(String key, int vals[]) {
+    public void setArg(String key, int vals[]) {
         ArrayList<Integer> list = new ArrayList<Integer>();
         for (int val : vals) {
             list.add(val);
         }
-        args.putIntegerArrayList(key, list);
+        mArgs.putIntegerArrayList(key, list);
     }
 
     /**
@@ -489,17 +496,17 @@ public class ApgCon {
      * 
      * <p>
      * Anything the has been set up with the various
-     * {@link #set_arg(String, String)} functions, is cleared.
+     * {@link #setArg(String, String)} functions, is cleared.
      * </p>
      * <p>
-     * Note, that any warning, error, callback, result, etc. is not cleared with
+     * Note, that any warning, error, callback, mResult, etc. is not cleared with
      * this.
      * </p>
      * 
      * @see #reset()
      */
-    public void clear_args() {
-        args.clear();
+    public void clearArgs() {
+        mArgs.clear();
     }
 
     /**
@@ -509,8 +516,8 @@ public class ApgCon {
      *            the object's key you want to return
      * @return an object at position key, or null if not set
      */
-    public Object get_arg(String key) {
-        return args.get(key);
+    public Object getArg(String key) {
+        return mArgs.get(key);
     }
 
     /**
@@ -525,12 +532,12 @@ public class ApgCon {
      * @return a human readable description of a error that happened, or null if
      *         no more errors
      * 
-     * @see #has_next_error()
-     * @see #clear_errors()
+     * @see #hasNextError()
+     * @see #clearErrors()
      */
-    public String get_next_error() {
-        if (error_list.size() != 0)
-            return error_list.remove(0);
+    public String getNextError() {
+        if (mErrorList.size() != 0)
+            return mErrorList.remove(0);
         else
             return null;
     }
@@ -540,10 +547,10 @@ public class ApgCon {
      * 
      * @return true, if there are unreturned errors, false otherwise
      * 
-     * @see #get_next_error()
+     * @see #getNextError()
      */
-    public boolean has_next_error() {
-        return error_list.size() != 0;
+    public boolean hasNextError() {
+        return mErrorList.size() != 0;
     }
 
     /**
@@ -552,15 +559,15 @@ public class ApgCon {
      * <p>
      * Values <100 mean the error happened locally, values >=100 mean the error
      * happened at the remote side (APG). See the IApgService.aidl (or get the
-     * human readable description with {@link #get_next_error()}) for what
+     * human readable description with {@link #getNextError()}) for what
      * errors >=100 mean.
      * </p>
      * 
      * @return the id of the error that happened
      */
-    public int get_error() {
-        if (result.containsKey(ret.ERROR.name()))
-            return result.getInt(ret.ERROR.name());
+    public int getError() {
+        if (mResult.containsKey(ret.ERROR.name()))
+            return mResult.getInt(ret.ERROR.name());
         else
             return -1;
     }
@@ -577,12 +584,12 @@ public class ApgCon {
      * @return a human readable description of a warning that happened, or null
      *         if no more warnings
      * 
-     * @see #has_next_warning()
-     * @see #clear_warnings()
+     * @see #hasNextWarning()
+     * @see #clearWarnings()
      */
-    public String get_next_warning() {
-        if (warning_list.size() != 0)
-            return warning_list.remove(0);
+    public String getNextWarning() {
+        if (mWarningList.size() != 0)
+            return mWarningList.remove(0);
         else
             return null;
     }
@@ -592,94 +599,94 @@ public class ApgCon {
      * 
      * @return true, if there are unreturned warnings, false otherwise
      * 
-     * @see #get_next_warning()
+     * @see #getNextWarning()
      */
-    public boolean has_next_warning() {
-        return warning_list.size() != 0;
+    public boolean hasNextWarning() {
+        return mWarningList.size() != 0;
     }
 
     /**
      * Get the result
      * 
      * <p>
-     * This gets your result. After doing an encryption or decryption with APG,
+     * This gets your mResult. After doing an encryption or decryption with APG,
      * you get the output with this function.
      * </p>
      * <p>
-     * Note, that when your last remote call is unsuccessful, the result will
+     * Note, that when your last remote call is unsuccessful, the mResult will
      * still have the same value like the last successful call (or null, if no
-     * call was successful). To ensure you do not work with old call's results,
-     * either be sure to {@link #reset()} (or at least {@link #clear_result()})
+     * call was successful). To ensure you do not work with old call's mResults,
+     * either be sure to {@link #reset()} (or at least {@link #clearResult()})
      * your instance before each new call or always check that
-     * {@link #has_next_error()} is false.
+     * {@link #hasNextError()} is false.
      * </p>
      * 
-     * @return the result of the last {@link #call(String)} or
+     * @return the mResult of the last {@link #call(String)} or
      *         {@link #call_asinc(String)}.
      * 
      * @see #reset()
-     * @see #clear_result()
-     * @see #get_result_bundle()
+     * @see #clearResult()
+     * @see #getResultBundle()
      */
-    public String get_result() {
-        return result.getString(ret.RESULT.name());
+    public String getResult() {
+        return mResult.getString(ret.RESULT.name());
     }
 
     /**
-     * Get the result bundle
+     * Get the mResult bundle
      * 
      * <p>
-     * Unlike {@link #get_result()}, which only returns any en-/decrypted
+     * Unlike {@link #getResult()}, which only returns any en-/decrypted
      * message, this function returns the complete information that was returned
      * by Apg. This also includes the "RESULT", but additionally the warnings,
      * errors and any other information.
      * </p>
      * <p>
      * For warnings and errors it is suggested to use the functions that are
-     * provided here, namely {@link #get_error()}, {@link #get_next_error()},
+     * provided here, namely {@link #getError()}, {@link #getNextError()},
      * {@link #get_next_Warning()} etc.), but if any call returns something non
-     * standard, you have access to the complete result bundle to extract the
+     * standard, you have access to the complete mResult bundle to extract the
      * information.
      * </p>
      * 
-     * @return the complete result-bundle of the last call to apg
+     * @return the complete mResult-bundle of the last call to apg
      */
-    public Bundle get_result_bundle() {
-        return result;
+    public Bundle getResultBundle() {
+        return mResult;
     }
 
-    public error get_connection_status() {
-        return connection_status;
+    public error getConnectionStatus() {
+        return mConnectionStatus;
     }
 
     /**
      * Clears all unfetched errors
      * 
-     * @see #get_next_error()
-     * @see #has_next_error()
+     * @see #getNextError()
+     * @see #hasNextError()
      */
-    public void clear_errors() {
-        error_list.clear();
-        result.remove(ret.ERROR.name());
+    public void clearErrors() {
+        mErrorList.clear();
+        mResult.remove(ret.ERROR.name());
     }
 
     /**
      * Clears all unfetched warnings
      * 
-     * @see #get_next_warning()
-     * @see #has_next_warning()
+     * @see #getNextWarning()
+     * @see #hasNextWarning()
      */
-    public void clear_warnings() {
-        warning_list.clear();
+    public void clearWarnings() {
+        mWarningList.clear();
     }
 
     /**
-     * Clears the last result
+     * Clears the last mResult
      * 
-     * @see #get_result()
+     * @see #getResult()
      */
-    public void clear_result() {
-        result.remove(ret.RESULT.name());
+    public void clearResult() {
+        mResult.remove(ret.RESULT.name());
     }
 
     /**
@@ -689,34 +696,34 @@ public class ApgCon {
      *            a object to call back after async execution
      * @see ApgConInterface
      */
-    public void set_onCallFinishListener(OnCallFinishListener lis) {
-        onCallFinishListener = lis;
+    public void setOnCallFinishListener(OnCallFinishListener lis) {
+        mOnCallFinishListener = lis;
     }
 
     /**
      * Clears any callback object
      * 
-     * @see #set_onCallFinishListener(OnCallFinishListener)
+     * @see #setOnCallFinishListener(OnCallFinishListener)
      */
-    public void clear_onCallFinishListener() {
-        onCallFinishListener = null;
+    public void clearOnCallFinishListener() {
+        mOnCallFinishListener = null;
     }
 
     /**
      * Checks, whether an async execution is running
      * 
      * <p>
-     * If you started something with {@link #call_async(String)}, this will
+     * If you started something with {@link #callAsync(String)}, this will
      * return true if the task is still running
      * </p>
      * 
      * @return true, if an async task is still running, false otherwise
      * 
-     * @see #call_async(String)
+     * @see #callAsync(String)
      * 
      */
-    public boolean is_running() {
-        return async_running;
+    public boolean isRunning() {
+        return mAsyncRunning;
     }
 
     /**
@@ -724,24 +731,24 @@ public class ApgCon {
      * 
      * <p>
      * This currently resets everything in this instance. Errors, warnings,
-     * results, callbacks, ... are removed. Any connection to the remote
+     * mResults, callbacks, ... are removed. Any connection to the remote
      * interface is upheld, though.
      * </p>
      * 
      * <p>
-     * Note, that when an async execution ({@link #call_async(String)}) is
-     * running, it's result, warnings etc. will still be evaluated (which might
+     * Note, that when an async execution ({@link #callAsync(String)}) is
+     * running, it's mResult, warnings etc. will still be evaluated (which might
      * be not what you want). Also mind, that any callback you set is also
      * reseted, so on finishing the execution any before defined callback will
      * NOT BE TRIGGERED.
      * </p>
      */
     public void reset() {
-        clear_errors();
-        clear_warnings();
-        clear_args();
-        clear_onCallFinishListener();
-        result.clear();
+        clearErrors();
+        clearWarnings();
+        clearArgs();
+        clearOnCallFinishListener();
+        mResult.clear();
     }
 
 }

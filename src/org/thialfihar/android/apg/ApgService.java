@@ -40,7 +40,7 @@ public class ApgService extends Service {
         PRIVATE_KEY_PASSPHRASE_WRONG,
         PRIVATE_KEY_PASSPHRASE_MISSING;
 
-        public int shifted_ordinal() {
+        public int shiftedOrdinal() {
             return ordinal() + 100;
         }
     }
@@ -90,7 +90,6 @@ public class ApgService extends Service {
         args = new HashSet<arg>();
         args.add(arg.KEY_TYPE);
         FUNCTIONS_REQUIRED_ARGS.put("get_keys", args);
-
     }
 
     /** optional arguments for each AIDL function */
@@ -124,21 +123,7 @@ public class ApgService extends Service {
         FUNCTIONS_DEFAULTS.put(arg.COMPRESSION, "getDefaultMessageCompression");
     }
 
-    /** a map the default functions to their return types */
-    private static final HashMap<String, Class<?>> FUNCTIONS_DEFAULTS_TYPES = new HashMap<String, Class<?>>();
-    static {
-        try {
-            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultEncryptionAlgorithm", Preferences.class.getMethod("getDefaultEncryptionAlgorithm").getReturnType());
-            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultHashAlgorithm", Preferences.class.getMethod("getDefaultHashAlgorithm").getReturnType());
-            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultAsciiArmour", Preferences.class.getMethod("getDefaultAsciiArmour").getReturnType());
-            FUNCTIONS_DEFAULTS_TYPES.put("getForceV3Signatures", Preferences.class.getMethod("getForceV3Signatures").getReturnType());
-            FUNCTIONS_DEFAULTS_TYPES.put("getDefaultMessageCompression", Preferences.class.getMethod("getDefaultMessageCompression").getReturnType());
-        } catch (Exception e) {
-            Log.e(TAG, "Function default exception: " + e.getMessage());
-        }
-    }
-
-    /** a map the default function names to their method */
+    /** a map of the default function names to their method */
     private static final HashMap<String, Method> FUNCTIONS_DEFAULTS_METHODS = new HashMap<String, Method>();
     static {
         try {
@@ -152,46 +137,47 @@ public class ApgService extends Service {
         }
     }
 
-    /**
-     * maps a fingerprint or user id of a key to as master key in database
-     * 
-     * @param search_key
-     *            fingerprint or user id to search for
-     * @return master key if found, or 0
-     */
-    private static long get_master_key(String search_key, Bundle pReturn) {
-        if (search_key == null || search_key.length() != 8) {
-            return 0;
-        }
-        ArrayList<String> tmp = new ArrayList<String>();
-        tmp.add(search_key);
-        long[] _keys = get_master_key(tmp, pReturn);
-        if (_keys.length > 0)
-            return _keys[0];
-        else
-            return 0;
-    }
-
-    private static Cursor get_key_entries(HashMap<String, Object> params) {
+    private static Cursor getKeyEntries(HashMap<String, Object> pParams) {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME
                 + "." + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME
                 + " ON " + "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "."
                 + UserIds.RANK + " = '0') ");
 
-        String orderBy = params.containsKey("order_by") ? (String) params.get("order_by") : UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
+        String orderBy = pParams.containsKey("order_by") ? (String) pParams.get("order_by") : UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC";
 
-        String type_val[] = null;
-        String type_where = null;
-        if (params.containsKey("key_type")) {
-            type_where = KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?";
-            type_val = new String[] {
-                "" + params.get("key_type")
+        String typeVal[] = null;
+        String typeWhere = null;
+        if (pParams.containsKey("key_type")) {
+            typeWhere = KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?";
+            typeVal = new String[] {
+                "" + pParams.get("key_type")
             };
         }
-        return qb.query(Apg.getDatabase().db(), (String[]) params.get("columns"), type_where, type_val, null, null, orderBy);
+        return qb.query(Apg.getDatabase().db(), (String[]) pParams.get("columns"), typeWhere, typeVal, null, null, orderBy);
     }
 
+    /**
+     * maps a fingerprint or user id of a key to a master key in database
+     * 
+     * @param search_key
+     *            fingerprint or user id to search for
+     * @return master key if found, or 0
+     */
+    private static long getMasterKey(String pSearchKey, Bundle pReturn) {
+        if (pSearchKey == null || pSearchKey.length() != 8) {
+            return 0;
+        }
+        ArrayList<String> keyList = new ArrayList<String>();
+        keyList.add(pSearchKey);
+        long[] keys = getMasterKey(keyList, pReturn);
+        if (keys.length > 0) {
+            return keys[0];
+        } else {
+            return 0;
+        }
+    }
+    
     /**
      * maps fingerprints or user ids of keys to master keys in database
      * 
@@ -200,7 +186,7 @@ public class ApgService extends Service {
      *            database
      * @return an array of master keys
      */
-    private static long[] get_master_key(ArrayList<String> search_keys, Bundle pReturn) {
+    private static long[] getMasterKey(ArrayList<String> pSearchKeys, Bundle pReturn) {
 
         HashMap<String, Object> qParams = new HashMap<String, Object>();
         qParams.put("columns", new String[] {
@@ -209,30 +195,30 @@ public class ApgService extends Service {
         });
         qParams.put("key_type", Id.database.type_public);
 
-        Cursor mCursor = get_key_entries(qParams);
+        Cursor mCursor = getKeyEntries(qParams);
 
         if( LOCAL_LOGV ) Log.v(TAG, "going through installed user keys");
-        ArrayList<Long> _master_keys = new ArrayList<Long>();
+        ArrayList<Long> masterKeys = new ArrayList<Long>();
         while (mCursor.moveToNext()) {
-            long _cur_mkey = mCursor.getLong(0);
-            String _cur_user = mCursor.getString(1);
+            long curMkey = mCursor.getLong(0);
+            String curUser = mCursor.getString(1);
 
-            String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
-            if( LOCAL_LOGV ) Log.v(TAG, "current user: " + _cur_user + " (" + _cur_fprint + ")");
-            if (search_keys.contains(_cur_fprint) || search_keys.contains(_cur_user)) {
-                if( LOCAL_LOGV ) Log.v(TAG, "master key found for: " + _cur_fprint);
-                _master_keys.add(_cur_mkey);
-                search_keys.remove(_cur_fprint);
+            String curFprint = Apg.getSmallFingerPrint(curMkey);
+            if( LOCAL_LOGV ) Log.v(TAG, "current user: " + curUser + " (" + curFprint + ")");
+            if (pSearchKeys.contains(curFprint) || pSearchKeys.contains(curUser)) {
+                if( LOCAL_LOGV ) Log.v(TAG, "master key found for: " + curFprint);
+                masterKeys.add(curMkey);
+                pSearchKeys.remove(curFprint);
             } else {
-                if( LOCAL_LOGV ) Log.v(TAG, "Installed key " + _cur_fprint + " is not in the list of public keys to encrypt with");
+                if( LOCAL_LOGV ) Log.v(TAG, "Installed key " + curFprint + " is not in the list of public keys to encrypt with");
             }
         }
         mCursor.close();
 
-        long[] _master_longs = new long[_master_keys.size()];
+        long[] masterKeyLongs = new long[masterKeys.size()];
         int i = 0;
-        for (Long _key : _master_keys) {
-            _master_longs[i++] = _key;
+        for (Long key : masterKeys) {
+            masterKeyLongs[i++] = key;
         }
 
         if (i == 0) {
@@ -240,12 +226,12 @@ public class ApgService extends Service {
             pReturn.getStringArrayList(ret.WARNINGS.name()).add("Searched for public key(s) but found not one");
         }
 
-        for (String _key : search_keys) {
-            Log.w(TAG, "Searched for key " + _key + " but cannot find it in APG");
-            pReturn.getStringArrayList(ret.WARNINGS.name()).add("Searched for key " + _key + " but cannot find it in APG");
+        for (String key : pSearchKeys) {
+            Log.w(TAG, "Searched for key " + key + " but cannot find it in APG");
+            pReturn.getStringArrayList(ret.WARNINGS.name()).add("Searched for key " + key + " but cannot find it in APG");
         }
 
-        return _master_longs;
+        return masterKeyLongs;
     }
 
     /**
@@ -254,27 +240,27 @@ public class ApgService extends Service {
      * @param args
      *            the bundle to add default parameters to if missing
      */
-    private void add_default_arguments(String call, Bundle args) {
+    private void addDefaultArguments(String pCall, Bundle pArgs) {
         // check whether there are optional elements defined for that call
-        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(call)) {
-            Preferences _mPreferences = Preferences.getPreferences(getBaseContext(), true);
+        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(pCall)) {
+            Preferences preferences = Preferences.getPreferences(getBaseContext(), true);
 
-            Iterator<arg> _iter = FUNCTIONS_DEFAULTS.keySet().iterator();
-            while (_iter.hasNext()) {
-                arg _current_arg = _iter.next();
-                String _current_key = _current_arg.name();
-                if (!args.containsKey(_current_key) && FUNCTIONS_OPTIONAL_ARGS.get(call).contains(_current_arg)) {
-                    String _current_function_name = FUNCTIONS_DEFAULTS.get(_current_arg);
+            Iterator<arg> iter = FUNCTIONS_DEFAULTS.keySet().iterator();
+            while (iter.hasNext()) {
+                arg currentArg = iter.next();
+                String currentKey = currentArg.name();
+                if (!pArgs.containsKey(currentKey) && FUNCTIONS_OPTIONAL_ARGS.get(pCall).contains(currentArg)) {
+                    String currentFunctionName = FUNCTIONS_DEFAULTS.get(currentArg);
                     try {
-                        Class<?> _ret_type = FUNCTIONS_DEFAULTS_TYPES.get(_current_function_name);
-                        if (_ret_type == String.class) {
-                            args.putString(_current_key, (String) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
-                        } else if (_ret_type == boolean.class) {
-                            args.putBoolean(_current_key, (Boolean) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
-                        } else if (_ret_type == int.class) {
-                            args.putInt(_current_key, (Integer) FUNCTIONS_DEFAULTS_METHODS.get(_current_function_name).invoke(_mPreferences));
+                        Class<?> returnType = FUNCTIONS_DEFAULTS_METHODS.get(currentFunctionName).getReturnType();
+                        if (returnType == String.class) {
+                            pArgs.putString(currentKey, (String) FUNCTIONS_DEFAULTS_METHODS.get(currentFunctionName).invoke(preferences));
+                        } else if (returnType == boolean.class) {
+                            pArgs.putBoolean(currentKey, (Boolean) FUNCTIONS_DEFAULTS_METHODS.get(currentFunctionName).invoke(preferences));
+                        } else if (returnType == int.class) {
+                            pArgs.putInt(currentKey, (Integer) FUNCTIONS_DEFAULTS_METHODS.get(currentFunctionName).invoke(preferences));
                         } else {
-                            Log.e(TAG, "Unknown return type " + _ret_type.toString() + " for default option");
+                            Log.e(TAG, "Unknown return type " + returnType.toString() + " for default option");
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Exception in add_default_arguments " + e.getMessage());
@@ -290,7 +276,7 @@ public class ApgService extends Service {
      * @param pReturn
      *            the Bundle to update
      */
-    private void add_default_returns(Bundle pReturn) {
+    private void addDefaultReturns(Bundle pReturn) {
         ArrayList<String> errors = new ArrayList<String>();
         ArrayList<String> warnings = new ArrayList<String>();
 
@@ -308,13 +294,13 @@ public class ApgService extends Service {
      * @param pReturn
      *            the bundle to write errors to
      */
-    private void check_required_args(String function, Bundle pArgs, Bundle pReturn) {
-        if (FUNCTIONS_REQUIRED_ARGS.containsKey(function)) {
-            Iterator<arg> _iter = FUNCTIONS_REQUIRED_ARGS.get(function).iterator();
-            while (_iter.hasNext()) {
-                String _cur_arg = _iter.next().name();
-                if (!pArgs.containsKey(_cur_arg)) {
-                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Argument missing: " + _cur_arg);
+    private void checkForRequiredArgs(String pFunction, Bundle pArgs, Bundle pReturn) {
+        if (FUNCTIONS_REQUIRED_ARGS.containsKey(pFunction)) {
+            Iterator<arg> iter = FUNCTIONS_REQUIRED_ARGS.get(pFunction).iterator();
+            while (iter.hasNext()) {
+                String curArg = iter.next().name();
+                if (!pArgs.containsKey(curArg)) {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Argument missing: " + curArg);
                 }
             }
         }
@@ -330,60 +316,60 @@ public class ApgService extends Service {
      * @param pReturn
      *            the bundle to write warnings to
      */
-    private void check_unknown_args(String function, Bundle pArgs, Bundle pReturn) {
+    private void checkForUnknownArgs(String pFunction, Bundle pArgs, Bundle pReturn) {
 
-        HashSet<arg> all_args = new HashSet<arg>();
-        if (FUNCTIONS_REQUIRED_ARGS.containsKey(function)) {
-            all_args.addAll(FUNCTIONS_REQUIRED_ARGS.get(function));
+        HashSet<arg> allArgs = new HashSet<arg>();
+        if (FUNCTIONS_REQUIRED_ARGS.containsKey(pFunction)) {
+            allArgs.addAll(FUNCTIONS_REQUIRED_ARGS.get(pFunction));
         }
-        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(function)) {
-            all_args.addAll(FUNCTIONS_OPTIONAL_ARGS.get(function));
+        if (FUNCTIONS_OPTIONAL_ARGS.containsKey(pFunction)) {
+            allArgs.addAll(FUNCTIONS_OPTIONAL_ARGS.get(pFunction));
         }
 
-        ArrayList<String> _unknown_args = new ArrayList<String>();
-        Iterator<String> _iter = pArgs.keySet().iterator();
-        while (_iter.hasNext()) {
-            String _cur_key = _iter.next();
+        ArrayList<String> unknownArgs = new ArrayList<String>();
+        Iterator<String> iter = pArgs.keySet().iterator();
+        while (iter.hasNext()) {
+            String curKey = iter.next();
             try {
-                arg _cur_arg = arg.valueOf(_cur_key);
-                if (!all_args.contains(_cur_arg)) {
-                    pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
-                    _unknown_args.add(_cur_key);
+                arg curArg = arg.valueOf(curKey);
+                if (!allArgs.contains(curArg)) {
+                    pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + curKey);
+                    unknownArgs.add(curKey);
                 }
             } catch (Exception e) {
-                pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + _cur_key);
-                _unknown_args.add(_cur_key);
+                pReturn.getStringArrayList(ret.WARNINGS.name()).add("Unknown argument: " + curKey);
+                unknownArgs.add(curKey);
             }
         }
 
         // remove unknown arguments so our bundle has just what we need
-        for (String _arg : _unknown_args) {
-            pArgs.remove(_arg);
+        for (String arg : unknownArgs) {
+            pArgs.remove(arg);
         }
     }
 
-    private boolean prepare_args(String call, Bundle pArgs, Bundle pReturn) {
+    private boolean prepareArgs(String pCall, Bundle pArgs, Bundle pReturn) {
         Apg.initialize(getBaseContext());
 
         /* add default return values for all functions */
-        add_default_returns(pReturn);
+        addDefaultReturns(pReturn);
 
         /* add default arguments if missing */
-        add_default_arguments(call, pArgs);
+        addDefaultArguments(pCall, pArgs);
         if( LOCAL_LOGV ) Log.v(TAG, "add_default_arguments");
 
         /* check for required arguments */
-        check_required_args(call, pArgs, pReturn);
+        checkForRequiredArgs(pCall, pArgs, pReturn);
         if( LOCAL_LOGV ) Log.v(TAG, "check_required_args");
 
         /* check for unknown arguments and add to warning if found */
-        check_unknown_args(call, pArgs, pReturn);
+        checkForUnknownArgs(pCall, pArgs, pReturn);
         if( LOCAL_LOGV ) Log.v(TAG, "check_unknown_args");
 
         /* return if errors happened */
         if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
-            if( LOCAL_LOGV ) Log.v(TAG, "Errors after preparing, not executing "+call);
-            pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.shifted_ordinal());
+            if( LOCAL_LOGV ) Log.v(TAG, "Errors after preparing, not executing "+pCall);
+            pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.shiftedOrdinal());
             return false;
         }
         if( LOCAL_LOGV ) Log.v(TAG, "error return");
@@ -393,30 +379,30 @@ public class ApgService extends Service {
 
     private boolean encrypt(Bundle pArgs, Bundle pReturn) {
 
-        long _pub_master_keys[] = {};
+        long pubMasterKeys[] = {};
         if (pArgs.containsKey(arg.PUBLIC_KEYS.name())) {
-            ArrayList<String> _list = pArgs.getStringArrayList(arg.PUBLIC_KEYS.name());
-            ArrayList<String> _pub_keys = new ArrayList<String>();
-            if( LOCAL_LOGV ) Log.v(TAG, "Long size: " + _list.size());
-            Iterator<String> _iter = _list.iterator();
-            while (_iter.hasNext()) {
-                _pub_keys.add(_iter.next());
+            ArrayList<String> list = pArgs.getStringArrayList(arg.PUBLIC_KEYS.name());
+            ArrayList<String> pubKeys = new ArrayList<String>();
+            if( LOCAL_LOGV ) Log.v(TAG, "Long size: " + list.size());
+            Iterator<String> iter = list.iterator();
+            while (iter.hasNext()) {
+                pubKeys.add(iter.next());
             }
-            _pub_master_keys = get_master_key(_pub_keys, pReturn);
+            pubMasterKeys = getMasterKey(pubKeys, pReturn);
         }
 
-        InputStream _inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
-        InputData _in = new InputData(_inStream, 0); // XXX Size second param?
+        InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+        InputData in = new InputData(inStream, 0); // XXX Size second param?
 
-        OutputStream _out = new ByteArrayOutputStream();
+        OutputStream out = new ByteArrayOutputStream();
         if( LOCAL_LOGV ) Log.v(TAG, "About to encrypt");
         try {
             Apg.encrypt(getBaseContext(), // context
-                    _in, // input stream
-                    _out, // output stream
+                    in, // input stream
+                    out, // output stream
                     pArgs.getBoolean(arg.ARMORED_OUTPUT.name()), // ARMORED_OUTPUT
-                    _pub_master_keys, // encryption keys
-                    get_master_key(pArgs.getString(arg.SIGNATURE_KEY.name()), pReturn), // signature key
+                    pubMasterKeys, // encryption keys
+                    getMasterKey(pArgs.getString(arg.SIGNATURE_KEY.name()), pReturn), // signature key
                     pArgs.getString(arg.PRIVATE_KEY_PASSPHRASE.name()), // signature passphrase
                     null, // progress
                     pArgs.getInt(arg.ENCRYPTION_ALGORYTHM.name()), // encryption
@@ -427,29 +413,29 @@ public class ApgService extends Service {
                     );
         } catch (Exception e) {
             Log.e(TAG, "Exception in encrypt");
-            String _msg = e.getMessage();
-            if (_msg.equals(getBaseContext().getString(R.string.error_noSignaturePassPhrase))) {
-                pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " missing): " + _msg);
-                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_MISSING.shifted_ordinal());
-            } else if (_msg.equals(getBaseContext().getString(R.string.error_couldNotExtractPrivateKey))) {
-                pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " probably wrong): " + _msg);
-                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shifted_ordinal());
+            String msg = e.getMessage();
+            if (msg.equals(getBaseContext().getString(R.string.error_noSignaturePassPhrase))) {
+                pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " missing): " + msg);
+                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_MISSING.shiftedOrdinal());
+            } else if (msg.equals(getBaseContext().getString(R.string.error_couldNotExtractPrivateKey))) {
+                pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot encrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " probably wrong): " + msg);
+                pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shiftedOrdinal());
             } else {
                 pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when encrypting: " + e.getMessage());
-                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shifted_ordinal());
+                pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shiftedOrdinal());
             }
             return false;
         }
         if( LOCAL_LOGV ) Log.v(TAG, "Encrypted");
-        pReturn.putString(ret.RESULT.name(), _out.toString());
+        pReturn.putString(ret.RESULT.name(), out.toString());
         return true;
     }
 
     private final IApgService.Stub mBinder = new IApgService.Stub() {
 
-        public boolean get_keys(Bundle pArgs, Bundle pReturn) {
+        public boolean getKeys(Bundle pArgs, Bundle pReturn) {
 
-            prepare_args("get_keys", pArgs, pReturn);
+            prepareArgs("get_keys", pArgs, pReturn);
 
             HashMap<String, Object> qParams = new HashMap<String, Object>();
             qParams.put("columns", new String[] {
@@ -459,31 +445,31 @@ public class ApgService extends Service {
 
             qParams.put("key_type", pArgs.getInt(arg.KEY_TYPE.name()));
 
-            Cursor mCursor = get_key_entries(qParams);
-            ArrayList<String> fprints = new ArrayList<String>();
+            Cursor cursor = getKeyEntries(qParams);
+            ArrayList<String> fPrints = new ArrayList<String>();
             ArrayList<String> ids = new ArrayList<String>();
-            while (mCursor.moveToNext()) {
-                if( LOCAL_LOGV ) Log.v(TAG, "adding key "+Apg.getSmallFingerPrint(mCursor.getLong(0)));
-                fprints.add(Apg.getSmallFingerPrint(mCursor.getLong(0)));
-                ids.add(mCursor.getString(1));
+            while (cursor.moveToNext()) {
+                if( LOCAL_LOGV ) Log.v(TAG, "adding key "+Apg.getSmallFingerPrint(cursor.getLong(0)));
+                fPrints.add(Apg.getSmallFingerPrint(cursor.getLong(0)));
+                ids.add(cursor.getString(1));
             }
-            mCursor.close();
+            cursor.close();
 
-            pReturn.putStringArrayList(ret.FINGERPRINTS.name(), fprints);
+            pReturn.putStringArrayList(ret.FINGERPRINTS.name(), fPrints);
             pReturn.putStringArrayList(ret.USER_IDS.name(), ids);
             return true;
         }
 
-        public boolean encrypt_with_public_key(Bundle pArgs, Bundle pReturn) {
-            if (!prepare_args("encrypt_with_public_key", pArgs, pReturn)) {
+        public boolean encryptWithPublicKey(Bundle pArgs, Bundle pReturn) {
+            if (!prepareArgs("encrypt_with_public_key", pArgs, pReturn)) {
                 return false;
             }
 
             return encrypt(pArgs, pReturn);
         }
 
-        public boolean encrypt_with_passphrase(Bundle pArgs, Bundle pReturn) {
-            if (!prepare_args("encrypt_with_passphrase", pArgs, pReturn)) {
+        public boolean encryptWithPassphrase(Bundle pArgs, Bundle pReturn) {
+            if (!prepareArgs("encrypt_with_passphrase", pArgs, pReturn)) {
                 return false;
             }
 
@@ -492,11 +478,11 @@ public class ApgService extends Service {
         }
 
         public boolean decrypt(Bundle pArgs, Bundle pReturn) {
-            if (!prepare_args("decrypt", pArgs, pReturn)) {
+            if (!prepareArgs("decrypt", pArgs, pReturn)) {
                 return false;
             }
 
-            String _passphrase = pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null ? pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) : pArgs
+            String passphrase = pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null ? pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) : pArgs
                     .getString(arg.PRIVATE_KEY_PASSPHRASE.name());
 
             InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
@@ -504,21 +490,21 @@ public class ApgService extends Service {
             OutputStream out = new ByteArrayOutputStream();
             if( LOCAL_LOGV ) Log.v(TAG, "About to decrypt");
             try {
-                Apg.decrypt(getBaseContext(), in, out, _passphrase, null, // progress
+                Apg.decrypt(getBaseContext(), in, out, passphrase, null, // progress
                         pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
                         );
             } catch (Exception e) {
                 Log.e(TAG, "Exception in decrypt");
-                String _msg = e.getMessage();
-                if (_msg.equals(getBaseContext().getString(R.string.error_noSecretKeyFound))) {
-                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt: " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.shifted_ordinal());
-                } else if (_msg.equals(getBaseContext().getString(R.string.error_wrongPassPhrase))) {
-                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " wrong/missing): " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shifted_ordinal());
+                String msg = e.getMessage();
+                if (msg.equals(getBaseContext().getString(R.string.error_noSecretKeyFound))) {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt: " + msg);
+                    pReturn.putInt(ret.ERROR.name(), error.NO_MATCHING_SECRET_KEY.shiftedOrdinal());
+                } else if (msg.equals(getBaseContext().getString(R.string.error_wrongPassPhrase))) {
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Cannot decrypt (" + arg.PRIVATE_KEY_PASSPHRASE.name() + " wrong/missing): " + msg);
+                    pReturn.putInt(ret.ERROR.name(), error.PRIVATE_KEY_PASSPHRASE_WRONG.shiftedOrdinal());
                 } else {
-                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when decrypting: " + _msg);
-                    pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shifted_ordinal());
+                    pReturn.getStringArrayList(ret.ERRORS.name()).add("Internal failure (" + e.getClass() + ") in APG when decrypting: " + msg);
+                    pReturn.putInt(ret.ERROR.name(), error.APG_FAILURE.shiftedOrdinal());
                 }
                 return false;
             }

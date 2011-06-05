@@ -1,12 +1,13 @@
 package org.thialfihar.android.apg;
 
 interface IApgService {
-    
-    /* All functions fill the return_vals Bundle with the following keys:
+
+    /* All functions fill the returnVals Bundle with the following keys:
      *
      * ArrayList<String> "WARNINGS"  = Warnings, if any
      * ArrayList<String> "ERRORS"    = Human readable error descriptions, if any
-     * int "ERROR"                   = Numeric representation of error, if any, starting with 100
+     * int "ERROR"                   = Numeric representation of error, if any
+     *                                 starting with 100:
      *                                  100: Required argument missing
      *                                  101: Generic failure of APG
      *                                  102: No matching private key found
@@ -14,10 +15,9 @@ interface IApgService {
      *                                  104: Private key's passphrase missing
      */
 
-    /* *******************************************************
-     * Encrypting and decrypting 
+    /* ********************************************************
+     * Encryption 
      * ********************************************************/
-
 
     /* All encryption function's arguments
      *
@@ -54,27 +54,28 @@ interface IApgService {
      *  (optional)
      *      String  "PRIVATE_KEY_PASSPHRASE"    = Passphrase for signing key
      *
-     * Bundle return_vals (in addition to the ERRORS/WARNINGS above):
+     * Bundle returnVals (in addition to the ERRORS/WARNINGS above):
      *      String  "RESULT"                    = Encrypted message
      */
-     
-     /* Additional argument:
+
+     /* Additional argument for function below:
      *  (required)
      *      String  "SYMMETRIC_PASSPHRASE"      = Symmetric passphrase to use
      */
-    boolean encrypt_with_passphrase(in Bundle params, out Bundle return_vals);
-    
+    boolean encryptWithPassphrase(in Bundle params, out Bundle returnVals);
+
     /* Additional argument:
      *  (required)
      *      ArrayList<String>   "PUBLIC_KEYS"   = Public keys (8char fingerprint "123ABC12" OR 
      *                                              complete id "Alice Meyer <ab@email.com>")
      */
-    boolean encrypt_with_public_key(in Bundle params, out Bundle return_vals);
-    
+    boolean encryptWithPublicKey(in Bundle params, out Bundle returnVals);
 
-    /* Decrypt something
-     *
-     * Bundle params:
+    /* ********************************************************
+     * Decryption
+     * ********************************************************/
+
+    /* Bundle params:
      *  (required) 
      *      String  "MESSAGE"                   = Message to decrypt
      *      
@@ -87,14 +88,12 @@ interface IApgService {
      * Bundle return_vals:
      *   String     "RESULT"                    = Decrypted message
      */
-    
-    boolean decrypt(in Bundle params, out Bundle return_vals);
-    
-    
-    /* *******************************************************
+    boolean decrypt(in Bundle params, out Bundle returnVals);
+ 
+    /* ********************************************************
      * Get key information 
      * ********************************************************/
-    
+
     /* Get info about all available keys
      * 
      * Bundle params:
@@ -106,8 +105,9 @@ interface IApgService {
      *  Returns:
      *      StringArrayList "FINGERPRINTS"      = Short fingerprints of keys
      *      
-     *      StringArrayList "USER_IDS"          = User ids of corrosponding fingerprints (order is the same)
+     *      StringArrayList "USER_IDS"          = User ids of corresponding fingerprints
+     *                                            (order is the same as in FINGERPRINTS)
      */
-    boolean get_keys(in Bundle params, out Bundle return_vals);
+    boolean getKeys(in Bundle params, out Bundle returnVals);
 
 }
