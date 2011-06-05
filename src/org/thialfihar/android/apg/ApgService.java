@@ -23,10 +23,12 @@ import android.util.Log;
 
 public class ApgService extends Service {
     private final static String TAG = "ApgService";
+    private static final boolean LOCAL_LOGV = true;
+    private static final boolean LOCAL_LOGD = true;
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "bound");
+        if( LOCAL_LOGD ) Log.d(TAG, "bound");
         return mBinder;
     }
 
@@ -209,20 +211,20 @@ public class ApgService extends Service {
 
         Cursor mCursor = get_key_entries(qParams);
 
-        Log.v(TAG, "going through installed user keys");
+        if( LOCAL_LOGV ) Log.v(TAG, "going through installed user keys");
         ArrayList<Long> _master_keys = new ArrayList<Long>();
         while (mCursor.moveToNext()) {
             long _cur_mkey = mCursor.getLong(0);
             String _cur_user = mCursor.getString(1);
 
             String _cur_fprint = Apg.getSmallFingerPrint(_cur_mkey);
-            Log.v(TAG, "current user: " + _cur_user + " (" + _cur_fprint + ")");
+            if( LOCAL_LOGV ) Log.v(TAG, "current user: " + _cur_user + " (" + _cur_fprint + ")");
             if (search_keys.contains(_cur_fprint) || search_keys.contains(_cur_user)) {
-                Log.v(TAG, "master key found for: " + _cur_fprint);
+                if( LOCAL_LOGV ) Log.v(TAG, "master key found for: " + _cur_fprint);
                 _master_keys.add(_cur_mkey);
                 search_keys.remove(_cur_fprint);
             } else {
-                Log.v(TAG, "Installed key " + _cur_fprint + " is not in the list of public keys to encrypt with");
+                if( LOCAL_LOGV ) Log.v(TAG, "Installed key " + _cur_fprint + " is not in the list of public keys to encrypt with");
             }
         }
         mCursor.close();
@@ -368,23 +370,23 @@ public class ApgService extends Service {
 
         /* add default arguments if missing */
         add_default_arguments(call, pArgs);
-        Log.v(TAG, "add_default_arguments");
+        if( LOCAL_LOGV ) Log.v(TAG, "add_default_arguments");
 
         /* check for required arguments */
         check_required_args(call, pArgs, pReturn);
-        Log.v(TAG, "check_required_args");
+        if( LOCAL_LOGV ) Log.v(TAG, "check_required_args");
 
         /* check for unknown arguments and add to warning if found */
         check_unknown_args(call, pArgs, pReturn);
-        Log.v(TAG, "check_unknown_args");
+        if( LOCAL_LOGV ) Log.v(TAG, "check_unknown_args");
 
         /* return if errors happened */
         if (pReturn.getStringArrayList(ret.ERRORS.name()).size() != 0) {
-            Log.v(TAG, "Errors after preparing, not executing "+call);
+            if( LOCAL_LOGV ) Log.v(TAG, "Errors after preparing, not executing "+call);
             pReturn.putInt(ret.ERROR.name(), error.ARGUMENTS_MISSING.shifted_ordinal());
             return false;
         }
-        Log.v(TAG, "error return");
+        if( LOCAL_LOGV ) Log.v(TAG, "error return");
 
         return true;
     }
@@ -395,7 +397,7 @@ public class ApgService extends Service {
         if (pArgs.containsKey(arg.PUBLIC_KEYS.name())) {
             ArrayList<String> _list = pArgs.getStringArrayList(arg.PUBLIC_KEYS.name());
             ArrayList<String> _pub_keys = new ArrayList<String>();
-            Log.v(TAG, "Long size: " + _list.size());
+            if( LOCAL_LOGV ) Log.v(TAG, "Long size: " + _list.size());
             Iterator<String> _iter = _list.iterator();
             while (_iter.hasNext()) {
                 _pub_keys.add(_iter.next());
@@ -407,7 +409,7 @@ public class ApgService extends Service {
         InputData _in = new InputData(_inStream, 0); // XXX Size second param?
 
         OutputStream _out = new ByteArrayOutputStream();
-        Log.v(TAG, "About to encrypt");
+        if( LOCAL_LOGV ) Log.v(TAG, "About to encrypt");
         try {
             Apg.encrypt(getBaseContext(), // context
                     _in, // input stream
@@ -438,7 +440,7 @@ public class ApgService extends Service {
             }
             return false;
         }
-        Log.v(TAG, "Encrypted");
+        if( LOCAL_LOGV ) Log.v(TAG, "Encrypted");
         pReturn.putString(ret.RESULT.name(), _out.toString());
         return true;
     }
@@ -461,7 +463,7 @@ public class ApgService extends Service {
             ArrayList<String> fprints = new ArrayList<String>();
             ArrayList<String> ids = new ArrayList<String>();
             while (mCursor.moveToNext()) {
-                Log.v(TAG, "adding key "+Apg.getSmallFingerPrint(mCursor.getLong(0)));
+                if( LOCAL_LOGV ) Log.v(TAG, "adding key "+Apg.getSmallFingerPrint(mCursor.getLong(0)));
                 fprints.add(Apg.getSmallFingerPrint(mCursor.getLong(0)));
                 ids.add(mCursor.getString(1));
             }
@@ -500,7 +502,7 @@ public class ApgService extends Service {
             InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
             InputData in = new InputData(inStream, 0); // XXX what size in second parameter?
             OutputStream out = new ByteArrayOutputStream();
-            Log.v(TAG, "About to decrypt");
+            if( LOCAL_LOGV ) Log.v(TAG, "About to decrypt");
             try {
                 Apg.decrypt(getBaseContext(), in, out, _passphrase, null, // progress
                         pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
@@ -520,7 +522,7 @@ public class ApgService extends Service {
                 }
                 return false;
             }
-            Log.v(TAG, "Decrypted");
+            if( LOCAL_LOGV ) Log.v(TAG, "Decrypted");
 
             pReturn.putString(ret.RESULT.name(), out.toString());
             return true;
