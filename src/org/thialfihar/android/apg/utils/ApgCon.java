@@ -56,6 +56,11 @@ public class ApgCon {
     private final static String TAG = "ApgCon";
     private final static int API_VERSION = 1; // aidl api-version it expects
     
+    /**
+     * How many seconds to wait for a connection to AGP when connecting.
+     * Being unsuccessful for this number of seconds, a connection
+     * is assumed to be failed.
+     */
     public int secondsToWaitForConnection = 15;
 
     private class CallAsync extends AsyncTask<String, Void, Void> {
@@ -278,12 +283,12 @@ public class ApgCon {
      * 
      * <p>
      * After you have set up everything with {@link #setArg(String, String)}
-     * (and variants), you can call a function from the AIDL-interface. This
-     * will
+     * (and variants), you can call a function of the AIDL-interface. This
+     * will:
      * <ul>
      * <li>start connection to the remote interface (if not already connected)</li>
-     * <li>call the passed function with all set up parameters synchronously</li>
-     * <li>set up everything to retrieve the mResult and/or warnings/errors</li>
+     * <li>call the function passed with all parameters synchronously</li>
+     * <li>set up everything to retrieve the result and/or warnings/errors</li>
      * <li>call the callback if provided
      * </ul>
      * </p>
@@ -317,7 +322,7 @@ public class ApgCon {
     }
 
     /**
-     * Calls a function from remote interface asynchronously
+     * Calls a function of remote interface asynchronously
      * 
      * <p>
      * This does exactly the same as {@link #call(String)}, but asynchronously.
@@ -326,7 +331,7 @@ public class ApgCon {
      * <p>
      * 
      * <p>
-     * To see whether the task is finished, you have to possibilities:
+     * To see whether the task is finished, you have two possibilities:
      * <ul>
      * <li>In your thread, poll {@link #isRunning()}</li>
      * <li>Supply a callback with {@link #setOnCallFinishListener(OnCallFinishListener)}</li>
@@ -396,7 +401,7 @@ public class ApgCon {
      * </p>
      * 
      * <p>
-     * Note, that the parameters are not deleted after a call, so you have to
+     * Note that parameters are not reseted after a call, so you have to
      * reset ({@link #clearArgs()}) them manually if you want to.
      * </p>
      * 
@@ -496,10 +501,11 @@ public class ApgCon {
      * 
      * <p>
      * Anything the has been set up with the various
-     * {@link #setArg(String, String)} functions, is cleared.
+     * {@link #setArg(String, String)} functions is cleared.
      * </p>
+     * 
      * <p>
-     * Note, that any warning, error, callback, mResult, etc. is not cleared with
+     * Note that any warning, error, callback, result, etc. is NOT cleared with
      * this.
      * </p>
      * 
@@ -524,7 +530,7 @@ public class ApgCon {
      * Iterates through the errors
      * 
      * <p>
-     * With this method, you can iterate through all errors. The errors are only
+     * With this method you can iterate through all errors. The errors are only
      * returned once and deleted immediately afterwards, so you can only return
      * each error once.
      * </p>
@@ -543,7 +549,7 @@ public class ApgCon {
     }
 
     /**
-     * Check, if there are any new errors
+     * Check if there are any new errors
      * 
      * @return true, if there are unreturned errors, false otherwise
      * 
@@ -576,7 +582,7 @@ public class ApgCon {
      * Iterates through the warnings
      * 
      * <p>
-     * With this method, you can iterate through all warnings. The warnings are
+     * With this method you can iterate through all warnings. Warnings are
      * only returned once and deleted immediately afterwards, so you can only
      * return each warning once.
      * </p>
@@ -595,7 +601,7 @@ public class ApgCon {
     }
 
     /**
-     * Check, if there are any new warnings
+     * Check if there are any new warnings
      * 
      * @return true, if there are unreturned warnings, false otherwise
      * 
@@ -609,20 +615,21 @@ public class ApgCon {
      * Get the result
      * 
      * <p>
-     * This gets your mResult. After doing an encryption or decryption with APG,
+     * This gets your result. After doing an encryption or decryption with APG,
      * you get the output with this function.
      * </p>
+     * 
      * <p>
-     * Note, that when your last remote call is unsuccessful, the mResult will
+     * Note when your last remote call is unsuccessful, the result will
      * still have the same value like the last successful call (or null, if no
-     * call was successful). To ensure you do not work with old call's mResults,
+     * call was successful). To ensure you do not work with old call's results,
      * either be sure to {@link #reset()} (or at least {@link #clearResult()})
      * your instance before each new call or always check that
      * {@link #hasNextError()} is false.
      * </p>
      * 
      * @return the mResult of the last {@link #call(String)} or
-     *         {@link #call_asinc(String)}.
+     *         {@link #callAsync(String)}.
      * 
      * @see #reset()
      * @see #clearResult()
@@ -633,7 +640,7 @@ public class ApgCon {
     }
 
     /**
-     * Get the mResult bundle
+     * Get the result bundle
      * 
      * <p>
      * Unlike {@link #getResult()}, which only returns any en-/decrypted
@@ -645,11 +652,11 @@ public class ApgCon {
      * For warnings and errors it is suggested to use the functions that are
      * provided here, namely {@link #getError()}, {@link #getNextError()},
      * {@link #get_next_Warning()} etc.), but if any call returns something non
-     * standard, you have access to the complete mResult bundle to extract the
+     * standard, you have access to the complete result bundle to extract the
      * information.
      * </p>
      * 
-     * @return the complete mResult-bundle of the last call to apg
+     * @return the complete result bundle of the last call to apg
      */
     public Bundle getResultBundle() {
         return mResult;
@@ -710,7 +717,7 @@ public class ApgCon {
     }
 
     /**
-     * Checks, whether an async execution is running
+     * Checks if an async execution is running
      * 
      * <p>
      * If you started something with {@link #callAsync(String)}, this will
@@ -731,15 +738,15 @@ public class ApgCon {
      * 
      * <p>
      * This currently resets everything in this instance. Errors, warnings,
-     * mResults, callbacks, ... are removed. Any connection to the remote
+     * results, callbacks, ... are removed. Any connection to the remote
      * interface is upheld, though.
      * </p>
      * 
      * <p>
-     * Note, that when an async execution ({@link #callAsync(String)}) is
-     * running, it's mResult, warnings etc. will still be evaluated (which might
-     * be not what you want). Also mind, that any callback you set is also
-     * reseted, so on finishing the execution any before defined callback will
+     * Note when an async execution ({@link #callAsync(String)}) is
+     * running, it's result, warnings etc. will still be evaluated (which might
+     * be not what you want). Also mind that any callback you set is also
+     * reseted, so when finishing the execution any before defined callback will
      * NOT BE TRIGGERED.
      * </p>
      */
