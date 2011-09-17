@@ -154,7 +154,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         return userId;
     }
 
-    @Override
     public void onClick(View v) {
         final ViewGroup parent = (ViewGroup)getParent();
         if (v == mDeleteButton) {
@@ -187,7 +186,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         return mIsMainUserId.isChecked();
     }
 
-    @Override
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
     }

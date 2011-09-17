@@ -20,8 +20,6 @@ import org.bouncycastle2.jce.provider.BouncyCastleProvider;
 import org.bouncycastle2.openpgp.PGPException;
 import org.bouncycastle2.openpgp.PGPPrivateKey;
 import org.bouncycastle2.openpgp.PGPSecretKey;
-import org.thialfihar.android.apg.Apg.GeneralException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -56,7 +54,6 @@ public class AskForSecretKeyPassPhrase {
                 alert.setTitle(R.string.title_keyNotFound);
                 alert.setMessage(context.getString(R.string.keyNotFound, secretKeyId));
                 alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
-                    @Override
                     public void onClick(DialogInterface dialog, int which) {
                         activity.removeDialog(Id.dialog.pass_phrase);
                     }

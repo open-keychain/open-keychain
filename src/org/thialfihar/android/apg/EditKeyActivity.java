@@ -93,7 +93,6 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
         mChangePassPhrase = (Button) findViewById(R.id.btn_change_pass_phrase);
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 showDialog(Id.dialog.new_pass_phrase);
             }
@@ -209,7 +208,6 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         }
     }
 
-    @Override
     public void onClick(View v) {
         if (v == mSaveButton) {
             // TODO: some warning

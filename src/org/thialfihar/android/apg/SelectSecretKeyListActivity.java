@@ -48,7 +48,6 @@ public class SelectSecretKeyListActivity extends BaseActivity {
         mList = (ListView) findViewById(R.id.list);
 
         mList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent data = new Intent();
                 data.putExtra(Apg.EXTRA_KEY_ID, id);
@@ -58,12 +57,11 @@ public class SelectSecretKeyListActivity extends BaseActivity {
             }
         });
 
-        mFilterLayout = (View) findViewById(R.id.layout_filter);
+        mFilterLayout = findViewById(R.id.layout_filter);
         mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
 
         mClearFilterButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 handleIntent(new Intent());
             }

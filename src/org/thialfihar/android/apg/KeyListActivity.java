@@ -86,12 +86,11 @@ public class KeyListActivity extends BaseActivity {
         mList = (ExpandableListView) findViewById(R.id.list);
         registerForContextMenu(mList);
 
-        mFilterLayout = (View) findViewById(R.id.layout_filter);
+        mFilterLayout = findViewById(R.id.layout_filter);
         mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
 
         mClearFilterButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 handleIntent(new Intent());
             }
@@ -232,8 +231,6 @@ public class KeyListActivity extends BaseActivity {
                                         getString(R.string.specifyFileToImportFrom),
                                         mImportFilename,
                                         new FileDialog.OnClickListener() {
-
-                                            @Override
                                             public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(Id.dialog.import_keys);
                                                 mDeleteAfterImport = checked;
@@ -241,7 +238,6 @@ public class KeyListActivity extends BaseActivity {
                                                 importKeys();
                                             }
 
-                                            @Override
                                             public void onCancelClick() {
                                                 removeDialog(Id.dialog.import_keys);
                                             }
@@ -270,14 +266,12 @@ public class KeyListActivity extends BaseActivity {
                                                       R.string.specifyFileToExportSecretKeysTo),
                                         mExportFilename,
                                         new FileDialog.OnClickListener() {
-                                            @Override
                                             public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(thisDialogId);
                                                 mExportFilename = filename;
                                                 exportKeys();
                                             }
 
-                                            @Override
                                             public void onCancelClick() {
                                                 removeDialog(thisDialogId);
                                             }
@@ -646,12 +640,10 @@ public class KeyListActivity extends BaseActivity {
             return children;
         }
 
-        @Override
         public boolean hasStableIds() {
             return true;
         }
 
-        @Override
         public boolean isChildSelectable(int groupPosition, int childPosition) {
             return true;
         }

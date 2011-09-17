@@ -143,24 +143,20 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         return true;
     }
 
-    @Override
     public int getCount() {
         return mCursor.getCount();
     }
 
-    @Override
     public Object getItem(int position) {
         mCursor.moveToPosition(position);
         return mCursor.getString(2); // USER_ID
     }
 
-    @Override
     public long getItemId(int position) {
         mCursor.moveToPosition(position);
         return mCursor.getLong(1); // MASTER_KEY_ID
     }
 
-    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         mCursor.moveToPosition(position);
 

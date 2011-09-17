@@ -48,7 +48,6 @@ public class SelectPublicKeyListActivity extends BaseActivity {
 
         Button okButton = (Button) findViewById(R.id.btn_ok);
         okButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 okClicked();
             }
@@ -56,18 +55,16 @@ public class SelectPublicKeyListActivity extends BaseActivity {
 
         Button cancelButton = (Button) findViewById(R.id.btn_cancel);
         cancelButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 cancelClicked();
             }
         });
 
-        mFilterLayout = (View) findViewById(R.id.layout_filter);
+        mFilterLayout = findViewById(R.id.layout_filter);
         mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
 
         mClearFilterButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 handleIntent(new Intent());
             }

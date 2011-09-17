@@ -253,7 +253,6 @@ public class BaseActivity extends Activity
                                 final File file = new File(getDeleteFile());
                                 showDialog(Id.dialog.deleting);
                                 mDeletingThread = new Thread(new Runnable() {
-                                   @Override
                                     public void run() {
                                        Bundle data = new Bundle();
                                        data.putInt(Constants.extras.status, Id.message.delete_done);

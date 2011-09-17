@@ -105,7 +105,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setExpiryDate(null);
 
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
                 if (date == null) {
@@ -201,7 +200,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         return mKey;
     }
 
-    @Override
     public void onClick(View v) {
         final ViewGroup parent = (ViewGroup)getParent();
         if (v == mDeleteButton) {
@@ -212,7 +210,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
     }
 
-    @Override
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
     }

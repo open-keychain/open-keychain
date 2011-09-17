@@ -10,13 +10,15 @@ public class CachedPassPhrase {
         this.passPhrase = passPhrase;
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         int hc1 = (int)(this.timestamp & 0xffffffff);
         int hc2 = (this.passPhrase == null ? 0 : this.passPhrase.hashCode());
         return (hc1 + hc2) * hc2 + hc1;
     }
 
-    public boolean equals(Object other) {
+    @Override
+	public boolean equals(Object other) {
         if (!(other instanceof CachedPassPhrase)) {
             return false;
         }
@@ -39,7 +41,8 @@ public class CachedPassPhrase {
         return true;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return "(" + timestamp + ", *******)";
     }
 }

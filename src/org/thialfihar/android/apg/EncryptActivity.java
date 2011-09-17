@@ -119,7 +119,6 @@ public class EncryptActivity extends BaseActivity {
 
         mSourcePrevious.setClickable(true);
         mSourcePrevious.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(EncryptActivity.this,
                                                                     R.anim.push_right_in));
@@ -132,7 +131,6 @@ public class EncryptActivity extends BaseActivity {
 
         mSourceNext.setClickable(true);
         OnClickListener nextSourceClickListener = new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(EncryptActivity.this,
                                                                     R.anim.push_left_in));
@@ -154,7 +152,6 @@ public class EncryptActivity extends BaseActivity {
 
         mModePrevious.setClickable(true);
         mModePrevious.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mMode.setInAnimation(AnimationUtils.loadAnimation(EncryptActivity.this,
                                                                     R.anim.push_right_in));
@@ -166,7 +163,6 @@ public class EncryptActivity extends BaseActivity {
         });
 
         OnClickListener nextModeClickListener = new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mMode.setInAnimation(AnimationUtils.loadAnimation(EncryptActivity.this,
                                                                     R.anim.push_left_in));
@@ -202,7 +198,6 @@ public class EncryptActivity extends BaseActivity {
         mFilename = (EditText) findViewById(R.id.filename);
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 openFile();
             }
@@ -234,35 +229,30 @@ public class EncryptActivity extends BaseActivity {
         mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
         mAsciiArmour.setChecked(mPreferences.getDefaultAsciiArmour());
         mAsciiArmour.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View view) {
                 guessOutputFilename();
             }
         });
 
         mEncryptToClipboardButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 encryptToClipboardClicked();
             }
         });
 
         mEncryptButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 encryptClicked();
             }
         });
 
         mSelectKeysButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 selectPublicKeys();
             }
         });
 
         mSign.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 CheckBox checkBox = (CheckBox) v;
                 if (checkBox.isChecked()) {
@@ -949,14 +939,12 @@ public class EncryptActivity extends BaseActivity {
                                         getString(R.string.specifyFileToEncryptTo),
                                         mOutputFilename,
                                         new FileDialog.OnClickListener() {
-                                            @Override
                                             public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(Id.dialog.output_filename);
                                                 mOutputFilename = filename;
                                                 encryptStart();
                                             }
 
-                                            @Override
                                             public void onCancelClick() {
                                                 removeDialog(Id.dialog.output_filename);
                                             }

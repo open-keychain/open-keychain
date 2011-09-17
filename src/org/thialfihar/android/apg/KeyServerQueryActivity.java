@@ -71,14 +71,12 @@ public class KeyServerQueryActivity extends BaseActivity {
         }
 
         mList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long keyId) {
                 get(keyId);
             }
         });
 
         mSearch.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 String query = mQuery.getText().toString();
                 search(query);
@@ -112,7 +110,8 @@ public class KeyServerQueryActivity extends BaseActivity {
         startThread();
     }
 
-    protected Dialog onCreateDialog(int id) {
+    @Override
+	protected Dialog onCreateDialog(int id) {
         ProgressDialog progress = (ProgressDialog) super.onCreateDialog(id);
         progress.setMessage(this.getString(R.string.progress_queryingServer,
                                            (String)mKeyServer.getSelectedItem()));
@@ -211,22 +210,18 @@ public class KeyServerQueryActivity extends BaseActivity {
             return true;
         }
 
-        @Override
         public int getCount() {
             return mKeys.size();
         }
 
-        @Override
         public Object getItem(int position) {
             return mKeys.get(position);
         }
 
-        @Override
         public long getItemId(int position) {
             return mKeys.get(position).keyId;
         }
 
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             KeyInfo keyInfo = mKeys.get(position);
 

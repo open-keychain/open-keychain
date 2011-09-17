@@ -212,7 +212,6 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
                 dialog.setPositiveButton(android.R.string.ok,
                                          new DialogInterface.OnClickListener() {
-                    @Override
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
                         try {
@@ -229,7 +228,6 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 dialog.setCancelable(true);
                 dialog.setNegativeButton(android.R.string.cancel,
                                          new DialogInterface.OnClickListener() {
-                    @Override
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
                     }

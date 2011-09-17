@@ -108,7 +108,6 @@ public class DecryptActivity extends BaseActivity {
 
         mSourcePrevious.setClickable(true);
         mSourcePrevious.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
                                                                     R.anim.push_right_in));
@@ -121,7 +120,6 @@ public class DecryptActivity extends BaseActivity {
 
         mSourceNext.setClickable(true);
         OnClickListener nextSourceClickListener = new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
                                                                     R.anim.push_left_in));
@@ -154,7 +152,6 @@ public class DecryptActivity extends BaseActivity {
         mFilename = (EditText) findViewById(R.id.filename);
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 openFile();
             }
@@ -282,7 +279,6 @@ public class DecryptActivity extends BaseActivity {
 
         mSignatureLayout.setVisibility(View.GONE);
         mSignatureLayout.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 if (mSignatureKeyId == 0) {
                     return;
@@ -298,14 +294,12 @@ public class DecryptActivity extends BaseActivity {
         });
 
         mDecryptButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 decryptClicked();
             }
         });
 
         mReplyButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 replyClicked();
             }
@@ -704,14 +698,12 @@ public class DecryptActivity extends BaseActivity {
                                         getString(R.string.specifyFileToDecryptTo),
                                         mOutputFilename,
                                         new FileDialog.OnClickListener() {
-                                            @Override
                                             public void onOkClick(String filename, boolean checked) {
                                                 removeDialog(Id.dialog.output_filename);
                                                 mOutputFilename = filename;
                                                 decryptStart();
                                             }
 
-                                            @Override
                                             public void onCancelClick() {
                                                 removeDialog(Id.dialog.output_filename);
                                             }

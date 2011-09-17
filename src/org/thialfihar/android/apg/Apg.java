@@ -372,10 +372,10 @@ public class Apg {
                                         new SecureRandom(), new BouncyCastleProvider().getName());
             ringGen.addSubKey(keyPair);
             PGPSecretKeyRing secKeyRing = ringGen.generateSecretKeyRing();
-            Iterator it = secKeyRing.getSecretKeys();
+            Iterator<PGPSecretKey> it = secKeyRing.getSecretKeys();
             // first one is the master key
             it.next();
-            secretKey = (PGPSecretKey) it.next();
+            secretKey = it.next();
         }
 
         return secretKey;
@@ -1048,7 +1048,7 @@ public class Apg {
             } else if (i != 0 && i % 2 == 0) {
                 fingerPrint += " ";
             }
-            String chunk = Integer.toHexString((((int)fp[i]) + 256) % 256).toUpperCase();
+            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase();
             while (chunk.length() < 2) {
                 chunk = "0" + chunk;
             }
@@ -1597,7 +1597,7 @@ public class Apg {
         // TODO: currently we always only look at the first known key
         // find the secret key
         PGPSecretKey secretKey = null;
-        Iterator it = enc.getEncryptedDataObjects();
+        Iterator<?> it = enc.getEncryptedDataObjects();
         boolean gotAsymmetricEncryption = false;
         while (it.hasNext()) {
             Object obj = it.next();
@@ -1640,7 +1640,7 @@ public class Apg {
             throw new GeneralException(context.getString(R.string.error_invalidData));
         }
 
-        Iterator it = enc.getEncryptedDataObjects();
+        Iterator<?> it = enc.getEncryptedDataObjects();
         while (it.hasNext()) {
             Object obj = it.next();
             if (obj instanceof PGPPBEEncryptedData) {
@@ -1688,7 +1688,7 @@ public class Apg {
         // there might be more...
         if (assumeSymmetric) {
             PGPPBEEncryptedData pbe = null;
-            Iterator it = enc.getEncryptedDataObjects();
+            Iterator<?> it = enc.getEncryptedDataObjects();
             // find secret key
             while (it.hasNext()) {
                 Object obj = it.next();
@@ -1710,7 +1710,7 @@ public class Apg {
             progress.setProgress(R.string.progress_findingKey, currentProgress, 100);
             PGPPublicKeyEncryptedData pbe = null;
             PGPSecretKey secretKey = null;
-            Iterator it = enc.getEncryptedDataObjects();
+            Iterator<?> it = enc.getEncryptedDataObjects();
             // find secret key
             while (it.hasNext()) {
                 Object obj = it.next();
@@ -1842,7 +1842,7 @@ public class Apg {
             if (signature != null) {
                 progress.setProgress(R.string.progress_verifyingSignature, 90, 100);
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
-                PGPSignature messageSignature = (PGPSignature) signatureList.get(signatureIndex);
+                PGPSignature messageSignature = signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
                     returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, true);
                 } else {
@@ -2195,13 +2195,13 @@ public class Apg {
         random.nextBytes(bytes);
         String result = "";
         for (int i = 0; i < length; ++i) {
-            int v = ((int)bytes[i] + 256) % 64;
+            int v = (bytes[i] + 256) % 64;
             if (v < 10) {
-                result += (char)((int)'0' + v);
+                result += (char)('0' + v);
             } else if (v < 36) {
-                result += (char)((int)'A' + v - 10);
+                result += (char)('A' + v - 10);
             } else if (v < 62) {
-                result += (char)((int)'a' + v - 36);
+                result += (char)('a' + v - 36);
             } else if (v == 62) {
                 result += '_';
             } else if (v == 63) {

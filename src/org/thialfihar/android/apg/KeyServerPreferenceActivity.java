@@ -70,7 +70,6 @@ public class KeyServerPreferenceActivity extends BaseActivity
 
         Button okButton = (Button) findViewById(R.id.btn_ok);
         okButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 okClicked();
             }
@@ -78,7 +77,6 @@ public class KeyServerPreferenceActivity extends BaseActivity
 
         Button cancelButton = (Button) findViewById(R.id.btn_cancel);
         cancelButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 cancelClicked();
             }

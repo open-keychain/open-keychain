@@ -94,7 +94,6 @@ public class GeneralActivity extends BaseActivity {
         mList.setAdapter(mAdapter);
 
         mList.setOnItemClickListener(new OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 clicked(mAdapter.getItem(arg2).getId());
             }
@@ -102,8 +101,6 @@ public class GeneralActivity extends BaseActivity {
 
         mCancelButton = (Button) findViewById(R.id.btn_cancel);
         mCancelButton.setOnClickListener(new OnClickListener() {
-
-            @Override
             public void onClick(View v) {
                 GeneralActivity.this.finish();
             }

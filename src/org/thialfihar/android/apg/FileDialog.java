@@ -58,14 +58,13 @@ public class FileDialog {
         alert.setTitle(title);
         alert.setMessage(message);
 
-        View view = (View) inflater.inflate(R.layout.file_dialog, null);
+        View view = inflater.inflate(R.layout.file_dialog, null);
 
         mActivity = activity;
         mFilename = (EditText) view.findViewById(R.id.input);
         mFilename.setText(defaultFile);
         mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 openFile();
             }

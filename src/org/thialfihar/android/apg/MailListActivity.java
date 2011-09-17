@@ -153,7 +153,6 @@ public class MailListActivity extends ListActivity {
 
         setListAdapter(new MailboxAdapter());
         getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
@@ -179,22 +178,18 @@ public class MailListActivity extends ListActivity {
             return true;
         }
 
-        @Override
         public int getCount() {
             return mMessages.size();
         }
 
-        @Override
         public Object getItem(int position) {
             return mMessages.get(position);
         }
 
-        @Override
         public long getItemId(int position) {
             return mMessages.get(position).id;
         }
 
-        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = mInflater.inflate(R.layout.mailbox_message_item, null);
 

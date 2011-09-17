@@ -62,7 +62,6 @@ public class KeyServerEditor extends LinearLayout implements Editor, OnClickList
         return mServer.getText().toString().trim();
     }
 
-    @Override
     public void onClick(View v) {
         final ViewGroup parent = (ViewGroup)getParent();
         if (v == mDeleteButton) {
@@ -73,7 +72,6 @@ public class KeyServerEditor extends LinearLayout implements Editor, OnClickList
         }
     }
 
-    @Override
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
     }

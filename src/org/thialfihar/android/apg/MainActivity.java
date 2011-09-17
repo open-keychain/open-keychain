@@ -67,7 +67,6 @@ public class MainActivity extends BaseActivity {
         mAccounts = (ListView) findViewById(R.id.accounts);
 
         encryptMessageButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
                 intent.setAction(Apg.Intent.ENCRYPT);
@@ -76,7 +75,6 @@ public class MainActivity extends BaseActivity {
         });
 
         decryptMessageButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT);
@@ -85,7 +83,6 @@ public class MainActivity extends BaseActivity {
         });
 
         encryptFileButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
                 intent.setAction(Apg.Intent.ENCRYPT_FILE);
@@ -94,7 +91,6 @@ public class MainActivity extends BaseActivity {
         });
 
         decryptFileButton.setOnClickListener(new OnClickListener() {
-            @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
                 intent.setAction(Apg.Intent.DECRYPT_FILE);
@@ -113,7 +109,6 @@ public class MainActivity extends BaseActivity {
         mListAdapter = new AccountListAdapter(this, mAccountCursor);
         mAccounts.setAdapter(mListAdapter);
         mAccounts.setOnItemClickListener(new OnItemClickListener() {
-            @Override
             public void onItemClick(AdapterView<?> arg0, View view, int index, long id) {
                 String accountName = (String) mAccounts.getItemAtPosition(index);
                 startActivity(new Intent(MainActivity.this, MailListActivity.class)
@@ -142,7 +137,7 @@ public class MainActivity extends BaseActivity {
 
                 LayoutInflater inflater =
                         (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                View view = (View) inflater.inflate(R.layout.add_account_dialog, null);
+                View view = inflater.inflate(R.layout.add_account_dialog, null);
 
                 final EditText input = (EditText) view.findViewById(R.id.input);
                 alert.setView(view);
