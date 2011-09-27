@@ -1799,6 +1799,10 @@ public class Apg {
             currentProgress += 10;
         }
 
+        if (dataChunk instanceof PGPSignatureList) {
+            dataChunk = plainFact.nextObject();
+        }
+
         if (dataChunk instanceof PGPLiteralData) {
             progress.setProgress(R.string.progress_decrypting, currentProgress, 100);
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
