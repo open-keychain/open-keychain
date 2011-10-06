@@ -2,8 +2,8 @@ package org.thialfihar.android.apg;
 
 import java.util.Vector;
 
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
-import org.bouncycastle2.openpgp.PGPEncryptedData;
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.openpgp.PGPEncryptedData;
 
 import android.content.Context;
 import android.content.SharedPreferences;

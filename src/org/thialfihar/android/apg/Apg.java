@@ -45,42 +45,42 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import org.bouncycastle2.bcpg.ArmoredInputStream;
-import org.bouncycastle2.bcpg.ArmoredOutputStream;
-import org.bouncycastle2.bcpg.BCPGOutputStream;
-import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
-import org.bouncycastle2.bcpg.SymmetricKeyAlgorithmTags;
-import org.bouncycastle2.bcpg.sig.KeyFlags;
-import org.bouncycastle2.jce.provider.BouncyCastleProvider;
-import org.bouncycastle2.jce.spec.ElGamalParameterSpec;
-import org.bouncycastle2.openpgp.PGPCompressedData;
-import org.bouncycastle2.openpgp.PGPCompressedDataGenerator;
-import org.bouncycastle2.openpgp.PGPEncryptedData;
-import org.bouncycastle2.openpgp.PGPEncryptedDataGenerator;
-import org.bouncycastle2.openpgp.PGPEncryptedDataList;
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPKeyPair;
-import org.bouncycastle2.openpgp.PGPKeyRingGenerator;
-import org.bouncycastle2.openpgp.PGPLiteralData;
-import org.bouncycastle2.openpgp.PGPLiteralDataGenerator;
-import org.bouncycastle2.openpgp.PGPObjectFactory;
-import org.bouncycastle2.openpgp.PGPOnePassSignature;
-import org.bouncycastle2.openpgp.PGPOnePassSignatureList;
-import org.bouncycastle2.openpgp.PGPPBEEncryptedData;
-import org.bouncycastle2.openpgp.PGPPrivateKey;
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPPublicKeyEncryptedData;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
-import org.bouncycastle2.openpgp.PGPSecretKey;
-import org.bouncycastle2.openpgp.PGPSecretKeyRing;
-import org.bouncycastle2.openpgp.PGPSignature;
-import org.bouncycastle2.openpgp.PGPSignatureGenerator;
-import org.bouncycastle2.openpgp.PGPSignatureList;
-import org.bouncycastle2.openpgp.PGPSignatureSubpacketGenerator;
-import org.bouncycastle2.openpgp.PGPSignatureSubpacketVector;
-import org.bouncycastle2.openpgp.PGPUtil;
-import org.bouncycastle2.openpgp.PGPV3SignatureGenerator;
+import org.spongycastle.bcpg.ArmoredInputStream;
+import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.BCPGOutputStream;
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
+import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.jce.spec.ElGamalParameterSpec;
+import org.spongycastle.openpgp.PGPCompressedData;
+import org.spongycastle.openpgp.PGPCompressedDataGenerator;
+import org.spongycastle.openpgp.PGPEncryptedData;
+import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
+import org.spongycastle.openpgp.PGPEncryptedDataList;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyPair;
+import org.spongycastle.openpgp.PGPKeyRingGenerator;
+import org.spongycastle.openpgp.PGPLiteralData;
+import org.spongycastle.openpgp.PGPLiteralDataGenerator;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPOnePassSignature;
+import org.spongycastle.openpgp.PGPOnePassSignatureList;
+import org.spongycastle.openpgp.PGPPBEEncryptedData;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureList;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUtil;
+import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -739,6 +739,7 @@ public class Apg {
         return key.getPublicKey().getCreationTime();
     }
 
+    @SuppressWarnings("unchecked")
     public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
         if (keyRing == null) {
             return null;
@@ -752,6 +753,7 @@ public class Apg {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static PGPSecretKey getMasterKey(PGPSecretKeyRing keyRing) {
         if (keyRing == null) {
             return null;
@@ -765,6 +767,7 @@ public class Apg {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static Vector<PGPPublicKey> getEncryptKeys(PGPPublicKeyRing keyRing) {
         Vector<PGPPublicKey> encryptKeys = new Vector<PGPPublicKey>();
 
@@ -777,6 +780,7 @@ public class Apg {
         return encryptKeys;
     }
 
+    @SuppressWarnings("unchecked")
     public static Vector<PGPSecretKey> getSigningKeys(PGPSecretKeyRing keyRing) {
         Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
 
@@ -884,6 +888,7 @@ public class Apg {
         return signingKeys.get(0);
     }
 
+    @SuppressWarnings("unchecked")
     public static String getMainUserId(PGPPublicKey key) {
         for (String userId : new IterableIterator<String>(key.getUserIDs())) {
             return userId;
@@ -891,6 +896,7 @@ public class Apg {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static String getMainUserId(PGPSecretKey key) {
         for (String userId : new IterableIterator<String>(key.getUserIDs())) {
             return userId;
@@ -914,6 +920,7 @@ public class Apg {
         return userId;
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean isEncryptionKey(PGPPublicKey key) {
         if (!key.isEncryptionKey()) {
             return false;
@@ -958,6 +965,7 @@ public class Apg {
         return isEncryptionKey(key.getPublicKey());
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean isSigningKey(PGPPublicKey key) {
         if (key.getVersion() <= 3) {
             return true;
@@ -1129,11 +1137,8 @@ public class Apg {
         if (keyRing == null) {
             return null;
         }
-        try {
-            return keyRing.getPublicKey(keyId);
-        } catch (PGPException e) {
-            return null;
-        }
+        
+        return keyRing.getPublicKey(keyId);
     }
 
     public static Vector<Integer> getKeyRingIds(int type) {

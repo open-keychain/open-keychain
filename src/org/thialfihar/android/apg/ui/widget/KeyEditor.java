@@ -22,8 +22,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;

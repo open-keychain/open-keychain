@@ -22,8 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.Vector;
 
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
