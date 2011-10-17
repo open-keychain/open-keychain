@@ -16,9 +16,11 @@
 
 package org.thialfihar.android.apg;
 
+import java.security.Security;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.thialfihar.android.apg.provider.Accounts;
 
 import android.app.AlertDialog;
@@ -51,6 +53,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends BaseActivity {
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+    
     private ListView mAccounts = null;
     private AccountListAdapter mListAdapter = null;
     private Cursor mAccountCursor;

@@ -12,12 +12,19 @@ public abstract class KeyServer {
             super(message);
         }
     }
+    
     static public class TooManyResponses extends Exception {
         private static final long serialVersionUID = 2703768928624654513L;
     }
+    
     static public class InsufficientQuery extends Exception {
         private static final long serialVersionUID = 2703768928624654514L;
     }
+    
+    static public class AddKeyException extends Exception {
+        private static final long serialVersionUID = -507574859137295530L;
+    }
+    
     static public class KeyInfo implements Serializable {
         private static final long serialVersionUID = -7797972113284992662L;
         Vector<String> userIds;
@@ -28,6 +35,8 @@ public abstract class KeyServer {
         int size;
         String algorithm;
     }
+    
     abstract List<KeyInfo> search(String query) throws QueryException, TooManyResponses, InsufficientQuery;
     abstract String get(long keyId) throws QueryException;
+    abstract void add(String armouredText) throws AddKeyException;
 }

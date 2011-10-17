@@ -163,6 +163,13 @@ public class BaseActivity extends Activity
                 mProgressDialog.setCancelable(false);
                 return mProgressDialog;
             }
+            
+            case Id.dialog.signing: {
+                mProgressDialog.setMessage(this.getString(R.string.progress_signing));
+                mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                mProgressDialog.setCancelable(false);
+                return mProgressDialog;
+            }
 
             default: {
                 break;

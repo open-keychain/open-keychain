@@ -61,6 +61,7 @@ import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedDataList;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyPair;
+import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPKeyRingGenerator;
 import org.spongycastle.openpgp.PGPLiteralData;
 import org.spongycastle.openpgp.PGPLiteralDataGenerator;
@@ -81,6 +82,7 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
+import org.thialfihar.android.apg.KeyServer.AddKeyException;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -119,6 +121,8 @@ public class Apg {
         public static final String LOOK_UP_KEY_ID = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID";
         public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
         public static final String GENERATE_SIGNATURE = "org.thialfihar.android.apg.intent.GENERATE_SIGNATURE";
+        public static final String EXPORT_KEY_TO_SERVER = "org.thialfihar.android.apg.intent.EXPORT_KEY_TO_SERVER";
+        public static final String IMPORT_FROM_QR_CODE = "org.thialfihar.android.apg.intent.IMPORT_FROM_QR_CODE";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -147,6 +151,7 @@ public class Apg {
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
     public static final String EXTRA_KEY_SERVERS = "keyServers";
+    public static final String EXTRA_EXPECTED_FINGERPRINT = "org.thialfihar.android.apg.EXPECTED_FINGERPRINT";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
@@ -590,6 +595,75 @@ public class Apg {
 
         progress.setProgress(R.string.progress_done, 100, 100);
     }
+    
+    public static PGPKeyRing decodeKeyRing(InputStream is) throws IOException {
+        InputStream in = PGPUtil.getDecoderStream(is);
+        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+        Object obj = objectFactory.nextObject();
+        
+        if (obj instanceof PGPKeyRing) {
+            return (PGPKeyRing) obj;
+        }
+        
+        return null;
+    }
+    
+    public static int storeKeyRingInCache(PGPKeyRing keyring) {
+        int status = Integer.MIN_VALUE; // out of bounds value (Id.retrun_value.*)
+        try {
+            if (keyring instanceof PGPSecretKeyRing) {
+                PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
+                boolean save = true;
+                try {
+                    PGPPrivateKey testKey = secretKeyRing.getSecretKey().extractPrivateKey(new char[] {}, new BouncyCastleProvider());
+                    if (testKey == null) {
+                        // this is bad, something is very wrong... likely a --export-secret-subkeys export
+                        save = false;
+                        status = Id.return_value.bad;
+                    }
+                } catch (PGPException e) {
+                    // all good if this fails, we likely didn't use the right password
+                }
+                
+                if (save) {
+                    status = mDatabase.saveKeyRing(secretKeyRing);
+                }
+            } else if (keyring instanceof PGPPublicKeyRing) {
+                PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
+                status = mDatabase.saveKeyRing(publicKeyRing);
+            }
+        } catch (IOException e) {
+            status = Id.return_value.error;
+        } catch (Database.GeneralException e) {
+            status = Id.return_value.error;
+        }
+        
+        return status;
+    }
+    
+    public static boolean uploadKeyRingToServer(HkpKeyServer server, PGPPublicKeyRing keyring) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+        try {
+            aos.write(keyring.getEncoded());
+            aos.close();
+            
+            String armouredKey = bos.toString("UTF-8");
+            server.add(armouredKey);
+            
+            return true;
+        } catch (IOException e) {
+            return false;
+        } catch(AddKeyException e) {
+            // TODO: tell the user?
+            return false;
+        } finally {
+            try {
+                bos.close();
+            } catch (IOException e) {
+            }
+        }
+    }
 
     public static Bundle importKeyRings(Activity context, int type,
                                         InputData data,
@@ -616,64 +690,32 @@ public class Apg {
         int oldKeys = 0;
         int badKeys = 0;
         try {
-            while (true) {
-                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-                Object obj = objectFactory.nextObject();
-                // if the first is already a null object, then we can stop trying
-                if (obj == null) {
-                    break;
+            PGPKeyRing keyring = decodeKeyRing(bufferedInput);
+            while (keyring != null) {
+                int status = Integer.MIN_VALUE; // out of bounds value
+                
+                // if this key is what we expect it to be, save it
+                if ((type == Id.type.secret_key && keyring instanceof PGPSecretKeyRing) ||
+                        (type == Id.type.public_key && keyring instanceof PGPPublicKeyRing)) {
+                    status = storeKeyRingInCache(keyring);
                 }
-                while (obj != null) {
-                    PGPPublicKeyRing publicKeyRing;
-                    PGPSecretKeyRing secretKeyRing;
-                    // a return value that doesn't match any Id.return_value.* values, in case
-                    // saveKeyRing is never called
-                    int retValue = 2107;
 
-                    try {
-                        if (type == Id.type.secret_key && obj instanceof PGPSecretKeyRing) {
-                            secretKeyRing = (PGPSecretKeyRing) obj;
-                            boolean save = true;
-                            try {
-                                PGPPrivateKey testKey = secretKeyRing.getSecretKey()
-                                        .extractPrivateKey(new char[] {}, new BouncyCastleProvider());
-                                if (testKey == null) {
-                                    // this is bad, something is very wrong... likely a
-                                    // --export-secret-subkeys export
-                                    retValue = Id.return_value.bad;
-                                    save = false;
-                                }
-                            } catch (PGPException e) {
-                                // all good if this fails, we likely didn't use the right password
-                            }
-                            if (save) {
-                                retValue = mDatabase.saveKeyRing(secretKeyRing);
-                            }
-                        } else if (type == Id.type.public_key && obj instanceof PGPPublicKeyRing) {
-                            publicKeyRing = (PGPPublicKeyRing) obj;
-                            retValue = mDatabase.saveKeyRing(publicKeyRing);
-                        }
-                    } catch (IOException e) {
-                        retValue = Id.return_value.error;
-                    } catch (Database.GeneralException e) {
-                        retValue = Id.return_value.error;
-                    }
-
-                    if (retValue == Id.return_value.error) {
-                        throw new GeneralException(context.getString(R.string.error_savingKeys));
-                    }
-
-                    if (retValue == Id.return_value.updated) {
-                        ++oldKeys;
-                    } else if (retValue == Id.return_value.ok) {
-                        ++newKeys;
-                    } else if (retValue == Id.return_value.bad) {
-                        ++badKeys;
-                    }
-                    progress.setProgress((int)(100 * progressIn.position() / data.getSize()), 100);
-                    obj = objectFactory.nextObject();
+                if (status == Id.return_value.error) {
+                    throw new GeneralException(context.getString(R.string.error_savingKeys));
                 }
+
+                // update the counts to display to the user at the end
+                if (status == Id.return_value.updated) {
+                    ++oldKeys;
+                } else if (status == Id.return_value.ok) {
+                    ++newKeys;
+                } else if (status == Id.return_value.bad) {
+                    ++badKeys;
+                }
+                
+                progress.setProgress((int)(100 * progressIn.position() / data.getSize()), 100);
+                
+                keyring = decodeKeyRing(bufferedInput);
             }
         } catch (EOFException e) {
             // nothing to do, we are done
@@ -1038,18 +1080,8 @@ public class Apg {
         return algorithmStr + ", " + keySize + "bit";
     }
 
-    public static String getFingerPrint(long keyId) {
-        PGPPublicKey key = Apg.getPublicKey(keyId);
-        if (key == null) {
-            PGPSecretKey secretKey = Apg.getSecretKey(keyId);
-            if (secretKey == null) {
-                return "";
-            }
-            key = secretKey.getPublicKey();
-        }
-
+    public static String convertToHex(byte[] fp) {
         String fingerPrint = "";
-        byte fp[] = key.getFingerprint();
         for (int i = 0; i < fp.length; ++i) {
             if (i != 0 && i % 10 == 0) {
                 fingerPrint += "  ";
@@ -1064,6 +1096,20 @@ public class Apg {
         }
 
         return fingerPrint;
+        
+    }
+    
+    public static String getFingerPrint(long keyId) {
+        PGPPublicKey key = Apg.getPublicKey(keyId);
+        if (key == null) {
+            PGPSecretKey secretKey = Apg.getSecretKey(keyId);
+            if (secretKey == null) {
+                return "";
+            }
+            key = secretKey.getPublicKey();
+        }
+
+        return convertToHex(key.getFingerprint());
     }
 
     public static String getSmallFingerPrint(long keyId) {
@@ -1089,8 +1135,8 @@ public class Apg {
         mDatabase.deleteKeyRing(keyRingId);
     }
 
-    public static Object getKeyRing(int keyRingId) {
-        return mDatabase.getKeyRing(keyRingId);
+    public static PGPKeyRing getKeyRing(int keyRingId) {
+        return (PGPKeyRing) mDatabase.getKeyRing(keyRingId);
     }
 
     public static PGPSecretKeyRing getSecretKeyRing(long keyId) {
@@ -1109,7 +1155,7 @@ public class Apg {
         }
         return null;
     }
-
+    
     public static PGPPublicKeyRing getPublicKeyRing(long keyId) {
         byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_public, keyId);
         if (data == null) {

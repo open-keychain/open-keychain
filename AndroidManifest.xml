@@ -184,6 +184,11 @@
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <activity
+            android:name=".SendKeyActivity"
+            android:label="@string/title_sendKey"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+
+        <activity
             android:name=".PreferencesActivity"
             android:label="@string/title_preferences"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
@@ -192,6 +197,17 @@
             android:name=".KeyServerPreferenceActivity"
             android:label="@string/title_keyServerPreference"
             android:configChanges="keyboardHidden|orientation|keyboard"/>
+
+        <activity
+            android:name=".SignKeyActivity"
+            android:label="@string/title_signKey"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+            
+        <activity
+            android:name=".ImportFromQRCodeActivity"
+            android:label="@string/title_importFromQRCode"
+            android:configChanges="keyboardHidden|orientation|keyboard"/>
+
 
         <service android:name=".Service" />
 

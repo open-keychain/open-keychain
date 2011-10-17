@@ -18,12 +18,16 @@ package org.thialfihar.android.apg;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
+
 public final class Id {
     public static final class menu {
         public static final int export = 0x21070001;
         public static final int delete = 0x21070002;
         public static final int edit = 0x21070003;
         public static final int update = 0x21070004;
+        public static final int exportToServer = 0x21070005;
+        public static final int share = 0x21070006;
+        public static final int signKey = 0x21070007;
 
         public static final class option {
             public static final int new_pass_phrase = 0x21070001;
@@ -37,6 +41,7 @@ public final class Id {
             public static final int search = 0x21070009;
             public static final int help = 0x21070010;
             public static final int key_server = 0x21070011;
+            public static final int scanQRCode = 0x21070012;
         }
     }
 
@@ -61,6 +66,9 @@ public final class Id {
         public static final int output_filename = 0x21070004;
         public static final int key_server_preference = 0x21070005;
         public static final int look_up_key_id = 0x21070006;
+        public static final int export_to_server = 0x21070007;
+        public static final int import_from_qr_code = 0x21070008;
+        public static final int sign_key = 0x21070009;
     }
 
     public static final class dialog {
@@ -86,6 +94,7 @@ public final class Id {
         public static final int help = 0x21070014;
         public static final int querying = 0x21070015;
         public static final int lookup_unknown_key = 0x21070016;
+        public static final int signing = 0x21070017;
     }
 
     public static final class task {
@@ -166,8 +175,9 @@ public final class Id {
         public static final int keys = 2;
     }
 
-    public static final class query {
+    public static final class keyserver {
         public static final int search = 0x21070001;
         public static final int get = 0x21070002;
+        public static final int add = 0x21070003;
     }
 }
