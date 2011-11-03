@@ -1262,6 +1262,7 @@ public class Apg {
         }
         if( progress != null )
             progress.setProgress(R.string.progress_preparingStreams, 5, 100);
+
         // encrypt and compress input file content
         PGPEncryptedDataGenerator cPk =
                 new PGPEncryptedDataGenerator(symmetricAlgorithm, true, new SecureRandom(),
@@ -1327,6 +1328,7 @@ public class Apg {
                                             new Date(), new byte[1 << 16]);
         if( progress != null )
             progress.setProgress(R.string.progress_encrypting, 20, 100);
+
         long done = 0;
         int n = 0;
         byte[] buffer = new byte[1 << 16];
