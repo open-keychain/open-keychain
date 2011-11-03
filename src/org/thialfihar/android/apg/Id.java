@@ -16,7 +16,7 @@
 
 package org.thialfihar.android.apg;
 
-import org.bouncycastle2.bcpg.CompressionAlgorithmTags;
+import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
 public final class Id {
     public static final class menu {

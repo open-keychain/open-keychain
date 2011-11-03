@@ -16,15 +16,9 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPSecretKey;
-import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
@@ -45,6 +39,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.util.Vector;
 
 public class EditKeyActivity extends BaseActivity implements OnClickListener {
 

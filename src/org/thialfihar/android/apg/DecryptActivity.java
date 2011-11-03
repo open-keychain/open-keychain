@@ -16,19 +16,9 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.Security;
-import java.security.SignatureException;
-import java.util.regex.Matcher;
-
-import org.bouncycastle2.jce.provider.BouncyCastleProvider;
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 
 import android.app.AlertDialog;
@@ -52,6 +42,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.Security;
+import java.security.SignatureException;
+import java.util.regex.Matcher;
 
 public class DecryptActivity extends BaseActivity {
     private long mSignatureKeyId = 0;

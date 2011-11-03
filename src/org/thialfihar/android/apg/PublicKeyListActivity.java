@@ -16,7 +16,7 @@
 
 package org.thialfihar.android.apg;
 
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 
 import android.content.Intent;
 import android.os.Bundle;

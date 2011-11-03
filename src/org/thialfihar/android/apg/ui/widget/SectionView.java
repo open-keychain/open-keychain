@@ -16,14 +16,8 @@
 
 package org.thialfihar.android.apg.ui.widget;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -48,6 +42,12 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.Vector;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Runnable {
     private LayoutInflater mInflater;
