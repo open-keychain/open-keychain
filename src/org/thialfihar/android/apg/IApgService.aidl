@@ -27,6 +27,11 @@ interface IApgService {
      *
      *  (required)
      *      String  "MESSAGE"                   = Message to encrypt
+     *		OR
+     *		String 	"BLOB"						= ContentUri to a file handle
+     *											  with binary data to encrypt
+     *											  (Attention: file will be overwritten
+     *                                            with encrypted content!)
      *      
      *  (optional)
      *      int     "ENCRYPTION_ALGORYTHM"      = Encryption Algorithm
@@ -55,7 +60,8 @@ interface IApgService {
      *      String  "PRIVATE_KEY_PASSPHRASE"    = Passphrase for signing key
      *
      * Bundle returnVals (in addition to the ERRORS/WARNINGS above):
-     *      String  "RESULT"                    = Encrypted message
+	 *      If "MESSAGE" was set:
+     *      	String  "RESULT"                    = Encrypted message
      */
 
      /* Additional argument for function below:
@@ -77,7 +83,12 @@ interface IApgService {
 
     /* Bundle params:
      *  (required) 
-     *      String  "MESSAGE"                   = Message to decrypt
+     *      String  "MESSAGE"                   = Message to dencrypt
+     *		OR
+     *		String 	"BLOB"						= ContentUri to a file handle
+     *											  with binary data to dencrypt
+     *											  (Attention: file will be overwritten
+     *                                            with dencrypted content!)
      *      
      *  (optional)
      *      String  "SYMMETRIC_PASSPHRASE"      = Symmetric passphrase for decryption
@@ -86,7 +97,8 @@ interface IApgService {
      *      String  "PRIVATE_KEY_PASSPHRASE"    = Private keys's passphrase on asymmetric encryption
      *
      * Bundle return_vals:
-     *   String     "RESULT"                    = Decrypted message
+	 *      If "MESSAGE" was set:
+     *          String     "RESULT"             = Decrypted message
      */
     boolean decrypt(in Bundle params, out Bundle returnVals);
  

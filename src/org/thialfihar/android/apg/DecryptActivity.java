@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -189,19 +190,28 @@ public class DecryptActivity extends BaseActivity {
                 // ignore, then
             }
         } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
+            Log.d(Constants.tag, "Apg Intent DECRYPT startet");
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
+                Log.d(Constants.tag, "extra bundle was null");
                 extras = new Bundle();
+            } else {
+                Log.d(Constants.tag, "got extras");
             }
 
             mData = extras.getByteArray(Apg.EXTRA_DATA);
             String textData = null;
             if (mData == null) {
+                Log.d(Constants.tag, "EXTRA_DATA was null");
                 textData = extras.getString(Apg.EXTRA_TEXT);
+            } else {
+                Log.d(Constants.tag, "Got data from EXTRA_DATA");
             }
             if (textData != null) {
+                Log.d(Constants.tag, "textData null, matching text ...");
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
+                    Log.d(Constants.tag, "PGP_MESSAGE matched");
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
@@ -209,11 +219,14 @@ public class DecryptActivity extends BaseActivity {
                 } else {
                     matcher = Apg.PGP_SIGNED_MESSAGE.matcher(textData);
                     if (matcher.matches()) {
+                        Log.d(Constants.tag, "PGP_SIGNED_MESSAGE matched");
                         textData = matcher.group(1);
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
                         mDecryptButton.setText(R.string.btn_verify);
+                    } else {
+                        Log.d(Constants.tag, "Nothing matched!");
                     }
                 }
             }

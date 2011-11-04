@@ -19,6 +19,9 @@ package org.thialfihar.android.apg;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
 public final class Id {
+    
+    public static final String TAG = "APG";
+    
     public static final class menu {
         public static final int export = 0x21070001;
         public static final int delete = 0x21070002;

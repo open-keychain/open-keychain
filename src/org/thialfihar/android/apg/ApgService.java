@@ -2,6 +2,7 @@ package org.thialfihar.android.apg;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
@@ -14,17 +15,19 @@ import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 public class ApgService extends Service {
     private final static String TAG = "ApgService";
-    private static final boolean LOCAL_LOGV = true;
-    private static final boolean LOCAL_LOGD = true;
+    public static final boolean LOCAL_LOGV = true;
+    public static final boolean LOCAL_LOGD = true;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -33,7 +36,7 @@ public class ApgService extends Service {
     }
 
     /** error status */
-    private enum error {
+    private static enum error {
         ARGUMENTS_MISSING,
         APG_FAILURE,
         NO_MATCHING_SECRET_KEY,
@@ -44,9 +47,16 @@ public class ApgService extends Service {
             return ordinal() + 100;
         }
     }
+    
+    private static enum call {
+        encrypt_with_passphrase,
+        encrypt_with_public_key,
+        decrypt,
+        get_keys
+    }
 
     /** all arguments that can be passed by calling application */
-    private enum arg {
+    public static enum arg {
         MESSAGE, // message to encrypt or to decrypt
         SYMMETRIC_PASSPHRASE, // key for symmetric en/decryption
         PUBLIC_KEYS, // public keys for encryption
@@ -58,10 +68,11 @@ public class ApgService extends Service {
         SIGNATURE_KEY, // key for signing
         PRIVATE_KEY_PASSPHRASE, // passphrase for encrypted private key
         KEY_TYPE, // type of key (private or public)
+        BLOB, // blob passed
     }
 
     /** all things that might be returned */
-    private enum ret {
+    private static enum ret {
         ERRORS, // string array list with errors
         WARNINGS, // string array list with warnings
         ERROR, // numeric error
@@ -75,21 +86,18 @@ public class ApgService extends Service {
     static {
         HashSet<arg> args = new HashSet<arg>();
         args.add(arg.SYMMETRIC_PASSPHRASE);
-        args.add(arg.MESSAGE);
-        FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_passphrase", args);
+        FUNCTIONS_REQUIRED_ARGS.put(call.encrypt_with_passphrase.name(), args);
 
         args = new HashSet<arg>();
         args.add(arg.PUBLIC_KEYS);
-        args.add(arg.MESSAGE);
-        FUNCTIONS_REQUIRED_ARGS.put("encrypt_with_public_key", args);
+        FUNCTIONS_REQUIRED_ARGS.put(call.encrypt_with_public_key.name(), args);
 
         args = new HashSet<arg>();
-        args.add(arg.MESSAGE);
-        FUNCTIONS_REQUIRED_ARGS.put("decrypt", args);
+        FUNCTIONS_REQUIRED_ARGS.put(call.decrypt.name(), args);
 
         args = new HashSet<arg>();
         args.add(arg.KEY_TYPE);
-        FUNCTIONS_REQUIRED_ARGS.put("get_keys", args);
+        FUNCTIONS_REQUIRED_ARGS.put(call.get_keys.name(), args);
     }
 
     /** optional arguments for each AIDL function */
@@ -103,14 +111,18 @@ public class ApgService extends Service {
         args.add(arg.COMPRESSION);
         args.add(arg.PRIVATE_KEY_PASSPHRASE);
         args.add(arg.SIGNATURE_KEY);
-        FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_passphrase", args);
-        FUNCTIONS_OPTIONAL_ARGS.put("encrypt_with_public_key", args);
+        args.add(arg.BLOB);
+        args.add(arg.MESSAGE);
+        FUNCTIONS_OPTIONAL_ARGS.put(call.encrypt_with_passphrase.name(), args);
+        FUNCTIONS_OPTIONAL_ARGS.put(call.encrypt_with_public_key.name(), args);
 
         args = new HashSet<arg>();
         args.add(arg.SYMMETRIC_PASSPHRASE);
         args.add(arg.PUBLIC_KEYS);
         args.add(arg.PRIVATE_KEY_PASSPHRASE);
-        FUNCTIONS_OPTIONAL_ARGS.put("decrypt", args);
+        args.add(arg.MESSAGE);
+        args.add(arg.BLOB);
+        FUNCTIONS_OPTIONAL_ARGS.put(call.decrypt.name(), args);
     }
 
     /** a map from ApgService parameters to function calls to get the default */
@@ -134,6 +146,14 @@ public class ApgService extends Service {
             FUNCTIONS_DEFAULTS_METHODS.put("getDefaultMessageCompression", Preferences.class.getMethod("getDefaultMessageCompression"));
         } catch (Exception e) {
             Log.e(TAG, "Function method exception: " + e.getMessage());
+        }
+    }
+    
+    private static void writeToOutputStream(InputStream is, OutputStream os) throws IOException {
+        byte[] buffer = new byte[8];
+        int len = 0;
+        while( (len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
         }
     }
 
@@ -304,6 +324,16 @@ public class ApgService extends Service {
                 }
             }
         }
+        
+        if(pFunction.equals(call.encrypt_with_passphrase.name()) ||
+                pFunction.equals(call.encrypt_with_public_key.name()) ||
+                pFunction.equals(call.decrypt.name())) {
+            // check that either MESSAGE or BLOB are there
+            if( !pArgs.containsKey(arg.MESSAGE.name()) && !pArgs.containsKey(arg.BLOB.name())) {
+                pReturn.getStringArrayList(ret.ERRORS.name()).add("Arguments missing: Neither MESSAGE nor BLOG found");
+            }
+            
+        }
     }
 
     /**
@@ -378,6 +408,7 @@ public class ApgService extends Service {
     }
 
     private boolean encrypt(Bundle pArgs, Bundle pReturn) {
+        boolean isBlob = pArgs.containsKey(arg.BLOB.name());
 
         long pubMasterKeys[] = {};
         if (pArgs.containsKey(arg.PUBLIC_KEYS.name())) {
@@ -391,7 +422,17 @@ public class ApgService extends Service {
             pubMasterKeys = getMasterKey(pubKeys, pReturn);
         }
 
-        InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+        InputStream inStream = null;
+        if(isBlob) {
+            ContentResolver cr = getContentResolver();
+            try {
+                inStream = cr.openInputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+            } catch (Exception e) {
+                Log.e(TAG, "... exception on opening blob", e);
+            }
+        } else {
+            inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+        }
         InputData in = new InputData(inStream, 0); // XXX Size second param?
 
         OutputStream out = new ByteArrayOutputStream();
@@ -427,7 +468,18 @@ public class ApgService extends Service {
             return false;
         }
         if( LOCAL_LOGV ) Log.v(TAG, "Encrypted");
-        pReturn.putString(ret.RESULT.name(), out.toString());
+        if(isBlob) {
+            ContentResolver cr = getContentResolver();
+            try {
+                OutputStream outStream = cr.openOutputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+                writeToOutputStream(new ByteArrayInputStream(out.toString().getBytes()), outStream);
+                outStream.close();
+            } catch (Exception e) {
+                Log.e(TAG, "... exception on writing blob", e);
+            }
+        } else {
+            pReturn.putString(ret.RESULT.name(), out.toString());
+        }
         return true;
     }
 
@@ -481,11 +533,24 @@ public class ApgService extends Service {
             if (!prepareArgs("decrypt", pArgs, pReturn)) {
                 return false;
             }
+            
+            boolean isBlob = pArgs.containsKey(arg.BLOB.name());
 
             String passphrase = pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null ? pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) : pArgs
                     .getString(arg.PRIVATE_KEY_PASSPHRASE.name());
 
-            InputStream inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+            InputStream inStream = null;
+            if(isBlob) {
+                ContentResolver cr = getContentResolver();
+                try {
+                    inStream = cr.openInputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+                } catch (Exception e) {
+                    Log.e(TAG, "... exception on opening blob", e);
+                }
+            } else {
+                inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+            }
+            
             InputData in = new InputData(inStream, 0); // XXX what size in second parameter?
             OutputStream out = new ByteArrayOutputStream();
             if( LOCAL_LOGV ) Log.v(TAG, "About to decrypt");
@@ -508,9 +573,20 @@ public class ApgService extends Service {
                 }
                 return false;
             }
-            if( LOCAL_LOGV ) Log.v(TAG, "Decrypted");
+            if( LOCAL_LOGV ) Log.v(TAG, "... decrypted");
 
-            pReturn.putString(ret.RESULT.name(), out.toString());
+            if(isBlob) {
+                ContentResolver cr = getContentResolver();
+                try {
+                    OutputStream outStream = cr.openOutputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+                    writeToOutputStream(new ByteArrayInputStream(out.toString().getBytes()), outStream);
+                    outStream.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "... exception on writing blob", e);
+                }                
+            } else {
+                pReturn.putString(ret.RESULT.name(), out.toString());
+            }
             return true;
         }
 

@@ -16,22 +16,27 @@
 
 package org.thialfihar.android.apg.utils;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import org.thialfihar.android.apg.IApgService;
+import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
 
-import android.content.Context;
 import android.content.ComponentName;
-import android.content.ServiceConnection;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-import org.thialfihar.android.apg.IApgService;
-import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 /**
  * A APG-AIDL-Wrapper
@@ -46,7 +51,7 @@ import org.thialfihar.android.apg.utils.ApgConInterface.OnCallFinishListener;
  * </p>
  * 
  * @author Markus Doits <markus.doits@googlemail.com>
- * @version 1.0rc1
+ * @version 1.1rc1
  * 
  */
 public class ApgCon {
@@ -54,7 +59,8 @@ public class ApgCon {
     private static final boolean LOCAL_LOGD = true;
 
     private final static String TAG = "ApgCon";
-    private final static int API_VERSION = 1; // aidl api-version it expects
+    private final static int API_VERSION = 2; // aidl api-version it expects
+    private final static String BLOB_URI = "content://org.thialfihar.android.apg.provider.apgserviceblobprovider";
     
     /**
      * How many seconds to wait for a connection to AGP when connecting.
@@ -79,7 +85,6 @@ public class ApgCon {
         }
 
     }
-
 
     private final Context mContext;
     private final error mConnectionStatus;
@@ -187,9 +192,9 @@ public class ApgCon {
                             mWarningList.add("(LOCAL) Could not determine ApgService API");
                             tmpError = error.APG_API_MISSMATCH;
                         } else if (inf.metaData.getInt("api_version") != API_VERSION) {
-                            Log.w(TAG, "Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
+                            Log.w(TAG, "Found ApgService API version " + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
                             Log.w(TAG, "This probably won't work!");
-                            mWarningList.add("(LOCAL) Found ApgService API version" + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
+                            mWarningList.add("(LOCAL) Found ApgService API version " + inf.metaData.getInt("api_version") + " but exspected " + API_VERSION);
                             tmpError = error.APG_API_MISSMATCH;
                         } else {
                             if( LOCAL_LOGV ) Log.v(TAG, "Found api_version " + API_VERSION + ", everything should work");
@@ -495,6 +500,41 @@ public class ApgCon {
         }
         mArgs.putIntegerArrayList(key, list);
     }
+    
+    /**
+     * Set up binary data to en/decrypt
+     * 
+     * @param is
+     *          InputStream to get the data from
+     */
+    public void setBlob(InputStream is) {
+        if( LOCAL_LOGD ) Log.d(TAG, "setBlob() called");
+        // 1. get the new contentUri
+        ContentResolver cr = mContext.getContentResolver();
+        Uri contentUri = cr.insert(Uri.parse(BLOB_URI), new ContentValues());
+        
+        // 2. insert binary data
+        OutputStream os = null;
+        try {
+            os = cr.openOutputStream(contentUri, "w");
+        } catch( Exception e ) {
+            Log.e(TAG, "... exception on setBlob", e);
+        }
+        
+        byte[] buffer = new byte[8];
+        int len = 0;
+        try {
+            while( (len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
+            if(LOCAL_LOGD) Log.d(TAG, "... write finished, now closing");
+            os.close();
+        } catch (Exception e) {
+            Log.e(TAG, "... error on writing buffer", e);
+        }
+        
+        mArgs.putString("BLOB", contentUri.toString() );
+    }
 
     /**
      * Clears all arguments
@@ -628,15 +668,50 @@ public class ApgCon {
      * {@link #hasNextError()} is false.
      * </p>
      * 
+     * <p>
+     * Note: When handling binary data with {@link #setBlob(InputStream)}, you
+     * get your result with {@link #getBlobResult()}.
+     * </p>
+     * 
      * @return the mResult of the last {@link #call(String)} or
      *         {@link #callAsync(String)}.
      * 
      * @see #reset()
      * @see #clearResult()
      * @see #getResultBundle()
+     * @see #getBlobResult()
      */
     public String getResult() {
         return mResult.getString(ret.RESULT.name());
+    }
+
+    /**
+     * Get the binary result
+     * 
+     * <p>
+     * This gets your binary result. It only works if you called {@link #setBlob(InputStream)} before.
+     * 
+     * If you did not call encrypt nor decrypt, this will be the same data as you inputed.
+     * </p>
+     * 
+     * @return InputStream of the binary data which was en/decrypted
+     * 
+     * @see #setBlob(InputStream)
+     * @see #getResult()
+     */
+    public InputStream getBlobResult() {
+        if(mArgs.containsKey("BLOB")) {
+            ContentResolver cr = mContext.getContentResolver();
+            InputStream in = null;
+            try {
+                in = cr.openInputStream(Uri.parse(mArgs.getString("BLOB")));
+            } catch( Exception e ) {
+                Log.e(TAG, "Could not return blob in result", e);
+            }
+            return in;
+        } else {
+            return null;
+        }
     }
 
     /**
