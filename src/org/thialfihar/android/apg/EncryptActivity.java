@@ -23,6 +23,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.utils.Choice;
+import org.thialfihar.android.apg.utils.Compatibility;
 
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -30,7 +31,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.ClipboardManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -881,8 +881,7 @@ public class EncryptActivity extends BaseActivity {
         switch (mEncryptTarget) {
             case Id.target.clipboard: {
                 String message = data.getString(Apg.EXTRA_ENCRYPTED_MESSAGE);
-                ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                clip.setText(message);
+                Compatibility.copyToClipboard(this, message);
                 Toast.makeText(this, R.string.encryptionToClipboardSuccessful,
                                Toast.LENGTH_SHORT).show();
                 break;

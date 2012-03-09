@@ -23,9 +23,6 @@ import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -143,19 +140,19 @@ public class KeyListActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case Id.menu.option.import_keys: {
-                showDialog(Id.dialog.import_keys);
-                return true;
-            }
+        case Id.menu.option.import_keys: {
+            showDialog(Id.dialog.import_keys);
+            return true;
+        }
 
-            case Id.menu.option.export_keys: {
-                showDialog(Id.dialog.export_keys);
-                return true;
-            }
-            
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        case Id.menu.option.export_keys: {
+            showDialog(Id.dialog.export_keys);
+            return true;
+        }
+
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
         }
     }
 
@@ -170,21 +167,21 @@ public class KeyListActivity extends BaseActivity {
         }
 
         switch (menuItem.getItemId()) {
-            case Id.menu.export: {
-                mSelectedItem = groupPosition;
-                showDialog(Id.dialog.export_key);
-                return true;
-            }
+        case Id.menu.export: {
+            mSelectedItem = groupPosition;
+            showDialog(Id.dialog.export_key);
+            return true;
+        }
 
-            case Id.menu.delete: {
-                mSelectedItem = groupPosition;
-                showDialog(Id.dialog.delete_key);
-                return true;
-            }
+        case Id.menu.delete: {
+            mSelectedItem = groupPosition;
+            showDialog(Id.dialog.delete_key);
+            return true;
+        }
 
-            default: {
-                return super.onContextItemSelected(menuItem);
-            }
+        default: {
+            return super.onContextItemSelected(menuItem);
+        }
         }
     }
 
@@ -193,101 +190,94 @@ public class KeyListActivity extends BaseActivity {
         boolean singleKeyExport = false;
 
         switch (id) {
-            case Id.dialog.delete_key: {
-                final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
-                mSelectedItem = -1;
-                // TODO: better way to do this?
-                String userId = "<unknown>";
-                Object keyRing = Apg.getKeyRing(keyRingId);
-                if (keyRing != null) {
-                    if (keyRing instanceof PGPPublicKeyRing) {
-                        userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey((PGPPublicKeyRing) keyRing));
-                    } else {
-                        userId = Apg.getMainUserIdSafe(this, Apg.getMasterKey((PGPSecretKeyRing) keyRing));
-                    }
+        case Id.dialog.delete_key: {
+            final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
+            mSelectedItem = -1;
+            // TODO: better way to do this?
+            String userId = "<unknown>";
+            Object keyRing = Apg.getKeyRing(keyRingId);
+            if (keyRing != null) {
+                if (keyRing instanceof PGPPublicKeyRing) {
+                    userId = Apg.getMainUserIdSafe(this,
+                            Apg.getMasterKey((PGPPublicKeyRing) keyRing));
+                } else {
+                    userId = Apg.getMainUserIdSafe(this,
+                            Apg.getMasterKey((PGPSecretKeyRing) keyRing));
                 }
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(R.string.warning);
-                builder.setMessage(getString(mKeyType == Id.type.public_key ?
-                                                 R.string.keyDeletionConfirmation :
-                                                 R.string.secretKeyDeletionConfirmation, userId));
-                builder.setIcon(android.R.drawable.ic_dialog_alert);
-                builder.setPositiveButton(R.string.btn_delete,
-                                          new DialogInterface.OnClickListener() {
-                                              public void onClick(DialogInterface dialog, int id) {
-                                                  deleteKey(keyRingId);
-                                                  removeDialog(Id.dialog.delete_key);
-                                              }
-                                          });
-                builder.setNegativeButton(android.R.string.cancel,
-                                          new DialogInterface.OnClickListener() {
-                                              public void onClick(DialogInterface dialog, int id) {
-                                                  removeDialog(Id.dialog.delete_key);
-                                              }
-                                          });
-                return builder.create();
             }
 
-            case Id.dialog.import_keys: {
-                return FileDialog.build(this, getString(R.string.title_importKeys),
-                                        getString(R.string.specifyFileToImportFrom),
-                                        mImportFilename,
-                                        new FileDialog.OnClickListener() {
-                                            public void onOkClick(String filename, boolean checked) {
-                                                removeDialog(Id.dialog.import_keys);
-                                                mDeleteAfterImport = checked;
-                                                mImportFilename = filename;
-                                                importKeys();
-                                            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.warning);
+            builder.setMessage(getString(
+                    mKeyType == Id.type.public_key ? R.string.keyDeletionConfirmation
+                            : R.string.secretKeyDeletionConfirmation, userId));
+            builder.setIcon(android.R.drawable.ic_dialog_alert);
+            builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    deleteKey(keyRingId);
+                    removeDialog(Id.dialog.delete_key);
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            removeDialog(Id.dialog.delete_key);
+                        }
+                    });
+            return builder.create();
+        }
 
-                                            public void onCancelClick() {
-                                                removeDialog(Id.dialog.import_keys);
-                                            }
-                                        },
-                                        getString(R.string.filemanager_titleOpen),
-                                        getString(R.string.filemanager_btnOpen),
-                                        getString(R.string.label_deleteAfterImport),
-                                        Id.request.filename);
-            }
+        case Id.dialog.import_keys: {
+            return FileDialog.build(this, getString(R.string.title_importKeys),
+                    getString(R.string.specifyFileToImportFrom), mImportFilename,
+                    new FileDialog.OnClickListener() {
+                        public void onOkClick(String filename, boolean checked) {
+                            removeDialog(Id.dialog.import_keys);
+                            mDeleteAfterImport = checked;
+                            mImportFilename = filename;
+                            importKeys();
+                        }
 
-            case Id.dialog.export_key: {
-                singleKeyExport = true;
-                // break intentionally omitted, to use the Id.dialog.export_keys dialog
-            }
+                        public void onCancelClick() {
+                            removeDialog(Id.dialog.import_keys);
+                        }
+                    }, getString(R.string.filemanager_titleOpen),
+                    getString(R.string.filemanager_btnOpen),
+                    getString(R.string.label_deleteAfterImport), Id.request.filename);
+        }
 
-            case Id.dialog.export_keys: {
-                String title = (singleKeyExport ?
-                                    getString(R.string.title_exportKey) :
-                                    getString(R.string.title_exportKeys));
+        case Id.dialog.export_key: {
+            singleKeyExport = true;
+            // break intentionally omitted, to use the Id.dialog.export_keys dialog
+        }
 
-                final int thisDialogId = (singleKeyExport ? Id.dialog.export_key : Id.dialog.export_keys);
+        case Id.dialog.export_keys: {
+            String title = (singleKeyExport ? getString(R.string.title_exportKey)
+                    : getString(R.string.title_exportKeys));
 
-                return FileDialog.build(this, title,
-                                        getString(mKeyType == Id.type.public_key ?
-                                                      R.string.specifyFileToExportTo :
-                                                      R.string.specifyFileToExportSecretKeysTo),
-                                        mExportFilename,
-                                        new FileDialog.OnClickListener() {
-                                            public void onOkClick(String filename, boolean checked) {
-                                                removeDialog(thisDialogId);
-                                                mExportFilename = filename;
-                                                exportKeys();
-                                            }
+            final int thisDialogId = (singleKeyExport ? Id.dialog.export_key
+                    : Id.dialog.export_keys);
 
-                                            public void onCancelClick() {
-                                                removeDialog(thisDialogId);
-                                            }
-                                        },
-                                        getString(R.string.filemanager_titleSave),
-                                        getString(R.string.filemanager_btnSave),
-                                        null,
-                                        Id.request.filename);
-            }
+            return FileDialog.build(this, title,
+                    getString(mKeyType == Id.type.public_key ? R.string.specifyFileToExportTo
+                            : R.string.specifyFileToExportSecretKeysTo), mExportFilename,
+                    new FileDialog.OnClickListener() {
+                        public void onOkClick(String filename, boolean checked) {
+                            removeDialog(thisDialogId);
+                            mExportFilename = filename;
+                            exportKeys();
+                        }
 
-            default: {
-                return super.onCreateDialog(id);
-            }
+                        public void onCancelClick() {
+                            removeDialog(thisDialogId);
+                        }
+                    }, getString(R.string.filemanager_titleSave),
+                    getString(R.string.filemanager_btnSave), null, Id.request.filename);
+        }
+
+        default: {
+            return super.onCreateDialog(id);
+        }
         }
     }
 
@@ -328,13 +318,14 @@ public class KeyListActivity extends BaseActivity {
             }
 
             if (mTask == Id.task.import_keys) {
-                data = Apg.importKeyRings(this, mKeyType, new InputData(importInputStream, size), this);
+                data = Apg.importKeyRings(this, mKeyType, new InputData(importInputStream, size),
+                        this);
             } else {
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {
-                    keyRingIds = Apg.getKeyRingIds(mKeyType == Id.type.public_key ?
-                                                       Id.database.type_public :
-                                                       Id.database.type_secret);
+                    keyRingIds = Apg
+                            .getKeyRingIds(mKeyType == Id.type.public_key ? Id.database.type_public
+                                    : Id.database.type_secret);
                 } else {
                     int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
                     keyRingIds.add(keyRingId);
@@ -386,82 +377,78 @@ public class KeyListActivity extends BaseActivity {
         if (data != null) {
             int type = data.getInt(Constants.extras.status);
             switch (type) {
-                case Id.message.import_done: {
-                    removeDialog(Id.dialog.importing);
+            case Id.message.import_done: {
+                removeDialog(Id.dialog.importing);
 
-                    String error = data.getString(Apg.EXTRA_ERROR);
-                    if (error != null) {
-                        Toast.makeText(KeyListActivity.this,
-                                       getString(R.string.errorMessage, error),
-                                       Toast.LENGTH_SHORT).show();
+                String error = data.getString(Apg.EXTRA_ERROR);
+                if (error != null) {
+                    Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    int added = data.getInt("added");
+                    int updated = data.getInt("updated");
+                    int bad = data.getInt("bad");
+                    String message;
+                    if (added > 0 && updated > 0) {
+                        message = getString(R.string.keysAddedAndUpdated, added, updated);
+                    } else if (added > 0) {
+                        message = getString(R.string.keysAdded, added);
+                    } else if (updated > 0) {
+                        message = getString(R.string.keysUpdated, updated);
                     } else {
-                        int added = data.getInt("added");
-                        int updated = data.getInt("updated");
-                        int bad = data.getInt("bad");
-                        String message;
-                        if (added > 0 && updated > 0) {
-                            message = getString(R.string.keysAddedAndUpdated, added, updated);
-                        } else if (added > 0) {
-                            message = getString(R.string.keysAdded, added);
-                        } else if (updated > 0) {
-                            message = getString(R.string.keysUpdated, updated);
-                        } else {
-                            message = getString(R.string.noKeysAddedOrUpdated);
-                        }
-                        Toast.makeText(KeyListActivity.this, message,
-                                       Toast.LENGTH_SHORT).show();
-                        if (bad > 0) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                            alert.setIcon(android.R.drawable.ic_dialog_alert);
-                            alert.setTitle(R.string.warning);
-                            alert.setMessage(this.getString(R.string.badKeysEncountered, bad));
-
-                            alert.setPositiveButton(android.R.string.ok,
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                            alert.setCancelable(true);
-                            alert.create().show();
-                        } else if (mDeleteAfterImport) {
-                            // everything went well, so now delete, if that was turned on
-                            setDeleteFile(mImportFilename);
-                            showDialog(Id.dialog.delete_file);
-                        }
+                        message = getString(R.string.noKeysAddedOrUpdated);
                     }
-                    refreshList();
-                    break;
+                    Toast.makeText(KeyListActivity.this, message, Toast.LENGTH_SHORT).show();
+                    if (bad > 0) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+                        alert.setIcon(android.R.drawable.ic_dialog_alert);
+                        alert.setTitle(R.string.warning);
+                        alert.setMessage(this.getString(R.string.badKeysEncountered, bad));
+
+                        alert.setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        alert.setCancelable(true);
+                        alert.create().show();
+                    } else if (mDeleteAfterImport) {
+                        // everything went well, so now delete, if that was turned on
+                        setDeleteFile(mImportFilename);
+                        showDialog(Id.dialog.delete_file);
+                    }
                 }
+                refreshList();
+                break;
+            }
 
-                case Id.message.export_done: {
-                    removeDialog(Id.dialog.exporting);
+            case Id.message.export_done: {
+                removeDialog(Id.dialog.exporting);
 
-                    String error = data.getString(Apg.EXTRA_ERROR);
-                    if (error != null) {
-                        Toast.makeText(KeyListActivity.this,
-                                       getString(R.string.errorMessage, error),
-                                       Toast.LENGTH_SHORT).show();
+                String error = data.getString(Apg.EXTRA_ERROR);
+                if (error != null) {
+                    Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    int exported = data.getInt("exported");
+                    String message;
+                    if (exported == 1) {
+                        message = getString(R.string.keyExported);
+                    } else if (exported > 0) {
+                        message = getString(R.string.keysExported, exported);
                     } else {
-                        int exported = data.getInt("exported");
-                        String message;
-                        if (exported == 1) {
-                            message = getString(R.string.keyExported);
-                        } else if (exported > 0) {
-                            message = getString(R.string.keysExported, exported);
-                        } else{
-                            message = getString(R.string.noKeysExported);
-                        }
-                        Toast.makeText(KeyListActivity.this, message,
-                                       Toast.LENGTH_SHORT).show();
+                        message = getString(R.string.noKeysExported);
                     }
-                    break;
+                    Toast.makeText(KeyListActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
+                break;
+            }
 
-                default: {
-                    break;
-                }
+            default: {
+                break;
+            }
             }
         }
     }
@@ -489,7 +476,7 @@ public class KeyListActivity extends BaseActivity {
             public String fingerPrint;
 
             public KeyChild(long keyId, boolean isMasterKey, int algorithm, int keySize,
-                            boolean canSign, boolean canEncrypt) {
+                    boolean canSign, boolean canEncrypt) {
                 this.type = KEY;
                 this.keyId = keyId;
                 this.isMasterKey = isMasterKey;
@@ -516,22 +503,19 @@ public class KeyListActivity extends BaseActivity {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mDatabase = Apg.getDatabase().db();
             SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-            qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
-                                          "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
-                                          Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
-                                          Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
-                                          ") " +
-                                          " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
-                                          "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
-                                          UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
-                                          UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0')");
+            qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "("
+                    + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."
+                    + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY
+                    + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME + " ON " + "("
+                    + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "."
+                    + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "." + UserIds.RANK
+                    + " = '0')");
 
             if (searchString != null && searchString.trim().length() > 0) {
                 String[] chunks = searchString.trim().split(" +");
-                qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " +
-                                        UserIds.TABLE_NAME + " AS tmp WHERE " +
-                                        "tmp." + UserIds.KEY_ID + " = " +
-                                        Keys.TABLE_NAME + "." + Keys._ID);
+                qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " + UserIds.TABLE_NAME
+                        + " AS tmp WHERE " + "tmp." + UserIds.KEY_ID + " = " + Keys.TABLE_NAME
+                        + "." + Keys._ID);
                 for (int i = 0; i < chunks.length; ++i) {
                     qb.appendWhere(" AND tmp." + UserIds.USER_ID + " LIKE ");
                     qb.appendWhereEscapeString("%" + chunks[i] + "%");
@@ -539,32 +523,22 @@ public class KeyListActivity extends BaseActivity {
                 qb.appendWhere(")");
             }
 
-            mCursor = qb.query(mDatabase,
-                    new String[] {
-                        KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
-                        KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
-                        UserIds.TABLE_NAME + "." + UserIds.USER_ID,         // 2
-                    },
-                    KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
-                    new String[] { "" + (mKeyType == Id.type.public_key ?
-                                             Id.database.type_public : Id.database.type_secret) },
-                    null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
+            mCursor = qb.query(mDatabase, new String[] { KeyRings.TABLE_NAME + "." + KeyRings._ID, // 0
+                    KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
+                    UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 2
+            }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] { ""
+                    + (mKeyType == Id.type.public_key ? Id.database.type_public
+                            : Id.database.type_secret) }, null, null, UserIds.TABLE_NAME + "."
+                    + UserIds.USER_ID + " ASC");
 
             // content provider way for reference, might have to go back to it sometime:
-            /*Uri contentUri = null;
-            if (mKeyType == Id.type.secret_key) {
-                contentUri = Apg.CONTENT_URI_SECRET_KEY_RINGS;
-            } else {
-                contentUri = Apg.CONTENT_URI_PUBLIC_KEY_RINGS;
-            }
-            mCursor = getContentResolver().query(
-                    contentUri,
-                    new String[] {
-                        DataProvider._ID,           // 0
-                        DataProvider.MASTER_KEY_ID, // 1
-                        DataProvider.USER_ID,       // 2
-                    },
-                    null, null, null);*/
+            /*
+             * Uri contentUri = null; if (mKeyType == Id.type.secret_key) { contentUri =
+             * Apg.CONTENT_URI_SECRET_KEY_RINGS; } else { contentUri =
+             * Apg.CONTENT_URI_PUBLIC_KEY_RINGS; } mCursor = getContentResolver().query( contentUri,
+             * new String[] { DataProvider._ID, // 0 DataProvider.MASTER_KEY_ID, // 1
+             * DataProvider.USER_ID, // 2 }, null, null, null);
+             */
 
             startManagingCursor(mCursor);
             rebuild(false);
@@ -595,26 +569,22 @@ public class KeyListActivity extends BaseActivity {
 
             mCursor.moveToPosition(groupPosition);
             children = new Vector<KeyChild>();
-            Cursor c = mDatabase.query(Keys.TABLE_NAME,
-                    new String[] {
-                        Keys._ID,           // 0
-                        Keys.KEY_ID,        // 1
-                        Keys.IS_MASTER_KEY, // 2
-                        Keys.ALGORITHM,     // 3
-                        Keys.KEY_SIZE,      // 4
-                        Keys.CAN_SIGN,      // 5
-                        Keys.CAN_ENCRYPT,   // 6
-                    },
-                    Keys.KEY_RING_ID + " = ?",
-                    new String[] { mCursor.getString(0) },
-                    null, null, Keys.RANK + " ASC");
+            Cursor c = mDatabase.query(Keys.TABLE_NAME, new String[] { Keys._ID, // 0
+                    Keys.KEY_ID, // 1
+                    Keys.IS_MASTER_KEY, // 2
+                    Keys.ALGORITHM, // 3
+                    Keys.KEY_SIZE, // 4
+                    Keys.CAN_SIGN, // 5
+                    Keys.CAN_ENCRYPT, // 6
+            }, Keys.KEY_RING_ID + " = ?", new String[] { mCursor.getString(0) }, null, null,
+                    Keys.RANK + " ASC");
 
             int masterKeyId = -1;
             long fingerPrintId = -1;
             for (int i = 0; i < c.getCount(); ++i) {
                 c.moveToPosition(i);
                 children.add(new KeyChild(c.getLong(1), c.getInt(2) == 1, c.getInt(3), c.getInt(4),
-                                          c.getInt(5) == 1, c.getInt(6) == 1));
+                        c.getInt(5) == 1, c.getInt(6) == 1));
                 if (i == 0) {
                     masterKeyId = c.getInt(0);
                     fingerPrintId = c.getLong(1);
@@ -624,19 +594,15 @@ public class KeyListActivity extends BaseActivity {
 
             if (masterKeyId != -1) {
                 children.insertElementAt(new KeyChild(Apg.getFingerPrint(fingerPrintId), true), 0);
-                c = mDatabase.query(UserIds.TABLE_NAME,
-                         new String[] {
-                             UserIds.USER_ID, // 0
-                         },
-                         UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0",
-                         new String[] { "" + masterKeyId },
-                         null, null, UserIds.RANK + " ASC");
+                c = mDatabase.query(UserIds.TABLE_NAME, new String[] { UserIds.USER_ID, // 0
+                        }, UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0", new String[] { ""
+                                + masterKeyId }, null, null, UserIds.RANK + " ASC");
 
-                 for (int i = 0; i < c.getCount(); ++i) {
-                     c.moveToPosition(i);
-                     children.add(new KeyChild(c.getString(0)));
-                 }
-                 c.close();
+                for (int i = 0; i < c.getCount(); ++i) {
+                    c.moveToPosition(i);
+                    children.add(new KeyChild(c.getString(0)));
+                }
+                c.close();
             }
 
             mChildren.set(groupPosition, children);
@@ -682,7 +648,7 @@ public class KeyListActivity extends BaseActivity {
         }
 
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
-                                 ViewGroup parent) {
+                ViewGroup parent) {
             mCursor.moveToPosition(groupPosition);
 
             View view = mInflater.inflate(R.layout.key_list_group_item, null);
@@ -713,9 +679,8 @@ public class KeyListActivity extends BaseActivity {
             return view;
         }
 
-        public View getChildView(int groupPosition, int childPosition,
-                                 boolean isLastChild, View convertView,
-                                 ViewGroup parent) {
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+                View convertView, ViewGroup parent) {
             mCursor.moveToPosition(groupPosition);
 
             Vector<KeyChild> children = getChildrenOfGroup(groupPosition);
@@ -723,46 +688,46 @@ public class KeyListActivity extends BaseActivity {
             KeyChild child = children.get(childPosition);
             View view = null;
             switch (child.type) {
-                case KeyChild.KEY: {
-                    if (child.isMasterKey) {
-                        view = mInflater.inflate(R.layout.key_list_child_item_master_key, null);
-                    } else {
-                        view = mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
-                    }
-
-                    TextView keyId = (TextView) view.findViewById(R.id.keyId);
-                    String keyIdStr = Apg.getSmallFingerPrint(child.keyId);
-                    keyId.setText(keyIdStr);
-                    TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
-                    String algorithmStr = Apg.getAlgorithmInfo(child.algorithm, child.keySize);
-                    keyDetails.setText("(" + algorithmStr + ")");
-
-                    ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
-                    if (!child.canEncrypt) {
-                        encryptIcon.setVisibility(View.GONE);
-                    }
-
-                    ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
-                    if (!child.canSign) {
-                        signIcon.setVisibility(View.GONE);
-                    }
-                    break;
+            case KeyChild.KEY: {
+                if (child.isMasterKey) {
+                    view = mInflater.inflate(R.layout.key_list_child_item_master_key, null);
+                } else {
+                    view = mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
                 }
 
-                case KeyChild.USER_ID: {
-                    view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-                    TextView userId = (TextView) view.findViewById(R.id.userId);
-                    userId.setText(child.userId);
-                    break;
+                TextView keyId = (TextView) view.findViewById(R.id.keyId);
+                String keyIdStr = Apg.getSmallFingerPrint(child.keyId);
+                keyId.setText(keyIdStr);
+                TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
+                String algorithmStr = Apg.getAlgorithmInfo(child.algorithm, child.keySize);
+                keyDetails.setText("(" + algorithmStr + ")");
+
+                ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
+                if (!child.canEncrypt) {
+                    encryptIcon.setVisibility(View.GONE);
                 }
 
-                case KeyChild.FINGER_PRINT: {
-                    view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-                    TextView userId = (TextView) view.findViewById(R.id.userId);
-                    userId.setText(getString(R.string.fingerprint) + ":\n" +
-                                   child.fingerPrint.replace("  ", "\n"));
-                    break;
+                ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
+                if (!child.canSign) {
+                    signIcon.setVisibility(View.GONE);
                 }
+                break;
+            }
+
+            case KeyChild.USER_ID: {
+                view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
+                TextView userId = (TextView) view.findViewById(R.id.userId);
+                userId.setText(child.userId);
+                break;
+            }
+
+            case KeyChild.FINGER_PRINT: {
+                view = mInflater.inflate(R.layout.key_list_child_item_user_id, null);
+                TextView userId = (TextView) view.findViewById(R.id.userId);
+                userId.setText(getString(R.string.fingerprint) + ":\n"
+                        + child.fingerPrint.replace("  ", "\n"));
+                break;
+            }
             }
             return view;
         }
@@ -771,26 +736,26 @@ public class KeyListActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.request.filename: {
-                if (resultCode == RESULT_OK && data != null) {
-                    String filename = data.getDataString();
-                    if (filename != null) {
-                        // Get rid of URI prefix:
-                        if (filename.startsWith("file://")) {
-                            filename = filename.substring(7);
-                        }
-                        // replace %20 and so on
-                        filename = Uri.decode(filename);
-
-                        FileDialog.setFilename(filename);
+        case Id.request.filename: {
+            if (resultCode == RESULT_OK && data != null) {
+                String filename = data.getDataString();
+                if (filename != null) {
+                    // Get rid of URI prefix:
+                    if (filename.startsWith("file://")) {
+                        filename = filename.substring(7);
                     }
+                    // replace %20 and so on
+                    filename = Uri.decode(filename);
+
+                    FileDialog.setFilename(filename);
                 }
-                return;
             }
-            
-            default: {
-                break;
-            }
+            return;
+        }
+
+        default: {
+            break;
+        }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

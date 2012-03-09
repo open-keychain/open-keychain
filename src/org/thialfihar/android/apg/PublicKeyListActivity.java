@@ -18,9 +18,6 @@ package org.thialfihar.android.apg;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -41,26 +38,25 @@ public class PublicKeyListActivity extends KeyListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys)
-                .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
-                .setIcon(android.R.drawable.ic_menu_save);
-        menu.add(1, Id.menu.option.search, 2, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
-        menu.add(1, Id.menu.option.preferences, 3, R.string.menu_preferences)
-                .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(1, Id.menu.option.about, 4, R.string.menu_about)
-                .setIcon(android.R.drawable.ic_menu_info_details);
-        menu.add(1, Id.menu.option.scanQRCode, 5, R.string.menu_scanQRCode)
-                .setIcon(android.R.drawable.ic_menu_add);
+        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys).setIcon(
+                android.R.drawable.ic_menu_add);
+        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys).setIcon(
+                android.R.drawable.ic_menu_save);
+        menu.add(1, Id.menu.option.search, 2, R.string.menu_search).setIcon(
+                android.R.drawable.ic_menu_search);
+        menu.add(1, Id.menu.option.preferences, 3, R.string.menu_preferences).setIcon(
+                android.R.drawable.ic_menu_preferences);
+        menu.add(1, Id.menu.option.about, 4, R.string.menu_about).setIcon(
+                android.R.drawable.ic_menu_info_details);
+        menu.add(1, Id.menu.option.scanQRCode, 5, R.string.menu_scanQRCode).setIcon(
+                android.R.drawable.ic_menu_add);
         return true;
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        ExpandableListView.ExpandableListContextMenuInfo info =
-                (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+        ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
@@ -84,103 +80,103 @@ public class PublicKeyListActivity extends KeyListActivity {
         }
 
         switch (menuItem.getItemId()) {
-            case Id.menu.update: {
-                mSelectedItem = groupPosition;
-                final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
-                long keyId = 0;
-                Object keyRing = Apg.getKeyRing(keyRingId);
-                if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
-                    keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
-                }
-                if (keyId == 0) {
-                    // this shouldn't happen
-                    return true;
-                }
-
-                Intent intent = new Intent(this, KeyServerQueryActivity.class);
-                intent.setAction(Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN);
-                intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
-                startActivityForResult(intent, Id.request.look_up_key_id);
-                
+        case Id.menu.update: {
+            mSelectedItem = groupPosition;
+            final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
+            long keyId = 0;
+            Object keyRing = Apg.getKeyRing(keyRingId);
+            if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
+                keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
+            }
+            if (keyId == 0) {
+                // this shouldn't happen
                 return true;
             }
 
-            case Id.menu.exportToServer: {
-                mSelectedItem = groupPosition;
-                final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
-                
-                Intent intent = new Intent(this, SendKeyActivity.class);
-                intent.setAction(Apg.Intent.EXPORT_KEY_TO_SERVER);
-                intent.putExtra(Apg.EXTRA_KEY_ID, keyRingId);
-                startActivityForResult(intent, Id.request.export_to_server);
-                
+            Intent intent = new Intent(this, KeyServerQueryActivity.class);
+            intent.setAction(Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN);
+            intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+            startActivityForResult(intent, Id.request.look_up_key_id);
+
+            return true;
+        }
+
+        case Id.menu.exportToServer: {
+            mSelectedItem = groupPosition;
+            final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
+
+            Intent intent = new Intent(this, SendKeyActivity.class);
+            intent.setAction(Apg.Intent.EXPORT_KEY_TO_SERVER);
+            intent.putExtra(Apg.EXTRA_KEY_ID, keyRingId);
+            startActivityForResult(intent, Id.request.export_to_server);
+
+            return true;
+        }
+
+        case Id.menu.signKey: {
+            mSelectedItem = groupPosition;
+            final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
+            long keyId = 0;
+            Object keyRing = Apg.getKeyRing(keyRingId);
+            if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
+                keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
+            }
+
+            if (keyId == 0) {
+                // this shouldn't happen
                 return true;
             }
-            
-            case Id.menu.signKey: {
-                mSelectedItem = groupPosition;
-                final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
-                long keyId = 0;
-                Object keyRing = Apg.getKeyRing(keyRingId);
-                if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
-                    keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
-                }
-                
-                if (keyId == 0) {
-                    // this shouldn't happen
-                    return true;
-                }
-                
-                Intent intent = new Intent(this, SignKeyActivity.class);
-                intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
-                startActivity(intent);
-                
-                return true;
-            }
-            
-            default: {
-                return super.onContextItemSelected(menuItem);
-            }
+
+            Intent intent = new Intent(this, SignKeyActivity.class);
+            intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+            startActivity(intent);
+
+            return true;
+        }
+
+        default: {
+            return super.onContextItemSelected(menuItem);
+        }
         }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case Id.menu.option.scanQRCode: {
-                Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-                intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
-                startActivityForResult(intent, Id.request.import_from_qr_code);
+        case Id.menu.option.scanQRCode: {
+            Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
+            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+            startActivityForResult(intent, Id.request.import_from_qr_code);
 
-                return true;
-            }
+            return true;
+        }
 
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.request.look_up_key_id: {
-                if (resultCode == RESULT_CANCELED || data == null ||
-                    data.getStringExtra(Apg.EXTRA_TEXT) == null) {
-                    return;
-                }
+        case Id.request.look_up_key_id: {
+            if (resultCode == RESULT_CANCELED || data == null
+                    || data.getStringExtra(Apg.EXTRA_TEXT) == null) {
+                return;
+            }
 
-                Intent intent = new Intent(this, PublicKeyListActivity.class);
-                intent.setAction(Apg.Intent.IMPORT);
-                intent.putExtra(Apg.EXTRA_TEXT, data.getStringExtra(Apg.EXTRA_TEXT));
-                handleIntent(intent);
-                break;
-            }
-            
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
+            Intent intent = new Intent(this, PublicKeyListActivity.class);
+            intent.setAction(Apg.Intent.IMPORT);
+            intent.putExtra(Apg.EXTRA_TEXT, data.getStringExtra(Apg.EXTRA_TEXT));
+            handleIntent(intent);
+            break;
+        }
+
+        default: {
+            super.onActivityResult(requestCode, resultCode, data);
+            break;
+        }
         }
     }
 }

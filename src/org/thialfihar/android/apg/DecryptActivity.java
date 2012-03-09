@@ -20,6 +20,7 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
+import org.thialfihar.android.apg.utils.Compatibility;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,7 +30,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -111,9 +111,9 @@ public class DecryptActivity extends BaseActivity {
         mSourcePrevious.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                                                                    R.anim.push_right_in));
+                        R.anim.push_right_in));
                 mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                                                                     R.anim.push_right_out));
+                        R.anim.push_right_out));
                 mSource.showPrevious();
                 updateSource();
             }
@@ -123,9 +123,9 @@ public class DecryptActivity extends BaseActivity {
         OnClickListener nextSourceClickListener = new OnClickListener() {
             public void onClick(View v) {
                 mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                                                                    R.anim.push_left_in));
+                        R.anim.push_left_in));
                 mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                                                                     R.anim.push_left_out));
+                        R.anim.push_left_out));
                 mSource.showNext();
                 updateSource();
             }
@@ -275,18 +275,22 @@ public class DecryptActivity extends BaseActivity {
             mReturnResult = true;
         }
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
-            mMessage.getText().length() == 0) {
-            ClipboardManager clip = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage
+                && mMessage.getText().length() == 0) {
+
+            CharSequence clipboardText = Compatibility.getClipboardText(this);
+
             String data = "";
-            Matcher matcher = Apg.PGP_MESSAGE.matcher(clip.getText());
-            if (!matcher.matches()) {
-                matcher = Apg.PGP_SIGNED_MESSAGE.matcher(clip.getText());
-            }
-            if (matcher.matches()) {
-                data = matcher.group(1);
-                mMessage.setText(data);
-                Toast.makeText(this, R.string.usingClipboardContent, Toast.LENGTH_SHORT).show();
+            if (clipboardText != null) {
+                Matcher matcher = Apg.PGP_MESSAGE.matcher(clipboardText);
+                if (!matcher.matches()) {
+                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(clipboardText);
+                }
+                if (matcher.matches()) {
+                    data = matcher.group(1);
+                    mMessage.setText(data);
+                    Toast.makeText(this, R.string.usingClipboardContent, Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
@@ -334,9 +338,9 @@ public class DecryptActivity extends BaseActivity {
 
         updateSource();
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage &&
-            (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
-             mDecryptButton.performClick();
+        if (mSource.getCurrentView().getId() == R.id.sourceMessage
+                && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
+            mDecryptButton.performClick();
         }
     }
 
@@ -369,21 +373,21 @@ public class DecryptActivity extends BaseActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-            case R.id.sourceFile: {
-                mSourceLabel.setText(R.string.label_file);
-                mDecryptButton.setText(R.string.btn_decrypt);
-                break;
-            }
+        case R.id.sourceFile: {
+            mSourceLabel.setText(R.string.label_file);
+            mDecryptButton.setText(R.string.btn_decrypt);
+            break;
+        }
 
-            case R.id.sourceMessage: {
-                mSourceLabel.setText(R.string.label_message);
-                mDecryptButton.setText(R.string.btn_decrypt);
-                break;
-            }
+        case R.id.sourceMessage: {
+            mSourceLabel.setText(R.string.label_message);
+            mDecryptButton.setText(R.string.btn_decrypt);
+            break;
+        }
 
-            default: {
-                break;
-            }
+        default: {
+            break;
+        }
         }
     }
 
@@ -411,9 +415,10 @@ public class DecryptActivity extends BaseActivity {
             if (mInputFilename.startsWith("file")) {
                 File file = new File(mInputFilename);
                 if (!file.exists() || !file.isFile()) {
-                    Toast.makeText(this, getString(R.string.errorMessage,
-                                                   getString(R.string.error_fileNotFound)),
-                                   Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            this,
+                            getString(R.string.errorMessage, getString(R.string.error_fileNotFound)),
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -450,8 +455,8 @@ public class DecryptActivity extends BaseActivity {
                 mAssumeSymmetricEncryption = true;
             }
 
-            if (getSecretKeyId() == Id.key.symmetric ||
-                Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
+            if (getSecretKeyId() == Id.key.symmetric
+                    || Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
                 showDialog(Id.dialog.pass_phrase);
             } else {
                 if (mDecryptTarget == Id.target.file) {
@@ -468,8 +473,8 @@ public class DecryptActivity extends BaseActivity {
             error = "" + e;
         }
         if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error),
-                           Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -522,22 +527,22 @@ public class DecryptActivity extends BaseActivity {
             if (mSignedOnly) {
                 data = Apg.verifyText(this, in, out, this);
             } else {
-                data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()),
-                                   this, mAssumeSymmetricEncryption);
+                data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()), this,
+                        mAssumeSymmetricEncryption);
             }
 
             out.close();
 
             if (mDataDestination.getStreamFilename() != null) {
-                data.putString(Apg.EXTRA_RESULT_URI, "content://" + DataProvider.AUTHORITY +
-                               "/data/" + mDataDestination.getStreamFilename());
+                data.putString(Apg.EXTRA_RESULT_URI, "content://" + DataProvider.AUTHORITY
+                        + "/data/" + mDataDestination.getStreamFilename());
             } else if (mDecryptTarget == Id.target.message) {
                 if (mReturnBinary) {
                     data.putByteArray(Apg.EXTRA_DECRYPTED_DATA,
-                                      ((ByteArrayOutputStream) out).toByteArray());
+                            ((ByteArrayOutputStream) out).toByteArray());
                 } else {
-                    data.putString(Apg.EXTRA_DECRYPTED_MESSAGE,
-                                   new String(((ByteArrayOutputStream) out).toByteArray()));
+                    data.putString(Apg.EXTRA_DECRYPTED_MESSAGE, new String(
+                            ((ByteArrayOutputStream) out).toByteArray()));
                 }
             }
         } catch (PGPException e) {
@@ -588,7 +593,8 @@ public class DecryptActivity extends BaseActivity {
 
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 
@@ -602,26 +608,26 @@ public class DecryptActivity extends BaseActivity {
         }
 
         switch (mDecryptTarget) {
-            case Id.target.message: {
-                String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
-                mMessage.setText(decryptedMessage);
-                mMessage.setHorizontallyScrolling(false);
-                mReplyButton.setVisibility(View.VISIBLE);
-                break;
-            }
+        case Id.target.message: {
+            String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
+            mMessage.setText(decryptedMessage);
+            mMessage.setHorizontallyScrolling(false);
+            mReplyButton.setVisibility(View.VISIBLE);
+            break;
+        }
 
-            case Id.target.file: {
-                if (mDeleteAfter.isChecked()) {
-                    setDeleteFile(mInputFilename);
-                    showDialog(Id.dialog.delete_file);
-                }
-                break;
+        case Id.target.file: {
+            if (mDeleteAfter.isChecked()) {
+                setDeleteFile(mInputFilename);
+                showDialog(Id.dialog.delete_file);
             }
+            break;
+        }
 
-            default: {
-                // shouldn't happen
-                break;
-            }
+        default: {
+            // shouldn't happen
+            break;
+        }
         }
 
         if (data.getBoolean(Apg.EXTRA_SIGNATURE)) {
@@ -642,7 +648,8 @@ public class DecryptActivity extends BaseActivity {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
             } else if (data.getBoolean(Apg.EXTRA_SIGNATURE_UNKNOWN)) {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                Toast.makeText(this, R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
+                        .show();
             } else {
                 mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
             }
@@ -653,51 +660,51 @@ public class DecryptActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.request.filename: {
-                if (resultCode == RESULT_OK && data != null) {
-                    String filename = data.getDataString();
-                    if (filename != null) {
-                        // Get rid of URI prefix:
-                        if (filename.startsWith("file://")) {
-                            filename = filename.substring(7);
-                        }
-                        // replace %20 and so on
-                        filename = Uri.decode(filename);
-
-                        mFilename.setText(filename);
+        case Id.request.filename: {
+            if (resultCode == RESULT_OK && data != null) {
+                String filename = data.getDataString();
+                if (filename != null) {
+                    // Get rid of URI prefix:
+                    if (filename.startsWith("file://")) {
+                        filename = filename.substring(7);
                     }
+                    // replace %20 and so on
+                    filename = Uri.decode(filename);
+
+                    mFilename.setText(filename);
                 }
-                return;
             }
+            return;
+        }
 
-            case Id.request.output_filename: {
-                if (resultCode == RESULT_OK && data != null) {
-                    String filename = data.getDataString();
-                    if (filename != null) {
-                        // Get rid of URI prefix:
-                        if (filename.startsWith("file://")) {
-                            filename = filename.substring(7);
-                        }
-                        // replace %20 and so on
-                        filename = Uri.decode(filename);
-
-                        FileDialog.setFilename(filename);
+        case Id.request.output_filename: {
+            if (resultCode == RESULT_OK && data != null) {
+                String filename = data.getDataString();
+                if (filename != null) {
+                    // Get rid of URI prefix:
+                    if (filename.startsWith("file://")) {
+                        filename = filename.substring(7);
                     }
-                }
-                return;
-            }
+                    // replace %20 and so on
+                    filename = Uri.decode(filename);
 
-            case Id.request.look_up_key_id: {
-                PausableThread thread = getRunningThread();
-                if (thread != null && thread.isPaused()) {
-                    thread.unpause();
+                    FileDialog.setFilename(filename);
                 }
-                return;
             }
+            return;
+        }
 
-            default: {
-                break;
+        case Id.request.look_up_key_id: {
+            PausableThread thread = getRunningThread();
+            if (thread != null && thread.isPaused()) {
+                thread.unpause();
             }
+            return;
+        }
+
+        default: {
+            break;
+        }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -706,63 +713,57 @@ public class DecryptActivity extends BaseActivity {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case Id.dialog.output_filename: {
-                return FileDialog.build(this, getString(R.string.title_decryptToFile),
-                                        getString(R.string.specifyFileToDecryptTo),
-                                        mOutputFilename,
-                                        new FileDialog.OnClickListener() {
-                                            public void onOkClick(String filename, boolean checked) {
-                                                removeDialog(Id.dialog.output_filename);
-                                                mOutputFilename = filename;
-                                                decryptStart();
-                                            }
+        case Id.dialog.output_filename: {
+            return FileDialog.build(this, getString(R.string.title_decryptToFile),
+                    getString(R.string.specifyFileToDecryptTo), mOutputFilename,
+                    new FileDialog.OnClickListener() {
+                        public void onOkClick(String filename, boolean checked) {
+                            removeDialog(Id.dialog.output_filename);
+                            mOutputFilename = filename;
+                            decryptStart();
+                        }
 
-                                            public void onCancelClick() {
-                                                removeDialog(Id.dialog.output_filename);
-                                            }
-                                        },
-                                        getString(R.string.filemanager_titleSave),
-                                        getString(R.string.filemanager_btnSave),
-                                        null,
-                                        Id.request.output_filename);
-            }
+                        public void onCancelClick() {
+                            removeDialog(Id.dialog.output_filename);
+                        }
+                    }, getString(R.string.filemanager_titleSave),
+                    getString(R.string.filemanager_btnSave), null, Id.request.output_filename);
+        }
 
-            case Id.dialog.lookup_unknown_key: {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        case Id.dialog.lookup_unknown_key: {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-                alert.setIcon(android.R.drawable.ic_dialog_alert);
-                alert.setTitle(R.string.title_unknownSignatureKey);
-                alert.setMessage(getString(R.string.lookupUnknownKey, Apg.getSmallFingerPrint(mUnknownSignatureKeyId)));
+            alert.setIcon(android.R.drawable.ic_dialog_alert);
+            alert.setTitle(R.string.title_unknownSignatureKey);
+            alert.setMessage(getString(R.string.lookupUnknownKey,
+                    Apg.getSmallFingerPrint(mUnknownSignatureKeyId)));
 
-                alert.setPositiveButton(android.R.string.ok,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                removeDialog(Id.dialog.lookup_unknown_key);
-                                                Intent intent = new Intent(DecryptActivity.this,
-                                                                           KeyServerQueryActivity.class);
-                                                intent.setAction(Apg.Intent.LOOK_UP_KEY_ID);
-                                                intent.putExtra(Apg.EXTRA_KEY_ID, mUnknownSignatureKeyId);
-                                                startActivityForResult(intent, Id.request.look_up_key_id);
-                                            }
-                                        });
-                alert.setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                removeDialog(Id.dialog.lookup_unknown_key);
-                                                PausableThread thread = getRunningThread();
-                                                if (thread != null && thread.isPaused()) {
-                                                    thread.unpause();
-                                                }
-                                            }
-                                        });
-                alert.setCancelable(true);
+            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    removeDialog(Id.dialog.lookup_unknown_key);
+                    Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
+                    intent.setAction(Apg.Intent.LOOK_UP_KEY_ID);
+                    intent.putExtra(Apg.EXTRA_KEY_ID, mUnknownSignatureKeyId);
+                    startActivityForResult(intent, Id.request.look_up_key_id);
+                }
+            });
+            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    removeDialog(Id.dialog.lookup_unknown_key);
+                    PausableThread thread = getRunningThread();
+                    if (thread != null && thread.isPaused()) {
+                        thread.unpause();
+                    }
+                }
+            });
+            alert.setCancelable(true);
 
-                return alert.create();
-            }
+            return alert.create();
+        }
 
-            default: {
-                break;
-            }
+        default: {
+            break;
+        }
         }
 
         return super.onCreateDialog(id);
