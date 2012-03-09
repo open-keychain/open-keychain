@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -18,11 +19,9 @@
 
      Send gjerne en e-post med spørsmål eller kommentarer. Kom gjerne med forslag til bedre
      oversettelser!
-
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Epost innboks</string>
@@ -130,15 +129,14 @@
     <string name="label_name">Navn</string>
     <string name="label_comment">Kommentar</string>
     <string name="label_email">Epost</string>
-
     <string name="noKeysSelected">Velg</string>
     <string name="oneKeySelected">1 Valgt</string>
     <string name="nKeysSelected">Valgt</string>
-    <string name="unknownUserId">&lt;ukjent&gt;</string>
-    <string name="none">&lt;ingen&gt;</string>
-    <string name="noKey">&lt;ingen nøkkel&gt;</string>
+    <string name="unknownUserId">&lt;ukjent></string>
+    <string name="none">&lt;ingen></string>
+    <string name="noKey">&lt;ingen nøkkel></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;utløper ikke&gt;</string>
+    <string name="noExpiry">&lt;utløper ikke></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">kan kryptere</string>
     <string name="canSign">kan signere</string>
@@ -164,18 +162,15 @@
     <string name="choice_8hours">8 timer</string>
     <string name="choice_untilQuit">til avsluttning</string>
     <string name="choice_language_system">System </string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Åpne...</string>
     <string name="filemanager_titleSave">Lagre Som...</string>
     <string name="filemanager_titleEncrypt">Velg Fil Som Skal Krypteres...</string>
     <string name="filemanager_titleDecrypt">Velg Fil Som Skal Dekrypteres...</string>
     <string name="filemanager_btnOpen">Åpne</string>
     <string name="filemanager_btnSave">Lagre</string>
-
     <string name="warning">Advarsel</string>
     <string name="error">Feil</string>
     <string name="warningMessage">Advarsel: %s</string>
@@ -221,8 +216,10 @@
     <string name="unknownSignatureKeyTouchToLookUp">Ukjent signatur, trykk for å sjekke nøkkel.</string>
     <string name="keyEditingIsBeta">Nøkkelredigering er enda beta.</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">sletting \'%s\' mislyktes</string>
     <string name="error_fileNotFound">finner ikke fil</string>
     <string name="error_noSecretKeyFound">finner ingen passende hemmelig nøkkel</string>
@@ -296,7 +293,6 @@
     <string name="action_decrypt">Dekrypter</string>
     <string name="action_importPublic">Importer Offentlige Nøkler</string>
     <string name="action_importSecret">Importer Private Nøkler</string>
-
     <string name="hint_publicKeys">Søk I Offentlige Nøkler</string>
     <string name="hint_secretKeys">Søk I Private Nøkler</string>
     <string name="filterInfo">Filter: \"%s\"</string>
@@ -309,11 +305,9 @@
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
     <string name="text_help">Installer K-9 Mail for den beste integrasjonen, det støtter APG for PGP/INLINE og lar deg kryptere/dekryptere epost direkte.
-\n\nDet er anbefalt at du installerer OI File Manager eller ASTRO for å kunne velge filer igjennom APG, med manuelt søk. <!-- to be able to use the browse button for file selection in APG. -->
+\n\nDet er anbefalt at du installerer OI File Manager eller ASTRO for å kunne velge filer igjennom APG, med manuelt søk.         <!-- to be able to use the browse button for file selection in APG. -->
 \n\nFørst trenger du noen nøkler. Du kan enten importere dem via menyene i \"Håndter Offentlige Nøkler\" og \"Håndter Private Nøkler\" eller lage dem selv i \"Håndter Private Nøkler\".
 \n\nDu kan også legge til en GMail-konto i hovedmenyen via \"Legg Til Konto\", noe som forenkler dekryptering av epost mottatt der.
-\n\nSjekk menyene under de forskjellige aktivitetene for å finne flere funksjoner.
-    </string>
+\n\nSjekk menyene under de forskjellige aktivitetene for å finne flere funksjoner.</string>
 
 </resources>
-

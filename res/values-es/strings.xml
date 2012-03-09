@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,7 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Bandeja de Entrada</string>
@@ -123,15 +123,14 @@
     <string name="label_name">Nombre</string>
     <string name="label_comment">Comentario</string>
     <string name="label_email">Email</string>
-
     <string name="noKeysSelected">Seleccionar</string>
     <string name="oneKeySelected">1 Seleccionada</string>
     <string name="nKeysSelected">Seleccionada</string>
-    <string name="unknownUserId">&lt;desconocido&gt;</string>
-    <string name="none">&lt;ninguno&gt;</string>
-    <string name="noKey">&lt;sin llave&gt;</string>
+    <string name="unknownUserId">&lt;desconocido></string>
+    <string name="none">&lt;ninguno></string>
+    <string name="noKey">&lt;sin llave></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;no expira&gt;</string>
+    <string name="noExpiry">&lt;no expira></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">puede cifrar</string>
     <string name="canSign">puede firmar</string>
@@ -153,18 +152,15 @@
     <string name="choice_40mins">40 mins</string>
     <string name="choice_untilQuit">hasta salir</string>
     <string name="choice_language_system">Sistema por defecto</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Abrir...</string>
     <string name="filemanager_titleSave">Guardar Como...</string>
     <string name="filemanager_titleEncrypt">Seleccionar Fichero Para Cifrar...</string>
     <string name="filemanager_titleDecrypt">Seleccionar Fichero Para Descifrar...</string>
     <string name="filemanager_btnOpen">Abrir</string>
     <string name="filemanager_btnSave">Guardar</string>
-
     <string name="warning">Advertencia</string>
     <string name="error">Error</string>
     <string name="warningMessage">Advertencia: %s</string>
@@ -210,8 +206,10 @@
     <string name="unknownSignatureKeyTouchToLookUp">Firma desconocida, pulsa para buscarla.</string>
     <string name="keyEditingIsBeta">Edición de llaves aún en fase beta.</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">borrado de \'%s\' fallido</string>
     <string name="error_fileNotFound">no se encontró el fichero</string>
     <string name="error_noSecretKeyFound">no se encontró la llave secreta adecuada</string>
@@ -285,7 +283,6 @@
     <string name="action_decrypt">Descifrar</string>
     <string name="action_importPublic">Importar Llaves Públicas</string>
     <string name="action_importSecret">Importar Llaves Privadas</string>
-
     <string name="hint_publicKeys">Buscar Llaves Públicas</string>
     <string name="hint_secretKeys">Buscar Llaves Privadas</string>
     <string name="filterInfo">Filtro: \"%s\"</string>
@@ -297,12 +294,10 @@
 
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
-    <string name="text_help">Puedes instalar K-9 Mail para una mejor integración, soporta APG para PGP de forma nativa y permite difrar/descifrar mensajes directamente.
+    <string name="text_help">uedes instalar K-9 Mail para una mejor integración, soporta APG para PGP de forma nativa y permite difrar/descifrar mensajes directamente.
 \n\nSe recomienda instalar OI File Manager o ASTRO para poder usar el botón de navegación para seleccioar ficheros en APG.
 \n\nPrimero necesitarás algunas llaves. Puedes importarlas mediante los menús de opciones en \"Administrar Llaves Públicas\" y \"Administrar Llaves Privadas\" o crearlas mediante \"Administrar Llaves Privadas\".
 \n\nTambién puedes añadir una cuenta GMail como actividad principal mediante \"Añadir Cuenta\", lo que simplifica el descifrado de mensajes recibidos en esa cuenta.
-\n\nDale un vistazo a los menús de opciones para encontrar más funciones.
-    </string>
+\n\nDale un vistazo a los menús de opciones para encontrar más funciones.</string>
 
 </resources>
-

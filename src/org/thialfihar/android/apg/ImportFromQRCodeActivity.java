@@ -26,7 +26,7 @@ public class ImportFromQRCodeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IntentIntegrator.initiateScan(this);
+        new IntentIntegrator(this).initiateScan();
     }
 
     private void importAndSign(final long keyId, final String expectedFingerprint) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,7 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Mail Inbox</string>
@@ -99,15 +99,14 @@
     <string name="label_passPhraseCacheTtl">Kodeords Cache</string>
     <string name="label_messageCompression">Besked Komprimering</string>
     <string name="label_fileCompression">Fil Komprimering</string>
-
     <string name="noKeysSelected">Vælg</string>
     <string name="oneKeySelected">1 Valgt</string>
     <string name="nKeysSelected">Valgt</string>
-    <string name="unknownUserId">&lt;ukendt&gt;</string>
-    <string name="none">&lt;ingen&gt;</string>
-    <string name="noKey">&lt;ingen nøgle&gt;</string>
+    <string name="unknownUserId">&lt;ukendt></string>
+    <string name="none">&lt;ingen></string>
+    <string name="noKey">&lt;ingen nøgle></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;udløber ikke&gt;</string>
+    <string name="noExpiry">&lt;udløber ikke></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">kan kryptere</string>
     <string name="canSign">kan signere</string>
@@ -131,18 +130,15 @@
     <string name="choice_4hours">4 timer</string>
     <string name="choice_8hours">8 timer</string>
     <string name="choice_untilQuit">Indtil slut</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Åbn...</string>
     <string name="filemanager_titleSave">Gem Som...</string>
     <string name="filemanager_titleEncrypt">Vælg Fil Som Skal Krypteres...</string>
     <string name="filemanager_titleDecrypt">Vælg Fil Som Skal Afkrypteres...</string>
     <string name="filemanager_btnOpen">Åbn</string>
     <string name="filemanager_btnSave">Gem</string>
-
     <string name="warning">Advarsel</string>
     <string name="error">Fejl</string>
     <string name="warningMessage">Advarsel: %s</string>
@@ -185,8 +181,10 @@
     <string name="keyCreationElGamalInfo">NB: Kun undernøgler understøtter ElGamal, og for ELGamal vil den nærmeste nøglestørrelse - 1536, 2048, 3072, 4096, eller 8192 - blive brugt.</string>
     <string name="keyNotFound">Kunne ikke finde %08X nøglen.</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">\'%s\' kunne ikke slettes</string>
     <string name="error_fileNotFound">filen findes ikke</string>
     <string name="error_noSecretKeyFound">ingen egnet privat nøgle fundet</string>
@@ -256,7 +254,6 @@
     <string name="action_decrypt">Afkryptér</string>
     <string name="action_importPublic">Importér Offentlige Nøgler</string>
     <string name="action_importSecret">Importér Private Nøgler</string>
-
     <string name="hint_publicKeys">Søg I Offentlige Nøgler</string>
     <string name="hint_secretKeys">Søg I Private Nøgler</string>
     <string name="filterInfo">Filter: \"%s\"</string>

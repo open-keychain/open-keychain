@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Poštni nabiralnik</string>
@@ -125,15 +125,14 @@
     <string name="label_name">Ime</string>
     <string name="label_comment">Komentar</string>
     <string name="label_email">E-pošta</string>
-
     <string name="noKeysSelected">Izberi</string>
     <string name="oneKeySelected">1 izbran</string>
     <string name="nKeysSelected">Izbrani</string>
-    <string name="unknownUserId">&lt;nepoznan&gt;</string>
-    <string name="none">&lt;brez&gt;</string>
-    <string name="noKey">&lt;brez ključa&gt;</string>
+    <string name="unknownUserId">&lt;nepoznan></string>
+    <string name="none">&lt;brez></string>
+    <string name="noKey">&lt;brez ključa></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;nikoli&gt;</string>
+    <string name="noExpiry">&lt;nikoli></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">lahko šifrira</string>
     <string name="canSign">lahko podpiše</string>
@@ -155,18 +154,15 @@
     <string name="choice_40mins">40 min</string>
     <string name="choice_untilQuit">do izhoda</string>
     <string name="choice_language_system">Sistemsko nastavljeno</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Odpri...</string>
     <string name="filemanager_titleSave">Shrani kot...</string>
     <string name="filemanager_titleEncrypt">Izberi datoteko za šifriranje...</string>
     <string name="filemanager_titleDecrypt">Izberi datoteko za dešifriranje...</string>
     <string name="filemanager_btnOpen">Odpri</string>
     <string name="filemanager_btnSave">Shrani</string>
-
     <string name="warning">Opozorilo</string>
     <string name="error">Napaka</string>
     <string name="warningMessage">Opozorilo: %s</string>
@@ -212,8 +208,10 @@
     <string name="unknownSignatureKeyTouchToLookUp">Neznan podpis, za ogled pritisni.</string>
     <string name="keyEditingIsBeta">Urejanje ključev je še vedno v precej testni fazi.</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">izbris \'%s\' ni uspel</string>
     <string name="error_fileNotFound">ne najdem datoteke</string>
     <string name="error_noSecretKeyFound">najden ni bil noben ustrezen zasebni kluč</string>
@@ -286,7 +284,6 @@
     <string name="action_decrypt">Dešifriraj</string>
     <string name="action_importPublic">Uvozi javne ključe</string>
     <string name="action_importSecret">Uvozi zasebne ključe</string>
-
     <string name="hint_publicKeys">Poišči javne ključe</string>
     <string name="hint_secretKeys">Poišči zasebne ključe</string>
     <string name="filterInfo">Filter: \"%s\"</string>
@@ -298,11 +295,10 @@
 
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
-    <string name="text_help"> Za boljšo integracijo namestite program K-9 Mail, ki omogoča način PGP/INLINE in neposredno šifriranje/dešifriranje e-pošte.
+    <string name="text_help">Za boljšo integracijo namestite program K-9 Mail, ki omogoča način PGP/INLINE in neposredno šifriranje/dešifriranje e-pošte.
     \n\nZaželjeno je, da namestite programa OI File Manager ali ASTRO, ki omogočata iskanje, izbiro in vnos datotek v APG.
     \n\nZa začetek potrebujete nekaj ključev. Lahko jih uvozite s klikom na menija \"Upravljanje javnih ključev\" in \"Upravljanje zasebnih ključev\" ali jih ustvarite v meniju \"Upravljanje zasebnih ključev\".
     \n\nPreko menija \"Dodaj račun\" lahko dodate vaše GMail račune in tako poenostavite dešifriranje e-pošte prejete nanje.
-    \n\nDa bi odkrili dodatne funkcije in zmožnosti programa APG, se sprehodite skozi njegove menije.
-    </string>
+    \n\nDa bi odkrili dodatne funkcije in zmožnosti programa APG, se sprehodite skozi njegove menije.</string>
 
 </resources>

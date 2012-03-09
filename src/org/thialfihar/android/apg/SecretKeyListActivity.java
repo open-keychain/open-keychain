@@ -108,7 +108,8 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
                 
                 long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
                 String msg = keyId + "," + Apg.getFingerPrint(keyId);;
-                IntentIntegrator.shareText(this, msg);
+                
+                new IntentIntegrator(this).shareText(msg);
             }
 
             default: {

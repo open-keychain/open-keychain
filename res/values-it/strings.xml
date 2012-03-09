@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Posta in arrivo</string>
@@ -126,15 +126,14 @@
     <string name="label_name">Nome</string>
     <string name="label_comment">Commento</string>
     <string name="label_email">Email</string>
-
     <string name="noKeysSelected">Seleziona</string>
     <string name="oneKeySelected">1 Selezionato</string>
     <string name="nKeysSelected">Selezionato</string>
-    <string name="unknownUserId">&lt;sconosciuto&gt;</string>
-    <string name="none">&lt;nessuno&gt;</string>
-    <string name="noKey">&lt;nessuna chiave&gt;</string>
+    <string name="unknownUserId">&lt;sconosciuto></string>
+    <string name="none">&lt;nessuno></string>
+    <string name="noKey">&lt;nessuna chiave></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;nessuna scadenza&gt;</string>
+    <string name="noExpiry">&lt;nessuna scadenza></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">crittazione consentita</string>
     <string name="canSign">firma consentita</string>
@@ -161,18 +160,15 @@
     <string name="choice_8hours">8 ore</string>
     <string name="choice_untilQuit">tutta la sessione</string>
     <string name="choice_language_system">Default di sistema</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Apri...</string>
     <string name="filemanager_titleSave">Salva con nome...</string>
     <string name="filemanager_titleEncrypt">Seleziona il file da crittare...</string>
     <string name="filemanager_titleDecrypt">Seleziona il file da decrittare...</string>
     <string name="filemanager_btnOpen">Apri</string>
     <string name="filemanager_btnSave">Salva</string>
-
     <string name="warning">Attenzione</string>
     <string name="error">Errore</string>
     <string name="warningMessage">Attenzione: %s</string>
@@ -220,8 +216,10 @@
     <string name="badKeysEncountered">%s chiavi segrete ignorate. Se hai esportato le chiavi con l\'opzione\n --export-secret-subkeys\nprovare ad utilizzare il parametro\n --export-secret-keys\n.</string>
     <string name="lookupUnknownKey">La chiave %s è sconosciuta; si desidera provare a cercarla su un keyserver?</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">cancellazione di \'%s\' fallita</string>
     <string name="error_fileNotFound">file non trovato</string>
     <string name="error_noSecretKeyFound">non è stata trovata nessuna chiave privata utilizzabile</string>
@@ -296,7 +294,6 @@
     <string name="action_decrypt">Decritta</string>
     <string name="action_importPublic">Importa Chiavi Pubbliche</string>
     <string name="action_importSecret">Importa Chiavi Private</string>
-
     <string name="hint_publicKeys">Cerca Chiavi Pubbliche</string>
     <string name="hint_secretKeys">Cerca Chiavi Private</string>
     <string name="filterInfo">Filtra: \"%s\"</string>
@@ -308,12 +305,10 @@
 
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
-    <string name="text_help">Per una migliore integrazione, si consiglia di installare K-9 Mail; questo applicativo supporta infatti APG e consente di crittare/decrittare direttamente le mail.
+    <string name="text_help">er una migliore integrazione, si consiglia di installare K-9 Mail; questo applicativo supporta infatti APG e consente di crittare/decrittare direttamente le mail.
 \n\nPer poter utilizzare il bottone \"sfoglia\" per la selezione dei file su APG, si consiglia di installare OI File Manager oppure ASTRO.
 \n\nCome prima cosa, è necessario disporre di una o più chiavi. E\' possibile importare chiavi esistenti tramite l\'opzione \"Manage Public Keys\" e \"Manage Secret Keys\", oppure crearne una nuova tramite l\'opzione \"Manage Secret Keys\".
 \n\nE\' possibile aggiungere un account GMail tramite l\'opzione \"Aggiungi Acconto GMail\"; questo semplifica il processo di decrittaggio delle mail ricevute sulla propria casella di posta su GMail.
-\n\nProva e controlla le opzioni dei vari menù per esplorare e conoscere tutte le funzionalità di APG.
-    </string>
+\n\nProva e controlla le opzioni dei vari menù per esplorare e conoscere tutte le funzionalità di APG.</string>
 
 </resources>
-

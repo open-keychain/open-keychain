@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -15,7 +16,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Mail Inbox</string>
@@ -133,15 +133,14 @@
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
     <string name="label_sendKey">Send Key to Server?</string>
-
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
     <string name="nKeysSelected">Selected</string>
-    <string name="unknownUserId">&lt;unknown&gt;</string>
-    <string name="none">&lt;none&gt;</string>
-    <string name="noKey">&lt;no key&gt;</string>
+    <string name="unknownUserId">&lt;unknown></string>
+    <string name="none">&lt;none></string>
+    <string name="noKey">&lt;no key></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;no expiry&gt;</string>
+    <string name="noExpiry">&lt;no expiry></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">can encrypt</string>
     <string name="canSign">can sign</string>
@@ -168,18 +167,15 @@
     <string name="choice_8hours">8 hours</string>
     <string name="choice_untilQuit">until quit</string>
     <string name="choice_language_system">System default</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">Open...</string>
     <string name="filemanager_titleSave">Save As...</string>
     <string name="filemanager_titleEncrypt">Select File To Encrypt...</string>
     <string name="filemanager_titleDecrypt">Select File To Decrypt...</string>
     <string name="filemanager_btnOpen">Open</string>
     <string name="filemanager_btnSave">Save</string>
-
     <string name="warning">Warning</string>
     <string name="error">Error</string>
     <string name="warningMessage">Warning: %s</string>
@@ -230,8 +226,10 @@
     <string name="keySignSuccess">Successfully signed key</string>
     <string name="qrScanImportSuccess">Successfully validated and imported key</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">deleting \'%s\' failed</string>
     <string name="error_fileNotFound">file not found</string>
     <string name="error_noSecretKeyFound">no suitable secret key found</string>
@@ -300,15 +298,14 @@
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>
     <string name="permission_read_key_details_description">Read key details of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
-	<string name="permission_store_blobs_label">Store blobs to en/decrypt with APG.</string>
-	<string name="permission_store_blobs_description">Store and read files on the android file system through APG. It cannot read files of other applications.</string>
+    <string name="permission_store_blobs_label">Store blobs to en/decrypt with APG.</string>
+    <string name="permission_store_blobs_description">Store and read files on the android file system through APG. It cannot read files of other applications.</string>
 
     <!-- action strings -->
     <string name="action_encrypt">Encrypt</string>
     <string name="action_decrypt">Decrypt</string>
     <string name="action_importPublic">Import Public Keys</string>
     <string name="action_importSecret">Import Secret Keys</string>
-
     <string name="hint_publicKeys">Search Public Keys</string>
     <string name="hint_secretKeys">Search Secret Keys</string>
     <string name="filterInfo">Filter: \"%s\"</string>
@@ -324,8 +321,6 @@
 \n\nIt is recommended that you install OI File Manager or ASTRO to be able to use the browse button for file selection in APG.
 \n\nFirst you need some keys. Either import them via the option menus in \"Manage Public Keys\" and \"Manage Secret Keys\" or create them in \"Manage Secret Keys\".
 \n\nYou can also add a GMail account in the main activity via \"Add Account\", which simplifies decrypting emails received there.
-\n\nCheck out the option menus in the various activities to find more functions.
-    </string>
+\n\nCheck out the option menus in the various activities to find more functions.</string>
 
 </resources>
-

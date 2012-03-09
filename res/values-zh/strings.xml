@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -17,7 +18,6 @@
 -->
 
 <resources>
-    <string name="app_name">APG</string>
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">收件箱</string>
@@ -126,15 +126,14 @@
     <string name="label_name">姓名</string>
     <string name="label_comment">注释</string>
     <string name="label_email">电子邮件</string>
-
     <string name="noKeysSelected">选择</string>
     <string name="oneKeySelected">1个选定</string>
     <string name="nKeysSelected">个选定</string>
-    <string name="unknownUserId">&lt;未知&gt;</string>
-    <string name="none">&lt;无&gt;</string>
-    <string name="noKey">&lt;无密钥&gt;</string>
+    <string name="unknownUserId">&lt;未知></string>
+    <string name="none">&lt;无></string>
+    <string name="noKey">&lt;无密钥></string>
     <string name="noDate">-</string>
-    <string name="noExpiry">&lt;不过期&gt;</string>
+    <string name="noExpiry">&lt;不过期></string>
     <string name="unknownStatus"></string>
     <string name="canEncrypt">可以加密</string>
     <string name="canSign">可以签名</string>
@@ -157,18 +156,15 @@
     <string name="choice_60mins">60 分钟</string>
     <string name="choice_untilQuit">直到退出</string>
     <string name="choice_language_system">系统默认</string>
-
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-
     <string name="filemanager_titleOpen">打开...</string>
     <string name="filemanager_titleSave">另存为...</string>
     <string name="filemanager_titleEncrypt">选择要加密的文件...</string>
     <string name="filemanager_titleDecrypt">选择要解密的文件...</string>
     <string name="filemanager_btnOpen">打开</string>
     <string name="filemanager_btnSave">保存</string>
-
     <string name="warning">警告</string>
     <string name="error">错误</string>
     <string name="warningMessage">警告: %s</string>
@@ -216,8 +212,10 @@
     <string name="badKeysEncountered">忽略 %s 个错误的密钥. 或许导出时你使用了\n --export-secret-subkeys\n请确保使用\n --export-secret-keys\n代替前者.</string>
     <string name="lookupUnknownKey">未知密钥 %s, 是否需要在密钥服务器上查找?</string>
 
-    <!-- error_lowerCase: phrases, no punctuation, all lowercase,
-         they will be put after "errorMessage", e.g. "Error: file not found" -->
+    <!--
+         error_lowerCase: phrases, no punctuation, all lowercase,
+         they will be put after "errorMessage", e.g. "Error: file not found"
+    -->
     <string name="error_fileDeleteFailed">删除 \'%s\' 失败</string>
     <string name="error_fileNotFound">文件没有找到</string>
     <string name="error_noSecretKeyFound">未发现合适的私钥</string>
@@ -292,7 +290,6 @@
     <string name="action_decrypt">解密</string>
     <string name="action_importPublic">导入公钥</string>
     <string name="action_importSecret">导入私钥</string>
-
     <string name="hint_publicKeys">搜索公钥</string>
     <string name="hint_secretKeys">搜索私钥</string>
     <string name="filterInfo">过滤信息: \"%s\"</string>
@@ -304,11 +301,10 @@
 
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
-    <string name="text_help">安装 K-9 Mail 以便达到最好的集成, K9支持APG处理PGP/INLINE并让你直接加密或解密邮件.
+    <string name="text_help">装 K-9 Mail 以便达到最好的集成, K9支持APG处理PGP/INLINE并让你直接加密或解密邮件.
 \n\n建议安装 OI File Manager 或 ASTRO 以便在APG中浏览文件夹.
 \n\n首先你需要一些密钥. 可以通过菜单 \"管理公钥\" 和 \"管理私钥\" 来导入, 或者在菜单 \"管理私钥\" 中创建.
 \n\n你也可以通过菜单 \"添加账户\" 来添加GMail账户, 这样可以简化解密那些账户中邮件的过程.
-\n\n可以通过查看选项菜单寻找更多的功能.
-    </string>
+\n\n可以通过查看选项菜单寻找更多的功能.</string>
 
 </resources>
