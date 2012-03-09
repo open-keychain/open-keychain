@@ -1,6 +1,6 @@
-/bin
-/gen
+bin/
+gen/
 .classpath
 .project
+.DS_Store
 .settings
-

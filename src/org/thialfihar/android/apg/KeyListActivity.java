@@ -16,19 +16,9 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
-import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -57,6 +47,16 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Vector;
 
 public class KeyListActivity extends BaseActivity {
     protected ExpandableListView mList;

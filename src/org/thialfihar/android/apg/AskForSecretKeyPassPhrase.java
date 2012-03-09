@@ -16,10 +16,11 @@
 
 package org.thialfihar.android.apg;
 
-import org.bouncycastle2.jce.provider.BouncyCastleProvider;
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPrivateKey;
-import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;

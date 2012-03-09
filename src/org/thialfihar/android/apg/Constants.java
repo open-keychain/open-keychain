@@ -19,6 +19,9 @@ package org.thialfihar.android.apg;
 import android.os.Environment;
 
 public final class Constants {
+    
+    public static final String tag = "APG";
+    
     public static final class path {
         public static final String app_dir = Environment.getExternalStorageDirectory() + "/APG";
     }

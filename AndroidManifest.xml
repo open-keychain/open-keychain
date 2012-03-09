@@ -17,7 +17,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
-    android:versionCode="10900" android:versionName="1.0.9 beta 00"
+    android:versionCode="10900" android:versionName="1.0.9/apg_service beta 00"
     android:installLocation="auto">
 
     <application
@@ -195,11 +195,26 @@
             android:configChanges="keyboardHidden|orientation|keyboard"/>
 
         <service android:name=".Service" />
-
+        <service
+            android:name=".ApgService"
+            android:enabled="true" android:exported="true"
+            android:process=":remote"
+            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+            >
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.IApgService"/>
+            </intent-filter>
+            <meta-data android:name="api_version" android:value="2" />
+        </service>  
         <provider
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
             android:name="org.thialfihar.android.apg.provider.DataProvider"
             android:authorities="org.thialfihar.android.apg.provider"/>
+            
+        <provider
+            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS"
+            android:name="org.thialfihar.android.apg.provider.ApgServiceBlobProvider"
+            android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"/>
 
     </application>
     <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="5" />
@@ -209,10 +224,16 @@
                 android:label="@string/permission_read_key_details_label"
                 android:description="@string/permission_read_key_details_description"/>
 
+    <permission android:name="org.thialfihar.android.apg.permission.STORE_BLOBS"
+                android:protectionLevel="dangerous"
+                android:label="@string/permission_store_blobs_label"
+                android:description="@string/permission_store_blobs_description"/>
+
     <uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
     <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="org.thialfihar.android.apg.permission.STORE_BLOBS"/>
 
 </manifest>

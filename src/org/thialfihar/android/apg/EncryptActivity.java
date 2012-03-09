@@ -16,21 +16,11 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
-import org.bouncycastle2.openpgp.PGPSecretKey;
-import org.bouncycastle2.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.utils.Choice;
 
@@ -54,6 +44,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.util.Vector;
 
 public class EncryptActivity extends BaseActivity {
     private Intent mIntent = null;

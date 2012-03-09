@@ -1,19 +1,24 @@
 package org.thialfihar.android.apg;
 
-import java.util.Vector;
-
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
-import org.bouncycastle2.openpgp.PGPEncryptedData;
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.openpgp.PGPEncryptedData;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import java.util.Vector;
 
 public class Preferences {
     private static Preferences mPreferences;
     private SharedPreferences mSharedPreferences;
 
     public static synchronized Preferences getPreferences(Context context) {
-        if (mPreferences == null) {
+        return getPreferences(context, false);
+    }
+    
+    public static synchronized Preferences getPreferences(Context context, boolean force_new)
+    {
+        if (mPreferences == null || force_new) {
             mPreferences = new Preferences(context);
         }
         return mPreferences;

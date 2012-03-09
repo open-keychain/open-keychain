@@ -16,14 +16,8 @@
 
 package org.thialfihar.android.apg.ui.widget;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Vector;
-
-import org.bouncycastle2.openpgp.PGPPublicKey;
-import org.bouncycastle2.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -44,6 +38,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private PGPSecretKey mKey;

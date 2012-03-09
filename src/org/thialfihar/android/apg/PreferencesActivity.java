@@ -16,12 +16,8 @@
 
 package org.thialfihar.android.apg;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Vector;
-
-import org.bouncycastle2.bcpg.HashAlgorithmTags;
-import org.bouncycastle2.openpgp.PGPEncryptedData;
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.openpgp.PGPEncryptedData;
 import org.thialfihar.android.apg.ui.widget.IntegerListPreference;
 
 import android.content.Intent;
@@ -31,6 +27,10 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Vector;
 
 public class PreferencesActivity extends PreferenceActivity {
     private ListPreference mLanguage = null;

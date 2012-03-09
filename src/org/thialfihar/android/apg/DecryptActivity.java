@@ -16,19 +16,9 @@
 
 package org.thialfihar.android.apg;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.Security;
-import java.security.SignatureException;
-import java.util.regex.Matcher;
-
-import org.bouncycastle2.jce.provider.BouncyCastleProvider;
-import org.bouncycastle2.openpgp.PGPException;
-import org.bouncycastle2.openpgp.PGPPublicKeyRing;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.provider.DataProvider;
 
 import android.app.AlertDialog;
@@ -40,6 +30,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.ClipboardManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -52,6 +43,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.Security;
+import java.security.SignatureException;
+import java.util.regex.Matcher;
 
 public class DecryptActivity extends BaseActivity {
     private long mSignatureKeyId = 0;
@@ -186,19 +187,28 @@ public class DecryptActivity extends BaseActivity {
                 // ignore, then
             }
         } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
+            Log.d(Constants.tag, "Apg Intent DECRYPT startet");
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
+                Log.d(Constants.tag, "extra bundle was null");
                 extras = new Bundle();
+            } else {
+                Log.d(Constants.tag, "got extras");
             }
 
             mData = extras.getByteArray(Apg.EXTRA_DATA);
             String textData = null;
             if (mData == null) {
+                Log.d(Constants.tag, "EXTRA_DATA was null");
                 textData = extras.getString(Apg.EXTRA_TEXT);
+            } else {
+                Log.d(Constants.tag, "Got data from EXTRA_DATA");
             }
             if (textData != null) {
+                Log.d(Constants.tag, "textData null, matching text ...");
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
+                    Log.d(Constants.tag, "PGP_MESSAGE matched");
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
@@ -206,11 +216,14 @@ public class DecryptActivity extends BaseActivity {
                 } else {
                     matcher = Apg.PGP_SIGNED_MESSAGE.matcher(textData);
                     if (matcher.matches()) {
+                        Log.d(Constants.tag, "PGP_SIGNED_MESSAGE matched");
                         textData = matcher.group(1);
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
                         mDecryptButton.setText(R.string.btn_verify);
+                    } else {
+                        Log.d(Constants.tag, "Nothing matched!");
                     }
                 }
             }
