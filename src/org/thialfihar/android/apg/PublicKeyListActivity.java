@@ -18,6 +18,9 @@ package org.thialfihar.android.apg;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -48,6 +51,8 @@ public class PublicKeyListActivity extends KeyListActivity {
                 .setIcon(android.R.drawable.ic_menu_preferences);
         menu.add(1, Id.menu.option.about, 4, R.string.menu_about)
                 .setIcon(android.R.drawable.ic_menu_info_details);
+        menu.add(1, Id.menu.option.scanQRCode, 5, R.string.menu_scanQRCode)
+                .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
 
@@ -63,6 +68,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             menu.add(0, Id.menu.export, 0, R.string.menu_exportKey);
             menu.add(0, Id.menu.delete, 1, R.string.menu_deleteKey);
             menu.add(0, Id.menu.update, 1, R.string.menu_updateKey);
+            menu.add(0, Id.menu.exportToServer, 1, R.string.menu_exportKeyToServer);
+            menu.add(0, Id.menu.signKey, 1, R.string.menu_signKey);
         }
     }
 
@@ -94,11 +101,62 @@ public class PublicKeyListActivity extends KeyListActivity {
                 intent.setAction(Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN);
                 intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
                 startActivityForResult(intent, Id.request.look_up_key_id);
+                
+                return true;
+            }
+
+            case Id.menu.exportToServer: {
+                mSelectedItem = groupPosition;
+                final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
+                
+                Intent intent = new Intent(this, SendKeyActivity.class);
+                intent.setAction(Apg.Intent.EXPORT_KEY_TO_SERVER);
+                intent.putExtra(Apg.EXTRA_KEY_ID, keyRingId);
+                startActivityForResult(intent, Id.request.export_to_server);
+                
+                return true;
+            }
+            
+            case Id.menu.signKey: {
+                mSelectedItem = groupPosition;
+                final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
+                long keyId = 0;
+                Object keyRing = Apg.getKeyRing(keyRingId);
+                if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
+                    keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
+                }
+                
+                if (keyId == 0) {
+                    // this shouldn't happen
+                    return true;
+                }
+                
+                Intent intent = new Intent(this, SignKeyActivity.class);
+                intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+                startActivity(intent);
+                
+                return true;
+            }
+            
+            default: {
+                return super.onContextItemSelected(menuItem);
+            }
+        }
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case Id.menu.option.scanQRCode: {
+                Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
+                intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+                startActivityForResult(intent, Id.request.import_from_qr_code);
+
                 return true;
             }
 
             default: {
-                return super.onContextItemSelected(menuItem);
+                return super.onOptionsItemSelected(item);
             }
         }
     }
@@ -118,7 +176,7 @@ public class PublicKeyListActivity extends KeyListActivity {
                 handleIntent(intent);
                 break;
             }
-
+            
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
                 break;

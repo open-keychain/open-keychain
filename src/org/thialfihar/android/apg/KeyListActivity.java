@@ -23,6 +23,9 @@ import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -149,7 +152,7 @@ public class KeyListActivity extends BaseActivity {
                 showDialog(Id.dialog.export_keys);
                 return true;
             }
-
+            
             default: {
                 return super.onOptionsItemSelected(item);
             }
@@ -784,7 +787,7 @@ public class KeyListActivity extends BaseActivity {
                 }
                 return;
             }
-
+            
             default: {
                 break;
             }

@@ -28,6 +28,8 @@ import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 import android.widget.ExpandableListView.OnChildClickListener;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
 public class SecretKeyListActivity extends KeyListActivity implements OnChildClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +82,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
             menu.add(0, Id.menu.export, 1, R.string.menu_exportKey);
             menu.add(0, Id.menu.delete, 2, R.string.menu_deleteKey);
+            menu.add(0, Id.menu.share, 2, R.string.menu_share);
         }
     }
 
@@ -98,6 +101,14 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
                 mSelectedItem = groupPosition;
                 checkPassPhraseAndEdit();
                 return true;
+            }
+
+            case Id.menu.share: {
+                mSelectedItem = groupPosition;
+                
+                long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
+                String msg = keyId + "," + Apg.getFingerPrint(keyId);;
+                IntentIntegrator.shareText(this, msg);
             }
 
             default: {
@@ -168,7 +179,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
                 }
                 break;
             }
-
+            
             default: {
                 break;
             }

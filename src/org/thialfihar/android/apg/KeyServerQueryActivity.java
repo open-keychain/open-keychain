@@ -97,7 +97,7 @@ public class KeyServerQueryActivity extends BaseActivity {
 
     private void search(String query) {
         showDialog(Id.dialog.querying);
-        mQueryType = Id.query.search;
+        mQueryType = Id.keyserver.search;
         mQueryString = query;
         mAdapter.setKeys(new Vector<KeyInfo>());
         startThread();
@@ -105,7 +105,7 @@ public class KeyServerQueryActivity extends BaseActivity {
 
     private void get(long keyId) {
         showDialog(Id.dialog.querying);
-        mQueryType = Id.query.get;
+        mQueryType = Id.keyserver.get;
         mQueryId = keyId;
         startThread();
     }
@@ -126,9 +126,9 @@ public class KeyServerQueryActivity extends BaseActivity {
 
         try {
             HkpKeyServer server = new HkpKeyServer((String)mKeyServer.getSelectedItem());
-            if (mQueryType == Id.query.search) {
+            if (mQueryType == Id.keyserver.search) {
                 mSearchResult = server.search(mQueryString);
-            } else if (mQueryType == Id.query.get) {
+            } else if (mQueryType == Id.keyserver.get) {
                 mKeyData = server.get(mQueryId);
             }
         } catch (QueryException e) {
@@ -162,12 +162,12 @@ public class KeyServerQueryActivity extends BaseActivity {
             return;
         }
 
-        if (mQueryType == Id.query.search) {
+        if (mQueryType == Id.keyserver.search) {
             if (mSearchResult != null) {
                 Toast.makeText(this, getString(R.string.keysFound, mSearchResult.size()), Toast.LENGTH_SHORT).show();
                 mAdapter.setKeys(mSearchResult);
             }
-        } else if (mQueryType == Id.query.get) {
+        } else if (mQueryType == Id.keyserver.get) {
             Intent orgIntent = getIntent();
             if (Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
                 if (mKeyData != null) {

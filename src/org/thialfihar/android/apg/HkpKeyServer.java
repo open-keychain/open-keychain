@@ -10,11 +10,24 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import android.text.Html;
 
@@ -38,16 +51,14 @@ public class HkpKeyServer extends KeyServer {
             return mData;
         }
     }
+
     private String mHost;
     private short mPort = 11371;
 
     // example:
     // pub  2048R/<a href="/pks/lookup?op=get&search=0x887DF4BE9F5C9090">9F5C9090</a> 2009-08-17 <a href="/pks/lookup?op=vindex&search=0x887DF4BE9F5C9090">Jörg Runge &lt;joerg@joergrunge.de&gt;</a>
-    public static Pattern PUB_KEY_LINE =
-            Pattern.compile("pub +([0-9]+)([a-z]+)/.*?0x([0-9a-z]+).*? +([0-9-]+) +(.+)[\n\r]+((?:    +.+[\n\r]+)*)",
-                            Pattern.CASE_INSENSITIVE);
-    public static Pattern USER_ID_LINE =
-            Pattern.compile("^   +(.+)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    public static Pattern PUB_KEY_LINE = Pattern.compile("pub +([0-9]+)([a-z]+)/.*?0x([0-9a-z]+).*? +([0-9-]+) +(.+)[\n\r]+((?:    +.+[\n\r]+)*)", Pattern.CASE_INSENSITIVE);
+    public static Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     public HkpKeyServer(String host) {
         mHost = host;
@@ -58,8 +69,7 @@ public class HkpKeyServer extends KeyServer {
         mPort = port;
     }
 
-    static private String readAll(InputStream in, String encoding)
-            throws IOException {
+    static private String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
 
         byte buffer[] = new byte[1 << 16];
@@ -74,8 +84,8 @@ public class HkpKeyServer extends KeyServer {
         return raw.toString(encoding);
     }
 
-    private String query(String request)
-            throws QueryException, HttpError {
+    // TODO: replace this with httpclient
+    private String query(String request) throws QueryException, HttpError {
         InetAddress ips[];
         try {
             ips = InetAddress.getAllByName(mHost);
@@ -93,8 +103,7 @@ public class HkpKeyServer extends KeyServer {
                 int response = conn.getResponseCode();
                 if (response >= 200 && response < 300) {
                     return readAll(conn.getInputStream(), conn.getContentEncoding());
-                }
-                else {
+                } else {
                     String data = readAll(conn.getErrorStream(), conn.getContentEncoding());
                     throw new HttpError(response, data);
                 }
@@ -108,9 +117,9 @@ public class HkpKeyServer extends KeyServer {
         throw new QueryException("querying server(s) for '" + mHost + "' failed");
     }
 
+    // TODO: replace this with httpclient
     @Override
-    List<KeyInfo> search(String query)
-            throws QueryException, TooManyResponses, InsufficientQuery {
+    List<KeyInfo> search(String query) throws QueryException, TooManyResponses, InsufficientQuery {
         Vector<KeyInfo> results = new Vector<KeyInfo>();
 
         if (query.length() < 3) {
@@ -151,9 +160,7 @@ public class HkpKeyServer extends KeyServer {
             info.keyId = Apg.keyFromHex(matcher.group(3));
             info.fingerPrint = Apg.getSmallFingerPrint(info.keyId);
             String chunks[] = matcher.group(4).split("-");
-            info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
-                                              Integer.parseInt(chunks[1]),
-                                              Integer.parseInt(chunks[2])).getTime();
+            info.date = new GregorianCalendar(Integer.parseInt(chunks[0]), Integer.parseInt(chunks[1]), Integer.parseInt(chunks[2])).getTime();
             info.userIds = new Vector<String>();
             if (matcher.group(5).startsWith("*** KEY")) {
                 info.revoked = matcher.group(5);
@@ -177,21 +184,50 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    String get(long keyId)
-            throws QueryException {
-        String request = "/pks/lookup?op=get&search=0x" + Apg.keyToHex(keyId);
-
-        String data = null;
+    String get(long keyId) throws QueryException {
+        HttpClient client = new DefaultHttpClient();
         try {
-            data = query(request);
-        } catch (HttpError e) {
-            throw new QueryException("not found");
+            HttpGet get = new HttpGet("http://" + mHost + ":" + mPort + "/pks/lookup?op=get&search=0x" + Apg.keyToHex(keyId));
+            
+            HttpResponse response = client.execute(get);
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new QueryException("not found");
+            }
+            
+            HttpEntity entity = response.getEntity();
+            InputStream is = entity.getContent();
+            String data = readAll(is, EntityUtils.getContentCharSet(entity));
+            Matcher matcher = Apg.PGP_PUBLIC_KEY.matcher(data);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        } catch (IOException e) {
+            // nothing to do, better luck on the next keyserver
+        } finally {
+            client.getConnectionManager().shutdown();
         }
-        Matcher matcher = Apg.PGP_PUBLIC_KEY.matcher(data);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-
+        
         return null;
+    }
+
+    @Override
+    void add(String armouredText) throws AddKeyException {
+        HttpClient client = new DefaultHttpClient();
+        try {
+            HttpPost post = new HttpPost("http://" + mHost + ":" + mPort + "/pks/add");
+            
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("keytext", armouredText));
+            post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            
+            HttpResponse response = client.execute(post);
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                throw new AddKeyException();
+            }
+        } catch (IOException e) {
+            // nothing to do, better luck on the next keyserver
+        } finally {
+            client.getConnectionManager().shutdown();
+        }
     }
 }
