@@ -1,0 +1,16 @@
+The following open source projects are used in APG:
+
+  * ZXing QRCode Integration
+    http://code.google.com/p/zxing/
+    Apache License v2
+
+  * SpongyCastle
+    https://github.com/rtyley/spongycastle
+    MIT X11 License
+
+Images:
+
+  * icon.svg
+    modified version of GnuPG Logo (not)
+    http://openclipart.org/detail/15078/gnupg-logo-(not)-by-mrbordello
+    Public Domain

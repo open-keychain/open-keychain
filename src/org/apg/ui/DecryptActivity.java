@@ -196,28 +196,28 @@ public class DecryptActivity extends BaseActivity {
                 // ignore, then
             }
         } else if (Apg.Intent.DECRYPT.equals(mIntent.getAction())) {
-            Log.d(Constants.tag, "Apg Intent DECRYPT startet");
+            Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
-                Log.d(Constants.tag, "extra bundle was null");
+                Log.d(Constants.TAG, "extra bundle was null");
                 extras = new Bundle();
             } else {
-                Log.d(Constants.tag, "got extras");
+                Log.d(Constants.TAG, "got extras");
             }
 
             mData = extras.getByteArray(Apg.EXTRA_DATA);
             String textData = null;
             if (mData == null) {
-                Log.d(Constants.tag, "EXTRA_DATA was null");
+                Log.d(Constants.TAG, "EXTRA_DATA was null");
                 textData = extras.getString(Apg.EXTRA_TEXT);
             } else {
-                Log.d(Constants.tag, "Got data from EXTRA_DATA");
+                Log.d(Constants.TAG, "Got data from EXTRA_DATA");
             }
             if (textData != null) {
-                Log.d(Constants.tag, "textData null, matching text ...");
+                Log.d(Constants.TAG, "textData null, matching text ...");
                 Matcher matcher = Apg.PGP_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
-                    Log.d(Constants.tag, "PGP_MESSAGE matched");
+                    Log.d(Constants.TAG, "PGP_MESSAGE matched");
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
@@ -225,14 +225,14 @@ public class DecryptActivity extends BaseActivity {
                 } else {
                     matcher = Apg.PGP_SIGNED_MESSAGE.matcher(textData);
                     if (matcher.matches()) {
-                        Log.d(Constants.tag, "PGP_SIGNED_MESSAGE matched");
+                        Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
                         textData = matcher.group(1);
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
                         mDecryptButton.setText(R.string.btn_verify);
                     } else {
-                        Log.d(Constants.tag, "Nothing matched!");
+                        Log.d(Constants.TAG, "Nothing matched!");
                     }
                 }
             }
@@ -377,7 +377,7 @@ public class DecryptActivity extends BaseActivity {
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
             filename = filename.substring(0, filename.length() - 4);
         }
-        mOutputFilename = Constants.path.app_dir + "/" + filename;
+        mOutputFilename = Constants.path.APP_DIR + "/" + filename;
     }
 
     private void updateSource() {
@@ -564,7 +564,7 @@ public class DecryptActivity extends BaseActivity {
             error = "" + e;
         }
 
-        data.putInt(Constants.extras.status, Id.message.done);
+        data.putInt(Constants.extras.STATUS, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);
@@ -581,8 +581,8 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
-        if (data.getInt(Constants.extras.status) == Id.message.unknown_signature_key) {
-            mUnknownSignatureKeyId = data.getLong(Constants.extras.key_id);
+        if (data.getInt(Constants.extras.STATUS) == Id.message.unknown_signature_key) {
+            mUnknownSignatureKeyId = data.getLong(Constants.extras.KEY_ID);
             showDialog(Id.dialog.lookup_unknown_key);
             return;
         }

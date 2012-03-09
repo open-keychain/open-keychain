@@ -1966,8 +1966,8 @@ public class Apg {
             }
             if (signatureKey == null) {
                 Bundle pauseData = new Bundle();
-                pauseData.putInt(Constants.extras.status, Id.message.unknown_signature_key);
-                pauseData.putLong(Constants.extras.key_id, signatureKeyId);
+                pauseData.putInt(Constants.extras.STATUS, Id.message.unknown_signature_key);
+                pauseData.putLong(Constants.extras.KEY_ID, signatureKeyId);
                 Message msg = new Message();
                 msg.setData(pauseData);
                 context.sendMessage(msg);

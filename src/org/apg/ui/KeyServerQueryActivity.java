@@ -144,7 +144,7 @@ public class KeyServerQueryActivity extends BaseActivity {
             error = "Too many responses.";
         }
 
-        data.putInt(Constants.extras.status, Id.message.done);
+        data.putInt(Constants.extras.STATUS, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);

@@ -40,7 +40,7 @@ import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 public class PublicKeyListActivity extends KeyListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mExportFilename = Constants.path.app_dir + "/pubexport.asc";
+        mExportFilename = Constants.path.APP_DIR + "/pubexport.asc";
         mKeyType = Id.type.public_key;
         super.onCreate(savedInstanceState);
     }

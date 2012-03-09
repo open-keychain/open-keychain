@@ -28,17 +28,17 @@ public class Preferences {
     }
 
     public String getLanguage() {
-        return mSharedPreferences.getString(Constants.pref.language, "");
+        return mSharedPreferences.getString(Constants.pref.LANGUAGE, "");
     }
 
     public void setLanguage(String value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(Constants.pref.language, value);
+        editor.putString(Constants.pref.LANGUAGE, value);
         editor.commit();
     }
 
     public int getPassPhraseCacheTtl() {
-        int ttl = mSharedPreferences.getInt(Constants.pref.pass_phrase_cache_ttl, 180);
+        int ttl = mSharedPreferences.getInt(Constants.pref.PASS_PHRASE_CACHE_TTL, 180);
         // fix the value if it was set to "never" in previous versions, which currently is not
         // supported
         if (ttl == 0) {
@@ -49,97 +49,97 @@ public class Preferences {
 
     public void setPassPhraseCacheTtl(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.pref.pass_phrase_cache_ttl, value);
+        editor.putInt(Constants.pref.PASS_PHRASE_CACHE_TTL, value);
         editor.commit();
     }
 
     public int getDefaultEncryptionAlgorithm() {
-        return mSharedPreferences.getInt(Constants.pref.default_encryption_algorithm,
+        return mSharedPreferences.getInt(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM,
                 PGPEncryptedData.AES_256);
     }
 
     public void setDefaultEncryptionAlgorithm(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.pref.default_encryption_algorithm, value);
+        editor.putInt(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM, value);
         editor.commit();
     }
 
     public int getDefaultHashAlgorithm() {
-        return mSharedPreferences.getInt(Constants.pref.default_hash_algorithm,
+        return mSharedPreferences.getInt(Constants.pref.DEFAULT_HASH_ALGORITHM,
                 HashAlgorithmTags.SHA256);
     }
 
     public void setDefaultHashAlgorithm(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.pref.default_hash_algorithm, value);
+        editor.putInt(Constants.pref.DEFAULT_HASH_ALGORITHM, value);
         editor.commit();
     }
 
     public int getDefaultMessageCompression() {
-        return mSharedPreferences.getInt(Constants.pref.default_message_compression,
+        return mSharedPreferences.getInt(Constants.pref.DEFAULT_MESSAGE_COMPRESSION,
                 Id.choice.compression.zlib);
     }
 
     public void setDefaultMessageCompression(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.pref.default_message_compression, value);
+        editor.putInt(Constants.pref.DEFAULT_MESSAGE_COMPRESSION, value);
         editor.commit();
     }
 
     public int getDefaultFileCompression() {
-        return mSharedPreferences.getInt(Constants.pref.default_file_compression,
+        return mSharedPreferences.getInt(Constants.pref.DEFAULT_FILE_COMPRESSION,
                 Id.choice.compression.none);
     }
 
     public void setDefaultFileCompression(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.pref.default_file_compression, value);
+        editor.putInt(Constants.pref.DEFAULT_FILE_COMPRESSION, value);
         editor.commit();
     }
 
     public boolean getDefaultAsciiArmour() {
-        return mSharedPreferences.getBoolean(Constants.pref.default_ascii_armour, false);
+        return mSharedPreferences.getBoolean(Constants.pref.DEFAULT_ASCII_ARMOUR, false);
     }
 
     public void setDefaultAsciiArmour(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.default_ascii_armour, value);
+        editor.putBoolean(Constants.pref.DEFAULT_ASCII_ARMOUR, value);
         editor.commit();
     }
 
     public boolean getForceV3Signatures() {
-        return mSharedPreferences.getBoolean(Constants.pref.force_v3_signatures, false);
+        return mSharedPreferences.getBoolean(Constants.pref.FORCE_V3_SIGNATURES, false);
     }
 
     public void setForceV3Signatures(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.force_v3_signatures, value);
+        editor.putBoolean(Constants.pref.FORCE_V3_SIGNATURES, value);
         editor.commit();
     }
 
     public boolean hasSeenChangeLog(String version) {
-        return mSharedPreferences.getBoolean(Constants.pref.has_seen_change_log + version, false);
+        return mSharedPreferences.getBoolean(Constants.pref.HAS_SEEN_CHANGE_LOG + version, false);
     }
 
     public void setHasSeenChangeLog(String version, boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.has_seen_change_log + version, value);
+        editor.putBoolean(Constants.pref.HAS_SEEN_CHANGE_LOG + version, value);
         editor.commit();
     }
 
     public boolean hasSeenHelp() {
-        return mSharedPreferences.getBoolean(Constants.pref.has_seen_help, false);
+        return mSharedPreferences.getBoolean(Constants.pref.HAS_SEEN_HELP, false);
     }
 
     public void setHasSeenHelp(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.has_seen_help, value);
+        editor.putBoolean(Constants.pref.HAS_SEEN_HELP, value);
         editor.commit();
     }
 
     public String[] getKeyServers() {
-        String rawData = mSharedPreferences.getString(Constants.pref.key_servers,
-                Constants.defaults.key_servers);
+        String rawData = mSharedPreferences.getString(Constants.pref.KEY_SERVERS,
+                Constants.defaults.KEY_SERVERS);
         Vector<String> servers = new Vector<String>();
         String chunks[] = rawData.split(",");
         for (int i = 0; i < chunks.length; ++i) {
@@ -164,7 +164,7 @@ public class Preferences {
             }
             rawData += tmp;
         }
-        editor.putString(Constants.pref.key_servers, rawData);
+        editor.putString(Constants.pref.KEY_SERVERS, rawData);
         editor.commit();
     }
 }

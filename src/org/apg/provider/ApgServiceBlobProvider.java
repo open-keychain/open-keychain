@@ -24,7 +24,7 @@ public class ApgServiceBlobProvider extends ContentProvider {
     
     private static final String COLUMN_KEY = "key";
     
-    private static final String STORE_PATH = Constants.path.app_dir+"/ApgServiceBlobs";
+    private static final String STORE_PATH = Constants.path.APP_DIR+"/ApgServiceBlobs";
     
     private ApgServiceBlobDatabase mDb = null;
 

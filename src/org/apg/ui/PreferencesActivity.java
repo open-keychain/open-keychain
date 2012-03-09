@@ -61,7 +61,7 @@ public class PreferencesActivity extends PreferenceActivity {
 
         addPreferencesFromResource(R.xml.apg_preferences);
 
-        mLanguage = (ListPreference) findPreference(Constants.pref.language);
+        mLanguage = (ListPreference) findPreference(Constants.pref.LANGUAGE);
         Vector<CharSequence> entryVector = new Vector<CharSequence>(Arrays.asList(mLanguage.getEntries()));
         Vector<CharSequence> entryValueVector = new Vector<CharSequence>(Arrays.asList(mLanguage.getEntryValues()));
         String supportedLanguages[] = getResources().getStringArray(R.array.supported_languages);
@@ -90,7 +90,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mPassPhraseCacheTtl = (IntegerListPreference) findPreference(Constants.pref.pass_phrase_cache_ttl);
+        mPassPhraseCacheTtl = (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL);
         mPassPhraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
         mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
         mPassPhraseCacheTtl.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
@@ -105,7 +105,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mEncryptionAlgorithm = (IntegerListPreference) findPreference(Constants.pref.default_encryption_algorithm);
+        mEncryptionAlgorithm = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM);
         int valueIds[] = {
                 PGPEncryptedData.AES_128, PGPEncryptedData.AES_192, PGPEncryptedData.AES_256,
                 PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH, PGPEncryptedData.CAST5,
@@ -135,7 +135,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mHashAlgorithm = (IntegerListPreference) findPreference(Constants.pref.default_hash_algorithm);
+        mHashAlgorithm = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM);
         valueIds = new int[] {
                 HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160, HashAlgorithmTags.SHA1,
                 HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256, HashAlgorithmTags.SHA384,
@@ -165,7 +165,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mMessageCompression = (IntegerListPreference) findPreference(Constants.pref.default_message_compression);
+        mMessageCompression = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION);
         valueIds = new int[] {
                 Id.choice.compression.none,
                 Id.choice.compression.zip,
@@ -197,7 +197,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mFileCompression = (IntegerListPreference) findPreference(Constants.pref.default_file_compression);
+        mFileCompression = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION);
         mFileCompression.setEntries(entries);
         mFileCompression.setEntryValues(values);
         mFileCompression.setValue("" + mPreferences.getDefaultFileCompression());
@@ -213,7 +213,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mAsciiArmour = (CheckBoxPreference) findPreference(Constants.pref.default_ascii_armour);
+        mAsciiArmour = (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR);
         mAsciiArmour.setChecked(mPreferences.getDefaultAsciiArmour());
         mAsciiArmour.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
         {
@@ -225,7 +225,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mForceV3Signatures = (CheckBoxPreference) findPreference(Constants.pref.force_v3_signatures);
+        mForceV3Signatures = (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES);
         mForceV3Signatures.setChecked(mPreferences.getForceV3Signatures());
         mForceV3Signatures.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
         {
@@ -237,7 +237,7 @@ public class PreferencesActivity extends PreferenceActivity {
             }
         });
 
-        mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.key_servers);
+        mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
         String servers[] = mPreferences.getKeyServers();
         mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers, servers.length));
         mKeyServerPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

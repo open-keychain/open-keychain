@@ -73,7 +73,7 @@ public class SendKeyActivity extends BaseActivity {
             }
         }
 
-        data.putInt(Constants.extras.status, Id.message.export_done);
+        data.putInt(Constants.extras.STATUS, Id.message.export_done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);

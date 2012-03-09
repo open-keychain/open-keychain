@@ -69,11 +69,11 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                     } catch (QueryException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
                         status.putString(Apg.EXTRA_ERROR, "Failed to query KeyServer");
-                        status.putInt(Constants.extras.status, Id.message.done);
+                        status.putInt(Constants.extras.STATUS, Id.message.done);
                     } catch (IOException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
                         status.putString(Apg.EXTRA_ERROR, "Failed to query KeyServer");
-                        status.putInt(Constants.extras.status, Id.message.done);
+                        status.putInt(Constants.extras.STATUS, Id.message.done);
                     }
                 }
             };
@@ -107,7 +107,7 @@ public class ImportFromQRCodeActivity extends BaseActivity {
             
             case Id.request.sign_key: {
                 // signals the end of processing.  Signature was either applied, or it wasnt
-                status.putInt(Constants.extras.status, Id.message.done);
+                status.putInt(Constants.extras.STATUS, Id.message.done);
                 
                 msg.setData(status);
                 sendMessage(msg);

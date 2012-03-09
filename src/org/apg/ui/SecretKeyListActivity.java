@@ -45,7 +45,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 public class SecretKeyListActivity extends KeyListActivity implements OnChildClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mExportFilename = Constants.path.app_dir + "/secexport.asc";
+        mExportFilename = Constants.path.APP_DIR + "/secexport.asc";
         mKeyType = Id.type.secret_key;
         super.onCreate(savedInstanceState);
         mList.setOnChildClickListener(this);

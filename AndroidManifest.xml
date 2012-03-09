@@ -8,7 +8,7 @@
     android:versionName="1.1" >
 
     <uses-sdk
-        android:minSdkVersion="3"
+        android:minSdkVersion="4"
         android:targetSdkVersion="14" />
 
     <permission
@@ -197,6 +197,11 @@
             android:name=".ui.ImportFromQRCodeActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_importFromQRCode" />
+        <activity
+            android:name=".ui.AboutActivity"
+            android:excludeFromRecents="true"
+            android:label="@string/title_about"
+            android:theme="@android:style/Theme.Dialog" />
 
         <service android:name=".Service" />
         <service

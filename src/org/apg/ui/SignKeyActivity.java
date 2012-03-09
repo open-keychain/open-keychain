@@ -141,7 +141,7 @@ public class SignKeyActivity extends BaseActivity {
 
                 status.putString(Apg.EXTRA_ERROR, "Key has already been signed");
 
-                status.putInt(Constants.extras.status, Id.message.done);
+                status.putInt(Constants.extras.STATUS, Id.message.done);
                 
                 msg.setData(status);
                 sendMessage(msg);
@@ -221,26 +221,26 @@ public class SignKeyActivity extends BaseActivity {
         } catch (PGPException e) {
             Log.e(TAG, "Failed to sign key", e);
             status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.status, Id.message.done);
+            status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, "Failed to sign key", e);
             status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.status, Id.message.done);
+            status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchProviderException e) {
             Log.e(TAG, "Failed to sign key", e);
             status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.status, Id.message.done);
+            status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (SignatureException e) {
             Log.e(TAG, "Failed to sign key", e);
             status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.status, Id.message.done);
+            status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         }
         
-        status.putInt(Constants.extras.status, Id.message.done);
+        status.putInt(Constants.extras.STATUS, Id.message.done);
         
         msg.setData(status);
         sendMessage(msg);

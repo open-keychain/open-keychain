@@ -88,7 +88,7 @@ public final class Id {
         public static final int export_keys = 0x2107000c;
         public static final int exporting = 0x2107000d;
         public static final int new_account = 0x2107000e;
-        public static final int about = 0x2107000f;
+//        public static final int about = 0x2107000f;
         public static final int change_log = 0x21070010;
         public static final int output_filename = 0x21070011;
         public static final int delete_file = 0x21070012;

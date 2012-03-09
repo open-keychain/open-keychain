@@ -421,7 +421,7 @@ public class EncryptActivity extends BaseActivity {
         mInputFilename = mFilename.getText().toString();
         File file = new File(mInputFilename);
         String ending = (mAsciiArmour.isChecked() ? ".asc" : ".gpg");
-        mOutputFilename = Constants.path.app_dir + "/" + file.getName() + ending;
+        mOutputFilename = Constants.path.APP_DIR + "/" + file.getName() + ending;
     }
 
     private void updateSource() {
@@ -731,7 +731,7 @@ public class EncryptActivity extends BaseActivity {
             error = "" + e;
         }
 
-        data.putInt(Constants.extras.status, Id.message.done);
+        data.putInt(Constants.extras.STATUS, Id.message.done);
 
         if (error != null) {
             data.putString(Apg.EXTRA_ERROR, error);

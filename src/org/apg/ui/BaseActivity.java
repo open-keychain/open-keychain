@@ -79,7 +79,7 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
         Apg.initialize(this);
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File dir = new File(Constants.path.app_dir);
+            File dir = new File(Constants.path.APP_DIR);
             if (!dir.exists() && !dir.mkdirs()) {
                 // ignore this for now, it's not crucial
                 // that the directory doesn't exist at this point
@@ -108,7 +108,7 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case Id.menu.option.about: {
-            showDialog(Id.dialog.about);
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
 
@@ -187,31 +187,6 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
         mProgressDialog = null;
 
         switch (id) {
-        case Id.dialog.about: {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            alert.setTitle("About " + Apg.getFullVersion(this));
-
-            LayoutInflater inflater = (LayoutInflater) this
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.info, null);
-            TextView message = (TextView) layout.findViewById(R.id.message);
-            message.setText("This is an attempt to bring OpenPGP to Android. "
-                    + "It is far from complete, but more features are planned (see website).\n\n"
-                    + "Feel free to send bug reports, suggestions, feature requests, feedback, "
-                    + "photographs.\n\n" + "mail: thi@thialfihar.org\n"
-                    + "site: http://apg.thialfihar.org\n\n"
-                    + "This software is provided \"as is\", without warranty of any kind.");
-            alert.setView(layout);
-
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    BaseActivity.this.removeDialog(Id.dialog.about);
-                }
-            });
-
-            return alert.create();
-        }
 
         case Id.dialog.pass_phrase: {
             return AskForSecretKeyPassPhrase.createDialog(this, getSecretKeyId(), this);
@@ -266,7 +241,7 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
                     mDeletingThread = new Thread(new Runnable() {
                         public void run() {
                             Bundle data = new Bundle();
-                            data.putInt(Constants.extras.status, Id.message.delete_done);
+                            data.putInt(Constants.extras.STATUS, Id.message.delete_done);
                             try {
                                 Apg.deleteFileSecurely(BaseActivity.this, file, BaseActivity.this);
                             } catch (FileNotFoundException e) {
@@ -330,9 +305,9 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
     public void setProgress(int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt(Constants.extras.status, Id.message.progress_update);
-        data.putInt(Constants.extras.progress, progress);
-        data.putInt(Constants.extras.progress_max, max);
+        data.putInt(Constants.extras.STATUS, Id.message.progress_update);
+        data.putInt(Constants.extras.PROGRESS, progress);
+        data.putInt(Constants.extras.PROGRESS_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -340,10 +315,10 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
     public void setProgress(String message, int progress, int max) {
         Message msg = new Message();
         Bundle data = new Bundle();
-        data.putInt(Constants.extras.status, Id.message.progress_update);
-        data.putString(Constants.extras.message, message);
-        data.putInt(Constants.extras.progress, progress);
-        data.putInt(Constants.extras.progress_max, max);
+        data.putInt(Constants.extras.STATUS, Id.message.progress_update);
+        data.putString(Constants.extras.MESSAGE, message);
+        data.putInt(Constants.extras.PROGRESS, progress);
+        data.putInt(Constants.extras.PROGRESS_MAX, max);
         msg.setData(data);
         mHandler.sendMessage(msg);
     }
@@ -354,16 +329,16 @@ public class BaseActivity extends Activity implements Runnable, ProgressDialogUp
             return;
         }
 
-        int type = data.getInt(Constants.extras.status);
+        int type = data.getInt(Constants.extras.STATUS);
         switch (type) {
         case Id.message.progress_update: {
-            String message = data.getString(Constants.extras.message);
+            String message = data.getString(Constants.extras.MESSAGE);
             if (mProgressDialog != null) {
                 if (message != null) {
                     mProgressDialog.setMessage(message);
                 }
-                mProgressDialog.setMax(data.getInt(Constants.extras.progress_max));
-                mProgressDialog.setProgress(data.getInt(Constants.extras.progress));
+                mProgressDialog.setMax(data.getInt(Constants.extras.PROGRESS_MAX));
+                mProgressDialog.setProgress(data.getInt(Constants.extras.PROGRESS));
             }
             break;
         }
