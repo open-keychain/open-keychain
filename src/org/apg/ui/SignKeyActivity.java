@@ -1,0 +1,294 @@
+package org.apg.ui;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.util.Iterator;
+
+import org.apg.Apg;
+import org.apg.Constants;
+import org.apg.HkpKeyServer;
+import org.apg.Id;
+import org.apg.Constants.extras;
+import org.apg.Id.dialog;
+import org.apg.Id.message;
+import org.apg.Id.request;
+import org.apg.Id.return_value;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUtil;
+import org.apg.R;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Spinner;
+import android.widget.Toast;
+
+/**
+ * gpg --sign-key
+ * 
+ * signs the specified public key with the specified secret master key
+ */
+public class SignKeyActivity extends BaseActivity {
+    private static final String TAG = "SignKeyActivity";
+
+    private long pubKeyId = 0;
+    private long masterKeyId = 0;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // check we havent already signed it
+        setContentView(R.layout.sign_key_layout);
+
+        final Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        keyServer.setAdapter(adapter);
+
+        final CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+        if (!sendKey.isChecked()) {
+            keyServer.setEnabled(false);
+        } else {
+            keyServer.setEnabled(true);
+        }
+
+        sendKey.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    keyServer.setEnabled(false);
+                } else {
+                    keyServer.setEnabled(true);
+                }
+            }
+        });
+
+        Button sign = (Button) findViewById(R.id.sign);
+        sign.setEnabled(false); // disabled until the user selects a key to sign with
+        sign.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (pubKeyId != 0) {
+                    initiateSigning();
+                }
+            }
+        });
+        
+        pubKeyId = getIntent().getLongExtra(Apg.EXTRA_KEY_ID, 0);
+        if (pubKeyId == 0) {
+            finish(); // nothing to do if we dont know what key to sign
+        } else {
+            // kick off the SecretKey selection activity so the user chooses which key to sign with first
+            Intent intent = new Intent(this, SelectSecretKeyListActivity.class);
+            startActivityForResult(intent, Id.request.secret_keys);
+        }
+    }
+
+    /**
+     * handles the UI bits of the signing process on the UI thread
+     */
+    private void initiateSigning() {
+        PGPPublicKeyRing pubring = Apg.getPublicKeyRing(pubKeyId);
+        if (pubring != null) {
+            // if we have already signed this key, dont bother doing it again
+            boolean alreadySigned = false;
+    
+            @SuppressWarnings("unchecked")
+            Iterator<PGPSignature> itr = pubring.getPublicKey(pubKeyId).getSignatures();
+            while (itr.hasNext()) {
+                PGPSignature sig = itr.next();
+                if (sig.getKeyID() == masterKeyId) {
+                    alreadySigned = true;
+                    break;
+                }
+            }
+    
+            if (!alreadySigned) {
+                /*
+                 * get the user's passphrase for this key (if required)
+                 */
+                String passphrase = Apg.getCachedPassPhrase(masterKeyId);
+                if (passphrase == null) {
+                    showDialog(Id.dialog.pass_phrase);
+                    return; // bail out; need to wait until the user has entered the passphrase before trying again
+                } else {
+                    startSigning();
+                }
+            } else {
+                final Bundle status = new Bundle();
+                Message msg = new Message();
+
+                status.putString(Apg.EXTRA_ERROR, "Key has already been signed");
+
+                status.putInt(Constants.extras.status, Id.message.done);
+                
+                msg.setData(status);
+                sendMessage(msg);
+                
+                setResult(Id.return_value.error);
+                finish();
+            }
+        }
+    }
+    
+    @Override
+    public long getSecretKeyId() {
+        return masterKeyId;
+    }
+    
+    @Override
+    public void passPhraseCallback(long keyId, String passPhrase) {
+        super.passPhraseCallback(keyId, passPhrase);
+        startSigning();
+    }
+    
+    /**
+     * kicks off the actual signing process on a background thread
+     */
+    private void startSigning() {
+        showDialog(Id.dialog.signing);
+        startThread();
+    }
+    
+    @Override
+    public void run() {
+        final Bundle status = new Bundle();
+        Message msg = new Message();
+
+        try {
+            String passphrase = Apg.getCachedPassPhrase(masterKeyId);
+            if (passphrase == null || passphrase.length() <= 0) {
+                status.putString(Apg.EXTRA_ERROR, "Unable to obtain passphrase");
+            } else {
+                PGPPublicKeyRing pubring = Apg.getPublicKeyRing(pubKeyId);
+                
+                /*
+                 * sign the incoming key
+                 */
+                PGPSecretKey secretKey = Apg.getSecretKey(masterKeyId);
+                PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(), BouncyCastleProvider.PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
+                sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
+    
+                PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+    
+                PGPSignatureSubpacketVector packetVector = spGen.generate();
+                sGen.setHashedSubpackets(packetVector);
+    
+                PGPPublicKey signedKey = PGPPublicKey.addCertification(pubring.getPublicKey(pubKeyId), sGen.generate());
+                pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
+    
+                // check if we need to send the key to the server or not
+                CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+                if (sendKey.isChecked()) {
+                    Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+                    HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
+    
+                    /*
+                     * upload the newly signed key to the key server
+                     */
+    
+                    Apg.uploadKeyRingToServer(server, pubring);
+                }
+    
+                // store the signed key in our local cache
+                int retval = Apg.storeKeyRingInCache(pubring);
+                if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
+                    status.putString(Apg.EXTRA_ERROR, "Failed to store signed key in local cache");
+                }
+            }
+        } catch (PGPException e) {
+            Log.e(TAG, "Failed to sign key", e);
+            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putInt(Constants.extras.status, Id.message.done);
+            return;
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(TAG, "Failed to sign key", e);
+            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putInt(Constants.extras.status, Id.message.done);
+            return;
+        } catch (NoSuchProviderException e) {
+            Log.e(TAG, "Failed to sign key", e);
+            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putInt(Constants.extras.status, Id.message.done);
+            return;
+        } catch (SignatureException e) {
+            Log.e(TAG, "Failed to sign key", e);
+            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putInt(Constants.extras.status, Id.message.done);
+            return;
+        }
+        
+        status.putInt(Constants.extras.status, Id.message.done);
+        
+        msg.setData(status);
+        sendMessage(msg);
+        
+        if (status.containsKey(Apg.EXTRA_ERROR)) {
+            setResult(Id.return_value.error);
+        } else {
+            setResult(Id.return_value.ok);
+        }
+        
+        finish();
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Id.request.secret_keys: {
+                if (resultCode == RESULT_OK) {
+                    masterKeyId = data.getLongExtra(Apg.EXTRA_KEY_ID, 0);
+                    
+                    // re-enable the sign button so the user can initiate the sign process
+                    Button sign = (Button) findViewById(R.id.sign);
+                    sign.setEnabled(true);
+                }
+                
+                break;
+            }
+            
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+            }
+        }
+    }
+    
+    @Override
+    public void doneCallback(Message msg) {
+        super.doneCallback(msg);
+        
+        removeDialog(Id.dialog.signing);
+
+        Bundle data = msg.getData();
+        String error = data.getString(Apg.EXTRA_ERROR);
+        if (error != null) {
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Toast.makeText(this, R.string.keySignSuccess, Toast.LENGTH_SHORT).show();
+        finish();
+    }
+}

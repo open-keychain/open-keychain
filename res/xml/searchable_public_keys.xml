@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +15,8 @@
      limitations under the License.
 -->
 
-<searchable
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:label="@string/app_name"
-    android:hint="@string/hint_publicKeys">
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+    android:hint="@string/hint_publicKeys"
+    android:label="@string/app_name" >
+
 </searchable>

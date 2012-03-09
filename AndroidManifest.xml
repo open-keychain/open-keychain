@@ -3,7 +3,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto"
-    package="org.thialfihar.android.apg"
+    package="org.apg"
     android:versionCode="11000"
     android:versionName="1.1" >
 
@@ -33,7 +33,7 @@
         android:icon="@drawable/icon"
         android:label="@string/app_name" >
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/app_name" >
             <intent-filter>
@@ -43,7 +43,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PublicKeyListActivity"
+            android:name=".ui.PublicKeyListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_managePublicKeys"
             android:launchMode="singleTop" >
@@ -56,7 +56,7 @@
                 android:resource="@xml/searchable_public_keys" />
         </activity>
         <activity
-            android:name=".SecretKeyListActivity"
+            android:name=".ui.SecretKeyListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_manageSecretKeys"
             android:launchMode="singleTop" >
@@ -69,11 +69,11 @@
                 android:resource="@xml/searchable_secret_keys" />
         </activity>
         <activity
-            android:name=".EditKeyActivity"
+            android:name=".ui.EditKeyActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_editKey" />
         <activity
-            android:name=".SelectPublicKeyListActivity"
+            android:name=".ui.SelectPublicKeyListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_selectRecipients"
             android:launchMode="singleTop" >
@@ -91,7 +91,7 @@
                 android:resource="@xml/searchable_public_keys" />
         </activity>
         <activity
-            android:name=".SelectSecretKeyListActivity"
+            android:name=".ui.SelectSecretKeyListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >
@@ -109,7 +109,7 @@
                 android:resource="@xml/searchable_secret_keys" />
         </activity>
         <activity
-            android:name=".EncryptActivity"
+            android:name=".ui.EncryptActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_encrypt" >
             <intent-filter>
@@ -124,7 +124,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DecryptActivity"
+            android:name=".ui.DecryptActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_decrypt" >
             <intent-filter>
@@ -138,7 +138,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GeneralActivity"
+            android:name=".ui.GeneralActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Dialog" >
@@ -170,31 +170,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MailListActivity"
+            android:name=".ui.MailListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_mailInbox" />
         <activity
-            android:name=".KeyServerQueryActivity"
+            android:name=".ui.KeyServerQueryActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_keyServerQuery" />
         <activity
-            android:name=".SendKeyActivity"
+            android:name=".ui.SendKeyActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_sendKey" />
         <activity
-            android:name=".PreferencesActivity"
+            android:name=".ui.PreferencesActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_preferences" />
         <activity
-            android:name=".KeyServerPreferenceActivity"
+            android:name=".ui.KeyServerPreferenceActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_keyServerPreference" />
         <activity
-            android:name=".SignKeyActivity"
+            android:name=".ui.SignKeyActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_signKey" />
         <activity
-            android:name=".ImportFromQRCodeActivity"
+            android:name=".ui.ImportFromQRCodeActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_importFromQRCode" />
 
@@ -215,11 +215,11 @@
         </service>
 
         <provider
-            android:name="org.thialfihar.android.apg.provider.DataProvider"
+            android:name=".provider.DataProvider"
             android:authorities="org.thialfihar.android.apg.provider"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
         <provider
-            android:name="org.thialfihar.android.apg.provider.ApgServiceBlobProvider"
+            android:name=".provider.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
             android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
     </application>

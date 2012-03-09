@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<org.thialfihar.android.apg.ui.widget.UserIdEditor
+<org.apg.ui.widget.UserIdEditor
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -112,4 +112,4 @@
 
     </LinearLayout>
 
-</org.thialfihar.android.apg.ui.widget.UserIdEditor>
+</org.apg.ui.widget.UserIdEditor>

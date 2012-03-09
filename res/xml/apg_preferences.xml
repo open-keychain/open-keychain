@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,71 +15,56 @@
      limitations under the License.
 -->
 
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <PreferenceCategory
-        android:title="@string/section_general">
-
+    <PreferenceCategory android:title="@string/section_general" >
         <ListPreference
-            android:key="language"
-            android:title="@string/label_language"
+            android:dialogTitle="@string/label_language"
             android:entries="@array/language_entries"
             android:entryValues="@array/language_values"
-            android:dialogTitle="@string/label_language" />
+            android:key="language"
+            android:title="@string/label_language" />
 
-        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
-            android:persistent="false"
-            android:key="passPhraseCacheTtl"
+        <org.apg.ui.widget.IntegerListPreference
             android:entries="@array/pass_phrase_cache_ttl_entries"
             android:entryValues="@array/pass_phrase_cache_ttl_values"
+            android:key="passPhraseCacheTtl"
+            android:persistent="false"
             android:title="@string/label_passPhraseCacheTtl" />
 
         <PreferenceScreen
-            android:persistent="false"
             android:key="keyServers"
+            android:persistent="false"
             android:title="@string/label_keyServers" />
-
     </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/section_defaults">
-
-        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
-            android:persistent="false"
+    <PreferenceCategory android:title="@string/section_defaults" >
+        <org.apg.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
+            android:persistent="false"
             android:title="@string/label_encryptionAlgorithm" />
-
-        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
-            android:persistent="false"
+        <org.apg.ui.widget.IntegerListPreference
             android:key="defaultHashAlgorithm"
+            android:persistent="false"
             android:title="@string/label_hashAlgorithm" />
-
-        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
-            android:persistent="false"
+        <org.apg.ui.widget.IntegerListPreference
             android:key="defaultMessageCompression"
-            android:title="@string/label_messageCompression" />
-
-        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:persistent="false"
+            android:title="@string/label_messageCompression" />
+        <org.apg.ui.widget.IntegerListPreference
             android:key="defaultFileCompression"
+            android:persistent="false"
             android:title="@string/label_fileCompression" />
 
         <CheckBoxPreference
-            android:persistent="false"
             android:key="defaultAsciiArmour"
-            android:title="@string/label_asciiArmour" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/section_advanced">
-
-        <CheckBoxPreference
             android:persistent="false"
+            android:title="@string/label_asciiArmour" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/section_advanced" >
+        <CheckBoxPreference
             android:key="forceV3Signatures"
+            android:persistent="false"
             android:title="@string/label_forceV3Signature" />
-
     </PreferenceCategory>
 
 </PreferenceScreen>
