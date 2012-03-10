@@ -35,7 +35,6 @@
     <string name="title_sendEmail">"Send Mail..."</string>
     <string name="title_encryptToFile">Encrypt To File</string>
     <string name="title_decryptToFile">Decrypt To File</string>
-    <string name="title_addAccount">Add Account</string>
     <string name="title_importKeys">Import Keys</string>
     <string name="title_exportKey">Export Key</string>
     <string name="title_exportKeys">Export Keys</string>
@@ -203,7 +202,6 @@
     <string name="selectEncryptionOrSignatureKey">Select at least one encryption key or a signature key.</string>
     <string name="specifyFileToEncryptTo">Please specify which file to encrypt to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToDecryptTo">Please specify which file to decrypt to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specifyGoogleMailAccount">Specify the Google Mail account you want to add.</string>
     <string name="specifyFileToImportFrom">Please specify which file to import keys from. (.asc or .gpg)</string>
     <string name="specifyFileToExportTo">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
@@ -236,8 +234,6 @@
     <string name="error_noSecretKeyFound">no suitable secret key found</string>
     <string name="error_noKnownEncryptionFound">no known kind of encryption found</string>
     <string name="error_externalStorageNotReady">external storage not ready</string>
-    <string name="error_accountNotFound">account \'%s\' not found</string>
-    <string name="error_accountReadingNotAllowed">no permission to read the account</string>
     <string name="error_addingAccountFailed">adding account \'%s\' failed</string>
     <string name="error_invalidEmail">invalid email \'%s\'</string>
     <string name="error_keySizeMinimum512bit">key size must be at least 512bit</string>
