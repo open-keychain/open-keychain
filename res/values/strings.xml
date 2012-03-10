@@ -320,7 +320,7 @@
    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
     <string name="about_license">License: Apache License 2.0</string>
     <string name="about_version">Version:</string>
-    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (Basic key server support), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann</string>
+    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, send key, sign key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann</string>
     
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
