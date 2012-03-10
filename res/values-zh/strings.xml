@@ -153,7 +153,6 @@
     <string name="choice_10mins">10 分钟</string>
     <string name="choice_20mins">20 分钟</string>
     <string name="choice_40mins">40 分钟</string>
-    <string name="choice_60mins">60 分钟</string>
     <string name="choice_untilQuit">直到退出</string>
     <string name="choice_language_system">系统默认</string>
     <string name="dsa">DSA</string>
