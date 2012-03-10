@@ -108,23 +108,23 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 public class Apg {
-    private static final String mApgPackageName = "org.thialfihar.android.apg";
+    private static final String mApgPackageName = "org.apg";
 
     public static class Intent {
-        public static final String DECRYPT = "org.thialfihar.android.apg.intent.DECRYPT";
-        public static final String ENCRYPT = "org.thialfihar.android.apg.intent.ENCRYPT";
-        public static final String DECRYPT_FILE = "org.thialfihar.android.apg.intent.DECRYPT_FILE";
-        public static final String ENCRYPT_FILE = "org.thialfihar.android.apg.intent.ENCRYPT_FILE";
-        public static final String DECRYPT_AND_RETURN = "org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN";
-        public static final String ENCRYPT_AND_RETURN = "org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN";
-        public static final String SELECT_PUBLIC_KEYS = "org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS";
-        public static final String SELECT_SECRET_KEY = "org.thialfihar.android.apg.intent.SELECT_SECRET_KEY";
-        public static final String IMPORT = "org.thialfihar.android.apg.intent.IMPORT";
-        public static final String LOOK_UP_KEY_ID = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID";
-        public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.thialfihar.android.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
-        public static final String GENERATE_SIGNATURE = "org.thialfihar.android.apg.intent.GENERATE_SIGNATURE";
-        public static final String EXPORT_KEY_TO_SERVER = "org.thialfihar.android.apg.intent.EXPORT_KEY_TO_SERVER";
-        public static final String IMPORT_FROM_QR_CODE = "org.thialfihar.android.apg.intent.IMPORT_FROM_QR_CODE";
+        public static final String DECRYPT = "org.apg.intent.DECRYPT";
+        public static final String ENCRYPT = "org.apg.intent.ENCRYPT";
+        public static final String DECRYPT_FILE = "org.apg.intent.DECRYPT_FILE";
+        public static final String ENCRYPT_FILE = "org.apg.intent.ENCRYPT_FILE";
+        public static final String DECRYPT_AND_RETURN = "org.apg.intent.DECRYPT_AND_RETURN";
+        public static final String ENCRYPT_AND_RETURN = "org.apg.intent.ENCRYPT_AND_RETURN";
+        public static final String SELECT_PUBLIC_KEYS = "org.apg.intent.SELECT_PUBLIC_KEYS";
+        public static final String SELECT_SECRET_KEY = "org.apg.intent.SELECT_SECRET_KEY";
+        public static final String IMPORT = "org.apg.intent.IMPORT";
+        public static final String LOOK_UP_KEY_ID = "org.apg.intent.LOOK_UP_KEY_ID";
+        public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
+        public static final String GENERATE_SIGNATURE = "org.apg.intent.GENERATE_SIGNATURE";
+        public static final String EXPORT_KEY_TO_SERVER = "org.apg.intent.EXPORT_KEY_TO_SERVER";
+        public static final String IMPORT_FROM_QR_CODE = "org.apg.intent.IMPORT_FROM_QR_CODE";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -153,7 +153,7 @@ public class Apg {
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
     public static final String EXTRA_KEY_SERVERS = "keyServers";
-    public static final String EXTRA_EXPECTED_FINGERPRINT = "org.thialfihar.android.apg.EXPECTED_FINGERPRINT";
+    public static final String EXTRA_EXPECTED_FINGERPRINT = "org.apg.EXPECTED_FINGERPRINT";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 

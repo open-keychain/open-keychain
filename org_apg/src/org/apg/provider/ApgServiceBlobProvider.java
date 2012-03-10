@@ -20,7 +20,7 @@ public class ApgServiceBlobProvider extends ContentProvider {
     
     private static final String TAG = "ApgServiceBlobProvider";
     
-    public static final Uri CONTENT_URI = Uri.parse("content://org.thialfihar.android.apg.provider.apgserviceblobprovider");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.apg.provider.apgserviceblobprovider");
     
     private static final String COLUMN_KEY = "key";
     

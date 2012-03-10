@@ -60,7 +60,7 @@ public class ApgCon {
 
     private final static String TAG = "ApgCon";
     private final static int API_VERSION = 2; // aidl api-version it expects
-    private final static String BLOB_URI = "content://org.thialfihar.android.apg.provider.apgserviceblobprovider";
+    private final static String BLOB_URI = "content://org.apg.provider.apgserviceblobprovider";
     
     /**
      * How many seconds to wait for a connection to AGP when connecting.
@@ -175,7 +175,7 @@ public class ApgCon {
         error tmpError = null;
         try {
             if( LOCAL_LOGV ) Log.v(TAG, "Searching for the right APG version");
-            ServiceInfo apgServices[] = ctx.getPackageManager().getPackageInfo("org.thialfihar.android.apg",
+            ServiceInfo apgServices[] = ctx.getPackageManager().getPackageInfo("org.apg",
                     PackageManager.GET_SERVICES | PackageManager.GET_META_DATA).services;
             if (apgServices == null) {
                 Log.e(TAG, "Could not fetch services");
@@ -184,7 +184,7 @@ public class ApgCon {
                 boolean apgServiceFound = false;
                 for (ServiceInfo inf : apgServices) {
                     if( LOCAL_LOGV ) Log.v(TAG, "Found service of APG: " + inf.name);
-                    if (inf.name.equals("org.thialfihar.android.apg.ApgService")) {
+                    if (inf.name.equals("org.apg.ApgService")) {
                         apgServiceFound = true;
                         if (inf.metaData == null) {
                             Log.w(TAG, "Could not determine ApgService API");

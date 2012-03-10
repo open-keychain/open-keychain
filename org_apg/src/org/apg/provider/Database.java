@@ -33,7 +33,7 @@ public class Database extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg";
     private static final int DATABASE_VERSION = 2;
 
-    public static final String AUTHORITY = "org.thialfihar.android.apg.database";
+    public static final String AUTHORITY = "org.apg.database";
 
     public static HashMap<String, String> sKeyRingsProjection;
     public static HashMap<String, String> sKeysProjection;

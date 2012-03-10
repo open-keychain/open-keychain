@@ -33,7 +33,7 @@ import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 
 public class DataProvider extends ContentProvider {
-    public static final String AUTHORITY = "org.thialfihar.android.apg.provider";
+    public static final String AUTHORITY = "org.apg.provider";
 
     private static final int PUBLIC_KEY_RING = 101;
     private static final int PUBLIC_KEY_RING_ID = 102;

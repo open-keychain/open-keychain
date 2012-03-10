@@ -11,23 +11,20 @@
         android:minSdkVersion="4"
         android:targetSdkVersion="14" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
+
     <permission
-        android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+        android:name="org.apg.permission.READ_KEY_DETAILS"
         android:description="@string/permission_read_key_details_description"
         android:label="@string/permission_read_key_details_label"
         android:protectionLevel="dangerous" />
     <permission
-        android:name="org.thialfihar.android.apg.permission.STORE_BLOBS"
+        android:name="org.apg.permission.STORE_BLOBS"
         android:description="@string/permission_store_blobs_description"
         android:label="@string/permission_store_blobs_label"
         android:protectionLevel="dangerous" />
-
-    <uses-permission android:name="com.google.android.providers.gmail.permission.READ_GMAIL" />
-    <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="org.thialfihar.android.apg.permission.STORE_BLOBS" />
 
     <application
         android:icon="@drawable/icon"
@@ -78,7 +75,7 @@
             android:label="@string/title_selectRecipients"
             android:launchMode="singleTop" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS" />
+                <action android:name="org.apg.intent.SELECT_PUBLIC_KEYS" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -96,7 +93,7 @@
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.SELECT_SECRET_KEY" />
+                <action android:name="org.apg.intent.SELECT_SECRET_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -113,10 +110,10 @@
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_encrypt" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
-                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
-                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
-                <action android:name="org.thialfihar.android.apg.intent.GENERATE_SIGNATURE" />
+                <action android:name="org.apg.intent.ENCRYPT" />
+                <action android:name="org.apg.intent.ENCRYPT_FILE" />
+                <action android:name="org.apg.intent.ENCRYPT_AND_RETURN" />
+                <action android:name="org.apg.intent.GENERATE_SIGNATURE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -128,9 +125,9 @@
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_decrypt" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
-                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
-                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
+                <action android:name="org.apg.intent.DECRYPT" />
+                <action android:name="org.apg.intent.DECRYPT_FILE" />
+                <action android:name="org.apg.intent.DECRYPT_AND_RETURN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -208,10 +205,10 @@
             android:name=".ApgService"
             android:enabled="true"
             android:exported="true"
-            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+            android:permission="org.apg.permission.READ_KEY_DETAILS"
             android:process=":remote" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.IApgService" />
+                <action android:name="org.apg.IApgService" />
             </intent-filter>
 
             <meta-data
@@ -221,12 +218,12 @@
 
         <provider
             android:name=".provider.DataProvider"
-            android:authorities="org.thialfihar.android.apg.provider"
-            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+            android:authorities="org.apg.provider"
+            android:readPermission="org.apg.permission.READ_KEY_DETAILS" />
         <provider
             android:name=".provider.ApgServiceBlobProvider"
-            android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
-            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
+            android:authorities="org.apg.provider.apgserviceblobprovider"
+            android:permission="org.apg.permission.STORE_BLOBS" />
     </application>
 
 </manifest>
