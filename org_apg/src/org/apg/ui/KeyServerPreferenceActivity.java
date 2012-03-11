@@ -24,19 +24,20 @@ import org.apg.ui.widget.KeyServerEditor;
 import org.apg.ui.widget.Editor.EditorListener;
 import org.apg.R;
 
+import com.actionbarsherlock.view.Menu;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class KeyServerPreferenceActivity extends BaseActivity
-        implements OnClickListener, EditorListener {
+public class KeyServerPreferenceActivity extends BaseActivity implements OnClickListener,
+        EditorListener {
     private LayoutInflater mInflater;
     private ViewGroup mEditors;
     private View mAdd;
@@ -63,7 +64,8 @@ public class KeyServerPreferenceActivity extends BaseActivity
         String servers[] = intent.getStringArrayExtra(Apg.EXTRA_KEY_SERVERS);
         if (servers != null) {
             for (int i = 0; i < servers.length; ++i) {
-                KeyServerEditor view = (KeyServerEditor) mInflater.inflate(R.layout.key_server_editor, mEditors, false);
+                KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
+                        R.layout.key_server_editor, mEditors, false);
                 view.setEditorListener(this);
                 view.setValue(servers[i]);
                 mEditors.addView(view);
@@ -90,7 +92,8 @@ public class KeyServerPreferenceActivity extends BaseActivity
     }
 
     public void onClick(View v) {
-        KeyServerEditor view = (KeyServerEditor) mInflater.inflate(R.layout.key_server_editor, mEditors, false);
+        KeyServerEditor view = (KeyServerEditor) mInflater.inflate(R.layout.key_server_editor,
+                mEditors, false);
         view.setEditorListener(this);
         mEditors.addView(view);
     }

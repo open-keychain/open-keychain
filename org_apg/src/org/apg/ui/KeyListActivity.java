@@ -29,6 +29,8 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.SearchManager;
@@ -42,7 +44,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -163,7 +164,7 @@ public class KeyListActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem menuItem) {
+    public boolean onContextItemSelected(android.view.MenuItem menuItem) {
         ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) menuItem.getMenuInfo();
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);

@@ -331,8 +331,8 @@
     <!-- Dashboard -->
     <string name="dashboard_manage_keys">Manage Keys</string>
     <string name="dashboard_my_keys">My Keys</string>
-    <string name="dashboard_encrypt_decrypt_file">Encrypt File</string>
-    <string name="dashboard_encrypt_decrypt_text">Encrypt Text</string>
+    <string name="dashboard_encrypt_decrypt_file">Encrypt/Decrypt File</string>
+    <string name="dashboard_encrypt_decrypt_text">Encrypt/Decrypt Text</string>
     <string name="dashboard_help">Help</string>
 
 </resources>

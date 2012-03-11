@@ -25,6 +25,10 @@ import org.apg.Id;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.apg.R;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -36,8 +40,6 @@ import android.text.util.Linkify.TransformFilter;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -83,88 +85,88 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        if (!mPreferences.hasSeenHelp()) {
-            showDialog(Id.dialog.help);
-        }
-
-        if (Apg.isReleaseVersion(this) && !mPreferences.hasSeenChangeLog(Apg.getVersion(this))) {
-            showDialog(Id.dialog.change_log);
-        }
+//        if (!mPreferences.hasSeenHelp()) {
+//            showDialog(Id.dialog.help);
+//        }
+//
+//        if (Apg.isReleaseVersion(this) && !mPreferences.hasSeenChangeLog(Apg.getVersion(this))) {
+//            showDialog(Id.dialog.change_log);
+//        }
     }
 
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
 
-        case Id.dialog.change_log: {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//        case Id.dialog.change_log: {
+//            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//
+//            alert.setTitle("Changes " + Apg.getFullVersion(this));
+//            LayoutInflater inflater = (LayoutInflater) this
+//                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            View layout = inflater.inflate(R.layout.info, null);
+//            TextView message = (TextView) layout.findViewById(R.id.message);
+//
+//            message.setText("Changes:\n" + "* \n" + "\n"
+//                    + "WARNING: be careful editing your existing keys, as they "
+//                    + "WILL be stripped of certificates right now.\n" + "\n"
+//                    + "Also: key cross-certification is NOT supported, so signing "
+//                    + "with those keys will get a warning when the signature is " + "checked.\n"
+//                    + "\n" + "I hope APG continues to be useful to you, please send "
+//                    + "bug reports, feature wishes, feedback.");
+//            alert.setView(layout);
+//
+//            alert.setCancelable(false);
+//            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    MainActivity.this.removeDialog(Id.dialog.change_log);
+//                    mPreferences.setHasSeenChangeLog(Apg.getVersion(MainActivity.this), true);
+//                }
+//            });
+//
+//            return alert.create();
+//        }
 
-            alert.setTitle("Changes " + Apg.getFullVersion(this));
-            LayoutInflater inflater = (LayoutInflater) this
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.info, null);
-            TextView message = (TextView) layout.findViewById(R.id.message);
-
-            message.setText("Changes:\n" + "* \n" + "\n"
-                    + "WARNING: be careful editing your existing keys, as they "
-                    + "WILL be stripped of certificates right now.\n" + "\n"
-                    + "Also: key cross-certification is NOT supported, so signing "
-                    + "with those keys will get a warning when the signature is " + "checked.\n"
-                    + "\n" + "I hope APG continues to be useful to you, please send "
-                    + "bug reports, feature wishes, feedback.");
-            alert.setView(layout);
-
-            alert.setCancelable(false);
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    MainActivity.this.removeDialog(Id.dialog.change_log);
-                    mPreferences.setHasSeenChangeLog(Apg.getVersion(MainActivity.this), true);
-                }
-            });
-
-            return alert.create();
-        }
-
-        case Id.dialog.help: {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            alert.setTitle(R.string.title_help);
-
-            LayoutInflater inflater = (LayoutInflater) this
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.info, null);
-            TextView message = (TextView) layout.findViewById(R.id.message);
-            message.setText(R.string.text_help);
-
-            TransformFilter packageNames = new TransformFilter() {
-                public final String transformUrl(final Matcher match, String url) {
-                    String name = match.group(1).toLowerCase();
-                    if (name.equals("astro")) {
-                        return "com.metago.astro";
-                    } else if (name.equals("k-9 mail")) {
-                        return "com.fsck.k9";
-                    } else {
-                        return "org.openintents.filemanager";
-                    }
-                }
-            };
-
-            Pattern pattern = Pattern.compile("(OI File Manager|ASTRO|K-9 Mail)");
-            String scheme = "market://search?q=pname:";
-            message.setAutoLinkMask(0);
-            Linkify.addLinks(message, pattern, scheme, null, packageNames);
-
-            alert.setView(layout);
-
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    MainActivity.this.removeDialog(Id.dialog.help);
-                    mPreferences.setHasSeenHelp(true);
-                }
-            });
-
-            return alert.create();
-        }
+//        case Id.dialog.help: {
+//            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//
+//            alert.setTitle(R.string.title_help);
+//
+//            LayoutInflater inflater = (LayoutInflater) this
+//                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//            View layout = inflater.inflate(R.layout.info, null);
+//            TextView message = (TextView) layout.findViewById(R.id.message);
+//            message.setText(R.string.text_help);
+//
+//            TransformFilter packageNames = new TransformFilter() {
+//                public final String transformUrl(final Matcher match, String url) {
+//                    String name = match.group(1).toLowerCase();
+//                    if (name.equals("astro")) {
+//                        return "com.metago.astro";
+//                    } else if (name.equals("k-9 mail")) {
+//                        return "com.fsck.k9";
+//                    } else {
+//                        return "org.openintents.filemanager";
+//                    }
+//                }
+//            };
+//
+//            Pattern pattern = Pattern.compile("(OI File Manager|ASTRO|K-9 Mail)");
+//            String scheme = "market://search?q=pname:";
+//            message.setAutoLinkMask(0);
+//            Linkify.addLinks(message, pattern, scheme, null, packageNames);
+//
+//            alert.setView(layout);
+//
+//            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    MainActivity.this.removeDialog(Id.dialog.help);
+//                    mPreferences.setHasSeenHelp(true);
+//                }
+//            });
+//
+//            return alert.create();
+//        }
 
         default: {
             return super.onCreateDialog(id);

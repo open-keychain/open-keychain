@@ -28,6 +28,8 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.view.Menu;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -36,7 +38,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
