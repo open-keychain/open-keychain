@@ -28,7 +28,6 @@ import org.apg.Id.type;
 import org.apg.Id.menu.option;
 import org.apg.R;
 
-
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -55,40 +54,41 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys)
-                .setIcon(android.R.drawable.ic_menu_add);
-        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys)
-                .setIcon(android.R.drawable.ic_menu_save);
-        menu.add(1, Id.menu.option.create, 2, R.string.menu_createKey)
-                .setIcon(android.R.drawable.ic_menu_add);
+        menu.add(1, Id.menu.option.create, 0, R.string.menu_createKey)
+                .setIcon(R.drawable.ic_suggestions_add)
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_keys, 1, R.string.menu_importKeys)
+        // .setIcon(R.drawable.ic_menu_find_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.export_keys, 2, R.string.menu_exportKeys)
+        // .setIcon(R.drawable.ic_menu_find_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
         menu.add(3, Id.menu.option.search, 3, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
-        menu.add(3, Id.menu.option.preferences, 4, R.string.menu_preferences)
-                .setIcon(android.R.drawable.ic_menu_preferences);
-        menu.add(3, Id.menu.option.about, 5, R.string.menu_about)
-                .setIcon(android.R.drawable.ic_menu_info_details);
+                .setIcon(R.drawable.ic_menu_search_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case Id.menu.option.create: {
-                createKey();
-                return true;
-            }
+        case Id.menu.option.create: {
+            createKey();
+            return true;
+        }
 
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
         }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        ExpandableListView.ExpandableListContextMenuInfo info =
-                (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+        ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
@@ -111,29 +111,31 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
         }
 
         switch (menuItem.getItemId()) {
-            case Id.menu.edit: {
-                mSelectedItem = groupPosition;
-                checkPassPhraseAndEdit();
-                return true;
-            }
+        case Id.menu.edit: {
+            mSelectedItem = groupPosition;
+            checkPassPhraseAndEdit();
+            return true;
+        }
 
-            case Id.menu.share: {
-                mSelectedItem = groupPosition;
-                
-                long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-                String msg = keyId + "," + Apg.getFingerPrint(keyId);;
-                
-                new IntentIntegrator(this).shareText(msg);
-            }
+        case Id.menu.share: {
+            mSelectedItem = groupPosition;
 
-            default: {
-                return super.onContextItemSelected(menuItem);
-            }
+            long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
+                    .getGroupId(mSelectedItem);
+            String msg = keyId + "," + Apg.getFingerPrint(keyId);
+            ;
+
+            new IntentIntegrator(this).shareText(msg);
+        }
+
+        default: {
+            return super.onContextItemSelected(menuItem);
+        }
         }
     }
 
     public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-                                int childPosition, long id) {
+            int childPosition, long id) {
         mSelectedItem = groupPosition;
         checkPassPhraseAndEdit();
         return true;
@@ -142,14 +144,15 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case Id.dialog.pass_phrase: {
-                long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-                return AskForSecretKeyPassPhrase.createDialog(this, keyId, this);
-            }
+        case Id.dialog.pass_phrase: {
+            long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
+                    .getGroupId(mSelectedItem);
+            return AskForSecretKeyPassPhrase.createDialog(this, keyId, this);
+        }
 
-            default: {
-                return super.onCreateDialog(id);
-            }
+        default: {
+            return super.onCreateDialog(id);
+        }
         }
     }
 
@@ -187,17 +190,17 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.message.create_key: // intentionally no break
-            case Id.message.edit_key: {
-                if (resultCode == RESULT_OK) {
-                    refreshList();
-                }
-                break;
+        case Id.message.create_key: // intentionally no break
+        case Id.message.edit_key: {
+            if (resultCode == RESULT_OK) {
+                refreshList();
             }
-            
-            default: {
-                break;
-            }
+            break;
+        }
+
+        default: {
+            break;
+        }
         }
 
         super.onActivityResult(requestCode, resultCode, data);

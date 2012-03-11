@@ -18,13 +18,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/section_general" >
-        <ListPreference
-            android:dialogTitle="@string/label_language"
-            android:entries="@array/language_entries"
-            android:entryValues="@array/language_values"
-            android:key="language"
-            android:title="@string/label_language" />
-
         <org.apg.ui.widget.IntegerListPreference
             android:entries="@array/pass_phrase_cache_ttl_entries"
             android:entryValues="@array/pass_phrase_cache_ttl_values"

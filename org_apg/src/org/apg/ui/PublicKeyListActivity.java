@@ -27,6 +27,7 @@ import org.apg.Id.menu.option;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -48,19 +49,47 @@ public class PublicKeyListActivity extends KeyListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.import_keys, 0, R.string.menu_importKeys).setIcon(
-                android.R.drawable.ic_menu_add);
-        menu.add(0, Id.menu.option.export_keys, 1, R.string.menu_exportKeys).setIcon(
-                android.R.drawable.ic_menu_save);
-        menu.add(1, Id.menu.option.search, 2, R.string.menu_search).setIcon(
-                android.R.drawable.ic_menu_search);
-        menu.add(1, Id.menu.option.preferences, 3, R.string.menu_preferences).setIcon(
-                android.R.drawable.ic_menu_preferences);
-        menu.add(1, Id.menu.option.about, 4, R.string.menu_about).setIcon(
-                android.R.drawable.ic_menu_info_details);
-        menu.add(1, Id.menu.option.scanQRCode, 5, R.string.menu_scanQRCode).setIcon(
-                android.R.drawable.ic_menu_add);
+        menu.add(1, Id.menu.option.key_server, 0, R.string.menu_keyServer)
+                .setIcon(R.drawable.ic_menu_find_holo_light)
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.scanQRCode, 1, R.string.menu_scanQRCode)
+        // .setIcon(R.drawable.ic_suggestions_add)
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys)
+        // .setIcon(R.drawable.ic_suggestions_add)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys)
+        // .setIcon(R.drawable.ic_menu_share_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.search, 4, R.string.menu_search)
+                .setIcon(R.drawable.ic_menu_search_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case Id.menu.option.key_server: {
+            startActivity(new Intent(this, KeyServerQueryActivity.class));
+
+            return true;
+        }
+        case Id.menu.option.scanQRCode: {
+            Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
+            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+            startActivityForResult(intent, Id.request.import_from_qr_code);
+
+            return true;
+        }
+
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
+        }
     }
 
     @Override
@@ -146,23 +175,6 @@ public class PublicKeyListActivity extends KeyListActivity {
 
         default: {
             return super.onContextItemSelected(menuItem);
-        }
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case Id.menu.option.scanQRCode: {
-            Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
-            startActivityForResult(intent, Id.request.import_from_qr_code);
-
-            return true;
-        }
-
-        default: {
-            return super.onOptionsItemSelected(item);
         }
         }
     }

@@ -14,15 +14,15 @@
   limitations under the License.
   -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/dashboard_encrypt_decrypt_file_pressed"
+    <item android:drawable="@drawable/dashboard_decrypt_pressed"
         android:state_focused="true"
         android:state_pressed="true" />
-    <item android:drawable="@drawable/dashboard_encrypt_decrypt_file_pressed"
+    <item android:drawable="@drawable/dashboard_decrypt_pressed"
         android:state_focused="false"
         android:state_pressed="true" />
-    <item android:drawable="@drawable/dashboard_encrypt_decrypt_file_pressed"
+    <item android:drawable="@drawable/dashboard_decrypt_pressed"
         android:state_focused="true" />
-    <item android:drawable="@drawable/dashboard_encrypt_decrypt_file_default"
+    <item android:drawable="@drawable/dashboard_decrypt_default"
         android:state_focused="false"
         android:state_pressed="false" />
 </selector>

@@ -79,15 +79,14 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 String error = data.getString(Apg.EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(getContext(),
-                                   getContext().getString(R.string.errorMessage, error),
-                                   Toast.LENGTH_SHORT).show();
+                            getContext().getString(R.string.errorMessage, error),
+                            Toast.LENGTH_SHORT).show();
                 }
 
                 boolean gotNewKey = data.getBoolean("gotNewKey");
                 if (gotNewKey) {
-                    KeyEditor view =
-                        (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
-                                                      mEditors, false);
+                    KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
+                            mEditors, false);
                     view.setEditorListener(SectionView.this);
                     boolean isMasterKey = (mEditors.getChildCount() == 0);
                     view.setValue(mNewKey, isMasterKey);
@@ -113,19 +112,19 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void setType(int type) {
         mType = type;
         switch (type) {
-            case Id.type.user_id: {
-                mTitle.setText(R.string.section_userIds);
-                break;
-            }
+        case Id.type.user_id: {
+            mTitle.setText(R.string.section_userIds);
+            break;
+        }
 
-            case Id.type.key: {
-                mTitle.setText(R.string.section_keys);
-                break;
-            }
+        case Id.type.key: {
+            mTitle.setText(R.string.section_keys);
+            break;
+        }
 
-            default: {
-                break;
-            }
+        default: {
+            break;
+        }
         }
     }
 
@@ -160,86 +159,80 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /** {@inheritDoc} */
     public void onClick(View v) {
         switch (mType) {
-            case Id.type.user_id: {
-                UserIdEditor view =
-                        (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
-                                                         mEditors, false);
-                view.setEditorListener(this);
-                if (mEditors.getChildCount() == 0) {
-                    view.setIsMainUserId(true);
-                }
-                mEditors.addView(view);
-                break;
+        case Id.type.user_id: {
+            UserIdEditor view = (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
+                    mEditors, false);
+            view.setEditorListener(this);
+            if (mEditors.getChildCount() == 0) {
+                view.setIsMainUserId(true);
+            }
+            mEditors.addView(view);
+            break;
+        }
+
+        case Id.type.key: {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+
+            View view = mInflater.inflate(R.layout.create_key, null);
+            dialog.setView(view);
+            dialog.setTitle(R.string.title_createKey);
+            dialog.setMessage(R.string.keyCreationElGamalInfo);
+
+            boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
+
+            final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
+            Vector<Choice> choices = new Vector<Choice>();
+            choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(R.string.dsa)));
+            if (!wouldBeMasterKey) {
+                choices.add(new Choice(Id.choice.algorithm.elgamal, getResources().getString(
+                        R.string.elgamal)));
             }
 
-            case Id.type.key: {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
+            choices.add(new Choice(Id.choice.algorithm.rsa, getResources().getString(R.string.rsa)));
 
-                View view = mInflater.inflate(R.layout.create_key, null);
-                dialog.setView(view);
-                dialog.setTitle(R.string.title_createKey);
-                dialog.setMessage(R.string.keyCreationElGamalInfo);
-
-                boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
-
-                final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
-                Vector<Choice> choices = new Vector<Choice>();
-                choices.add(new Choice(Id.choice.algorithm.dsa,
-                                       getResources().getString(R.string.dsa)));
-                if (!wouldBeMasterKey) {
-                    choices.add(new Choice(Id.choice.algorithm.elgamal,
-                                           getResources().getString(R.string.elgamal)));
+            ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
+                    android.R.layout.simple_spinner_item, choices);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            algorithm.setAdapter(adapter);
+            // make RSA the default
+            for (int i = 0; i < choices.size(); ++i) {
+                if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
+                    algorithm.setSelection(i);
+                    break;
                 }
+            }
 
-                choices.add(new Choice(Id.choice.algorithm.rsa,
-                                       getResources().getString(R.string.rsa)));
+            final EditText keySize = (EditText) view.findViewById(R.id.size);
 
-                ArrayAdapter<Choice> adapter =
-                        new ArrayAdapter<Choice>(getContext(),
-                                                 android.R.layout.simple_spinner_item,
-                                                 choices);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                algorithm.setAdapter(adapter);
-                // make RSA the default
-                for (int i = 0; i < choices.size(); ++i) {
-                    if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
-                        algorithm.setSelection(i);
-                        break;
+            dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface di, int id) {
+                    di.dismiss();
+                    try {
+                        mNewKeySize = Integer.parseInt("" + keySize.getText());
+                    } catch (NumberFormatException e) {
+                        mNewKeySize = 0;
                     }
+
+                    mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
+                    createKey();
                 }
+            });
 
-                final EditText keySize = (EditText) view.findViewById(R.id.size);
-
-                dialog.setPositiveButton(android.R.string.ok,
-                                         new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface di, int id) {
-                        di.dismiss();
-                        try {
-                            mNewKeySize = Integer.parseInt("" + keySize.getText());
-                        } catch (NumberFormatException e) {
-                            mNewKeySize = 0;
+            dialog.setCancelable(true);
+            dialog.setNegativeButton(android.R.string.cancel,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface di, int id) {
+                            di.dismiss();
                         }
+                    });
 
-                        mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
-                        createKey();
-                    }
-                });
+            dialog.create().show();
+            break;
+        }
 
-                dialog.setCancelable(true);
-                dialog.setNegativeButton(android.R.string.cancel,
-                                         new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface di, int id) {
-                        di.dismiss();
-                    }
-                });
-
-                dialog.create().show();
-                break;
-            }
-
-            default: {
-                break;
-            }
+        default: {
+            break;
+        }
         }
         this.updateEditorsVisible();
     }
@@ -251,8 +244,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         mEditors.removeAllViews();
         for (String userId : list) {
-            UserIdEditor view =
-                (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item, mEditors, false);
+            UserIdEditor view = (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
+                    mEditors, false);
             view.setEditorListener(this);
             view.setValue(userId);
             if (mEditors.getChildCount() == 0) {
@@ -271,8 +264,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         mEditors.removeAllViews();
         for (PGPSecretKey key : list) {
-            KeyEditor view =
-                (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors, false);
+            KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors,
+                    false);
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
             view.setValue(key, isMasterKey);
@@ -303,10 +296,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             } else {
                 passPhrase = "";
             }
-            mNewKey = Apg.createKey(getContext(),
-                                    mNewKeyAlgorithmChoice.getId(),
-                                    mNewKeySize, passPhrase,
-                                    masterKey);
+            mNewKey = Apg.createKey(getContext(), mNewKeyAlgorithmChoice.getId(), mNewKeySize,
+                    passPhrase, masterKey);
         } catch (NoSuchProviderException e) {
             error = "" + e;
         } catch (NoSuchAlgorithmException e) {

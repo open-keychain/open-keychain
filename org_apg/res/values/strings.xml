@@ -86,7 +86,7 @@
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_importKeys">Import Keys</string>
-    <string name="menu_exportKeys">Export Keys</string>
+    <string name="menu_exportKeys">Export All Keys</string>
     <string name="menu_exportKey">Export Key</string>
     <string name="menu_deleteKey">Delete Key</string>
     <string name="menu_createKey">Create Key</string>
@@ -119,7 +119,6 @@
     <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
     <string name="label_messageCompression">Message Compression</string>
     <string name="label_fileCompression">File Compression</string>
-    <string name="label_language">Language</string>
     <string name="label_forceV3Signature">Force V3 Signatures</string>
     <string name="label_keyServers">Key Servers</string>
     <string name="label_keyId">Key ID</string>
@@ -323,16 +322,17 @@
 
 
     <!-- about -->
-    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
+    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.\n\nAPG+ is a fork based on the original APG to introduce more features and a new user interface.</string>
     <string name="about_license">License: Apache License 2.0</string>
     <string name="about_version">Version:</string>
-    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, send key, sign key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann</string>
+    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, sign key, upload key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann (APG+ fork)</string>
 
     <!-- Dashboard -->
     <string name="dashboard_manage_keys">Manage Keys</string>
     <string name="dashboard_my_keys">My Keys</string>
-    <string name="dashboard_encrypt_decrypt_file">Encrypt/Decrypt File</string>
-    <string name="dashboard_encrypt_decrypt_text">Encrypt/Decrypt Text</string>
+    <string name="dashboard_encrypt">Encrypt</string>
+    <string name="dashboard_decrypt">Decrypt</string>
     <string name="dashboard_help">Help</string>
+    <string name="dashboard_scan_qrcode">Scan QRCode</string>
 
 </resources>

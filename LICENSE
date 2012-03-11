@@ -19,6 +19,9 @@ Images:
     http://rrze-icon-set.berlios.de/
     Creative Commons Attribution Share-Alike licence 3.0
 
-  * dashboard_encrypt_decrypt_file.svg, dashboard_encrypt_decrypt_text.svg, dashboard_help.svg
+  * dashboard_decrypt.svg, dashboard_encrypt.svg, dashboard_help.svg
     http://tango.freedesktop.org/
     Public Domain
+
+  * dashboard_scan_qrcode.svg
+    Barcode Scanner App

@@ -33,6 +33,9 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -112,6 +115,36 @@ public class EncryptActivity extends BaseActivity {
     private DataDestination mDataDestination = null;
 
     private boolean mGenerateSignature = false;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(1, Id.menu.option.encrypt, 0, R.string.btn_encrypt)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case Id.menu.option.key_server: {
+            startActivity(new Intent(this, KeyServerQueryActivity.class));
+
+            return true;
+        }
+        case Id.menu.option.scanQRCode: {
+            Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
+            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+            startActivityForResult(intent, Id.request.import_from_qr_code);
+
+            return true;
+        }
+
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

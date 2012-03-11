@@ -44,6 +44,10 @@ public final class Id {
             public static final int help = 0x21070010;
             public static final int key_server = 0x21070011;
             public static final int scanQRCode = 0x21070012;
+            public static final int encrypt = 0x21070013;
+            public static final int decrypt = 0x21070014;
+            public static final int encrypt_ = 0x21070015;
+
         }
     }
 

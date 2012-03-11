@@ -40,9 +40,9 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     private EditText mEmail;
     private EditText mComment;
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+[.]([a-zA-Z])+([a-zA-Z])+",
-                            Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+            "^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+[.]([a-zA-Z])+([a-zA-Z])+",
+            Pattern.CASE_INSENSITIVE);
 
     public static class NoNameException extends Exception {
         static final long serialVersionUID = 0xf812773343L;
@@ -124,8 +124,8 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         if (email.length() > 0) {
             Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
             if (!emailMatcher.matches()) {
-                throw new InvalidEmailException(
-                        getContext().getString(R.string.error_invalidEmail, email));
+                throw new InvalidEmailException(getContext().getString(R.string.error_invalidEmail,
+                        email));
             }
         }
 
@@ -155,7 +155,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     }
 
     public void onClick(View v) {
-        final ViewGroup parent = (ViewGroup)getParent();
+        final ViewGroup parent = (ViewGroup) getParent();
         if (v == mDeleteButton) {
             boolean wasMainUserId = mIsMainUserId.isChecked();
             parent.removeView(this);

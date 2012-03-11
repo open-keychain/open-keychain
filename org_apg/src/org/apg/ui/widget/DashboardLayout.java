@@ -27,7 +27,6 @@ import android.view.ViewGroup;
  */
 public class DashboardLayout extends ViewGroup {
     private static final int UNEVEN_GRID_PENALTY_MULTIPLIER = 10;
-    private static final int OVERLAP_PENALTY_MULTIPLIER = 10;
 
     private int mMaxChildWidth = 0;
     private int mMaxChildHeight = 0;
@@ -129,12 +128,8 @@ public class DashboardLayout extends ViewGroup {
             spaceDifference = Math.abs(vSpace - hSpace);
             if (rows * cols != visibleCount) {
                 spaceDifference *= UNEVEN_GRID_PENALTY_MULTIPLIER;
-            }
-            if (hSpace < 0) {
-                spaceDifference *= OVERLAP_PENALTY_MULTIPLIER;
-            }
-            if (vSpace < 0) {
-                spaceDifference *= OVERLAP_PENALTY_MULTIPLIER;
+            } else if (rows * mMaxChildHeight > height || cols * mMaxChildWidth > width) {
+                spaceDifference *= UNEVEN_GRID_PENALTY_MULTIPLIER;
             }
 
             if (spaceDifference < bestSpaceDifference) {

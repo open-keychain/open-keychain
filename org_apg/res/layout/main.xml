@@ -39,18 +39,26 @@
             android:text="@string/dashboard_my_keys" />
 
         <Button
-            android:id="@+id/dashboard_encrypt_decrypt_file"
+            android:id="@+id/dashboard_encrypt"
             style="@style/DashboardButton"
-            android:drawableTop="@drawable/dashboard_encrypt_decrypt_file"
-            android:onClick="encryptDecryptFileOnClick"
-            android:text="@string/dashboard_encrypt_decrypt_file" />
+            android:drawableTop="@drawable/dashboard_encrypt"
+            android:onClick="encryptOnClick"
+            android:text="@string/dashboard_encrypt" />
 
         <Button
-            android:id="@+id/dashboard_encrypt_decrypt_text"
+            android:id="@+id/dashboard_decrypt"
             style="@style/DashboardButton"
-            android:drawableTop="@drawable/dashboard_encrypt_decrypt_text"
-            android:onClick="encryptDecryptTextOnClick"
-            android:text="@string/dashboard_encrypt_decrypt_text" />
+            android:drawableTop="@drawable/dashboard_decrypt"
+            android:onClick="decryptOnClick"
+            android:text="@string/dashboard_decrypt" />
+        
+        
+        <Button
+            android:id="@+id/dashboard_scan_qrcode"
+            style="@style/DashboardButton"
+            android:drawableTop="@drawable/dashboard_scan_qrcode"
+            android:onClick="scanQrcodeOnClick"
+            android:text="@string/dashboard_scan_qrcode" />
 
         <Button
             android:id="@+id/dashboard_help"

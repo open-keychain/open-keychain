@@ -31,6 +31,7 @@ import org.apg.ProgressDialogUpdater;
 import org.apg.Service;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -75,8 +76,11 @@ public class BaseActivity extends SherlockActivity implements Runnable, Progress
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         mPreferences = Preferences.getPreferences(this);
-        setLanguage(this, mPreferences.getLanguage());
 
         Apg.initialize(this);
 
@@ -98,35 +102,21 @@ public class BaseActivity extends SherlockActivity implements Runnable, Progress
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences).setIcon(
-                android.R.drawable.ic_menu_preferences);
-        menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setIcon(
-                android.R.drawable.ic_menu_info_details);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case Id.menu.option.about: {
-            startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        }
 
-        case Id.menu.option.preferences: {
-            startActivity(new Intent(this, PreferencesActivity.class));
+        case android.R.id.home:
+            startActivity(new Intent(this, MainActivity.class));
             return true;
-        }
 
-        case Id.menu.option.search: {
+            // TODO: needed?:
+        case Id.menu.option.search:
             startSearch("", false, null, false);
             return true;
-        }
 
-        default: {
+        default:
             break;
-        }
+
         }
         return false;
     }
@@ -421,18 +411,5 @@ public class BaseActivity extends SherlockActivity implements Runnable, Progress
 
     protected String getDeleteFile() {
         return mDeleteFile;
-    }
-
-    public static void setLanguage(Context context, String language) {
-        Locale locale;
-        if (language == null || language.equals("")) {
-            locale = Locale.getDefault();
-        } else {
-            locale = new Locale(language);
-        }
-        Configuration config = new Configuration();
-        config.locale = locale;
-        context.getResources().updateConfiguration(config,
-                context.getResources().getDisplayMetrics());
     }
 }
