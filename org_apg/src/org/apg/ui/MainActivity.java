@@ -42,53 +42,46 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends BaseActivity {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
+    public void manageKeysOnClick(View view) {
+        startActivity(new Intent(this, PublicKeyListActivity.class));
+    }
+
+    public void myKeysOnClick(View view) {
+        startActivity(new Intent(this, SecretKeyListActivity.class));
+
+    }
+
+    public void encryptDecryptFileOnClick(View view) {
+        Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+        intent.setAction(Apg.Intent.ENCRYPT_FILE);
+        startActivity(intent);
+
+        // intent.setAction(Apg.Intent.DECRYPT_FILE);
+    }
+
+    public void encryptDecryptTextOnClick(View view) {
+        Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+        intent.setAction(Apg.Intent.ENCRYPT);
+        startActivity(intent);
+
+        // intent.setAction(Apg.Intent.DECRYPT);
+    }
+
+    public void helpOnClick(View view) {
+        // TODO: implement help view
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        Button encryptMessageButton = (Button) findViewById(R.id.btn_encryptMessage);
-        Button decryptMessageButton = (Button) findViewById(R.id.btn_decryptMessage);
-        Button encryptFileButton = (Button) findViewById(R.id.btn_encryptFile);
-        Button decryptFileButton = (Button) findViewById(R.id.btn_decryptFile);
-
-        encryptMessageButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
-                intent.setAction(Apg.Intent.ENCRYPT);
-                startActivity(intent);
-            }
-        });
-
-        decryptMessageButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
-                intent.setAction(Apg.Intent.DECRYPT);
-                startActivity(intent);
-            }
-        });
-
-        encryptFileButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
-                intent.setAction(Apg.Intent.ENCRYPT_FILE);
-                startActivity(intent);
-            }
-        });
-
-        decryptFileButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
-                intent.setAction(Apg.Intent.DECRYPT_FILE);
-                startActivity(intent);
-            }
-        });
 
         if (!mPreferences.hasSeenHelp()) {
             showDialog(Id.dialog.help);
@@ -185,8 +178,6 @@ public class MainActivity extends BaseActivity {
                 android.R.drawable.ic_menu_manage);
         menu.add(0, Id.menu.option.manage_secret_keys, 1, R.string.menu_manageSecretKeys).setIcon(
                 android.R.drawable.ic_menu_manage);
-        menu.add(1, Id.menu.option.create, 2, R.string.menu_addAccount).setIcon(
-                android.R.drawable.ic_menu_add);
         menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences).setIcon(
                 android.R.drawable.ic_menu_preferences);
         menu.add(2, Id.menu.option.key_server, 4, R.string.menu_keyServer).setIcon(

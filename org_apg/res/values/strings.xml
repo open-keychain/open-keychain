@@ -46,7 +46,7 @@
     <string name="title_importFromQRCode">Import from QR Code</string>
     <string name="title_signKey">Sign Key</string>
     <string name="title_about">About</string>
-    
+
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>
@@ -81,7 +81,6 @@
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">About</string>
-    <string name="menu_addAccount">Add GMail Account</string>
     <string name="menu_deleteAccount">Delete Account</string>
     <string name="menu_managePublicKeys">Manage Public Keys</string>
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
@@ -311,13 +310,7 @@
     <string name="fast">fast</string>
     <string name="slow">slow</string>
     <string name="very_slow">very slow</string>
-    
-    <!-- about -->
-   <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
-    <string name="about_license">License: Apache License 2.0</string>
-    <string name="about_version">Version:</string>
-    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, send key, sign key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann</string>
-    
+
     <!-- texts -->
     <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
     <string name="text_help">Install K-9 Mail for the best integration, it supports APG for PGP/INLINE and lets you directly encrypt/decrypt emails.
@@ -325,5 +318,21 @@
 \n\nFirst you need some keys. Either import them via the option menus in \"Manage Public Keys\" and \"Manage Secret Keys\" or create them in \"Manage Secret Keys\".
 \n\nYou can also add a GMail account in the main activity via \"Add Account\", which simplifies decrypting emails received there.
 \n\nCheck out the option menus in the various activities to find more functions.</string>
+
+    <!-- APG Plus -->
+
+
+    <!-- about -->
+    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
+    <string name="about_license">License: Apache License 2.0</string>
+    <string name="about_version">Version:</string>
+    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, send key, sign key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_manage_keys">Manage Keys</string>
+    <string name="dashboard_my_keys">My Keys</string>
+    <string name="dashboard_encrypt_decrypt_file">Encrypt File</string>
+    <string name="dashboard_encrypt_decrypt_text">Encrypt Text</string>
+    <string name="dashboard_help">Help</string>
 
 </resources>

@@ -19,3 +19,6 @@ On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 # Build SpongyCastle
 
 see https://github.com/rtyley/spongycastle
+
+# Dashboard Icons pressed
+Inkscape -> Extensions -> Color -> darker
