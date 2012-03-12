@@ -19,15 +19,9 @@ package org.apg.ui;
 import org.apg.Apg;
 import org.apg.Constants;
 import org.apg.Id;
-import org.apg.Constants.path;
-import org.apg.Id.menu;
-import org.apg.Id.request;
-import org.apg.Id.type;
-import org.apg.Id.menu.option;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.apg.R;
 
-import com.actionbarsherlock.ActionBarSherlock;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -50,15 +44,13 @@ public class PublicKeyListActivity extends KeyListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(1, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(R.drawable.ic_menu_search_holo_light)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(1, Id.menu.option.scanQRCode, 1, R.string.menu_scanQRCode)
-        // .setIcon(R.drawable.ic_suggestions_add)
+                .setIcon(R.drawable.ic_menu_scan_qrcode)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
         menu.add(1, Id.menu.option.key_server, 2, R.string.menu_keyServer)
-                .setIcon(R.drawable.ic_menu_find_holo_light)
+                .setIcon(R.drawable.ic_menu_search_list)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(0, Id.menu.option.import_keys, 3, R.string.menu_importKeys)
@@ -145,7 +137,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
 
-            Intent intent = new Intent(this, SendKeyActivity.class);
+            Intent intent = new Intent(this, KeyServerExportActivity.class);
             intent.setAction(Apg.Intent.EXPORT_KEY_TO_SERVER);
             intent.putExtra(Apg.EXTRA_KEY_ID, keyRingId);
             startActivityForResult(intent, Id.request.export_to_server);

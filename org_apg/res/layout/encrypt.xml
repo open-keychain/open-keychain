@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
 
-<!-- <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!-- android:layout_width="fill_parent" -->
-<!-- android:layout_height="fill_parent" -->
-<!-- android:orientation="vertical" -->
-<!-- android:paddingTop="5dip" > -->
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -15,7 +9,7 @@
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -80,13 +74,14 @@
                         android:id="@+id/filename"
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:inputType="textNoSuggestions" />
 
                     <ImageButton
                         android:id="@+id/btn_browse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_launcher_folder_small" />
+                        android:src="@drawable/ic_menu_filebrowser" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -178,7 +173,6 @@
                 android:id="@+id/modeLabel"
                 android:layout_width="0dip"
                 android:layout_height="fill_parent"
-                android:layout_weight="1"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/label_asymmetric"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -321,25 +315,4 @@
             android:background="?android:attr/listDivider" />
     </LinearLayout>
 
-</ScrollView> <!-- <LinearLayout -->
-<!-- style="@android:style/ButtonBar" -->
-<!-- android:layout_width="fill_parent" -->
-<!-- android:layout_height="wrap_content" -->
-<!-- android:orientation="horizontal" > -->
-
-<!-- <Button -->
-<!-- android:id="@+id/btn_encryptToClipboard" -->
-<!-- android:layout_width="0dip" -->
-<!-- android:layout_height="fill_parent" -->
-<!-- android:layout_weight="1" -->
-<!-- android:text="@string/btn_encryptToClipboard" /> -->
-
-<!-- <Button -->
-<!-- android:id="@+id/btn_encrypt" -->
-<!-- android:layout_width="0dip" -->
-<!-- android:layout_height="fill_parent" -->
-<!-- android:layout_weight="1" -->
-<!-- android:text="@string/btn_encrypt" /> -->
-<!-- </LinearLayout> -->
-
-<!-- </LinearLayout> -->
+</ScrollView>

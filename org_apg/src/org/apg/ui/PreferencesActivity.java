@@ -20,10 +20,6 @@ import org.apg.Apg;
 import org.apg.Constants;
 import org.apg.Id;
 import org.apg.Preferences;
-import org.apg.Constants.pref;
-import org.apg.Id.choice;
-import org.apg.Id.request;
-import org.apg.Id.choice.compression;
 import org.apg.ui.widget.IntegerListPreference;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -36,17 +32,11 @@ import com.actionbarsherlock.view.MenuItem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Vector;
 
 public class PreferencesActivity extends SherlockPreferenceActivity {
-    private ListPreference mLanguage = null;
     private IntegerListPreference mPassPhraseCacheTtl = null;
     private IntegerListPreference mEncryptionAlgorithm = null;
     private IntegerListPreference mHashAlgorithm = null;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,29 +15,20 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <Spinner
+        android:id="@+id/keyServer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_export_to_server"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-	    <Spinner
-	        android:id="@+id/keyServer"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <Button
-            android:id="@+id/btn_export_to_server"
-            android:text="@string/btn_export_to_server"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
+        android:text="@string/btn_export_to_server" />
 
 </LinearLayout>

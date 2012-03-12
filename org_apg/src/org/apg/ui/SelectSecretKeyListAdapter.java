@@ -1,10 +1,23 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apg.ui;
 
 import java.util.Date;
 
 import org.apg.Apg;
 import org.apg.Id;
-import org.apg.Id.database;
 import org.apg.provider.KeyRings;
 import org.apg.provider.Keys;
 import org.apg.provider.UserIds;
@@ -35,26 +48,23 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
 
         mActivity = activity;
         mParent = parent;
-        mDatabase =  Apg.getDatabase().db();
-        mInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mDatabase = Apg.getDatabase().db();
+        mInflater = (LayoutInflater) parent.getContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
         long now = new Date().getTime() / 1000;
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " +
-                                    "(" + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " +
-                                    Keys.TABLE_NAME + "." + Keys.KEY_RING_ID + " AND " +
-                                    Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY + " = '1'" +
-                                    ") " +
-                                    " INNER JOIN " + UserIds.TABLE_NAME + " ON " +
-                                    "(" + Keys.TABLE_NAME + "." + Keys._ID + " = " +
-                                    UserIds.TABLE_NAME + "." + UserIds.KEY_ID + " AND " +
-                                    UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
+        qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "("
+                + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."
+                + Keys.KEY_RING_ID + " AND " + Keys.TABLE_NAME + "." + Keys.IS_MASTER_KEY
+                + " = '1'" + ") " + " INNER JOIN " + UserIds.TABLE_NAME + " ON " + "("
+                + Keys.TABLE_NAME + "." + Keys._ID + " = " + UserIds.TABLE_NAME + "."
+                + UserIds.KEY_ID + " AND " + UserIds.TABLE_NAME + "." + UserIds.RANK + " = '0') ");
 
         if (searchString != null && searchString.trim().length() > 0) {
             String[] chunks = searchString.trim().split(" +");
-            qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " +
-                                    UserIds.TABLE_NAME + " AS tmp WHERE " +
-                                    "tmp." + UserIds.KEY_ID + " = " +
-                                    Keys.TABLE_NAME + "." + Keys._ID);
+            qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " + UserIds.TABLE_NAME
+                    + " AS tmp WHERE " + "tmp." + UserIds.KEY_ID + " = " + Keys.TABLE_NAME + "."
+                    + Keys._ID);
             for (int i = 0; i < chunks.length; ++i) {
                 qb.appendWhere(" AND tmp." + UserIds.USER_ID + " LIKE ");
                 qb.appendWhereEscapeString("%" + chunks[i] + "%");
@@ -62,28 +72,23 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
             qb.appendWhere(")");
         }
 
-        mCursor = qb.query(mDatabase,
-              new String[] {
-                  KeyRings.TABLE_NAME + "." + KeyRings._ID,           // 0
-                  KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
-                  UserIds.TABLE_NAME + "." + UserIds.USER_ID,         // 2
-                  "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
-                      "tmp." + Keys.KEY_RING_ID + " = " +
-                      KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
-                      "tmp." + Keys.IS_REVOKED + " = '0' AND " +
-                      "tmp." + Keys.CAN_SIGN + " = '1')",             // 3,
-                  "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE " +
-                      "tmp." + Keys.KEY_RING_ID + " = " +
-                      KeyRings.TABLE_NAME + "." + KeyRings._ID + " AND " +
-                      "tmp." + Keys.IS_REVOKED + " = '0' AND " +
-                      "tmp." + Keys.CAN_SIGN + " = '1' AND " +
-                      "tmp." + Keys.CREATION + " <= '" + now + "' AND " +
-                      "(tmp." + Keys.EXPIRY + " IS NULL OR " +
-                       "tmp." + Keys.EXPIRY + " >= '" + now + "'))",  // 4
-              },
-              KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?",
-              new String[] { "" + Id.database.type_secret },
-              null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID + " ASC");
+        mCursor = qb.query(mDatabase, new String[] {
+                KeyRings.TABLE_NAME + "." + KeyRings._ID, // 0
+                KeyRings.TABLE_NAME + "." + KeyRings.MASTER_KEY_ID, // 1
+                UserIds.TABLE_NAME + "." + UserIds.USER_ID, // 2
+                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE "
+                        + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME + "."
+                        + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND "
+                        + "tmp." + Keys.CAN_SIGN + " = '1')", // 3,
+                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Keys.TABLE_NAME + " AS tmp WHERE "
+                        + "tmp." + Keys.KEY_RING_ID + " = " + KeyRings.TABLE_NAME + "."
+                        + KeyRings._ID + " AND " + "tmp." + Keys.IS_REVOKED + " = '0' AND "
+                        + "tmp." + Keys.CAN_SIGN + " = '1' AND " + "tmp." + Keys.CREATION + " <= '"
+                        + now + "' AND " + "(tmp." + Keys.EXPIRY + " IS NULL OR " + "tmp."
+                        + Keys.EXPIRY + " >= '" + now + "'))", // 4
+        }, KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?", new String[] { ""
+                + Id.database.type_secret }, null, null, UserIds.TABLE_NAME + "." + UserIds.USER_ID
+                + " ASC");
 
         activity.startManagingCursor(mCursor);
     }

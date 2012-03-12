@@ -18,10 +18,7 @@ package org.apg.ui;
 
 import org.apg.Apg;
 import org.apg.Id;
-import org.apg.Id.menu;
-import org.apg.Id.menu.option;
 import org.apg.R;
-
 
 import com.actionbarsherlock.view.Menu;
 
@@ -59,7 +56,7 @@ public class SelectSecretKeyListActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent data = new Intent();
                 data.putExtra(Apg.EXTRA_KEY_ID, id);
-                data.putExtra(Apg.EXTRA_USER_ID, (String)mList.getItemAtPosition(position));
+                data.putExtra(Apg.EXTRA_USER_ID, (String) mList.getItemAtPosition(position));
                 setResult(RESULT_OK, data);
                 finish();
             }
@@ -110,8 +107,8 @@ public class SelectSecretKeyListActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
+        menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
+                android.R.drawable.ic_menu_search);
         return true;
     }
 }

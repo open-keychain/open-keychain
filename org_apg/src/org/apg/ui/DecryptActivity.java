@@ -31,6 +31,9 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -43,7 +46,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -85,8 +87,13 @@ public class DecryptActivity extends BaseActivity {
     private ImageView mSourcePrevious = null;
     private ImageView mSourceNext = null;
 
-    private Button mDecryptButton = null;
-    private Button mReplyButton = null;
+    // private Button mDecryptButton = null;
+    // private Button mReplyButton = null;
+
+    private boolean mDecryptEnabled = true;
+    private String mDecryptString = "";
+    private boolean mReplyEnabled = true;
+    private String mReplyString = "";
 
     private int mDecryptTarget;
 
@@ -105,6 +112,25 @@ public class DecryptActivity extends BaseActivity {
     private DataDestination mDataDestination = null;
 
     private long mUnknownSignatureKeyId = 0;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        if (mDecryptEnabled) {
+            menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mDecryptString)
+            // .setIcon(R.drawable.ic_menu_encrypt)
+                    .setShowAsAction(
+                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        }
+        if (mReplyEnabled) {
+            menu.add(1, Id.menu.option.encrypt, 1, mReplyString)
+            // .setIcon(R.drawable.ic_menu_decrypt)
+                    .setShowAsAction(
+                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        }
+
+        return true;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -145,8 +171,8 @@ public class DecryptActivity extends BaseActivity {
         mSourceLabel.setOnClickListener(nextSourceClickListener);
 
         mMessage = (EditText) findViewById(R.id.message);
-        mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
-        mReplyButton = (Button) findViewById(R.id.btn_reply);
+        // mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
+        // mReplyButton = (Button) findViewById(R.id.btn_reply);
         mSignatureLayout = (LinearLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
@@ -230,7 +256,8 @@ public class DecryptActivity extends BaseActivity {
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
-                        mDecryptButton.setText(R.string.btn_verify);
+                        mDecryptString = getString(R.string.btn_verify);
+                        // mDecryptButton.setText(R.string.btn_verify);
                     } else {
                         Log.d(Constants.TAG, "Nothing matched!");
                     }
@@ -276,7 +303,9 @@ public class DecryptActivity extends BaseActivity {
                             // replace non breakable spaces
                             data = data.replaceAll("\\xa0", " ");
                             mMessage.setText(data);
-                            mDecryptButton.setText(R.string.btn_verify);
+                            mDecryptString = getString(R.string.btn_verify);
+
+                            // mDecryptButton.setText(R.string.btn_verify);
                         }
                     }
                 }
@@ -319,18 +348,20 @@ public class DecryptActivity extends BaseActivity {
             }
         });
 
-        mDecryptButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                decryptClicked();
-            }
-        });
+        // mDecryptButton.setOnClickListener(new OnClickListener() {
+        // public void onClick(View v) {
+        // decryptClicked();
+        // }
+        // });
+        //
+        // mReplyButton.setOnClickListener(new OnClickListener() {
+        // public void onClick(View v) {
+        // replyClicked();
+        // }
+        // });
+        // mReplyButton.setVisibility(View.INVISIBLE);
 
-        mReplyButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                replyClicked();
-            }
-        });
-        mReplyButton.setVisibility(View.INVISIBLE);
+        mReplyEnabled = false;
 
         if (mReturnResult) {
             mSourcePrevious.setClickable(false);
@@ -349,7 +380,8 @@ public class DecryptActivity extends BaseActivity {
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
-            mDecryptButton.performClick();
+            // mDecryptButton.performClick();
+            decryptClicked();
         }
     }
 
@@ -384,13 +416,16 @@ public class DecryptActivity extends BaseActivity {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
             mSourceLabel.setText(R.string.label_file);
-            mDecryptButton.setText(R.string.btn_decrypt);
+            // mDecryptButton.setText(R.string.btn_decrypt);
+            mDecryptString = getString(R.string.btn_decrypt);
             break;
         }
 
         case R.id.sourceMessage: {
             mSourceLabel.setText(R.string.label_message);
-            mDecryptButton.setText(R.string.btn_decrypt);
+            // mDecryptButton.setText(R.string.btn_decrypt);
+            mDecryptString = getString(R.string.btn_decrypt);
+
             break;
         }
 
@@ -598,7 +633,8 @@ public class DecryptActivity extends BaseActivity {
         removeDialog(Id.dialog.decrypting);
         mSignatureKeyId = 0;
         mSignatureLayout.setVisibility(View.GONE);
-        mReplyButton.setVisibility(View.INVISIBLE);
+        // mReplyButton.setVisibility(View.INVISIBLE);
+        mReplyEnabled = false;
 
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
@@ -621,7 +657,8 @@ public class DecryptActivity extends BaseActivity {
             String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
             mMessage.setText(decryptedMessage);
             mMessage.setHorizontallyScrolling(false);
-            mReplyButton.setVisibility(View.VISIBLE);
+            // mReplyButton.setVisibility(View.VISIBLE);
+            mReplyEnabled = false;
             break;
         }
 

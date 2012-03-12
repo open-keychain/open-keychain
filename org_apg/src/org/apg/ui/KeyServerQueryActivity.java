@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apg.ui;
 
 import java.util.List;
@@ -12,6 +26,8 @@ import org.apg.KeyServer.KeyInfo;
 import org.apg.KeyServer.QueryException;
 import org.apg.KeyServer.TooManyResponses;
 import org.apg.R;
+
+import com.actionbarsherlock.view.MenuItem;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -51,6 +67,21 @@ public class KeyServerQueryActivity extends BaseActivity {
     private volatile String mKeyData;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case android.R.id.home:
+            startActivity(new Intent(this, PublicKeyListActivity.class));
+            return true;
+
+        default:
+            break;
+
+        }
+        return false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -63,10 +94,8 @@ public class KeyServerQueryActivity extends BaseActivity {
         mList.setAdapter(mAdapter);
 
         mKeyServer = (Spinner) findViewById(R.id.keyServer);
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(this,
-                                         android.R.layout.simple_spinner_item,
-                                         mPreferences.getKeyServers());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeyServer.setAdapter(adapter);
         if (adapter.getCount() > 0) {
@@ -89,8 +118,8 @@ public class KeyServerQueryActivity extends BaseActivity {
         });
 
         Intent intent = getIntent();
-        if (Apg.Intent.LOOK_UP_KEY_ID.equals(intent.getAction()) ||
-            Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
+        if (Apg.Intent.LOOK_UP_KEY_ID.equals(intent.getAction())
+                || Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
             long keyId = intent.getLongExtra(Apg.EXTRA_KEY_ID, 0);
             if (keyId != 0) {
                 String query = "0x" + Apg.keyToHex(keyId);
@@ -116,10 +145,10 @@ public class KeyServerQueryActivity extends BaseActivity {
     }
 
     @Override
-	protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(int id) {
         ProgressDialog progress = (ProgressDialog) super.onCreateDialog(id);
         progress.setMessage(this.getString(R.string.progress_queryingServer,
-                                           (String)mKeyServer.getSelectedItem()));
+                (String) mKeyServer.getSelectedItem()));
         return progress;
     }
 
@@ -130,7 +159,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            HkpKeyServer server = new HkpKeyServer((String)mKeyServer.getSelectedItem());
+            HkpKeyServer server = new HkpKeyServer((String) mKeyServer.getSelectedItem());
             if (mQueryType == Id.keyserver.search) {
                 mSearchResult = server.search(mQueryString);
             } else if (mQueryType == Id.keyserver.get) {
@@ -163,13 +192,15 @@ public class KeyServerQueryActivity extends BaseActivity {
         Bundle data = msg.getData();
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 
         if (mQueryType == Id.keyserver.search) {
             if (mSearchResult != null) {
-                Toast.makeText(this, getString(R.string.keysFound, mSearchResult.size()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.keysFound, mSearchResult.size()),
+                        Toast.LENGTH_SHORT).show();
                 mAdapter.setKeys(mSearchResult);
             }
         } else if (mQueryType == Id.keyserver.get) {
@@ -284,7 +315,8 @@ public class KeyServerQueryActivity extends BaseActivity {
                         sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
                         ll.addView(sep);
                     }
-                    TextView uidView = (TextView) mInflater.inflate(R.layout.key_server_query_result_user_id, null);
+                    TextView uidView = (TextView) mInflater.inflate(
+                            R.layout.key_server_query_result_user_id, null);
                     uidView.setText(uid);
                     ll.addView(uidView);
                     second = false;

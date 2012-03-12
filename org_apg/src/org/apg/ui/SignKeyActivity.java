@@ -1,3 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apg.ui;
 
 import java.security.NoSuchAlgorithmException;
@@ -9,11 +23,6 @@ import org.apg.Apg;
 import org.apg.Constants;
 import org.apg.HkpKeyServer;
 import org.apg.Id;
-import org.apg.Constants.extras;
-import org.apg.Id.dialog;
-import org.apg.Id.message;
-import org.apg.Id.request;
-import org.apg.Id.return_value;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -26,6 +35,8 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.apg.R;
+
+import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,7 +62,22 @@ public class SignKeyActivity extends BaseActivity {
 
     private long pubKeyId = 0;
     private long masterKeyId = 0;
-    
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case android.R.id.home:
+            startActivity(new Intent(this, PublicKeyListActivity.class));
+            return true;
+
+        default:
+            break;
+
+        }
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +86,8 @@ public class SignKeyActivity extends BaseActivity {
         setContentView(R.layout.sign_key_layout);
 
         final Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         keyServer.setAdapter(adapter);
 
@@ -94,12 +121,13 @@ public class SignKeyActivity extends BaseActivity {
                 }
             }
         });
-        
+
         pubKeyId = getIntent().getLongExtra(Apg.EXTRA_KEY_ID, 0);
         if (pubKeyId == 0) {
             finish(); // nothing to do if we dont know what key to sign
         } else {
-            // kick off the SecretKey selection activity so the user chooses which key to sign with first
+            // kick off the SecretKey selection activity so the user chooses which key to sign with
+            // first
             Intent intent = new Intent(this, SelectSecretKeyListActivity.class);
             startActivityForResult(intent, Id.request.secret_keys);
         }
@@ -113,7 +141,7 @@ public class SignKeyActivity extends BaseActivity {
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
-    
+
             @SuppressWarnings("unchecked")
             Iterator<PGPSignature> itr = pubring.getPublicKey(pubKeyId).getSignatures();
             while (itr.hasNext()) {
@@ -123,7 +151,7 @@ public class SignKeyActivity extends BaseActivity {
                     break;
                 }
             }
-    
+
             if (!alreadySigned) {
                 /*
                  * get the user's passphrase for this key (if required)
@@ -131,7 +159,8 @@ public class SignKeyActivity extends BaseActivity {
                 String passphrase = Apg.getCachedPassPhrase(masterKeyId);
                 if (passphrase == null) {
                     showDialog(Id.dialog.pass_phrase);
-                    return; // bail out; need to wait until the user has entered the passphrase before trying again
+                    return; // bail out; need to wait until the user has entered the passphrase
+                            // before trying again
                 } else {
                     startSigning();
                 }
@@ -142,27 +171,27 @@ public class SignKeyActivity extends BaseActivity {
                 status.putString(Apg.EXTRA_ERROR, "Key has already been signed");
 
                 status.putInt(Constants.extras.STATUS, Id.message.done);
-                
+
                 msg.setData(status);
                 sendMessage(msg);
-                
+
                 setResult(Id.return_value.error);
                 finish();
             }
         }
     }
-    
+
     @Override
     public long getSecretKeyId() {
         return masterKeyId;
     }
-    
+
     @Override
     public void passPhraseCallback(long keyId, String passPhrase) {
         super.passPhraseCallback(keyId, passPhrase);
         startSigning();
     }
-    
+
     /**
      * kicks off the actual signing process on a background thread
      */
@@ -170,7 +199,7 @@ public class SignKeyActivity extends BaseActivity {
         showDialog(Id.dialog.signing);
         startThread();
     }
-    
+
     @Override
     public void run() {
         final Bundle status = new Bundle();
@@ -182,36 +211,39 @@ public class SignKeyActivity extends BaseActivity {
                 status.putString(Apg.EXTRA_ERROR, "Unable to obtain passphrase");
             } else {
                 PGPPublicKeyRing pubring = Apg.getPublicKeyRing(pubKeyId);
-                
+
                 /*
                  * sign the incoming key
                  */
                 PGPSecretKey secretKey = Apg.getSecretKey(masterKeyId);
-                PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(), BouncyCastleProvider.PROVIDER_NAME);
-                PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
+                PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
+                        BouncyCastleProvider.PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
+                        .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
                 sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
-    
+
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-    
+
                 PGPSignatureSubpacketVector packetVector = spGen.generate();
                 sGen.setHashedSubpackets(packetVector);
-    
-                PGPPublicKey signedKey = PGPPublicKey.addCertification(pubring.getPublicKey(pubKeyId), sGen.generate());
+
+                PGPPublicKey signedKey = PGPPublicKey.addCertification(
+                        pubring.getPublicKey(pubKeyId), sGen.generate());
                 pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
-    
+
                 // check if we need to send the key to the server or not
                 CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
                 if (sendKey.isChecked()) {
                     Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
                     HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
-    
+
                     /*
                      * upload the newly signed key to the key server
                      */
-    
+
                     Apg.uploadKeyRingToServer(server, pubring);
                 }
-    
+
                 // store the signed key in our local cache
                 int retval = Apg.storeKeyRingInCache(pubring);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
@@ -239,52 +271,53 @@ public class SignKeyActivity extends BaseActivity {
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         }
-        
+
         status.putInt(Constants.extras.STATUS, Id.message.done);
-        
+
         msg.setData(status);
         sendMessage(msg);
-        
+
         if (status.containsKey(Apg.EXTRA_ERROR)) {
             setResult(Id.return_value.error);
         } else {
             setResult(Id.return_value.ok);
         }
-        
+
         finish();
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case Id.request.secret_keys: {
-                if (resultCode == RESULT_OK) {
-                    masterKeyId = data.getLongExtra(Apg.EXTRA_KEY_ID, 0);
-                    
-                    // re-enable the sign button so the user can initiate the sign process
-                    Button sign = (Button) findViewById(R.id.sign);
-                    sign.setEnabled(true);
-                }
-                
-                break;
+        case Id.request.secret_keys: {
+            if (resultCode == RESULT_OK) {
+                masterKeyId = data.getLongExtra(Apg.EXTRA_KEY_ID, 0);
+
+                // re-enable the sign button so the user can initiate the sign process
+                Button sign = (Button) findViewById(R.id.sign);
+                sign.setEnabled(true);
             }
-            
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-            }
+
+            break;
+        }
+
+        default: {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
         }
     }
-    
+
     @Override
     public void doneCallback(Message msg) {
         super.doneCallback(msg);
-        
+
         removeDialog(Id.dialog.signing);
 
         Bundle data = msg.getData();
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
 

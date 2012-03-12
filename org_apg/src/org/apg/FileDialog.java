@@ -37,8 +37,6 @@ public class FileDialog {
     private static ImageButton mBrowse;
     private static CheckBox mCheckBox;
     private static Activity mActivity;
-    private static String mFileManagerTitle;
-    private static String mFileManagerButton;
     private static int mRequestCode;
 
     public static interface OnClickListener {
@@ -70,8 +68,6 @@ public class FileDialog {
                 openFile();
             }
         });
-        mFileManagerTitle = fileManagerTitle;
-        mFileManagerButton = fileManagerButton;
         mRequestCode = requestCode;
         mCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
         if (checkboxText == null) {
@@ -121,7 +117,7 @@ public class FileDialog {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
         intent.setData(Uri.parse("file://" + filename));
-        intent.setType("*/*");
+        intent.setType("text/plain"); // only .asc or .gpg files
 
         try {
             mActivity.startActivityForResult(intent, mRequestCode);

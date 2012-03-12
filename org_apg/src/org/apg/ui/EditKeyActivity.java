@@ -59,9 +59,6 @@ public class EditKeyActivity extends BaseActivity {
     private SectionView mUserIds;
     private SectionView mKeys;
 
-    // private Button mSaveButton;
-    // private Button mDiscardButton;
-
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
@@ -162,10 +159,6 @@ public class EditKeyActivity extends BaseActivity {
         }
 
         updatePassPhraseButtonText();
-
-        // Toast.makeText(this,
-        // getString(R.string.warningMessage, getString(R.string.keyEditingIsBeta)),
-        // Toast.LENGTH_LONG).show();
     }
 
     private long getMasterKeyId() {
@@ -179,15 +172,6 @@ public class EditKeyActivity extends BaseActivity {
         return (!mCurrentPassPhrase.equals(""))
                 || (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
     }
-
-    // @Override
-    // public boolean onCreateOptionsMenu(Menu menu) {
-    // menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences).setIcon(
-    // android.R.drawable.ic_menu_preferences);
-    // menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setIcon(
-    // android.R.drawable.ic_menu_info_details);
-    // return true;
-    // }
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -244,15 +228,6 @@ public class EditKeyActivity extends BaseActivity {
         }
         }
     }
-
-    // public void onClick(View v) {
-    // if (v == mSaveButton) {
-    // // TODO: some warning
-    // saveClicked();
-    // } else if (v == mDiscardButton) {
-    // finish();
-    // }
-    // }
 
     private void saveClicked() {
         if (!havePassPhrase()) {

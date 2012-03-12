@@ -182,7 +182,7 @@
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_keyServerQuery" />
         <activity
-            android:name=".ui.SendKeyActivity"
+            android:name=".ui.KeyServerExportActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_sendKey" />
         <activity

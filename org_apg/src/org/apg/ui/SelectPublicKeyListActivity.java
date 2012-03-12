@@ -20,10 +20,7 @@ import java.util.Vector;
 
 import org.apg.Apg;
 import org.apg.Id;
-import org.apg.Id.menu;
-import org.apg.Id.menu.option;
 import org.apg.R;
-
 
 import com.actionbarsherlock.view.Menu;
 
@@ -167,8 +164,8 @@ public class SelectPublicKeyListActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(android.R.drawable.ic_menu_search);
+        menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
+                android.R.drawable.ic_menu_search);
         return true;
     }
 }

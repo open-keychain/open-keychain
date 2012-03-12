@@ -17,8 +17,6 @@
 package org.apg.ui;
 
 import java.security.Security;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apg.Apg;
 import org.apg.Id;
@@ -26,26 +24,16 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.util.Linkify;
-import android.text.util.Linkify.TransformFilter;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends BaseActivity {
     static {
@@ -184,10 +172,10 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
-                .setIcon(R.drawable.ic_menu_settings_holo_light)
+                .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setIcon(R.drawable.ic_menu_about)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         return true;
     }
 
@@ -210,53 +198,6 @@ public class MainActivity extends BaseActivity {
         }
         return false;
     }
-
-    // @Override
-    // public boolean onCreateOptionsMenu(Menu menu) {
-    // menu.add(2, Id.menu.option.preferences, 3, R.string.menu_preferences).setIcon(
-    // android.R.drawable.ic_menu_preferences);
-    // menu.add(2, Id.menu.option.key_server, 4, R.string.menu_keyServer).setIcon(
-    // android.R.drawable.ic_menu_search);
-    // menu.add(3, Id.menu.option.about, 5, R.string.menu_about).setIcon(
-    // android.R.drawable.ic_menu_info_details);
-    // menu.add(3, Id.menu.option.help, 6, R.string.menu_help).setIcon(
-    // android.R.drawable.ic_menu_help);
-    // return true;
-    // }
-    //
-    // @Override
-    // public boolean onOptionsItemSelected(MenuItem item) {
-    // switch (item.getItemId()) {
-    // case Id.menu.option.create: {
-    // showDialog(Id.dialog.new_account);
-    // return true;
-    // }
-    //
-    // case Id.menu.option.manage_public_keys: {
-    // startActivity(new Intent(this, PublicKeyListActivity.class));
-    // return true;
-    // }
-    //
-    // case Id.menu.option.manage_secret_keys: {
-    // startActivity(new Intent(this, SecretKeyListActivity.class));
-    // return true;
-    // }
-    //
-    // case Id.menu.option.help: {
-    // showDialog(Id.dialog.help);
-    // return true;
-    // }
-    //
-    // case Id.menu.option.key_server: {
-    // startActivity(new Intent(this, KeyServerQueryActivity.class));
-    // return true;
-    // }
-    //
-    // default: {
-    // return super.onOptionsItemSelected(item);
-    // }
-    // }
-    // }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

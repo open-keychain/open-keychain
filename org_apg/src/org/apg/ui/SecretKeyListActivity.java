@@ -20,12 +20,6 @@ import org.apg.Apg;
 import org.apg.AskForSecretKeyPassPhrase;
 import org.apg.Constants;
 import org.apg.Id;
-import org.apg.Constants.path;
-import org.apg.Id.dialog;
-import org.apg.Id.menu;
-import org.apg.Id.message;
-import org.apg.Id.type;
-import org.apg.Id.menu.option;
 import org.apg.R;
 
 import com.actionbarsherlock.view.Menu;
@@ -55,10 +49,10 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(R.drawable.ic_menu_search_holo_light)
+                .setIcon(R.drawable.ic_menu_search_list)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(1, Id.menu.option.create, 1, R.string.menu_createKey)
-                .setIcon(R.drawable.ic_suggestions_add)
+        // .setIcon(R.drawable.ic_suggestions_add)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys)

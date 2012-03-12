@@ -76,10 +76,9 @@ public class EncryptActivity extends BaseActivity {
     private boolean mReturnResult = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
-//    private Button mEncryptButton = null;
+
     private boolean mEncryptEnabled = false;
     private String mEncryptString = "";
-//    private Button mEncryptToClipboardButton = null;
     private boolean mEncryptToClipboardEnabled = false;
     private String mEncryptToClipboardString = "";
 
@@ -126,12 +125,15 @@ public class EncryptActivity extends BaseActivity {
 
         if (mEncryptToClipboardEnabled) {
             menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString)
+            // .setIcon(R.drawable.ic_menu_encrypt)
                     .setShowAsAction(
                             MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mEncryptEnabled) {
-            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString).setShowAsAction(
-                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString)
+            // .setIcon(R.drawable.ic_menu_decrypt)
+                    .setShowAsAction(
+                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -231,8 +233,8 @@ public class EncryptActivity extends BaseActivity {
 
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
-//        mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
-//        mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
+        // mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
+        // mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
         mSign = (CheckBox) findViewById(R.id.sign);
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -285,18 +287,6 @@ public class EncryptActivity extends BaseActivity {
                 guessOutputFilename();
             }
         });
-
-//        mEncryptToClipboardButton.setOnClickListener(new OnClickListener() {
-//            public void onClick(View v) {
-//                encryptToClipboardClicked();
-//            }
-//        });
-
-//        mEncryptButton.setOnClickListener(new OnClickListener() {
-//            public void onClick(View v) {
-//                encryptClicked();
-//            }
-//        });
 
         mSelectKeysButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -502,81 +492,50 @@ public class EncryptActivity extends BaseActivity {
             mSourceLabel.setText(R.string.label_message);
             if (mReturnResult) {
                 mEncryptToClipboardEnabled = false;
-                // mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
             } else {
                 mEncryptToClipboardEnabled = true;
-                // mEncryptToClipboardButton.setVisibility(View.VISIBLE);
             }
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
                 if (mReturnResult) {
                     mEncryptString = getString(R.string.btn_encrypt);
-                    // mEncryptButton.setText(R.string.btn_encrypt);
                 } else {
                     mEncryptString = getString(R.string.btn_encryptAndEmail);
-
-                    // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                 }
                 mEncryptEnabled = true;
                 mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
                 mEncryptToClipboardEnabled = true;
-
-                // mEncryptButton.setEnabled(true);
-                // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                // mEncryptToClipboardButton.setEnabled(true);
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (getSecretKeyId() == 0) {
                         if (mReturnResult) {
                             mEncryptString = getString(R.string.btn_encrypt);
-                            // mEncryptButton.setText(R.string.btn_encrypt);
                         } else {
                             mEncryptString = getString(R.string.btn_encryptAndEmail);
-
-                            // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                         }
                         mEncryptEnabled = false;
                         mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
                         mEncryptToClipboardEnabled = false;
-
-                        // mEncryptButton.setEnabled(false);
-                        // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                        // mEncryptToClipboardButton.setEnabled(false);
                     } else {
                         if (mReturnResult) {
                             mEncryptString = getString(R.string.btn_sign);
-
-                            // mEncryptButton.setText(R.string.btn_sign);
                         } else {
                             mEncryptString = getString(R.string.btn_signAndEmail);
-
-                            // mEncryptButton.setText(R.string.btn_signAndEmail);
                         }
 
                         mEncryptEnabled = true;
                         mEncryptToClipboardString = getString(R.string.btn_signToClipboard);
                         mEncryptToClipboardEnabled = true;
-
-                        // mEncryptButton.setEnabled(true);
-                        // mEncryptToClipboardButton.setText(R.string.btn_signToClipboard);
-                        // mEncryptToClipboardButton.setEnabled(true);
                     }
                 } else {
                     if (mReturnResult) {
                         mEncryptString = getString(R.string.btn_encrypt);
-
-                        // mEncryptButton.setText(R.string.btn_encrypt);
                     } else {
                         mEncryptString = getString(R.string.btn_encryptAndEmail);
-
-                        // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                     }
 
                     mEncryptEnabled = true;
                     mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
                     mEncryptToClipboardEnabled = true;
-                    // mEncryptButton.setEnabled(true);
-                    // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                    // mEncryptToClipboardButton.setEnabled(true);
                 }
             }
             break;
