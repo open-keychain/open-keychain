@@ -76,8 +76,13 @@ public class EncryptActivity extends BaseActivity {
     private boolean mReturnResult = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
-    private Button mEncryptButton = null;
-    private Button mEncryptToClipboardButton = null;
+//    private Button mEncryptButton = null;
+    private boolean mEncryptEnabled = false;
+    private String mEncryptString = "";
+//    private Button mEncryptToClipboardButton = null;
+    private boolean mEncryptToClipboardEnabled = false;
+    private String mEncryptToClipboardString = "";
+
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
     private TextView mMainUserIdRest = null;
@@ -118,24 +123,30 @@ public class EncryptActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.encrypt, 0, R.string.btn_encrypt)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        if (mEncryptToClipboardEnabled) {
+            menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString)
+                    .setShowAsAction(
+                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        }
+        if (mEncryptEnabled) {
+            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString).setShowAsAction(
+                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        }
 
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case Id.menu.option.key_server: {
-            startActivity(new Intent(this, KeyServerQueryActivity.class));
+        case Id.menu.option.encrypt_to_clipboard: {
+            encryptToClipboardClicked();
 
             return true;
         }
-        case Id.menu.option.scanQRCode: {
-            Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
-            startActivityForResult(intent, Id.request.import_from_qr_code);
+        case Id.menu.option.encrypt: {
+            encryptClicked();
 
             return true;
         }
@@ -220,8 +231,8 @@ public class EncryptActivity extends BaseActivity {
 
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
-        mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
-        mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
+//        mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
+//        mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
         mSign = (CheckBox) findViewById(R.id.sign);
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -275,17 +286,17 @@ public class EncryptActivity extends BaseActivity {
             }
         });
 
-        mEncryptToClipboardButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                encryptToClipboardClicked();
-            }
-        });
+//        mEncryptToClipboardButton.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//                encryptToClipboardClicked();
+//            }
+//        });
 
-        mEncryptButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                encryptClicked();
-            }
-        });
+//        mEncryptButton.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//                encryptClicked();
+//            }
+//        });
 
         mSelectKeysButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -479,57 +490,93 @@ public class EncryptActivity extends BaseActivity {
     private void updateButtons() {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
-            mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
-            mEncryptButton.setText(R.string.btn_encrypt);
+            mEncryptEnabled = true;
+            mEncryptToClipboardEnabled = false;
+
+            // mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
+            // mEncryptButton.setText(R.string.btn_encrypt);
             break;
         }
 
         case R.id.sourceMessage: {
             mSourceLabel.setText(R.string.label_message);
             if (mReturnResult) {
-                mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
+                mEncryptToClipboardEnabled = false;
+                // mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
             } else {
-                mEncryptToClipboardButton.setVisibility(View.VISIBLE);
+                mEncryptToClipboardEnabled = true;
+                // mEncryptToClipboardButton.setVisibility(View.VISIBLE);
             }
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
                 if (mReturnResult) {
-                    mEncryptButton.setText(R.string.btn_encrypt);
+                    mEncryptString = getString(R.string.btn_encrypt);
+                    // mEncryptButton.setText(R.string.btn_encrypt);
                 } else {
-                    mEncryptButton.setText(R.string.btn_encryptAndEmail);
+                    mEncryptString = getString(R.string.btn_encryptAndEmail);
+
+                    // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                 }
-                mEncryptButton.setEnabled(true);
-                mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                mEncryptToClipboardButton.setEnabled(true);
+                mEncryptEnabled = true;
+                mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
+                mEncryptToClipboardEnabled = true;
+
+                // mEncryptButton.setEnabled(true);
+                // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
+                // mEncryptToClipboardButton.setEnabled(true);
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (getSecretKeyId() == 0) {
                         if (mReturnResult) {
-                            mEncryptButton.setText(R.string.btn_encrypt);
+                            mEncryptString = getString(R.string.btn_encrypt);
+                            // mEncryptButton.setText(R.string.btn_encrypt);
                         } else {
-                            mEncryptButton.setText(R.string.btn_encryptAndEmail);
+                            mEncryptString = getString(R.string.btn_encryptAndEmail);
+
+                            // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                         }
-                        mEncryptButton.setEnabled(false);
-                        mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                        mEncryptToClipboardButton.setEnabled(false);
+                        mEncryptEnabled = false;
+                        mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
+                        mEncryptToClipboardEnabled = false;
+
+                        // mEncryptButton.setEnabled(false);
+                        // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
+                        // mEncryptToClipboardButton.setEnabled(false);
                     } else {
                         if (mReturnResult) {
-                            mEncryptButton.setText(R.string.btn_sign);
+                            mEncryptString = getString(R.string.btn_sign);
+
+                            // mEncryptButton.setText(R.string.btn_sign);
                         } else {
-                            mEncryptButton.setText(R.string.btn_signAndEmail);
+                            mEncryptString = getString(R.string.btn_signAndEmail);
+
+                            // mEncryptButton.setText(R.string.btn_signAndEmail);
                         }
-                        mEncryptButton.setEnabled(true);
-                        mEncryptToClipboardButton.setText(R.string.btn_signToClipboard);
-                        mEncryptToClipboardButton.setEnabled(true);
+
+                        mEncryptEnabled = true;
+                        mEncryptToClipboardString = getString(R.string.btn_signToClipboard);
+                        mEncryptToClipboardEnabled = true;
+
+                        // mEncryptButton.setEnabled(true);
+                        // mEncryptToClipboardButton.setText(R.string.btn_signToClipboard);
+                        // mEncryptToClipboardButton.setEnabled(true);
                     }
                 } else {
                     if (mReturnResult) {
-                        mEncryptButton.setText(R.string.btn_encrypt);
+                        mEncryptString = getString(R.string.btn_encrypt);
+
+                        // mEncryptButton.setText(R.string.btn_encrypt);
                     } else {
-                        mEncryptButton.setText(R.string.btn_encryptAndEmail);
+                        mEncryptString = getString(R.string.btn_encryptAndEmail);
+
+                        // mEncryptButton.setText(R.string.btn_encryptAndEmail);
                     }
-                    mEncryptButton.setEnabled(true);
-                    mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
-                    mEncryptToClipboardButton.setEnabled(true);
+
+                    mEncryptEnabled = true;
+                    mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
+                    mEncryptToClipboardEnabled = true;
+                    // mEncryptButton.setEnabled(true);
+                    // mEncryptToClipboardButton.setText(R.string.btn_encryptToClipboard);
+                    // mEncryptToClipboardButton.setEnabled(true);
                 }
             }
             break;
@@ -539,6 +586,9 @@ public class EncryptActivity extends BaseActivity {
             break;
         }
         }
+
+        // build new action bar
+        invalidateOptionsMenu();
     }
 
     private void updateMode() {

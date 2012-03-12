@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,18 +15,31 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
-    <include android:id="@+id/layout_filter" layout="@layout/filter_info"/>
+    <include
+        android:id="@+id/layout_filter"
+        layout="@layout/filter_info" />
 
     <ExpandableListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:isScrollContainer="true"/>
+        android:layout_weight="1"
+        android:isScrollContainer="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_weight="1"
+        android:background="@drawable/abs__ab_bottom_solid_light_holo"
+        android:paddingBottom="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="3dp"
+        android:text="@string/listInformation" />
 
 </LinearLayout>

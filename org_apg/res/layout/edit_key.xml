@@ -62,26 +62,26 @@
 
     </ScrollView>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        style="@android:style/ButtonBar">
+<!--     <LinearLayout -->
+<!--         android:layout_width="fill_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:orientation="horizontal" -->
+<!--         style="@android:style/ButtonBar"> -->
 
-        <Button
-            android:id="@+id/btn_save"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="@string/btn_save"/>
+<!--         <Button -->
+<!--             android:id="@+id/btn_save" -->
+<!--             android:layout_width="0dip" -->
+<!--             android:layout_height="fill_parent" -->
+<!--             android:layout_weight="1" -->
+<!--             android:text="@string/btn_save"/> -->
 
-        <Button
-            android:id="@+id/btn_discard"
-            android:layout_width="0dip"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:text="@string/btn_doNotSave"/>
+<!--         <Button -->
+<!--             android:id="@+id/btn_discard" -->
+<!--             android:layout_width="0dip" -->
+<!--             android:layout_height="fill_parent" -->
+<!--             android:layout_weight="1" -->
+<!--             android:text="@string/btn_doNotSave"/> -->
 
-    </LinearLayout>
+<!--     </LinearLayout> -->
 
 </LinearLayout>

@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void decryptOnClick(View view) {
-        Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
+        Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
         intent.setAction(Apg.Intent.DECRYPT);
         startActivity(intent);
     }

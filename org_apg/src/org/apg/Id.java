@@ -45,8 +45,11 @@ public final class Id {
             public static final int key_server = 0x21070011;
             public static final int scanQRCode = 0x21070012;
             public static final int encrypt = 0x21070013;
-            public static final int decrypt = 0x21070014;
-            public static final int encrypt_ = 0x21070015;
+            public static final int encrypt_to_clipboard = 0x21070014;
+            public static final int decrypt = 0x21070015;
+            public static final int decrypt_to_clipboard = 0x21070016;
+            public static final int cancel = 0x21070017;
+            public static final int save = 0x21070018;
 
         }
     }
@@ -92,7 +95,7 @@ public final class Id {
         public static final int export_keys = 0x2107000c;
         public static final int exporting = 0x2107000d;
         public static final int new_account = 0x2107000e;
-//        public static final int about = 0x2107000f;
+        // public static final int about = 0x2107000f;
         public static final int change_log = 0x21070010;
         public static final int output_filename = 0x21070011;
         public static final int delete_file = 0x21070012;

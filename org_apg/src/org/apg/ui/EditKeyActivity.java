@@ -29,6 +29,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -51,20 +52,54 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Vector;
 
-public class EditKeyActivity extends BaseActivity implements OnClickListener {
+public class EditKeyActivity extends BaseActivity {
 
     private PGPSecretKeyRing mKeyRing = null;
 
     private SectionView mUserIds;
     private SectionView mKeys;
 
-    private Button mSaveButton;
-    private Button mDiscardButton;
+    // private Button mSaveButton;
+    // private Button mDiscardButton;
 
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
     private Button mChangePassPhrase;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(2, Id.menu.option.cancel, 0, R.string.btn_doNotSave)
+                // .setIcon(R.drawable.ic_menu_search_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(2, Id.menu.option.save, 1, R.string.btn_save)
+                // .setIcon(R.drawable.ic_suggestions_add)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case android.R.id.home:
+            startActivity(new Intent(this, SecretKeyListActivity.class));
+            return true;
+
+        case Id.menu.option.save:
+            saveClicked();
+            return true;
+
+        case Id.menu.option.cancel:
+            finish();
+            return true;
+
+        default:
+            break;
+
+        }
+        return false;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,11 +138,11 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
             }
         });
 
-        mSaveButton = (Button) findViewById(R.id.btn_save);
-        mDiscardButton = (Button) findViewById(R.id.btn_discard);
+        // mSaveButton = (Button) findViewById(R.id.btn_save);
+        // mDiscardButton = (Button) findViewById(R.id.btn_discard);
 
-        mSaveButton.setOnClickListener(this);
-        mDiscardButton.setOnClickListener(this);
+        // mSaveButton.setOnClickListener(this);
+        // mDiscardButton.setOnClickListener(this);
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -128,9 +163,9 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
 
         updatePassPhraseButtonText();
 
-        Toast.makeText(this,
-                getString(R.string.warningMessage, getString(R.string.keyEditingIsBeta)),
-                Toast.LENGTH_LONG).show();
+        // Toast.makeText(this,
+        // getString(R.string.warningMessage, getString(R.string.keyEditingIsBeta)),
+        // Toast.LENGTH_LONG).show();
     }
 
     private long getMasterKeyId() {
@@ -145,14 +180,14 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
                 || (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences).setIcon(
-                android.R.drawable.ic_menu_preferences);
-        menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setIcon(
-                android.R.drawable.ic_menu_info_details);
-        return true;
-    }
+    // @Override
+    // public boolean onCreateOptionsMenu(Menu menu) {
+    // menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences).setIcon(
+    // android.R.drawable.ic_menu_preferences);
+    // menu.add(0, Id.menu.option.about, 1, R.string.menu_about).setIcon(
+    // android.R.drawable.ic_menu_info_details);
+    // return true;
+    // }
 
     @Override
     protected Dialog onCreateDialog(int id) {
@@ -210,14 +245,14 @@ public class EditKeyActivity extends BaseActivity implements OnClickListener {
         }
     }
 
-    public void onClick(View v) {
-        if (v == mSaveButton) {
-            // TODO: some warning
-            saveClicked();
-        } else if (v == mDiscardButton) {
-            finish();
-        }
-    }
+    // public void onClick(View v) {
+    // if (v == mSaveButton) {
+    // // TODO: some warning
+    // saveClicked();
+    // } else if (v == mDiscardButton) {
+    // finish();
+    // }
+    // }
 
     private void saveClicked() {
         if (!havePassPhrase()) {

@@ -49,23 +49,24 @@ public class PublicKeyListActivity extends KeyListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.key_server, 0, R.string.menu_keyServer)
-                .setIcon(R.drawable.ic_menu_find_holo_light)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.search, 0, R.string.menu_search)
+                .setIcon(R.drawable.ic_menu_search_holo_light)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(1, Id.menu.option.scanQRCode, 1, R.string.menu_scanQRCode)
         // .setIcon(R.drawable.ic_suggestions_add)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys)
+
+        menu.add(1, Id.menu.option.key_server, 2, R.string.menu_keyServer)
+                .setIcon(R.drawable.ic_menu_find_holo_light)
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_keys, 3, R.string.menu_importKeys)
         // .setIcon(R.drawable.ic_suggestions_add)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys)
+        menu.add(0, Id.menu.option.export_keys, 4, R.string.menu_exportKeys)
         // .setIcon(R.drawable.ic_menu_share_holo_light)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.search, 4, R.string.menu_search)
-                .setIcon(R.drawable.ic_menu_search_holo_light)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         return true;
     }
