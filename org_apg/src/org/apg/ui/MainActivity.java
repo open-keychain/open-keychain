@@ -46,7 +46,6 @@ public class MainActivity extends BaseActivity {
 
     public void myKeysOnClick(View view) {
         startActivity(new Intent(this, SecretKeyListActivity.class));
-
     }
 
     public void encryptOnClick(View view) {
@@ -68,7 +67,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void helpOnClick(View view) {
-        // TODO: implement help view
+        startActivity(new Intent(this, HelpActivity.class));
     }
 
     @Override

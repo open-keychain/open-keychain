@@ -46,7 +46,8 @@
     <string name="title_importFromQRCode">Import from QR Code</string>
     <string name="title_signKey">Sign Key</string>
     <string name="title_about">About</string>
-
+    <string name="title_help">Help</string>
+    
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
     <string name="section_keys">Keys</string>

@@ -206,6 +206,9 @@
             android:excludeFromRecents="true"
             android:label="@string/title_about"
             android:theme="@style/Theme.Sherlock.Light.Dialog" />
+        <activity
+            android:name=".ui.HelpActivity"
+            android:label="@string/title_help" />
 
         <service android:name=".Service" />
         <service

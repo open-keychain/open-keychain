@@ -117,19 +117,39 @@ public class DecryptActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         if (mDecryptEnabled) {
-            menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mDecryptString)
+            menu.add(1, Id.menu.option.decrypt, 0, mDecryptString)
             // .setIcon(R.drawable.ic_menu_encrypt)
                     .setShowAsAction(
                             MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mReplyEnabled) {
-            menu.add(1, Id.menu.option.encrypt, 1, mReplyString)
+            menu.add(1, Id.menu.option.reply, 1, mReplyString)
             // .setIcon(R.drawable.ic_menu_decrypt)
                     .setShowAsAction(
                             MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case Id.menu.option.decrypt: {
+            decryptClicked();
+
+            return true;
+        }
+        case Id.menu.option.reply: {
+            replyClicked();
+
+            return true;
+        }
+
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
+        }
     }
 
     @Override
@@ -171,8 +191,6 @@ public class DecryptActivity extends BaseActivity {
         mSourceLabel.setOnClickListener(nextSourceClickListener);
 
         mMessage = (EditText) findViewById(R.id.message);
-        // mDecryptButton = (Button) findViewById(R.id.btn_decrypt);
-        // mReplyButton = (Button) findViewById(R.id.btn_reply);
         mSignatureLayout = (LinearLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
@@ -258,6 +276,9 @@ public class DecryptActivity extends BaseActivity {
                         mMessage.setText(textData);
                         mDecryptString = getString(R.string.btn_verify);
                         // mDecryptButton.setText(R.string.btn_verify);
+
+                        // build new action bar
+                        invalidateOptionsMenu();
                     } else {
                         Log.d(Constants.TAG, "Nothing matched!");
                     }
@@ -305,7 +326,8 @@ public class DecryptActivity extends BaseActivity {
                             mMessage.setText(data);
                             mDecryptString = getString(R.string.btn_verify);
 
-                            // mDecryptButton.setText(R.string.btn_verify);
+                            // build new action bar
+                            invalidateOptionsMenu();
                         }
                     }
                 }
@@ -348,20 +370,10 @@ public class DecryptActivity extends BaseActivity {
             }
         });
 
-        // mDecryptButton.setOnClickListener(new OnClickListener() {
-        // public void onClick(View v) {
-        // decryptClicked();
-        // }
-        // });
-        //
-        // mReplyButton.setOnClickListener(new OnClickListener() {
-        // public void onClick(View v) {
-        // replyClicked();
-        // }
-        // });
-        // mReplyButton.setVisibility(View.INVISIBLE);
-
         mReplyEnabled = false;
+
+        // build new actionbar
+        invalidateOptionsMenu();
 
         if (mReturnResult) {
             mSourcePrevious.setClickable(false);
@@ -381,6 +393,7 @@ public class DecryptActivity extends BaseActivity {
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
             // mDecryptButton.performClick();
+            // TODO: why was it performClick()???
             decryptClicked();
         }
     }
@@ -416,16 +429,19 @@ public class DecryptActivity extends BaseActivity {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
             mSourceLabel.setText(R.string.label_file);
-            // mDecryptButton.setText(R.string.btn_decrypt);
             mDecryptString = getString(R.string.btn_decrypt);
+
+            // build new action bar
+            invalidateOptionsMenu();
             break;
         }
 
         case R.id.sourceMessage: {
             mSourceLabel.setText(R.string.label_message);
-            // mDecryptButton.setText(R.string.btn_decrypt);
             mDecryptString = getString(R.string.btn_decrypt);
 
+            // build new action bar
+            invalidateOptionsMenu();
             break;
         }
 
@@ -633,8 +649,10 @@ public class DecryptActivity extends BaseActivity {
         removeDialog(Id.dialog.decrypting);
         mSignatureKeyId = 0;
         mSignatureLayout.setVisibility(View.GONE);
-        // mReplyButton.setVisibility(View.INVISIBLE);
         mReplyEnabled = false;
+
+        // build new action bar
+        invalidateOptionsMenu();
 
         String error = data.getString(Apg.EXTRA_ERROR);
         if (error != null) {
@@ -657,8 +675,10 @@ public class DecryptActivity extends BaseActivity {
             String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
             mMessage.setText(decryptedMessage);
             mMessage.setHorizontallyScrolling(false);
-            // mReplyButton.setVisibility(View.VISIBLE);
             mReplyEnabled = false;
+
+            // build new action bar
+            invalidateOptionsMenu();
             break;
         }
 

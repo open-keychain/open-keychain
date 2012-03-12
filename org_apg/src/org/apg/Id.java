@@ -47,7 +47,7 @@ public final class Id {
             public static final int encrypt = 0x21070013;
             public static final int encrypt_to_clipboard = 0x21070014;
             public static final int decrypt = 0x21070015;
-            public static final int decrypt_to_clipboard = 0x21070016;
+            public static final int reply = 0x21070016;
             public static final int cancel = 0x21070017;
             public static final int save = 0x21070018;
 

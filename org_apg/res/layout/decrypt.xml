@@ -48,10 +48,10 @@
                     android:id="@+id/sourceLabel"
                     android:layout_width="0dip"
                     android:layout_height="fill_parent"
+                    android:layout_weight="1"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="@string/label_message"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#ffffffff" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <ImageView
                     android:id="@+id/sourceNext"
@@ -103,7 +103,7 @@
                             android:id="@+id/btn_browse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_launcher_folder_small" />
+                            android:src="@drawable/ic_menu_filebrowser" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -179,26 +179,5 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
     </LinearLayout>
-
-<!--     <LinearLayout -->
-<!--         style="@android:style/ButtonBar" -->
-<!--         android:layout_width="fill_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:orientation="horizontal" > -->
-
-<!--         <Button -->
-<!--             android:id="@+id/btn_reply" -->
-<!--             android:layout_width="0dip" -->
-<!--             android:layout_height="fill_parent" -->
-<!--             android:layout_weight="1" -->
-<!--             android:text="@string/btn_reply" /> -->
-
-<!--         <Button -->
-<!--             android:id="@+id/btn_decrypt" -->
-<!--             android:layout_width="0dip" -->
-<!--             android:layout_height="fill_parent" -->
-<!--             android:layout_weight="1" -->
-<!--             android:text="@string/btn_decrypt" /> -->
-<!--     </LinearLayout> -->
 
 </LinearLayout>
