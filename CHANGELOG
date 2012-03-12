@@ -1,0 +1,14 @@
+1.1 (APG+)
+* Complete redesign
+* Integration of different branches:
+* Share public keys via qr codes
+* Sign keys
+* Upload keys to server
+
+1.08 (Last changes on APG)
+* basic key server support (HKP, please report bugs :))
+* app2sd (untested, let me know if there are problems)
+* more choices for pass phrase cache: 1, 2, 4, 8, hours
+* translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+* bugfixes
+* optimizations

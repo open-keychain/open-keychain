@@ -1,0 +1,25 @@
+THIS IS BETA SOFTWARE.
+APG+ contains many remaining bugs, so help us developing on github!
+
+Description:
+Android Privacy Guard (APG) is a open source OpenPGP implementation for Android.
+
+APG+ is a fork based on the original APG to introduce more features and a new user interface.
+
+* Manage secret/public keys (eg. GPG/PGP)
+* Create new keys and edit them
+* Encrypt/Sign/Decrypt/Verify emails and files
+* Share keys via QRCodes
+* HKP Keyserver support
+* Integration with K9 Mail
+* Intent and AIDL API
+
+Website and Issue Tracker:
+https://github.com/dschuermann/apg
+
+License:
+Apache License 2.0
+
+Permissions:
+• Internet access: Internet access is ONLY used for key server queries.
+• Modify/delete SD card content: To export keys to the sd card
