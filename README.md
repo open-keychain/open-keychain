@@ -18,16 +18,17 @@ Fork APG+ and do a merge request. I will merge your changes back into the main p
 
 # Build using Ant
 
-1. Execute "ant -Dsdk.dir=/opt/android-sdk/ -Dndk.dir=/opt/android-ndk/ release" in the folder org_adaway with the appropriate paths. 
+## Command Line
 
-2. Alternatively you could add a file local.properties in org_adaway folder with the following lines, altered to your locations of the SDK and NDK:
+1. Execute "ant -Dsdk.dir=/opt/android-sdk/ release" in the folder org_apg with the appropriate paths. 
+
+## Local.properties
+
+1. Alternatively you could add a file local.properties in org_apg folder with the following lines, altered to your locations of the SDK:
 
     sdk.dir=/opt/android-sdk
-    ndk.dir=/opt/android-ndk
 
-    and execute "ant release" 
-
-3. Build
+2. execute "ant release" 
 
 # Libraries
 
