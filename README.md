@@ -8,30 +8,26 @@ I will try to reintegrate the various forks and build a new stable version, whic
 
 Fork APG+ and do a merge request. I will merge your changes back into the main project.
 
+# Build using Eclipse
+
+1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
+2. New -> Android Project -> Create project from existing source, choose org_apg
+3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
+4. Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
+5. Now APG+ can be build
+
 # Build using Ant
 
 1. Execute "ant -Dsdk.dir=/opt/android-sdk/ -Dndk.dir=/opt/android-ndk/ release" in the folder org_adaway with the appropriate paths. 
 
-1. Alternatively you could add a file local.properties in org_adaway folder with the following lines, altered to your locations of the SDK and NDK:
+2. Alternatively you could add a file local.properties in org_adaway folder with the following lines, altered to your locations of the SDK and NDK:
 
     sdk.dir=/opt/android-sdk
     ndk.dir=/opt/android-ndk
 
     and execute "ant release" 
 
-2. Build
-
-APG+ is using ActionBarSherlock to provide backwards compatibility.
-ActionBarSherlock
-
-1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
-
-# Build using Eclipse
-
-1. New -> Android Project -> Create project from existing source, choose org_apg
-2. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
-3. Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
-4. Now APG+ can be build 
+3. Build
 
 # Libraries
 
