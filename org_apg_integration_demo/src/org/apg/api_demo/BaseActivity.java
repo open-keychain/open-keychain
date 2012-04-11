@@ -17,7 +17,6 @@
 package org.apg.api_demo;
 
 import org.apg.api_demo.R;
-import org.apg.integration.ApgIntentHelper;
 
 import android.app.Activity;
 import android.content.Intent;
