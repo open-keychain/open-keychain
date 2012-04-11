@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apg.api_demo.util;
+package org.apg.integration;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;

@@ -17,6 +17,7 @@
 package org.apg.api_demo;
 
 import org.apg.api_demo.R;
+import org.apg.integration.ApgIntentHelper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,11 +25,13 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.widget.Toast;
 
 public class BaseActivity extends PreferenceActivity {
     private Activity mActivity;
 
     private Preference mIntentDemo;
+    private Preference mAidlDemo;
 
     /**
      * Called when the activity is first created.
@@ -43,16 +46,26 @@ public class BaseActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.base_preference);
 
         // find preferences
-        mIntentDemo = (Preference) findPreference("intent_demo_1");
+        mIntentDemo = (Preference) findPreference("intent_demo");
+        mAidlDemo = (Preference) findPreference("aidl_demo");
 
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, IntentDemo1Activity.class));
+                startActivity(new Intent(mActivity, IntentDemoActivity.class));
 
                 return false;
             }
         });
 
+        mAidlDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(mActivity, "Currently not implemented!", Toast.LENGTH_LONG).show();
+
+                return false;
+            }
+        });
     }
+
 }

@@ -50,6 +50,7 @@ public final class Id {
             public static final int reply = 0x21070016;
             public static final int cancel = 0x21070017;
             public static final int save = 0x21070018;
+            public static final int okay = 0x21070019;
 
         }
     }

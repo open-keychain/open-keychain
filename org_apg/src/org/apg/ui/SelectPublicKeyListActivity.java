@@ -22,7 +22,9 @@ import org.apg.Apg;
 import org.apg.Id;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -43,6 +45,12 @@ public class SelectPublicKeyListActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
+
         setContentView(R.layout.select_public_key);
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
@@ -50,20 +58,6 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         mList = (ListView) findViewById(R.id.list);
         // needed in Android 1.5, where the XML attribute gets ignored
         mList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
-        Button okButton = (Button) findViewById(R.id.btn_ok);
-        okButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                okClicked();
-            }
-        });
-
-        Button cancelButton = (Button) findViewById(R.id.btn_cancel);
-        cancelButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                cancelClicked();
-            }
-        });
 
         mFilterLayout = findViewById(R.id.layout_filter);
         mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
@@ -166,6 +160,29 @@ public class SelectPublicKeyListActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
                 android.R.drawable.ic_menu_search);
+        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.okay, 1, R.string.btn_okay).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case Id.menu.option.okay:
+            okClicked();
+            return true;
+
+        case Id.menu.option.cancel:
+            cancelClicked();
+            return true;
+
+        default:
+            break;
+
+        }
+        return false;
     }
 }

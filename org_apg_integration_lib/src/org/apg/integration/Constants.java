@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apg.api_demo.util;
-
-import java.util.regex.Pattern;
+package org.apg.integration;
 
 import android.net.Uri;
 

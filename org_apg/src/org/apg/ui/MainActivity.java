@@ -78,6 +78,7 @@ public class MainActivity extends BaseActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
 
         // if (!mPreferences.hasSeenHelp()) {
         // showDialog(Id.dialog.help);

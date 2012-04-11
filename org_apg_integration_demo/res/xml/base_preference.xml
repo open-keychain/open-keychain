@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="Intent" >
+        <Preference
+            android:key="intent_demo"
+            android:title="Intent Demo" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="AIDL" >
+        <Preference
+            android:key="aidl_demo"
+            android:title="AIDL Demo" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

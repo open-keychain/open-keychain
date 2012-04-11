@@ -4,8 +4,11 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <!-- permission to access provider and service, intents are public! -->
+    <uses-permission android:name="org.apg.permission.READ_KEY_DETAILS" />
+
     <uses-sdk
-        android:minSdkVersion="4"
+        android:minSdkVersion="7"
         android:targetSdkVersion="14" />
 
     <application
@@ -21,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IntentDemo1Activity"
+            android:name=".IntentDemoActivity"
             android:label="Intent Demo 1" />
     </application>
 

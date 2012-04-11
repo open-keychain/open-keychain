@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,42 +15,21 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:orientation="vertical" >
 
-    <include android:id="@+id/layout_filter" layout="@layout/filter_info"/>
+    <include
+        android:id="@+id/layout_filter"
+        layout="@layout/filter_info" />
 
     <ListView
         android:id="@+id/list"
-        android:choiceMode="multipleChoice"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"/>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@android:style/ButtonBar">
-
-        <Button
-            android:text="@android:string/ok"
-            android:id="@+id/btn_ok"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <Button
-            android:text="@android:string/cancel"
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
+        android:layout_weight="1"
+        android:choiceMode="multipleChoice" />
 
 </LinearLayout>

@@ -66,10 +66,10 @@ public class EditKeyActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(2, Id.menu.option.cancel, 0, R.string.btn_doNotSave)
+        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave)
                 // .setIcon(R.drawable.ic_menu_search_holo_light)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(2, Id.menu.option.save, 1, R.string.btn_save)
+        menu.add(1, Id.menu.option.save, 1, R.string.btn_save)
                 // .setIcon(R.drawable.ic_suggestions_add)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;

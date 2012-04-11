@@ -20,6 +20,7 @@ import org.apg.Apg;
 import org.apg.Id;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 
 import android.app.SearchManager;
@@ -46,9 +47,14 @@ public class SelectSecretKeyListActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
 
         setContentView(R.layout.select_secret_key);
+
+        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         mList = (ListView) findViewById(R.id.list);
 
