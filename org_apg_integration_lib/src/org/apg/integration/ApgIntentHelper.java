@@ -40,7 +40,7 @@ public class ApgIntentHelper {
      * 
      * @param userIds
      *            value to specify prefilled values for user that should be created
-     * @return true when user presses save, false when user presses cancel
+     * @return true when activity was found and executed successfully
      */
     public boolean createNewKey(String userIds) {
         Intent intent = new Intent(Constants.Intent.EDIT_KEY);
@@ -60,7 +60,7 @@ public class ApgIntentHelper {
     /**
      * Opens APG activity to create new key
      * 
-     * @return true when user presses save, false when user presses cancel
+     * @return true when activity was found and executed successfully
      */
     public boolean createNewKey() {
         return createNewKey(null);
@@ -70,7 +70,7 @@ public class ApgIntentHelper {
      * Opens APG activity to edit already existing key based on keyId
      * 
      * @param keyId
-     * @return true when user presses save, false when user presses cancel
+     * @return true when activity was found and executed successfully
      */
     public boolean editKey(long keyId) {
         Intent intent = new Intent(Constants.Intent.EDIT_KEY);
@@ -88,7 +88,7 @@ public class ApgIntentHelper {
     /**
      * Opens APG activity to select the signature key.
      * 
-     * @return true when user presses okay, false when user presses cancel
+     * @return true when activity was found and executed successfully
      */
     public boolean selectSecretKey() {
         Intent intent = new Intent(Constants.Intent.SELECT_SECRET_KEY);
@@ -112,7 +112,7 @@ public class ApgIntentHelper {
      *            long[] that holds the ids of the encryption keys
      * @param signatureKeyId
      *            id of the signature key
-     * @return
+     * @return true when activity was found and executed successfully
      */
     public boolean encrypt(String data, long[] encryptionKeyIds, long signatureKeyId) {
         Intent intent = new Intent(Constants.Intent.ENCRYPT_AND_RETURN);
@@ -136,7 +136,7 @@ public class ApgIntentHelper {
      * @param activity
      * @param data
      * @param pgpData
-     * @return success or failure
+     * @return true when activity was found and executed successfully
      */
     public boolean decrypt(String data) {
         Intent intent = new Intent(Constants.Intent.DECRYPT_AND_RETURN);
@@ -168,6 +168,7 @@ public class ApgIntentHelper {
         switch (requestCode) {
         case Constants.SELECT_SECRET_KEY:
             if (resultCode != Activity.RESULT_OK || data == null) {
+                // user canceled!
                 break;
             }
             apgData.setSignatureKeyId(data.getLongExtra(Constants.EXTRA_KEY_ID, 0));
@@ -225,7 +226,7 @@ public class ApgIntentHelper {
      * 
      * @param emails
      *            The emails that should be used for preselection.
-     * @return false when activity could not be found!
+     * @return true when activity was found and executed successfully
      */
     public boolean selectEncryptionKeys(String emails) {
         return selectEncryptionKeys(emails, null);
@@ -238,7 +239,7 @@ public class ApgIntentHelper {
      *            The emails that should be used for preselection.
      * @param apgData
      *            ApgData with encryption keys and signature keys preselected
-     * @return false when activity could not be found!
+     * @return true when activity was found and executed successfully
      */
     public boolean selectEncryptionKeys(String emails, ApgData apgData) {
         Intent intent = new Intent(Constants.Intent.SELECT_PUBLIC_KEYS);

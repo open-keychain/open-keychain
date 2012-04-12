@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,53 +15,43 @@
      limitations under the License.
 -->
 
-<org.apg.ui.widget.SectionView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<org.apg.ui.widget.SectionView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"/>
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/header"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="14dip"
-        android:layout_marginTop="2dip"
-        android:layout_marginBottom="2dip"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:clickable="true"
         android:focusable="true"
-        android:clickable="true">
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
 
         <TextView
             android:id="@+id/title"
-            android:text="Section Name"
+            style="@style/SectionHeader"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:singleLine="true"
             android:ellipsize="marquee"
-            android:fadingEdge="horizontal"/>
+            android:fadingEdge="horizontal"
+            android:singleLine="true"
+            android:text="Section Name" />
 
         <ImageView
+            style="@style/PlusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:duplicateParentState="true"
-            style="@style/PlusButton"/>
-
+            android:duplicateParentState="true" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/editors"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="6dip"
-        android:orientation="vertical"/>
+        android:orientation="vertical"
+        android:paddingBottom="6dip" />
 
 </org.apg.ui.widget.SectionView>

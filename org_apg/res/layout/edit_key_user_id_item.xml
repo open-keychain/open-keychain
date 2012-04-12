@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,102 +15,93 @@
      limitations under the License.
 -->
 
-<org.apg.ui.widget.UserIdEditor
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<org.apg.ui.widget.UserIdEditor xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingLeft="5dip">
-
-    <View
-        android:id="@+id/separator"
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider"/>
+    android:orientation="vertical" >
 
     <RadioButton
         android:id="@+id/isMainUserId"
-        android:text="@string/label_mainUserId"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:layout_marginLeft="20dip"/>
+        android:layout_height="wrap_content"
+        android:text="@string/label_mainUserId" />
 
     <LinearLayout
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <TableLayout
-            android:layout_height="wrap_content"
             android:layout_width="0dip"
-            android:layout_weight="1"
-            android:layout_marginLeft="16dip">
+            android:layout_height="wrap_content"
+            android:layout_weight="1" >
 
             <TableRow>
 
                 <TextView
                     android:id="@+id/label_name"
-                    android:text="@string/label_name"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingRight="5dip"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="5dip"
+                    android:text="@string/label_name" />
 
                 <EditText
                     android:id="@+id/name"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
-                    android:inputType="textPersonName|textCapWords"/>
-
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="textPersonName|textCapWords" />
             </TableRow>
 
             <TableRow>
 
                 <TextView
                     android:id="@+id/label_email"
-                    android:text="@string/label_email"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingRight="5dip"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="5dip"
+                    android:text="@string/label_email" />
 
                 <EditText
                     android:id="@+id/email"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
-                    android:inputType="textEmailAddress"/>
-
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="textEmailAddress" />
             </TableRow>
 
             <TableRow>
 
                 <TextView
                     android:id="@+id/label_comment"
-                    android:text="@string/label_comment"
-                    android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingRight="5dip"/>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="5dip"
+                    android:text="@string/label_comment" />
 
                 <EditText
                     android:id="@+id/comment"
-                    android:layout_weight="1"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"/>
-
+                    android:layout_weight="1" />
             </TableRow>
-
         </TableLayout>
 
         <ImageButton
             android:id="@+id/delete"
+            style="@style/MinusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/MinusButton"
-            android:layout_gravity="center_vertical"/>
-
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="?android:attr/listDivider" />
 
 </org.apg.ui.widget.UserIdEditor>

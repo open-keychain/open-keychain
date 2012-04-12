@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,51 +15,59 @@
      limitations under the License.
 -->
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-        <TableLayout
-            android:layout_height="fill_parent"
-            android:layout_width="fill_parent"
-            android:stretchColumns="1"
-            android:layout_marginRight="?android:attr/scrollbarSize"
-            android:paddingLeft="6dip">
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:stretchColumns="1" >
 
-            <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:text="@string/keyCreationElGamalInfo" />
 
-                <TextView android:id="@+id/label_algorithm"
-                          android:text="@string/label_algorithm"
-                          android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:layout_gravity="center_vertical"
-                          android:paddingRight="10dip"/>
+        <TableRow>
 
-                <Spinner
-                    android:id="@+id/algorithm"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/label_algorithm" />
 
-            </TableRow>
+            <Spinner
+                android:id="@+id/create_key_algorithm"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp" />
+        </TableRow>
 
-            <TableRow>
+        <TableRow>
 
-                <TextView android:id="@+id/label_size"
-                          android:text="@string/label_keySize"
-                          android:layout_height="wrap_content"
-                          android:layout_width="wrap_content"
-                          android:layout_gravity="center_vertical"
-                          android:paddingRight="10dip"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/label_keySize" />
 
-                <EditText android:id="@+id/size"
-                          android:text="1024"
-                          android:layout_height="wrap_content"
-                          android:layout_width="fill_parent"
-                          android:gravity="right"
-                          android:numeric="integer"/>
-            </TableRow>
-
-        </TableLayout>
+            <EditText
+                android:id="@+id/create_key_size"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:numeric="integer"
+                android:padding="4dp"
+                android:text="1024" />
+        </TableRow>
+    </TableLayout>
+    <!-- </LinearLayout> -->
 
 </ScrollView>

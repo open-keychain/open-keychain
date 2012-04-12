@@ -37,9 +37,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -176,11 +180,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             View view = mInflater.inflate(R.layout.create_key, null);
             dialog.setView(view);
             dialog.setTitle(R.string.title_createKey);
-            dialog.setMessage(R.string.keyCreationElGamalInfo);
 
             boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
 
-            final Spinner algorithm = (Spinner) view.findViewById(R.id.algorithm);
+            final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
             Vector<Choice> choices = new Vector<Choice>();
             choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(R.string.dsa)));
             if (!wouldBeMasterKey) {
@@ -202,7 +205,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 }
             }
 
-            final EditText keySize = (EditText) view.findViewById(R.id.size);
+            final EditText keySize = (EditText) view.findViewById(R.id.create_key_size);
 
             dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface di, int id) {
@@ -271,6 +274,24 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             view.setValue(key, isMasterKey);
             mEditors.addView(view);
         }
+
+        this.updateEditorsVisible();
+    }
+
+    // TODO !!!
+    public void createInitialKey() {
+        mEditors.removeAllViews();
+
+        // create initial key
+        // PGPSecretKey key = new PGPSecretKey();
+
+        // for (PGPSecretKey key : list) {
+        KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors, false);
+        view.setEditorListener(this);
+        boolean isMasterKey = (mEditors.getChildCount() == 0);
+        // view.setValue(key, isMasterKey);
+        mEditors.addView(view);
+        // }
 
         this.updateEditorsVisible();
     }

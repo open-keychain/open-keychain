@@ -53,12 +53,10 @@ public class PublicKeyListActivity extends KeyListActivity {
                 .setIcon(R.drawable.ic_menu_search_list)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.import_keys, 3, R.string.menu_importKeys)
-        // .setIcon(R.drawable.ic_suggestions_add)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.export_keys, 4, R.string.menu_exportKeys)
-        // .setIcon(R.drawable.ic_menu_share_holo_light)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_keys, 3, R.string.menu_importKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.export_keys, 4, R.string.menu_exportKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
     }

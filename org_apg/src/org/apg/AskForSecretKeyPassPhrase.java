@@ -31,6 +31,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AskForSecretKeyPassPhrase {
@@ -69,9 +70,14 @@ public class AskForSecretKeyPassPhrase {
 
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.pass_phrase, null);
-        final EditText input = (EditText) view.findViewById(R.id.passPhrase);
-        final EditText inputNotUsed = (EditText) view.findViewById(R.id.passPhraseAgain);
+        View view = inflater.inflate(R.layout.passphrase, null);
+        final EditText input = (EditText) view.findViewById(R.id.passphrase_passphrase);
+
+        final TextView labelNotUsed = (TextView) view
+                .findViewById(R.id.passphrase_label_passphrase_again);
+        labelNotUsed.setVisibility(View.GONE);
+        final EditText inputNotUsed = (EditText) view
+                .findViewById(R.id.passphrase_passphrase_again);
         inputNotUsed.setVisibility(View.GONE);
 
         alert.setView(view);

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +45,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.Toast;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -149,17 +154,32 @@ public class EditKeyActivity extends BaseActivity {
             }
         }
 
-        mChangePassPhrase = (Button) findViewById(R.id.btn_change_pass_phrase);
+        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 showDialog(Id.dialog.new_pass_phrase);
             }
         });
 
+        // disable passphrase when no passphrase checkobox is checked!
+        final CheckBox noPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+        noPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mChangePassPhrase.setVisibility(View.GONE);
+                } else {
+                    mChangePassPhrase.setVisibility(View.VISIBLE);
+                }
+
+            }
+        });
+
         // Build layout based on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        LinearLayout container = (LinearLayout) findViewById(R.id.container);
+        LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
         mUserIds = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mUserIds.setType(Id.type.user_id);
         mUserIds.setUserIds(userIds);
@@ -203,9 +223,9 @@ public class EditKeyActivity extends BaseActivity {
             alert.setMessage(R.string.enterPassPhraseTwice);
 
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.pass_phrase, null);
-            final EditText input1 = (EditText) view.findViewById(R.id.passPhrase);
-            final EditText input2 = (EditText) view.findViewById(R.id.passPhraseAgain);
+            View view = inflater.inflate(R.layout.passphrase, null);
+            final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
+            final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
 
             alert.setView(view);
 

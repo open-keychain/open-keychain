@@ -25,13 +25,13 @@
     <string name="title_selectSignature">Select Signature</string>
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
-    <string name="title_authentication">Pass Phrase</string>
+    <string name="title_authentication">Passphrase</string>
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_keyServerPreference">Key Server Preference</string>
-    <string name="title_changePassPhrase">Change Pass Phrase</string>
-    <string name="title_setPassPhrase">Set Pass Phrase</string>
+    <string name="title_changePassPhrase">Change Passphrase</string>
+    <string name="title_setPassPhrase">Set Passphrase</string>
     <string name="title_sendEmail">"Send Mail..."</string>
     <string name="title_encryptToFile">Encrypt To File</string>
     <string name="title_decryptToFile">Decrypt To File</string>
@@ -76,8 +76,8 @@
     <string name="btn_noDate">None</string>
     <string name="btn_okay">Okay</string>
     <string name="btn_clearFilter">Clear Filter</string>
-    <string name="btn_changePassPhrase">Change Pass Phrase</string>
-    <string name="btn_setPassPhrase">Set Pass Phrase</string>
+    <string name="btn_changePassPhrase">Change Passphrase</string>
+    <string name="btn_setPassPhrase">Set Passphrase</string>
     <string name="btn_search">Search</string>
     <string name="btn_export_to_server">Export To Server</string>
 
@@ -106,7 +106,8 @@
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>
     <string name="label_file">File</string>
-    <string name="label_passPhrase">Pass Phrase</string>
+    <string name="label_noPassPhrase">No Passphrase</string>
+    <string name="label_passPhrase">Passphrase</string>
     <string name="label_passPhraseAgain">Again</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_asciiArmour">ASCII Armour</string>
@@ -117,8 +118,8 @@
     <string name="label_encryptionAlgorithm">Encryption Algorithm</string>
     <string name="label_hashAlgorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
-    <string name="label_symmetric">Pass Phrase</string>
-    <string name="label_passPhraseCacheTtl">Pass Phrase Cache</string>
+    <string name="label_symmetric">Passphrase</string>
+    <string name="label_passPhraseCacheTtl">Passphrase Cache</string>
     <string name="label_messageCompression">Message Compression</string>
     <string name="label_fileCompression">File Compression</string>
     <string name="label_forceV3Signature">Force V3 Signatures</string>
@@ -182,13 +183,13 @@
     <string name="errorMessage">Error: %s</string>
 
     <!-- sentences -->
-    <string name="wrongPassPhrase">Wrong pass phrase.</string>
+    <string name="wrongPassPhrase">Wrong passphrase.</string>
     <string name="usingClipboardContent">Using clipboard content.</string>
     <string name="keySaved">Key saved.</string>
-    <string name="setAPassPhrase">Set a pass phrase first.</string>
+    <string name="setAPassPhrase">Set a passphrase first.</string>
     <string name="noFilemanagerInstalled">No compatible file manager installed.</string>
-    <string name="passPhrasesDoNotMatch">The pass phrases didn\'t match.</string>
-    <string name="passPhraseMustNotBeEmpty">Empty pass phrases are not allowed.</string>
+    <string name="passPhrasesDoNotMatch">The passphrases didn\'t match.</string>
+    <string name="passPhraseMustNotBeEmpty">Empty passphrases are not allowed.</string>
     <string name="passPhraseForSymmetricEncryption">Symmetric encryption.</string>
     <string name="passPhraseFor">%s</string>
     <string name="fileDeleteConfirmation">Are you sure you want to delete\n%s?</string>
@@ -197,7 +198,7 @@
     <string name="decryptionSuccessful">Successfully decrypted.</string>
     <string name="encryptionSuccessful">Successfully encrypted.</string>
     <string name="encryptionToClipboardSuccessful">Successfully encrypted to clipboard.</string>
-    <string name="enterPassPhraseTwice">Enter the pass phrase twice.</string>
+    <string name="enterPassPhraseTwice">Enter the passphrase twice.</string>
     <string name="selectEncryptionKey">Select at least one encryption key.</string>
     <string name="selectEncryptionOrSignatureKey">Select at least one encryption key or a signature key.</string>
     <string name="specifyFileToEncryptTo">Please specify which file to encrypt to.\nWARNING! File will be overwritten if it exists.</string>
@@ -246,14 +247,14 @@
     <string name="error_mainUserIdMustNotBeEmpty">main user id must not be empty</string>
     <string name="error_keyNeedsMasterKey">need at least a master key</string>
     <string name="error_expiryMustComeAfterCreation">expiry date must come after creation date</string>
-    <string name="error_noEncryptionKeysOrPassPhrase">no encryption key(s) or pass phrase given</string>
+    <string name="error_noEncryptionKeysOrPassPhrase">no encryption key(s) or passphrase given</string>
     <string name="error_signatureFailed">signature failed</string>
-    <string name="error_noSignaturePassPhrase">no pass phrase given</string>
+    <string name="error_noSignaturePassPhrase">no passphrase given</string>
     <string name="error_noSignatureKey">no signature key given</string>
     <string name="error_invalidData">not valid encryption data</string>
     <string name="error_corruptData">corrupt data</string>
     <string name="error_noSymmetricEncryptionPacket">couldn\'t find a packet with symmetric encryption</string>
-    <string name="error_wrongPassPhrase">wrong pass phrase</string>
+    <string name="error_wrongPassPhrase">wrong passphrase</string>
     <string name="error_savingKeys">error saving some key(s)</string>
     <string name="error_couldNotExtractPrivateKey">could not extract private key</string>
 
