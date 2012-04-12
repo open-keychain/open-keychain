@@ -28,6 +28,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -36,6 +37,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ import java.security.SignatureException;
 import java.util.Vector;
 
 public class EditKeyActivity extends BaseActivity {
+    private Intent mIntent = null;
 
     private PGPSecretKeyRing mKeyRing = null;
 
@@ -66,12 +69,10 @@ public class EditKeyActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave)
-                // .setIcon(R.drawable.ic_menu_search_holo_light)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.save, 1, R.string.btn_save)
-                // .setIcon(R.drawable.ic_suggestions_add)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.save, 1, R.string.btn_save).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
     }
 
@@ -128,6 +129,26 @@ public class EditKeyActivity extends BaseActivity {
             }
         }
 
+        // Catch Intents opened from other apps
+        mIntent = getIntent();
+        if (Apg.Intent.EDIT_KEY.equals(mIntent.getAction())) {
+            Bundle extras = mIntent.getExtras();
+            if (extras == null) {
+                extras = new Bundle();
+            }
+
+            // disable home button on actionbar because this activity is run from another app
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
+
+            // if userId is given, prefill the fields
+            if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
+                userIds.add(extras.getString(Apg.EXTRA_USER_IDS));
+            }
+        }
+
         mChangePassPhrase = (Button) findViewById(R.id.btn_change_pass_phrase);
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -135,12 +156,7 @@ public class EditKeyActivity extends BaseActivity {
             }
         });
 
-        // mSaveButton = (Button) findViewById(R.id.btn_save);
-        // mDiscardButton = (Button) findViewById(R.id.btn_discard);
-
-        // mSaveButton.setOnClickListener(this);
-        // mDiscardButton.setOnClickListener(this);
-
+        // Build layout based on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.container);

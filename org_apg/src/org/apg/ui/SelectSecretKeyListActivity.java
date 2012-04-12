@@ -19,6 +19,7 @@ package org.apg.ui;
 import org.apg.Apg;
 import org.apg.Id;
 import org.apg.R;
+import org.apg.ui.widget.SelectSecretKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;

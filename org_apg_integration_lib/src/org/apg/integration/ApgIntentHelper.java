@@ -36,11 +36,59 @@ public class ApgIntentHelper {
     }
 
     /**
-     * Select the signature key.
+     * Opens APG activity to create new key
      * 
-     * @param activity
-     * @param pgpData
-     * @return success or failure
+     * @param userIds
+     *            value to specify prefilled values for user that should be created
+     * @return true when user presses save, false when user presses cancel
+     */
+    public boolean createNewKey(String userIds) {
+        Intent intent = new Intent(Constants.Intent.EDIT_KEY);
+        if (userIds != null) {
+            intent.putExtra(Constants.EXTRA_USER_IDS, userIds);
+        }
+        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        try {
+            activity.startActivityForResult(intent, Constants.CREATE_NEW_KEY);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
+    }
+
+    /**
+     * Opens APG activity to create new key
+     * 
+     * @return true when user presses save, false when user presses cancel
+     */
+    public boolean createNewKey() {
+        return createNewKey(null);
+    }
+
+    /**
+     * Opens APG activity to edit already existing key based on keyId
+     * 
+     * @param keyId
+     * @return true when user presses save, false when user presses cancel
+     */
+    public boolean editKey(long keyId) {
+        Intent intent = new Intent(Constants.Intent.EDIT_KEY);
+        intent.putExtra(Constants.EXTRA_KEY_ID, keyId);
+        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        try {
+            activity.startActivityForResult(intent, Constants.CREATE_NEW_KEY);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
+    }
+
+    /**
+     * Opens APG activity to select the signature key.
+     * 
+     * @return true when user presses okay, false when user presses cancel
      */
     public boolean selectSecretKey() {
         Intent intent = new Intent(Constants.Intent.SELECT_SECRET_KEY);
@@ -55,12 +103,16 @@ public class ApgIntentHelper {
     }
 
     /**
-     * Start the encrypt activity.
+     * Encrypts the given data by opening APGs encrypt activity. If encryptionKeys are given it
+     * encrypts immediately and goes back to your program after that
      * 
-     * @param activity
      * @param data
-     * @param pgpData
-     * @return success or failure
+     *            String that contains the message to be encrypted
+     * @param encryptionKeyIds
+     *            long[] that holds the ids of the encryption keys
+     * @param signatureKeyId
+     *            id of the signature key
+     * @return
      */
     public boolean encrypt(String data, long[] encryptionKeyIds, long signatureKeyId) {
         Intent intent = new Intent(Constants.Intent.ENCRYPT_AND_RETURN);

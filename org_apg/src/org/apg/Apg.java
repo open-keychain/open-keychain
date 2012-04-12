@@ -125,6 +125,7 @@ public class Apg {
         public static final String GENERATE_SIGNATURE = "org.apg.intent.GENERATE_SIGNATURE";
         public static final String EXPORT_KEY_TO_SERVER = "org.apg.intent.EXPORT_KEY_TO_SERVER";
         public static final String IMPORT_FROM_QR_CODE = "org.apg.intent.IMPORT_FROM_QR_CODE";
+        public static final String EDIT_KEY = "org.apg.intent.EDIT_KEY";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -153,7 +154,7 @@ public class Apg {
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
     public static final String EXTRA_BINARY = "binary";
     public static final String EXTRA_KEY_SERVERS = "keyServers";
-    public static final String EXTRA_EXPECTED_FINGERPRINT = "org.apg.EXPECTED_FINGERPRINT";
+    public static final String EXTRA_EXPECTED_FINGERPRINT = "expectedFingerprint";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 

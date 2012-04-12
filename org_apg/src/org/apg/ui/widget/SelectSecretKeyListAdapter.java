@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.apg.ui;
+package org.apg.ui.widget;
 
 import java.util.Date;
 

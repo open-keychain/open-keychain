@@ -54,6 +54,11 @@ public class IntentDemoActivity extends Activity {
         mApgData = new ApgData();
     }
 
+    public void intentDemoCreateNewKeyOnClick(View view) {
+        // mApgIntentHelper.createNewKey();
+        mApgIntentHelper.createNewKey("dom <+491716581452@cryptocall.org>");
+    }
+
     public void intentDemoSelectSecretKeyOnClick(View view) {
         mApgIntentHelper.selectSecretKey();
     }

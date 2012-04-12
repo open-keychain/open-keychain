@@ -75,7 +75,13 @@
             android:name=".ui.EditKeyActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_editKey"
-            android:uiOptions="splitActionBarWhenNarrow" />
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter>
+                <action android:name="org.apg.intent.EDIT_KEY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.SelectPublicKeyListActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"

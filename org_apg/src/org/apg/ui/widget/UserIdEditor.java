@@ -40,9 +40,12 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     private EditText mEmail;
     private EditText mComment;
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+[.]([a-zA-Z])+([a-zA-Z])+",
-            Pattern.CASE_INSENSITIVE);
+    // see http://www.regular-expressions.info/email.html
+    // RFC 2822 if we omit the syntax using double quotes and square brackets
+    private static final Pattern EMAIL_PATTERN = Pattern
+            .compile(
+                    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+                    Pattern.CASE_INSENSITIVE);
 
     public static class NoNameException extends Exception {
         static final long serialVersionUID = 0xf812773343L;

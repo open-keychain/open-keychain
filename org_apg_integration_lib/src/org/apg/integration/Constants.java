@@ -49,6 +49,7 @@ public class Constants {
                 + ".intent.SELECT_PUBLIC_KEYS";
         public static final String SELECT_SECRET_KEY = APG_PACKAGE_NAME
                 + ".intent.SELECT_SECRET_KEY";
+        public static final String EDIT_KEY = APG_PACKAGE_NAME + ".intent.EDIT_KEY";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -62,6 +63,7 @@ public class Constants {
     public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String EXTRA_USER_ID = "userId";
+    public static final String EXTRA_USER_IDS = "userIds";
     public static final String EXTRA_KEY_ID = "keyId";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
@@ -74,6 +76,7 @@ public class Constants {
     public static final int ENCRYPT_MESSAGE = 0x21070002;
     public static final int SELECT_PUBLIC_KEYS = 0x21070003;
     public static final int SELECT_SECRET_KEY = 0x21070004;
+    public static final int CREATE_NEW_KEY = 0x21070005;
 
     // public static Pattern PGP_MESSAGE = Pattern.compile(
     // ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);

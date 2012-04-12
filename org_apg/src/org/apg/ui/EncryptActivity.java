@@ -33,6 +33,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -125,15 +126,12 @@ public class EncryptActivity extends BaseActivity {
 
         if (mEncryptToClipboardEnabled) {
             menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString)
-            // .setIcon(R.drawable.ic_menu_encrypt)
                     .setShowAsAction(
                             MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mEncryptEnabled) {
-            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString)
-            // .setIcon(R.drawable.ic_menu_decrypt)
-                    .setShowAsAction(
-                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString).setShowAsAction(
+                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -233,8 +231,6 @@ public class EncryptActivity extends BaseActivity {
 
         mMessage = (EditText) findViewById(R.id.message);
         mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
-        // mEncryptButton = (Button) findViewById(R.id.btn_encrypt);
-        // mEncryptToClipboardButton = (Button) findViewById(R.id.btn_encryptToClipboard);
         mSign = (CheckBox) findViewById(R.id.sign);
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -316,6 +312,12 @@ public class EncryptActivity extends BaseActivity {
             if (extras == null) {
                 extras = new Bundle();
             }
+
+            // disable home button on actionbar because this activity is run from another app
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
 
             if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
                     || Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
@@ -483,8 +485,6 @@ public class EncryptActivity extends BaseActivity {
             mEncryptEnabled = true;
             mEncryptToClipboardEnabled = false;
 
-            // mEncryptToClipboardButton.setVisibility(View.INVISIBLE);
-            // mEncryptButton.setText(R.string.btn_encrypt);
             break;
         }
 

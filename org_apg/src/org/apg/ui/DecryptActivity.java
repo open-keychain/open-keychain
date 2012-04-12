@@ -31,6 +31,7 @@ import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.apg.R;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -248,6 +249,12 @@ public class DecryptActivity extends BaseActivity {
             } else {
                 Log.d(Constants.TAG, "got extras");
             }
+
+            // disable home button on actionbar because this activity is run from another app
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
 
             mData = extras.getByteArray(Apg.EXTRA_DATA);
             String textData = null;

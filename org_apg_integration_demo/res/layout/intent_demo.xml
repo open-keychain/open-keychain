@@ -7,6 +7,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
+        
+        <Button
+            android:id="@+id/intent_demo_create_new_key"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="intentDemoCreateNewKeyOnClick"
+            android:text="Create new key" />
 
         <Button
             android:id="@+id/intent_demo_select_secret_key"
