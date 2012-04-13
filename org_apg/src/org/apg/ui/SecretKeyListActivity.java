@@ -49,15 +49,13 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(R.drawable.ic_menu_search)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(1, Id.menu.option.create, 1, R.string.menu_createKey)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.add(1, Id.menu.option.create, 1, R.string.menu_createKey).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
     }
@@ -114,7 +112,6 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
                     .getGroupId(mSelectedItem);
             String msg = keyId + "," + Apg.getFingerPrint(keyId);
-            ;
 
             new IntentIntegrator(this).shareText(msg);
         }

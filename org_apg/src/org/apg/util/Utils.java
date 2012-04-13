@@ -19,6 +19,8 @@ package org.apg.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import android.content.Context;
 
@@ -49,6 +51,25 @@ public class Utils {
             e.printStackTrace();
         }
         return stream.toString();
+    }
+
+    /**
+     * Return the number if days between two dates
+     * 
+     * @param first
+     * @param second
+     * @return number of days
+     */
+    public static long getNumDaysBetween(GregorianCalendar first, GregorianCalendar second) {
+        GregorianCalendar tmp = new GregorianCalendar();
+        tmp.setTime(first.getTime());
+        long numDays = (second.getTimeInMillis() - first.getTimeInMillis()) / 1000 / 86400;
+        tmp.add(Calendar.DAY_OF_MONTH, (int) numDays);
+        while (tmp.before(second)) {
+            tmp.add(Calendar.DAY_OF_MONTH, 1);
+            ++numDays;
+        }
+        return numDays;
     }
 
 }

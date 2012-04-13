@@ -38,7 +38,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -49,7 +48,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -71,6 +69,8 @@ public class EditKeyActivity extends BaseActivity {
     private String mNewPassPhrase = null;
 
     private Button mChangePassPhrase;
+
+    private CheckBox mNoPassphrase;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -152,6 +152,14 @@ public class EditKeyActivity extends BaseActivity {
             if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
                 userIds.add(extras.getString(Apg.EXTRA_USER_IDS));
             }
+
+            // if userId is given, prefill the fields
+            if (extras.containsKey(Apg.EXTRA_NO_PASSPHRASE)) {
+                boolean noPassphrase = extras.getBoolean(Apg.EXTRA_NO_PASSPHRASE);
+                if (noPassphrase) {
+                    mCurrentPassPhrase = "";
+                }
+            }
         }
 
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
@@ -162,12 +170,15 @@ public class EditKeyActivity extends BaseActivity {
         });
 
         // disable passphrase when no passphrase checkobox is checked!
-        final CheckBox noPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
-        noPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+        mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    // remove passphrase
+                    mNewPassPhrase = null;
+
                     mChangePassPhrase.setVisibility(View.GONE);
                 } else {
                     mChangePassPhrase.setVisibility(View.VISIBLE);
@@ -194,6 +205,12 @@ public class EditKeyActivity extends BaseActivity {
             mCurrentPassPhrase = "";
         }
 
+        if (mCurrentPassPhrase.equals("")) {
+            // check "no passphrase" checkbox and remove button
+            mNoPassphrase.setChecked(true);
+            mChangePassPhrase.setVisibility(View.GONE);
+        }
+
         updatePassPhraseButtonText();
     }
 
@@ -204,9 +221,15 @@ public class EditKeyActivity extends BaseActivity {
         return ((KeyEditor) mKeys.getEditors().getChildAt(0)).getValue().getKeyID();
     }
 
-    public boolean havePassPhrase() {
-        return (!mCurrentPassPhrase.equals(""))
-                || (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
+    public boolean isPassphraseSet() {
+        if (mNoPassphrase.isChecked()) {
+            return true;
+        } else if ((!mCurrentPassPhrase.equals(""))
+                || (mNewPassPhrase != null && !mNewPassPhrase.equals(""))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -215,7 +238,7 @@ public class EditKeyActivity extends BaseActivity {
         case Id.dialog.new_pass_phrase: {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
-            if (havePassPhrase()) {
+            if (isPassphraseSet()) {
                 alert.setTitle(R.string.title_changePassPhrase);
             } else {
                 alert.setTitle(R.string.title_setPassPhrase);
@@ -266,7 +289,7 @@ public class EditKeyActivity extends BaseActivity {
     }
 
     private void saveClicked() {
-        if (!havePassPhrase()) {
+        if (!isPassphraseSet()) {
             Toast.makeText(this, R.string.setAPassPhrase, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -333,7 +356,7 @@ public class EditKeyActivity extends BaseActivity {
     }
 
     private void updatePassPhraseButtonText() {
-        mChangePassPhrase.setText(havePassPhrase() ? R.string.btn_changePassPhrase
+        mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_changePassPhrase
                 : R.string.btn_setPassPhrase);
     }
 }

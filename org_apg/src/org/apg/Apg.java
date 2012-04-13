@@ -27,6 +27,7 @@ import org.apg.ui.widget.KeyEditor;
 import org.apg.ui.widget.SectionView;
 import org.apg.ui.widget.UserIdEditor;
 import org.apg.util.IterableIterator;
+import org.apg.util.Utils;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
@@ -155,6 +156,7 @@ public class Apg {
     public static final String EXTRA_BINARY = "binary";
     public static final String EXTRA_KEY_SERVERS = "keyServers";
     public static final String EXTRA_EXPECTED_FINGERPRINT = "expectedFingerprint";
+    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
@@ -374,18 +376,6 @@ public class Apg {
         return secretKey;
     }
 
-    private static long getNumDaysBetween(GregorianCalendar first, GregorianCalendar second) {
-        GregorianCalendar tmp = new GregorianCalendar();
-        tmp.setTime(first.getTime());
-        long numDays = (second.getTimeInMillis() - first.getTimeInMillis()) / 1000 / 86400;
-        tmp.add(Calendar.DAY_OF_MONTH, (int) numDays);
-        while (tmp.before(second)) {
-            tmp.add(Calendar.DAY_OF_MONTH, 1);
-            ++numDays;
-        }
-        return numDays;
-    }
-
     public static void buildSecretKey(Activity context, SectionView userIdsView,
             SectionView keysView, String oldPassPhrase, String newPassPhrase,
             ProgressDialogUpdater progress) throws Apg.GeneralException, NoSuchProviderException,
@@ -509,7 +499,7 @@ public class Apg {
             GregorianCalendar creationDate = new GregorianCalendar();
             creationDate.setTime(getCreationDate(masterKey));
             GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-            long numDays = getNumDaysBetween(creationDate, expiryDate);
+            long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
             if (numDays <= 0) {
                 throw new GeneralException(
                         context.getString(R.string.error_expiryMustComeAfterCreation));
@@ -517,8 +507,10 @@ public class Apg {
             hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
         }
 
-        if (progress != null)
+        if (progress != null) {
             progress.setProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
+        }
+
         PGPKeyRingGenerator keyGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
                 masterKeyPair, mainUserId, PGPEncryptedData.CAST5, newPassPhrase.toCharArray(),
                 hashedPacketsGen.generate(), unhashedPacketsGen.generate(), new SecureRandom(),
@@ -558,7 +550,7 @@ public class Apg {
                 GregorianCalendar creationDate = new GregorianCalendar();
                 creationDate.setTime(getCreationDate(masterKey));
                 GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-                long numDays = getNumDaysBetween(creationDate, expiryDate);
+                long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
                 if (numDays <= 0) {
                     throw new GeneralException(
                             context.getString(R.string.error_expiryMustComeAfterCreation));
@@ -2202,7 +2194,7 @@ public class Apg {
                 return false;
             }
         } catch (NameNotFoundException e) {
-            // unpossible!
+            // impossible!
             return false;
         }
     }
@@ -2216,7 +2208,7 @@ public class Apg {
             VERSION = pi.versionName;
             return VERSION;
         } catch (NameNotFoundException e) {
-            // unpossible!
+            // impossible!
             return "0.0.0";
         }
     }

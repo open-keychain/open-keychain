@@ -118,16 +118,12 @@ public class DecryptActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         if (mDecryptEnabled) {
-            menu.add(1, Id.menu.option.decrypt, 0, mDecryptString)
-            // .setIcon(R.drawable.ic_menu_encrypt)
-                    .setShowAsAction(
-                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            menu.add(1, Id.menu.option.decrypt, 0, mDecryptString).setShowAsAction(
+                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mReplyEnabled) {
-            menu.add(1, Id.menu.option.reply, 1, mReplyString)
-            // .setIcon(R.drawable.ic_menu_decrypt)
-                    .setShowAsAction(
-                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            menu.add(1, Id.menu.option.reply, 1, mReplyString).setShowAsAction(
+                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -275,9 +271,8 @@ public class DecryptActivity extends BaseActivity {
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
+                        
                         mDecryptString = getString(R.string.btn_verify);
-                        // mDecryptButton.setText(R.string.btn_verify);
-
                         // build new action bar
                         invalidateOptionsMenu();
                     } else {
@@ -399,8 +394,6 @@ public class DecryptActivity extends BaseActivity {
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
-            // mDecryptButton.performClick();
-            // TODO: why was it performClick()???
             decryptClicked();
         }
     }

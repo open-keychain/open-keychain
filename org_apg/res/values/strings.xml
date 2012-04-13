@@ -98,7 +98,7 @@
     <string name="menu_keyServer">Key Server</string>
     <string name="menu_updateKey">Update</string>
     <string name="menu_exportKeyToServer">Export To Server</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_share">Share with QR Code</string>
     <string name="menu_scanQRCode">Scan QR Code</string>
     <string name="menu_signKey">Sign Key</string>
 

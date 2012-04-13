@@ -28,6 +28,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -86,7 +87,7 @@ public class AskForSecretKeyPassPhrase {
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 activity.removeDialog(Id.dialog.pass_phrase);
-                String passPhrase = "" + input.getText();
+                String passPhrase = input.getText().toString();
                 long keyId;
                 if (secretKey != null) {
                     try {
@@ -116,6 +117,23 @@ public class AskForSecretKeyPassPhrase {
             }
         });
 
+        // check if the key has no passphrase
+        if (secretKey != null) {
+            try {
+                Log.d("APG", "check if key has no passphrase...");
+                PGPPrivateKey testKey = secretKey.extractPrivateKey("".toCharArray(),
+                        new BouncyCastleProvider());
+                if (testKey != null) {
+                    Log.d("APG", "Key has no passphrase!");
+
+                    cb.passPhraseCallback(secretKey.getKeyID(), null);
+
+                    return null;
+                }
+            } catch (PGPException e) {
+
+            }
+        }
         return alert.create();
     }
 }
