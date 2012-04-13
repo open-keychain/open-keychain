@@ -13,7 +13,7 @@ Fork APG+ and do a merge request. I will merge your changes back into the main p
 1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
 2. New -> Android Project -> Create project from existing source, choose org_apg
 3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
-4. Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
+4. Optional (As of Android Tools r17 the libraries are automatically added from the libs folder): Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
 5. Now APG+ can be build
 
 # Build using Ant
@@ -37,7 +37,7 @@ The Libraries are provided in the git repository.
 * ActionBarSherlock to provide an ActionBar for Android < 3.0
 * Spongy Castle as the main Crypto Lib
 * android-support-v4.jar: Compatibility Lib
-* android-integration-supportv4.jar: Barcode Scanner Integration
+* barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
 
 # Build XZing Integration Library
 
@@ -53,7 +53,7 @@ On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
 see https://github.com/rtyley/spongycastle
 
-# Generate pressed dashboard icons 
+# Generate pressed dashboard icons
 
 1. Open svg in Inkscape
 2. Extensions -> Color -> darker (2 times!)

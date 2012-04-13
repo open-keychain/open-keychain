@@ -124,7 +124,8 @@
             android:name=".ui.EncryptActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_encrypt"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="org.apg.intent.ENCRYPT" />
                 <action android:name="org.apg.intent.ENCRYPT_FILE" />
@@ -140,7 +141,8 @@
             android:name=".ui.DecryptActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_decrypt"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="stateHidden" >
             <intent-filter>
                 <action android:name="org.apg.intent.DECRYPT" />
                 <action android:name="org.apg.intent.DECRYPT_FILE" />
