@@ -250,12 +250,6 @@ public class DecryptActivity extends BaseActivity {
                 Log.d(Constants.TAG, "got extras");
             }
 
-            // disable home button on actionbar because this activity is run from another app
-            final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
-
             mData = extras.getByteArray(Apg.EXTRA_DATA);
             String textData = null;
             if (mData == null) {
@@ -311,6 +305,12 @@ public class DecryptActivity extends BaseActivity {
             if (extras == null) {
                 extras = new Bundle();
             }
+
+            // disable home button on actionbar because this activity is run from another app
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
 
             mReturnBinary = extras.getBoolean(Apg.EXTRA_BINARY, false);
 

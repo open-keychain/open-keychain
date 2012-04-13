@@ -18,18 +18,20 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="10dip"
     android:fillViewport="true" >
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:padding="4dp" >
 
             <ImageView
                 android:id="@+id/sourcePrevious"
@@ -39,6 +41,7 @@
 
             <TextView
                 android:id="@+id/sourceLabel"
+                style="@style/SectionHeader"
                 android:layout_width="0dip"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
@@ -63,7 +66,8 @@
                 android:id="@+id/sourceMessage"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="4dp" >
 
                 <EditText
                     android:id="@+id/message"
@@ -77,7 +81,8 @@
                 android:id="@+id/sourceFile"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="4dp" >
 
                 <LinearLayout
                     android:layout_width="fill_parent"
@@ -111,7 +116,7 @@
                         android:layout_weight="1"
                         android:paddingRight="10dip"
                         android:text="@string/label_fileCompression"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <Spinner
                         android:id="@+id/fileCompression"
@@ -125,21 +130,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/label_deleteAfterEncryption"
-                        android:layout_width="0dip"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="10dip"
-                        android:text="@string/label_deleteAfterEncryption"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-
                     <CheckBox
                         android:id="@+id/deleteAfterEncryption"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/label_deleteAfterEncryption" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -147,35 +143,21 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/label_asciiArmour"
-                        android:layout_width="0dip"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="10dip"
-                        android:text="@string/label_asciiArmour"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
-
                     <CheckBox
                         android:id="@+id/asciiArmour"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/label_asciiArmour" />
                 </LinearLayout>
             </LinearLayout>
         </ViewFlipper>
 
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_marginBottom="5dip"
-            android:background="?android:attr/listDivider" />
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:padding="4dp" >
 
             <ImageView
                 android:id="@+id/modePrevious"
@@ -185,12 +167,12 @@
 
             <TextView
                 android:id="@+id/modeLabel"
+                style="@style/SectionHeader"
                 android:layout_width="0dip"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:gravity="center_horizontal|center_vertical"
-                android:text="@string/label_asymmetric"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:text="@string/label_asymmetric" />
 
             <ImageView
                 android:id="@+id/modeNext"
@@ -208,21 +190,20 @@
                 android:id="@+id/modeAsymmetric"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:padding="4dp" >
 
                 <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/label_sign"
-                        android:layout_width="0dip"
+                    <CheckBox
+                        android:id="@+id/sign"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:text="@string/label_sign"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                        android:text="@string/label_sign" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -247,12 +228,6 @@
                             android:text="Main User Id Rest"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
                     </LinearLayout>
-
-                    <CheckBox
-                        android:id="@+id/sign"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -283,6 +258,7 @@
                 android:id="@+id/modeSymmetric"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:padding="4dp"
                 android:stretchColumns="1" >
 
                 <TableRow>
@@ -322,12 +298,6 @@
                 </TableRow>
             </TableLayout>
         </ViewFlipper>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dip"
-            android:layout_marginBottom="5dip"
-            android:background="?android:attr/listDivider" />
     </LinearLayout>
 
 </ScrollView>

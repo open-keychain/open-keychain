@@ -314,10 +314,12 @@ public class EncryptActivity extends BaseActivity {
             }
 
             // disable home button on actionbar because this activity is run from another app
-            final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
+            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
+                final ActionBar actionBar = getSupportActionBar();
+                actionBar.setDisplayShowTitleEnabled(true);
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setHomeButtonEnabled(false);
+            }
 
             if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
                     || Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
