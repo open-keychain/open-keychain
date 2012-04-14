@@ -109,24 +109,27 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 public class Apg {
-    private static final String mApgPackageName = "org.apg";
+    private static final String PACKAGE_NAME = "org.apg";
+    private static final String INTENT_PREFIX = "org.apg.intent.";
 
     public static class Intent {
-        public static final String DECRYPT = "org.apg.intent.DECRYPT";
-        public static final String ENCRYPT = "org.apg.intent.ENCRYPT";
-        public static final String DECRYPT_FILE = "org.apg.intent.DECRYPT_FILE";
-        public static final String ENCRYPT_FILE = "org.apg.intent.ENCRYPT_FILE";
-        public static final String DECRYPT_AND_RETURN = "org.apg.intent.DECRYPT_AND_RETURN";
-        public static final String ENCRYPT_AND_RETURN = "org.apg.intent.ENCRYPT_AND_RETURN";
-        public static final String SELECT_PUBLIC_KEYS = "org.apg.intent.SELECT_PUBLIC_KEYS";
-        public static final String SELECT_SECRET_KEY = "org.apg.intent.SELECT_SECRET_KEY";
-        public static final String IMPORT = "org.apg.intent.IMPORT";
-        public static final String LOOK_UP_KEY_ID = "org.apg.intent.LOOK_UP_KEY_ID";
-        public static final String LOOK_UP_KEY_ID_AND_RETURN = "org.apg.intent.LOOK_UP_KEY_ID_AND_RETURN";
-        public static final String GENERATE_SIGNATURE = "org.apg.intent.GENERATE_SIGNATURE";
-        public static final String EXPORT_KEY_TO_SERVER = "org.apg.intent.EXPORT_KEY_TO_SERVER";
-        public static final String IMPORT_FROM_QR_CODE = "org.apg.intent.IMPORT_FROM_QR_CODE";
-        public static final String EDIT_KEY = "org.apg.intent.EDIT_KEY";
+        public static final String DECRYPT = INTENT_PREFIX + "DECRYPT";
+        public static final String ENCRYPT = INTENT_PREFIX + "ENCRYPT";
+        public static final String DECRYPT_FILE = INTENT_PREFIX + "DECRYPT_FILE";
+        public static final String ENCRYPT_FILE = INTENT_PREFIX + "ENCRYPT_FILE";
+        public static final String DECRYPT_AND_RETURN = INTENT_PREFIX + "DECRYPT_AND_RETURN";
+        public static final String ENCRYPT_AND_RETURN = INTENT_PREFIX + "ENCRYPT_AND_RETURN";
+        public static final String SELECT_PUBLIC_KEYS = INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
+        public static final String SELECT_SECRET_KEY = INTENT_PREFIX + "SELECT_SECRET_KEY";
+        public static final String IMPORT = INTENT_PREFIX + "IMPORT";
+        public static final String LOOK_UP_KEY_ID = INTENT_PREFIX + "LOOK_UP_KEY_ID";
+        public static final String LOOK_UP_KEY_ID_AND_RETURN = INTENT_PREFIX
+                + "LOOK_UP_KEY_ID_AND_RETURN";
+        public static final String GENERATE_SIGNATURE = INTENT_PREFIX + "GENERATE_SIGNATURE";
+        public static final String EXPORT_KEY_TO_SERVER = INTENT_PREFIX + "EXPORT_KEY_TO_SERVER";
+        public static final String IMPORT_FROM_QR_CODE = INTENT_PREFIX + "IMPORT_FROM_QR_CODE";
+        public static final String CREATE_KEY = INTENT_PREFIX + "CREATE_KEY";
+        public static final String EDIT_KEY = INTENT_PREFIX + "EDIT_KEY";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -157,6 +160,7 @@ public class Apg {
     public static final String EXTRA_KEY_SERVERS = "keyServers";
     public static final String EXTRA_EXPECTED_FINGERPRINT = "expectedFingerprint";
     public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
+    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
 
     public static final String AUTHORITY = DataProvider.AUTHORITY;
 
@@ -2187,7 +2191,7 @@ public class Apg {
 
     public static boolean isReleaseVersion(Context context) {
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(mApgPackageName, 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
             if (pi.versionCode % 100 == 99) {
                 return true;
             } else {
@@ -2204,7 +2208,7 @@ public class Apg {
             return VERSION;
         }
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(mApgPackageName, 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
             VERSION = pi.versionName;
             return VERSION;
         } catch (NameNotFoundException e) {

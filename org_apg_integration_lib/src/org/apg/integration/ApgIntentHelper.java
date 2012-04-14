@@ -26,6 +26,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.widget.Toast;
 
 public class ApgIntentHelper {
@@ -42,14 +43,17 @@ public class ApgIntentHelper {
      *            value to specify prefilled values for user that should be created
      * @return true when activity was found and executed successfully
      */
-    public boolean createNewKey(String userIds) {
-        Intent intent = new Intent(Constants.Intent.EDIT_KEY);
+    public boolean createNewKey(String userIds, boolean noPassphrase, boolean generateDefaultKeys) {
+        Intent intent = new Intent(Constants.Intent.CREATE_KEY);
         if (userIds != null) {
             intent.putExtra(Constants.EXTRA_USER_IDS, userIds);
         }
+        intent.putExtra(Constants.EXTRA_NO_PASSPHRASE, noPassphrase);
+        intent.putExtra(Constants.EXTRA_GENERATE_DEFAULT_KEYS, generateDefaultKeys);
+
         intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, Constants.CREATE_NEW_KEY);
+            activity.startActivityForResult(intent, Constants.CREATE_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -63,7 +67,7 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean createNewKey() {
-        return createNewKey(null);
+        return createNewKey(null, false, false);
     }
 
     /**
@@ -77,7 +81,7 @@ public class ApgIntentHelper {
         intent.putExtra(Constants.EXTRA_KEY_ID, keyId);
         intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, Constants.CREATE_NEW_KEY);
+            activity.startActivityForResult(intent, Constants.EDIT_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();

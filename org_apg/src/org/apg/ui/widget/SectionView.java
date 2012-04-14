@@ -93,7 +93,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                             mEditors, false);
                     view.setEditorListener(SectionView.this);
                     boolean isMasterKey = (mEditors.getChildCount() == 0);
-                    view.setValue(mNewKey, isMasterKey);
+                    view.setValue(mNewKey, isMasterKey, -1);
                     mEditors.addView(view);
                     SectionView.this.updateEditorsVisible();
                 }
@@ -260,38 +260,22 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         this.updateEditorsVisible();
     }
 
-    public void setKeys(Vector<PGPSecretKey> list) {
+    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages) {
         if (mType != Id.type.key) {
             return;
         }
 
         mEditors.removeAllViews();
-        for (PGPSecretKey key : list) {
+
+        // go through all keys and set view based on them
+        for (int i = 0; i < list.size(); i++) {
             KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors,
                     false);
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
-            view.setValue(key, isMasterKey);
+            view.setValue(list.get(i), isMasterKey, usages.get(i));
             mEditors.addView(view);
         }
-
-        this.updateEditorsVisible();
-    }
-
-    // TODO !!!
-    public void createInitialKey() {
-        mEditors.removeAllViews();
-
-        // create initial key
-        // PGPSecretKey key = new PGPSecretKey();
-
-        // for (PGPSecretKey key : list) {
-        KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item, mEditors, false);
-        view.setEditorListener(this);
-        boolean isMasterKey = (mEditors.getChildCount() == 0);
-        // view.setValue(key, isMasterKey);
-        mEditors.addView(view);
-        // }
 
         this.updateEditorsVisible();
     }

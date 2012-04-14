@@ -78,6 +78,7 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
+                <action android:name="org.apg.intent.CREATE_KEY" />
                 <action android:name="org.apg.intent.EDIT_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />

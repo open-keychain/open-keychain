@@ -40,8 +40,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -52,6 +54,8 @@ import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -59,6 +63,7 @@ import java.util.Vector;
 
 public class EditKeyActivity extends BaseActivity {
     private Intent mIntent = null;
+    private ActionBar mActionBar;
 
     private PGPSecretKeyRing mKeyRing = null;
 
@@ -109,60 +114,119 @@ public class EditKeyActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_key);
 
+        mActionBar = getSupportActionBar();
+
+        // find views
+        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
+        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+
         Vector<String> userIds = new Vector<String>();
         Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
-
-        Intent intent = getIntent();
-        long keyId = 0;
-        if (intent.getExtras() != null) {
-            keyId = intent.getExtras().getLong(Apg.EXTRA_KEY_ID);
-        }
-
-        if (keyId != 0) {
-            PGPSecretKey masterKey = null;
-            mKeyRing = Apg.getSecretKeyRing(keyId);
-            if (mKeyRing != null) {
-                masterKey = Apg.getMasterKey(mKeyRing);
-                for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
-                    keys.add(key);
-                }
-            }
-            if (masterKey != null) {
-                for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
-                    userIds.add(userId);
-                }
-            }
-        }
+        Vector<Integer> keysUsages = new Vector<Integer>();
 
         // Catch Intents opened from other apps
         mIntent = getIntent();
-        if (Apg.Intent.EDIT_KEY.equals(mIntent.getAction())) {
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                extras = new Bundle();
+        Bundle extras = mIntent.getExtras();
+        if (Apg.Intent.CREATE_KEY.equals(mIntent.getAction())) {
+
+            mActionBar.setTitle(R.string.title_createKey);
+
+            mCurrentPassPhrase = "";
+
+            if (extras != null) {
+
+                // disable home button on actionbar because this activity is run from another app
+                mActionBar.setDisplayShowTitleEnabled(true);
+                mActionBar.setDisplayHomeAsUpEnabled(false);
+                mActionBar.setHomeButtonEnabled(false);
+
+                // if userId is given, prefill the fields
+                if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
+                    Log.d(Constants.TAG, "UserIds are given!");
+                    userIds.add(extras.getString(Apg.EXTRA_USER_IDS));
+                }
+
+                // if no passphrase is given
+                if (extras.containsKey(Apg.EXTRA_NO_PASSPHRASE)) {
+                    boolean noPassphrase = extras.getBoolean(Apg.EXTRA_NO_PASSPHRASE);
+                    if (noPassphrase) {
+                        // check "no passphrase" checkbox and remove button
+                        mNoPassphrase.setChecked(true);
+                        mChangePassPhrase.setVisibility(View.GONE);
+                    }
+                }
+
+                // generate key
+                if (extras.containsKey(Apg.EXTRA_GENERATE_DEFAULT_KEYS)) {
+                    boolean generateDefaultKeys = extras
+                            .getBoolean(Apg.EXTRA_GENERATE_DEFAULT_KEYS);
+                    if (generateDefaultKeys) {
+
+                        // generate a RSA 2048 key for encryption and signing!
+                        try {
+                            PGPSecretKey masterKey = Apg.createKey(this, Id.choice.algorithm.rsa,
+                                    2048, mCurrentPassPhrase, null);
+
+                            // add new masterKey to keys array, which is then added to view
+                            keys.add(masterKey);
+                            keysUsages.add(Id.choice.usage.sign_only);
+
+                            PGPSecretKey subKey = Apg.createKey(this, Id.choice.algorithm.rsa,
+                                    2048, mCurrentPassPhrase, masterKey);
+
+                            keys.add(subKey);
+                            keysUsages.add(Id.choice.usage.encrypt_only);
+
+                            // define usage of this key
+                        } catch (Exception e) {
+                            Log.e(Constants.TAG, "Creating initial key failed: +" + e);
+                        }
+                    }
+
+                }
+            }
+        } else if (Apg.Intent.EDIT_KEY.equals(mIntent.getAction())) {
+
+            mActionBar.setTitle(R.string.title_editKey);
+
+            mCurrentPassPhrase = Apg.getEditPassPhrase();
+            if (mCurrentPassPhrase == null) {
+                mCurrentPassPhrase = "";
             }
 
-            // disable home button on actionbar because this activity is run from another app
-            final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
-
-            // if userId is given, prefill the fields
-            if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
-                userIds.add(extras.getString(Apg.EXTRA_USER_IDS));
+            if (mCurrentPassPhrase.equals("")) {
+                // check "no passphrase" checkbox and remove button
+                mNoPassphrase.setChecked(true);
+                mChangePassPhrase.setVisibility(View.GONE);
             }
 
-            // if userId is given, prefill the fields
-            if (extras.containsKey(Apg.EXTRA_NO_PASSPHRASE)) {
-                boolean noPassphrase = extras.getBoolean(Apg.EXTRA_NO_PASSPHRASE);
-                if (noPassphrase) {
-                    mCurrentPassPhrase = "";
+            if (extras != null) {
+
+                if (extras.containsKey(Apg.EXTRA_KEY_ID)) {
+                    long keyId = mIntent.getExtras().getLong(Apg.EXTRA_KEY_ID);
+
+                    if (keyId != 0) {
+                        PGPSecretKey masterKey = null;
+                        mKeyRing = Apg.getSecretKeyRing(keyId);
+                        if (mKeyRing != null) {
+                            masterKey = Apg.getMasterKey(mKeyRing);
+                            for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
+                                    mKeyRing.getSecretKeys())) {
+                                keys.add(key);
+                                keysUsages.add(-1); // get usage when view is created
+                            }
+                        }
+                        if (masterKey != null) {
+                            for (String userId : new IterableIterator<String>(
+                                    masterKey.getUserIDs())) {
+                                userIds.add(userId);
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 showDialog(Id.dialog.new_pass_phrase);
@@ -170,7 +234,6 @@ public class EditKeyActivity extends BaseActivity {
         });
 
         // disable passphrase when no passphrase checkobox is checked!
-        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
         mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
@@ -197,19 +260,8 @@ public class EditKeyActivity extends BaseActivity {
         container.addView(mUserIds);
         mKeys = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeys.setType(Id.type.key);
-        mKeys.setKeys(keys);
+        mKeys.setKeys(keys, keysUsages);
         container.addView(mKeys);
-
-        mCurrentPassPhrase = Apg.getEditPassPhrase();
-        if (mCurrentPassPhrase == null) {
-            mCurrentPassPhrase = "";
-        }
-
-        if (mCurrentPassPhrase.equals("")) {
-            // check "no passphrase" checkbox and remove button
-            mNoPassphrase.setChecked(true);
-            mChangePassPhrase.setVisibility(View.GONE);
-        }
 
         updatePassPhraseButtonText();
     }

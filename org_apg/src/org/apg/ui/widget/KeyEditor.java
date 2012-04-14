@@ -59,13 +59,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     Button mExpiryDateButton;
     GregorianCalendar mExpiryDate;
 
-    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener =
-            new DatePickerDialog.OnDateSetListener() {
-                public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                    GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-                    setExpiryDate(date);
-                }
-            };
+    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+            GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+            setExpiryDate(date);
+        }
+    };
 
     public KeyEditor(Context context) {
         super(context);
@@ -86,16 +85,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mExpiryDateButton = (Button) findViewById(R.id.expiry);
         mUsage = (Spinner) findViewById(R.id.usage);
         Choice choices[] = {
-                new Choice(Id.choice.usage.sign_only,
-                           getResources().getString(R.string.choice_signOnly)),
-                new Choice(Id.choice.usage.encrypt_only,
-                           getResources().getString(R.string.choice_encryptOnly)),
-                new Choice(Id.choice.usage.sign_and_encrypt,
-                           getResources().getString(R.string.choice_signAndEncrypt)),
-        };
-        ArrayAdapter<Choice> adapter =
-                new ArrayAdapter<Choice>(getContext(),
-                                         android.R.layout.simple_spinner_item, choices);
+                new Choice(Id.choice.usage.sign_only, getResources().getString(
+                        R.string.choice_signOnly)),
+                new Choice(Id.choice.usage.encrypt_only, getResources().getString(
+                        R.string.choice_encryptOnly)),
+                new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
+                        R.string.choice_signAndEncrypt)), };
+        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
+                android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
@@ -111,15 +108,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                     date = new GregorianCalendar();
                 }
 
-                DatePickerDialog dialog =
-                        new DatePickerDialog(getContext(), mExpiryDateSetListener,
-                                             date.get(Calendar.YEAR),
-                                             date.get(Calendar.MONTH),
-                                             date.get(Calendar.DAY_OF_MONTH));
+                DatePickerDialog dialog = new DatePickerDialog(getContext(),
+                        mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
+                        date.get(Calendar.DAY_OF_MONTH));
                 dialog.setCancelable(true);
-                dialog.setButton(Dialog.BUTTON_NEGATIVE,
-                                 getContext().getString(R.string.btn_noDate),
-                                 new DialogInterface.OnClickListener() {
+                dialog.setButton(Dialog.BUTTON_NEGATIVE, getContext()
+                        .getString(R.string.btn_noDate), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         setExpiryDate(null);
                     }
@@ -131,7 +125,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         super.onFinishInflate();
     }
 
-    public void setValue(PGPSecretKey key, boolean isMasterKey) {
+    public void setValue(PGPSecretKey key, boolean isMasterKey, int usage) {
         mKey = key;
 
         mIsMasterKey = isMasterKey;
@@ -147,24 +141,24 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         Vector<Choice> choices = new Vector<Choice>();
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
         if (!isElGamalKey) {
-            choices.add(new Choice(Id.choice.usage.sign_only,
-                                   getResources().getString(R.string.choice_signOnly)));
+            choices.add(new Choice(Id.choice.usage.sign_only, getResources().getString(
+                    R.string.choice_signOnly)));
         }
         if (!mIsMasterKey) {
-            choices.add(new Choice(Id.choice.usage.encrypt_only,
-                                   getResources().getString(R.string.choice_encryptOnly)));
+            choices.add(new Choice(Id.choice.usage.encrypt_only, getResources().getString(
+                    R.string.choice_encryptOnly)));
         }
         if (!isElGamalKey) {
-            choices.add(new Choice(Id.choice.usage.sign_and_encrypt,
-                                   getResources().getString(R.string.choice_signAndEncrypt)));
+            choices.add(new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
+                    R.string.choice_signAndEncrypt)));
         }
 
-        ArrayAdapter<Choice> adapter =
-                new ArrayAdapter<Choice>(getContext(),
-                                         android.R.layout.simple_spinner_item, choices);
+        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
+                android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
+        // Set value in choice dropdown to key
         int selectId = 0;
         if (Apg.isEncryptionKey(key)) {
             if (Apg.isSigningKey(key)) {
@@ -173,7 +167,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 selectId = Id.choice.usage.encrypt_only;
             }
         } else {
-            selectId = Id.choice.usage.sign_only;
+            // set usage if it is predefined
+            if (usage != -1) {
+                selectId = usage;
+            } else {
+                selectId = Id.choice.usage.sign_only;
+            }
+
         }
 
         for (int i = 0; i < choices.size(); ++i) {
@@ -194,6 +194,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             cal.setTime(Apg.getExpiryDate(key));
             setExpiryDate(cal);
         }
+
     }
 
     public PGPSecretKey getValue() {
@@ -201,7 +202,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public void onClick(View v) {
-        final ViewGroup parent = (ViewGroup)getParent();
+        final ViewGroup parent = (ViewGroup) getParent();
         if (v == mDeleteButton) {
             parent.removeView(this);
             if (mEditorListener != null) {
@@ -230,4 +231,5 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     public int getUsage() {
         return ((Choice) mUsage.getSelectedItem()).getId();
     }
+
 }

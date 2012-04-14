@@ -36,20 +36,19 @@ public class Constants {
     public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
             + AUTHORITY + "/key_rings/public/emails/");
 
+    public static final String APG_INTENT_PREFIX = "org.apg.intent.";
+
     public static class Intent {
-        public static final String DECRYPT = APG_PACKAGE_NAME + ".intent.DECRYPT";
-        public static final String ENCRYPT = APG_PACKAGE_NAME + ".intent.ENCRYPT";
-        public static final String DECRYPT_FILE = APG_PACKAGE_NAME + ".intent.DECRYPT_FILE";
-        public static final String ENCRYPT_FILE = APG_PACKAGE_NAME + ".intent.ENCRYPT_FILE";
-        public static final String DECRYPT_AND_RETURN = APG_PACKAGE_NAME
-                + ".intent.DECRYPT_AND_RETURN";
-        public static final String ENCRYPT_AND_RETURN = APG_PACKAGE_NAME
-                + ".intent.ENCRYPT_AND_RETURN";
-        public static final String SELECT_PUBLIC_KEYS = APG_PACKAGE_NAME
-                + ".intent.SELECT_PUBLIC_KEYS";
-        public static final String SELECT_SECRET_KEY = APG_PACKAGE_NAME
-                + ".intent.SELECT_SECRET_KEY";
-        public static final String EDIT_KEY = APG_PACKAGE_NAME + ".intent.EDIT_KEY";
+        public static final String DECRYPT = APG_INTENT_PREFIX + "DECRYPT";
+        public static final String ENCRYPT = APG_INTENT_PREFIX + "ENCRYPT";
+        public static final String DECRYPT_FILE = APG_INTENT_PREFIX + "DECRYPT_FILE";
+        public static final String ENCRYPT_FILE = APG_INTENT_PREFIX + "ENCRYPT_FILE";
+        public static final String DECRYPT_AND_RETURN = APG_INTENT_PREFIX + "DECRYPT_AND_RETURN";
+        public static final String ENCRYPT_AND_RETURN = APG_INTENT_PREFIX + "ENCRYPT_AND_RETURN";
+        public static final String SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
+        public static final String SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
+        public static final String CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
+        public static final String EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -68,6 +67,8 @@ public class Constants {
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
     public static final String EXTRA_MESSAGE = "message";
+    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
+    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
     public static final String EXTRA_INTENT_VERSION = "intentVersion";
 
     public static final String INTENT_VERSION = "1";
@@ -76,7 +77,9 @@ public class Constants {
     public static final int ENCRYPT_MESSAGE = 0x21070002;
     public static final int SELECT_PUBLIC_KEYS = 0x21070003;
     public static final int SELECT_SECRET_KEY = 0x21070004;
-    public static final int CREATE_NEW_KEY = 0x21070005;
+    public static final int CREATE_KEY = 0x21070005;
+    public static final int EDIT_KEY = 0x21070006;
+
 
     // public static Pattern PGP_MESSAGE = Pattern.compile(
     // ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);

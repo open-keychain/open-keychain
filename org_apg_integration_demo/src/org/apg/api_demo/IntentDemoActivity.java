@@ -56,7 +56,7 @@ public class IntentDemoActivity extends Activity {
 
     public void intentDemoCreateNewKeyOnClick(View view) {
         // mApgIntentHelper.createNewKey();
-        mApgIntentHelper.createNewKey("dom <+491716581452@cryptocall.org>");
+        mApgIntentHelper.createNewKey("test <+491716581452@cryptocall.org>", true, true);
     }
 
     public void intentDemoSelectSecretKeyOnClick(View view) {

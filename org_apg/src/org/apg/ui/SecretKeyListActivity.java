@@ -164,13 +164,13 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     private void createKey() {
         Apg.setEditPassPhrase("");
-        Intent intent = new Intent(this, EditKeyActivity.class);
+        Intent intent = new Intent(Apg.Intent.CREATE_KEY);
         startActivityForResult(intent, Id.message.create_key);
     }
 
     private void editKey() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        Intent intent = new Intent(this, EditKeyActivity.class);
+        Intent intent = new Intent(Apg.Intent.EDIT_KEY);
         intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
         startActivityForResult(intent, Id.message.edit_key);
     }
