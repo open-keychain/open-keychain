@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 
-<org.apg.ui.widget.SectionView xmlns:android="http://schemas.android.com/apk/res/android"
+<org.thialfihar.android.apg.ui.widget.SectionView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
@@ -54,4 +54,4 @@
         android:orientation="vertical"
         android:paddingBottom="6dip" />
 
-</org.apg.ui.widget.SectionView>
+</org.thialfihar.android.apg.ui.widget.SectionView>

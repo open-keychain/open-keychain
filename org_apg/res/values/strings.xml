@@ -327,10 +327,10 @@
 
 
     <!-- about -->
-    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.\n\nAPG+ is a fork based on the original APG to introduce more features and a new user interface.</string>
+    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
     <string name="about_license">License: Apache License 2.0</string>
     <string name="about_version">Version:</string>
-    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, sign key, upload key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann (APG+ fork)</string>
+    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, sign key, upload key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann (New user interface)</string>
 
     <!-- Dashboard -->
     <string name="dashboard_manage_keys">Manage Keys</string>

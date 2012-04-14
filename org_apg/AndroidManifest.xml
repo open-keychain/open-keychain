@@ -2,12 +2,12 @@
 <!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.apg"
+    package="org.thialfihar.android.apg"
     android:installLocation="auto"
     android:versionCode="50"
-    android:versionName="1.1" >
+    android:versionName="2.0" >
 
-    <!-- APG Plus starting with versionCode 50! -->
+    <!-- APG 2 starting with versionCode 50! -->
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -18,12 +18,12 @@
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
 
     <permission
-        android:name="org.apg.permission.READ_KEY_DETAILS"
+        android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
         android:description="@string/permission_read_key_details_description"
         android:label="@string/permission_read_key_details_label"
         android:protectionLevel="dangerous" />
     <permission
-        android:name="org.apg.permission.STORE_BLOBS"
+        android:name="org.thialfihar.android.apg.permission.STORE_BLOBS"
         android:description="@string/permission_store_blobs_description"
         android:label="@string/permission_store_blobs_label"
         android:protectionLevel="dangerous" />
@@ -78,8 +78,8 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="org.apg.intent.CREATE_KEY" />
-                <action android:name="org.apg.intent.EDIT_KEY" />
+                <action android:name="org.thialfihar.android.apg.intent.CREATE_KEY" />
+                <action android:name="org.thialfihar.android.apg.intent.EDIT_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -91,7 +91,7 @@
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
-                <action android:name="org.apg.intent.SELECT_PUBLIC_KEYS" />
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_PUBLIC_KEYS" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -109,7 +109,7 @@
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >
             <intent-filter>
-                <action android:name="org.apg.intent.SELECT_SECRET_KEY" />
+                <action android:name="org.thialfihar.android.apg.intent.SELECT_SECRET_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -128,10 +128,10 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="org.apg.intent.ENCRYPT" />
-                <action android:name="org.apg.intent.ENCRYPT_FILE" />
-                <action android:name="org.apg.intent.ENCRYPT_AND_RETURN" />
-                <action android:name="org.apg.intent.GENERATE_SIGNATURE" />
+                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
+                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
+                <action android:name="org.thialfihar.android.apg.intent.GENERATE_SIGNATURE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -145,9 +145,9 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="org.apg.intent.DECRYPT" />
-                <action android:name="org.apg.intent.DECRYPT_FILE" />
-                <action android:name="org.apg.intent.DECRYPT_AND_RETURN" />
+                <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
+                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
+                <action android:name="org.thialfihar.android.apg.intent.DECRYPT_AND_RETURN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -220,18 +220,18 @@
             android:label="@string/title_about"
             android:theme="@style/Theme.Sherlock.Light.Dialog" />
         <activity
-            android:name=".ui.HelpActivity"
+            android:name="org.thialfihar.android.apg.ui.HelpActivity"
             android:label="@string/title_help" />
 
         <service android:name=".Service" />
         <service
-            android:name=".ApgService"
+            android:name="org.thialfihar.android.apg.ApgService"
             android:enabled="true"
             android:exported="true"
-            android:permission="org.apg.permission.READ_KEY_DETAILS"
+            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
             android:process=":remote" >
             <intent-filter>
-                <action android:name="org.apg.IApgService" />
+                <action android:name="org.thialfihar.android.apg.IApgService" />
             </intent-filter>
 
             <meta-data
@@ -241,12 +241,12 @@
 
         <provider
             android:name=".provider.DataProvider"
-            android:authorities="org.apg.provider"
-            android:readPermission="org.apg.permission.READ_KEY_DETAILS" />
+            android:authorities="org.thialfihar.android.apg.provider"
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
         <provider
-            android:name=".provider.ApgServiceBlobProvider"
-            android:authorities="org.apg.provider.apgserviceblobprovider"
-            android:permission="org.apg.permission.STORE_BLOBS" />
+            android:name="org.thialfihar.android.apg.provider.ApgServiceBlobProvider"
+            android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
+            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
     </application>
 
 </manifest>

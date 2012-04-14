@@ -20,7 +20,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <org.apg.ui.widget.DashboardLayout
+    <org.thialfihar.android.apg.ui.widget.DashboardLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
 
@@ -66,7 +66,7 @@
             android:drawableTop="@drawable/dashboard_help"
             android:onClick="helpOnClick"
             android:text="@string/dashboard_help" />
-    </org.apg.ui.widget.DashboardLayout>
+    </org.thialfihar.android.apg.ui.widget.DashboardLayout>
 
     <!-- <LinearLayout -->
     <!-- style="@android:style/ButtonBar" -->

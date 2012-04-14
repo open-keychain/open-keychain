@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.apg.api_demo"
+    package="org.thialfihar.android.apg.demo"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <!-- permission to access provider and service, intents are public! -->
-    <uses-permission android:name="org.apg.permission.READ_KEY_DETAILS" />
+    <uses-permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -25,7 +25,8 @@
         </activity>
         <activity
             android:name=".IntentDemoActivity"
-            android:label="Intent Demo 1" />
+            android:label="Intent Demo 1"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

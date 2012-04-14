@@ -18,7 +18,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/section_general" >
-        <org.apg.ui.widget.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:entries="@array/pass_phrase_cache_ttl_entries"
             android:entryValues="@array/pass_phrase_cache_ttl_values"
             android:key="passPhraseCacheTtl"
@@ -31,19 +31,19 @@
             android:title="@string/label_keyServers" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/section_defaults" >
-        <org.apg.ui.widget.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
             android:persistent="false"
             android:title="@string/label_encryptionAlgorithm" />
-        <org.apg.ui.widget.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:key="defaultHashAlgorithm"
             android:persistent="false"
             android:title="@string/label_hashAlgorithm" />
-        <org.apg.ui.widget.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:key="defaultMessageCompression"
             android:persistent="false"
             android:title="@string/label_messageCompression" />
-        <org.apg.ui.widget.IntegerListPreference
+        <org.thialfihar.android.apg.ui.widget.IntegerListPreference
             android:key="defaultFileCompression"
             android:persistent="false"
             android:title="@string/label_fileCompression" />
