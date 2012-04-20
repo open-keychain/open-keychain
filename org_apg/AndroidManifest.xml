@@ -224,20 +224,22 @@
             android:label="@string/title_help" />
 
         <service android:name=".Service" />
-        <service
-            android:name="org.thialfihar.android.apg.ApgService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
-            android:process=":remote" >
-            <intent-filter>
-                <action android:name="org.thialfihar.android.apg.IApgService" />
-            </intent-filter>
+        
+        <service android:name=".service.ApgService" />
+<!--         <service -->
+<!--             android:name=".ApgService2" -->
+<!--             android:enabled="true" -->
+<!--             android:exported="true" -->
+<!--             android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" -->
+<!--             android:process=":remote" > -->
+<!--             <intent-filter> -->
+<!--                 <action android:name="org.thialfihar.android.apg.IApgService" /> -->
+<!--             </intent-filter> -->
 
-            <meta-data
-                android:name="api_version"
-                android:value="2" />
-        </service>
+<!--             <meta-data -->
+<!--                 android:name="api_version" -->
+<!--                 android:value="2" /> -->
+<!--         </service> -->
 
         <provider
             android:name=".provider.DataProvider"

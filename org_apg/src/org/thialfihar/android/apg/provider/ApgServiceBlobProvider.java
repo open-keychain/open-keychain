@@ -14,7 +14,7 @@
 
 package org.thialfihar.android.apg.provider;
 
-import org.thialfihar.android.apg.ApgService;
+import org.thialfihar.android.apg.ApgService2;
 import org.thialfihar.android.apg.Constants;
 
 import android.content.ContentProvider;
@@ -43,29 +43,29 @@ public class ApgServiceBlobProvider extends ContentProvider {
     private ApgServiceBlobDatabase mDb = null;
 
     public ApgServiceBlobProvider() {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "Constructor called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "Constructor called");
         File dir = new File(STORE_PATH);
         dir.mkdirs();
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "Constructor finished");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "Constructor finished");
     }
 
     @Override
     public int delete(Uri arg0, String arg1, String[] arg2) {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "delete() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "delete() called");
         // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public String getType(Uri arg0) {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "getType() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "getType() called");
         // not needed for now
         return null;
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues ignored) {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "insert() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "insert() called");
         // ContentValues are actually ignored, because we want to store a blob with no more information 
         // but have to create an record with the password generated here first
         
@@ -82,7 +82,7 @@ public class ApgServiceBlobProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "onCreate() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "onCreate() called");
         mDb = new ApgServiceBlobDatabase(getContext());
         // TODO Auto-generated method stub
         return true;
@@ -90,23 +90,23 @@ public class ApgServiceBlobProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri arg0, String[] arg1, String arg2, String[] arg3, String arg4) {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "query() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "query() called");
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int update(Uri arg0, ContentValues arg1, String arg2, String[] arg3) {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "update() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "update() called");
         // TODO Auto-generated method stub
         return 0;
     }
     
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws SecurityException, FileNotFoundException {
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "openFile() called");
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "... with uri: "+uri.toString());
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "... with mode: "+mode);
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "openFile() called");
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... with uri: "+uri.toString());
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... with mode: "+mode);
         
         List<String> segments = uri.getPathSegments();
         if(segments.size() < 2) {
@@ -115,8 +115,8 @@ public class ApgServiceBlobProvider extends ContentProvider {
         String id = segments.get(0);
         String key = segments.get(1);
         
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "... got id: "+id);
-        if(ApgService.LOCAL_LOGD) Log.d(TAG, "... and key: "+key);
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... got id: "+id);
+        if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... and key: "+key);
 
         // get the data
         Cursor result = mDb.query(id, key);
@@ -128,7 +128,7 @@ public class ApgServiceBlobProvider extends ContentProvider {
         
         File targetFile = new File(STORE_PATH, id);
         if(mode.equals("w")) {
-            if(ApgService.LOCAL_LOGD) Log.d(TAG, "... will try to open file w");
+            if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... will try to open file w");
             if( !targetFile.exists() ) {
                 try {
                     targetFile.createNewFile();
@@ -139,7 +139,7 @@ public class ApgServiceBlobProvider extends ContentProvider {
             }
             return ParcelFileDescriptor.open(targetFile, ParcelFileDescriptor.MODE_WRITE_ONLY | ParcelFileDescriptor.MODE_TRUNCATE );
         } else if(mode.equals("r")) {
-            if(ApgService.LOCAL_LOGD) Log.d(TAG, "... will try to open file r");
+            if(ApgService2.LOCAL_LOGD) Log.d(TAG, "... will try to open file r");
             if( !targetFile.exists() ) {
                 throw new FileNotFoundException("Error: Could not find the file requested");
             }

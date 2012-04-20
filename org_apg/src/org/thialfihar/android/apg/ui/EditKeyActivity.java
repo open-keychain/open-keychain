@@ -17,19 +17,20 @@
 
 package org.thialfihar.android.apg.ui;
 
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.provider.Database;
+import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
+import org.thialfihar.android.apg.ui.widget.UserIdEditor;
 import org.thialfihar.android.apg.util.IterableIterator;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -39,7 +40,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,15 +57,11 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
 import java.util.Vector;
 
-public class EditKeyActivity extends BaseActivity {
+public class EditKeyActivity extends SherlockActivity { // extends BaseActivity {
     private Intent mIntent = null;
     private ActionBar mActionBar;
 
@@ -343,67 +343,204 @@ public class EditKeyActivity extends BaseActivity {
             Toast.makeText(this, R.string.setAPassPhrase, Toast.LENGTH_SHORT).show();
             return;
         }
-        showDialog(Id.dialog.saving);
-        startThread();
-    }
+//        showDialog(Id.dialog.saving);
+        
+        ProgressDialogFragment newFragment = ProgressDialogFragment.newInstance(
+                ProgressDialogFragment.ID_SAVING);
+        newFragment.show(getSupportFragmentManager(), "saving");
+//        ((ProgressDialog) newFragment.getDialog()).setProgress(value)
 
-    @Override
-    public void run() {
-        String error = null;
+        // startThread();
+
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(this, ApgService.class);
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(handler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SAVE_KEYRING);
+
+        // fill values for this action
         Bundle data = new Bundle();
-        Message msg = new Message();
+        data.putString(ApgService.DATA_CURRENT_PASSPHRASE, mCurrentPassPhrase);
+        data.putString(ApgService.DATA_NEW_PASSPHRASE, mNewPassPhrase);
+        data.putSerializable(ApgService.DATA_USER_IDS, getUserIds(mUserIds));
 
-        try {
-            String oldPassPhrase = mCurrentPassPhrase;
-            String newPassPhrase = mNewPassPhrase;
-            if (newPassPhrase == null) {
-                newPassPhrase = oldPassPhrase;
+        Vector<PGPSecretKey> keys = getKeys(mKeys);
+
+        // convert to byte[]
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        for (PGPSecretKey key : keys) {
+            try {
+                key.encode(os);
+            } catch (IOException e) {
+                Log.e(Constants.TAG,
+                        "Error while converting PGPSecretKey to byte[]: " + e.getMessage());
+                e.printStackTrace();
             }
-            Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
-            Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
-        } catch (NoSuchProviderException e) {
-            error = "" + e;
-        } catch (NoSuchAlgorithmException e) {
-            error = "" + e;
-        } catch (PGPException e) {
-            error = "" + e;
-        } catch (SignatureException e) {
-            error = "" + e;
-        } catch (Apg.GeneralException e) {
-            error = "" + e;
-        } catch (Database.GeneralException e) {
-            error = "" + e;
-        } catch (IOException e) {
-            error = "" + e;
         }
 
-        data.putInt(Constants.extras.STATUS, Id.message.done);
+        byte[] keysBytes = os.toByteArray();
 
-        if (error != null) {
-            data.putString(Apg.EXTRA_ERROR, error);
-        }
+        data.putByteArray(ApgService.DATA_KEYS, keysBytes);
 
-        msg.setData(data);
-        sendMessage(msg);
+        data.putSerializable(ApgService.DATA_KEYS_USAGES, getKeysUsages(mKeys).toArray());
+        data.putLong(ApgService.DATA_MASTER_KEY_ID, getMasterKeyId());
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        startService(intent);
     }
 
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
+    private Handler handler = new Handler() {
+        public void handleMessage(Message message) {
+            Object path = message.obj;
+            if (message.arg1 == ApgService.MESSAGE_OKAY) {
+                Toast.makeText(EditKeyActivity.this, "okay", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(EditKeyActivity.this, "nope", Toast.LENGTH_LONG).show();
+            }
 
-        Bundle data = msg.getData();
-        removeDialog(Id.dialog.saving);
+        };
+    };
 
-        String error = data.getString(Apg.EXTRA_ERROR);
-        if (error != null) {
-            Toast.makeText(EditKeyActivity.this, getString(R.string.errorMessage, error),
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
+    // TODO: put in other class
+    private Vector<String> getUserIds(SectionView userIdsView) {
+        Vector<String> userIds = new Vector<String>();
+
+        ViewGroup userIdEditors = userIdsView.getEditors();
+
+        boolean gotMainUserId = false;
+        for (int i = 0; i < userIdEditors.getChildCount(); ++i) {
+            UserIdEditor editor = (UserIdEditor) userIdEditors.getChildAt(i);
+            String userId = null;
+            try {
+                userId = editor.getValue();
+            } catch (UserIdEditor.NoNameException e) {
+                // throw new Apg.GeneralException(this.getString(R.string.error_userIdNeedsAName));
+            } catch (UserIdEditor.NoEmailException e) {
+                // throw new Apg.GeneralException(
+                // this.getString(R.string.error_userIdNeedsAnEmailAddress));
+            } catch (UserIdEditor.InvalidEmailException e) {
+                // throw new Apg.GeneralException("" + e);
+            }
+
+            if (userId.equals("")) {
+                continue;
+            }
+
+            if (editor.isMainUserId()) {
+                userIds.insertElementAt(userId, 0);
+                gotMainUserId = true;
+            } else {
+                userIds.add(userId);
+            }
         }
+
+        if (userIds.size() == 0) {
+            // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
+        }
+
+        if (!gotMainUserId) {
+            // throw new Apg.GeneralException(
+            // context.getString(R.string.error_mainUserIdMustNotBeEmpty));
+        }
+
+        return userIds;
     }
+
+    private Vector<PGPSecretKey> getKeys(SectionView keysView) {
+        Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
+
+        ViewGroup keyEditors = keysView.getEditors();
+
+        if (keyEditors.getChildCount() == 0) {
+            // throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+        }
+
+        for (int i = 0; i < keyEditors.getChildCount(); ++i) {
+            KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
+            keys.add(editor.getValue());
+        }
+
+        return keys;
+    }
+
+    private Vector<Integer> getKeysUsages(SectionView keysView) {
+        Vector<Integer> getKeysUsages = new Vector<Integer>();
+
+        ViewGroup keyEditors = keysView.getEditors();
+
+        if (keyEditors.getChildCount() == 0) {
+            // throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+        }
+
+        for (int i = 0; i < keyEditors.getChildCount(); ++i) {
+            KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
+            getKeysUsages.add(editor.getUsage());
+        }
+
+        return getKeysUsages;
+    }
+
+    // @Override
+    // public void run() {
+    // String error = null;
+    // Bundle data = new Bundle();
+    // Message msg = new Message();
+    //
+    // data.putParcelable("ts", (Parcelable) mUserIds);
+    //
+    // try {
+    // String oldPassPhrase = mCurrentPassPhrase;
+    // String newPassPhrase = mNewPassPhrase;
+    // if (newPassPhrase == null) {
+    // newPassPhrase = oldPassPhrase;
+    // }
+    // Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
+    // Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
+    // } catch (NoSuchProviderException e) {
+    // error = "" + e;
+    // } catch (NoSuchAlgorithmException e) {
+    // error = "" + e;
+    // } catch (PGPException e) {
+    // error = "" + e;
+    // } catch (SignatureException e) {
+    // error = "" + e;
+    // } catch (Apg.GeneralException e) {
+    // error = "" + e;
+    // } catch (Database.GeneralException e) {
+    // error = "" + e;
+    // } catch (IOException e) {
+    // error = "" + e;
+    // }
+    //
+    // data.putInt(Constants.extras.STATUS, Id.message.done);
+    //
+    // if (error != null) {
+    // data.putString(Apg.EXTRA_ERROR, error);
+    // }
+    //
+    // msg.setData(data);
+    // sendMessage(msg);
+    // }
+
+    // @Override
+    // public void doneCallback(Message msg) {
+    // super.doneCallback(msg);
+    //
+    // Bundle data = msg.getData();
+    // removeDialog(Id.dialog.saving);
+    //
+    // String error = data.getString(Apg.EXTRA_ERROR);
+    // if (error != null) {
+    // Toast.makeText(EditKeyActivity.this, getString(R.string.errorMessage, error),
+    // Toast.LENGTH_SHORT).show();
+    // } else {
+    // Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
+    // setResult(RESULT_OK);
+    // finish();
+    // }
+    // }
 
     private void updatePassPhraseButtonText() {
         mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_changePassPhrase

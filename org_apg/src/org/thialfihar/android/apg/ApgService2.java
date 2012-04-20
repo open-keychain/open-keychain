@@ -40,7 +40,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class ApgService extends Service {
+public class ApgService2 extends Service {
     private final static String TAG = "ApgService";
     public static final boolean LOCAL_LOGV = true;
     public static final boolean LOCAL_LOGD = true;
