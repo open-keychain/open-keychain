@@ -130,7 +130,13 @@ public class ActionMenuPresenter extends BaseMenuPresenter
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB);
         } else {
-            return !ViewConfiguration.get(context).hasPermanentMenuKey();
+            return !HasPermanentMenuKey.get(context);
+        }
+    }
+
+    private static class HasPermanentMenuKey {
+        public static boolean get(Context context) {
+            return ViewConfiguration.get(context).hasPermanentMenuKey();
         }
     }
 
@@ -299,7 +305,7 @@ public class ActionMenuPresenter extends BaseMenuPresenter
      */
     public boolean showOverflowMenu() {
         if (mReserveOverflow && !isOverflowMenuShowing() && mMenu != null && mMenuView != null &&
-                mPostedOpenRunnable == null) {
+                mPostedOpenRunnable == null && !mMenu.getNonActionItems().isEmpty()) {
             OverflowPopup popup = new OverflowPopup(mContext, mMenu, mOverflowButton, true);
             mPostedOpenRunnable = new OpenOverflowRunnable(popup);
             // Post this for later; we might still need a layout for the anchor to be right.
