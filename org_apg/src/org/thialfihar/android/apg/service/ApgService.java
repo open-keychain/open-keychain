@@ -155,7 +155,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // Output
                 Bundle resultData = new Bundle();
-                resultData.putByteArray(ApgHandler.NEW_KEY,
+                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY,
                         Utils.PGPSecretKeyRingToBytes(newKeyRing));
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
             } catch (Exception e) {
@@ -178,9 +178,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // Output
                 Bundle resultData = new Bundle();
-                resultData.putByteArray(ApgHandler.NEW_KEY,
+                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY,
                         Utils.PGPSecretKeyRingToBytes(masterKeyRing));
-                resultData.putByteArray(ApgHandler.NEW_KEY2,
+                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY2,
                         Utils.PGPSecretKeyRingToBytes(subKeyRing));
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
             } catch (Exception e) {
@@ -200,7 +200,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
         e.printStackTrace();
 
         Bundle data = new Bundle();
-        data.putString(ApgHandler.ERROR, e.getMessage());
+        data.putString(ApgHandler.DATA_ERROR, e.getMessage());
         sendMessageToHandler(ApgHandler.MESSAGE_EXCEPTION, null, data);
     }
 
@@ -235,10 +235,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
         Bundle data = new Bundle();
         if (message != null) {
-            data.putString(ApgHandler.MESSAGE, message);
+            data.putString(ApgHandler.DATA_MESSAGE, message);
         }
-        data.putInt(ApgHandler.PROGRESS, progress);
-        data.putInt(ApgHandler.PROGRESS_MAX, max);
+        data.putInt(ApgHandler.DATA_PROGRESS, progress);
+        data.putInt(ApgHandler.DATA_PROGRESS_MAX, max);
 
         sendMessageToHandler(ApgHandler.MESSAGE_UPDATE_PROGRESS, null, data);
     }

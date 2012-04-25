@@ -33,19 +33,17 @@ public class ApgHandler extends Handler {
     public static final int MESSAGE_UPDATE_PROGRESS = 3;
 
     // possible data keys for messages
-    public static final String ERROR = "error";
-    public static final String PROGRESS = "progress";
-    public static final String PROGRESS_MAX = "max";
-    public static final String MESSAGE = "message";
-    public static final String MESSAGE_ID = "message_id";
-    
-    // generate key results
-    public static final String NEW_KEY = "new_key";
-    public static final String NEW_KEY2 = "new_key2";
+    public static final String DATA_ERROR = "error";
+    public static final String DATA_PROGRESS = "progress";
+    public static final String DATA_PROGRESS_MAX = "max";
+    public static final String DATA_MESSAGE = "message";
+    public static final String DATA_MESSAGE_ID = "message_id";
 
+    // possible data keys as result from service
+    public static final String RESULT_NEW_KEY = "new_key";
+    public static final String RESULT_NEW_KEY2 = "new_key2";
 
     Activity mActivity;
-
     ProgressDialogFragment mProgressDialogFragment;
 
     public ApgHandler(Activity activity) {
@@ -64,35 +62,35 @@ public class ApgHandler extends Handler {
         switch (message.arg1) {
         case MESSAGE_OKAY:
             mProgressDialogFragment.dismiss();
-            
+
             break;
 
         case MESSAGE_EXCEPTION:
             mProgressDialogFragment.dismiss();
 
-            if (data.containsKey(ERROR)) {
+            // show error from service
+            if (data.containsKey(DATA_ERROR)) {
                 Toast.makeText(mActivity,
-                        mActivity.getString(R.string.errorMessage, data.getString(ERROR)),
+                        mActivity.getString(R.string.errorMessage, data.getString(DATA_ERROR)),
                         Toast.LENGTH_SHORT).show();
             }
 
             break;
 
         case MESSAGE_UPDATE_PROGRESS:
-            if (data.containsKey(PROGRESS) && data.containsKey(PROGRESS_MAX)) {
+            if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
 
-                if (data.containsKey(MESSAGE)) {
-                    mProgressDialogFragment.setProgress(data.getString(MESSAGE),
-                            data.getInt(PROGRESS), data.getInt(PROGRESS_MAX));
-                } else if (data.containsKey(MESSAGE_ID)) {
-                    mProgressDialogFragment.setProgress(data.getInt(MESSAGE_ID),
-                            data.getInt(PROGRESS), data.getInt(PROGRESS_MAX));
-
+                // update progress from service
+                if (data.containsKey(DATA_MESSAGE)) {
+                    mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
+                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                } else if (data.containsKey(DATA_MESSAGE_ID)) {
+                    mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
+                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
                 } else {
-                    mProgressDialogFragment.setProgress(data.getInt(PROGRESS),
-                            data.getInt(PROGRESS_MAX));
+                    mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
+                            data.getInt(DATA_PROGRESS_MAX));
                 }
-
             }
 
             break;

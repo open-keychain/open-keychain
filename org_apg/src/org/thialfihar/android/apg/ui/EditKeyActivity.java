@@ -61,7 +61,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import java.util.Iterator;
 import java.util.Vector;
 
-public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseActivity {
+public class EditKeyActivity extends SherlockFragmentActivity {
     private Intent mIntent = null;
     private ActionBar mActionBar;
 
@@ -207,10 +207,10 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                                     Bundle data = message.getData();
                                     PGPSecretKeyRing masterKeyRing = Utils
                                             .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgHandler.NEW_KEY));
+                                                    .getByteArray(ApgHandler.RESULT_NEW_KEY));
                                     PGPSecretKeyRing subKeyRing = Utils
                                             .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgHandler.NEW_KEY2));
+                                                    .getByteArray(ApgHandler.RESULT_NEW_KEY2));
 
                                     // add master key
                                     Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
