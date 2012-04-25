@@ -399,28 +399,25 @@ public class Apg {
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
                 .setProvider("SC").build(passPhrase.toCharArray());
 
-        PGPSecretKeyRing secKeyRing = null;
+        PGPKeyRingGenerator ringGen = null;
         if (masterSecretKey == null) {
 
             // build keyRing with only this one master key in it!
-            PGPKeyRingGenerator ringGen = new PGPKeyRingGenerator(
-                    PGPSignature.DEFAULT_CERTIFICATION, keyPair, "", sha1Calc, null, null,
-                    certificationSignerBuilder, keyEncryptor);
-
-            secKeyRing = ringGen.generateSecretKeyRing();
+            ringGen = new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
+                    sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
         } else {
             PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
             PGPPrivateKey masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
             PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
 
             // build keyRing with master key and new key as subkey (certified by masterkey)
-            PGPKeyRingGenerator ringGen = new PGPKeyRingGenerator(
-                    PGPSignature.DEFAULT_CERTIFICATION, masterKeyPair, "", sha1Calc, null, null,
-                    certificationSignerBuilder, keyEncryptor);
+            ringGen = new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION, masterKeyPair,
+                    "", sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
 
             ringGen.addSubKey(keyPair);
-            secKeyRing = ringGen.generateSecretKeyRing();
         }
+
+        PGPSecretKeyRing secKeyRing = ringGen.generateSecretKeyRing();
 
         return secKeyRing;
     }

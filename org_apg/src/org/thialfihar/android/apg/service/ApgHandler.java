@@ -41,6 +41,7 @@ public class ApgHandler extends Handler {
     
     // generate key results
     public static final String NEW_KEY = "new_key";
+    public static final String NEW_KEY2 = "new_key2";
 
 
     Activity mActivity;

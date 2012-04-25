@@ -58,6 +58,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseActivity {
@@ -66,8 +67,8 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
 
     private PGPSecretKeyRing mKeyRing = null;
 
-    private SectionView mUserIds;
-    private SectionView mKeys;
+    private SectionView mUserIdsView;
+    private SectionView mKeysView;
 
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
@@ -77,6 +78,11 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
     private CheckBox mNoPassphrase;
 
     private ProgressDialogFragment mSavingDialog;
+    private ProgressDialogFragment mGeneratingDialog;
+
+    Vector<String> mUserIds;
+    Vector<PGPSecretKey> mKeys;
+    Vector<Integer> mKeysUsages;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,9 +137,9 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
 
-        Vector<String> userIds = new Vector<String>();
-        Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
-        Vector<Integer> keysUsages = new Vector<Integer>();
+        mUserIds = new Vector<String>();
+        mKeys = new Vector<PGPSecretKey>();
+        mKeysUsages = new Vector<Integer>();
 
         // Catch Intents opened from other apps
         mIntent = getIntent();
@@ -150,7 +156,7 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                 // if userId is given, prefill the fields
                 if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
                     Log.d(Constants.TAG, "UserIds are given!");
-                    userIds.add(extras.getString(Apg.EXTRA_USER_IDS));
+                    mUserIds.add(extras.getString(Apg.EXTRA_USER_IDS));
                 }
 
                 // if no passphrase is given
@@ -169,25 +175,62 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                             .getBoolean(Apg.EXTRA_GENERATE_DEFAULT_KEYS);
                     if (generateDefaultKeys) {
 
-//                        // generate a RSA 2048 key for encryption and signing!
-//                        try {
-//                            PGPSecretKey masterKey = Apg.createKey(this, Id.choice.algorithm.rsa,
-//                                    2048, mCurrentPassPhrase, null);
-//
-//                            // add new masterKey to keys array, which is then added to view
-//                            keys.add(masterKey);
-//                            keysUsages.add(Id.choice.usage.sign_only);
-//
-//                            PGPSecretKey subKey = Apg.createKey(this, Id.choice.algorithm.rsa,
-//                                    2048, mCurrentPassPhrase, masterKey);
-//
-//                            keys.add(subKey);
-//                            keysUsages.add(Id.choice.usage.encrypt_only);
-//                        } catch (Exception e) {
-//                            Log.e(Constants.TAG, "Creating initial key failed: +" + e);
-//                        }
-                    }
+                        // Send all information needed to service generate keys in other thread
+                        Intent intent = new Intent(this, ApgService.class);
+                        intent.putExtra(ApgService.EXTRA_ACTION,
+                                ApgService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
 
+                        // fill values for this action
+                        Bundle data = new Bundle();
+                        data.putString(ApgService.PASSPHRASE, mCurrentPassPhrase);
+
+                        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+                        // show progress dialog
+                        mGeneratingDialog = ProgressDialogFragment.newInstance(
+                                R.string.progress_generating, ProgressDialog.STYLE_SPINNER);
+
+                        // Message is received after generating is done in ApgService
+                        ApgHandler saveHandler = new ApgHandler(this, mGeneratingDialog) {
+                            public void handleMessage(Message message) {
+                                // handle messages by standard ApgHandler first
+                                super.handleMessage(message);
+
+                                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                                    // get new key from data bundle returned from service
+                                    Bundle data = message.getData();
+                                    PGPSecretKeyRing masterKeyRing = Utils
+                                            .BytesToPGPSecretKeyRing(data
+                                                    .getByteArray(ApgHandler.NEW_KEY));
+                                    PGPSecretKeyRing subKeyRing = Utils
+                                            .BytesToPGPSecretKeyRing(data
+                                                    .getByteArray(ApgHandler.NEW_KEY2));
+
+                                    // add master key
+                                    Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
+                                    mKeys.add(masterIt.next());
+                                    mKeysUsages.add(Id.choice.usage.sign_only);
+
+                                    // add sub key
+                                    Iterator<PGPSecretKey> subIt = subKeyRing.getSecretKeys();
+                                    subIt.next(); // masterkey
+                                    mKeys.add(subIt.next());
+                                    mKeysUsages.add(Id.choice.usage.encrypt_only);
+
+                                    buildLayout();
+                                }
+                            };
+                        };
+
+                        // Create a new Messenger for the communication back
+                        Messenger messenger = new Messenger(saveHandler);
+                        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+                        mGeneratingDialog.show(getSupportFragmentManager(), "dialog");
+
+                        // start service with intent
+                        startService(intent);
+                    }
                 }
             }
         } else if (Apg.Intent.EDIT_KEY.equals(mIntent.getAction())) {
@@ -217,14 +260,14 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                             masterKey = Apg.getMasterKey(mKeyRing);
                             for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
                                     mKeyRing.getSecretKeys())) {
-                                keys.add(key);
-                                keysUsages.add(-1); // get usage when view is created
+                                mKeys.add(key);
+                                mKeysUsages.add(-1); // get usage when view is created
                             }
                         }
                         if (masterKey != null) {
                             for (String userId : new IterableIterator<String>(
                                     masterKey.getUserIDs())) {
-                                userIds.add(userId);
+                                mUserIds.add(userId);
                             }
                         }
                     }
@@ -255,27 +298,35 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
             }
         });
 
+        buildLayout();
+    }
+
+    /**
+     * Build layout based on mUserId, mKeys and mKeysUsages Vectors. It creates Views for every user
+     * id and key.
+     */
+    private void buildLayout() {
         // Build layout based on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
-        mUserIds = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mUserIds.setType(Id.type.user_id);
-        mUserIds.setUserIds(userIds);
-        container.addView(mUserIds);
-        mKeys = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
-        mKeys.setType(Id.type.key);
-        mKeys.setKeys(keys, keysUsages);
-        container.addView(mKeys);
+        mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
+        mUserIdsView.setType(Id.type.user_id);
+        mUserIdsView.setUserIds(mUserIds);
+        container.addView(mUserIdsView);
+        mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
+        mKeysView.setType(Id.type.key);
+        mKeysView.setKeys(mKeys, mKeysUsages);
+        container.addView(mKeysView);
 
         updatePassPhraseButtonText();
     }
 
     private long getMasterKeyId() {
-        if (mKeys.getEditors().getChildCount() == 0) {
+        if (mKeysView.getEditors().getChildCount() == 0) {
             return 0;
         }
-        return ((KeyEditor) mKeys.getEditors().getChildAt(0)).getValue().getKeyID();
+        return ((KeyEditor) mKeysView.getEditors().getChildAt(0)).getValue().getKeyID();
     }
 
     public boolean isPassphraseSet() {
@@ -362,13 +413,12 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
             data.putString(ApgService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
             data.putString(ApgService.NEW_PASSPHRASE, mNewPassPhrase);
 
-            data.putSerializable(ApgService.USER_IDS, getUserIds(mUserIds));
+            data.putSerializable(ApgService.USER_IDS, getUserIds(mUserIdsView));
 
-            Vector<PGPSecretKey> keys = getKeys(mKeys);
-            byte[] keysBytes = Utils.PGPSecretKeyListToBytes(keys);
-            data.putByteArray(ApgService.KEYS, keysBytes);
+            Vector<PGPSecretKey> keys = getKeys(mKeysView);
+            data.putByteArray(ApgService.KEYS, Utils.PGPSecretKeyListToBytes(keys));
 
-            data.putSerializable(ApgService.KEYS_USAGES, getKeysUsages(mKeys));
+            data.putSerializable(ApgService.KEYS_USAGES, getKeysUsages(mKeysView));
 
             data.putLong(ApgService.MASTER_KEY_ID, getMasterKeyId());
 

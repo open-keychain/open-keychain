@@ -22,6 +22,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.util.Utils;
 
@@ -64,6 +65,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     // possible ints for EXTRA_ACTION
     public static final int ACTION_SAVE_KEYRING = 1;
     public static final int ACTION_GENERATE_KEY = 2;
+    public static final int ACTION_GENERATE_DEFAULT_RSA_KEYS = 3;
 
     Messenger mMessenger;
 
@@ -158,6 +160,31 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_GENERATE_DEFAULT_RSA_KEYS:
+            // generate one RSA 2048 key for signing and one subkey for encrypting!
+            try {
+                String passphrase = data.getString(PASSPHRASE);
+
+                // Operation
+                PGPSecretKeyRing masterKeyRing = Apg.createKey(this, Id.choice.algorithm.rsa, 2048,
+                        passphrase, null);
+
+                PGPSecretKeyRing subKeyRing = Apg.createKey(this, Id.choice.algorithm.rsa, 2048,
+                        passphrase, masterKeyRing.getSecretKey());
+
+                // Output
+                Bundle resultData = new Bundle();
+                resultData.putByteArray(ApgHandler.NEW_KEY,
+                        Utils.PGPSecretKeyRingToBytes(masterKeyRing));
+                resultData.putByteArray(ApgHandler.NEW_KEY2,
+                        Utils.PGPSecretKeyRingToBytes(subKeyRing));
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
+            } catch (Exception e) {
+                Log.e(Constants.TAG, "Creating initial key failed: +" + e);
             }
 
             break;
