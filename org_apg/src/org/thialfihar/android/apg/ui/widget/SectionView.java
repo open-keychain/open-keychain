@@ -17,6 +17,7 @@
 package org.thialfihar.android.apg.ui.widget;
 
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.service.ApgHandler;
@@ -48,6 +49,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
@@ -282,14 +284,27 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
-                    PGPSecretKey newKey = Utils.BytesToPGPSecretKey(data
+                    PGPSecretKeyRing newKeyRing = Utils.BytesToPGPSecretKeyRing(data
                             .getByteArray(ApgHandler.NEW_KEY));
+
+                    boolean isMasterKey = (mEditors.getChildCount() == 0);
+
+                    // take only the key from this ring
+                    PGPSecretKey newKey = null;
+                    Iterator<PGPSecretKey> it = newKeyRing.getSecretKeys();
+
+                    if (isMasterKey) {
+                        newKey = it.next();
+                    } else {
+                        // first one is the master key
+                        it.next();
+                        newKey = it.next();
+                    }
 
                     // add view with new key
                     KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
                             mEditors, false);
                     view.setEditorListener(SectionView.this);
-                    boolean isMasterKey = (mEditors.getChildCount() == 0);
                     view.setValue(newKey, isMasterKey, -1);
                     mEditors.addView(view);
                     SectionView.this.updateEditorsVisible();

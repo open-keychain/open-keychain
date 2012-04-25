@@ -110,7 +110,7 @@ public class Utils {
      * @param keysBytes
      * @return
      */
-    public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
+    public static PGPSecretKeyRing BytesToPGPSecretKeyRing(byte[] keysBytes) {
         PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
         PGPSecretKeyRing keyRing = null;
         try {
@@ -120,6 +120,12 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return keyRing;
+    }
+
+    public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
+        PGPSecretKeyRing keyRing = BytesToPGPSecretKeyRing(keysBytes);
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
         Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
@@ -139,6 +145,16 @@ public class Utils {
     public static byte[] PGPSecretKeyToBytes(PGPSecretKey key) {
         try {
             return key.getEncoded();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Encoding failed: ", e);
+
+            return null;
+        }
+    }
+
+    public static byte[] PGPSecretKeyRingToBytes(PGPSecretKeyRing keyRing) {
+        try {
+            return keyRing.getEncoded();
         } catch (IOException e) {
             Log.e(Constants.TAG, "Encoding failed: ", e);
 

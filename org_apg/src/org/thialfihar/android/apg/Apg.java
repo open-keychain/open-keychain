@@ -53,6 +53,16 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
+import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.PGPDigestCalculator;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+import org.thialfihar.android.apg.Id.return_value;
 import org.thialfihar.android.apg.KeyServer.AddKeyException;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
@@ -94,6 +104,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -111,6 +122,12 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 public class Apg {
+
+    static {
+        // register spongy castle provider
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
 
     private static final String INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
@@ -296,16 +313,32 @@ public class Apg {
         return delay;
     }
 
-    public static PGPSecretKey createKey(Context context, int algorithmChoice, int keySize,
-            String passPhrase, PGPSecretKey masterKey) throws NoSuchAlgorithmException,
+    /**
+     * Creates new secret key. The returned PGPSecretKeyRing contains only one newly generated key
+     * when this key is the new masterkey. If a masterkey is supplied in the parameters
+     * PGPSecretKeyRing contains the masterkey and the new key as a subkey (certified by the
+     * masterkey).
+     * 
+     * @param context
+     * @param algorithmChoice
+     * @param keySize
+     * @param passPhrase
+     * @param masterSecretKey
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws PGPException
+     * @throws NoSuchProviderException
+     * @throws GeneralException
+     * @throws InvalidAlgorithmParameterException
+     */
+    public static PGPSecretKeyRing createKey(Context context, int algorithmChoice, int keySize,
+            String passPhrase, PGPSecretKey masterSecretKey) throws NoSuchAlgorithmException,
             PGPException, NoSuchProviderException, GeneralException,
             InvalidAlgorithmParameterException {
 
         if (keySize < 512) {
             throw new GeneralException(context.getString(R.string.error_keySizeMinimum512bit));
         }
-
-        Security.addProvider(new BouncyCastleProvider());
 
         if (passPhrase == null) {
             passPhrase = "";
@@ -316,18 +349,18 @@ public class Apg {
 
         switch (algorithmChoice) {
         case Id.choice.algorithm.dsa: {
-            keyGen = KeyPairGenerator.getInstance("DSA", new BouncyCastleProvider());
+            keyGen = KeyPairGenerator.getInstance("DSA", "SC");
             keyGen.initialize(keySize, new SecureRandom());
             algorithm = PGPPublicKey.DSA;
             break;
         }
 
         case Id.choice.algorithm.elgamal: {
-            if (masterKey == null) {
+            if (masterSecretKey == null) {
                 throw new GeneralException(
                         context.getString(R.string.error_masterKeyMustNotBeElGamal));
             }
-            keyGen = KeyPairGenerator.getInstance("ELGAMAL", new BouncyCastleProvider());
+            keyGen = KeyPairGenerator.getInstance("ELGAMAL", "SC");
             BigInteger p = Primes.getBestPrime(keySize);
             BigInteger g = new BigInteger("2");
 
@@ -339,7 +372,7 @@ public class Apg {
         }
 
         case Id.choice.algorithm.rsa: {
-            keyGen = KeyPairGenerator.getInstance("RSA", new BouncyCastleProvider());
+            keyGen = KeyPairGenerator.getInstance("RSA", "SC");
             keyGen.initialize(keySize, new SecureRandom());
 
             algorithm = PGPPublicKey.RSA_GENERAL;
@@ -351,38 +384,45 @@ public class Apg {
         }
         }
 
-        PGPKeyPair keyPair = new PGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
+        // build new key pair
+        PGPKeyPair keyPair = new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), new Date());
 
-        PGPSecretKey secretKey = null;
-        if (masterKey == null) {
-            // enough for now, as we assemble the key again later anyway
-            secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
-                    PGPEncryptedData.CAST5, passPhrase.toCharArray(), null, null,
-                    new SecureRandom(), new BouncyCastleProvider().getName());
+        // define hashing and signing algos
+        PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
+                HashAlgorithmTags.SHA1);
+        PGPContentSignerBuilder certificationSignerBuilder = new JcaPGPContentSignerBuilder(keyPair
+                .getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
 
-        } else {
-            PGPPublicKey tmpKey = masterKey.getPublicKey();
-            PGPPublicKey masterPublicKey = new PGPPublicKey(tmpKey.getAlgorithm(),
-                    tmpKey.getKey(new BouncyCastleProvider()), tmpKey.getCreationTime());
-            PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(passPhrase.toCharArray(),
-                    new BouncyCastleProvider());
+        // Build key encrypter and decrypter based on passphrase
+        PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
+                PGPEncryptedData.CAST5, sha1Calc).setProvider("SC").build(passPhrase.toCharArray());
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider("SC").build(passPhrase.toCharArray());
 
-            PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
+        PGPSecretKeyRing secKeyRing = null;
+        if (masterSecretKey == null) {
+
+            // build keyRing with only this one master key in it!
             PGPKeyRingGenerator ringGen = new PGPKeyRingGenerator(
-                    PGPSignature.POSITIVE_CERTIFICATION, masterKeyPair, "", PGPEncryptedData.CAST5,
-                    passPhrase.toCharArray(), null, null, new SecureRandom(),
-                    new BouncyCastleProvider().getName());
+                    PGPSignature.DEFAULT_CERTIFICATION, keyPair, "", sha1Calc, null, null,
+                    certificationSignerBuilder, keyEncryptor);
+
+            secKeyRing = ringGen.generateSecretKeyRing();
+        } else {
+            PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
+            PGPPrivateKey masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
+            PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
+
+            // build keyRing with master key and new key as subkey (certified by masterkey)
+            PGPKeyRingGenerator ringGen = new PGPKeyRingGenerator(
+                    PGPSignature.DEFAULT_CERTIFICATION, masterKeyPair, "", sha1Calc, null, null,
+                    certificationSignerBuilder, keyEncryptor);
+
             ringGen.addSubKey(keyPair);
-            PGPSecretKeyRing secKeyRing = ringGen.generateSecretKeyRing();
-            Iterator<PGPSecretKey> it = secKeyRing.getSecretKeys();
-            // first one is the master key
-            it.next();
-            secretKey = it.next();
+            secKeyRing = ringGen.generateSecretKeyRing();
         }
 
-        Log.d(Constants.TAG, "new secretkey: " + secretKey.toString());
-
-        return secretKey;
+        return secKeyRing;
     }
 
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
@@ -393,8 +433,6 @@ public class Apg {
 
         if (progress != null)
             progress.setProgress(R.string.progress_buildingKey, 0, 100);
-
-        Security.addProvider(new BouncyCastleProvider());
 
         if (oldPassPhrase == null || oldPassPhrase.equals("")) {
             oldPassPhrase = "";
@@ -1239,7 +1277,6 @@ public class Apg {
             int hashAlgorithm, int compression, boolean forceV3Signature, String passPhrase)
             throws IOException, GeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
-        Security.addProvider(new BouncyCastleProvider());
 
         if (encryptionKeyIds == null) {
             encryptionKeyIds = new long[0];
@@ -1394,7 +1431,6 @@ public class Apg {
             long signatureKeyId, String signaturePassPhrase, int hashAlgorithm,
             boolean forceV3Signature, ProgressDialogUpdater progress) throws GeneralException,
             PGPException, IOException, NoSuchAlgorithmException, SignatureException {
-        Security.addProvider(new BouncyCastleProvider());
 
         ArmoredOutputStream armorOut = new ArmoredOutputStream(outStream);
         armorOut.setHeader("Version", getFullVersion(context));
@@ -1500,7 +1536,6 @@ public class Apg {
             int hashAlgorithm, boolean forceV3Signature, ProgressDialogUpdater progress)
             throws GeneralException, PGPException, IOException, NoSuchAlgorithmException,
             SignatureException {
-        Security.addProvider(new BouncyCastleProvider());
 
         ArmoredOutputStream armorOut = null;
         OutputStream out = null;

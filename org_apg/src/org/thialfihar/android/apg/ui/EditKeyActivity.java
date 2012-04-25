@@ -169,23 +169,23 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                             .getBoolean(Apg.EXTRA_GENERATE_DEFAULT_KEYS);
                     if (generateDefaultKeys) {
 
-                        // generate a RSA 2048 key for encryption and signing!
-                        try {
-                            PGPSecretKey masterKey = Apg.createKey(this, Id.choice.algorithm.rsa,
-                                    2048, mCurrentPassPhrase, null);
-
-                            // add new masterKey to keys array, which is then added to view
-                            keys.add(masterKey);
-                            keysUsages.add(Id.choice.usage.sign_only);
-
-                            PGPSecretKey subKey = Apg.createKey(this, Id.choice.algorithm.rsa,
-                                    2048, mCurrentPassPhrase, masterKey);
-
-                            keys.add(subKey);
-                            keysUsages.add(Id.choice.usage.encrypt_only);
-                        } catch (Exception e) {
-                            Log.e(Constants.TAG, "Creating initial key failed: +" + e);
-                        }
+//                        // generate a RSA 2048 key for encryption and signing!
+//                        try {
+//                            PGPSecretKey masterKey = Apg.createKey(this, Id.choice.algorithm.rsa,
+//                                    2048, mCurrentPassPhrase, null);
+//
+//                            // add new masterKey to keys array, which is then added to view
+//                            keys.add(masterKey);
+//                            keysUsages.add(Id.choice.usage.sign_only);
+//
+//                            PGPSecretKey subKey = Apg.createKey(this, Id.choice.algorithm.rsa,
+//                                    2048, mCurrentPassPhrase, masterKey);
+//
+//                            keys.add(subKey);
+//                            keysUsages.add(Id.choice.usage.encrypt_only);
+//                        } catch (Exception e) {
+//                            Log.e(Constants.TAG, "Creating initial key failed: +" + e);
+//                        }
                     }
 
                 }

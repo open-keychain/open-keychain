@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.service;
 import java.util.ArrayList;
 
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
@@ -147,12 +148,13 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 }
 
                 // Operation
-                PGPSecretKey newKey = Apg
-                        .createKey(this, algorithm, keysize, passphrase, masterKey);
+                PGPSecretKeyRing newKeyRing = Apg.createKey(this, algorithm, keysize, passphrase,
+                        masterKey);
 
                 // Output
                 Bundle resultData = new Bundle();
-                resultData.putByteArray(ApgHandler.NEW_KEY, Utils.PGPSecretKeyToBytes(newKey));
+                resultData.putByteArray(ApgHandler.NEW_KEY,
+                        Utils.PGPSecretKeyRingToBytes(newKeyRing));
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
