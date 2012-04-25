@@ -1,6 +1,6 @@
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.service;
 
-interface IApgService {
+interface IApgService2 {
 
     /* All functions fill the returnVals Bundle with the following keys:
      *

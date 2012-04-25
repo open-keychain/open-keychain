@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,8 +25,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.thialfihar.android.apg.IApgService;
+import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.service.IApgService2;
+import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.InputData;
+import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.service.IApgService2.Stub;
+import org.thialfihar.android.apg.Id.database;
+import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -40,7 +47,14 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
-public class ApgService2 extends Service {
+/**
+ * ATTENTION:
+ * 
+ * This is the old ApgService used as remote service over aidl interface.
+ * It will be reworked!
+ *
+ */
+public class ApgService2 extends PassphraseCacheService {
     private final static String TAG = "ApgService";
     public static final boolean LOCAL_LOGV = true;
     public static final boolean LOCAL_LOGD = true;
@@ -536,7 +550,7 @@ public class ApgService2 extends Service {
         return true;
     }
 
-    private final IApgService.Stub mBinder = new IApgService.Stub() {
+    private final IApgService2.Stub mBinder = new IApgService2.Stub() {
 
         public boolean getKeys(Bundle pArgs, Bundle pReturn) {
 

@@ -12,14 +12,17 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.service;
 
+import org.thialfihar.android.apg.Apg;
+
+import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 
-public class Service extends android.app.Service {
+public class PassphraseCacheService extends Service {
     private final IBinder mBinder = new LocalBinder();
 
     public static final String EXTRA_TTL = "ttl";
@@ -80,8 +83,8 @@ public class Service extends android.app.Service {
     }
 
     public class LocalBinder extends Binder {
-        Service getService() {
-            return Service.this;
+        PassphraseCacheService getService() {
+            return PassphraseCacheService.this;
         }
     }
 

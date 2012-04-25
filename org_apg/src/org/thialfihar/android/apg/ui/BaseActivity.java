@@ -28,7 +28,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.PausableThread;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
-import org.thialfihar.android.apg.Service;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -92,8 +92,8 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
     }
 
     public static void startCacheService(Activity activity, Preferences preferences) {
-        Intent intent = new Intent(activity, Service.class);
-        intent.putExtra(Service.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
+        Intent intent = new Intent(activity, PassphraseCacheService.class);
+        intent.putExtra(PassphraseCacheService.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
         activity.startService(intent);
     }
 

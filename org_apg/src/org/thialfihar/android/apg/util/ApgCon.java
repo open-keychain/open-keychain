@@ -16,7 +16,7 @@
 
 package org.thialfihar.android.apg.util;
 
-import org.thialfihar.android.apg.IApgService;
+import org.thialfihar.android.apg.service.IApgService2;
 import org.thialfihar.android.apg.util.ApgConInterface.OnCallFinishListener;
 
 import android.content.ComponentName;
@@ -97,13 +97,13 @@ public class ApgCon {
     private final ArrayList<String> mWarningList = new ArrayList<String>();
 
     /** Remote service for decrypting and encrypting data */
-    private IApgService mApgService = null;
+    private IApgService2 mApgService = null;
 
     /** Set apgService accordingly to connection status */
     private ServiceConnection mApgConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             if( LOCAL_LOGD ) Log.d(TAG, "IApgService bound to apgService");
-            mApgService = IApgService.Stub.asInterface(service);
+            mApgService = IApgService2.Stub.asInterface(service);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -231,7 +231,7 @@ public class ApgCon {
         }
 
         try {
-            mContext.bindService(new Intent(IApgService.class.getName()), mApgConnection, Context.BIND_AUTO_CREATE);
+            mContext.bindService(new Intent(IApgService2.class.getName()), mApgConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             Log.e(TAG, "could not bind APG service", e);
             return false;
@@ -370,7 +370,7 @@ public class ApgCon {
         }
 
         try {
-            Boolean success = (Boolean) IApgService.class.getMethod(function, Bundle.class, Bundle.class).invoke(mApgService, pArgs, pReturn);
+            Boolean success = (Boolean) IApgService2.class.getMethod(function, Bundle.class, Bundle.class).invoke(mApgService, pArgs, pReturn);
             mErrorList.addAll(pReturn.getStringArrayList(ret.ERRORS.name()));
             mWarningList.addAll(pReturn.getStringArrayList(ret.WARNINGS.name()));
             return success;

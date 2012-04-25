@@ -14,8 +14,8 @@
 
 package org.thialfihar.android.apg.provider;
 
-import org.thialfihar.android.apg.ApgService2;
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.service.ApgService2;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

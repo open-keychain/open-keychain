@@ -84,7 +84,7 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
     Vector<PGPSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
 
-    // will be set to true to build layout later in handler
+    // will be set to false to build layout later in handler
     private boolean mBuildLayout = true;
 
     @Override
@@ -300,7 +300,6 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                 } else {
                     mChangePassPhrase.setVisibility(View.VISIBLE);
                 }
-
             }
         });
 
