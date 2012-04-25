@@ -84,6 +84,9 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
     Vector<PGPSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
 
+    // will be set to true to build layout later in handler
+    private boolean mBuildLayout = true;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
@@ -174,6 +177,9 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
                     boolean generateDefaultKeys = extras
                             .getBoolean(Apg.EXTRA_GENERATE_DEFAULT_KEYS);
                     if (generateDefaultKeys) {
+
+                        // build layout in handler after generating keys not directly in onCreate
+                        mBuildLayout = false;
 
                         // Send all information needed to service generate keys in other thread
                         Intent intent = new Intent(this, ApgService.class);
@@ -298,7 +304,9 @@ public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseA
             }
         });
 
-        buildLayout();
+        if (mBuildLayout) {
+            buildLayout();
+        }
     }
 
     /**
