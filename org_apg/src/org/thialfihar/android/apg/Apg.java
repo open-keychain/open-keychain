@@ -77,6 +77,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Message;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.io.BufferedInputStream;
@@ -110,7 +111,8 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 
 public class Apg {
-    private static final String PACKAGE_NAME = "org.thialfihar.android.apg";
+    public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
+
     private static final String INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
 
     public static class Intent {
@@ -378,14 +380,16 @@ public class Apg {
             secretKey = it.next();
         }
 
+        Log.d(Constants.TAG, "new secretkey: " + secretKey.toString());
+
         return secretKey;
     }
 
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
-            ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId, String oldPassPhrase, String newPassPhrase,
-            ProgressDialogUpdater progress) throws Apg.GeneralException, NoSuchProviderException,
-            PGPException, NoSuchAlgorithmException, SignatureException, IOException,
-            Database.GeneralException {
+            ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
+            String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)
+            throws Apg.GeneralException, NoSuchProviderException, PGPException,
+            NoSuchAlgorithmException, SignatureException, IOException, Database.GeneralException {
 
         if (progress != null)
             progress.setProgress(R.string.progress_buildingKey, 0, 100);
@@ -400,64 +404,63 @@ public class Apg {
             newPassPhrase = "";
         }
 
-//        Vector<String> userIds = new Vector<String>();
-//        Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
+        // Vector<String> userIds = new Vector<String>();
+        // Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
 
-//        ViewGroup userIdEditors = userIdsView.getEditors();
-//        ViewGroup keyEditors = keysView.getEditors();
-//
-//        boolean gotMainUserId = false;
-//        for (int i = 0; i < userIdEditors.getChildCount(); ++i) {
-//            UserIdEditor editor = (UserIdEditor) userIdEditors.getChildAt(i);
-//            String userId = null;
-//            try {
-//                userId = editor.getValue();
-//            } catch (UserIdEditor.NoNameException e) {
-//                throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAName));
-//            } catch (UserIdEditor.NoEmailException e) {
-//                throw new Apg.GeneralException(
-//                        context.getString(R.string.error_userIdNeedsAnEmailAddress));
-//            } catch (UserIdEditor.InvalidEmailException e) {
-//                throw new Apg.GeneralException("" + e);
-//            }
-//
-//            if (userId.equals("")) {
-//                continue;
-//            }
-//
-//            if (editor.isMainUserId()) {
-//                userIds.insertElementAt(userId, 0);
-//                gotMainUserId = true;
-//            } else {
-//                userIds.add(userId);
-//            }
-//        }
+        // ViewGroup userIdEditors = userIdsView.getEditors();
+        // ViewGroup keyEditors = keysView.getEditors();
+        //
+        // boolean gotMainUserId = false;
+        // for (int i = 0; i < userIdEditors.getChildCount(); ++i) {
+        // UserIdEditor editor = (UserIdEditor) userIdEditors.getChildAt(i);
+        // String userId = null;
+        // try {
+        // userId = editor.getValue();
+        // } catch (UserIdEditor.NoNameException e) {
+        // throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAName));
+        // } catch (UserIdEditor.NoEmailException e) {
+        // throw new Apg.GeneralException(
+        // context.getString(R.string.error_userIdNeedsAnEmailAddress));
+        // } catch (UserIdEditor.InvalidEmailException e) {
+        // throw new Apg.GeneralException("" + e);
+        // }
+        //
+        // if (userId.equals("")) {
+        // continue;
+        // }
+        //
+        // if (editor.isMainUserId()) {
+        // userIds.insertElementAt(userId, 0);
+        // gotMainUserId = true;
+        // } else {
+        // userIds.add(userId);
+        // }
+        // }
 
-//        if (userIds.size() == 0) {
-//            throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
-//        }
-//
-//        if (!gotMainUserId) {
-//            throw new Apg.GeneralException(
-//                    context.getString(R.string.error_mainUserIdMustNotBeEmpty));
-//        }
+        // if (userIds.size() == 0) {
+        // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
+        // }
+        //
+        // if (!gotMainUserId) {
+        // throw new Apg.GeneralException(
+        // context.getString(R.string.error_mainUserIdMustNotBeEmpty));
+        // }
 
-//        if (keyEditors.getChildCount() == 0) {
-//            throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsMasterKey));
-//        }
-//
-//        for (int i = 0; i < keyEditors.getChildCount(); ++i) {
-//            KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
-//            keys.add(editor.getValue());
-//        }
+        // if (keyEditors.getChildCount() == 0) {
+        // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsMasterKey));
+        // }
+        //
+        // for (int i = 0; i < keyEditors.getChildCount(); ++i) {
+        // KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
+        // keys.add(editor.getValue());
+        // }
 
         if (progress != null)
             progress.setProgress(R.string.progress_preparingMasterKey, 10, 100);
-        
-        
-//        KeyEditor keyEditor = (KeyEditor) keyEditors.getChildAt(0);
-//        int usageId = keyEditor.getUsage();
-        
+
+        // KeyEditor keyEditor = (KeyEditor) keyEditors.getChildAt(0);
+        // int usageId = keyEditor.getUsage();
+
         int usageId = keysUsages.get(0);
         boolean canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
         boolean canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
@@ -504,17 +507,17 @@ public class Apg {
         hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
 
         // TODO: this doesn't work quite right yet
-//        if (keyEditor.getExpiryDate() != null) {
-//            GregorianCalendar creationDate = new GregorianCalendar();
-//            creationDate.setTime(getCreationDate(masterKey));
-//            GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-//            long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
-//            if (numDays <= 0) {
-//                throw new GeneralException(
-//                        context.getString(R.string.error_expiryMustComeAfterCreation));
-//            }
-//            hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
-//        }
+        // if (keyEditor.getExpiryDate() != null) {
+        // GregorianCalendar creationDate = new GregorianCalendar();
+        // creationDate.setTime(getCreationDate(masterKey));
+        // GregorianCalendar expiryDate = keyEditor.getExpiryDate();
+        // long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
+        // if (numDays <= 0) {
+        // throw new GeneralException(
+        // context.getString(R.string.error_expiryMustComeAfterCreation));
+        // }
+        // hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
+        // }
 
         if (progress != null) {
             progress.setProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
@@ -531,7 +534,7 @@ public class Apg {
             if (progress != null)
                 progress.setProgress(40 + 50 * (i - 1) / (keys.size() - 1), 100);
             PGPSecretKey subKey = keys.get(i);
-//            keyEditor = (KeyEditor) keyEditors.getChildAt(i);
+            // keyEditor = (KeyEditor) keyEditors.getChildAt(i);
             PGPPublicKey subPublicKey = subKey.getPublicKey();
             PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(oldPassPhrase.toCharArray(),
                     new BouncyCastleProvider());
@@ -543,8 +546,8 @@ public class Apg {
             unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
             keyFlags = 0;
-//            usageId = keyEditor.getUsage();
-            
+            // usageId = keyEditor.getUsage();
+
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
@@ -557,17 +560,17 @@ public class Apg {
             hashedPacketsGen.setKeyFlags(true, keyFlags);
 
             // TODO: this doesn't work quite right yet
-//            if (keyEditor.getExpiryDate() != null) {
-//                GregorianCalendar creationDate = new GregorianCalendar();
-//                creationDate.setTime(getCreationDate(masterKey));
-//                GregorianCalendar expiryDate = keyEditor.getExpiryDate();
-//                long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
-//                if (numDays <= 0) {
-//                    throw new GeneralException(
-//                            context.getString(R.string.error_expiryMustComeAfterCreation));
-//                }
-//                hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
-//            }
+            // if (keyEditor.getExpiryDate() != null) {
+            // GregorianCalendar creationDate = new GregorianCalendar();
+            // creationDate.setTime(getCreationDate(masterKey));
+            // GregorianCalendar expiryDate = keyEditor.getExpiryDate();
+            // long numDays = Utils.getNumDaysBetween(creationDate, expiryDate);
+            // if (numDays <= 0) {
+            // throw new GeneralException(
+            // context.getString(R.string.error_expiryMustComeAfterCreation));
+            // }
+            // hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
+            // }
 
             keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
         }

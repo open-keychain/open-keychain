@@ -16,44 +16,41 @@
 
 package org.thialfihar.android.apg.ui.widget;
 
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
 import org.thialfihar.android.apg.util.Choice;
+import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.Vector;
 
-public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Runnable {
+public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
     private LayoutInflater mInflater;
     private View mAdd;
     private ViewGroup mEditors;
@@ -63,50 +60,18 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
 
-    volatile private PGPSecretKey mNewKey;
-    private ProgressDialog mProgressDialog;
-    private Thread mRunningThread = null;
+    private SherlockFragmentActivity mActivity;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            Bundle data = msg.getData();
-            if (data != null) {
-                boolean closeProgressDialog = data.getBoolean("closeProgressDialog");
-                if (closeProgressDialog) {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                    }
-                }
-
-                String error = data.getString(Apg.EXTRA_ERROR);
-                if (error != null) {
-                    Toast.makeText(getContext(),
-                            getContext().getString(R.string.errorMessage, error),
-                            Toast.LENGTH_SHORT).show();
-                }
-
-                boolean gotNewKey = data.getBoolean("gotNewKey");
-                if (gotNewKey) {
-                    KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
-                            mEditors, false);
-                    view.setEditorListener(SectionView.this);
-                    boolean isMasterKey = (mEditors.getChildCount() == 0);
-                    view.setValue(mNewKey, isMasterKey, -1);
-                    mEditors.addView(view);
-                    SectionView.this.updateEditorsVisible();
-                }
-            }
-        }
-    };
+    private ProgressDialogFragment mGeneratingDialog;
 
     public SectionView(Context context) {
         super(context);
+        mActivity = (SherlockFragmentActivity) context;
     }
 
     public SectionView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mActivity = (SherlockFragmentActivity) context;
     }
 
     public ViewGroup getEditors() {
@@ -281,51 +246,64 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     private void createKey() {
-        mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setMessage(getContext().getString(R.string.progress_generating));
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.show();
-        mRunningThread = new Thread(this);
-        mRunningThread.start();
-    }
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(mActivity, ApgService.class);
 
-    public void run() {
-        String error = null;
-        try {
-            PGPSecretKey masterKey = null;
-            String passPhrase;
-            if (mEditors.getChildCount() > 0) {
-                masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
-                passPhrase = Apg.getCachedPassPhrase(masterKey.getKeyID());
-            } else {
-                passPhrase = "";
-            }
-            mNewKey = Apg.createKey(getContext(), mNewKeyAlgorithmChoice.getId(), mNewKeySize,
-                    passPhrase, masterKey);
-        } catch (NoSuchProviderException e) {
-            error = "" + e;
-        } catch (NoSuchAlgorithmException e) {
-            error = "" + e;
-        } catch (PGPException e) {
-            error = "" + e;
-        } catch (InvalidParameterException e) {
-            error = "" + e;
-        } catch (InvalidAlgorithmParameterException e) {
-            error = "" + e;
-        } catch (Apg.GeneralException e) {
-            error = "" + e;
-        }
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_GENERATE_KEY);
 
-        Message message = new Message();
+        // fill values for this action
         Bundle data = new Bundle();
-        data.putBoolean("closeProgressDialog", true);
-        if (error != null) {
-            data.putString(Apg.EXTRA_ERROR, error);
+
+        String passPhrase;
+        if (mEditors.getChildCount() > 0) {
+            PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
+            passPhrase = Apg.getCachedPassPhrase(masterKey.getKeyID());
+
+            data.putByteArray(ApgService.MASTER_KEY, Utils.PGPSecretKeyToBytes(masterKey));
         } else {
-            data.putBoolean("gotNewKey", true);
+            passPhrase = "";
         }
-        message.setData(data);
-        mHandler.sendMessage(message);
+        data.putString(ApgService.PASSPHRASE, passPhrase);
+        data.putInt(ApgService.ALGORITHM, mNewKeyAlgorithmChoice.getId());
+        data.putInt(ApgService.KEY_SIZE, mNewKeySize);
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        // show progress dialog
+        mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
+                ProgressDialog.STYLE_SPINNER);
+
+        // Message is received after generating is done in ApgService
+        ApgHandler saveHandler = new ApgHandler(mActivity, mGeneratingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    // get new key from data bundle returned from service
+                    Bundle data = message.getData();
+                    PGPSecretKey newKey = Utils.BytesToPGPSecretKey(data
+                            .getByteArray(ApgHandler.NEW_KEY));
+
+                    // add view with new key
+                    KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
+                            mEditors, false);
+                    view.setEditorListener(SectionView.this);
+                    boolean isMasterKey = (mEditors.getChildCount() == 0);
+                    view.setValue(newKey, isMasterKey, -1);
+                    mEditors.addView(view);
+                    SectionView.this.updateEditorsVisible();
+                }
+            };
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        mGeneratingDialog.show(mActivity.getSupportFragmentManager(), "dialog");
+
+        // start service with intent
+        mActivity.startService(intent);
     }
 }

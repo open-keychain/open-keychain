@@ -22,28 +22,29 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
 import org.thialfihar.android.apg.util.IterableIterator;
+import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,11 +58,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Vector;
 
-public class EditKeyActivity extends SherlockActivity { // extends BaseActivity {
+public class EditKeyActivity extends SherlockFragmentActivity { // extends BaseActivity {
     private Intent mIntent = null;
     private ActionBar mActionBar;
 
@@ -76,6 +75,8 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
     private Button mChangePassPhrase;
 
     private CheckBox mNoPassphrase;
+
+    private ProgressDialogFragment mSavingDialog;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -115,6 +116,16 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
         setContentView(R.layout.edit_key);
 
         mActionBar = getSupportActionBar();
+        mActionBar.setDisplayShowTitleEnabled(true);
+
+        // set actionbar without home button if called from another app
+        if (getCallingPackage() != null && getCallingPackage().equals(Apg.PACKAGE_NAME)) {
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+            mActionBar.setHomeButtonEnabled(true);
+        } else {
+            mActionBar.setDisplayHomeAsUpEnabled(false);
+            mActionBar.setHomeButtonEnabled(false);
+        }
 
         // find views
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
@@ -126,6 +137,8 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
 
         // Catch Intents opened from other apps
         mIntent = getIntent();
+
+        // Handle intents
         Bundle extras = mIntent.getExtras();
         if (Apg.Intent.CREATE_KEY.equals(mIntent.getAction())) {
 
@@ -134,12 +147,6 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
             mCurrentPassPhrase = "";
 
             if (extras != null) {
-
-                // disable home button on actionbar because this activity is run from another app
-                mActionBar.setDisplayShowTitleEnabled(true);
-                mActionBar.setDisplayHomeAsUpEnabled(false);
-                mActionBar.setHomeButtonEnabled(false);
-
                 // if userId is given, prefill the fields
                 if (extras.containsKey(Apg.EXTRA_USER_IDS)) {
                     Log.d(Constants.TAG, "UserIds are given!");
@@ -339,72 +346,71 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
     }
 
     private void saveClicked() {
-        if (!isPassphraseSet()) {
-            Toast.makeText(this, R.string.setAPassPhrase, Toast.LENGTH_SHORT).show();
-            return;
-        }
-//        showDialog(Id.dialog.saving);
-        
-        ProgressDialogFragment newFragment = ProgressDialogFragment.newInstance(
-                ProgressDialogFragment.ID_SAVING);
-        newFragment.show(getSupportFragmentManager(), "saving");
-//        ((ProgressDialog) newFragment.getDialog()).setProgress(value)
 
-        // startThread();
-
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(this, ApgService.class);
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(handler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SAVE_KEYRING);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-        data.putString(ApgService.DATA_CURRENT_PASSPHRASE, mCurrentPassPhrase);
-        data.putString(ApgService.DATA_NEW_PASSPHRASE, mNewPassPhrase);
-        data.putSerializable(ApgService.DATA_USER_IDS, getUserIds(mUserIds));
-
-        Vector<PGPSecretKey> keys = getKeys(mKeys);
-
-        // convert to byte[]
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        for (PGPSecretKey key : keys) {
-            try {
-                key.encode(os);
-            } catch (IOException e) {
-                Log.e(Constants.TAG,
-                        "Error while converting PGPSecretKey to byte[]: " + e.getMessage());
-                e.printStackTrace();
+        try {
+            if (!isPassphraseSet()) {
+                throw new Apg.GeneralException(this.getString(R.string.setAPassPhrase));
             }
+
+            // Send all information needed to service to edit key in other thread
+            Intent intent = new Intent(this, ApgService.class);
+
+            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SAVE_KEYRING);
+
+            // fill values for this action
+            Bundle data = new Bundle();
+            data.putString(ApgService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
+            data.putString(ApgService.NEW_PASSPHRASE, mNewPassPhrase);
+
+            data.putSerializable(ApgService.USER_IDS, getUserIds(mUserIds));
+
+            Vector<PGPSecretKey> keys = getKeys(mKeys);
+            byte[] keysBytes = Utils.PGPSecretKeyListToBytes(keys);
+            data.putByteArray(ApgService.KEYS, keysBytes);
+
+            data.putSerializable(ApgService.KEYS_USAGES, getKeysUsages(mKeys));
+
+            data.putLong(ApgService.MASTER_KEY_ID, getMasterKeyId());
+
+            intent.putExtra(ApgService.EXTRA_DATA, data);
+
+            // show progress dialog
+            mSavingDialog = ProgressDialogFragment.newInstance(R.string.progress_saving,
+                    ProgressDialog.STYLE_HORIZONTAL);
+
+            // Message is received after saving is done in ApgService
+            ApgHandler saveHandler = new ApgHandler(this, mSavingDialog) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard ApgHandler first
+                    super.handleMessage(message);
+
+                    if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                        finish();
+                    }
+                };
+            };
+
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+            mSavingDialog.show(getSupportFragmentManager(), "dialog");
+
+            // start service with intent
+            startService(intent);
+        } catch (Apg.GeneralException e) {
+            Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
+                    Toast.LENGTH_SHORT).show();
         }
-
-        byte[] keysBytes = os.toByteArray();
-
-        data.putByteArray(ApgService.DATA_KEYS, keysBytes);
-
-        data.putSerializable(ApgService.DATA_KEYS_USAGES, getKeysUsages(mKeys).toArray());
-        data.putLong(ApgService.DATA_MASTER_KEY_ID, getMasterKeyId());
-
-        intent.putExtra(ApgService.EXTRA_DATA, data);
-
-        startService(intent);
     }
 
-    private Handler handler = new Handler() {
-        public void handleMessage(Message message) {
-            Object path = message.obj;
-            if (message.arg1 == ApgService.MESSAGE_OKAY) {
-                Toast.makeText(EditKeyActivity.this, "okay", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(EditKeyActivity.this, "nope", Toast.LENGTH_LONG).show();
-            }
-
-        };
-    };
-
-    // TODO: put in other class
-    private Vector<String> getUserIds(SectionView userIdsView) {
+    /**
+     * Returns user ids from the SectionView
+     * 
+     * @param userIdsView
+     * @return
+     */
+    private Vector<String> getUserIds(SectionView userIdsView) throws Apg.GeneralException {
         Vector<String> userIds = new Vector<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
@@ -416,12 +422,12 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                // throw new Apg.GeneralException(this.getString(R.string.error_userIdNeedsAName));
+                throw new Apg.GeneralException(this.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
-                // throw new Apg.GeneralException(
-                // this.getString(R.string.error_userIdNeedsAnEmailAddress));
+                throw new Apg.GeneralException(
+                        this.getString(R.string.error_userIdNeedsAnEmailAddress));
             } catch (UserIdEditor.InvalidEmailException e) {
-                // throw new Apg.GeneralException("" + e);
+                throw new Apg.GeneralException(e.getMessage());
             }
 
             if (userId.equals("")) {
@@ -437,24 +443,29 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
         }
 
         if (userIds.size() == 0) {
-            // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
+            throw new Apg.GeneralException(getString(R.string.error_keyNeedsAUserId));
         }
 
         if (!gotMainUserId) {
-            // throw new Apg.GeneralException(
-            // context.getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new Apg.GeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         return userIds;
     }
 
-    private Vector<PGPSecretKey> getKeys(SectionView keysView) {
+    /**
+     * Returns keys from the SectionView
+     * 
+     * @param keysView
+     * @return
+     */
+    private Vector<PGPSecretKey> getKeys(SectionView keysView) throws Apg.GeneralException {
         Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            // throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -465,13 +476,19 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
         return keys;
     }
 
-    private Vector<Integer> getKeysUsages(SectionView keysView) {
+    /**
+     * Returns usage selections of keys from the SectionView
+     * 
+     * @param keysView
+     * @return
+     */
+    private Vector<Integer> getKeysUsages(SectionView keysView) throws Apg.GeneralException {
         Vector<Integer> getKeysUsages = new Vector<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            // throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new Apg.GeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -481,66 +498,6 @@ public class EditKeyActivity extends SherlockActivity { // extends BaseActivity 
 
         return getKeysUsages;
     }
-
-    // @Override
-    // public void run() {
-    // String error = null;
-    // Bundle data = new Bundle();
-    // Message msg = new Message();
-    //
-    // data.putParcelable("ts", (Parcelable) mUserIds);
-    //
-    // try {
-    // String oldPassPhrase = mCurrentPassPhrase;
-    // String newPassPhrase = mNewPassPhrase;
-    // if (newPassPhrase == null) {
-    // newPassPhrase = oldPassPhrase;
-    // }
-    // Apg.buildSecretKey(this, mUserIds, mKeys, oldPassPhrase, newPassPhrase, this);
-    // Apg.setCachedPassPhrase(getMasterKeyId(), newPassPhrase);
-    // } catch (NoSuchProviderException e) {
-    // error = "" + e;
-    // } catch (NoSuchAlgorithmException e) {
-    // error = "" + e;
-    // } catch (PGPException e) {
-    // error = "" + e;
-    // } catch (SignatureException e) {
-    // error = "" + e;
-    // } catch (Apg.GeneralException e) {
-    // error = "" + e;
-    // } catch (Database.GeneralException e) {
-    // error = "" + e;
-    // } catch (IOException e) {
-    // error = "" + e;
-    // }
-    //
-    // data.putInt(Constants.extras.STATUS, Id.message.done);
-    //
-    // if (error != null) {
-    // data.putString(Apg.EXTRA_ERROR, error);
-    // }
-    //
-    // msg.setData(data);
-    // sendMessage(msg);
-    // }
-
-    // @Override
-    // public void doneCallback(Message msg) {
-    // super.doneCallback(msg);
-    //
-    // Bundle data = msg.getData();
-    // removeDialog(Id.dialog.saving);
-    //
-    // String error = data.getString(Apg.EXTRA_ERROR);
-    // if (error != null) {
-    // Toast.makeText(EditKeyActivity.this, getString(R.string.errorMessage, error),
-    // Toast.LENGTH_SHORT).show();
-    // } else {
-    // Toast.makeText(EditKeyActivity.this, R.string.keySaved, Toast.LENGTH_SHORT).show();
-    // setResult(RESULT_OK);
-    // finish();
-    // }
-    // }
 
     private void updatePassPhraseButtonText() {
         mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_changePassPhrase

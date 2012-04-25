@@ -55,19 +55,34 @@ public final class Id {
         }
     }
 
+    // use only lower 16 bits due to compatibility lib
     public static final class message {
-        public static final int progress_update = 0x21070001;
-        public static final int done = 0x21070002;
-        public static final int import_keys = 0x21070003;
-        public static final int export_keys = 0x21070004;
-        public static final int import_done = 0x21070005;
-        public static final int export_done = 0x21070006;
-        public static final int create_key = 0x21070007;
-        public static final int edit_key = 0x21070008;
-        public static final int delete_done = 0x21070009;
-        public static final int query_done = 0x21070010;
-        public static final int unknown_signature_key = 0x21070011;
+        public static final int progress_update = 0x00006001;
+        public static final int done = 0x00006002;
+        public static final int import_keys = 0x00006003;
+        public static final int export_keys = 0x00006004;
+        public static final int import_done = 0x00006005;
+        public static final int export_done = 0x00006006;
+        public static final int create_key = 0x00006007;
+        public static final int edit_key = 0x00006008;
+        public static final int delete_done = 0x00006009;
+        public static final int query_done = 0x00006010;
+        public static final int unknown_signature_key = 0x00006011;
     }
+
+    // public static final class message {
+    // public static final int progress_update = 0x21070001;
+    // public static final int done = 0x21070002;
+    // public static final int import_keys = 0x21070003;
+    // public static final int export_keys = 0x21070004;
+    // public static final int import_done = 0x21070005;
+    // public static final int export_done = 0x21070006;
+    // public static final int create_key = 0x21070007;
+    // public static final int edit_key = 0x21070008;
+    // public static final int delete_done = 0x21070009;
+    // public static final int query_done = 0x21070010;
+    // public static final int unknown_signature_key = 0x21070011;
+    // }
 
     public static final class request {
         public static final int public_keys = 0x21070001;

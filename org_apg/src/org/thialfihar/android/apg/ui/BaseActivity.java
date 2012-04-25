@@ -32,6 +32,7 @@ import org.thialfihar.android.apg.Service;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 import android.app.Activity;
@@ -44,10 +45,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
-public class BaseActivity extends SherlockActivity implements Runnable, ProgressDialogUpdater,
-        AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
+public class BaseActivity extends SherlockFragmentActivity implements Runnable,
+        ProgressDialogUpdater, AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
 
     private ProgressDialog mProgressDialog = null;
     private PausableThread mRunningThread = null;

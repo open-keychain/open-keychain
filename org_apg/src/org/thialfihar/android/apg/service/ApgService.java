@@ -1,24 +1,28 @@
-/**
- * TODO:
- * - Reimplement all the threads in the activitys as intents in this intentService
- * - This IntentService stopps itself after an action is executed
+/*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.thialfihar.android.apg.service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
 
-import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
-import org.thialfihar.android.apg.ui.widget.KeyEditor;
-import org.thialfihar.android.apg.ui.widget.SectionView;
+import org.thialfihar.android.apg.util.Utils;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -28,7 +32,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
-//TODO: ProgressDialogUpdater rework???
+/**
+ * This Service contains all important long lasting operations for APG. It receives Intents with
+ * data from the activities or other apps, queues these intents, executes them, and stops itself
+ * doing it.
+ */
+// TODO: ProgressDialogUpdater rework???
 public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // extras that can be given by intent
@@ -38,22 +47,22 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // keys for data bundle
     // edit keys
-    public static final String DATA_NEW_PASSPHRASE = "new_passphrase";
-    public static final String DATA_CURRENT_PASSPHRASE = "current_passphrase";
-    public static final String DATA_USER_IDS = "user_ids";
-    public static final String DATA_KEYS = "keys";
-    public static final String DATA_KEYS_USAGES = "keys_usages";
-    public static final String DATA_MASTER_KEY_ID = "master_key_id";
+    public static final String NEW_PASSPHRASE = "new_passphrase";
+    public static final String CURRENT_PASSPHRASE = "current_passphrase";
+    public static final String USER_IDS = "user_ids";
+    public static final String KEYS = "keys";
+    public static final String KEYS_USAGES = "keys_usages";
+    public static final String MASTER_KEY_ID = "master_key_id";
+
+    // generate key
+    public static final String ALGORITHM = "algorithm";
+    public static final String KEY_SIZE = "key_size";
+    public static final String PASSPHRASE = "passphrase";
+    public static final String MASTER_KEY = "master_key";
 
     // possible ints for EXTRA_ACTION
     public static final int ACTION_SAVE_KEYRING = 1;
-
-    // possible messages send from this service to handler on ui
-    public static final int MESSAGE_OKAY = 1;
-    public static final int MESSAGE_EXCEPTION = 2;
-
-    // possible data keys for messages
-    public static final String MESSAGE_DATA_ERROR = "error";
+    public static final int ACTION_GENERATE_KEY = 2;
 
     Messenger mMessenger;
 
@@ -69,89 +78,104 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
-        if (extras != null) {
+        if (extras == null) {
+            Log.e(Constants.TAG, "Extra bundle is null!");
+            return;
+        }
 
-            if (!extras.containsKey(EXTRA_ACTION)) {
-                Log.e(Constants.TAG, "Extra bundle must contain a action!");
-                return;
+        if (!extras.containsKey(EXTRA_MESSENGER)) {
+            Log.e(Constants.TAG, "Extra bundle must contain a messenger!");
+            return;
+        }
+        mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
+
+        if (!extras.containsKey(EXTRA_DATA)) {
+            Log.e(Constants.TAG, "Extra bundle must contain data bundle!");
+            return;
+        }
+        Bundle data = extras.getBundle(EXTRA_DATA);
+
+        if (!extras.containsKey(EXTRA_ACTION)) {
+            Log.e(Constants.TAG, "Extra bundle must contain a action!");
+            return;
+        }
+        int action = extras.getInt(EXTRA_ACTION);
+
+        // execute action from extra bundle
+        switch (action) {
+        case ACTION_SAVE_KEYRING:
+
+            try {
+                // Input
+                String oldPassPhrase = data.getString(CURRENT_PASSPHRASE);
+                String newPassPhrase = data.getString(NEW_PASSPHRASE);
+                if (newPassPhrase == null) {
+                    newPassPhrase = oldPassPhrase;
+                }
+                @SuppressWarnings("unchecked")
+                ArrayList<String> userIds = (ArrayList<String>) data.getSerializable(USER_IDS);
+                ArrayList<PGPSecretKey> keys = Utils.BytesToPGPSecretKeyList(data
+                        .getByteArray(KEYS));
+                @SuppressWarnings("unchecked")
+                ArrayList<Integer> keysUsages = (ArrayList<Integer>) data
+                        .getSerializable(KEYS_USAGES);
+                long masterKeyId = data.getLong(MASTER_KEY_ID);
+
+                // Operation
+                Apg.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
+                        newPassPhrase, this);
+                Apg.setCachedPassPhrase(masterKeyId, newPassPhrase);
+
+                // Output
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
             }
 
-            if (!extras.containsKey(EXTRA_MESSENGER)) {
-                Log.e(Constants.TAG, "Extra bundle must contain a messenger!");
-                return;
-            }
-            mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
+            break;
 
-            Bundle data = null;
-            if (extras.containsKey(EXTRA_DATA)) {
-                data = extras.getBundle(EXTRA_DATA);
-            }
+        case ACTION_GENERATE_KEY:
 
-            int action = extras.getInt(EXTRA_ACTION);
-
-            // will be filled if error occurs
-            String error = "";
-
-            // execute action from extra bundle
-            switch (action) {
-            case ACTION_SAVE_KEYRING:
-
-                try {
-                    String oldPassPhrase = data.getString(DATA_CURRENT_PASSPHRASE);
-                    String newPassPhrase = data.getString(DATA_NEW_PASSPHRASE);
-                    if (newPassPhrase == null) {
-                        newPassPhrase = oldPassPhrase;
-                    }
-                    ArrayList<String> userIds = (ArrayList<String>) data
-                            .getSerializable(DATA_USER_IDS);
-
-                    byte[] keysBytes = data.getByteArray(DATA_KEYS);
-
-                    // convert back from byte[] to ArrayList<PGPSecretKey>
-                    PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
-                    PGPSecretKeyRing keyRing = null;
-                    if ((keyRing = (PGPSecretKeyRing) factory.nextObject()) == null) {
-                        Log.e(Constants.TAG, "No keys given!");
-                    }
-                    ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
-
-                    Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
-                    while (itr.hasNext()) {
-                        keys.add(itr.next());
-                        Log.d(Constants.TAG, "added...");
-                    }
-
-                    ArrayList<Integer> keysUsages = (ArrayList<Integer>) data
-                            .getSerializable(DATA_KEYS_USAGES);
-                    long masterKeyId = data.getLong(DATA_MASTER_KEY_ID);
-
-                    Apg.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
-                            newPassPhrase, this);
-                    Apg.setCachedPassPhrase(masterKeyId, newPassPhrase);
-                } catch (Exception e) {
-                    error = e.getMessage();
-                    Log.e(Constants.TAG, "Exception: " + error);
-                    e.printStackTrace();
-                    sendErrorToUi(error);
+            try {
+                // Input
+                int algorithm = data.getInt(ALGORITHM);
+                String passphrase = data.getString(PASSPHRASE);
+                int keysize = data.getInt(KEY_SIZE);
+                PGPSecretKey masterKey = null;
+                if (data.containsKey(MASTER_KEY)) {
+                    masterKey = Utils.BytesToPGPSecretKey(data.getByteArray(MASTER_KEY));
                 }
 
-                sendMessageToUi(MESSAGE_OKAY, null, null);
-                break;
+                // Operation
+                PGPSecretKey newKey = Apg
+                        .createKey(this, algorithm, keysize, passphrase, masterKey);
 
-            default:
-                break;
+                // Output
+                Bundle resultData = new Bundle();
+                resultData.putByteArray(ApgHandler.NEW_KEY, Utils.PGPSecretKeyToBytes(newKey));
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
             }
 
+            break;
+
+        default:
+            break;
         }
+
     }
 
-    private void sendErrorToUi(String error) {
+    private void sendErrorToHandler(Exception e) {
+        Log.e(Constants.TAG, "ApgService Exception: ", e);
+        e.printStackTrace();
+
         Bundle data = new Bundle();
-        data.putString(MESSAGE_DATA_ERROR, error);
-        sendMessageToUi(MESSAGE_EXCEPTION, null, data);
+        data.putString(ApgHandler.ERROR, e.getMessage());
+        sendMessageToHandler(ApgHandler.MESSAGE_EXCEPTION, null, data);
     }
 
-    private void sendMessageToUi(Integer arg1, Integer arg2, Bundle data) {
+    private void sendMessageToHandler(Integer arg1, Integer arg2, Bundle data) {
         Message msg = Message.obtain();
         msg.arg1 = arg1;
         if (arg2 != null) {
@@ -164,10 +188,30 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message", e);
+            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
         } catch (NullPointerException e) {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
+    }
+
+    private void sendMessageToHandler(Integer arg1) {
+        sendMessageToHandler(arg1, null, null);
+    }
+
+    /**
+     * Set progress of ProgressDialog by sending message to handler on UI thread
+     */
+    public void setProgress(String message, int progress, int max) {
+        Log.d(Constants.TAG, "Send message by setProgress");
+
+        Bundle data = new Bundle();
+        if (message != null) {
+            data.putString(ApgHandler.MESSAGE, message);
+        }
+        data.putInt(ApgHandler.PROGRESS, progress);
+        data.putInt(ApgHandler.PROGRESS_MAX, max);
+
+        sendMessageToHandler(ApgHandler.MESSAGE_UPDATE_PROGRESS, null, data);
     }
 
     public void setProgress(int resourceId, int progress, int max) {
@@ -175,32 +219,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     }
 
     public void setProgress(int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt(Constants.extras.STATUS, Id.message.progress_update);
-        data.putInt(Constants.extras.PROGRESS, progress);
-        data.putInt(Constants.extras.PROGRESS_MAX, max);
-        msg.setData(data);
-        try {
-            mMessenger.send(msg);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setProgress(String message, int progress, int max) {
-        Message msg = new Message();
-        Bundle data = new Bundle();
-        data.putInt(Constants.extras.STATUS, Id.message.progress_update);
-        data.putString(Constants.extras.MESSAGE, message);
-        data.putInt(Constants.extras.PROGRESS, progress);
-        data.putInt(Constants.extras.PROGRESS_MAX, max);
-        msg.setData(data);
-        try {
-            mMessenger.send(msg);
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        setProgress(null, progress, max);
     }
 }

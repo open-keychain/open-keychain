@@ -1,6 +1,20 @@
-package org.thialfihar.android.apg.ui;
+/*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.thialfihar.android.apg.R;
+package org.thialfihar.android.apg.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -13,27 +27,68 @@ import android.view.KeyEvent;
 
 public class ProgressDialogFragment extends DialogFragment {
 
-    public static final int ID_ENCRYPTING = 1;
-    public static final int ID_DECRYPTING = 2;
-    public static final int ID_SAVING = 3;
-    public static final int ID_IMPORTING = 4;
-    public static final int ID_EXPORTING = 5;
-    public static final int ID_DELETING = 6;
-    public static final int ID_QUERYING = 7;
-    public static final int ID_SIGNING = 8;
+    private static final String ARG_MESSAGE_ID = "message_id";
+    private static final String ARG_STYLE = "style";
 
-    public static ProgressDialogFragment newInstance(int id) {
+    /**
+     * Instantiates new instance of this fragment
+     * 
+     * @param id
+     * @return
+     */
+    public static ProgressDialogFragment newInstance(int messageId, int style) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
-        args.putInt("id", id);
+        args.putInt(ARG_MESSAGE_ID, messageId);
+        args.putInt(ARG_STYLE, style);
+
         frag.setArguments(args);
         return frag;
     }
 
-    public static void test() {
-
+    /**
+     * Updates progress of dialog
+     * 
+     * @param messageId
+     * @param progress
+     * @param max
+     */
+    public void setProgress(int messageId, int progress, int max) {
+        setProgress(getString(messageId), progress, max);
     }
 
+    /**
+     * Updates progress of dialog
+     * 
+     * @param messageId
+     * @param progress
+     * @param max
+     */
+    public void setProgress(int progress, int max) {
+        ProgressDialog dialog = (ProgressDialog) getDialog();
+
+        dialog.setProgress(progress);
+        dialog.setMax(max);
+    }
+
+    /**
+     * Updates progress of dialog
+     * 
+     * @param messageId
+     * @param progress
+     * @param max
+     */
+    public void setProgress(String message, int progress, int max) {
+        ProgressDialog dialog = (ProgressDialog) getDialog();
+
+        dialog.setMessage(message);
+        dialog.setProgress(progress);
+        dialog.setMax(max);
+    }
+
+    /**
+     * Creates dialog based on arguments (messageId, style)
+     */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Activity activity = getActivity();
@@ -41,57 +96,28 @@ public class ProgressDialogFragment extends DialogFragment {
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
 
-        int id = getArguments().getInt("id");
+        int messageId = getArguments().getInt(ARG_MESSAGE_ID);
+        int style = getArguments().getInt(ARG_STYLE);
 
-        switch (id) {
-        case ID_ENCRYPTING:
-            dialog.setMessage(this.getString(R.string.progress_initializing));
-
-        case ID_DECRYPTING:
-            dialog.setMessage(this.getString(R.string.progress_initializing));
-
-        case ID_SAVING:
-            dialog.setMessage(this.getString(R.string.progress_saving));
-
-        case ID_IMPORTING:
-            dialog.setMessage(this.getString(R.string.progress_importing));
-
-        case ID_EXPORTING:
-            dialog.setMessage(this.getString(R.string.progress_exporting));
-
-        case ID_DELETING:
-            dialog.setMessage(this.getString(R.string.progress_initializing));
-
-        case ID_QUERYING:
-            dialog.setMessage(this.getString(R.string.progress_querying));
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setCancelable(false);
-
-        case ID_SIGNING:
-            dialog.setMessage(this.getString(R.string.progress_signing));
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            dialog.setCancelable(false);
-
-        default:
-            break;
-
-        }
+        dialog.setMessage(getString(messageId));
+        dialog.setProgressStyle(style);
 
         // Disable the back button
-        // OnKeyListener keyListener = new OnKeyListener() {
-        //
-        // @Override
-        // public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-        //
-        // if (keyCode == KeyEvent.KEYCODE_BACK) {
-        // return true;
-        // }
-        // return false;
-        // }
-        //
-        // };
-        // dialog.setOnKeyListener(keyListener);
+        OnKeyListener keyListener = new OnKeyListener() {
+
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    return true;
+                }
+                return false;
+            }
+
+        };
+        dialog.setOnKeyListener(keyListener);
 
         return dialog;
     }
