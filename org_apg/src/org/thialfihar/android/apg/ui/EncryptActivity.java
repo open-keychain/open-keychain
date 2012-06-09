@@ -25,7 +25,6 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.FileDialog;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
-import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
@@ -129,6 +128,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
         return mSecretKeyId;
     }
 
+    /**
+     * ActionBar menu is created based on class variables to change it at runtime
+     * 
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mEncryptToClipboardEnabled) {
@@ -437,7 +440,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSourceLabel.setEnabled(false);
         }
 
-        updateButtons();
+        updateActionBarButtons();
 
         if (mReturnResult
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)
@@ -486,66 +489,72 @@ public class EncryptActivity extends SherlockFragmentActivity {
             break;
         }
         }
-        updateButtons();
+        updateActionBarButtons();
     }
 
-    private void updateButtons() {
+    /**
+     * Set ActionBar buttons based on parameters
+     * 
+     * @param encryptEnabled
+     * @param encryptStringRes
+     * @param encryptToClipboardEnabled
+     * @param encryptToClipboardStringRes
+     */
+    private void setActionbarButtons(boolean encryptEnabled, int encryptStringRes,
+            boolean encryptToClipboardEnabled, int encryptToClipboardStringRes) {
+        mEncryptEnabled = encryptEnabled;
+        if (encryptEnabled) {
+            mEncryptString = getString(encryptStringRes);
+        }
+        mEncryptToClipboardEnabled = encryptToClipboardEnabled;
+        if (encryptToClipboardEnabled) {
+            mEncryptToClipboardString = getString(encryptToClipboardStringRes);
+        }
+
+        // build new action bar based on these class variables
+        invalidateOptionsMenu();
+    }
+
+    /**
+     * Update ActionBar buttons based on current selection in view
+     */
+    private void updateActionBarButtons() {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
-            mEncryptEnabled = true;
-            mEncryptToClipboardEnabled = false;
+            setActionbarButtons(true, R.string.btn_encryptFile, false, 0);
 
             break;
         }
 
         case R.id.sourceMessage: {
             mSourceLabel.setText(R.string.label_message);
-            if (mReturnResult) {
-                mEncryptToClipboardEnabled = false;
-            } else {
-                mEncryptToClipboardEnabled = true;
-            }
+
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
                 if (mReturnResult) {
-                    mEncryptString = getString(R.string.btn_encrypt);
+                    setActionbarButtons(true, R.string.btn_encrypt, false, 0);
                 } else {
-                    mEncryptString = getString(R.string.btn_encryptAndEmail);
+                    setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                            R.string.btn_encryptToClipboard);
                 }
-                mEncryptEnabled = true;
-                mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
-                mEncryptToClipboardEnabled = true;
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (getSecretKeyId() == 0) {
-                        if (mReturnResult) {
-                            mEncryptString = getString(R.string.btn_encrypt);
-                        } else {
-                            mEncryptString = getString(R.string.btn_encryptAndEmail);
-                        }
-                        mEncryptEnabled = false;
-                        mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
-                        mEncryptToClipboardEnabled = false;
+                        setActionbarButtons(false, 0, false, 0);
                     } else {
                         if (mReturnResult) {
-                            mEncryptString = getString(R.string.btn_sign);
+                            setActionbarButtons(true, R.string.btn_sign, false, 0);
                         } else {
-                            mEncryptString = getString(R.string.btn_signAndEmail);
+                            setActionbarButtons(true, R.string.btn_signAndEmail, true,
+                                    R.string.btn_signToClipboard);
                         }
-
-                        mEncryptEnabled = true;
-                        mEncryptToClipboardString = getString(R.string.btn_signToClipboard);
-                        mEncryptToClipboardEnabled = true;
                     }
                 } else {
                     if (mReturnResult) {
-                        mEncryptString = getString(R.string.btn_encrypt);
+                        setActionbarButtons(true, R.string.btn_encrypt, false, 0);
                     } else {
-                        mEncryptString = getString(R.string.btn_encryptAndEmail);
+                        setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                                R.string.btn_encryptToClipboard);
                     }
-
-                    mEncryptEnabled = true;
-                    mEncryptToClipboardString = getString(R.string.btn_encryptToClipboard);
-                    mEncryptToClipboardEnabled = true;
                 }
             }
             break;
@@ -556,8 +565,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
         }
         }
 
-        // build new action bar
-        invalidateOptionsMenu();
     }
 
     private void updateMode() {
@@ -576,7 +583,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             break;
         }
         }
-        updateButtons();
+        updateActionBarButtons();
     }
 
     private void encryptToClipboardClicked() {
@@ -738,43 +745,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        // fillDataSource(signOnly && !mReturnResult);
-        // fillDataDestination();
-
-        // if (mContentUri != null) {
-        // mDataSource.setUri(mContentUri);
-        // } else if (mEncryptTarget == Id.target.file) {
-        // mDataSource.setUri(mInputFilename);
-        // } else {
-        // if (mData != null) {
-        // mDataSource.setData(mData);
-        // } else {
-        // String message = mMessage.getText().toString();
-        // if (fixContent) {
-        // // fix the message a bit, trailing spaces and newlines break stuff,
-        // // because GMail sends as HTML and such things fuck up the
-        // // signature,
-        // // TODO: things like "<" and ">" also fuck up the signature
-        // message = message.replaceAll(" +\n", "\n");
-        // message = message.replaceAll("\n\n+", "\n\n");
-        // message = message.replaceFirst("^\n+", "");
-        // // make sure there'll be exactly one newline at the end
-        // message = message.replaceFirst("\n*$", "\n");
-        // }
-        // mDataSource.setText(message);
-        // }
-        // }
-
-        // mDataDestination = new DataDestination();
-        // if (mContentUri != null) {
-        // mDataDestination.setMode(Id.mode.stream);
-        // } else if (mEncryptTarget == Id.target.file) {
-        // mDataDestination.setFilename(mOutputFilename);
-        // mDataDestination.setMode(Id.mode.file);
-        // } else {
-        // mDataDestination.setMode(Id.mode.byte_array);
-        // }
-
         // choose default settings, action and data bundle by target
         if (mContentUri != null) {
             // mDataSource.setUri(mContentUri);
@@ -804,7 +774,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             } else {
                 String message = mMessage.getText().toString();
                 if (signOnly && !mReturnResult) {
-                    fixContent(message);
+                    fixBadCharactersForGmail(message);
                 }
                 // mDataSource.setText(message);
                 data.putByteArray(ApgService.BYTES, message.getBytes());
@@ -905,7 +875,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
         startService(intent);
     }
 
-    private String fixContent(String message) {
+    /**
+     * Fixes bad message characters for gmail
+     * 
+     * @param message
+     * @return
+     */
+    private String fixBadCharactersForGmail(String message) {
         // fix the message a bit, trailing spaces and newlines break stuff,
         // because GMail sends as HTML and such things fuck up the
         // signature,
@@ -953,7 +929,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSign.setChecked(true);
         }
 
-        updateButtons();
+        updateActionBarButtons();
     }
 
     private void selectPublicKeys() {
