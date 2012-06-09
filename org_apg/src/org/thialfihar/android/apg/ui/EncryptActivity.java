@@ -649,7 +649,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
             }
 
             if (getSecretKeyId() != 0 && Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
-                // showDialog(Id.dialog.pass_phrase);
                 showPassphraseDialog();
 
                 return;
@@ -672,7 +671,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.arg1 == PassphraseDialogFragment.MESSAGE_OKAY) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     if (mEncryptTarget == Id.target.file) {
                         askForOutputFilename();
                     } else {
@@ -685,12 +684,15 @@ public class EncryptActivity extends SherlockFragmentActivity {
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
 
-        PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                mSecretKeyId, messenger);
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                    mSecretKeyId, messenger);
 
-        // no passphrase for this secret key -> passphraseDialog is null
-        if (passphraseDialog != null) {
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
+        } catch (Apg.GeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
         }
     }
 

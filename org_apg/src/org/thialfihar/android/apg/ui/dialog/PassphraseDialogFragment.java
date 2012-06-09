@@ -16,11 +16,13 @@
 
 package org.thialfihar.android.apg.ui.dialog;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.Apg.GeneralException;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -59,15 +61,55 @@ public class PassphraseDialogFragment extends DialogFragment {
      * @param messenger
      *            to communicate back after caching the passphrase
      * @return
+     * @throws GeneralException
      */
-    public static PassphraseDialogFragment newInstance(long secretKeyId, Messenger messenger) {
+    public static PassphraseDialogFragment newInstance(long secretKeyId, Messenger messenger)
+            throws GeneralException {
+        // check if secret key has a passphrase
+        if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
+            if (!hasPassphrase(secretKeyId)) {
+                throw new Apg.GeneralException("No passphrase! No passphrase dialog needed!");
+            }
+        }
+
         PassphraseDialogFragment frag = new PassphraseDialogFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_SECRET_KEY_ID, secretKeyId);
         args.putParcelable(ARG_MESSENGER, messenger);
 
         frag.setArguments(args);
+
         return frag;
+    }
+
+    /**
+     * Checks if key has a passphrase
+     * 
+     * @param secretKeyId
+     * @return true if it has a passphrase
+     */
+    private static boolean hasPassphrase(long secretKeyId) {
+        // check if the key has no passphrase
+        try {
+            PGPSecretKey secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
+
+            Log.d(Constants.TAG, "Check if key has no passphrase...");
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                    "SC").build("".toCharArray());
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+            if (testKey != null) {
+                Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
+
+                // cache empty passphrase
+                Apg.setCachedPassPhrase(secretKey.getKeyID(), "");
+
+                return false;
+            }
+        } catch (PGPException e) {
+            // silently catch
+        }
+
+        return true;
     }
 
     /**
@@ -119,17 +161,17 @@ public class PassphraseDialogFragment extends DialogFragment {
 
         alert.setView(view);
 
-        // final PassPhraseCallbackInterface cb = callback;
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // activity.removeDialog(Id.dialog.pass_phrase);
                 dismiss();
+
                 String passPhrase = input.getText().toString();
                 long keyId;
                 if (secretKey != null) {
                     try {
-                        PGPPrivateKey testKey = secretKey.extractPrivateKey(
-                                passPhrase.toCharArray(), new BouncyCastleProvider());
+                        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                                .setProvider("SC").build(passPhrase.toCharArray());
+                        PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
                         if (testKey == null) {
                             Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
                                     Toast.LENGTH_SHORT).show();
@@ -145,54 +187,32 @@ public class PassphraseDialogFragment extends DialogFragment {
                     keyId = Id.key.symmetric;
                 }
 
-                // cache again
+                // cache the new passphrase
+                Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
                 Apg.setCachedPassPhrase(keyId, passPhrase);
-                // return by callback
-                // cb.passPhraseCallback(keyId, passPhrase);
+
                 sendMessageToHandler(MESSAGE_OKAY);
             }
         });
 
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // activity.removeDialog(Id.dialog.pass_phrase);
                 dismiss();
             }
         });
 
-        // check if the key has no passphrase
-        if (secretKey != null) {
-            try {
-                Log.d(Constants.TAG, "Check if key has no passphrase...");
-                PGPPrivateKey testKey = secretKey.extractPrivateKey("".toCharArray(),
-                        new BouncyCastleProvider());
-                if (testKey != null) {
-                    Log.d(Constants.TAG, "Key has no passphrase!");
-
-                    // cache null
-                    Apg.setCachedPassPhrase(secretKey.getKeyID(), null);
-                    // return by callback
-                    // cb.passPhraseCallback(secretKey.getKeyID(), null);
-                    sendMessageToHandler(MESSAGE_OKAY);
-
-                    return null;
-                }
-            } catch (PGPException e) {
-
-            }
-        }
         return alert.create();
     }
 
     /**
      * Send message back to handler which is initialized in a activity
      * 
-     * @param arg1
-     *            Message you want to send
+     * @param what
+     *            Message integer you want to send
      */
-    private void sendMessageToHandler(Integer arg1) {
+    private void sendMessageToHandler(Integer what) {
         Message msg = Message.obtain();
-        msg.arg1 = arg1;
+        msg.what = what;
 
         try {
             mMessenger.send(msg);

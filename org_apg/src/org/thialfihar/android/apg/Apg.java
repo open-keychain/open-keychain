@@ -507,8 +507,9 @@ public class Apg {
         PGPPublicKey tmpKey = masterKey.getPublicKey();
         PGPPublicKey masterPublicKey = new PGPPublicKey(tmpKey.getAlgorithm(),
                 tmpKey.getKey(new BouncyCastleProvider()), tmpKey.getCreationTime());
-        PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(oldPassPhrase.toCharArray(),
-                new BouncyCastleProvider());
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider("SC").build(oldPassPhrase.toCharArray());
+        PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
 
         if (progress != null)
             progress.setProgress(R.string.progress_certifyingMasterKey, 20, 100);
@@ -572,8 +573,10 @@ public class Apg {
             PGPSecretKey subKey = keys.get(i);
             // keyEditor = (KeyEditor) keyEditors.getChildAt(i);
             PGPPublicKey subPublicKey = subKey.getPublicKey();
-            PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(oldPassPhrase.toCharArray(),
-                    new BouncyCastleProvider());
+
+            PBESecretKeyDecryptor keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider("SC").build(oldPassPhrase.toCharArray());
+            PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
             PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey.getAlgorithm(),
                     subPublicKey.getKey(new BouncyCastleProvider()), subPrivateKey.getKey(),
                     subPublicKey.getCreationTime());
@@ -642,8 +645,10 @@ public class Apg {
                 PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
                 boolean save = true;
                 try {
+                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                            .setProvider("SC").build(new char[] {});
                     PGPPrivateKey testKey = secretKeyRing.getSecretKey().extractPrivateKey(
-                            new char[] {}, new BouncyCastleProvider());
+                            keyDecryptor);
                     if (testKey == null) {
                         // this is bad, something is very wrong... likely a --export-secret-subkeys
                         // export
@@ -1311,8 +1316,9 @@ public class Apg {
             }
             if (progress != null)
                 progress.setProgress(R.string.progress_extractingSignatureKey, 0, 100);
-            signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
-                    new BouncyCastleProvider());
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                    "SC").build(signaturePassPhrase.toCharArray());
+            signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new GeneralException(
                         context.getString(R.string.error_couldNotExtractPrivateKey));
@@ -1450,8 +1456,9 @@ public class Apg {
         if (signaturePassPhrase == null) {
             throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
         }
-        signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
-                new BouncyCastleProvider());
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider("SC").build(signaturePassPhrase.toCharArray());
+        signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
             throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
         }
@@ -1562,8 +1569,9 @@ public class Apg {
         if (signaturePassPhrase == null) {
             throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
         }
-        signaturePrivateKey = signingKey.extractPrivateKey(signaturePassPhrase.toCharArray(),
-                new BouncyCastleProvider());
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                .setProvider("SC").build(signaturePassPhrase.toCharArray());
+        signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
             throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
         }
@@ -1804,8 +1812,9 @@ public class Apg {
                 progress.setProgress(R.string.progress_extractingKey, currentProgress, 100);
             PGPPrivateKey privateKey = null;
             try {
-                privateKey = secretKey.extractPrivateKey(passPhrase.toCharArray(),
-                        new BouncyCastleProvider());
+                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                        .setProvider("SC").build(passPhrase.toCharArray());
+                privateKey = secretKey.extractPrivateKey(keyDecryptor);
             } catch (PGPException e) {
                 throw new PGPException(context.getString(R.string.error_wrongPassPhrase));
             }
