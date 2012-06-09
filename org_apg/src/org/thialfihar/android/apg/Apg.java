@@ -64,6 +64,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.thialfihar.android.apg.Id.return_value;
 import org.thialfihar.android.apg.KeyServer.AddKeyException;
+import org.thialfihar.android.apg.passphrase.CachedPassPhrase;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -2289,7 +2290,7 @@ public class Apg {
         return result;
     }
 
-    static long getLengthOfStream(InputStream in) throws IOException {
+    public static long getLengthOfStream(InputStream in) throws IOException {
         long size = 0;
         long n = 0;
         byte dummy[] = new byte[0x10000];

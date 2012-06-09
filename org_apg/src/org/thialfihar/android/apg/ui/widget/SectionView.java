@@ -285,7 +285,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
                     PGPSecretKeyRing newKeyRing = Utils.BytesToPGPSecretKeyRing(data
-                            .getByteArray(ApgHandler.RESULT_NEW_KEY));
+                            .getByteArray(ApgService.RESULT_NEW_KEY));
 
                     boolean isMasterKey = (mEditors.getChildCount() == 0);
 

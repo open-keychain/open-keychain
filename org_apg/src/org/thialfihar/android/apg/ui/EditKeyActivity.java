@@ -207,10 +207,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                                     Bundle data = message.getData();
                                     PGPSecretKeyRing masterKeyRing = Utils
                                             .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgHandler.RESULT_NEW_KEY));
+                                                    .getByteArray(ApgService.RESULT_NEW_KEY));
                                     PGPSecretKeyRing subKeyRing = Utils
                                             .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgHandler.RESULT_NEW_KEY2));
+                                                    .getByteArray(ApgService.RESULT_NEW_KEY2));
 
                                     // add master key
                                     Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
@@ -419,14 +419,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             Bundle data = new Bundle();
             data.putString(ApgService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
             data.putString(ApgService.NEW_PASSPHRASE, mNewPassPhrase);
-
             data.putSerializable(ApgService.USER_IDS, getUserIds(mUserIdsView));
-
             Vector<PGPSecretKey> keys = getKeys(mKeysView);
             data.putByteArray(ApgService.KEYS, Utils.PGPSecretKeyListToBytes(keys));
-
             data.putSerializable(ApgService.KEYS_USAGES, getKeysUsages(mKeysView));
-
             data.putLong(ApgService.MASTER_KEY_ID, getMasterKeyId());
 
             intent.putExtra(ApgService.EXTRA_DATA, data);

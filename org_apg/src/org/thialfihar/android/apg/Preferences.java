@@ -22,6 +22,10 @@ import android.content.SharedPreferences;
 
 import java.util.Vector;
 
+/**
+ * Singelton Implementation of a Preference Helper
+ *
+ */
 public class Preferences {
     private static Preferences mPreferences;
     private SharedPreferences mSharedPreferences;

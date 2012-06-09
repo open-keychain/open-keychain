@@ -16,19 +16,37 @@
 
 package org.thialfihar.android.apg.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.DataDestination;
+import org.thialfihar.android.apg.DataSource;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.InputData;
+import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
+import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.Apg.GeneralException;
+import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.util.Utils;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -37,7 +55,7 @@ import android.util.Log;
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
  * data from the activities or other apps, queues these intents, executes them, and stops itself
- * doing it.
+ * after doing them.
  */
 // TODO: ProgressDialogUpdater rework???
 public class ApgService extends IntentService implements ProgressDialogUpdater {
@@ -62,10 +80,39 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String PASSPHRASE = "passphrase";
     public static final String MASTER_KEY = "master_key";
 
+    // encrypt
+    public static final String SECRET_KEY_ID = "secret_key_id";
+    // public static final String DATA_SOURCE = "data_source";
+    // public static final String DATA_DESTINATION = "data_destination";
+    public static final String USE_ASCII_AMOR = "use_ascii_amor";
+    // public static final String ENCRYPTION_TARGET = "encryption_target";
+    public static final String ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
+    public static final String SIGNATURE_KEY_ID = "signature_key_id";
+    public static final String COMPRESSION_ID = "compression_id";
+    public static final String GENERATE_SIGNATURE = "generate_signature";
+    public static final String SIGN_ONLY = "sign_only";
+    public static final String BYTES = "bytes";
+    public static final String FILE_URI = "file_uri";
+    public static final String OUTPUT_FILENAME = "output_filename";
+    public static final String PROVIDER_URI = "provider_uri";
+
     // possible ints for EXTRA_ACTION
     public static final int ACTION_SAVE_KEYRING = 1;
     public static final int ACTION_GENERATE_KEY = 2;
     public static final int ACTION_GENERATE_DEFAULT_RSA_KEYS = 3;
+
+    public static final int ACTION_ENCRYPT_SIGN_BYTES = 4;
+    public static final int ACTION_ENCRYPT_SIGN_FILE = 5;
+    public static final int ACTION_ENCRYPT_SIGN_STREAM = 6;
+
+    // possible data keys as result
+    public static final String RESULT_NEW_KEY = "new_key";
+    public static final String RESULT_NEW_KEY2 = "new_key2";
+    public static final String RESULT_SIGNATURE_DATA = "signatureData";
+    public static final String RESULT_SIGNATURE_TEXT = "signatureText";
+    public static final String RESULT_ENCRYPTED_MESSAGE = "encryptedMessage";
+    public static final String RESULT_ENCRYPTED_DATA = "encryptedData";
+    public static final String RESULT_URI = "resultUri";
 
     Messenger mMessenger;
 
@@ -82,26 +129,19 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras == null) {
-            Log.e(Constants.TAG, "Extra bundle is null!");
+            Log.e(Constants.TAG, "Extras bundle is null!");
             return;
         }
 
-        if (!extras.containsKey(EXTRA_MESSENGER)) {
-            Log.e(Constants.TAG, "Extra bundle must contain a messenger!");
+        if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) || extras
+                .containsKey(EXTRA_ACTION))) {
+            Log.e(Constants.TAG,
+                    "Extra bundle must contain a messenger, a data bundle, and an action!");
             return;
         }
+
         mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
-
-        if (!extras.containsKey(EXTRA_DATA)) {
-            Log.e(Constants.TAG, "Extra bundle must contain data bundle!");
-            return;
-        }
         Bundle data = extras.getBundle(EXTRA_DATA);
-
-        if (!extras.containsKey(EXTRA_ACTION)) {
-            Log.e(Constants.TAG, "Extra bundle must contain a action!");
-            return;
-        }
         int action = extras.getInt(EXTRA_ACTION);
 
         // execute action from extra bundle
@@ -155,9 +195,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // Output
                 Bundle resultData = new Bundle();
-                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY,
-                        Utils.PGPSecretKeyRingToBytes(newKeyRing));
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
+                resultData.putByteArray(RESULT_NEW_KEY, Utils.PGPSecretKeyRingToBytes(newKeyRing));
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
@@ -178,13 +217,263 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // Output
                 Bundle resultData = new Bundle();
-                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY,
+                resultData.putByteArray(RESULT_NEW_KEY,
                         Utils.PGPSecretKeyRingToBytes(masterKeyRing));
-                resultData.putByteArray(ApgHandler.RESULT_NEW_KEY2,
-                        Utils.PGPSecretKeyRingToBytes(subKeyRing));
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, null, resultData);
+                resultData.putByteArray(RESULT_NEW_KEY2, Utils.PGPSecretKeyRingToBytes(subKeyRing));
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
-                Log.e(Constants.TAG, "Creating initial key failed: +" + e);
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_ENCRYPT_SIGN_BYTES:
+
+            try {
+                // Input
+                long secretKeyId = data.getLong(SECRET_KEY_ID);
+                String passphrase = data.getString(PASSPHRASE);
+
+                byte[] bytes = data.getByteArray(BYTES);
+
+                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
+                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
+                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
+                int compressionId = data.getInt(COMPRESSION_ID);
+                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
+                boolean signOnly = data.getBoolean(SIGN_ONLY);
+
+                // Operation
+                ByteArrayInputStream inStream = new ByteArrayInputStream(bytes);
+                int inLength = bytes.length;
+
+                InputData inputData = new InputData(inStream, inLength);
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+
+                if (generateSignature) {
+                    Apg.generateSignature(this, inputData, outStream, useAsciiArmour, false,
+                            secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences
+                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                                    .getPreferences(this).getForceV3Signatures(), this);
+                } else if (signOnly) {
+                    Apg.signText(this, inputData, outStream, secretKeyId, Apg
+                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
+                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures(), this);
+                } else {
+                    Apg.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, Apg.getCachedPassPhrase(signatureKeyId), this,
+                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
+                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
+                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
+                            passphrase);
+                }
+
+                outStream.close();
+
+                // Output
+                Bundle resultData = new Bundle();
+
+                // if (encryptionTarget != Id.target.file) {
+                // if (out instanceof ByteArrayOutputStream) {
+                if (useAsciiArmour) {
+                    String output = new String(outStream.toByteArray());
+                    if (generateSignature) {
+                        resultData.putString(RESULT_SIGNATURE_TEXT, output);
+                    } else {
+                        resultData.putString(RESULT_ENCRYPTED_MESSAGE, output);
+                    }
+                } else {
+                    byte output[] = outStream.toByteArray();
+                    if (generateSignature) {
+                        resultData.putByteArray(RESULT_SIGNATURE_DATA, output);
+                    } else {
+                        resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
+                    }
+                }
+                // } else if (out instanceof FileOutputStream) {
+                // String fileName = dataDestination.getStreamFilename();
+                // String uri = "content://" + DataProvider.AUTHORITY + "/data/" + fileName;
+                // resultData.putString(RESULT_URI, uri);
+                // } else {
+                // sendErrorToHandler(new Apg.GeneralException("No output-data found."));
+                // }
+                // }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_ENCRYPT_SIGN_FILE:
+            try {
+                // Input
+                long secretKeyId = data.getLong(SECRET_KEY_ID);
+                String passphrase = data.getString(PASSPHRASE);
+
+                Uri fileUri = Uri.parse(data.getString(FILE_URI));
+                String outputFilename = data.getString(OUTPUT_FILENAME);
+
+                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
+                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
+                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
+                int compressionId = data.getInt(COMPRESSION_ID);
+                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
+                boolean signOnly = data.getBoolean(SIGN_ONLY);
+
+                // InputStream
+                long inLength = -1;
+                FileInputStream inStream = null;
+                if (fileUri.getScheme().equals("file")) {
+                    // get the rest after "file://"
+                    String path = Uri.decode(fileUri.toString().substring(7));
+                    if (path.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+                        if (!Environment.getExternalStorageState()
+                                .equals(Environment.MEDIA_MOUNTED)) {
+                            sendErrorToHandler(new GeneralException(
+                                    getString(R.string.error_externalStorageNotReady)));
+                            return;
+                        }
+                    }
+                    inStream = new FileInputStream(path);
+                    File file = new File(path);
+                    inLength = file.length();
+                }
+
+                InputData inputData = new InputData(inStream, inLength);
+
+                // OutputStream
+                if (outputFilename.startsWith(Environment.getExternalStorageDirectory()
+                        .getAbsolutePath())) {
+                    if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                        sendErrorToHandler(new GeneralException(
+                                getString(R.string.error_externalStorageNotReady)));
+                        return;
+                    }
+                }
+                FileOutputStream outStream = new FileOutputStream(outputFilename);
+
+                // Operation
+                if (generateSignature) {
+                    Apg.generateSignature(this, inputData, outStream, useAsciiArmour, true,
+                            secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences
+                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                                    .getPreferences(this).getForceV3Signatures(), this);
+                } else if (signOnly) {
+                    Apg.signText(this, inputData, outStream, secretKeyId, Apg
+                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
+                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures(), this);
+                } else {
+                    Apg.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, Apg.getCachedPassPhrase(signatureKeyId), this,
+                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
+                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
+                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
+                            passphrase);
+                }
+
+                outStream.close();
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+            break;
+
+        case ACTION_ENCRYPT_SIGN_STREAM:
+            try {
+                // Input
+                long secretKeyId = data.getLong(SECRET_KEY_ID);
+                String passphrase = data.getString(PASSPHRASE);
+
+                Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
+
+                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
+                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
+                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
+                int compressionId = data.getInt(COMPRESSION_ID);
+                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
+                boolean signOnly = data.getBoolean(SIGN_ONLY);
+
+                // InputStream
+                InputStream in = getContentResolver().openInputStream(providerUri);
+                long inLength = Apg.getLengthOfStream(in);
+
+                InputData inputData = new InputData(in, inLength);
+
+                // OutputStream
+                String streamFilename = null;
+                try {
+                    while (true) {
+                        streamFilename = Apg.generateRandomString(32);
+                        if (streamFilename == null) {
+                            throw new Apg.GeneralException("couldn't generate random file name");
+                        }
+                        openFileInput(streamFilename).close();
+                    }
+                } catch (FileNotFoundException e) {
+                    // found a name that isn't used yet
+                }
+                FileOutputStream outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+
+                // Operation
+
+                if (generateSignature) {
+                    Apg.generateSignature(this, inputData, outStream, useAsciiArmour, true,
+                            secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences
+                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                                    .getPreferences(this).getForceV3Signatures(), this);
+                } else if (signOnly) {
+                    Apg.signText(this, inputData, outStream, secretKeyId, Apg
+                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
+                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures(), this);
+                } else {
+                    Apg.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, Apg.getCachedPassPhrase(signatureKeyId), this,
+                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
+                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
+                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
+                            passphrase);
+                }
+
+                outStream.close();
+
+                // Output
+                Bundle resultData = new Bundle();
+
+                // if (encryptionTarget != Id.target.file) {
+                // if (out instanceof ByteArrayOutputStream) {
+                // if (useAsciiArmour) {
+                // String output = new String(outStream.toByteArray());
+                // if (generateSignature) {
+                // resultData.putString(RESULT_SIGNATURE_TEXT, output);
+                // } else {
+                // resultData.putString(RESULT_ENCRYPTED_MESSAGE, output);
+                // }
+                // } else {
+                // byte output[] = outStream.toByteArray();
+                // if (generateSignature) {
+                // resultData.putByteArray(RESULT_SIGNATURE_DATA, output);
+                // } else {
+                // resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
+                // }
+                // }
+                // } else if (out instanceof FileOutputStream) {
+                // String fileName = dataDestination.getStreamFilename();
+                String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
+                resultData.putString(RESULT_URI, uri);
+                // } else {
+                // sendErrorToHandler(new Apg.GeneralException("No output-data found."));
+                // }
+                // }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
             }
 
             break;
@@ -221,6 +510,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
         } catch (NullPointerException e) {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
+    }
+
+    private void sendMessageToHandler(Integer arg1, Bundle data) {
+        sendMessageToHandler(arg1, null, data);
     }
 
     private void sendMessageToHandler(Integer arg1) {

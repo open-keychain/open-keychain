@@ -39,10 +39,6 @@ public class ApgHandler extends Handler {
     public static final String DATA_MESSAGE = "message";
     public static final String DATA_MESSAGE_ID = "message_id";
 
-    // possible data keys as result from service
-    public static final String RESULT_NEW_KEY = "new_key";
-    public static final String RESULT_NEW_KEY2 = "new_key2";
-
     Activity mActivity;
     ProgressDialogFragment mProgressDialogFragment;
 

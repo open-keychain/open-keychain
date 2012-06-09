@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Apg.GeneralException;
@@ -28,7 +29,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 
-public class DataSource {
+public class DataSource implements Serializable {
+
+    private static final long serialVersionUID = 2377217399907415255L;
+
     private Uri mContentUri = null;
     private String mText = null;
     private byte[] mData = null;
@@ -51,6 +55,10 @@ public class DataSource {
         }
     }
 
+    public Uri getUri() {
+        return mContentUri;
+    }
+
     public void setText(String text) {
         mText = text;
         mData = null;
@@ -69,6 +77,17 @@ public class DataSource {
 
     public boolean isBinary() {
         return mData != null || mContentUri != null;
+    }
+
+    public byte[] getBytes() {
+        byte[] bytes = null;
+        if (mData != null) {
+            bytes = mData;
+        } else {
+            bytes = mText.getBytes();
+        }
+
+        return bytes;
     }
 
     public InputData getInputData(Context context, boolean withSize) throws GeneralException,

@@ -22,6 +22,7 @@ import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
+import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.widget.IntegerListPreference;
 import org.thialfihar.android.apg.R;
 
@@ -67,7 +68,9 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
                         mPassPhraseCacheTtl.setValue(newValue.toString());
                         mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
                         mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
-                        BaseActivity.startCacheService(PreferencesActivity.this, mPreferences);
+                        
+                        // restart cache service with new ttl
+                        PassphraseCacheService.startCacheService(PreferencesActivity.this);
                         return false;
                     }
                 });

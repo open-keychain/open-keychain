@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Apg.GeneralException;
@@ -26,7 +27,10 @@ import org.thialfihar.android.apg.Apg.GeneralException;
 import android.content.Context;
 import android.os.Environment;
 
-public class DataDestination {
+public class DataDestination implements Serializable {
+
+    private static final long serialVersionUID = -6478075911319320498L;
+    
     private String mStreamFilename;
     private String mFilename;
     private int mMode = Id.mode.undefined;

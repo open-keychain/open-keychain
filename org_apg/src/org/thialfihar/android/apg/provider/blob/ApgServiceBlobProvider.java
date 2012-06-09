@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.provider;
+package org.thialfihar.android.apg.provider.blob;
 
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.service.ApgService2;

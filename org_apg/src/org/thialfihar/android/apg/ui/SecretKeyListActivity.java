@@ -18,9 +18,9 @@ package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Apg;
-import org.thialfihar.android.apg.AskForSecretKeyPassPhrase;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -135,7 +135,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
         case Id.dialog.pass_phrase: {
             long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
                     .getGroupId(mSelectedItem);
-            return AskForSecretKeyPassPhrase.createDialog(this, keyId, this);
+            return AskForPassphrase.createDialog(this, keyId, this);
         }
 
         default: {

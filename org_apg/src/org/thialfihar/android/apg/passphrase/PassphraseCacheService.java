@@ -12,11 +12,13 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.service;
+package org.thialfihar.android.apg.passphrase;
 
 import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.Preferences;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
@@ -26,6 +28,12 @@ public class PassphraseCacheService extends Service {
     private final IBinder mBinder = new LocalBinder();
 
     public static final String EXTRA_TTL = "ttl";
+
+    public static void startCacheService(Context context) {
+        Intent intent = new Intent(context, PassphraseCacheService.class);
+        intent.putExtra(PassphraseCacheService.EXTRA_TTL, Preferences.getPreferences(context).getPassPhraseCacheTtl());
+        context.startService(intent);
+    }
 
     private int mPassPhraseCacheTtl = 15;
     private Handler mCacheHandler = new Handler();

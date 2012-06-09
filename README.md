@@ -2,19 +2,11 @@
 
 This is a fork of Android Privacy Guard (APG) named APG+
 
-I will try to reintegrate the various forks and build a new stable version, which can be released to the market.
+I will try to reintegrate the various forks and build a new stable version, which can be released to Google Play Store.
 
 # Contribute
 
 Fork APG+ and do a merge request. I will merge your changes back into the main project.
-
-# Build using Eclipse
-
-1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
-2. New -> Android Project -> Create project from existing source, choose org_apg
-3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
-4. Optional (As of Android Tools r17 the libraries are automatically added from the libs folder): Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
-5. Now APG+ can be build
 
 # Build using Ant
 
@@ -28,7 +20,15 @@ Fork APG+ and do a merge request. I will merge your changes back into the main p
 
     sdk.dir=/opt/android-sdk
 
-2. execute "ant release" 
+2. execute "ant release"
+
+# Build using Eclipse
+
+1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
+2. New -> Android Project -> Create project from existing source, choose org_apg
+3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
+4. Optional (As of Android Tools r17 the libraries are automatically added from the libs folder): Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
+5. Now APG+ can be build
 
 # Libraries
 
@@ -39,7 +39,7 @@ The Libraries are provided in the git repository.
 * android-support-v4.jar: Compatibility Lib
 * barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
 
-# Build XZing Integration Library
+## Build Barcode Scanner Integration
 
 1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
 2. Change android-home variable in "build.properties" in the main directory to point to your Android SDK
@@ -49,11 +49,13 @@ The Libraries are provided in the git repository.
 
 On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
-# Build Spongy Castle
+## Build Spongy Castle
 
 see https://github.com/rtyley/spongycastle
 
-# Generate pressed dashboard icons
+# Notes
 
-1. Open svg in Inkscape
+## Generate pressed dashboard icons
+
+1. Open svg file in Inkscape
 2. Extensions -> Color -> darker (2 times!)

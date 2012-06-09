@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
@@ -32,7 +31,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.ForceOverflow" >
+        android:theme="@style/Theme.Sherlock.Light.ForceOverflow" android:name="ApgApplication">
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
@@ -220,10 +219,10 @@
             android:label="@string/title_about"
             android:theme="@style/Theme.Sherlock.Light.Dialog" />
         <activity
-            android:name="org.thialfihar.android.apg.ui.HelpActivity"
+            android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
-        <service android:name=".service.PassphraseCacheService" />
+        <service android:name=".service.password.PassphraseCacheService" />
         <service android:name=".service.ApgService" />
 
         <!-- TODO: need to be moved into new service model -->
@@ -247,7 +246,7 @@
             android:authorities="org.thialfihar.android.apg.provider"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
         <provider
-            android:name="org.thialfihar.android.apg.provider.ApgServiceBlobProvider"
+            android:name=".provider.blob.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
             android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
     </application>

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.passphrase;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 
 import android.app.Activity;
@@ -35,7 +37,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AskForSecretKeyPassPhrase {
+public class AskForPassphrase {
     public static interface PassPhraseCallbackInterface {
         void passPhraseCallback(long keyId, String passPhrase);
     }
@@ -107,6 +109,10 @@ public class AskForSecretKeyPassPhrase {
                 } else {
                     keyId = Id.key.symmetric;
                 }
+                
+                // cache again
+                Apg.setCachedPassPhrase(keyId, passPhrase);
+                // return by callback
                 cb.passPhraseCallback(keyId, passPhrase);
             }
         });
@@ -126,6 +132,9 @@ public class AskForSecretKeyPassPhrase {
                 if (testKey != null) {
                     Log.d("APG", "Key has no passphrase!");
 
+                    // cache null
+                    Apg.setCachedPassPhrase(secretKey.getKeyID(), null);
+                    // return by callback
                     cb.passPhraseCallback(secretKey.getKeyID(), null);
 
                     return null;

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.passphrase;
 
 public class CachedPassPhrase {
     public final long timestamp;

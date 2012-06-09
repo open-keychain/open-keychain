@@ -34,6 +34,7 @@ import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.service.IApgService2.Stub;
 import org.thialfihar.android.apg.Id.database;
 import org.thialfihar.android.apg.R.string;
+import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -50,9 +51,8 @@ import android.util.Log;
 /**
  * ATTENTION:
  * 
- * This is the old ApgService used as remote service over aidl interface.
- * It will be reworked!
- *
+ * This is the old ApgService used as remote service over aidl interface. It will be reworked!
+ * 
  */
 public class ApgService2 extends PassphraseCacheService {
     private final static String TAG = "ApgService";

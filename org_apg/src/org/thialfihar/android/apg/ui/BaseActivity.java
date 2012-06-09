@@ -22,13 +22,13 @@ import java.io.IOException;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Apg;
-import org.thialfihar.android.apg.AskForSecretKeyPassPhrase;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.PausableThread;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
-import org.thialfihar.android.apg.service.PassphraseCacheService;
+import org.thialfihar.android.apg.passphrase.AskForPassphrase;
+import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -50,7 +50,7 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 public class BaseActivity extends SherlockFragmentActivity implements Runnable,
-        ProgressDialogUpdater, AskForSecretKeyPassPhrase.PassPhraseCallbackInterface {
+        ProgressDialogUpdater, AskForPassphrase.PassPhraseCallbackInterface {
 
     private ProgressDialog mProgressDialog = null;
     private PausableThread mRunningThread = null;
@@ -76,6 +76,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        // not needed later:
         mPreferences = Preferences.getPreferences(this);
 
         Apg.initialize(this);
@@ -88,14 +89,14 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
             }
         }
 
-        startCacheService(this, mPreferences);
+//        startCacheService(this, mPreferences);
     }
 
-    public static void startCacheService(Activity activity, Preferences preferences) {
-        Intent intent = new Intent(activity, PassphraseCacheService.class);
-        intent.putExtra(PassphraseCacheService.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
-        activity.startService(intent);
-    }
+//    public static void startCacheService(Activity activity, Preferences preferences) {
+//        Intent intent = new Intent(activity, PassphraseCacheService.class);
+//        intent.putExtra(PassphraseCacheService.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
+//        activity.startService(intent);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -177,7 +178,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         switch (id) {
 
         case Id.dialog.pass_phrase: {
-            return AskForSecretKeyPassPhrase.createDialog(this, getSecretKeyId(), this);
+            return AskForPassphrase.createDialog(this, getSecretKeyId(), this);
         }
 
         case Id.dialog.pass_phrases_do_not_match: {
@@ -373,6 +374,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
     }
 
     public void passPhraseCallback(long keyId, String passPhrase) {
+        // TODO: Not needed anymore, now implemented in AskForSecretKeyPass
         Apg.setCachedPassPhrase(keyId, passPhrase);
     }
 
