@@ -22,14 +22,14 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.DataDestination;
-import org.thialfihar.android.apg.DataSource;
 import org.thialfihar.android.apg.FileDialog;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.util.Compatibility;
 import org.thialfihar.android.apg.R;
@@ -45,6 +45,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
@@ -65,8 +66,7 @@ import android.widget.ViewFlipper;
 import java.io.File;
 import java.util.Vector;
 
-public class EncryptActivity extends SherlockFragmentActivity implements
-        AskForPassphrase.PassPhraseCallbackInterface {
+public class EncryptActivity extends SherlockFragmentActivity {
     private Intent mIntent = null;
     private String mSubject = null;
     private String mSendTo = null;
@@ -115,18 +115,22 @@ public class EncryptActivity extends SherlockFragmentActivity implements
     private Uri mContentUri = null;
     private byte[] mData = null;
 
-    private DataSource mDataSource = null;
-    private DataDestination mDataDestination = null;
-
     private boolean mGenerateSignature = false;
 
     private long mSecretKeyId = 0;
 
     private ProgressDialogFragment mEncryptingDialog;
 
+    public void setSecretKeyId(long id) {
+        mSecretKeyId = id;
+    }
+
+    public long getSecretKeyId() {
+        return mSecretKeyId;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         if (mEncryptToClipboardEnabled) {
             menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString)
                     .setShowAsAction(
@@ -144,6 +148,7 @@ public class EncryptActivity extends SherlockFragmentActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case Id.menu.option.encrypt_to_clipboard: {
+            Log.d(Constants.TAG, "encrypt_to_clipboard option item clicked!");
             encryptToClipboardClicked();
 
             return true;
@@ -580,6 +585,8 @@ public class EncryptActivity extends SherlockFragmentActivity implements
     }
 
     private void encryptClicked() {
+        Log.d(Constants.TAG, "encryptClicked invoked!");
+
         if (mSource.getCurrentView().getId() == R.id.sourceFile) {
             mEncryptTarget = Id.target.file;
         } else {
@@ -642,7 +649,9 @@ public class EncryptActivity extends SherlockFragmentActivity implements
             }
 
             if (getSecretKeyId() != 0 && Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
-                showDialog(Id.dialog.pass_phrase);
+                // showDialog(Id.dialog.pass_phrase);
+                showPassphraseDialog();
+
                 return;
             }
         }
@@ -654,22 +663,53 @@ public class EncryptActivity extends SherlockFragmentActivity implements
         }
     }
 
+    /**
+     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
+     * encryption
+     */
+    private void showPassphraseDialog() {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.arg1 == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    if (mEncryptTarget == Id.target.file) {
+                        askForOutputFilename();
+                    } else {
+                        encryptStart();
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                mSecretKeyId, messenger);
+
+        // no passphrase for this secret key -> passphraseDialog is null
+        if (passphraseDialog != null) {
+            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
+        }
+    }
+
     private void askForOutputFilename() {
         showDialog(Id.dialog.output_filename);
     }
 
-    @Override
-    public void passPhraseCallback(long keyId, String passPhrase) {
-        // super.passPhraseCallback(keyId, passPhrase);
-        if (mEncryptTarget == Id.target.file) {
-            askForOutputFilename();
-        } else {
-            encryptStart();
-        }
-    }
+    // @Override
+    // public void passPhraseCallback(long keyId, String passPhrase) {
+    // // super.passPhraseCallback(keyId, passPhrase);
+    // if (mEncryptTarget == Id.target.file) {
+    // askForOutputFilename();
+    // } else {
+    // encryptStart();
+    // }
+    // }
 
     private void encryptStart() {
-        showDialog(Id.dialog.encrypting);
+        // showDialog(Id.dialog.encrypting);
         // startThread();
 
         boolean useAsciiArmour = true;
@@ -690,23 +730,65 @@ public class EncryptActivity extends SherlockFragmentActivity implements
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
         }
 
-        fillDataSource(signOnly && !mReturnResult);
-        fillDataDestination();
-
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(this, ApgService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
+        // fillDataSource(signOnly && !mReturnResult);
+        // fillDataDestination();
+
+        // if (mContentUri != null) {
+        // mDataSource.setUri(mContentUri);
+        // } else if (mEncryptTarget == Id.target.file) {
+        // mDataSource.setUri(mInputFilename);
+        // } else {
+        // if (mData != null) {
+        // mDataSource.setData(mData);
+        // } else {
+        // String message = mMessage.getText().toString();
+        // if (fixContent) {
+        // // fix the message a bit, trailing spaces and newlines break stuff,
+        // // because GMail sends as HTML and such things fuck up the
+        // // signature,
+        // // TODO: things like "<" and ">" also fuck up the signature
+        // message = message.replaceAll(" +\n", "\n");
+        // message = message.replaceAll("\n\n+", "\n\n");
+        // message = message.replaceFirst("^\n+", "");
+        // // make sure there'll be exactly one newline at the end
+        // message = message.replaceFirst("\n*$", "\n");
+        // }
+        // mDataSource.setText(message);
+        // }
+        // }
+
+        // mDataDestination = new DataDestination();
+        // if (mContentUri != null) {
+        // mDataDestination.setMode(Id.mode.stream);
+        // } else if (mEncryptTarget == Id.target.file) {
+        // mDataDestination.setFilename(mOutputFilename);
+        // mDataDestination.setMode(Id.mode.file);
+        // } else {
+        // mDataDestination.setMode(Id.mode.byte_array);
+        // }
+
         // choose default settings, action and data bundle by target
-        if (mEncryptTarget == Id.target.file) {
+        if (mContentUri != null) {
+            // mDataSource.setUri(mContentUri);
+
+            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_STREAM);
+
+            data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
+
+        } else if (mEncryptTarget == Id.target.file) {
             useAsciiArmour = mAsciiArmour.isChecked();
             compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
 
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_FILE);
 
-            data.putString(ApgService.FILE_URI, mDataSource.getUri().toString());
+            data.putString(ApgService.FILE_URI, mInputFilename);
+            data.putString(ApgService.OUTPUT_FILENAME, mOutputFilename);
 
         } else {
             useAsciiArmour = true;
@@ -714,7 +796,18 @@ public class EncryptActivity extends SherlockFragmentActivity implements
 
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_BYTES);
 
-            data.putByteArray(ApgService.BYTES, mDataSource.getBytes());
+            if (mData != null) {
+                // mDataSource.setData(mData);
+                data.putByteArray(ApgService.BYTES, mData);
+            } else {
+                String message = mMessage.getText().toString();
+                if (signOnly && !mReturnResult) {
+                    fixContent(message);
+                }
+                // mDataSource.setText(message);
+                data.putByteArray(ApgService.BYTES, message.getBytes());
+            }
+
         }
 
         if (mOverrideAsciiArmour) {
@@ -735,7 +828,7 @@ public class EncryptActivity extends SherlockFragmentActivity implements
         mEncryptingDialog = ProgressDialogFragment.newInstance(R.string.progress_encrypting,
                 ProgressDialog.STYLE_HORIZONTAL);
 
-        // Message is received after saving is done in ApgService
+        // Message is received after encrypting is done in ApgService
         ApgHandler saveHandler = new ApgHandler(this, mEncryptingDialog) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
@@ -766,17 +859,18 @@ public class EncryptActivity extends SherlockFragmentActivity implements
                         }
 
                         output = data.getString(ApgService.RESULT_ENCRYPTED_MESSAGE);
-                        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+                        Log.d(Constants.TAG, "output: " + output);
+
+                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
                         emailIntent.setType("text/plain; charset=utf-8");
-                        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+                        emailIntent.putExtra(Intent.EXTRA_TEXT, output);
                         if (mSubject != null) {
-                            emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mSubject);
+                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, mSubject);
                         }
                         if (mSendTo != null) {
-                            emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-                                    new String[] { mSendTo });
+                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { mSendTo });
                         }
-                        EncryptActivity.this.startActivity(Intent.createChooser(emailIntent,
+                        startActivity(Intent.createChooser(emailIntent,
                                 getString(R.string.title_sendEmail)));
                         break;
 
@@ -809,12 +903,18 @@ public class EncryptActivity extends SherlockFragmentActivity implements
         startService(intent);
     }
 
-    public void setSecretKeyId(long id) {
-        mSecretKeyId = id;
-    }
+    private String fixContent(String message) {
+        // fix the message a bit, trailing spaces and newlines break stuff,
+        // because GMail sends as HTML and such things fuck up the
+        // signature,
+        // TODO: things like "<" and ">" also fuck up the signature
+        message = message.replaceAll(" +\n", "\n");
+        message = message.replaceAll("\n\n+", "\n\n");
+        message = message.replaceFirst("^\n+", "");
+        // make sure there'll be exactly one newline at the end
+        message = message.replaceFirst("\n*$", "\n");
 
-    public long getSecretKeyId() {
-        return mSecretKeyId;
+        return message;
     }
 
     private void updateView() {
@@ -918,18 +1018,21 @@ public class EncryptActivity extends SherlockFragmentActivity implements
             return;
         }
 
-        case Id.request.secret_keys: {
+        case Id.request.public_keys: {
             if (resultCode == RESULT_OK) {
-                super.onActivityResult(requestCode, resultCode, data);
+                Bundle bundle = data.getExtras();
+                mEncryptionKeyIds = bundle.getLongArray(Apg.EXTRA_SELECTION);
             }
             updateView();
             break;
         }
 
-        case Id.request.public_keys: {
+        case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                mEncryptionKeyIds = bundle.getLongArray(Apg.EXTRA_SELECTION);
+                setSecretKeyId(bundle.getLong(Apg.EXTRA_KEY_ID));
+            } else {
+                setSecretKeyId(Id.key.none);
             }
             updateView();
             break;
@@ -971,42 +1074,4 @@ public class EncryptActivity extends SherlockFragmentActivity implements
         return super.onCreateDialog(id);
     }
 
-    protected void fillDataSource(boolean fixContent) {
-        mDataSource = new DataSource();
-        if (mContentUri != null) {
-            mDataSource.setUri(mContentUri);
-        } else if (mEncryptTarget == Id.target.file) {
-            mDataSource.setUri(mInputFilename);
-        } else {
-            if (mData != null) {
-                mDataSource.setData(mData);
-            } else {
-                String message = mMessage.getText().toString();
-                if (fixContent) {
-                    // fix the message a bit, trailing spaces and newlines break stuff,
-                    // because GMail sends as HTML and such things fuck up the
-                    // signature,
-                    // TODO: things like "<" and ">" also fuck up the signature
-                    message = message.replaceAll(" +\n", "\n");
-                    message = message.replaceAll("\n\n+", "\n\n");
-                    message = message.replaceFirst("^\n+", "");
-                    // make sure there'll be exactly one newline at the end
-                    message = message.replaceFirst("\n*$", "\n");
-                }
-                mDataSource.setText(message);
-            }
-        }
-    }
-
-    protected void fillDataDestination() {
-        mDataDestination = new DataDestination();
-        if (mContentUri != null) {
-            mDataDestination.setMode(Id.mode.stream);
-        } else if (mEncryptTarget == Id.target.file) {
-            mDataDestination.setFilename(mOutputFilename);
-            mDataDestination.setMode(Id.mode.file);
-        } else {
-            mDataDestination.setMode(Id.mode.byte_array);
-        }
-    }
 }

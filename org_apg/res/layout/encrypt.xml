@@ -206,18 +206,19 @@
                         android:text="@string/label_sign" />
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
                         android:orientation="vertical"
-                        android:paddingRight="5dip" >
+                        android:paddingLeft="16dp" >
 
                         <TextView
                             android:id="@+id/mainUserId"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:text="Main User Id"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:text="Sign User Id"
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <TextView
@@ -225,7 +226,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
-                            android:text="Main User Id Rest"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:text="Sign email"
                             android:textAppearance="?android:attr/textAppearanceSmall" />
                     </LinearLayout>
                 </LinearLayout>

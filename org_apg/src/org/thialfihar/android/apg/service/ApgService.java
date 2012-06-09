@@ -274,8 +274,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // Output
                 Bundle resultData = new Bundle();
 
-                // if (encryptionTarget != Id.target.file) {
-                // if (out instanceof ByteArrayOutputStream) {
                 if (useAsciiArmour) {
                     String output = new String(outStream.toByteArray());
                     if (generateSignature) {
@@ -291,14 +289,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
                     }
                 }
-                // } else if (out instanceof FileOutputStream) {
-                // String fileName = dataDestination.getStreamFilename();
-                // String uri = "content://" + DataProvider.AUTHORITY + "/data/" + fileName;
-                // resultData.putString(RESULT_URI, uri);
-                // } else {
-                // sendErrorToHandler(new Apg.GeneralException("No output-data found."));
-                // }
-                // }
 
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -445,31 +435,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // Output
                 Bundle resultData = new Bundle();
 
-                // if (encryptionTarget != Id.target.file) {
-                // if (out instanceof ByteArrayOutputStream) {
-                // if (useAsciiArmour) {
-                // String output = new String(outStream.toByteArray());
-                // if (generateSignature) {
-                // resultData.putString(RESULT_SIGNATURE_TEXT, output);
-                // } else {
-                // resultData.putString(RESULT_ENCRYPTED_MESSAGE, output);
-                // }
-                // } else {
-                // byte output[] = outStream.toByteArray();
-                // if (generateSignature) {
-                // resultData.putByteArray(RESULT_SIGNATURE_DATA, output);
-                // } else {
-                // resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
-                // }
-                // }
-                // } else if (out instanceof FileOutputStream) {
-                // String fileName = dataDestination.getStreamFilename();
                 String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
                 resultData.putString(RESULT_URI, uri);
-                // } else {
-                // sendErrorToHandler(new Apg.GeneralException("No output-data found."));
-                // }
-                // }
 
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

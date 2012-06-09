@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.ui;
+package org.thialfihar.android.apg.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -87,7 +87,7 @@ public class ProgressDialogFragment extends DialogFragment {
     }
 
     /**
-     * Creates dialog based on arguments (messageId, style)
+     * Creates dialog
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

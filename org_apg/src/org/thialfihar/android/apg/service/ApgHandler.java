@@ -17,7 +17,7 @@
 package org.thialfihar.android.apg.service;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.ui.ProgressDialogFragment;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 
 import android.app.Activity;
 import android.os.Bundle;
