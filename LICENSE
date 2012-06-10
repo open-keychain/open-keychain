@@ -12,7 +12,6 @@ Images:
 
   * icon.svg
     modified version of kgpg_key2_kopete.svgz
-    GPL
 
   * dashboard_manage_keys.svg, dashboard_my_keys.svg, key.svg
     http://rrze-icon-set.berlios.de/
@@ -23,4 +22,5 @@ Images:
     Public Domain
 
   * dashboard_scan_qrcode.svg
-    Barcode Scanner App
+    New creation for APG
+    Apache License v2

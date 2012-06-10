@@ -24,6 +24,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -35,7 +36,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends SherlockActivity {
     static {
         Security.addProvider(new BouncyCastleProvider());
     }

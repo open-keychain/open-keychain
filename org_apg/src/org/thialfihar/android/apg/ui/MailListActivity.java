@@ -65,9 +65,8 @@ public class MailListActivity extends ListActivity {
         public String replyTo;
         public boolean signedOnly;
 
-        public Message(Conversation parent, long id, String subject,
-                       String fromAddress, String replyTo,
-                       String data, boolean signedOnly) {
+        public Message(Conversation parent, long id, String subject, String fromAddress,
+                String replyTo, String data, boolean signedOnly) {
             this.parent = parent;
             this.id = id;
             this.subject = subject;
@@ -98,24 +97,19 @@ public class MailListActivity extends ListActivity {
         String account = getIntent().getExtras().getString(EXTRA_ACCOUNT);
         // TODO: what if account is null?
         Uri uri = Uri.parse("content://gmail-ls/conversations/" + account);
-        Cursor cursor =
-                managedQuery(uri, new String[] { "conversation_id", "subject" }, null, null, null);
+        Cursor cursor = managedQuery(uri, new String[] { "conversation_id", "subject" }, null,
+                null, null);
         for (int i = 0; i < cursor.getCount(); ++i) {
             cursor.moveToPosition(i);
 
             int idIndex = cursor.getColumnIndex("conversation_id");
             int subjectIndex = cursor.getColumnIndex("subject");
             long conversationId = cursor.getLong(idIndex);
-            Conversation conversation =
-                    new Conversation(conversationId, cursor.getString(subjectIndex));
+            Conversation conversation = new Conversation(conversationId,
+                    cursor.getString(subjectIndex));
             Uri messageUri = Uri.withAppendedPath(uri, "" + conversationId + "/messages");
-            Cursor messageCursor =
-                    managedQuery(messageUri, new String[] {
-                            "messageId",
-                            "subject",
-                            "fromAddress",
-                            "replyToAddresses",
-                            "body" }, null, null, null);
+            Cursor messageCursor = managedQuery(messageUri, new String[] { "messageId", "subject",
+                    "fromAddress", "replyToAddresses", "body" }, null, null, null);
             Vector<Message> messages = new Vector<Message>();
             for (int j = 0; j < messageCursor.getCount(); ++j) {
                 messageCursor.moveToPosition(j);
@@ -139,13 +133,10 @@ public class MailListActivity extends ListActivity {
                         data = null;
                     }
                 }
-                Message message =
-                        new Message(conversation,
-                                    messageCursor.getLong(idIndex),
-                                    messageCursor.getString(subjectIndex),
-                                    messageCursor.getString(fromAddressIndex),
-                                    messageCursor.getString(replyToIndex),
-                                    data, signedOnly);
+                Message message = new Message(conversation, messageCursor.getLong(idIndex),
+                        messageCursor.getString(subjectIndex),
+                        messageCursor.getString(fromAddressIndex),
+                        messageCursor.getString(replyToIndex), data, signedOnly);
 
                 messages.add(message);
                 mMessages.add(message);

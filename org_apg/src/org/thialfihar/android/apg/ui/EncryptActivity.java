@@ -747,7 +747,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         // choose default settings, action and data bundle by target
         if (mContentUri != null) {
-            // mDataSource.setUri(mContentUri);
 
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_STREAM);
 
@@ -769,14 +768,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_BYTES);
 
             if (mData != null) {
-                // mDataSource.setData(mData);
                 data.putByteArray(ApgService.BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
                 if (signOnly && !mReturnResult) {
                     fixBadCharactersForGmail(message);
                 }
-                // mDataSource.setText(message);
                 data.putByteArray(ApgService.BYTES, message.getBytes());
             }
 
