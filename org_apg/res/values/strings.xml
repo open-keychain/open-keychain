@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+     Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
      Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -315,22 +316,8 @@
     <string name="slow">slow</string>
     <string name="very_slow">very slow</string>
 
-    <!-- texts -->
-    <!-- "OI File Manager", "ASTRO", and "K-9 Mail" must not be translated in order for the links to the market to work. -->
-    <string name="text_help">Install K-9 Mail for the best integration, it supports APG for PGP/INLINE and lets you directly encrypt/decrypt emails.
-\n\nIt is recommended that you install OI File Manager or ASTRO to be able to use the browse button for file selection in APG.
-\n\nFirst you need some keys. Either import them via the option menus in \"Manage Public Keys\" and \"Manage Secret Keys\" or create them in \"Manage Secret Keys\".
-\n\nYou can also add a GMail account in the main activity via \"Add Account\", which simplifies decrypting emails received there.
-\n\nCheck out the option menus in the various activities to find more functions.</string>
+    <!-- APG Fork -->
 
-    <!-- APG Plus -->
-
-
-    <!-- about -->
-    <string name="about_description">Android Privacy Guard (APG) is a OpenPGP implementation for Android.</string>
-    <string name="about_license">License: Apache License 2.0</string>
-    <string name="about_version">Version:</string>
-    <string name="about_developer">Developer: Thialfihar (Main developer), Senecaso (QRCode, sign key, upload key), Markus Doits (AIDL), Oliver Runge, Dominik Schürmann (New user interface)</string>
 
     <!-- Dashboard -->
     <string name="dashboard_manage_keys">Manage Keys</string>
@@ -339,5 +326,11 @@
     <string name="dashboard_decrypt">Decrypt</string>
     <string name="dashboard_help">Help</string>
     <string name="dashboard_scan_qrcode">Scan QRCode</string>
+
+    <!-- Help -->
+    <string name="help_tab_start">Start</string>
+    <string name="help_tab_changelog">Changelog</string>
+    <string name="help_tab_about">About</string>
+    <string name="help_about_version">Version:</string>
 
 </resources>

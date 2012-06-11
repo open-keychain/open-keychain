@@ -24,7 +24,7 @@ import java.util.Vector;
 
 /**
  * Singelton Implementation of a Preference Helper
- *
+ * 
  */
 public class Preferences {
     private static Preferences mPreferences;
@@ -132,26 +132,6 @@ public class Preferences {
     public void setForceV3Signatures(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Constants.pref.FORCE_V3_SIGNATURES, value);
-        editor.commit();
-    }
-
-    public boolean hasSeenChangeLog(String version) {
-        return mSharedPreferences.getBoolean(Constants.pref.HAS_SEEN_CHANGE_LOG + version, false);
-    }
-
-    public void setHasSeenChangeLog(String version, boolean value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.HAS_SEEN_CHANGE_LOG + version, value);
-        editor.commit();
-    }
-
-    public boolean hasSeenHelp() {
-        return mSharedPreferences.getBoolean(Constants.pref.HAS_SEEN_HELP, false);
-    }
-
-    public void setHasSeenHelp(boolean value) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.pref.HAS_SEEN_HELP, value);
         editor.commit();
     }
 

@@ -229,11 +229,6 @@
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_importFromQRCode" />
         <activity
-            android:name=".ui.AboutActivity"
-            android:excludeFromRecents="true"
-            android:label="@string/title_about"
-            android:theme="@style/Theme.Sherlock.Light.Dialog" />
-        <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 

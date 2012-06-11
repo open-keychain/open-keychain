@@ -17,63 +17,146 @@
 package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.util.Utils;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.TextView;
 
-public class HelpActivity extends SherlockActivity {
-    Activity mActivity;
-    TextView mHelpText;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.view.MenuItem;
 
+import java.util.ArrayList;
+
+import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
+public class HelpActivity extends SherlockFragmentActivity {
+    ViewPager mViewPager;
+    TabsAdapter mTabsAdapter;
+    TextView tabCenter;
+    TextView tabText;
+
+    /**
+     * Menu Items
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
         case android.R.id.home:
-            startActivity(new Intent(this, MainActivity.class));
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
-
         default:
-            break;
-
+            return super.onOptionsItemSelected(item);
         }
-        return false;
     }
 
-    /**
-     * Instantiate View for this Activity
-     */
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.help_activity);
+        mViewPager = new ViewPager(this);
+        mViewPager.setId(R.id.pager);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        setContentView(mViewPager);
+        ActionBar bar = getSupportActionBar();
+        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        bar.setDisplayShowTitleEnabled(true);
+        bar.setDisplayHomeAsUpEnabled(true);
 
-        mActivity = this;
+        mTabsAdapter = new TabsAdapter(this, mViewPager);
 
-        mHelpText = (TextView) findViewById(R.id.help_text);
+        Bundle startBundle = new Bundle();
+        startBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_start);
+        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_start)),
+                HelpFragmentHtml.class, startBundle);
 
-        // load html from html file from /res/raw
-        String helpText = Utils.readContentFromResource(mActivity, R.raw.help);
+        Bundle changelogBundle = new Bundle();
+        changelogBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_changelog);
+        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_changelog)),
+                HelpFragmentHtml.class, changelogBundle);
 
-        // set text from resources with html markup
-        mHelpText.setText(Html.fromHtml(helpText));
-        // make links work
-        mHelpText.setMovementMethod(LinkMovementMethod.getInstance());
-
+        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_about)),
+                HelpFragmentAbout.class, null);
     }
 
+    public static class TabsAdapter extends FragmentPagerAdapter implements ActionBar.TabListener,
+            ViewPager.OnPageChangeListener {
+        private final Context mContext;
+        private final ActionBar mActionBar;
+        private final ViewPager mViewPager;
+        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+
+        static final class TabInfo {
+            private final Class<?> clss;
+            private final Bundle args;
+
+            TabInfo(Class<?> _class, Bundle _args) {
+                clss = _class;
+                args = _args;
+            }
+        }
+
+        public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+            super(activity.getSupportFragmentManager());
+            mContext = activity;
+            mActionBar = activity.getSupportActionBar();
+            mViewPager = pager;
+            mViewPager.setAdapter(this);
+            mViewPager.setOnPageChangeListener(this);
+        }
+
+        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
+            TabInfo info = new TabInfo(clss, args);
+            tab.setTag(info);
+            tab.setTabListener(this);
+            mTabs.add(info);
+            mActionBar.addTab(tab);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return mTabs.size();
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            TabInfo info = mTabs.get(position);
+            return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        }
+
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        public void onPageSelected(int position) {
+            mActionBar.setSelectedNavigationItem(position);
+        }
+
+        public void onPageScrollStateChanged(int state) {
+        }
+
+        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+            Object tag = tab.getTag();
+            for (int i = 0; i < mTabs.size(); i++) {
+                if (mTabs.get(i) == tag) {
+                    mViewPager.setCurrentItem(i);
+                }
+            }
+        }
+
+        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        }
+
+        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        }
+    }
 }
