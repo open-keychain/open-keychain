@@ -49,7 +49,7 @@
 * GMail account listing was broken in 1.0.0, fixed again
 
 1.0.0
-* k9mail integration, APG supporting beta build of k9mail is available here
+* k9mail integration, APG supporting beta build of k9mail
 * support of more file managers (including ASTRO)
 * Slovenian translation
 * new database, much faster, less memory usage
