@@ -1,14 +1,115 @@
-1.1 (APG+)
+2.0
 * Complete redesign
 * Integration of different branches:
 * Share public keys via qr codes
 * Sign keys
 * Upload keys to server
 
-1.08 (Last changes on APG)
+1.0.8
 * basic key server support (HKP, please report bugs :))
 * app2sd (untested, let me know if there are problems)
 * more choices for pass phrase cache: 1, 2, 4, 8, hours
 * translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
 * bugfixes
 * optimizations
+
+1.0.7
+* clear sign problem with lacking trailing newline fixed
+* more options for pass phrase cache time to live (20, 40, 60 mins)
+
+1.0.6
+* account adding crash on Froyo fixed
+* secure file deletion
+* option to delete key file after import
+* stream encryption/decryption (gallery, etc.)
+* new options (language, force v3 signatures)
+* interface changes
+* bugfixes
+
+1.0.5
+* German and Italian translation
+* much smaller package, due to reduced BC sources
+* new preferences GUI
+* layout adjustment for localization
+* signature bugfix
+
+1.0.4
+* fixed another crash caused by some SDK bug with query builder
+
+1.0.3
+* fixed crashes during encryption/signing and possibly key export
+
+1.0.2
+* filterable key lists
+* smarter preselection of encryption keys
+* new Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
+* fixes and additional features (key preselection) for k9, new beta build available
+
+1.0.1
+* GMail account listing was broken in 1.0.0, fixed again
+
+1.0.0
+* k9mail integration, APG supporting beta build of k9mail is available here
+* support of more file managers (including ASTRO)
+* Slovenian translation
+* new database, much faster, less memory usage
+* defined Intents and content provider for other apps
+* bugfixes
+
+0.9.7
+* 0.9.5 must have introduced a bug that prevented symmetric encryption, this release fixes it
+
+0.9.6
+* finally fixed that bug that prevents the import of keys exported with Enigmail (and others), since this likely affects many users... it gets its own quick release
+
+0.9.5
+* k9mail integration: using "More -> Forward (alternate)"
+* pass phrase cache
+* compression preferences added
+* accurate decryption progress bar
+* internationalization prepared, hopefully translations will follow
+
+0.9.4
+* Android 1.5 support, I *hope*, please report problems with layout and graphics
+* yet another interface change, hopefully this will be it :)
+* symmetric encryption for messages
+* encrypt and decrypt processes all wrapped into ONE activity respectively in preparation for defined Intents to use APG in other apps
+
+0.9.3
+* handle large files correctly
+* better progress bars (especially for file encryption/decryption)
+* option to delete files after en-/decryption
+* bug fixes, layout tweaks
+
+0.9.2
+* settings for default encryption/hash algorithm
+* hushmail key support
+* GUI improvements (encrypt file layout rewritten)
+* bug fixes
+
+0.9.1
+* ElGamal support for subkeys
+* fixes of some silly 0.9.0 bugs
+
+0.9.0
+* OI File Manager support
+* file encryption/decryption
+
+0.8.1
+* display/verify signed-only mails
+* bug fixes, layout fixes
+
+0.8.0
+* create/edit keys
+* export keys
+* GUI more Android-like
+* a lot of code review, rewriting things
+* tidy up strings and error handling
+
+0.7.1
+* minor fixes, some code review
+* recognize ElGamal encryption keys as suitable for encryption
+* allow signing only
+
+0.7.0
+* initial public release
