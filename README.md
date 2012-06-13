@@ -1,12 +1,12 @@
-# APG+
+# APG
 
-This is a fork of Android Privacy Guard (APG) named APG+
+This is a fork of Android Privacy Guard (APG)
 
-I will try to reintegrate the various forks and build a new stable version, which can be released to Google Play Store.
+I will try to reintegrate the various forks and develope a new user interface and API via AIDL and build a new stable version.
 
 # Contribute
 
-Fork APG+ and do a merge request. I will merge your changes back into the main project.
+Fork APG and do a merge request. I will merge your changes back into the main project.
 
 # Build using Ant
 
