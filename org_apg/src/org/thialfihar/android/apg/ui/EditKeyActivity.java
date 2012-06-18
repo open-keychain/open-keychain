@@ -102,7 +102,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         switch (item.getItemId()) {
 
         case android.R.id.home:
-            startActivity(new Intent(this, SecretKeyListActivity.class));
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, SecretKeyListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
 
         case Id.menu.option.save:

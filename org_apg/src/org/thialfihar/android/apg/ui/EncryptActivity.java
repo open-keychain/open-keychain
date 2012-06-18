@@ -22,15 +22,16 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.FileDialog;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.util.Compatibility;
+import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -38,9 +39,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -119,6 +118,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private long mSecretKeyId = 0;
 
     private ProgressDialogFragment mEncryptingDialog;
+    private FileDialogFragment mFileDialog;
 
     public void setSecretKeyId(long id) {
         mSecretKeyId = id;
@@ -150,6 +150,14 @@ public class EncryptActivity extends SherlockFragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+
         case Id.menu.option.encrypt_to_clipboard: {
             Log.d(Constants.TAG, "encrypt_to_clipboard option item clicked!");
             encryptToClipboardClicked();
@@ -260,7 +268,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openFile();
+                Utils.openFile(EncryptActivity.this, mFilename.getText().toString(), "*/*",
+                        Id.request.filename);
             }
         });
 
@@ -324,10 +333,14 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 extras = new Bundle();
             }
 
-            // disable home button on actionbar because this activity is run from another app
-            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())) {
-                final ActionBar actionBar = getSupportActionBar();
-                actionBar.setDisplayShowTitleEnabled(true);
+            // set actionbar without home button if called from another app
+            final ActionBar actionBar = getSupportActionBar();
+            Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
+                    + getCallingPackage());
+            if (getCallingPackage() != null && getCallingPackage().equals(Apg.PACKAGE_NAME)) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+            } else {
                 actionBar.setDisplayHomeAsUpEnabled(false);
                 actionBar.setHomeButtonEnabled(false);
             }
@@ -446,23 +459,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)
                 && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || getSecretKeyId() != 0)) {
             encryptClicked();
-        }
-    }
-
-    private void openFile() {
-        String filename = mFilename.getText().toString();
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setData(Uri.parse("file://" + filename));
-        intent.setType("*/*");
-
-        try {
-            startActivityForResult(intent, Id.request.filename);
-        } catch (ActivityNotFoundException e) {
-            // No compatible file manager was found.
-            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -693,7 +689,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    mSecretKeyId, messenger);
+                    messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (Apg.GeneralException e) {
@@ -704,7 +700,30 @@ public class EncryptActivity extends SherlockFragmentActivity {
     }
 
     private void askForOutputFilename() {
-        showDialog(Id.dialog.output_filename);
+        // showDialog(Id.dialog.output_filename);
+
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+                    mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+                    encryptStart();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        mFileDialog = FileDialogFragment.newInstance(messenger,
+                getString(R.string.title_encryptToFile),
+                getString(R.string.specifyFileToEncryptTo), mOutputFilename, null,
+                Id.request.output_filename);
+
+        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+
     }
 
     // @Override
@@ -718,9 +737,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     // }
 
     private void encryptStart() {
-        // showDialog(Id.dialog.encrypting);
-        // startThread();
-
         boolean useAsciiArmour = true;
         long encryptionKeyIds[] = null;
         long signatureKeyId = 0;
@@ -758,8 +774,11 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_FILE);
 
-            data.putString(ApgService.FILE_URI, mInputFilename);
-            data.putString(ApgService.OUTPUT_FILENAME, mOutputFilename);
+            Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
+                    + mOutputFilename);
+
+            data.putString(ApgService.INPUT_FILE, mInputFilename);
+            data.putString(ApgService.OUTPUT_FILE, mOutputFilename);
 
         } else {
             useAsciiArmour = true;
@@ -961,16 +980,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
         switch (requestCode) {
         case Id.request.filename: {
             if (resultCode == RESULT_OK && data != null) {
-                String filename = data.getDataString();
-                if (filename != null) {
-                    // Get rid of URI prefix:
-                    if (filename.startsWith("file://")) {
-                        filename = filename.substring(7);
-                    }
-                    // replace %20 and so on
-                    filename = Uri.decode(filename);
+                try {
+                    String path = data.getData().getPath();
+                    Log.d(Constants.TAG, "path=" + path);
 
-                    mFilename.setText(filename);
+                    mFilename.setText(path);
+                } catch (NullPointerException e) {
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
                 }
             }
             return;
@@ -978,16 +994,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         case Id.request.output_filename: {
             if (resultCode == RESULT_OK && data != null) {
-                String filename = data.getDataString();
-                if (filename != null) {
-                    // Get rid of URI prefix:
-                    if (filename.startsWith("file://")) {
-                        filename = filename.substring(7);
-                    }
-                    // replace %20 and so on
-                    filename = Uri.decode(filename);
+                try {
+                    String path = data.getData().getPath();
+                    Log.d(Constants.TAG, "path=" + path);
 
-                    FileDialog.setFilename(filename);
+                    mFileDialog.setFilename(path);
+                } catch (NullPointerException e) {
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
                 }
             }
             return;
@@ -1021,32 +1034,32 @@ public class EncryptActivity extends SherlockFragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case Id.dialog.output_filename: {
-            return FileDialog.build(this, getString(R.string.title_encryptToFile),
-                    getString(R.string.specifyFileToEncryptTo), mOutputFilename,
-                    new FileDialog.OnClickListener() {
-                        public void onOkClick(String filename, boolean checked) {
-                            removeDialog(Id.dialog.output_filename);
-                            mOutputFilename = filename;
-                            encryptStart();
-                        }
-
-                        public void onCancelClick() {
-                            removeDialog(Id.dialog.output_filename);
-                        }
-                    }, getString(R.string.filemanager_titleSave),
-                    getString(R.string.filemanager_btnSave), null, Id.request.output_filename);
-        }
-
-        default: {
-            break;
-        }
-        }
-
-        return super.onCreateDialog(id);
-    }
+    // @Override
+    // protected Dialog onCreateDialog(int id) {
+    // switch (id) {
+    // case Id.dialog.output_filename: {
+    // return FileDialog.build(this, getString(R.string.title_encryptToFile),
+    // getString(R.string.specifyFileToEncryptTo), mOutputFilename,
+    // new FileDialog.OnClickListener() {
+    // public void onOkClick(String filename, boolean checked) {
+    // removeDialog(Id.dialog.output_filename);
+    // mOutputFilename = filename;
+    // encryptStart();
+    // }
+    //
+    // public void onCancelClick() {
+    // removeDialog(Id.dialog.output_filename);
+    // }
+    // }, getString(R.string.filemanager_titleSave),
+    // getString(R.string.filemanager_btnSave), null, Id.request.output_filename);
+    // }
+    //
+    // default: {
+    // break;
+    // }
+    // }
+    //
+    // return super.onCreateDialog(id);
+    // }
 
 }

@@ -32,6 +32,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+/**
+ * 
+ * 
+ * SHOUDL BE DELTED, DileDialogFragment is the new implementation
+ * 
+ * 
+ * @author ds1
+ *
+ */
 public class FileDialog {
     private static EditText mFilename;
     private static ImageButton mBrowse;

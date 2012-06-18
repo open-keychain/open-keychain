@@ -16,22 +16,15 @@
 
 package org.thialfihar.android.apg.ui.dialog;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.thialfihar.android.apg.Apg;
-import org.thialfihar.android.apg.Apg.GeneralException;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.util.Utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -40,62 +33,44 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ImageButton;
 
 public class FileDialogFragment extends DialogFragment {
 
     private Messenger mMessenger;
 
     private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_SECRET_KEY_ID = "secret_key_id";
+    private static final String ARG_TITLE = "title";
+    private static final String ARG_MESSAGE = "message";
+    private static final String ARG_DEFAULT_FILE = "default_file";
+    private static final String ARG_CHECKBOX_TEXT = "checkbox_text";
+    private static final String ARG_REQUEST_CODE = "request_code";
 
     public static final int MESSAGE_OKAY = 1;
 
+    public static final String MESSAGE_DATA_FILENAME = "filename";
+    public static final String MESSAGE_CHECKED = "checked";
+
     /**
-     * Instantiates new instance of this dialog fragment
-     * 
+     * Creates new instance of this file dialog fragment
      */
-    public static FileDialogFragment newInstance(long secretKeyId, Messenger messenger){
+    public static FileDialogFragment newInstance(Messenger messenger, String title, String message,
+            String defaultFile, String checkboxText, int requestCode) {
         FileDialogFragment frag = new FileDialogFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_SECRET_KEY_ID, secretKeyId);
         args.putParcelable(ARG_MESSENGER, messenger);
+
+        args.putString(ARG_TITLE, title);
+        args.putString(ARG_MESSAGE, message);
+        args.putString(ARG_DEFAULT_FILE, defaultFile);
+        args.putString(ARG_CHECKBOX_TEXT, checkboxText);
+        args.putInt(ARG_REQUEST_CODE, requestCode);
 
         frag.setArguments(args);
 
         return frag;
-    }
-
-    /**
-     * Checks if key has a passphrase
-     * 
-     * @param secretKeyId
-     * @return true if it has a passphrase
-     */
-    private static boolean hasPassphrase(long secretKeyId) {
-        // check if the key has no passphrase
-        try {
-            PGPSecretKey secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
-
-            Log.d(Constants.TAG, "Check if key has no passphrase...");
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    "SC").build("".toCharArray());
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-            if (testKey != null) {
-                Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
-
-                // cache empty passphrase
-                Apg.setCachedPassPhrase(secretKey.getKeyID(), "");
-
-                return false;
-            }
-        } catch (PGPException e) {
-            // silently catch
-        }
-
-        return true;
     }
 
     /**
@@ -105,89 +80,93 @@ public class FileDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        long secretKeyId = getArguments().getLong(ARG_SECRET_KEY_ID);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
+        String title = getArguments().getString(ARG_TITLE);
+        String message = getArguments().getString(ARG_MESSAGE);
+        String defaultFile = getArguments().getString(ARG_DEFAULT_FILE);
+        String checkboxText = getArguments().getString(ARG_CHECKBOX_TEXT);
+        final int requestCode = getArguments().getInt(ARG_REQUEST_CODE);
+
+        final EditText mFilename;
+        final ImageButton mBrowse;
+        final CheckBox mCheckBox;
+
+        LayoutInflater inflater = (LayoutInflater) activity
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-        alert.setTitle(R.string.title_authentication);
+        alert.setTitle(title);
+        alert.setMessage(message);
 
-        final PGPSecretKey secretKey;
+        View view = inflater.inflate(R.layout.file_dialog, null);
 
-        if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
-            secretKey = null;
-            alert.setMessage(getString(R.string.passPhraseForSymmetricEncryption));
-        } else {
-            secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
-            if (secretKey == null) {
-                alert.setTitle(R.string.title_keyNotFound);
-                alert.setMessage(getString(R.string.keyNotFound, secretKeyId));
-                alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dismiss();
-                    }
-                });
-                alert.setCancelable(false);
-                return alert.create();
+        mFilename = (EditText) view.findViewById(R.id.input);
+        mFilename.setText(defaultFile);
+        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
+        mBrowse.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // only .asc or .gpg files
+                Utils.openFile(activity, mFilename.getText().toString(), "text/plain", requestCode);
             }
-            String userId = Apg.getMainUserIdSafe(activity, secretKey);
-            alert.setMessage(getString(R.string.passPhraseFor, userId));
+        });
+
+        mCheckBox = (CheckBox) view.findViewById(R.id.checkbox);
+        if (checkboxText == null) {
+            mCheckBox.setEnabled(false);
+            mCheckBox.setVisibility(View.GONE);
+        } else {
+            mCheckBox.setEnabled(true);
+            mCheckBox.setVisibility(View.VISIBLE);
+            mCheckBox.setText(checkboxText);
         }
-
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.passphrase, null);
-        final EditText input = (EditText) view.findViewById(R.id.passphrase_passphrase);
-
-        final TextView labelNotUsed = (TextView) view
-                .findViewById(R.id.passphrase_label_passphrase_again);
-        labelNotUsed.setVisibility(View.GONE);
-        final EditText inputNotUsed = (EditText) view
-                .findViewById(R.id.passphrase_passphrase_again);
-        inputNotUsed.setVisibility(View.GONE);
 
         alert.setView(view);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dismiss();
 
-                String passPhrase = input.getText().toString();
-                long keyId;
-                if (secretKey != null) {
-                    try {
-                        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                .setProvider("SC").build(passPhrase.toCharArray());
-                        PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-                        if (testKey == null) {
-                            Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
-                                    Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    } catch (PGPException e) {
-                        Toast.makeText(activity, R.string.wrongPassPhrase, Toast.LENGTH_SHORT)
-                                .show();
-                        return;
-                    }
-                    keyId = secretKey.getKeyID();
-                } else {
-                    keyId = Id.key.symmetric;
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+                boolean checked = false;
+                if (mCheckBox.isEnabled()) {
+                    checked = mCheckBox.isChecked();
                 }
 
-                // cache the new passphrase
-                Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                Apg.setCachedPassPhrase(keyId, passPhrase);
+                // return resulting data back to activity
+                Bundle data = new Bundle();
+                data.putString(MESSAGE_DATA_FILENAME, mFilename.getText().toString());
+                data.putBoolean(MESSAGE_CHECKED, checked);
 
-                sendMessageToHandler(MESSAGE_OKAY);
+                sendMessageToHandler(MESSAGE_OKAY, data);
+
+                dismiss();
             }
         });
 
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
             }
         });
-
         return alert.create();
+    }
+
+    /**
+     * Updates filename in dialog, normally called in onActivityResult in activity using the
+     * FileDialog
+     * 
+     * @param messageId
+     * @param progress
+     * @param max
+     */
+    public void setFilename(String filename) {
+        AlertDialog dialog = (AlertDialog) getDialog();
+        EditText filenameEditText = (EditText) dialog.findViewById(R.id.input);
+
+        if (filenameEditText != null) {
+            filenameEditText.setText(filename);
+        }
     }
 
     /**
@@ -196,9 +175,12 @@ public class FileDialogFragment extends DialogFragment {
      * @param what
      *            Message integer you want to send
      */
-    private void sendMessageToHandler(Integer what) {
+    private void sendMessageToHandler(Integer what, Bundle data) {
         Message msg = Message.obtain();
         msg.what = what;
+        if (data != null) {
+            msg.setData(data);
+        }
 
         try {
             mMessenger.send(msg);

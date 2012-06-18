@@ -92,8 +92,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String GENERATE_SIGNATURE = "generate_signature";
     public static final String SIGN_ONLY = "sign_only";
     public static final String BYTES = "bytes";
-    public static final String FILE_URI = "file_uri";
-    public static final String OUTPUT_FILENAME = "output_filename";
+    public static final String INPUT_FILE = "input_file";
+    public static final String OUTPUT_FILE = "output_file";
     public static final String PROVIDER_URI = "provider_uri";
 
     // possible ints for EXTRA_ACTION
@@ -303,8 +303,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 long secretKeyId = data.getLong(SECRET_KEY_ID);
                 String passphrase = data.getString(PASSPHRASE);
 
-                Uri fileUri = Uri.parse(data.getString(FILE_URI));
-                String outputFilename = data.getString(OUTPUT_FILENAME);
+                String inputFile = data.getString(INPUT_FILE);
+                String outputFile = data.getString(OUTPUT_FILE);
 
                 boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
@@ -316,26 +316,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // InputStream
                 long inLength = -1;
                 FileInputStream inStream = null;
-                if (fileUri.getScheme().equals("file")) {
-                    // get the rest after "file://"
-                    String path = Uri.decode(fileUri.toString().substring(7));
-                    if (path.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
-                        if (!Environment.getExternalStorageState()
-                                .equals(Environment.MEDIA_MOUNTED)) {
-                            sendErrorToHandler(new GeneralException(
-                                    getString(R.string.error_externalStorageNotReady)));
-                            return;
-                        }
-                    }
-                    inStream = new FileInputStream(path);
-                    File file = new File(path);
-                    inLength = file.length();
-                }
-
-                InputData inputData = new InputData(inStream, inLength);
-
-                // OutputStream
-                if (outputFilename.startsWith(Environment.getExternalStorageDirectory()
+                if (inputFile.startsWith(Environment.getExternalStorageDirectory()
                         .getAbsolutePath())) {
                     if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
                         sendErrorToHandler(new GeneralException(
@@ -343,7 +324,22 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         return;
                     }
                 }
-                FileOutputStream outStream = new FileOutputStream(outputFilename);
+                inStream = new FileInputStream(inputFile);
+                File file = new File(inputFile);
+                inLength = file.length();
+
+                InputData inputData = new InputData(inStream, inLength);
+
+                // OutputStream
+                if (outputFile.startsWith(Environment.getExternalStorageDirectory()
+                        .getAbsolutePath())) {
+                    if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+                        sendErrorToHandler(new GeneralException(
+                                getString(R.string.error_externalStorageNotReady)));
+                        return;
+                    }
+                }
+                FileOutputStream outStream = new FileOutputStream(outputFile);
 
                 // Operation
                 if (generateSignature) {
@@ -410,7 +406,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 FileOutputStream outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
 
                 // Operation
-
                 if (generateSignature) {
                     Apg.generateSignature(this, inputData, outStream, useAsciiArmour, true,
                             secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences

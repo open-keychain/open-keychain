@@ -31,7 +31,7 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_STYLE = "style";
 
     /**
-     * Instantiates new instance of this fragment
+     * Creates new instance of this fragment
      * 
      * @param id
      * @return

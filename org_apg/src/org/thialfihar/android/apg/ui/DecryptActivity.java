@@ -29,6 +29,7 @@ import org.thialfihar.android.apg.InputData;
 import org.thialfihar.android.apg.PausableThread;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.util.Compatibility;
+import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -132,6 +133,14 @@ public class DecryptActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+
         case Id.menu.option.decrypt: {
             decryptClicked();
 
@@ -204,7 +213,8 @@ public class DecryptActivity extends BaseActivity {
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                openFile();
+                Utils.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
+                        Id.request.filename);
             }
         });
 
@@ -271,7 +281,7 @@ public class DecryptActivity extends BaseActivity {
                         // replace non breakable spaces
                         textData = textData.replaceAll("\\xa0", " ");
                         mMessage.setText(textData);
-                        
+
                         mDecryptString = getString(R.string.btn_verify);
                         // build new action bar
                         invalidateOptionsMenu();
@@ -301,11 +311,15 @@ public class DecryptActivity extends BaseActivity {
                 extras = new Bundle();
             }
 
-            // disable home button on actionbar because this activity is run from another app
+            // set actionbar without home button if called from another app
             final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayShowTitleEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
+            if (getCallingPackage() != null && getCallingPackage().equals(Apg.PACKAGE_NAME)) {
+                actionBar.setDisplayHomeAsUpEnabled(true);
+                actionBar.setHomeButtonEnabled(true);
+            } else {
+                actionBar.setDisplayHomeAsUpEnabled(false);
+                actionBar.setHomeButtonEnabled(false);
+            }
 
             mReturnBinary = extras.getBoolean(Apg.EXTRA_BINARY, false);
 
@@ -395,23 +409,6 @@ public class DecryptActivity extends BaseActivity {
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
             decryptClicked();
-        }
-    }
-
-    private void openFile() {
-        String filename = mFilename.getText().toString();
-
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setData(Uri.parse("file://" + filename));
-        intent.setType("*/*");
-
-        try {
-            startActivityForResult(intent, Id.request.filename);
-        } catch (ActivityNotFoundException e) {
-            // No compatible file manager was found.
-            Toast.makeText(this, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -54,7 +54,7 @@ public class PassphraseDialogFragment extends DialogFragment {
     public static final int MESSAGE_OKAY = 1;
 
     /**
-     * Instantiates new instance of this dialog fragment
+     * Creates new instance of this dialog fragment
      * 
      * @param secretKeyId
      *            secret key id you want to use
@@ -63,7 +63,7 @@ public class PassphraseDialogFragment extends DialogFragment {
      * @return
      * @throws GeneralException
      */
-    public static PassphraseDialogFragment newInstance(long secretKeyId, Messenger messenger)
+    public static PassphraseDialogFragment newInstance(Messenger messenger, long secretKeyId)
             throws GeneralException {
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
