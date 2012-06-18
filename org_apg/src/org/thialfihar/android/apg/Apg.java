@@ -1304,7 +1304,7 @@ public class Apg {
                     context.getString(R.string.error_noEncryptionKeysOrPassPhrase));
         }
 
-        if (signatureKeyId != -1) {
+        if (signatureKeyId != Id.key.none) {
             signingKeyRing = getSecretKeyRing(signatureKeyId);
             signingKey = getSigningKey(signatureKeyId);
             if (signingKey == null) {
@@ -1347,7 +1347,7 @@ public class Apg {
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
 
-        if (signatureKeyId != -1) {
+        if (signatureKeyId != Id.key.none) {
             if (progress != null)
                 progress.setProgress(R.string.progress_preparingSignature, 10, 100);
             if (forceV3Signature) {
@@ -1374,7 +1374,7 @@ public class Apg {
             compressGen = new PGPCompressedDataGenerator(compression);
             bcpgOut = new BCPGOutputStream(compressGen.open(encryptOut));
         }
-        if (signatureKeyId != -1) {
+        if (signatureKeyId != Id.key.none) {
             if (forceV3Signature) {
                 signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
             } else {
@@ -1395,7 +1395,7 @@ public class Apg {
         InputStream in = data.getInputStream();
         while ((n = in.read(buffer)) > 0) {
             pOut.write(buffer, 0, n);
-            if (signatureKeyId != -1) {
+            if (signatureKeyId != Id.key.none) {
                 if (forceV3Signature) {
                     signatureV3Generator.update(buffer, 0, n);
                 } else {
@@ -1411,7 +1411,7 @@ public class Apg {
 
         literalGen.close();
 
-        if (signatureKeyId != -1) {
+        if (signatureKeyId != Id.key.none) {
             if (progress != null)
                 progress.setProgress(R.string.progress_generatingSignature, 95, 100);
             if (forceV3Signature) {

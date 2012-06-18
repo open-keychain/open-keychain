@@ -22,16 +22,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.DataDestination;
-import org.thialfihar.android.apg.DataSource;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.InputData;
 import org.thialfihar.android.apg.Preferences;
@@ -82,10 +80,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // encrypt
     public static final String SECRET_KEY_ID = "secret_key_id";
-    // public static final String DATA_SOURCE = "data_source";
-    // public static final String DATA_DESTINATION = "data_destination";
     public static final String USE_ASCII_AMOR = "use_ascii_amor";
-    // public static final String ENCRYPTION_TARGET = "encryption_target";
     public static final String ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String SIGNATURE_KEY_ID = "signature_key_id";
     public static final String COMPRESSION_ID = "compression_id";
@@ -96,6 +91,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String OUTPUT_FILE = "output_file";
     public static final String PROVIDER_URI = "provider_uri";
 
+    // delete file securely
+    public static final String DELETE_FILE = "delete_file";
+
     // possible ints for EXTRA_ACTION
     public static final int ACTION_SAVE_KEYRING = 1;
     public static final int ACTION_GENERATE_KEY = 2;
@@ -104,6 +102,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final int ACTION_ENCRYPT_SIGN_BYTES = 4;
     public static final int ACTION_ENCRYPT_SIGN_FILE = 5;
     public static final int ACTION_ENCRYPT_SIGN_STREAM = 6;
+
+    public static final int ACTION_DELETE_FILE_SECURELY = 7;
 
     // possible data keys as result
     public static final String RESULT_NEW_KEY = "new_key";
@@ -440,6 +440,30 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 resultData.putString(RESULT_URI, uri);
 
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_DELETE_FILE_SECURELY:
+            try {
+                // Input
+                String deleteFile = data.getString(DELETE_FILE);
+
+                // Operation
+                try {
+                    Apg.deleteFileSecurely(this, new File(deleteFile), this);
+                } catch (FileNotFoundException e) {
+                    throw new Apg.GeneralException(getString(R.string.error_fileNotFound,
+                            deleteFile));
+                } catch (IOException e) {
+                    throw new Apg.GeneralException(getString(R.string.error_fileDeleteFailed,
+                            deleteFile));
+                }
+
+                // Output
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

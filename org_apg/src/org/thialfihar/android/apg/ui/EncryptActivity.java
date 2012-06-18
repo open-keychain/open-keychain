@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +27,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
@@ -115,7 +117,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private boolean mGenerateSignature = false;
 
-    private long mSecretKeyId = 0;
+    private long mSecretKeyId = Id.key.none;
 
     private ProgressDialogFragment mEncryptingDialog;
     private FileDialogFragment mFileDialog;
@@ -698,8 +700,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     }
 
     private void askForOutputFilename() {
-        // showDialog(Id.dialog.output_filename);
-
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
@@ -733,7 +733,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         boolean useAsciiArmour = true;
         long encryptionKeyIds[] = null;
-        long signatureKeyId = -1; // -1 means no signature! 
+        long signatureKeyId = Id.key.none;
         int compressionId = 0;
         boolean signOnly = false;
 
@@ -743,6 +743,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (passPhrase.length() == 0) {
                 passPhrase = null;
             }
+            // signatureKeyId = Id.key.symmetric;
 
             data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
         } else {
@@ -799,7 +800,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // show progress dialog
+        // create progress dialog
         mEncryptingDialog = ProgressDialogFragment.newInstance(R.string.progress_encrypting,
                 ProgressDialog.STYLE_HORIZONTAL);
 
@@ -852,10 +853,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     case Id.target.file:
                         Toast.makeText(EncryptActivity.this, R.string.encryptionSuccessful,
                                 Toast.LENGTH_SHORT).show();
+
                         if (mDeleteAfter.isChecked()) {
-                            // TODO: Reimplement that!
-                            // setDeleteFile(mInputFilename);
-                            // showDialog(Id.dialog.delete_file);
+                            // Create and show dialog to delete original file
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                    .newInstance(mInputFilename);
+                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                         }
                         break;
 
@@ -872,7 +875,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-        mEncryptingDialog.show(getSupportFragmentManager(), "dialog");
+        // show progress dialog
+        mEncryptingDialog.show(getSupportFragmentManager(), "encryptingDialog");
 
         // start service with intent
         startService(intent);
@@ -908,7 +912,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     + getResources().getString(R.string.nKeysSelected));
         }
 
-        if (getSecretKeyId() == 0) {
+        if (getSecretKeyId() == Id.key.none) {
             mSign.setChecked(false);
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
