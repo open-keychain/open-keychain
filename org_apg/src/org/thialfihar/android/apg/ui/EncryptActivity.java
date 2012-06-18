@@ -158,21 +158,19 @@ public class EncryptActivity extends SherlockFragmentActivity {
             startActivity(intent);
             return true;
 
-        case Id.menu.option.encrypt_to_clipboard: {
-            Log.d(Constants.TAG, "encrypt_to_clipboard option item clicked!");
+        case Id.menu.option.encrypt_to_clipboard:
             encryptToClipboardClicked();
 
             return true;
-        }
-        case Id.menu.option.encrypt: {
+
+        case Id.menu.option.encrypt:
             encryptClicked();
 
             return true;
-        }
 
-        default: {
+        default:
             return super.onOptionsItemSelected(item);
-        }
+
         }
     }
 
@@ -726,46 +724,36 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     }
 
-    // @Override
-    // public void passPhraseCallback(long keyId, String passPhrase) {
-    // // super.passPhraseCallback(keyId, passPhrase);
-    // if (mEncryptTarget == Id.target.file) {
-    // askForOutputFilename();
-    // } else {
-    // encryptStart();
-    // }
-    // }
-
     private void encryptStart() {
-        boolean useAsciiArmour = true;
-        long encryptionKeyIds[] = null;
-        long signatureKeyId = 0;
-        int compressionId = 0;
-        boolean signOnly = false;
-
-        String passPhrase = null;
-        if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-            passPhrase = mPassPhrase.getText().toString();
-            if (passPhrase.length() == 0) {
-                passPhrase = null;
-            }
-        } else {
-            encryptionKeyIds = mEncryptionKeyIds;
-            signatureKeyId = getSecretKeyId();
-            signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
-        }
-
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(this, ApgService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
+        boolean useAsciiArmour = true;
+        long encryptionKeyIds[] = null;
+        long signatureKeyId = -1; // -1 means no signature! 
+        int compressionId = 0;
+        boolean signOnly = false;
+
+        if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
+            Log.d(Constants.TAG, "Symmetric encryption enabled!");
+            String passPhrase = mPassPhrase.getText().toString();
+            if (passPhrase.length() == 0) {
+                passPhrase = null;
+            }
+
+            data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
+        } else {
+            encryptionKeyIds = mEncryptionKeyIds;
+            signatureKeyId = getSecretKeyId();
+            signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
+        }
+
         // choose default settings, action and data bundle by target
         if (mContentUri != null) {
-
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_STREAM);
-
             data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
 
         } else if (mEncryptTarget == Id.target.file) {
@@ -795,7 +783,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 }
                 data.putByteArray(ApgService.BYTES, message.getBytes());
             }
-
         }
 
         if (mOverrideAsciiArmour) {
@@ -1033,33 +1020,5 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-    // @Override
-    // protected Dialog onCreateDialog(int id) {
-    // switch (id) {
-    // case Id.dialog.output_filename: {
-    // return FileDialog.build(this, getString(R.string.title_encryptToFile),
-    // getString(R.string.specifyFileToEncryptTo), mOutputFilename,
-    // new FileDialog.OnClickListener() {
-    // public void onOkClick(String filename, boolean checked) {
-    // removeDialog(Id.dialog.output_filename);
-    // mOutputFilename = filename;
-    // encryptStart();
-    // }
-    //
-    // public void onCancelClick() {
-    // removeDialog(Id.dialog.output_filename);
-    // }
-    // }, getString(R.string.filemanager_titleSave),
-    // getString(R.string.filemanager_btnSave), null, Id.request.output_filename);
-    // }
-    //
-    // default: {
-    // break;
-    // }
-    // }
-    //
-    // return super.onCreateDialog(id);
-    // }
 
 }

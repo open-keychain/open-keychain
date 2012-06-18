@@ -192,7 +192,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                         // fill values for this action
                         Bundle data = new Bundle();
-                        data.putString(ApgService.PASSPHRASE, mCurrentPassPhrase);
+                        data.putString(ApgService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
 
                         intent.putExtra(ApgService.EXTRA_DATA, data);
 

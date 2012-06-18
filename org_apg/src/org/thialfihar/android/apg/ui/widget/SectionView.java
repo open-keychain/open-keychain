@@ -265,7 +265,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         } else {
             passPhrase = "";
         }
-        data.putString(ApgService.PASSPHRASE, passPhrase);
+        data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
         data.putInt(ApgService.ALGORITHM, mNewKeyAlgorithmChoice.getId());
         data.putInt(ApgService.KEY_SIZE, mNewKeySize);
 

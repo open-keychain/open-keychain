@@ -77,7 +77,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     // generate key
     public static final String ALGORITHM = "algorithm";
     public static final String KEY_SIZE = "key_size";
-    public static final String PASSPHRASE = "passphrase";
+    public static final String SYMMETRIC_PASSPHRASE = "passphrase";
     public static final String MASTER_KEY = "master_key";
 
     // encrypt
@@ -182,7 +182,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
                 // Input
                 int algorithm = data.getInt(ALGORITHM);
-                String passphrase = data.getString(PASSPHRASE);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
                 int keysize = data.getInt(KEY_SIZE);
                 PGPSecretKey masterKey = null;
                 if (data.containsKey(MASTER_KEY)) {
@@ -206,7 +206,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
         case ACTION_GENERATE_DEFAULT_RSA_KEYS:
             // generate one RSA 2048 key for signing and one subkey for encrypting!
             try {
-                String passphrase = data.getString(PASSPHRASE);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
 
                 // Operation
                 PGPSecretKeyRing masterKeyRing = Apg.createKey(this, Id.choice.algorithm.rsa, 2048,
@@ -232,7 +232,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
                 // Input
                 long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(PASSPHRASE);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
 
                 byte[] bytes = data.getByteArray(BYTES);
 
@@ -251,16 +251,19 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
                 if (generateSignature) {
+                    Log.d(Constants.TAG, "generate signature...");
                     Apg.generateSignature(this, inputData, outStream, useAsciiArmour, false,
                             secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(), this);
                 } else if (signOnly) {
+                    Log.d(Constants.TAG, "sign only...");
                     Apg.signText(this, inputData, outStream, secretKeyId, Apg
                             .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
                             .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
                             .getForceV3Signatures(), this);
                 } else {
+                    Log.d(Constants.TAG, "encrypt...");
                     Apg.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
                             signatureKeyId, Apg.getCachedPassPhrase(signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
@@ -301,7 +304,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
                 // Input
                 long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(PASSPHRASE);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
 
                 String inputFile = data.getString(INPUT_FILE);
                 String outputFile = data.getString(OUTPUT_FILE);
@@ -343,16 +346,19 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // Operation
                 if (generateSignature) {
+                    Log.d(Constants.TAG, "generate signature...");
                     Apg.generateSignature(this, inputData, outStream, useAsciiArmour, true,
                             secretKeyId, Apg.getCachedPassPhrase(secretKeyId), Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(), this);
                 } else if (signOnly) {
+                    Log.d(Constants.TAG, "sign only...");
                     Apg.signText(this, inputData, outStream, secretKeyId, Apg
                             .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
                             .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
                             .getForceV3Signatures(), this);
                 } else {
+                    Log.d(Constants.TAG, "encrypt...");
                     Apg.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
                             signatureKeyId, Apg.getCachedPassPhrase(signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
@@ -373,7 +379,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
                 // Input
                 long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(PASSPHRASE);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
 
                 Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
 
