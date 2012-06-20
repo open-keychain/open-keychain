@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.passphrase;
+package org.thialfihar.android.apg.service;
 
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;

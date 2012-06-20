@@ -34,10 +34,10 @@ import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.util.InputData;
 
 import android.content.ContentResolver;

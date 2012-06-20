@@ -12,13 +12,13 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.passphrase;
+package org.thialfihar.android.apg.service;
 
-public class CachedPassPhrase {
+public class CachedPassphrase {
     public final long timestamp;
     public final String passPhrase;
 
-    public CachedPassPhrase(long timestamp, String passPhrase) {
+    public CachedPassphrase(long timestamp, String passPhrase) {
         super();
         this.timestamp = timestamp;
         this.passPhrase = passPhrase;
@@ -33,11 +33,11 @@ public class CachedPassPhrase {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof CachedPassPhrase)) {
+        if (!(other instanceof CachedPassphrase)) {
             return false;
         }
 
-        CachedPassPhrase o = (CachedPassPhrase) other;
+        CachedPassphrase o = (CachedPassphrase) other;
         if (timestamp != o.timestamp) {
             return false;
         }

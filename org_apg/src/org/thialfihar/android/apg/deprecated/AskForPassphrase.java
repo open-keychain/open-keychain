@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.passphrase;
+package org.thialfihar.android.apg.deprecated;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
@@ -38,6 +38,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * TODO:
+ * 
+ * - Use new PassphraseDialogFragment!
+ * 
+ * 
+ */
 public class AskForPassphrase {
     public static interface PassPhraseCallbackInterface {
         void passPhraseCallback(long keyId, String passPhrase);
@@ -110,7 +117,7 @@ public class AskForPassphrase {
                 } else {
                     keyId = Id.key.symmetric;
                 }
-                
+
                 // cache again
                 PGPMain.setCachedPassPhrase(keyId, passPhrase);
                 // return by callback

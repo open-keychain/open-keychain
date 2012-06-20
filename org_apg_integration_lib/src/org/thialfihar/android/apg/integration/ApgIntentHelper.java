@@ -193,13 +193,6 @@ public class ApgIntentHelper {
                 break;
             }
             apgData.setEncryptedData(data.getStringExtra(Constants.EXTRA_ENCRYPTED_MESSAGE));
-            // this was a stupid bug in an earlier version, just gonna leave this in for an APG
-            // version or two
-            if (apgData.getEncryptedData() == null) {
-                apgData.setEncryptedData(data.getStringExtra(Constants.EXTRA_DECRYPTED_MESSAGE));
-            }
-            if (apgData.getEncryptedData() != null) {
-            }
             break;
 
         case Constants.DECRYPT_MESSAGE:
@@ -215,7 +208,6 @@ public class ApgIntentHelper {
                     false));
 
             apgData.setDecryptedData(data.getStringExtra(Constants.EXTRA_DECRYPTED_MESSAGE));
-
             break;
 
         default:

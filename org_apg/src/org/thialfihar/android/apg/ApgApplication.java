@@ -16,7 +16,7 @@
 
 package org.thialfihar.android.apg;
 
-import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import android.app.Application;
 

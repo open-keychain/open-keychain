@@ -770,9 +770,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     }
                     }
 
-                    if (data.getBoolean(ApgService.EXTRA_SIGNATURE)) {
-                        String userId = data.getString(ApgService.EXTRA_SIGNATURE_USER_ID);
-                        mSignatureKeyId = data.getLong(ApgService.EXTRA_SIGNATURE_KEY_ID);
+                    if (data.getBoolean(ApgService.RESULT_SIGNATURE)) {
+                        String userId = data.getString(ApgService.RESULT_SIGNATURE_USER_ID);
+                        mSignatureKeyId = data.getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
                         mUserIdRest
                                 .setText("id: " + PGPHelper.getSmallFingerPrint(mSignatureKeyId));
                         if (userId == null) {
@@ -785,9 +785,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         }
                         mUserId.setText(userId);
 
-                        if (data.getBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS)) {
+                        if (data.getBoolean(ApgService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                        } else if (data.getBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN)) {
+                        } else if (data.getBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
                                     R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)

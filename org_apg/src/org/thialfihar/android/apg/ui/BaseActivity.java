@@ -17,25 +17,20 @@
 package org.thialfihar.android.apg.ui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
+import org.thialfihar.android.apg.deprecated.AskForPassphrase;
 import org.thialfihar.android.apg.deprecated.PausableThread;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.passphrase.AskForPassphrase;
-import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -45,9 +40,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.widget.Toast;
 
 public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         ProgressDialogUpdater, AskForPassphrase.PassPhraseCallbackInterface {
@@ -89,14 +81,14 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
             }
         }
 
-//        startCacheService(this, mPreferences);
+        // startCacheService(this, mPreferences);
     }
 
-//    public static void startCacheService(Activity activity, Preferences preferences) {
-//        Intent intent = new Intent(activity, PassphraseCacheService.class);
-//        intent.putExtra(PassphraseCacheService.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
-//        activity.startService(intent);
-//    }
+    // public static void startCacheService(Activity activity, Preferences preferences) {
+    // Intent intent = new Intent(activity, PassphraseCacheService.class);
+    // intent.putExtra(PassphraseCacheService.EXTRA_TTL, preferences.getPassPhraseCacheTtl());
+    // activity.startService(intent);
+    // }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -218,48 +210,48 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
             return alert.create();
         }
 
-//        case Id.dialog.delete_file: {
-//            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//
-//            alert.setIcon(android.R.drawable.ic_dialog_alert);
-//            alert.setTitle(R.string.warning);
-//            alert.setMessage(this.getString(R.string.fileDeleteConfirmation, getDeleteFile()));
-//
-//            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    removeDialog(Id.dialog.delete_file);
-//                    final File file = new File(getDeleteFile());
-//                    showDialog(Id.dialog.deleting);
-//                    mDeletingThread = new Thread(new Runnable() {
-//                        public void run() {
-//                            Bundle data = new Bundle();
-//                            data.putInt(Constants.extras.STATUS, Id.message.delete_done);
-//                            try {
-//                                Apg.deleteFileSecurely(BaseActivity.this, file, BaseActivity.this);
-//                            } catch (FileNotFoundException e) {
-//                                data.putString(Apg.EXTRA_ERROR, BaseActivity.this.getString(
-//                                        R.string.error_fileNotFound, file));
-//                            } catch (IOException e) {
-//                                data.putString(Apg.EXTRA_ERROR, BaseActivity.this.getString(
-//                                        R.string.error_fileDeleteFailed, file));
-//                            }
-//                            Message msg = new Message();
-//                            msg.setData(data);
-//                            sendMessage(msg);
-//                        }
-//                    });
-//                    mDeletingThread.start();
-//                }
-//            });
-//            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int id) {
-//                    removeDialog(Id.dialog.delete_file);
-//                }
-//            });
-//            alert.setCancelable(true);
-//
-//            return alert.create();
-//        }
+        // case Id.dialog.delete_file: {
+        // AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        //
+        // alert.setIcon(android.R.drawable.ic_dialog_alert);
+        // alert.setTitle(R.string.warning);
+        // alert.setMessage(this.getString(R.string.fileDeleteConfirmation, getDeleteFile()));
+        //
+        // alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        // public void onClick(DialogInterface dialog, int id) {
+        // removeDialog(Id.dialog.delete_file);
+        // final File file = new File(getDeleteFile());
+        // showDialog(Id.dialog.deleting);
+        // mDeletingThread = new Thread(new Runnable() {
+        // public void run() {
+        // Bundle data = new Bundle();
+        // data.putInt(Constants.extras.STATUS, Id.message.delete_done);
+        // try {
+        // Apg.deleteFileSecurely(BaseActivity.this, file, BaseActivity.this);
+        // } catch (FileNotFoundException e) {
+        // data.putString(Apg.EXTRA_ERROR, BaseActivity.this.getString(
+        // R.string.error_fileNotFound, file));
+        // } catch (IOException e) {
+        // data.putString(Apg.EXTRA_ERROR, BaseActivity.this.getString(
+        // R.string.error_fileDeleteFailed, file));
+        // }
+        // Message msg = new Message();
+        // msg.setData(data);
+        // sendMessage(msg);
+        // }
+        // });
+        // mDeletingThread.start();
+        // }
+        // });
+        // alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+        // public void onClick(DialogInterface dialog, int id) {
+        // removeDialog(Id.dialog.delete_file);
+        // }
+        // });
+        // alert.setCancelable(true);
+        //
+        // return alert.create();
+        // }
 
         default: {
             break;
@@ -335,11 +327,11 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
             break;
         }
 
-//        case Id.message.delete_done: {
-//            mProgressDialog = null;
-//            deleteDoneCallback(msg);
-//            break;
-//        }
+        // case Id.message.delete_done: {
+        // mProgressDialog = null;
+        // deleteDoneCallback(msg);
+        // break;
+        // }
 
         case Id.message.import_done: // intentionally no break
         case Id.message.export_done: // intentionally no break
@@ -360,21 +352,21 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
 
     }
 
-//    public void deleteDoneCallback(Message msg) {
-//        removeDialog(Id.dialog.deleting);
-//        mDeletingThread = null;
-//
-//        Bundle data = msg.getData();
-//        String error = data.getString(Apg.EXTRA_ERROR);
-//        String message;
-//        if (error != null) {
-//            message = getString(R.string.errorMessage, error);
-//        } else {
-//            message = getString(R.string.fileDeleteSuccessful);
-//        }
-//
-//        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-//    }
+    // public void deleteDoneCallback(Message msg) {
+    // removeDialog(Id.dialog.deleting);
+    // mDeletingThread = null;
+    //
+    // Bundle data = msg.getData();
+    // String error = data.getString(Apg.EXTRA_ERROR);
+    // String message;
+    // if (error != null) {
+    // message = getString(R.string.errorMessage, error);
+    // } else {
+    // message = getString(R.string.fileDeleteSuccessful);
+    // }
+    //
+    // Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    // }
 
     public void passPhraseCallback(long keyId, String passPhrase) {
         // TODO: Not needed anymore, now implemented in AskForSecretKeyPass

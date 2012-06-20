@@ -21,10 +21,6 @@ import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.Constants.defaults;
-import org.thialfihar.android.apg.Constants.pref;
-import org.thialfihar.android.apg.Id.choice;
-import org.thialfihar.android.apg.Id.choice.compression;
 
 import android.content.Context;
 import android.content.SharedPreferences;

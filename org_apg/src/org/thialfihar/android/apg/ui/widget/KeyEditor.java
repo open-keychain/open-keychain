@@ -20,7 +20,6 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.R;
 

@@ -71,13 +71,13 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
-import org.thialfihar.android.apg.passphrase.CachedPassPhrase;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.CachedPassphrase;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
@@ -185,7 +185,7 @@ public class PGPMain {
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
 
-    private static HashMap<Long, CachedPassPhrase> mPassPhraseCache = new HashMap<Long, CachedPassPhrase>();
+    private static HashMap<Long, CachedPassphrase> mPassPhraseCache = new HashMap<Long, CachedPassphrase>();
     private static String mEditPassPhrase = null;
 
     private static Database mDatabase = null;
@@ -225,7 +225,7 @@ public class PGPMain {
     }
 
     public static void setCachedPassPhrase(long keyId, String passPhrase) {
-        mPassPhraseCache.put(keyId, new CachedPassPhrase(new Date().getTime(), passPhrase));
+        mPassPhraseCache.put(keyId, new CachedPassphrase(new Date().getTime(), passPhrase));
     }
 
     public static String getCachedPassPhrase(long keyId) {
@@ -241,7 +241,7 @@ public class PGPMain {
             }
             realId = masterKey.getKeyID();
         }
-        CachedPassPhrase cpp = mPassPhraseCache.get(realId);
+        CachedPassphrase cpp = mPassPhraseCache.get(realId);
         if (cpp == null) {
             return null;
         }
@@ -255,7 +255,7 @@ public class PGPMain {
         long realTtl = ttl * 1000;
         long now = new Date().getTime();
         Vector<Long> oldKeys = new Vector<Long>();
-        for (Map.Entry<Long, CachedPassPhrase> pair : mPassPhraseCache.entrySet()) {
+        for (Map.Entry<Long, CachedPassphrase> pair : mPassPhraseCache.entrySet()) {
             long lived = now - pair.getValue().timestamp;
             if (lived >= realTtl) {
                 oldKeys.add(pair.getKey());
@@ -1516,7 +1516,7 @@ public class PGPMain {
         if (dataChunk instanceof PGPOnePassSignatureList) {
             if (progress != null)
                 progress.setProgress(R.string.progress_processingSignature, currentProgress, 100);
-            returnData.putBoolean(ApgService.EXTRA_SIGNATURE, true);
+            returnData.putBoolean(ApgService.RESULT_SIGNATURE, true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
@@ -1534,12 +1534,12 @@ public class PGPMain {
                     if (sigKeyRing != null) {
                         userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
                     }
-                    returnData.putString(ApgService.EXTRA_SIGNATURE_USER_ID, userId);
+                    returnData.putString(ApgService.RESULT_SIGNATURE_USER_ID, userId);
                     break;
                 }
             }
 
-            returnData.putLong(ApgService.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
+            returnData.putLong(ApgService.RESULT_SIGNATURE_KEY_ID, signatureKeyId);
 
             if (signature != null) {
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
@@ -1550,7 +1550,7 @@ public class PGPMain {
                 // deprecated method:
                 // signature.initVerify(signatureKey, new BouncyCastleProvider());
             } else {
-                returnData.putBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN, true);
+                returnData.putBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN, true);
             }
 
             dataChunk = plainFact.nextObject();
@@ -1587,7 +1587,7 @@ public class PGPMain {
                     try {
                         signature.update(buffer, 0, n);
                     } catch (SignatureException e) {
-                        returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, false);
+                        returnData.putBoolean(ApgService.RESULT_SIGNATURE_SUCCESS, false);
                         signature = null;
                     }
                 }
@@ -1610,9 +1610,9 @@ public class PGPMain {
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
-                    returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, true);
+                    returnData.putBoolean(ApgService.RESULT_SIGNATURE_SUCCESS, true);
                 } else {
-                    returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, false);
+                    returnData.putBoolean(ApgService.RESULT_SIGNATURE_SUCCESS, false);
                 }
             }
         }
@@ -1667,7 +1667,7 @@ public class PGPMain {
         byte[] clearText = out.toByteArray();
         outStream.write(clearText);
 
-        returnData.putBoolean(ApgService.EXTRA_SIGNATURE, true);
+        returnData.putBoolean(ApgService.RESULT_SIGNATURE, true);
 
         if (progress != null)
             progress.setProgress(R.string.progress_processingSignature, 60, 100);
@@ -1709,15 +1709,15 @@ public class PGPMain {
                 if (sigKeyRing != null) {
                     userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
                 }
-                returnData.putString(ApgService.EXTRA_SIGNATURE_USER_ID, userId);
+                returnData.putString(ApgService.RESULT_SIGNATURE_USER_ID, userId);
                 break;
             }
         }
 
-        returnData.putLong(ApgService.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
+        returnData.putLong(ApgService.RESULT_SIGNATURE_KEY_ID, signatureKeyId);
 
         if (signature == null) {
-            returnData.putBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN, true);
+            returnData.putBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN, true);
             if (progress != null)
                 progress.setProgress(R.string.progress_done, 100, 100);
             return returnData;
@@ -1748,7 +1748,7 @@ public class PGPMain {
             } while (lookAhead != -1);
         }
 
-        returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, signature.verify());
+        returnData.putBoolean(ApgService.RESULT_SIGNATURE_SUCCESS, signature.verify());
 
         if (progress != null)
             progress.setProgress(R.string.progress_done, 100, 100);

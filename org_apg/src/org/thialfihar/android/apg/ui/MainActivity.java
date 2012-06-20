@@ -22,7 +22,6 @@ import java.security.Security;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPMain;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;

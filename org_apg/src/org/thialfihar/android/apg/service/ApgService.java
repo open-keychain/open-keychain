@@ -75,40 +75,40 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     // keys for data bundle
 
     // encrypt
-    public static final String SECRET_KEY_ID = "secret_key_id";
-    public static final String USE_ASCII_AMOR = "use_ascii_amor";
-    public static final String ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
-    public static final String SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String COMPRESSION_ID = "compression_id";
-    public static final String GENERATE_SIGNATURE = "generate_signature";
-    public static final String SIGN_ONLY = "sign_only";
-    public static final String MESSAGE_BYTES = "message_bytes";
-    public static final String INPUT_FILE = "input_file";
-    public static final String OUTPUT_FILE = "output_file";
-    public static final String PROVIDER_URI = "provider_uri";
+    public static final String SECRET_KEY_ID = "secretKeyId";
+    public static final String USE_ASCII_AMOR = "useAsciiAmor";
+    public static final String ENCRYPTION_KEYS_IDS = "encryptionKeysIds";
+    public static final String SIGNATURE_KEY_ID = "signatureKeyId";
+    public static final String COMPRESSION_ID = "compressionId";
+    public static final String GENERATE_SIGNATURE = "generateSignature";
+    public static final String SIGN_ONLY = "signOnly";
+    public static final String MESSAGE_BYTES = "messageBytes";
+    public static final String INPUT_FILE = "inputFile";
+    public static final String OUTPUT_FILE = "outputFile";
+    public static final String PROVIDER_URI = "providerUri";
 
     // decrypt
-    public static final String SIGNED_ONLY = "signed_only";
-    public static final String RETURN_BYTES = "return_binary";
-    public static final String CIPHERTEXT_BYTES = "ciphertext_bytes";
-    public static final String ASSUME_SYMMETRIC = "assume_symmetric";
+    public static final String SIGNED_ONLY = "signedOnly";
+    public static final String RETURN_BYTES = "returnBinary";
+    public static final String CIPHERTEXT_BYTES = "ciphertextBytes";
+    public static final String ASSUME_SYMMETRIC = "assumeSymmetric";
 
     // edit keys
-    public static final String NEW_PASSPHRASE = "new_passphrase";
-    public static final String CURRENT_PASSPHRASE = "current_passphrase";
-    public static final String USER_IDS = "user_ids";
+    public static final String NEW_PASSPHRASE = "newPassphrase";
+    public static final String CURRENT_PASSPHRASE = "currentPassphrase";
+    public static final String USER_IDS = "userIds";
     public static final String KEYS = "keys";
-    public static final String KEYS_USAGES = "keys_usages";
-    public static final String MASTER_KEY_ID = "master_key_id";
+    public static final String KEYS_USAGES = "keysUsages";
+    public static final String MASTER_KEY_ID = "masterKeyId";
 
     // generate key
     public static final String ALGORITHM = "algorithm";
     public static final String KEY_SIZE = "key_size";
     public static final String SYMMETRIC_PASSPHRASE = "passphrase";
-    public static final String MASTER_KEY = "master_key";
+    public static final String MASTER_KEY = "masterKey";
 
     // delete file securely
-    public static final String DELETE_FILE = "delete_file";
+    public static final String DELETE_FILE = "deleteFile";
 
     // possible EXTRA_ACTIONs
     public static final int ACTION_ENCRYPT_SIGN_BYTES = 10;
@@ -127,24 +127,24 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // possible data keys as result
     // keys
-    public static final String RESULT_NEW_KEY = "new_key";
-    public static final String RESULT_NEW_KEY2 = "new_key2";
+    public static final String RESULT_NEW_KEY = "newKey";
+    public static final String RESULT_NEW_KEY2 = "newKey2";
 
     // encrypt
-    public static final String RESULT_SIGNATURE_DATA = "signature_data";
-    public static final String RESULT_SIGNATURE_TEXT = "signature_text";
-    public static final String RESULT_ENCRYPTED_MESSAGE = "encrypted_message";
-    public static final String RESULT_ENCRYPTED_DATA = "encrypted_data";
-    public static final String RESULT_URI = "result_uri";
+    public static final String RESULT_SIGNATURE_DATA = "signatureData";
+    public static final String RESULT_SIGNATURE_TEXT = "signatureText";
+    public static final String RESULT_ENCRYPTED_MESSAGE = "encryptedMessage";
+    public static final String RESULT_ENCRYPTED_DATA = "encryptedData";
+    public static final String RESULT_URI = "resultUri";
 
     // decrypt
-    public static final String RESULT_DECRYPTED_MESSAGE = "decrypted_message";
-    public static final String RESULT_DECRYPTED_DATA = "decrypted_data";
-    public static final String EXTRA_SIGNATURE = "signature";
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String EXTRA_SIGNATURE_USER_ID = "signature_user_id";
-    public static final String EXTRA_SIGNATURE_SUCCESS = "signature_success";
-    public static final String EXTRA_SIGNATURE_UNKNOWN = "signature_unknown";
+    public static final String RESULT_DECRYPTED_MESSAGE = "decryptedMessage";
+    public static final String RESULT_DECRYPTED_DATA = "decryptedData";
+    public static final String RESULT_SIGNATURE = "signature";
+    public static final String RESULT_SIGNATURE_KEY_ID = "signatureKeyId";
+    public static final String RESULT_SIGNATURE_USER_ID = "signatureUserId";
+    public static final String RESULT_SIGNATURE_SUCCESS = "signatureSuccess";
+    public static final String RESULT_SIGNATURE_UNKNOWN = "signatureUnknown";
 
     Messenger mMessenger;
 
@@ -197,8 +197,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 long masterKeyId = data.getLong(MASTER_KEY_ID);
 
                 /* Operation */
-                PGPMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId,
-                        oldPassPhrase, newPassPhrase, this);
+                PGPMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
+                        newPassPhrase, this);
                 PGPMain.setCachedPassPhrase(masterKeyId, newPassPhrase);
 
                 /* Output */
@@ -416,7 +416,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 int compressionId = data.getInt(COMPRESSION_ID);
                 boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
                 boolean signOnly = data.getBoolean(SIGN_ONLY);
-                
+
                 /* Operation */
                 // InputStream
                 InputStream in = getContentResolver().openInputStream(providerUri);
@@ -429,8 +429,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     while (true) {
                         streamFilename = PGPMain.generateRandomString(32);
                         if (streamFilename == null) {
-                            throw new PGPMain.GeneralException(
-                                    "couldn't generate random file name");
+                            throw new PGPMain.GeneralException("couldn't generate random file name");
                         }
                         openFileInput(streamFilename).close();
                     }
@@ -585,7 +584,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 }
 
                 outStream.close();
-                
+
                 /* Output */
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -613,8 +612,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     while (true) {
                         streamFilename = PGPMain.generateRandomString(32);
                         if (streamFilename == null) {
-                            throw new PGPMain.GeneralException(
-                                    "couldn't generate random file name");
+                            throw new PGPMain.GeneralException("couldn't generate random file name");
                         }
                         openFileInput(streamFilename).close();
                     }
