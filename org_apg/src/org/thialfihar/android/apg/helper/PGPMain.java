@@ -53,14 +53,18 @@ import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
+import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
-import org.spongycastle.openpgp.operator.PublicKeyKeyEncryptionMethodGenerator;
+import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
+import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
+import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
@@ -987,14 +991,18 @@ public class PGPMain {
         if (signatureKeyId != Id.key.none) {
             if (progress != null)
                 progress.setProgress(R.string.progress_preparingSignature, 10, 100);
+
+            // content signer based on signing key algorithm and choosen hash algorithm
+            JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
+                    signingKey.getPublicKey().getAlgorithm(), hashAlgorithm)
+                    .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
+
             if (forceV3Signature) {
-                signatureV3Generator = new PGPV3SignatureGenerator(signingKey.getPublicKey()
-                        .getAlgorithm(), hashAlgorithm, new BouncyCastleProvider());
-                signatureV3Generator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
+                signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
+                signatureV3Generator.init(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
             } else {
-                signatureGenerator = new PGPSignatureGenerator(signingKey.getPublicKey()
-                        .getAlgorithm(), hashAlgorithm, new BouncyCastleProvider());
-                signatureGenerator.initSign(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
+                signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+                signatureGenerator.init(PGPSignature.BINARY_DOCUMENT, signaturePrivateKey);
 
                 String userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(signingKeyRing));
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
@@ -1109,16 +1117,17 @@ public class PGPMain {
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
 
+        // content signer based on signing key algorithm and choosen hash algorithm
+        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(signingKey
+                .getPublicKey().getAlgorithm(), hashAlgorithm)
+                .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
+
         if (forceV3Signature) {
-            signatureV3Generator = new PGPV3SignatureGenerator(signingKey.getPublicKey()
-                    .getAlgorithm(), hashAlgorithm, new BouncyCastleProvider());
-            signatureV3Generator
-                    .initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
+            signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
+            signatureV3Generator.init(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
         } else {
-            signatureGenerator = new PGPSignatureGenerator(
-                    signingKey.getPublicKey().getAlgorithm(), hashAlgorithm,
-                    new BouncyCastleProvider());
-            signatureGenerator.initSign(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
+            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+            signatureGenerator.init(PGPSignature.CANONICAL_TEXT_DOCUMENT, signaturePrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             String userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(signingKeyRing));
@@ -1227,15 +1236,18 @@ public class PGPMain {
             type = PGPSignature.BINARY_DOCUMENT;
         }
 
+        // content signer based on signing key algorithm and choosen hash algorithm
+        JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(signingKey
+                .getPublicKey().getAlgorithm(), hashAlgorithm)
+                .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
+
         if (forceV3Signature) {
-            signatureV3Generator = new PGPV3SignatureGenerator(signingKey.getPublicKey()
-                    .getAlgorithm(), hashAlgorithm, new BouncyCastleProvider());
-            signatureV3Generator.initSign(type, signaturePrivateKey);
+            signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
+            signatureV3Generator.init(type, signaturePrivateKey);
+
         } else {
-            signatureGenerator = new PGPSignatureGenerator(
-                    signingKey.getPublicKey().getAlgorithm(), hashAlgorithm,
-                    new BouncyCastleProvider());
-            signatureGenerator.initSign(type, signaturePrivateKey);
+            signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
+            signatureGenerator.init(type, signaturePrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             String userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(signingKeyRing));
@@ -1419,7 +1431,17 @@ public class PGPMain {
 
             if (progress != null)
                 progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
-            clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
+
+            PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
+                    .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build();
+            PBEDataDecryptorFactory decryptorFactory = new JcePBEDataDecryptorFactoryBuilder(
+                    digestCalcProvider).setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(
+                    passPhrase.toCharArray());
+
+            clear = pbe.getDataStream(decryptorFactory);
+
+            // deprecated method:
+            // clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
         } else {
@@ -1463,7 +1485,14 @@ public class PGPMain {
             currentProgress += 5;
             if (progress != null)
                 progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
-            clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
+
+            PublicKeyDataDecryptorFactory decryptorFactory = new JcePublicKeyDataDecryptorFactoryBuilder()
+                    .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(privateKey);
+
+            clear = pbe.getDataStream(decryptorFactory);
+
+            // deprecated method:
+            // clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
         }
@@ -1513,7 +1542,13 @@ public class PGPMain {
             returnData.putLong(ApgService.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
 
             if (signature != null) {
-                signature.initVerify(signatureKey, new BouncyCastleProvider());
+                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                        .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
+
+                signature.init(contentVerifierBuilderProvider, signatureKey);
+
+                // deprecated method:
+                // signature.initVerify(signatureKey, new BouncyCastleProvider());
             } else {
                 returnData.putBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN, true);
             }
@@ -1688,7 +1723,13 @@ public class PGPMain {
             return returnData;
         }
 
-        signature.initVerify(signatureKey, new BouncyCastleProvider());
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
+
+        signature.init(contentVerifierBuilderProvider, signatureKey);
+
+        // deprecated method:
+        // signature.initVerify(signatureKey, new BouncyCastleProvider());
 
         InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
 
