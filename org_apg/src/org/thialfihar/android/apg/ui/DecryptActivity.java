@@ -21,6 +21,7 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
@@ -299,7 +300,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             }
             if (textData != null) {
                 Log.d(Constants.TAG, "textData null, matching text ...");
-                Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(textData);
+                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
                     Log.d(Constants.TAG, "PGP_MESSAGE matched");
                     textData = matcher.group(1);
@@ -307,7 +308,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     textData = textData.replaceAll("\\xa0", " ");
                     mMessage.setText(textData);
                 } else {
-                    matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(textData);
+                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(textData);
                     if (matcher.matches()) {
                         Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
                         textData = matcher.group(1);
@@ -350,14 +351,14 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 mData = extras.getByteArray(EXTRA_DATA);
                 String data = extras.getString(EXTRA_TEXT);
                 if (data != null) {
-                    Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(data);
+                    Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
                     if (matcher.matches()) {
                         data = matcher.group(1);
                         // replace non breakable spaces
                         data = data.replaceAll("\\xa0", " ");
                         mMessage.setText(data);
                     } else {
-                        matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(data);
+                        matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
                         if (matcher.matches()) {
                             data = matcher.group(1);
                             // replace non breakable spaces
@@ -381,9 +382,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
             String data = "";
             if (clipboardText != null) {
-                Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(clipboardText);
+                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(clipboardText);
                 if (!matcher.matches()) {
-                    matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(clipboardText);
+                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(clipboardText);
                 }
                 if (matcher.matches()) {
                     data = matcher.group(1);
@@ -399,7 +400,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (mSignatureKeyId == 0) {
                     return;
                 }
-                PGPPublicKeyRing key = PGPHelper.getPublicKeyRing(mSignatureKeyId);
+                PGPPublicKeyRing key = PGPMain.getPublicKeyRing(mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
                     intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
@@ -506,7 +507,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         if (mDecryptTarget == Id.target.message) {
             String messageData = mMessage.getText().toString();
-            Matcher matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(messageData);
+            Matcher matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(messageData);
             if (matcher.matches()) {
                 mSignedOnly = true;
                 decryptStart();
@@ -523,7 +524,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         // if we need a symmetric passphrase or a passphrase to use a sekret key ask for it
         if (getSecretKeyId() == Id.key.symmetric
-                || PGPHelper.getCachedPassPhrase(getSecretKeyId()) == null) {
+                || PGPMain.getCachedPassPhrase(getSecretKeyId()) == null) {
             // showDialog(Id.dialog.pass_phrase);
             showPassphraseDialog();
         } else {
@@ -563,7 +564,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PGPHelper.GeneralException e) {
+        } catch (PGPMain.GeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
@@ -609,15 +610,15 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         try {
             try {
-                setSecretKeyId(PGPHelper.getDecryptionKeyId(this, inStream));
+                setSecretKeyId(PGPMain.getDecryptionKeyId(this, inStream));
                 if (getSecretKeyId() == Id.key.none) {
-                    throw new PGPHelper.GeneralException(getString(R.string.error_noSecretKeyFound));
+                    throw new PGPMain.GeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
-            } catch (PGPHelper.NoAsymmetricEncryptionException e) {
+            } catch (PGPMain.NoAsymmetricEncryptionException e) {
                 setSecretKeyId(Id.key.symmetric);
-                if (!PGPHelper.hasSymmetricEncryption(this, inStream)) {
-                    throw new PGPHelper.GeneralException(
+                if (!PGPMain.hasSymmetricEncryption(this, inStream)) {
+                    throw new PGPMain.GeneralException(
                             getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;

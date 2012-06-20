@@ -22,6 +22,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -269,7 +270,7 @@ public class KeyListActivity extends BaseActivity {
             mSelectedItem = -1;
             // TODO: better way to do this?
             String userId = "<unknown>";
-            Object keyRing = PGPHelper.getKeyRing(keyRingId);
+            Object keyRing = PGPMain.getKeyRing(keyRingId);
             if (keyRing != null) {
                 if (keyRing instanceof PGPPublicKeyRing) {
                     userId = PGPHelper.getMainUserIdSafe(this,
@@ -344,12 +345,12 @@ public class KeyListActivity extends BaseActivity {
             }
 
             if (mTask == Id.task.import_keys) {
-                data = PGPHelper.importKeyRings(this, mKeyType, new InputData(importInputStream,
+                data = PGPMain.importKeyRings(this, mKeyType, new InputData(importInputStream,
                         size), this);
             } else {
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {
-                    keyRingIds = PGPHelper
+                    keyRingIds = PGPMain
                             .getKeyRingIds(mKeyType == Id.type.public_key ? Id.database.type_public
                                     : Id.database.type_secret);
                 } else {
@@ -357,7 +358,7 @@ public class KeyListActivity extends BaseActivity {
                     keyRingIds.add(keyRingId);
                     mSelectedItem = -1;
                 }
-                data = PGPHelper.exportKeyRings(this, keyRingIds, exportOutputStream, this);
+                data = PGPMain.exportKeyRings(this, keyRingIds, exportOutputStream, this);
             }
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
@@ -365,7 +366,7 @@ public class KeyListActivity extends BaseActivity {
             error = "" + e;
         } catch (PGPException e) {
             error = "" + e;
-        } catch (PGPHelper.GeneralException e) {
+        } catch (PGPMain.GeneralException e) {
             error = "" + e;
         }
 
@@ -386,7 +387,7 @@ public class KeyListActivity extends BaseActivity {
     }
 
     protected void deleteKey(int keyRingId) {
-        PGPHelper.deleteKey(keyRingId);
+        PGPMain.deleteKey(keyRingId);
         refreshList();
     }
 
@@ -527,7 +528,7 @@ public class KeyListActivity extends BaseActivity {
             mSearchString = searchString;
 
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mDatabase = PGPHelper.getDatabase().db();
+            mDatabase = PGPMain.getDatabase().db();
             SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
             qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "("
                     + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."

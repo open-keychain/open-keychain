@@ -32,6 +32,7 @@ import org.thialfihar.android.apg.deprecated.IApgService2.Stub;
 import org.thialfihar.android.apg.Id.database;
 import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -204,7 +205,7 @@ public class ApgService2 extends PassphraseCacheService {
             typeWhere = KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?";
             typeVal = new String[] { "" + pParams.get("key_type") };
         }
-        return qb.query(PGPHelper.getDatabase().db(), (String[]) pParams.get("columns"), typeWhere,
+        return qb.query(PGPMain.getDatabase().db(), (String[]) pParams.get("columns"), typeWhere,
                 typeVal, null, null, orderBy);
     }
 
@@ -427,7 +428,7 @@ public class ApgService2 extends PassphraseCacheService {
     }
 
     private boolean prepareArgs(String pCall, Bundle pArgs, Bundle pReturn) {
-        PGPHelper.initialize(getBaseContext());
+        PGPMain.initialize(getBaseContext());
 
         /* add default return values for all functions */
         addDefaultReturns(pReturn);
@@ -493,7 +494,7 @@ public class ApgService2 extends PassphraseCacheService {
         if (LOCAL_LOGV)
             Log.v(TAG, "About to encrypt");
         try {
-            PGPHelper.encrypt(getBaseContext(), // context
+            PGPMain.encrypt(getBaseContext(), // context
                     in, // input stream
                     out, // output stream
                     pArgs.getBoolean(arg.ARMORED_OUTPUT.name()), // ARMORED_OUTPUT
@@ -625,7 +626,7 @@ public class ApgService2 extends PassphraseCacheService {
             if (LOCAL_LOGV)
                 Log.v(TAG, "About to decrypt");
             try {
-                PGPHelper.decrypt(getBaseContext(), in, out, passphrase, null, // progress
+                PGPMain.decrypt(getBaseContext(), in, out, passphrase, null, // progress
                         pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
                 );
             } catch (Exception e) {

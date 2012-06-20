@@ -20,6 +20,7 @@ import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 
 import com.actionbarsherlock.view.Menu;
@@ -146,11 +147,11 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     public void checkPassPhraseAndEdit() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        String passPhrase = PGPHelper.getCachedPassPhrase(keyId);
+        String passPhrase = PGPMain.getCachedPassPhrase(keyId);
         if (passPhrase == null) {
             showDialog(Id.dialog.pass_phrase);
         } else {
-            PGPHelper.setEditPassPhrase(passPhrase);
+            PGPMain.setEditPassPhrase(passPhrase);
             editKey();
         }
     }
@@ -158,12 +159,12 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     public void passPhraseCallback(long keyId, String passPhrase) {
         super.passPhraseCallback(keyId, passPhrase);
-        PGPHelper.setEditPassPhrase(passPhrase);
+        PGPMain.setEditPassPhrase(passPhrase);
         editKey();
     }
 
     private void createKey() {
-        PGPHelper.setEditPassPhrase("");
+        PGPMain.setEditPassPhrase("");
         Intent intent = new Intent(EditKeyActivity.ACTION_CREATE_KEY);
         startActivityForResult(intent, Id.message.create_key);
     }

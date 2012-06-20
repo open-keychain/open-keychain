@@ -45,6 +45,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 
 import android.text.Html;
 
@@ -223,7 +224,7 @@ public class HkpKeyServer extends KeyServer {
             HttpEntity entity = response.getEntity();
             InputStream is = entity.getContent();
             String data = readAll(is, EntityUtils.getContentCharSet(entity));
-            Matcher matcher = PGPHelper.PGP_PUBLIC_KEY.matcher(data);
+            Matcher matcher = PGPMain.PGP_PUBLIC_KEY.matcher(data);
             if (matcher.find()) {
                 return matcher.group(1);
             }

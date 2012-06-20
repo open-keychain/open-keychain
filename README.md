@@ -27,7 +27,6 @@ Fork APG and do a merge request. I will merge your changes back into the main pr
 1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
 2. New -> Android Project -> Create project from existing source, choose org_apg
 3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
-4. Optional (As of Android Tools r17 the libraries are automatically added from the libs folder): Add Java libs (Properties of org_apg -> Java Build Path -> Libraries -> add all libraries from libs folder in org_apg)
 5. Now APG+ can be build
 
 # Libraries
@@ -35,7 +34,7 @@ Fork APG and do a merge request. I will merge your changes back into the main pr
 The Libraries are provided in the git repository.
 
 * ActionBarSherlock to provide an ActionBar for Android < 3.0
-* Spongy Castle as the main Crypto Lib
+* Spongy Castle Crypto Lib (Android version of Bouncy Castle)
 * android-support-v4.jar: Compatibility Lib
 * barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
 

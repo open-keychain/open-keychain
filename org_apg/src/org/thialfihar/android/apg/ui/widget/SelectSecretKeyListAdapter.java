@@ -19,6 +19,7 @@ import java.util.Date;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -48,7 +49,7 @@ public class SelectSecretKeyListAdapter extends BaseAdapter {
 
         mActivity = activity;
         mParent = parent;
-        mDatabase = PGPHelper.getDatabase().db();
+        mDatabase = PGPMain.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         long now = new Date().getTime() / 1000;

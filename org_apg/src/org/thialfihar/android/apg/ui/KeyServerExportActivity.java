@@ -21,7 +21,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 
 import com.actionbarsherlock.view.MenuItem;
@@ -110,9 +110,9 @@ public class KeyServerExportActivity extends BaseActivity {
 
         int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
 
-        PGPKeyRing keyring = PGPHelper.getKeyRing(keyRingId);
+        PGPKeyRing keyring = PGPMain.getKeyRing(keyRingId);
         if (keyring != null && keyring instanceof PGPPublicKeyRing) {
-            boolean uploaded = PGPHelper.uploadKeyRingToServer(server, (PGPPublicKeyRing) keyring);
+            boolean uploaded = PGPMain.uploadKeyRingToServer(server, (PGPPublicKeyRing) keyring);
             if (!uploaded) {
                 error = "Unable to export key to selected server";
             }

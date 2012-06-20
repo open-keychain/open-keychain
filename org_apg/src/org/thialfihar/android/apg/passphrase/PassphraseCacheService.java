@@ -14,7 +14,7 @@
 
 package org.thialfihar.android.apg.passphrase;
 
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 
 import android.app.Service;
@@ -47,7 +47,7 @@ public class PassphraseCacheService extends Service {
                 delay = 60000;
             }
 
-            delay = PGPHelper.cleanUpCache(mPassPhraseCacheTtl, delay);
+            delay = PGPMain.cleanUpCache(mPassPhraseCacheTtl, delay);
             // don't check too often, even if we were close
             if (delay < 5000) {
                 delay = 5000;

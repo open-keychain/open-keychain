@@ -19,7 +19,6 @@ package org.thialfihar.android.apg.ui.dialog;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.FileHelper;
-import org.thialfihar.android.apg.helper.OtherHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;

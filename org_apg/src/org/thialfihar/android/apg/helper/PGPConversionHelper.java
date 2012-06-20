@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
@@ -54,7 +55,7 @@ public class PGPConversionHelper {
     }
 
     /**
-     * Convert from byte[] to ArrayList<PGPSecretKey>
+     * Convert from byte[] to PGPSecretKeyRing
      * 
      * @param keysBytes
      * @return
@@ -64,6 +65,26 @@ public class PGPConversionHelper {
         PGPSecretKeyRing keyRing = null;
         try {
             if ((keyRing = (PGPSecretKeyRing) factory.nextObject()) == null) {
+                Log.e(Constants.TAG, "No keys given!");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return keyRing;
+    }
+    
+    /**
+     * Convert from byte[] to PGPPublicKeyRing
+     * 
+     * @param keysBytes
+     * @return
+     */
+    public static PGPPublicKeyRing BytesToPGPPublicKeyRing(byte[] keysBytes) {
+        PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
+        PGPPublicKeyRing keyRing = null;
+        try {
+            if ((keyRing = (PGPPublicKeyRing) factory.nextObject()) == null) {
                 Log.e(Constants.TAG, "No keys given!");
             }
         } catch (IOException e) {

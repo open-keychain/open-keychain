@@ -20,7 +20,7 @@ import java.util.Vector;
 
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.ui.widget.Editor;
 import org.thialfihar.android.apg.ui.widget.KeyServerEditor;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;

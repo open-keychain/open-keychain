@@ -33,9 +33,9 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.FileHelper;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.helper.PGPHelper.GeneralException;
+import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.util.InputData;
@@ -197,9 +197,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 long masterKeyId = data.getLong(MASTER_KEY_ID);
 
                 /* Operation */
-                PGPHelper.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId,
+                PGPMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId,
                         oldPassPhrase, newPassPhrase, this);
-                PGPHelper.setCachedPassPhrase(masterKeyId, newPassPhrase);
+                PGPMain.setCachedPassPhrase(masterKeyId, newPassPhrase);
 
                 /* Output */
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
@@ -223,7 +223,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 }
 
                 /* Operation */
-                PGPSecretKeyRing newKeyRing = PGPHelper.createKey(this, algorithm, keysize,
+                PGPSecretKeyRing newKeyRing = PGPMain.createKey(this, algorithm, keysize,
                         passphrase, masterKey);
 
                 /* Output */
@@ -244,10 +244,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
 
                 /* Operation */
-                PGPSecretKeyRing masterKeyRing = PGPHelper.createKey(this, Id.choice.algorithm.rsa,
+                PGPSecretKeyRing masterKeyRing = PGPMain.createKey(this, Id.choice.algorithm.rsa,
                         2048, passphrase, null);
 
-                PGPSecretKeyRing subKeyRing = PGPHelper.createKey(this, Id.choice.algorithm.rsa,
+                PGPSecretKeyRing subKeyRing = PGPMain.createKey(this, Id.choice.algorithm.rsa,
                         2048, passphrase, masterKeyRing.getSecretKey());
 
                 /* Output */
@@ -288,20 +288,20 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generate signature...");
-                    PGPHelper.generateSignature(this, inputData, outStream, useAsciiArmour, false,
-                            secretKeyId, PGPHelper.getCachedPassPhrase(secretKeyId), Preferences
+                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, false,
+                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(), this);
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
-                    PGPHelper.signText(this, inputData, outStream, secretKeyId, PGPHelper
+                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
                             .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
                             .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
                             .getForceV3Signatures(), this);
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    PGPHelper.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPHelper.getCachedPassPhrase(signatureKeyId), this,
+                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(),
                             compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
@@ -373,20 +373,20 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generate signature...");
-                    PGPHelper.generateSignature(this, inputData, outStream, useAsciiArmour, true,
-                            secretKeyId, PGPHelper.getCachedPassPhrase(secretKeyId), Preferences
+                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, true,
+                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(), this);
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
-                    PGPHelper.signText(this, inputData, outStream, secretKeyId, PGPHelper
+                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
                             .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
                             .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
                             .getForceV3Signatures(), this);
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    PGPHelper.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPHelper.getCachedPassPhrase(signatureKeyId), this,
+                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(),
                             compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
@@ -420,16 +420,16 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 // InputStream
                 InputStream in = getContentResolver().openInputStream(providerUri);
-                long inLength = PGPHelper.getLengthOfStream(in);
+                long inLength = PGPMain.getLengthOfStream(in);
                 InputData inputData = new InputData(in, inLength);
 
                 // OutputStream
                 String streamFilename = null;
                 try {
                     while (true) {
-                        streamFilename = PGPHelper.generateRandomString(32);
+                        streamFilename = PGPMain.generateRandomString(32);
                         if (streamFilename == null) {
-                            throw new PGPHelper.GeneralException(
+                            throw new PGPMain.GeneralException(
                                     "couldn't generate random file name");
                         }
                         openFileInput(streamFilename).close();
@@ -440,18 +440,18 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 FileOutputStream outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
 
                 if (generateSignature) {
-                    PGPHelper.generateSignature(this, inputData, outStream, useAsciiArmour, true,
-                            secretKeyId, PGPHelper.getCachedPassPhrase(secretKeyId), Preferences
+                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, true,
+                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(), this);
                 } else if (signOnly) {
-                    PGPHelper.signText(this, inputData, outStream, secretKeyId, PGPHelper
+                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
                             .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
                             .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
                             .getForceV3Signatures(), this);
                 } else {
-                    PGPHelper.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPHelper.getCachedPassPhrase(signatureKeyId), this,
+                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(),
                             compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
@@ -480,12 +480,12 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 /* Operation */
                 try {
-                    PGPHelper.deleteFileSecurely(this, new File(deleteFile), this);
+                    PGPMain.deleteFileSecurely(this, new File(deleteFile), this);
                 } catch (FileNotFoundException e) {
-                    throw new PGPHelper.GeneralException(getString(R.string.error_fileNotFound,
+                    throw new PGPMain.GeneralException(getString(R.string.error_fileNotFound,
                             deleteFile));
                 } catch (IOException e) {
-                    throw new PGPHelper.GeneralException(getString(R.string.error_fileDeleteFailed,
+                    throw new PGPMain.GeneralException(getString(R.string.error_fileDeleteFailed,
                             deleteFile));
                 }
 
@@ -518,10 +518,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 if (signedOnly) {
-                    resultData = PGPHelper.verifyText(this, inputData, outStream, this);
+                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
                 } else {
-                    resultData = PGPHelper.decrypt(this, inputData, outStream,
-                            PGPHelper.getCachedPassPhrase(secretKeyId), this,
+                    resultData = PGPMain.decrypt(this, inputData, outStream,
+                            PGPMain.getCachedPassPhrase(secretKeyId), this,
                             assumeSymmetricEncryption);
                 }
 
@@ -577,10 +577,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // verifyText and decrypt returning additional output values for the
                 // verification of signatures
                 if (signedOnly) {
-                    resultData = PGPHelper.verifyText(this, inputData, outStream, this);
+                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
                 } else {
-                    resultData = PGPHelper.decrypt(this, inputData, outStream,
-                            PGPHelper.getCachedPassPhrase(secretKeyId), this,
+                    resultData = PGPMain.decrypt(this, inputData, outStream,
+                            PGPMain.getCachedPassPhrase(secretKeyId), this,
                             assumeSymmetricEncryption);
                 }
 
@@ -604,16 +604,16 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 // InputStream
                 InputStream in = getContentResolver().openInputStream(providerUri);
-                long inLength = PGPHelper.getLengthOfStream(in);
+                long inLength = PGPMain.getLengthOfStream(in);
                 InputData inputData = new InputData(in, inLength);
 
                 // OutputStream
                 String streamFilename = null;
                 try {
                     while (true) {
-                        streamFilename = PGPHelper.generateRandomString(32);
+                        streamFilename = PGPMain.generateRandomString(32);
                         if (streamFilename == null) {
-                            throw new PGPHelper.GeneralException(
+                            throw new PGPMain.GeneralException(
                                     "couldn't generate random file name");
                         }
                         openFileInput(streamFilename).close();
@@ -628,10 +628,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // verifyText and decrypt returning additional output values for the
                 // verification of signatures
                 if (signedOnly) {
-                    resultData = PGPHelper.verifyText(this, inputData, outStream, this);
+                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
                 } else {
-                    resultData = PGPHelper.decrypt(this, inputData, outStream,
-                            PGPHelper.getCachedPassPhrase(secretKeyId), this,
+                    resultData = PGPMain.decrypt(this, inputData, outStream,
+                            PGPMain.getCachedPassPhrase(secretKeyId), this,
                             assumeSymmetricEncryption);
                 }
 

@@ -21,7 +21,7 @@ import java.util.Vector;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.ui.widget.SelectPublicKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;

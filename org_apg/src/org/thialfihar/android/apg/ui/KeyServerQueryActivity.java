@@ -21,6 +21,7 @@ import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.KeyServer.InsufficientQuery;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;

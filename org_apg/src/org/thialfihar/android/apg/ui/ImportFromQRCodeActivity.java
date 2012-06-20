@@ -24,6 +24,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.KeyServer.QueryException;
 import org.thialfihar.android.apg.R;
@@ -83,7 +84,7 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                                     .getPublicKey().getFingerprint());
                             if (expectedFingerprint.equals(actualFingerprint)) {
                                 // store the signed key in our local cache
-                                int retval = PGPHelper.storeKeyRingInCache(publicKeyRing);
+                                int retval = PGPMain.storeKeyRingInCache(publicKeyRing);
                                 if (retval != Id.return_value.ok
                                         && retval != Id.return_value.updated) {
                                     status.putString(EXTRA_ERROR,

@@ -19,7 +19,7 @@ package org.thialfihar.android.apg.ui.widget;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
@@ -259,7 +259,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         String passPhrase;
         if (mEditors.getChildCount() > 0) {
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
-            passPhrase = PGPHelper.getCachedPassPhrase(masterKey.getKeyID());
+            passPhrase = PGPMain.getCachedPassPhrase(masterKey.getKeyID());
 
             data.putByteArray(ApgService.MASTER_KEY,
                     PGPConversionHelper.PGPSecretKeyToBytes(masterKey));

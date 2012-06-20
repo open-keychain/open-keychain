@@ -22,6 +22,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgHandler;
@@ -256,7 +257,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         } else if (ACTION_EDIT_KEY.equals(mIntent.getAction())) {
             mActionBar.setTitle(R.string.title_editKey);
 
-            mCurrentPassPhrase = PGPHelper.getEditPassPhrase();
+            mCurrentPassPhrase = PGPMain.getEditPassPhrase();
             if (mCurrentPassPhrase == null) {
                 mCurrentPassPhrase = "";
             }
@@ -274,7 +275,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                     if (keyId != 0) {
                         PGPSecretKey masterKey = null;
-                        mKeyRing = PGPHelper.getSecretKeyRing(keyId);
+                        mKeyRing = PGPMain.getSecretKeyRing(keyId);
                         if (mKeyRing != null) {
                             masterKey = PGPHelper.getMasterKey(mKeyRing);
                             for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
@@ -420,7 +421,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         try {
             if (!isPassphraseSet()) {
-                throw new PGPHelper.GeneralException(this.getString(R.string.setAPassPhrase));
+                throw new PGPMain.GeneralException(this.getString(R.string.setAPassPhrase));
             }
 
             // Send all information needed to service to edit key in other thread
@@ -464,7 +465,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             // start service with intent
             startService(intent);
-        } catch (PGPHelper.GeneralException e) {
+        } catch (PGPMain.GeneralException e) {
             Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
                     Toast.LENGTH_SHORT).show();
         }
@@ -476,7 +477,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param userIdsView
      * @return
      */
-    private Vector<String> getUserIds(SectionView userIdsView) throws PGPHelper.GeneralException {
+    private Vector<String> getUserIds(SectionView userIdsView) throws PGPMain.GeneralException {
         Vector<String> userIds = new Vector<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
@@ -488,13 +489,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new PGPHelper.GeneralException(
+                throw new PGPMain.GeneralException(
                         this.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
-                throw new PGPHelper.GeneralException(
+                throw new PGPMain.GeneralException(
                         this.getString(R.string.error_userIdNeedsAnEmailAddress));
             } catch (UserIdEditor.InvalidEmailException e) {
-                throw new PGPHelper.GeneralException(e.getMessage());
+                throw new PGPMain.GeneralException(e.getMessage());
             }
 
             if (userId.equals("")) {
@@ -510,11 +511,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (userIds.size() == 0) {
-            throw new PGPHelper.GeneralException(getString(R.string.error_keyNeedsAUserId));
+            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsAUserId));
         }
 
         if (!gotMainUserId) {
-            throw new PGPHelper.GeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new PGPMain.GeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         return userIds;
@@ -526,13 +527,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<PGPSecretKey> getKeys(SectionView keysView) throws PGPHelper.GeneralException {
+    private Vector<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.GeneralException {
         Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PGPHelper.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -549,13 +550,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<Integer> getKeysUsages(SectionView keysView) throws PGPHelper.GeneralException {
+    private Vector<Integer> getKeysUsages(SectionView keysView) throws PGPMain.GeneralException {
         Vector<Integer> getKeysUsages = new Vector<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PGPHelper.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {

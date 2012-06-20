@@ -35,7 +35,7 @@ import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 
 import com.actionbarsherlock.view.MenuItem;
@@ -143,7 +143,7 @@ public class SignKeyActivity extends BaseActivity {
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = PGPHelper.getPublicKeyRing(pubKeyId);
+        PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
@@ -162,7 +162,7 @@ public class SignKeyActivity extends BaseActivity {
                 /*
                  * get the user's passphrase for this key (if required)
                  */
-                String passphrase = PGPHelper.getCachedPassPhrase(masterKeyId);
+                String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
                 if (passphrase == null) {
                     showDialog(Id.dialog.pass_phrase);
                     return; // bail out; need to wait until the user has entered the passphrase
@@ -212,16 +212,16 @@ public class SignKeyActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            String passphrase = PGPHelper.getCachedPassPhrase(masterKeyId);
+            String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
             if (passphrase == null || passphrase.length() <= 0) {
                 status.putString(EXTRA_ERROR, "Unable to obtain passphrase");
             } else {
-                PGPPublicKeyRing pubring = PGPHelper.getPublicKeyRing(pubKeyId);
+                PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
 
                 /*
                  * sign the incoming key
                  */
-                PGPSecretKey secretKey = PGPHelper.getSecretKey(masterKeyId);
+                PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
                 PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
                         BouncyCastleProvider.PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
@@ -247,11 +247,11 @@ public class SignKeyActivity extends BaseActivity {
                      * upload the newly signed key to the key server
                      */
 
-                    PGPHelper.uploadKeyRingToServer(server, pubring);
+                    PGPMain.uploadKeyRingToServer(server, pubring);
                 }
 
                 // store the signed key in our local cache
-                int retval = PGPHelper.storeKeyRingInCache(pubring);
+                int retval = PGPMain.storeKeyRingInCache(pubring);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
                     status.putString(EXTRA_ERROR, "Failed to store signed key in local cache");
                 }

@@ -23,6 +23,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -55,7 +56,7 @@ public class AskForPassphrase {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = PGPHelper.getMasterKey(PGPHelper.getSecretKeyRing(secretKeyId));
+            secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
                 alert.setTitle(R.string.title_keyNotFound);
                 alert.setMessage(context.getString(R.string.keyNotFound, secretKeyId));
@@ -111,7 +112,7 @@ public class AskForPassphrase {
                 }
                 
                 // cache again
-                PGPHelper.setCachedPassPhrase(keyId, passPhrase);
+                PGPMain.setCachedPassPhrase(keyId, passPhrase);
                 // return by callback
                 cb.passPhraseCallback(keyId, passPhrase);
             }
@@ -133,7 +134,7 @@ public class AskForPassphrase {
                     Log.d("APG", "Key has no passphrase!");
 
                     // cache null
-                    PGPHelper.setCachedPassPhrase(secretKey.getKeyID(), null);
+                    PGPMain.setCachedPassPhrase(secretKey.getKeyID(), null);
                     // return by callback
                     cb.passPhraseCallback(secretKey.getKeyID(), null);
 

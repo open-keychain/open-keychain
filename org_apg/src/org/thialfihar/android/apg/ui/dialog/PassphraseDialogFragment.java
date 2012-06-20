@@ -22,7 +22,8 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.PGPHelper.GeneralException;
+import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -68,7 +69,7 @@ public class PassphraseDialogFragment extends DialogFragment {
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
             if (!hasPassphrase(secretKeyId)) {
-                throw new PGPHelper.GeneralException("No passphrase! No passphrase dialog needed!");
+                throw new PGPMain.GeneralException("No passphrase! No passphrase dialog needed!");
             }
         }
 
@@ -91,7 +92,8 @@ public class PassphraseDialogFragment extends DialogFragment {
     private static boolean hasPassphrase(long secretKeyId) {
         // check if the key has no passphrase
         try {
-            PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPHelper.getSecretKeyRing(secretKeyId));
+            PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPMain
+                    .getSecretKeyRing(secretKeyId));
 
             Log.d(Constants.TAG, "Check if key has no passphrase...");
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -101,7 +103,7 @@ public class PassphraseDialogFragment extends DialogFragment {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
 
                 // cache empty passphrase
-                PGPHelper.setCachedPassPhrase(secretKey.getKeyID(), "");
+                PGPMain.setCachedPassPhrase(secretKey.getKeyID(), "");
 
                 return false;
             }
@@ -132,7 +134,7 @@ public class PassphraseDialogFragment extends DialogFragment {
             secretKey = null;
             alert.setMessage(getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = PGPHelper.getMasterKey(PGPHelper.getSecretKeyRing(secretKeyId));
+            secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
                 alert.setTitle(R.string.title_keyNotFound);
                 alert.setMessage(getString(R.string.keyNotFound, secretKeyId));
@@ -189,7 +191,7 @@ public class PassphraseDialogFragment extends DialogFragment {
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PGPHelper.setCachedPassPhrase(keyId, passPhrase);
+                PGPMain.setCachedPassPhrase(keyId, passPhrase);
 
                 sendMessageToHandler(MESSAGE_OKAY);
             }

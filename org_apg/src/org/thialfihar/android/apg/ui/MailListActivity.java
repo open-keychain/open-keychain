@@ -20,7 +20,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 
 import android.app.ListActivity;
@@ -121,11 +121,11 @@ public class MailListActivity extends ListActivity {
                 String data = messageCursor.getString(bodyIndex);
                 data = Html.fromHtml(data).toString();
                 boolean signedOnly = false;
-                Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(data);
+                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
                     data = matcher.group(1);
                 } else {
-                    matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(data);
+                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
                     if (matcher.matches()) {
                         data = matcher.group(1);
                         signedOnly = true;
