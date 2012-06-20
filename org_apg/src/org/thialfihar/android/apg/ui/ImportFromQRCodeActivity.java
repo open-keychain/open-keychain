@@ -43,6 +43,11 @@ public class ImportFromQRCodeActivity extends BaseActivity {
     public static final String IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_FROM_QR_CODE";
 
+    public static final String EXTRA_KEY_ID = "keyId";
+
+    // TODO: remove when using new intentservice:
+    public static final String EXTRA_ERROR = "error";
+
     private static final String TAG = "ImportFromQRCodeActivity";
 
     private final Bundle status = new Bundle();
@@ -64,12 +69,8 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                     try {
                         // TODO: display some sort of spinner here while the user waits
 
-                        HkpKeyServer server = new HkpKeyServer(mPreferences.getKeyServers()[0]); // TODO:
-                                                                                                 // there
-                                                                                                 // should
-                                                                                                 // be
-                                                                                                 // only
-                                                                                                 // 1
+                        // TODO: there should be only 1
+                        HkpKeyServer server = new HkpKeyServer(mPreferences.getKeyServers()[0]);
                         String encodedKey = server.get(keyId);
 
                         PGPKeyRing keyring = PGPHelper.decodeKeyRing(new ByteArrayInputStream(
@@ -85,27 +86,27 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                                 int retval = PGPHelper.storeKeyRingInCache(publicKeyRing);
                                 if (retval != Id.return_value.ok
                                         && retval != Id.return_value.updated) {
-                                    status.putString(PGPHelper.EXTRA_ERROR,
+                                    status.putString(EXTRA_ERROR,
                                             "Failed to store signed key in local cache");
                                 } else {
                                     Intent intent = new Intent(ImportFromQRCodeActivity.this,
                                             SignKeyActivity.class);
-                                    intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
+                                    intent.putExtra(EXTRA_KEY_ID, keyId);
                                     startActivityForResult(intent, Id.request.sign_key);
                                 }
                             } else {
                                 status.putString(
-                                        PGPHelper.EXTRA_ERROR,
+                                        EXTRA_ERROR,
                                         "Scanned fingerprint does NOT match the fingerprint of the received key.  You shouldnt trust this key.");
                             }
                         }
                     } catch (QueryException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
-                        status.putString(PGPHelper.EXTRA_ERROR, "Failed to query KeyServer");
+                        status.putString(EXTRA_ERROR, "Failed to query KeyServer");
                         status.putInt(Constants.extras.STATUS, Id.message.done);
                     } catch (IOException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
-                        status.putString(PGPHelper.EXTRA_ERROR, "Failed to query KeyServer");
+                        status.putString(EXTRA_ERROR, "Failed to query KeyServer");
                         status.putInt(Constants.extras.STATUS, Id.message.done);
                     }
                 }
@@ -162,7 +163,7 @@ public class ImportFromQRCodeActivity extends BaseActivity {
         super.doneCallback(msg);
 
         Bundle data = msg.getData();
-        String error = data.getString(PGPHelper.EXTRA_ERROR);
+        String error = data.getString(EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();

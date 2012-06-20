@@ -275,7 +275,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(PGPHelper.EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

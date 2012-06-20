@@ -195,7 +195,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
                     public boolean onPreferenceClick(Preference preference) {
                         Intent intent = new Intent(PreferencesActivity.this,
                                 PreferencesKeyServerActivity.class);
-                        intent.putExtra(PGPHelper.EXTRA_KEY_SERVERS, mPreferences.getKeyServers());
+                        intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
+                                mPreferences.getKeyServers());
                         startActivityForResult(intent, Id.request.key_server_preference);
                         return false;
                     }
@@ -209,7 +210,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
             if (resultCode == RESULT_CANCELED || data == null) {
                 return;
             }
-            String servers[] = data.getStringArrayExtra(PGPHelper.EXTRA_KEY_SERVERS);
+            String servers[] = data
+                    .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
             mPreferences.setKeyServers(servers);
             mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers,
                     servers.length));

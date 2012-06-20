@@ -60,6 +60,12 @@ public class KeyServerQueryActivity extends BaseActivity {
     public static final String ACTION_LOOK_UP_KEY_ID_AND_RETURN = Constants.INTENT_PREFIX
             + "LOOK_UP_KEY_ID_AND_RETURN";
 
+    public static final String EXTRA_KEY_ID = "keyId";
+
+    // TODO: remove when using new intentservice:
+    public static final String EXTRA_ERROR = "error";
+    public static final String EXTRA_TEXT = "text";
+
     private ListView mList;
     private EditText mQuery;
     private Button mSearch;
@@ -129,7 +135,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         Intent intent = getIntent();
         if (ACTION_LOOK_UP_KEY_ID.equals(intent.getAction())
                 || ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
-            long keyId = intent.getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
+            long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
             if (keyId != 0) {
                 String query = "0x" + PGPHelper.keyToHex(keyId);
                 mQuery.setText(query);
@@ -185,7 +191,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         data.putInt(Constants.extras.STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString(PGPHelper.EXTRA_ERROR, error);
+            data.putString(EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -199,7 +205,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         removeDialog(Id.dialog.querying);
 
         Bundle data = msg.getData();
-        String error = data.getString(PGPHelper.EXTRA_ERROR);
+        String error = data.getString(EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();
@@ -217,7 +223,7 @@ public class KeyServerQueryActivity extends BaseActivity {
             if (ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
                 if (mKeyData != null) {
                     Intent intent = new Intent();
-                    intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
+                    intent.putExtra(EXTRA_TEXT, mKeyData);
                     setResult(RESULT_OK, intent);
                 } else {
                     setResult(RESULT_CANCELED);
@@ -227,7 +233,7 @@ public class KeyServerQueryActivity extends BaseActivity {
                 if (mKeyData != null) {
                     Intent intent = new Intent(this, PublicKeyListActivity.class);
                     intent.setAction(KeyListActivity.ACTION_IMPORT);
-                    intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
+                    intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
                     startActivity(intent);
                 }
             }
@@ -320,7 +326,7 @@ public class KeyServerQueryActivity extends BaseActivity {
                     }
                     if (!second) {
                         View sep = new View(mActivity);
-                        sep.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, 1));
+                        sep.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, 1));
                         sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
                         ll.addView(sep);
                     }

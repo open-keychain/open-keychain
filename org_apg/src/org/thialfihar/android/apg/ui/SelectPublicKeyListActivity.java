@@ -43,6 +43,9 @@ public class SelectPublicKeyListActivity extends BaseActivity {
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
             + "SELECT_PUBLIC_KEYS";
 
+    public static final String EXTRA_SELECTION = "selection";
+    public static final String EXTRA_USER_IDS = "userIds";
+
     protected ListView mList;
     protected SelectPublicKeyListAdapter mListAdapter;
     protected View mFilterLayout;
@@ -95,7 +98,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         }
 
         long selectedKeyIds[] = null;
-        selectedKeyIds = intent.getLongArrayExtra(PGPHelper.EXTRA_SELECTION);
+        selectedKeyIds = intent.getLongArrayExtra(EXTRA_SELECTION);
 
         if (selectedKeyIds == null) {
             Vector<Long> vector = new Vector<Long>();
@@ -157,8 +160,8 @@ public class SelectPublicKeyListActivity extends BaseActivity {
             selectedKeyIds[i] = keys.get(i);
         }
         String userIdArray[] = new String[0];
-        data.putExtra(PGPHelper.EXTRA_SELECTION, selectedKeyIds);
-        data.putExtra(PGPHelper.EXTRA_USER_IDS, userIds.toArray(userIdArray));
+        data.putExtra(EXTRA_SELECTION, selectedKeyIds);
+        data.putExtra(EXTRA_USER_IDS, userIds.toArray(userIdArray));
         setResult(RESULT_OK, data);
         finish();
     }

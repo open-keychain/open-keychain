@@ -171,7 +171,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     private void editKey() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
         Intent intent = new Intent(EditKeyActivity.ACTION_EDIT_KEY);
-        intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
+        intent.putExtra(EditKeyActivity.EXTRA_KEY_ID, keyId);
         startActivityForResult(intent, Id.message.edit_key);
     }
 

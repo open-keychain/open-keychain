@@ -72,6 +72,11 @@ public class KeyListActivity extends BaseActivity {
 
     public static final String ACTION_IMPORT = Constants.INTENT_PREFIX + "IMPORT";
 
+    public static final String EXTRA_TEXT = "text";
+
+    // TODO: remove when using new intentservice:
+    public static final String EXTRA_ERROR = "error";
+
     protected ExpandableListView mList;
     protected KeyListAdapter mListAdapter;
     protected View mFilterLayout;
@@ -146,7 +151,7 @@ public class KeyListActivity extends BaseActivity {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
             } else {
-                mImportData = intent.getStringExtra(PGPHelper.EXTRA_TEXT);
+                mImportData = intent.getStringExtra(EXTRA_TEXT);
             }
             importKeys();
         }
@@ -373,7 +378,7 @@ public class KeyListActivity extends BaseActivity {
         }
 
         if (error != null) {
-            data.putString(PGPHelper.EXTRA_ERROR, error);
+            data.putString(EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -401,7 +406,7 @@ public class KeyListActivity extends BaseActivity {
             case Id.message.import_done: {
                 removeDialog(Id.dialog.importing);
 
-                String error = data.getString(PGPHelper.EXTRA_ERROR);
+                String error = data.getString(EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
                             Toast.LENGTH_SHORT).show();
@@ -448,7 +453,7 @@ public class KeyListActivity extends BaseActivity {
             case Id.message.export_done: {
                 removeDialog(Id.dialog.exporting);
 
-                String error = data.getString(PGPHelper.EXTRA_ERROR);
+                String error = data.getString(EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
                             Toast.LENGTH_SHORT).show();

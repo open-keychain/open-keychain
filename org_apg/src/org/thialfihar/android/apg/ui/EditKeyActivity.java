@@ -69,6 +69,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
     public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
 
+    // possible extra keys
+    public static final String EXTRA_USER_IDS = "userIds";
+    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
+    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
+    public static final String EXTRA_KEY_ID = "keyId";
+
     private Intent mIntent = null;
     private ActionBar mActionBar;
 
@@ -166,14 +172,14 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             if (extras != null) {
                 // if userId is given, prefill the fields
-                if (extras.containsKey(PGPHelper.EXTRA_USER_IDS)) {
+                if (extras.containsKey(EXTRA_USER_IDS)) {
                     Log.d(Constants.TAG, "UserIds are given!");
-                    mUserIds.add(extras.getString(PGPHelper.EXTRA_USER_IDS));
+                    mUserIds.add(extras.getString(EXTRA_USER_IDS));
                 }
 
                 // if no passphrase is given
-                if (extras.containsKey(PGPHelper.EXTRA_NO_PASSPHRASE)) {
-                    boolean noPassphrase = extras.getBoolean(PGPHelper.EXTRA_NO_PASSPHRASE);
+                if (extras.containsKey(EXTRA_NO_PASSPHRASE)) {
+                    boolean noPassphrase = extras.getBoolean(EXTRA_NO_PASSPHRASE);
                     if (noPassphrase) {
                         // check "no passphrase" checkbox and remove button
                         mNoPassphrase.setChecked(true);
@@ -182,9 +188,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                 }
 
                 // generate key
-                if (extras.containsKey(PGPHelper.EXTRA_GENERATE_DEFAULT_KEYS)) {
-                    boolean generateDefaultKeys = extras
-                            .getBoolean(PGPHelper.EXTRA_GENERATE_DEFAULT_KEYS);
+                if (extras.containsKey(EXTRA_GENERATE_DEFAULT_KEYS)) {
+                    boolean generateDefaultKeys = extras.getBoolean(EXTRA_GENERATE_DEFAULT_KEYS);
                     if (generateDefaultKeys) {
 
                         // build layout in handler after generating keys not directly in onCreate
@@ -264,8 +269,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             if (extras != null) {
 
-                if (extras.containsKey(PGPHelper.EXTRA_KEY_ID)) {
-                    long keyId = mIntent.getExtras().getLong(PGPHelper.EXTRA_KEY_ID);
+                if (extras.containsKey(EXTRA_KEY_ID)) {
+                    long keyId = mIntent.getExtras().getLong(EXTRA_KEY_ID);
 
                     if (keyId != 0) {
                         PGPSecretKey masterKey = null;

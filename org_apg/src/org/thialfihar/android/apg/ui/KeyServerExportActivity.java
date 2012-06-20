@@ -47,6 +47,11 @@ public class KeyServerExportActivity extends BaseActivity {
     public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
             + "EXPORT_KEY_TO_SERVER";
 
+    public static final String EXTRA_KEY_ID = "keyId";
+
+    // TODO: remove when using new intentservice:
+    public static final String EXTRA_ERROR = "error";
+
     private Button export;
     private Spinner keyServer;
 
@@ -103,7 +108,7 @@ public class KeyServerExportActivity extends BaseActivity {
 
         HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
 
-        int keyRingId = getIntent().getIntExtra(PGPHelper.EXTRA_KEY_ID, -1);
+        int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
 
         PGPKeyRing keyring = PGPHelper.getKeyRing(keyRingId);
         if (keyring != null && keyring instanceof PGPPublicKeyRing) {
@@ -116,7 +121,7 @@ public class KeyServerExportActivity extends BaseActivity {
         data.putInt(Constants.extras.STATUS, Id.message.export_done);
 
         if (error != null) {
-            data.putString(PGPHelper.EXTRA_ERROR, error);
+            data.putString(EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -128,7 +133,7 @@ public class KeyServerExportActivity extends BaseActivity {
         super.doneCallback(msg);
 
         Bundle data = msg.getData();
-        String error = data.getString(PGPHelper.EXTRA_ERROR);
+        String error = data.getString(EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();

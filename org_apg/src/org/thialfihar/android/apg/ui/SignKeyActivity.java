@@ -60,7 +60,11 @@ import android.widget.Toast;
  * signs the specified public key with the specified secret master key
  */
 public class SignKeyActivity extends BaseActivity {
-    private static final String TAG = "SignKeyActivity";
+
+    public static final String EXTRA_KEY_ID = "keyId";
+
+    // TODO: remove when using new intentservice:
+    public static final String EXTRA_ERROR = "error";
 
     private long pubKeyId = 0;
     private long masterKeyId = 0;
@@ -124,7 +128,7 @@ public class SignKeyActivity extends BaseActivity {
             }
         });
 
-        pubKeyId = getIntent().getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
+        pubKeyId = getIntent().getLongExtra(EXTRA_KEY_ID, 0);
         if (pubKeyId == 0) {
             finish(); // nothing to do if we dont know what key to sign
         } else {
@@ -170,7 +174,7 @@ public class SignKeyActivity extends BaseActivity {
                 final Bundle status = new Bundle();
                 Message msg = new Message();
 
-                status.putString(PGPHelper.EXTRA_ERROR, "Key has already been signed");
+                status.putString(EXTRA_ERROR, "Key has already been signed");
 
                 status.putInt(Constants.extras.STATUS, Id.message.done);
 
@@ -210,7 +214,7 @@ public class SignKeyActivity extends BaseActivity {
         try {
             String passphrase = PGPHelper.getCachedPassPhrase(masterKeyId);
             if (passphrase == null || passphrase.length() <= 0) {
-                status.putString(PGPHelper.EXTRA_ERROR, "Unable to obtain passphrase");
+                status.putString(EXTRA_ERROR, "Unable to obtain passphrase");
             } else {
                 PGPPublicKeyRing pubring = PGPHelper.getPublicKeyRing(pubKeyId);
 
@@ -249,27 +253,27 @@ public class SignKeyActivity extends BaseActivity {
                 // store the signed key in our local cache
                 int retval = PGPHelper.storeKeyRingInCache(pubring);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                    status.putString(PGPHelper.EXTRA_ERROR, "Failed to store signed key in local cache");
+                    status.putString(EXTRA_ERROR, "Failed to store signed key in local cache");
                 }
             }
         } catch (PGPException e) {
-            Log.e(TAG, "Failed to sign key", e);
-            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
+            Log.e(Constants.TAG, "Failed to sign key", e);
+            status.putString(EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, "Failed to sign key", e);
-            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
+            Log.e(Constants.TAG, "Failed to sign key", e);
+            status.putString(EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchProviderException e) {
-            Log.e(TAG, "Failed to sign key", e);
-            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
+            Log.e(Constants.TAG, "Failed to sign key", e);
+            status.putString(EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (SignatureException e) {
-            Log.e(TAG, "Failed to sign key", e);
-            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
+            Log.e(Constants.TAG, "Failed to sign key", e);
+            status.putString(EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         }
@@ -279,7 +283,7 @@ public class SignKeyActivity extends BaseActivity {
         msg.setData(status);
         sendMessage(msg);
 
-        if (status.containsKey(PGPHelper.EXTRA_ERROR)) {
+        if (status.containsKey(EXTRA_ERROR)) {
             setResult(Id.return_value.error);
         } else {
             setResult(Id.return_value.ok);
@@ -293,7 +297,7 @@ public class SignKeyActivity extends BaseActivity {
         switch (requestCode) {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
-                masterKeyId = data.getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
+                masterKeyId = data.getLongExtra(EXTRA_KEY_ID, 0);
 
                 // re-enable the sign button so the user can initiate the sign process
                 Button sign = (Button) findViewById(R.id.sign);
@@ -316,7 +320,7 @@ public class SignKeyActivity extends BaseActivity {
         removeDialog(Id.dialog.signing);
 
         Bundle data = msg.getData();
-        String error = data.getString(PGPHelper.EXTRA_ERROR);
+        String error = data.getString(EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();

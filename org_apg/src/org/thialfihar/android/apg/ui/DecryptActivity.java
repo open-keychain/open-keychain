@@ -75,6 +75,13 @@ public class DecryptActivity extends SherlockFragmentActivity {
     public static final String ACTION_DECRYPT_AND_RETURN = Constants.INTENT_PREFIX
             + "DECRYPT_AND_RETURN";
 
+    // possible extra keys
+    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_REPLY_TO = "replyTo";
+    public static final String EXTRA_SUBJECT = "subject";
+    public static final String EXTRA_BINARY = "binary";
+
     private long mSignatureKeyId = 0;
 
     private Intent mIntent;
@@ -96,9 +103,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private ImageView mSourcePrevious = null;
     private ImageView mSourceNext = null;
 
-    // private Button mDecryptButton = null;
-    // private Button mReplyButton = null;
-
     private boolean mDecryptEnabled = true;
     private String mDecryptString = "";
     private boolean mReplyEnabled = true;
@@ -116,9 +120,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private Uri mContentUri = null;
     private byte[] mData = null;
     private boolean mReturnBinary = false;
-
-    // private DataSource mDataSource = null;
-    // private DataDestination mDataDestination = null;
 
     private long mUnknownSignatureKeyId = 0;
 
@@ -288,11 +289,11 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 Log.d(Constants.TAG, "got extras");
             }
 
-            mData = extras.getByteArray(PGPHelper.EXTRA_DATA);
+            mData = extras.getByteArray(EXTRA_DATA);
             String textData = null;
             if (mData == null) {
                 Log.d(Constants.TAG, "EXTRA_DATA was null");
-                textData = extras.getString(PGPHelper.EXTRA_TEXT);
+                textData = extras.getString(EXTRA_TEXT);
             } else {
                 Log.d(Constants.TAG, "Got data from EXTRA_DATA");
             }
@@ -322,8 +323,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     }
                 }
             }
-            mReplyTo = extras.getString(PGPHelper.EXTRA_REPLY_TO);
-            mSubject = extras.getString(PGPHelper.EXTRA_SUBJECT);
+            mReplyTo = extras.getString(EXTRA_REPLY_TO);
+            mSubject = extras.getString(EXTRA_SUBJECT);
         } else if (ACTION_DECRYPT_FILE.equals(mIntent.getAction())) {
             mInputFilename = mIntent.getDataString();
             if ("file".equals(mIntent.getScheme())) {
@@ -343,11 +344,11 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 extras = new Bundle();
             }
 
-            mReturnBinary = extras.getBoolean(PGPHelper.EXTRA_BINARY, false);
+            mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
 
             if (mContentUri == null) {
-                mData = extras.getByteArray(PGPHelper.EXTRA_DATA);
-                String data = extras.getString(PGPHelper.EXTRA_TEXT);
+                mData = extras.getByteArray(EXTRA_DATA);
+                String data = extras.getString(EXTRA_TEXT);
                 if (data != null) {
                     Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(data);
                     if (matcher.matches()) {
@@ -402,7 +403,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
                     intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-                    intent.putExtra(PGPHelper.EXTRA_KEY_ID, mSignatureKeyId);
+                    intent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }
             }
@@ -633,11 +634,11 @@ public class DecryptActivity extends SherlockFragmentActivity {
         String data = mMessage.getText().toString();
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
-        intent.putExtra(PGPHelper.EXTRA_TEXT, data);
-        intent.putExtra(PGPHelper.EXTRA_SUBJECT, "Re: " + mSubject);
-        intent.putExtra(PGPHelper.EXTRA_SEND_TO, mReplyTo);
-        intent.putExtra(PGPHelper.EXTRA_SIGNATURE_KEY_ID, getSecretKeyId());
-        intent.putExtra(PGPHelper.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
+        intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
+        intent.putExtra(EncryptActivity.EXTRA_SUBJECT, "Re: " + mSubject);
+        intent.putExtra(EncryptActivity.EXTRA_SEND_TO, mReplyTo);
+        intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, getSecretKeyId());
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
         startActivity(intent);
     }
 
@@ -1044,7 +1045,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     removeDialog(Id.dialog.lookup_unknown_key);
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
                     intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-                    intent.putExtra(PGPHelper.EXTRA_KEY_ID, mUnknownSignatureKeyId);
+                    intent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, mUnknownSignatureKeyId);
                     startActivityForResult(intent, Id.request.look_up_key_id);
                 }
             });

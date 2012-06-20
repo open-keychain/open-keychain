@@ -41,6 +41,9 @@ import android.widget.TextView;
 
 public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
         EditorListener {
+
+    public static final String EXTRA_KEY_SERVERS = "keyServers";
+
     private LayoutInflater mInflater;
     private ViewGroup mEditors;
     private View mAdd;
@@ -114,7 +117,7 @@ public class PreferencesKeyServerActivity extends SherlockActivity implements On
         mAdd.setOnClickListener(this);
 
         Intent intent = getIntent();
-        String servers[] = intent.getStringArrayExtra(PGPHelper.EXTRA_KEY_SERVERS);
+        String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
         if (servers != null) {
             for (int i = 0; i < servers.length; ++i) {
                 KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
@@ -153,7 +156,7 @@ public class PreferencesKeyServerActivity extends SherlockActivity implements On
             }
         }
         String[] dummy = new String[0];
-        data.putExtra(PGPHelper.EXTRA_KEY_SERVERS, servers.toArray(dummy));
+        data.putExtra(EXTRA_KEY_SERVERS, servers.toArray(dummy));
         setResult(RESULT_OK, data);
         finish();
     }

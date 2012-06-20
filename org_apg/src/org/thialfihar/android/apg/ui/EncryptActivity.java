@@ -76,6 +76,15 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public static final String ACTION_GENERATE_SIGNATURE = Constants.INTENT_PREFIX
             + "GENERATE_SIGNATURE";
 
+    // possible extra keys
+    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
+    public static final String EXTRA_SEND_TO = "sendTo";
+    public static final String EXTRA_SUBJECT = "subject";
+    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
+
     private Intent mIntent = null;
     private String mSubject = null;
     private String mSendTo = null;
@@ -365,21 +374,21 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 mAsciiArmourDemand = false;
             }
 
-            if (extras.containsKey(PGPHelper.EXTRA_ASCII_ARMOUR)) {
-                mAsciiArmourDemand = extras.getBoolean(PGPHelper.EXTRA_ASCII_ARMOUR, true);
+            if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
+                mAsciiArmourDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
                 mOverrideAsciiArmour = true;
                 mAsciiArmour.setChecked(mAsciiArmourDemand);
             }
 
-            mData = extras.getByteArray(PGPHelper.EXTRA_DATA);
+            mData = extras.getByteArray(EXTRA_DATA);
             String textData = null;
             if (mData == null) {
-                textData = extras.getString(PGPHelper.EXTRA_TEXT);
+                textData = extras.getString(EXTRA_TEXT);
             }
-            mSendTo = extras.getString(PGPHelper.EXTRA_SEND_TO);
-            mSubject = extras.getString(PGPHelper.EXTRA_SUBJECT);
-            long signatureKeyId = extras.getLong(PGPHelper.EXTRA_SIGNATURE_KEY_ID);
-            long encryptionKeyIds[] = extras.getLongArray(PGPHelper.EXTRA_ENCRYPTION_KEY_IDS);
+            mSendTo = extras.getString(EXTRA_SEND_TO);
+            mSubject = extras.getString(EXTRA_SUBJECT);
+            long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
+            long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
             if (signatureKeyId != 0) {
                 PGPSecretKeyRing keyRing = PGPHelper.getSecretKeyRing(signatureKeyId);
                 PGPSecretKey masterKey = null;
@@ -964,7 +973,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 initialKeyIds[i] = keyIds.get(i);
             }
         }
-        intent.putExtra(PGPHelper.EXTRA_SELECTION, initialKeyIds);
+        intent.putExtra(SelectPublicKeyListActivity.EXTRA_SELECTION, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -1007,7 +1016,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.public_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                mEncryptionKeyIds = bundle.getLongArray(PGPHelper.EXTRA_SELECTION);
+                mEncryptionKeyIds = bundle
+                        .getLongArray(SelectPublicKeyListActivity.EXTRA_SELECTION);
             }
             updateView();
             break;
@@ -1016,7 +1026,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(PGPHelper.EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

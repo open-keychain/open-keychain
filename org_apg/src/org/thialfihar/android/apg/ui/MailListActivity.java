@@ -151,9 +151,9 @@ public class MailListActivity extends ListActivity {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
                 intent.setAction(DecryptActivity.ACTION_DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
-                intent.putExtra(PGPHelper.EXTRA_TEXT, message.data);
-                intent.putExtra(PGPHelper.EXTRA_SUBJECT, message.subject);
-                intent.putExtra(PGPHelper.EXTRA_REPLY_TO, message.replyTo);
+                intent.putExtra(DecryptActivity.EXTRA_TEXT, message.data);
+                intent.putExtra(DecryptActivity.EXTRA_SUBJECT, message.subject);
+                intent.putExtra(DecryptActivity.EXTRA_REPLY_TO, message.replyTo);
                 startActivity(intent);
             }
         });
