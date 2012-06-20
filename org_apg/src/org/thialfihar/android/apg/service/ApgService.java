@@ -33,6 +33,7 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.FileHelper;
+import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
@@ -168,6 +169,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
         mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
         Bundle data = extras.getBundle(EXTRA_DATA);
+
+        OtherHelper.logDebugBundle(data, "EXTRA_DATA");
+
         int action = extras.getInt(EXTRA_ACTION);
 
         // execute action from extra bundle
@@ -606,7 +610,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
      * Set progress of ProgressDialog by sending message to handler on UI thread
      */
     public void setProgress(String message, int progress, int max) {
-        Log.d(Constants.TAG, "Send message by setProgress");
+        Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
+                + max);
 
         Bundle data = new Bundle();
         if (message != null) {

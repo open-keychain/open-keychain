@@ -21,7 +21,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.util.Log;
+
 import android.content.Context;
+import android.os.Bundle;
 
 public class OtherHelper {
 
@@ -71,4 +78,26 @@ public class OtherHelper {
         return numDays;
     }
 
+    /**
+     * Logs bundle content to debug for inspecting the content
+     * 
+     * @param bundle
+     * @param bundleName
+     */
+    public static void logDebugBundle(Bundle bundle, String bundleName) {
+        if (Constants.DEBUG) {
+            Set<String> ks = bundle.keySet();
+            Iterator<String> iterator = ks.iterator();
+
+            Log.d(Constants.TAG, "Bundle " + bundleName + ":");
+            Log.d(Constants.TAG, "------------------------------");
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                Object value = bundle.get(key);
+
+                Log.d(Constants.TAG, key + " : " + value.toString());
+            }
+            Log.d(Constants.TAG, "------------------------------");
+        }
+    }
 }
