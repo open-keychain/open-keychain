@@ -97,7 +97,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
+import org.thialfihar.android.apg.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

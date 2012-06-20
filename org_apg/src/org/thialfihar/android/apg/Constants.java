@@ -24,6 +24,8 @@ public final class Constants {
 
     public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
 
+    public static final boolean DEBUG = true;
+
     /*
      * TODO:
      * 

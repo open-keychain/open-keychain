@@ -28,11 +28,11 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 
-import android.util.Log;
+import org.thialfihar.android.apg.util.Log;
 
 public class PGPConversionHelper {
     /**
-     * Converts Vector<PGPSecretKey> to a byte[] array to send it by intent to service
+     * Converts Vector<PGPSecretKey> to a byte[]
      * 
      * @param keys
      * @return
@@ -73,7 +73,7 @@ public class PGPConversionHelper {
 
         return keyRing;
     }
-    
+
     /**
      * Convert from byte[] to PGPPublicKeyRing
      * 
@@ -94,10 +94,17 @@ public class PGPConversionHelper {
         return keyRing;
     }
 
+    /**
+     * Convert from byte[] to ArrayList<PGPSecretKey>
+     * 
+     * @param keysBytes
+     * @return
+     */
     public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
         PGPSecretKeyRing keyRing = BytesToPGPSecretKeyRing(keysBytes);
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
+        @SuppressWarnings("unchecked")
         Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
         while (itr.hasNext()) {
             keys.add(itr.next());
@@ -106,12 +113,24 @@ public class PGPConversionHelper {
         return keys;
     }
 
+    /**
+     * Convert from byte[] to PGPSecretKey
+     * 
+     * @param keysBytes
+     * @return
+     */
     public static PGPSecretKey BytesToPGPSecretKey(byte[] keyBytes) {
         PGPSecretKey key = BytesToPGPSecretKeyList(keyBytes).get(0);
 
         return key;
     }
 
+    /**
+     * Convert from PGPSecretKey to byte[]
+     * 
+     * @param keysBytes
+     * @return
+     */
     public static byte[] PGPSecretKeyToBytes(PGPSecretKey key) {
         try {
             return key.getEncoded();
@@ -122,6 +141,12 @@ public class PGPConversionHelper {
         }
     }
 
+    /**
+     * Convert from PGPSecretKeyRing to byte[]
+     * 
+     * @param keysBytes
+     * @return
+     */
     public static byte[] PGPSecretKeyRingToBytes(PGPSecretKeyRing keyRing) {
         try {
             return keyRing.getEncoded();

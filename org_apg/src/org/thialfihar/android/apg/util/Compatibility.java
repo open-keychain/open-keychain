@@ -19,7 +19,7 @@ package org.thialfihar.android.apg.util;
 import java.lang.reflect.Method;
 
 import android.content.Context;
-import android.util.Log;
+import org.thialfihar.android.apg.util.Log;
 
 public class Compatibility {
 

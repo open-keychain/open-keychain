@@ -48,7 +48,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.util.Log;
+import org.thialfihar.android.apg.util.Log;
 
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with

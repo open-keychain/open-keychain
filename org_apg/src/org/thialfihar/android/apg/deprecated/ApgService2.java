@@ -47,7 +47,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
+import org.thialfihar.android.apg.util.Log;
 
 /**
  * ATTENTION:
