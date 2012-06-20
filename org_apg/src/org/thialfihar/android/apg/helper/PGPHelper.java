@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.helper;
 
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.ArmoredOutputStream;
@@ -62,20 +63,37 @@ import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+import org.thialfihar.android.apg.Id.choice;
+import org.thialfihar.android.apg.Id.content;
+import org.thialfihar.android.apg.Id.database;
+import org.thialfihar.android.apg.Id.key;
 import org.thialfihar.android.apg.Id.return_value;
+import org.thialfihar.android.apg.Id.type;
+import org.thialfihar.android.apg.Id.choice.algorithm;
+import org.thialfihar.android.apg.Id.choice.compression;
+import org.thialfihar.android.apg.Id.choice.usage;
 import org.thialfihar.android.apg.KeyServer.AddKeyException;
+import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.passphrase.CachedPassPhrase;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.provider.Database;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
+import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.BaseActivity;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
+import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.IterableIterator;
-import org.thialfihar.android.apg.util.Utils;
+import org.thialfihar.android.apg.util.PositionAwareInputStream;
+import org.thialfihar.android.apg.util.Primes;
+import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.HkpKeyServer;
+import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.KeyServer;
+import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.R;
 
 import android.app.Activity;
@@ -122,7 +140,15 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-public class Apg {
+/**
+ * TODO:
+ * 
+ * - Externalize the constants
+ * 
+ * - Separate this file into different helpers
+ * 
+ */
+public class PGPHelper {
 
     static {
         // register spongy castle provider
@@ -161,13 +187,9 @@ public class Apg {
     public static final String EXTRA_ENCRYPTED_MESSAGE = "encryptedMessage";
     public static final String EXTRA_ENCRYPTED_DATA = "encryptedData";
     public static final String EXTRA_RESULT_URI = "resultUri";
-    public static final String EXTRA_SIGNATURE = "signature";
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
-    public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
-    public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
-    public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String EXTRA_SIGNATURE_DATA = "signatureData";
     public static final String EXTRA_SIGNATURE_TEXT = "signatureText";
+    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
     public static final String EXTRA_USER_ID = "userId";
     public static final String EXTRA_USER_IDS = "userIds";
     public static final String EXTRA_KEY_ID = "keyId";
@@ -426,7 +448,7 @@ public class Apg {
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
             ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
             String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)
-            throws Apg.GeneralException, NoSuchProviderException, PGPException,
+            throws PGPHelper.GeneralException, NoSuchProviderException, PGPException,
             NoSuchAlgorithmException, SignatureException, IOException, Database.GeneralException {
 
         if (progress != null)
@@ -1143,9 +1165,9 @@ public class Apg {
     }
 
     public static String getFingerPrint(long keyId) {
-        PGPPublicKey key = Apg.getPublicKey(keyId);
+        PGPPublicKey key = PGPHelper.getPublicKey(keyId);
         if (key == null) {
-            PGPSecretKey secretKey = Apg.getSecretKey(keyId);
+            PGPSecretKey secretKey = PGPHelper.getSecretKey(keyId);
             if (secretKey == null) {
                 return "";
             }
@@ -1654,9 +1676,9 @@ public class Apg {
             progress.setProgress(R.string.progress_done, 100, 100);
     }
 
-    public static long getDecryptionKeyId(Context context, InputData data) throws GeneralException,
-            NoAsymmetricEncryptionException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
+    public static long getDecryptionKeyId(Context context, InputStream inputStream)
+            throws GeneralException, NoAsymmetricEncryptionException, IOException {
+        InputStream in = PGPUtil.getDecoderStream(inputStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -1700,9 +1722,9 @@ public class Apg {
         return secretKey.getKeyID();
     }
 
-    public static boolean hasSymmetricEncryption(Context context, InputData data)
+    public static boolean hasSymmetricEncryption(Context context, InputStream inputStream)
             throws GeneralException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
+        InputStream in = PGPUtil.getDecoderStream(inputStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
@@ -1850,7 +1872,7 @@ public class Apg {
         if (dataChunk instanceof PGPOnePassSignatureList) {
             if (progress != null)
                 progress.setProgress(R.string.progress_processingSignature, currentProgress, 100);
-            returnData.putBoolean(EXTRA_SIGNATURE, true);
+            returnData.putBoolean(ApgService.EXTRA_SIGNATURE, true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
@@ -1868,17 +1890,17 @@ public class Apg {
                     if (sigKeyRing != null) {
                         userId = getMainUserId(getMasterKey(sigKeyRing));
                     }
-                    returnData.putString(EXTRA_SIGNATURE_USER_ID, userId);
+                    returnData.putString(ApgService.EXTRA_SIGNATURE_USER_ID, userId);
                     break;
                 }
             }
 
-            returnData.putLong(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
+            returnData.putLong(ApgService.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
 
             if (signature != null) {
                 signature.initVerify(signatureKey, new BouncyCastleProvider());
             } else {
-                returnData.putBoolean(EXTRA_SIGNATURE_UNKNOWN, true);
+                returnData.putBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN, true);
             }
 
             dataChunk = plainFact.nextObject();
@@ -1915,7 +1937,7 @@ public class Apg {
                     try {
                         signature.update(buffer, 0, n);
                     } catch (SignatureException e) {
-                        returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, false);
+                        returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, false);
                         signature = null;
                     }
                 }
@@ -1938,9 +1960,9 @@ public class Apg {
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
                 if (signature.verify(messageSignature)) {
-                    returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, true);
+                    returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, true);
                 } else {
-                    returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, false);
+                    returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, false);
                 }
             }
         }
@@ -1963,7 +1985,7 @@ public class Apg {
         return returnData;
     }
 
-    public static Bundle verifyText(BaseActivity context, InputData data, OutputStream outStream,
+    public static Bundle verifyText(Context context, InputData data, OutputStream outStream,
             ProgressDialogUpdater progress) throws IOException, GeneralException, PGPException,
             SignatureException {
         Bundle returnData = new Bundle();
@@ -1995,7 +2017,7 @@ public class Apg {
         byte[] clearText = out.toByteArray();
         outStream.write(clearText);
 
-        returnData.putBoolean(EXTRA_SIGNATURE, true);
+        returnData.putBoolean(ApgService.EXTRA_SIGNATURE, true);
 
         if (progress != null)
             progress.setProgress(R.string.progress_processingSignature, 60, 100);
@@ -2015,16 +2037,17 @@ public class Apg {
                 signatureKeyId = signature.getKeyID();
             }
             if (signatureKey == null) {
-                Bundle pauseData = new Bundle();
-                pauseData.putInt(Constants.extras.STATUS, Id.message.unknown_signature_key);
-                pauseData.putLong(Constants.extras.KEY_ID, signatureKeyId);
-                Message msg = new Message();
-                msg.setData(pauseData);
-                context.sendMessage(msg);
-                // pause here
-                context.getRunningThread().pause();
-                // see whether the key was found in the meantime
-                signatureKey = getPublicKey(signature.getKeyID());
+                // TODO: reimplement!
+                // Bundle pauseData = new Bundle();
+                // pauseData.putInt(Constants.extras.STATUS, Id.message.unknown_signature_key);
+                // pauseData.putLong(Constants.extras.KEY_ID, signatureKeyId);
+                // Message msg = new Message();
+                // msg.setData(pauseData);
+                // context.sendMessage(msg);
+                // // pause here
+                // context.getRunningThread().pause();
+                // // see whether the key was found in the meantime
+                // signatureKey = getPublicKey(signature.getKeyID());
             }
 
             if (signatureKey == null) {
@@ -2036,15 +2059,15 @@ public class Apg {
                 if (sigKeyRing != null) {
                     userId = getMainUserId(getMasterKey(sigKeyRing));
                 }
-                returnData.putString(EXTRA_SIGNATURE_USER_ID, userId);
+                returnData.putString(ApgService.EXTRA_SIGNATURE_USER_ID, userId);
                 break;
             }
         }
 
-        returnData.putLong(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
+        returnData.putLong(ApgService.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
 
         if (signature == null) {
-            returnData.putBoolean(EXTRA_SIGNATURE_UNKNOWN, true);
+            returnData.putBoolean(ApgService.EXTRA_SIGNATURE_UNKNOWN, true);
             if (progress != null)
                 progress.setProgress(R.string.progress_done, 100, 100);
             return returnData;
@@ -2069,7 +2092,7 @@ public class Apg {
             } while (lookAhead != -1);
         }
 
-        returnData.putBoolean(EXTRA_SIGNATURE_SUCCESS, signature.verify());
+        returnData.putBoolean(ApgService.EXTRA_SIGNATURE_SUCCESS, signature.verify());
 
         if (progress != null)
             progress.setProgress(R.string.progress_done, 100, 100);

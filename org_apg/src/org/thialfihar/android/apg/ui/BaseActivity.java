@@ -21,12 +21,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.PausableThread;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 
@@ -79,7 +79,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         // not needed later:
         mPreferences = Preferences.getPreferences(this);
 
-        Apg.initialize(this);
+        PGPHelper.initialize(this);
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File dir = new File(Constants.path.APP_DIR);
@@ -275,7 +275,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(Apg.EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(PGPHelper.EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }
@@ -378,7 +378,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
 
     public void passPhraseCallback(long keyId, String passPhrase) {
         // TODO: Not needed anymore, now implemented in AskForSecretKeyPass
-        Apg.setCachedPassPhrase(keyId, passPhrase);
+        PGPHelper.setCachedPassPhrase(keyId, passPhrase);
     }
 
     public void sendMessage(Message msg) {

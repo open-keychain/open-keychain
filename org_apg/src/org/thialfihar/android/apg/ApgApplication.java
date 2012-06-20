@@ -26,7 +26,7 @@ public class ApgApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        /** Start passphrase cache service */
+        /* Start passphrase cache service */
         PassphraseCacheService.startCacheService(this);
     }
 

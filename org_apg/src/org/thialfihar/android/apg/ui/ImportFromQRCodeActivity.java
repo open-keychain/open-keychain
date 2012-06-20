@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2011 Senecaso
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,11 +21,11 @@ import java.io.IOException;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.KeyServer.QueryException;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.R;
 
 import android.content.Intent;
@@ -60,33 +62,33 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                         HkpKeyServer server = new HkpKeyServer(mPreferences.getKeyServers()[0]); // TODO: there should be only 1
                         String encodedKey = server.get(keyId);
 
-                        PGPKeyRing keyring = Apg.decodeKeyRing(new ByteArrayInputStream(encodedKey.getBytes()));
+                        PGPKeyRing keyring = PGPHelper.decodeKeyRing(new ByteArrayInputStream(encodedKey.getBytes()));
                         if (keyring != null && keyring instanceof PGPPublicKeyRing) {
                             PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
 
                             // make sure the fingerprints match before we cache this thing
-                            String actualFingerprint = Apg.convertToHex(publicKeyRing.getPublicKey().getFingerprint());
+                            String actualFingerprint = PGPHelper.convertToHex(publicKeyRing.getPublicKey().getFingerprint());
                             if (expectedFingerprint.equals(actualFingerprint)) {
                                 // store the signed key in our local cache
-                                int retval = Apg.storeKeyRingInCache(publicKeyRing);
+                                int retval = PGPHelper.storeKeyRingInCache(publicKeyRing);
                                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                                    status.putString(Apg.EXTRA_ERROR, "Failed to store signed key in local cache");
+                                    status.putString(PGPHelper.EXTRA_ERROR, "Failed to store signed key in local cache");
                                 } else {
                                     Intent intent = new Intent(ImportFromQRCodeActivity.this, SignKeyActivity.class);
-                                    intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+                                    intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
                                     startActivityForResult(intent, Id.request.sign_key);
                                 }
                             } else {
-                                status.putString(Apg.EXTRA_ERROR, "Scanned fingerprint does NOT match the fingerprint of the received key.  You shouldnt trust this key.");
+                                status.putString(PGPHelper.EXTRA_ERROR, "Scanned fingerprint does NOT match the fingerprint of the received key.  You shouldnt trust this key.");
                             }
                         }
                     } catch (QueryException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
-                        status.putString(Apg.EXTRA_ERROR, "Failed to query KeyServer");
+                        status.putString(PGPHelper.EXTRA_ERROR, "Failed to query KeyServer");
                         status.putInt(Constants.extras.STATUS, Id.message.done);
                     } catch (IOException e) {
                         Log.e(TAG, "Failed to query KeyServer", e);
-                        status.putString(Apg.EXTRA_ERROR, "Failed to query KeyServer");
+                        status.putString(PGPHelper.EXTRA_ERROR, "Failed to query KeyServer");
                         status.putInt(Constants.extras.STATUS, Id.message.done);
                     }
                 }
@@ -140,7 +142,7 @@ public class ImportFromQRCodeActivity extends BaseActivity {
         super.doneCallback(msg);
         
         Bundle data = msg.getData();
-        String error = data.getString(Apg.EXTRA_ERROR);
+        String error = data.getString(PGPHelper.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT).show();
             return;

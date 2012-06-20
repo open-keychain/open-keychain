@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.util.Vector;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.util.Choice;
 
 import android.content.Intent;
@@ -83,7 +83,7 @@ public class GeneralActivity extends BaseActivity {
 
         int contentType = Id.content.unknown;
         try {
-            contentType = Apg.getStreamContent(this, inStream);
+            contentType = PGPHelper.getStreamContent(this, inStream);
             inStream.close();
         } catch (IOException e) {
             // just means that there's no PGP data in there
@@ -134,10 +134,10 @@ public class GeneralActivity extends BaseActivity {
             case Id.choice.action.encrypt: {
                 intent.setClass(this, EncryptActivity.class);
                 if (mDataString != null) {
-                    intent.setAction(Apg.Intent.ENCRYPT);
-                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                    intent.setAction(PGPHelper.Intent.ENCRYPT);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mDataString);
                 } else if (mDataUri != null) {
-                    intent.setAction(Apg.Intent.ENCRYPT_FILE);
+                    intent.setAction(PGPHelper.Intent.ENCRYPT_FILE);
                     intent.setDataAndType(mDataUri, mIntent.getType());
                 }
 
@@ -147,10 +147,10 @@ public class GeneralActivity extends BaseActivity {
             case Id.choice.action.decrypt: {
                 intent.setClass(this, DecryptActivity.class);
                 if (mDataString != null) {
-                    intent.setAction(Apg.Intent.DECRYPT);
-                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                    intent.setAction(PGPHelper.Intent.DECRYPT);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mDataString);
                 } else if (mDataUri != null) {
-                    intent.setAction(Apg.Intent.DECRYPT_FILE);
+                    intent.setAction(PGPHelper.Intent.DECRYPT_FILE);
                     intent.setDataAndType(mDataUri, mIntent.getType());
                 }
 
@@ -159,9 +159,9 @@ public class GeneralActivity extends BaseActivity {
 
             case Id.choice.action.import_public: {
                 intent.setClass(this, PublicKeyListActivity.class);
-                intent.setAction(Apg.Intent.IMPORT);
+                intent.setAction(PGPHelper.Intent.IMPORT);
                 if (mDataString != null) {
-                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mDataString);
                 } else if (mDataUri != null) {
                     intent.setDataAndType(mDataUri, mIntent.getType());
                 }
@@ -170,9 +170,9 @@ public class GeneralActivity extends BaseActivity {
 
             case Id.choice.action.import_secret: {
                 intent.setClass(this, SecretKeyListActivity.class);
-                intent.setAction(Apg.Intent.IMPORT);
+                intent.setAction(PGPHelper.Intent.IMPORT);
                 if (mDataString != null) {
-                    intent.putExtra(Apg.EXTRA_TEXT, mDataString);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mDataString);
                 } else if (mDataUri != null) {
                     intent.setDataAndType(mDataUri, mIntent.getType());
                 }

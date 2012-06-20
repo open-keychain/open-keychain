@@ -21,10 +21,11 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
+import org.thialfihar.android.apg.helper.FileHelper;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
@@ -33,7 +34,6 @@ import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.util.Compatibility;
-import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -181,6 +181,18 @@ public class EncryptActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.encrypt);
 
+        // set actionbar without home button if called from another app
+        final ActionBar actionBar = getSupportActionBar();
+        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
+                + getCallingPackage());
+        if (getCallingPackage() != null && getCallingPackage().equals(PGPHelper.PACKAGE_NAME)) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        } else {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
+        }
+
         mGenerateSignature = false;
 
         mSource = (ViewFlipper) findViewById(R.id.source);
@@ -268,7 +280,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         mBrowse = (ImageButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Utils.openFile(EncryptActivity.this, mFilename.getText().toString(), "*/*",
+                FileHelper.openFile(EncryptActivity.this, mFilename.getText().toString(), "*/*",
                         Id.request.filename);
             }
         });
@@ -323,61 +335,49 @@ public class EncryptActivity extends SherlockFragmentActivity {
         });
 
         mIntent = getIntent();
-        if (Apg.Intent.ENCRYPT.equals(mIntent.getAction())
-                || Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())
-                || Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                || Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+        if (PGPHelper.Intent.ENCRYPT.equals(mIntent.getAction())
+                || PGPHelper.Intent.ENCRYPT_FILE.equals(mIntent.getAction())
+                || PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
             mContentUri = mIntent.getData();
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
 
-            // set actionbar without home button if called from another app
-            final ActionBar actionBar = getSupportActionBar();
-            Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
-                    + getCallingPackage());
-            if (getCallingPackage() != null && getCallingPackage().equals(Apg.PACKAGE_NAME)) {
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setHomeButtonEnabled(true);
-            } else {
-                actionBar.setDisplayHomeAsUpEnabled(false);
-                actionBar.setHomeButtonEnabled(false);
-            }
-
-            if (Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                    || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 mReturnResult = true;
             }
 
-            if (Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 mGenerateSignature = true;
                 mOverrideAsciiArmour = true;
                 mAsciiArmourDemand = false;
             }
 
-            if (extras.containsKey(Apg.EXTRA_ASCII_ARMOUR)) {
-                mAsciiArmourDemand = extras.getBoolean(Apg.EXTRA_ASCII_ARMOUR, true);
+            if (extras.containsKey(PGPHelper.EXTRA_ASCII_ARMOUR)) {
+                mAsciiArmourDemand = extras.getBoolean(PGPHelper.EXTRA_ASCII_ARMOUR, true);
                 mOverrideAsciiArmour = true;
                 mAsciiArmour.setChecked(mAsciiArmourDemand);
             }
 
-            mData = extras.getByteArray(Apg.EXTRA_DATA);
+            mData = extras.getByteArray(PGPHelper.EXTRA_DATA);
             String textData = null;
             if (mData == null) {
-                textData = extras.getString(Apg.EXTRA_TEXT);
+                textData = extras.getString(PGPHelper.EXTRA_TEXT);
             }
-            mSendTo = extras.getString(Apg.EXTRA_SEND_TO);
-            mSubject = extras.getString(Apg.EXTRA_SUBJECT);
-            long signatureKeyId = extras.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
-            long encryptionKeyIds[] = extras.getLongArray(Apg.EXTRA_ENCRYPTION_KEY_IDS);
+            mSendTo = extras.getString(PGPHelper.EXTRA_SEND_TO);
+            mSubject = extras.getString(PGPHelper.EXTRA_SUBJECT);
+            long signatureKeyId = extras.getLong(PGPHelper.EXTRA_SIGNATURE_KEY_ID);
+            long encryptionKeyIds[] = extras.getLongArray(PGPHelper.EXTRA_ENCRYPTION_KEY_IDS);
             if (signatureKeyId != 0) {
-                PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(signatureKeyId);
+                PGPSecretKeyRing keyRing = PGPHelper.getSecretKeyRing(signatureKeyId);
                 PGPSecretKey masterKey = null;
                 if (keyRing != null) {
-                    masterKey = Apg.getMasterKey(keyRing);
+                    masterKey = PGPHelper.getMasterKey(keyRing);
                     if (masterKey != null) {
-                        Vector<PGPSecretKey> signKeys = Apg.getUsableSigningKeys(keyRing);
+                        Vector<PGPSecretKey> signKeys = PGPHelper.getUsableSigningKeys(keyRing);
                         if (signKeys.size() > 0) {
                             setSecretKeyId(masterKey.getKeyID());
                         }
@@ -388,16 +388,16 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (encryptionKeyIds != null) {
                 Vector<Long> goodIds = new Vector<Long>();
                 for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                    PGPPublicKeyRing keyRing = Apg.getPublicKeyRing(encryptionKeyIds[i]);
+                    PGPPublicKeyRing keyRing = PGPHelper.getPublicKeyRing(encryptionKeyIds[i]);
                     PGPPublicKey masterKey = null;
                     if (keyRing == null) {
                         continue;
                     }
-                    masterKey = Apg.getMasterKey(keyRing);
+                    masterKey = PGPHelper.getMasterKey(keyRing);
                     if (masterKey == null) {
                         continue;
                     }
-                    Vector<PGPPublicKey> encryptKeys = Apg.getUsableEncryptKeys(keyRing);
+                    Vector<PGPPublicKey> encryptKeys = PGPHelper.getUsableEncryptKeys(keyRing);
                     if (encryptKeys.size() == 0) {
                         continue;
                     }
@@ -411,9 +411,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 }
             }
 
-            if (Apg.Intent.ENCRYPT.equals(mIntent.getAction())
-                    || Apg.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || Apg.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (PGPHelper.Intent.ENCRYPT.equals(mIntent.getAction())
+                    || PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                    || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 if (textData != null) {
                     mMessage.setText(textData);
                 }
@@ -422,7 +422,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                     mSource.showNext();
                 }
-            } else if (Apg.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
+            } else if (PGPHelper.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
                 if ("file".equals(mIntent.getScheme())) {
                     mInputFilename = Uri.decode(mIntent.getDataString().replace("file://", ""));
                     mFilename.setText(mInputFilename);
@@ -651,7 +651,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 return;
             }
 
-            if (getSecretKeyId() != 0 && Apg.getCachedPassPhrase(getSecretKeyId()) == null) {
+            if (getSecretKeyId() != 0 && PGPHelper.getCachedPassPhrase(getSecretKeyId()) == null) {
                 showPassphraseDialog();
 
                 return;
@@ -659,7 +659,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         }
 
         if (mEncryptTarget == Id.target.file) {
-            askForOutputFilename();
+            showOutputFileDialog();
         } else {
             encryptStart();
         }
@@ -676,7 +676,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     if (mEncryptTarget == Id.target.file) {
-                        askForOutputFilename();
+                        showOutputFileDialog();
                     } else {
                         encryptStart();
                     }
@@ -692,15 +692,15 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (Apg.GeneralException e) {
+        } catch (PGPHelper.GeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
         }
     }
 
-    private void askForOutputFilename() {
-        // Message is received after passphrase is cached
+    private void showOutputFileDialog() {
+        // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -721,7 +721,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 Id.request.output_filename);
 
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
-
     }
 
     private void encryptStart() {
@@ -743,7 +742,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (passPhrase.length() == 0) {
                 passPhrase = null;
             }
-            // signatureKeyId = Id.key.symmetric;
 
             data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
         } else {
@@ -776,13 +774,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
             intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_BYTES);
 
             if (mData != null) {
-                data.putByteArray(ApgService.BYTES, mData);
+                data.putByteArray(ApgService.MESSAGE_BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
                 if (signOnly && !mReturnResult) {
                     fixBadCharactersForGmail(message);
                 }
-                data.putByteArray(ApgService.BYTES, message.getBytes());
+                data.putByteArray(ApgService.MESSAGE_BYTES, message.getBytes());
             }
         }
 
@@ -919,11 +917,11 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else {
             String uid = getResources().getString(R.string.unknownUserId);
             String uidExtra = "";
-            PGPSecretKeyRing keyRing = Apg.getSecretKeyRing(getSecretKeyId());
+            PGPSecretKeyRing keyRing = PGPHelper.getSecretKeyRing(getSecretKeyId());
             if (keyRing != null) {
-                PGPSecretKey key = Apg.getMasterKey(keyRing);
+                PGPSecretKey key = PGPHelper.getMasterKey(keyRing);
                 if (key != null) {
-                    String userId = Apg.getMainUserIdSafe(this, key);
+                    String userId = PGPHelper.getMainUserIdSafe(this, key);
                     String chunks[] = userId.split(" <", 2);
                     uid = chunks[0];
                     if (chunks.length > 1) {
@@ -957,7 +955,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 initialKeyIds[i] = keyIds.get(i);
             }
         }
-        intent.putExtra(Apg.EXTRA_SELECTION, initialKeyIds);
+        intent.putExtra(PGPHelper.EXTRA_SELECTION, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -1000,7 +998,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.public_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                mEncryptionKeyIds = bundle.getLongArray(Apg.EXTRA_SELECTION);
+                mEncryptionKeyIds = bundle.getLongArray(PGPHelper.EXTRA_SELECTION);
             }
             updateView();
             break;
@@ -1009,7 +1007,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(Apg.EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(PGPHelper.EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

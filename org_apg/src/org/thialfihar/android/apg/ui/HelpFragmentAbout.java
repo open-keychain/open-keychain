@@ -18,7 +18,7 @@ package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.util.Utils;
+import org.thialfihar.android.apg.helper.OtherHelper;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -52,7 +52,7 @@ public class HelpFragmentAbout extends SherlockFragment {
         View view = inflater.inflate(R.layout.help_fragment_about, container, false);
 
         // load html from html file from /res/raw
-        String aboutText = Utils.readContentFromResource(this.getActivity(), R.raw.help_about);
+        String aboutText = OtherHelper.readContentFromResource(this.getActivity(), R.raw.help_about);
 
         TextView versionText = (TextView) view.findViewById(R.id.help_about_version);
         versionText.setText(getString(R.string.help_about_version) + " " + getVersion());

@@ -17,10 +17,10 @@
 package org.thialfihar.android.apg.ui;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -71,7 +71,7 @@ public class PublicKeyListActivity extends KeyListActivity {
         }
         case Id.menu.option.scanQRCode: {
             Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-            intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+            intent.setAction(PGPHelper.Intent.IMPORT_FROM_QR_CODE);
             startActivityForResult(intent, Id.request.import_from_qr_code);
 
             return true;
@@ -114,9 +114,9 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            Object keyRing = Apg.getKeyRing(keyRingId);
+            Object keyRing = PGPHelper.getKeyRing(keyRingId);
             if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
-                keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
+                keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
             if (keyId == 0) {
                 // this shouldn't happen
@@ -124,8 +124,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             }
 
             Intent intent = new Intent(this, KeyServerQueryActivity.class);
-            intent.setAction(Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN);
-            intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+            intent.setAction(PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN);
+            intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
             startActivityForResult(intent, Id.request.look_up_key_id);
 
             return true;
@@ -136,8 +136,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
 
             Intent intent = new Intent(this, KeyServerExportActivity.class);
-            intent.setAction(Apg.Intent.EXPORT_KEY_TO_SERVER);
-            intent.putExtra(Apg.EXTRA_KEY_ID, keyRingId);
+            intent.setAction(PGPHelper.Intent.EXPORT_KEY_TO_SERVER);
+            intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyRingId);
             startActivityForResult(intent, Id.request.export_to_server);
 
             return true;
@@ -147,9 +147,9 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            Object keyRing = Apg.getKeyRing(keyRingId);
+            Object keyRing = PGPHelper.getKeyRing(keyRingId);
             if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
-                keyId = Apg.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
+                keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
 
             if (keyId == 0) {
@@ -158,7 +158,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             }
 
             Intent intent = new Intent(this, SignKeyActivity.class);
-            intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+            intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
             startActivity(intent);
 
             return true;
@@ -175,13 +175,13 @@ public class PublicKeyListActivity extends KeyListActivity {
         switch (requestCode) {
         case Id.request.look_up_key_id: {
             if (resultCode == RESULT_CANCELED || data == null
-                    || data.getStringExtra(Apg.EXTRA_TEXT) == null) {
+                    || data.getStringExtra(PGPHelper.EXTRA_TEXT) == null) {
                 return;
             }
 
             Intent intent = new Intent(this, PublicKeyListActivity.class);
-            intent.setAction(Apg.Intent.IMPORT);
-            intent.putExtra(Apg.EXTRA_TEXT, data.getStringExtra(Apg.EXTRA_TEXT));
+            intent.setAction(PGPHelper.Intent.IMPORT);
+            intent.putExtra(PGPHelper.EXTRA_TEXT, data.getStringExtra(PGPHelper.EXTRA_TEXT));
             handleIntent(intent);
             break;
         }

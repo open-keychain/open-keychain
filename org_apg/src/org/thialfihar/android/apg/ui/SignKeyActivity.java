@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2011 Senecaso
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,11 +32,11 @@ import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import com.actionbarsherlock.view.MenuItem;
 
@@ -122,7 +124,7 @@ public class SignKeyActivity extends BaseActivity {
             }
         });
 
-        pubKeyId = getIntent().getLongExtra(Apg.EXTRA_KEY_ID, 0);
+        pubKeyId = getIntent().getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
         if (pubKeyId == 0) {
             finish(); // nothing to do if we dont know what key to sign
         } else {
@@ -137,7 +139,7 @@ public class SignKeyActivity extends BaseActivity {
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = Apg.getPublicKeyRing(pubKeyId);
+        PGPPublicKeyRing pubring = PGPHelper.getPublicKeyRing(pubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
@@ -156,7 +158,7 @@ public class SignKeyActivity extends BaseActivity {
                 /*
                  * get the user's passphrase for this key (if required)
                  */
-                String passphrase = Apg.getCachedPassPhrase(masterKeyId);
+                String passphrase = PGPHelper.getCachedPassPhrase(masterKeyId);
                 if (passphrase == null) {
                     showDialog(Id.dialog.pass_phrase);
                     return; // bail out; need to wait until the user has entered the passphrase
@@ -168,7 +170,7 @@ public class SignKeyActivity extends BaseActivity {
                 final Bundle status = new Bundle();
                 Message msg = new Message();
 
-                status.putString(Apg.EXTRA_ERROR, "Key has already been signed");
+                status.putString(PGPHelper.EXTRA_ERROR, "Key has already been signed");
 
                 status.putInt(Constants.extras.STATUS, Id.message.done);
 
@@ -206,16 +208,16 @@ public class SignKeyActivity extends BaseActivity {
         Message msg = new Message();
 
         try {
-            String passphrase = Apg.getCachedPassPhrase(masterKeyId);
+            String passphrase = PGPHelper.getCachedPassPhrase(masterKeyId);
             if (passphrase == null || passphrase.length() <= 0) {
-                status.putString(Apg.EXTRA_ERROR, "Unable to obtain passphrase");
+                status.putString(PGPHelper.EXTRA_ERROR, "Unable to obtain passphrase");
             } else {
-                PGPPublicKeyRing pubring = Apg.getPublicKeyRing(pubKeyId);
+                PGPPublicKeyRing pubring = PGPHelper.getPublicKeyRing(pubKeyId);
 
                 /*
                  * sign the incoming key
                  */
-                PGPSecretKey secretKey = Apg.getSecretKey(masterKeyId);
+                PGPSecretKey secretKey = PGPHelper.getSecretKey(masterKeyId);
                 PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
                         BouncyCastleProvider.PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
@@ -241,33 +243,33 @@ public class SignKeyActivity extends BaseActivity {
                      * upload the newly signed key to the key server
                      */
 
-                    Apg.uploadKeyRingToServer(server, pubring);
+                    PGPHelper.uploadKeyRingToServer(server, pubring);
                 }
 
                 // store the signed key in our local cache
-                int retval = Apg.storeKeyRingInCache(pubring);
+                int retval = PGPHelper.storeKeyRingInCache(pubring);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                    status.putString(Apg.EXTRA_ERROR, "Failed to store signed key in local cache");
+                    status.putString(PGPHelper.EXTRA_ERROR, "Failed to store signed key in local cache");
                 }
             }
         } catch (PGPException e) {
             Log.e(TAG, "Failed to sign key", e);
-            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchAlgorithmException e) {
             Log.e(TAG, "Failed to sign key", e);
-            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (NoSuchProviderException e) {
             Log.e(TAG, "Failed to sign key", e);
-            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         } catch (SignatureException e) {
             Log.e(TAG, "Failed to sign key", e);
-            status.putString(Apg.EXTRA_ERROR, "Failed to sign key");
+            status.putString(PGPHelper.EXTRA_ERROR, "Failed to sign key");
             status.putInt(Constants.extras.STATUS, Id.message.done);
             return;
         }
@@ -277,7 +279,7 @@ public class SignKeyActivity extends BaseActivity {
         msg.setData(status);
         sendMessage(msg);
 
-        if (status.containsKey(Apg.EXTRA_ERROR)) {
+        if (status.containsKey(PGPHelper.EXTRA_ERROR)) {
             setResult(Id.return_value.error);
         } else {
             setResult(Id.return_value.ok);
@@ -291,7 +293,7 @@ public class SignKeyActivity extends BaseActivity {
         switch (requestCode) {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
-                masterKeyId = data.getLongExtra(Apg.EXTRA_KEY_ID, 0);
+                masterKeyId = data.getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
 
                 // re-enable the sign button so the user can initiate the sign process
                 Button sign = (Button) findViewById(R.id.sign);
@@ -314,7 +316,7 @@ public class SignKeyActivity extends BaseActivity {
         removeDialog(Id.dialog.signing);
 
         Bundle data = msg.getData();
-        String error = data.getString(Apg.EXTRA_ERROR);
+        String error = data.getString(PGPHelper.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();

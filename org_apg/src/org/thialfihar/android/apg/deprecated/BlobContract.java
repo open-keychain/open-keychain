@@ -1,3 +1,4 @@
+package org.thialfihar.android.apg.deprecated;
 //package org.thialfihar.android.apg.provider.blob;
 //
 //import android.net.Uri;

@@ -12,10 +12,9 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.provider.blob;
+package org.thialfihar.android.apg.deprecated;
 
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.service.ApgService2;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

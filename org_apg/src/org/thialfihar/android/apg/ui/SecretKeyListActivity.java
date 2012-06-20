@@ -17,9 +17,9 @@
 package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 
 import com.actionbarsherlock.view.Menu;
@@ -111,7 +111,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
             long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
                     .getGroupId(mSelectedItem);
-            String msg = keyId + "," + Apg.getFingerPrint(keyId);
+            String msg = keyId + "," + PGPHelper.getFingerPrint(keyId);
 
             new IntentIntegrator(this).shareText(msg);
         }
@@ -146,11 +146,11 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     public void checkPassPhraseAndEdit() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        String passPhrase = Apg.getCachedPassPhrase(keyId);
+        String passPhrase = PGPHelper.getCachedPassPhrase(keyId);
         if (passPhrase == null) {
             showDialog(Id.dialog.pass_phrase);
         } else {
-            Apg.setEditPassPhrase(passPhrase);
+            PGPHelper.setEditPassPhrase(passPhrase);
             editKey();
         }
     }
@@ -158,20 +158,20 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
     @Override
     public void passPhraseCallback(long keyId, String passPhrase) {
         super.passPhraseCallback(keyId, passPhrase);
-        Apg.setEditPassPhrase(passPhrase);
+        PGPHelper.setEditPassPhrase(passPhrase);
         editKey();
     }
 
     private void createKey() {
-        Apg.setEditPassPhrase("");
-        Intent intent = new Intent(Apg.Intent.CREATE_KEY);
+        PGPHelper.setEditPassPhrase("");
+        Intent intent = new Intent(PGPHelper.Intent.CREATE_KEY);
         startActivityForResult(intent, Id.message.create_key);
     }
 
     private void editKey() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        Intent intent = new Intent(Apg.Intent.EDIT_KEY);
-        intent.putExtra(Apg.EXTRA_KEY_ID, keyId);
+        Intent intent = new Intent(PGPHelper.Intent.EDIT_KEY);
+        intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
         startActivityForResult(intent, Id.message.edit_key);
     }
 

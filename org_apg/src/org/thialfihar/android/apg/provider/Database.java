@@ -19,8 +19,8 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.util.IterableIterator;
 
 import android.content.ContentValues;
@@ -318,11 +318,11 @@ public class Database extends SQLiteOpenHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getBitStrength());
-        values.put(Keys.CAN_SIGN, Apg.isSigningKey(key));
-        values.put(Keys.CAN_ENCRYPT, Apg.isEncryptionKey(key));
+        values.put(Keys.CAN_SIGN, PGPHelper.isSigningKey(key));
+        values.put(Keys.CAN_ENCRYPT, PGPHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.isRevoked());
-        values.put(Keys.CREATION, Apg.getCreationDate(key).getTime() / 1000);
-        Date expiryDate = Apg.getExpiryDate(key);
+        values.put(Keys.CREATION, PGPHelper.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = PGPHelper.getExpiryDate(key);
         if (expiryDate != null) {
             values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
         }
@@ -367,11 +367,11 @@ public class Database extends SQLiteOpenHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
-        values.put(Keys.CAN_SIGN, Apg.isSigningKey(key));
-        values.put(Keys.CAN_ENCRYPT, Apg.isEncryptionKey(key));
+        values.put(Keys.CAN_SIGN, PGPHelper.isSigningKey(key));
+        values.put(Keys.CAN_ENCRYPT, PGPHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
-        values.put(Keys.CREATION, Apg.getCreationDate(key).getTime() / 1000);
-        Date expiryDate = Apg.getExpiryDate(key);
+        values.put(Keys.CREATION, PGPHelper.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = PGPHelper.getExpiryDate(key);
         if (expiryDate != null) {
             values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
         }

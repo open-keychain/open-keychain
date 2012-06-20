@@ -27,8 +27,6 @@ public final class Constants {
     }
 
     public static final class pref {
-        public static final String HAS_SEEN_HELP = "seenHelp";
-        public static final String HAS_SEEN_CHANGE_LOG = "seenChangeLogDialog";
         public static final String DEFAULT_ENCRYPTION_ALGORITHM = "defaultEncryptionAlgorithm";
         public static final String DEFAULT_HASH_ALGORITHM = "defaultHashAlgorithm";
         public static final String DEFAULT_ASCII_ARMOUR = "defaultAsciiArmour";
@@ -44,6 +42,7 @@ public final class Constants {
         public static final String KEY_SERVERS = "pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu";
     }
 
+    // TODO: rework!
     public static final class extras {
         public static final String PROGRESS = "progress";
         public static final String PROGRESS_MAX = "max";

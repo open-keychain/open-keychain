@@ -18,14 +18,14 @@ package org.thialfihar.android.apg.ui.widget;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
 import org.thialfihar.android.apg.util.Choice;
-import org.thialfihar.android.apg.util.Utils;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -259,9 +259,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         String passPhrase;
         if (mEditors.getChildCount() > 0) {
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
-            passPhrase = Apg.getCachedPassPhrase(masterKey.getKeyID());
+            passPhrase = PGPHelper.getCachedPassPhrase(masterKey.getKeyID());
 
-            data.putByteArray(ApgService.MASTER_KEY, Utils.PGPSecretKeyToBytes(masterKey));
+            data.putByteArray(ApgService.MASTER_KEY,
+                    PGPConversionHelper.PGPSecretKeyToBytes(masterKey));
         } else {
             passPhrase = "";
         }
@@ -284,7 +285,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
-                    PGPSecretKeyRing newKeyRing = Utils.BytesToPGPSecretKeyRing(data
+                    PGPSecretKeyRing newKeyRing = PGPConversionHelper.BytesToPGPSecretKeyRing(data
                             .getByteArray(ApgService.RESULT_NEW_KEY));
 
                     boolean isMasterKey = (mEditors.getChildCount() == 0);

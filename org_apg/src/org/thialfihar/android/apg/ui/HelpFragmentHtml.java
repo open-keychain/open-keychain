@@ -16,7 +16,7 @@
 
 package org.thialfihar.android.apg.ui;
 
-import org.thialfihar.android.apg.util.Utils;
+import org.thialfihar.android.apg.helper.OtherHelper;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -68,7 +68,7 @@ public class HelpFragmentHtml extends SherlockFragment {
         htmlFile = getArguments().getInt(ARG_HTML_FILE);
 
         // load html from html file from /res/raw
-        String helpText = Utils.readContentFromResource(this.getActivity(), htmlFile);
+        String helpText = OtherHelper.readContentFromResource(this.getActivity(), htmlFile);
 
         mActivity = getActivity();
 

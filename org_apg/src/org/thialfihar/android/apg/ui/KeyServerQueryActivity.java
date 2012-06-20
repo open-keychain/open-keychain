@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
@@ -26,6 +25,7 @@ import org.thialfihar.android.apg.KeyServer.InsufficientQuery;
 import org.thialfihar.android.apg.KeyServer.KeyInfo;
 import org.thialfihar.android.apg.KeyServer.QueryException;
 import org.thialfihar.android.apg.KeyServer.TooManyResponses;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import com.actionbarsherlock.view.MenuItem;
 
@@ -71,7 +71,10 @@ public class KeyServerQueryActivity extends BaseActivity {
         switch (item.getItemId()) {
 
         case android.R.id.home:
-            startActivity(new Intent(this, PublicKeyListActivity.class));
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, PublicKeyListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
 
         default:
@@ -118,11 +121,11 @@ public class KeyServerQueryActivity extends BaseActivity {
         });
 
         Intent intent = getIntent();
-        if (Apg.Intent.LOOK_UP_KEY_ID.equals(intent.getAction())
-                || Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
-            long keyId = intent.getLongExtra(Apg.EXTRA_KEY_ID, 0);
+        if (PGPHelper.Intent.LOOK_UP_KEY_ID.equals(intent.getAction())
+                || PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
+            long keyId = intent.getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
             if (keyId != 0) {
-                String query = "0x" + Apg.keyToHex(keyId);
+                String query = "0x" + PGPHelper.keyToHex(keyId);
                 mQuery.setText(query);
                 search(query);
             }
@@ -176,7 +179,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         data.putInt(Constants.extras.STATUS, Id.message.done);
 
         if (error != null) {
-            data.putString(Apg.EXTRA_ERROR, error);
+            data.putString(PGPHelper.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -190,7 +193,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         removeDialog(Id.dialog.querying);
 
         Bundle data = msg.getData();
-        String error = data.getString(Apg.EXTRA_ERROR);
+        String error = data.getString(PGPHelper.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();
@@ -205,10 +208,10 @@ public class KeyServerQueryActivity extends BaseActivity {
             }
         } else if (mQueryType == Id.keyserver.get) {
             Intent orgIntent = getIntent();
-            if (Apg.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
+            if (PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
                 if (mKeyData != null) {
                     Intent intent = new Intent();
-                    intent.putExtra(Apg.EXTRA_TEXT, mKeyData);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
                     setResult(RESULT_OK, intent);
                 } else {
                     setResult(RESULT_CANCELED);
@@ -217,8 +220,8 @@ public class KeyServerQueryActivity extends BaseActivity {
             } else {
                 if (mKeyData != null) {
                     Intent intent = new Intent(this, PublicKeyListActivity.class);
-                    intent.setAction(Apg.Intent.IMPORT);
-                    intent.putExtra(Apg.EXTRA_TEXT, mKeyData);
+                    intent.setAction(PGPHelper.Intent.IMPORT);
+                    intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
                     startActivity(intent);
                 }
             }
@@ -284,7 +287,7 @@ public class KeyServerQueryActivity extends BaseActivity {
                 mainUserId.setText(userId);
             }
 
-            keyId.setText(Apg.getSmallFingerPrint(keyInfo.keyId));
+            keyId.setText(PGPHelper.getSmallFingerPrint(keyInfo.keyId));
 
             if (mainUserIdRest.getText().length() == 0) {
                 mainUserIdRest.setVisibility(View.GONE);

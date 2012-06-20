@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,30 +15,29 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+android:id/text_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:gravity="center_vertical">
+        android:orientation="horizontal" >
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="6sp"
             android:layout_marginLeft="16sp"
             android:layout_marginRight="6sp"
             android:layout_marginTop="6sp"
-            android:layout_marginBottom="6sp"
             android:layout_weight="1"
-            android:focusable="true"
-            android:background="@android:drawable/menuitem_background">
+            android:background="@android:drawable/menuitem_background"
+            android:focusable="true" >
 
             <TextView
                 android:id="@+id/title"
@@ -51,65 +51,40 @@
                 android:id="@+id/summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
                 android:layout_alignLeft="@android:id/title"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:maxLines="2" />
-
+                android:layout_below="@android:id/title"
+                android:maxLines="2"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
         </RelativeLayout>
 
         <ImageView
             android:id="@+id/add"
+            style="@style/PlusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="4dip"
             android:layout_marginRight="6dip"
-            android:layout_gravity="center_vertical"
-            android:clickable="true"
-            style="@style/PlusButton"/>
-
+            android:clickable="true" />
     </LinearLayout>
 
     <View
         android:id="@+id/separator"
         android:layout_width="fill_parent"
         android:layout_height="1dip"
-        android:background="?android:attr/listDivider"/>
+        android:background="?android:attr/listDivider" />
 
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <LinearLayout
             android:id="@+id/editors"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical"/>
-
+            android:orientation="vertical" />
     </ScrollView>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@android:style/ButtonBar">
-
-        <Button
-            android:text="@android:string/ok"
-            android:id="@+id/btn_ok"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <Button
-            android:text="@android:string/cancel"
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-    </LinearLayout>
 
 </LinearLayout>

@@ -20,9 +20,9 @@ import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -55,7 +55,7 @@ public class AskForPassphrase {
             secretKey = null;
             alert.setMessage(context.getString(R.string.passPhraseForSymmetricEncryption));
         } else {
-            secretKey = Apg.getMasterKey(Apg.getSecretKeyRing(secretKeyId));
+            secretKey = PGPHelper.getMasterKey(PGPHelper.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
                 alert.setTitle(R.string.title_keyNotFound);
                 alert.setMessage(context.getString(R.string.keyNotFound, secretKeyId));
@@ -67,7 +67,7 @@ public class AskForPassphrase {
                 alert.setCancelable(false);
                 return alert.create();
             }
-            String userId = Apg.getMainUserIdSafe(context, secretKey);
+            String userId = PGPHelper.getMainUserIdSafe(context, secretKey);
             alert.setMessage(context.getString(R.string.passPhraseFor, userId));
         }
 
@@ -111,7 +111,7 @@ public class AskForPassphrase {
                 }
                 
                 // cache again
-                Apg.setCachedPassPhrase(keyId, passPhrase);
+                PGPHelper.setCachedPassPhrase(keyId, passPhrase);
                 // return by callback
                 cb.passPhraseCallback(keyId, passPhrase);
             }
@@ -133,7 +133,7 @@ public class AskForPassphrase {
                     Log.d("APG", "Key has no passphrase!");
 
                     // cache null
-                    Apg.setCachedPassPhrase(secretKey.getKeyID(), null);
+                    PGPHelper.setCachedPassPhrase(secretKey.getKeyID(), null);
                     // return by callback
                     cb.passPhraseCallback(secretKey.getKeyID(), null);
 

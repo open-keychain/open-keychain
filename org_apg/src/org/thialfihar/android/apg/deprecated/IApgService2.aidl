@@ -1,4 +1,4 @@
-package org.thialfihar.android.apg.service;
+package org.thialfihar.android.apg.deprecated;
 
 interface IApgService2 {
 

@@ -42,7 +42,7 @@
         android:protectionLevel="dangerous" />
 
     <application
-        android:name="ApgApplication"
+        android:name=".ApgApplication"
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -217,9 +217,11 @@
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/title_preferences" />
         <activity
-            android:name=".ui.KeyServerPreferenceActivity"
+            android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
-            android:label="@string/title_keyServerPreference" />
+            android:label="@string/title_keyServerPreference"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SignKeyActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
@@ -237,7 +239,7 @@
 
         <!-- TODO: need to be moved into new service model -->
         <service
-            android:name=".service.ApgService2"
+            android:name=".deprecated.ApgService2"
             android:enabled="true"
             android:exported="true"
             android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
@@ -256,7 +258,7 @@
             android:authorities="org.thialfihar.android.apg.provider"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
         <provider
-            android:name=".provider.blob.ApgServiceBlobProvider"
+            android:name=".deprecated.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
             android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
     </application>

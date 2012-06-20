@@ -19,8 +19,8 @@ package org.thialfihar.android.apg.ui;
 import java.util.Vector;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.ui.widget.SelectPublicKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -89,7 +89,7 @@ public class SelectPublicKeyListActivity extends BaseActivity {
         }
 
         long selectedKeyIds[] = null;
-        selectedKeyIds = intent.getLongArrayExtra(Apg.EXTRA_SELECTION);
+        selectedKeyIds = intent.getLongArrayExtra(PGPHelper.EXTRA_SELECTION);
 
         if (selectedKeyIds == null) {
             Vector<Long> vector = new Vector<Long>();
@@ -151,8 +151,8 @@ public class SelectPublicKeyListActivity extends BaseActivity {
             selectedKeyIds[i] = keys.get(i);
         }
         String userIdArray[] = new String[0];
-        data.putExtra(Apg.EXTRA_SELECTION, selectedKeyIds);
-        data.putExtra(Apg.EXTRA_USER_IDS, userIds.toArray(userIdArray));
+        data.putExtra(PGPHelper.EXTRA_SELECTION, selectedKeyIds);
+        data.putExtra(PGPHelper.EXTRA_USER_IDS, userIds.toArray(userIdArray));
         setResult(RESULT_OK, data);
         finish();
     }

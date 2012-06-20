@@ -19,14 +19,14 @@ package org.thialfihar.android.apg.ui;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.FileDialog;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.InputData;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
+import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
+import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.view.MenuItem;
@@ -42,7 +42,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -82,6 +85,8 @@ public class KeyListActivity extends BaseActivity {
     protected boolean mDeleteAfterImport = false;
 
     protected int mKeyType = Id.type.public_key;
+
+    FileDialogFragment mFileDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,11 +139,11 @@ public class KeyListActivity extends BaseActivity {
         mListAdapter = new KeyListAdapter(this, searchString);
         mList.setAdapter(mListAdapter);
 
-        if (Apg.Intent.IMPORT.equals(intent.getAction())) {
+        if (PGPHelper.Intent.IMPORT.equals(intent.getAction())) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
             } else {
-                mImportData = intent.getStringExtra(Apg.EXTRA_TEXT);
+                mImportData = intent.getStringExtra(PGPHelper.EXTRA_TEXT);
             }
             importKeys();
         }
@@ -148,12 +153,14 @@ public class KeyListActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case Id.menu.option.import_keys: {
-            showDialog(Id.dialog.import_keys);
+            // showDialog(Id.dialog.import_keys);
+            showImportKeysDialog();
             return true;
         }
 
         case Id.menu.option.export_keys: {
-            showDialog(Id.dialog.export_keys);
+            // showDialog(Id.dialog.export_keys);
+            showExportKeysDialog(false);
             return true;
         }
 
@@ -161,6 +168,59 @@ public class KeyListActivity extends BaseActivity {
             return super.onOptionsItemSelected(item);
         }
         }
+    }
+
+    private void showImportKeysDialog() {
+        // Message is received after file is selected
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+                    mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+
+                    mDeleteAfterImport = data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED);
+                    importKeys();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        mFileDialog = FileDialogFragment.newInstance(messenger,
+                getString(R.string.title_importKeys), getString(R.string.specifyFileToImportFrom),
+                mImportFilename, null, Id.request.filename);
+
+        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+    }
+
+    private void showExportKeysDialog(boolean singleKeyExport) {
+        String title = (singleKeyExport ? getString(R.string.title_exportKey)
+                : getString(R.string.title_exportKeys));
+        String message = getString(mKeyType == Id.type.public_key ? R.string.specifyFileToExportTo
+                : R.string.specifyFileToExportSecretKeysTo);
+
+        // Message is received after file is selected
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+                    mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+
+                    exportKeys();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        mFileDialog = FileDialogFragment.newInstance(messenger, title, message, mExportFilename,
+                null, Id.request.filename);
+
+        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
     }
 
     @Override
@@ -176,7 +236,7 @@ public class KeyListActivity extends BaseActivity {
         switch (menuItem.getItemId()) {
         case Id.menu.export: {
             mSelectedItem = groupPosition;
-            showDialog(Id.dialog.export_key);
+            showExportKeysDialog(true);
             return true;
         }
 
@@ -194,7 +254,6 @@ public class KeyListActivity extends BaseActivity {
 
     @Override
     protected Dialog onCreateDialog(int id) {
-        boolean singleKeyExport = false;
 
         switch (id) {
         case Id.dialog.delete_key: {
@@ -202,14 +261,14 @@ public class KeyListActivity extends BaseActivity {
             mSelectedItem = -1;
             // TODO: better way to do this?
             String userId = "<unknown>";
-            Object keyRing = Apg.getKeyRing(keyRingId);
+            Object keyRing = PGPHelper.getKeyRing(keyRingId);
             if (keyRing != null) {
                 if (keyRing instanceof PGPPublicKeyRing) {
-                    userId = Apg.getMainUserIdSafe(this,
-                            Apg.getMasterKey((PGPPublicKeyRing) keyRing));
+                    userId = PGPHelper.getMainUserIdSafe(this,
+                            PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing));
                 } else {
-                    userId = Apg.getMainUserIdSafe(this,
-                            Apg.getMasterKey((PGPSecretKeyRing) keyRing));
+                    userId = PGPHelper.getMainUserIdSafe(this,
+                            PGPHelper.getMasterKey((PGPSecretKeyRing) keyRing));
                 }
             }
 
@@ -232,54 +291,6 @@ public class KeyListActivity extends BaseActivity {
                         }
                     });
             return builder.create();
-        }
-
-        case Id.dialog.import_keys: {
-            return FileDialog.build(this, getString(R.string.title_importKeys),
-                    getString(R.string.specifyFileToImportFrom), mImportFilename,
-                    new FileDialog.OnClickListener() {
-                        public void onOkClick(String filename, boolean checked) {
-                            removeDialog(Id.dialog.import_keys);
-                            mDeleteAfterImport = checked;
-                            mImportFilename = filename;
-                            importKeys();
-                        }
-
-                        public void onCancelClick() {
-                            removeDialog(Id.dialog.import_keys);
-                        }
-                    }, getString(R.string.filemanager_titleOpen),
-                    getString(R.string.filemanager_btnOpen),
-                    getString(R.string.label_deleteAfterImport), Id.request.filename);
-        }
-
-        case Id.dialog.export_key: {
-            singleKeyExport = true;
-            // break intentionally omitted, to use the Id.dialog.export_keys dialog
-        }
-
-        case Id.dialog.export_keys: {
-            String title = (singleKeyExport ? getString(R.string.title_exportKey)
-                    : getString(R.string.title_exportKeys));
-
-            final int thisDialogId = (singleKeyExport ? Id.dialog.export_key
-                    : Id.dialog.export_keys);
-
-            return FileDialog.build(this, title,
-                    getString(mKeyType == Id.type.public_key ? R.string.specifyFileToExportTo
-                            : R.string.specifyFileToExportSecretKeysTo), mExportFilename,
-                    new FileDialog.OnClickListener() {
-                        public void onOkClick(String filename, boolean checked) {
-                            removeDialog(thisDialogId);
-                            mExportFilename = filename;
-                            exportKeys();
-                        }
-
-                        public void onCancelClick() {
-                            removeDialog(thisDialogId);
-                        }
-                    }, getString(R.string.filemanager_titleSave),
-                    getString(R.string.filemanager_btnSave), null, Id.request.filename);
         }
 
         default: {
@@ -325,12 +336,12 @@ public class KeyListActivity extends BaseActivity {
             }
 
             if (mTask == Id.task.import_keys) {
-                data = Apg.importKeyRings(this, mKeyType, new InputData(importInputStream, size),
-                        this);
+                data = PGPHelper.importKeyRings(this, mKeyType, new InputData(importInputStream,
+                        size), this);
             } else {
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (mSelectedItem == -1) {
-                    keyRingIds = Apg
+                    keyRingIds = PGPHelper
                             .getKeyRingIds(mKeyType == Id.type.public_key ? Id.database.type_public
                                     : Id.database.type_secret);
                 } else {
@@ -338,7 +349,7 @@ public class KeyListActivity extends BaseActivity {
                     keyRingIds.add(keyRingId);
                     mSelectedItem = -1;
                 }
-                data = Apg.exportKeyRings(this, keyRingIds, exportOutputStream, this);
+                data = PGPHelper.exportKeyRings(this, keyRingIds, exportOutputStream, this);
             }
         } catch (FileNotFoundException e) {
             error = getString(R.string.error_fileNotFound);
@@ -346,7 +357,7 @@ public class KeyListActivity extends BaseActivity {
             error = "" + e;
         } catch (PGPException e) {
             error = "" + e;
-        } catch (Apg.GeneralException e) {
+        } catch (PGPHelper.GeneralException e) {
             error = "" + e;
         }
 
@@ -359,7 +370,7 @@ public class KeyListActivity extends BaseActivity {
         }
 
         if (error != null) {
-            data.putString(Apg.EXTRA_ERROR, error);
+            data.putString(PGPHelper.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -367,7 +378,7 @@ public class KeyListActivity extends BaseActivity {
     }
 
     protected void deleteKey(int keyRingId) {
-        Apg.deleteKey(keyRingId);
+        PGPHelper.deleteKey(keyRingId);
         refreshList();
     }
 
@@ -387,7 +398,7 @@ public class KeyListActivity extends BaseActivity {
             case Id.message.import_done: {
                 removeDialog(Id.dialog.importing);
 
-                String error = data.getString(Apg.EXTRA_ERROR);
+                String error = data.getString(PGPHelper.EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
                             Toast.LENGTH_SHORT).show();
@@ -434,7 +445,7 @@ public class KeyListActivity extends BaseActivity {
             case Id.message.export_done: {
                 removeDialog(Id.dialog.exporting);
 
-                String error = data.getString(Apg.EXTRA_ERROR);
+                String error = data.getString(PGPHelper.EXTRA_ERROR);
                 if (error != null) {
                     Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
                             Toast.LENGTH_SHORT).show();
@@ -508,7 +519,7 @@ public class KeyListActivity extends BaseActivity {
             mSearchString = searchString;
 
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mDatabase = Apg.getDatabase().db();
+            mDatabase = PGPHelper.getDatabase().db();
             SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
             qb.setTables(KeyRings.TABLE_NAME + " INNER JOIN " + Keys.TABLE_NAME + " ON " + "("
                     + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."
@@ -600,7 +611,8 @@ public class KeyListActivity extends BaseActivity {
             c.close();
 
             if (masterKeyId != -1) {
-                children.insertElementAt(new KeyChild(Apg.getFingerPrint(fingerPrintId), true), 0);
+                children.insertElementAt(
+                        new KeyChild(PGPHelper.getFingerPrint(fingerPrintId), true), 0);
                 c = mDatabase.query(UserIds.TABLE_NAME, new String[] { UserIds.USER_ID, // 0
                         }, UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0", new String[] { ""
                                 + masterKeyId }, null, null, UserIds.RANK + " ASC");
@@ -703,10 +715,10 @@ public class KeyListActivity extends BaseActivity {
                 }
 
                 TextView keyId = (TextView) view.findViewById(R.id.keyId);
-                String keyIdStr = Apg.getSmallFingerPrint(child.keyId);
+                String keyIdStr = PGPHelper.getSmallFingerPrint(child.keyId);
                 keyId.setText(keyIdStr);
                 TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
-                String algorithmStr = Apg.getAlgorithmInfo(child.algorithm, child.keySize);
+                String algorithmStr = PGPHelper.getAlgorithmInfo(child.algorithm, child.keySize);
                 keyDetails.setText("(" + algorithmStr + ")");
 
                 ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
@@ -745,16 +757,13 @@ public class KeyListActivity extends BaseActivity {
         switch (requestCode) {
         case Id.request.filename: {
             if (resultCode == RESULT_OK && data != null) {
-                String filename = data.getDataString();
-                if (filename != null) {
-                    // Get rid of URI prefix:
-                    if (filename.startsWith("file://")) {
-                        filename = filename.substring(7);
-                    }
-                    // replace %20 and so on
-                    filename = Uri.decode(filename);
+                try {
+                    String path = data.getData().getPath();
+                    Log.d(Constants.TAG, "path=" + path);
 
-                    FileDialog.setFilename(filename);
+                    mFileDialog.setFilename(path);
+                } catch (NullPointerException e) {
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
                 }
             }
             return;

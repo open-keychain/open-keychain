@@ -19,8 +19,8 @@ package org.thialfihar.android.apg.ui.widget;
 import java.util.Date;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
@@ -53,7 +53,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
 
         mActivity = activity;
         mParent = parent;
-        mDatabase = Apg.getDatabase().db();
+        mDatabase = PGPHelper.getDatabase().db();
         mInflater = (LayoutInflater) parent.getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
         long now = new Date().getTime() / 1000;
@@ -177,7 +177,7 @@ public class SelectPublicKeyListAdapter extends BaseAdapter {
         }
 
         long masterKeyId = mCursor.getLong(1); // MASTER_KEY_ID
-        keyId.setText(Apg.getSmallFingerPrint(masterKeyId));
+        keyId.setText(PGPHelper.getSmallFingerPrint(masterKeyId));
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);

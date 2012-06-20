@@ -12,9 +12,10 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.util;
 
 import java.io.InputStream;
+
 
 public class InputData {
     private PositionAwareInputStream mInputStream;

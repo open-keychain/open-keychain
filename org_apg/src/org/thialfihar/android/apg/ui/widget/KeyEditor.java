@@ -18,8 +18,8 @@ package org.thialfihar.android.apg.ui.widget;
 
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.R;
 
@@ -133,9 +133,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mDeleteButton.setVisibility(View.INVISIBLE);
         }
 
-        mAlgorithm.setText(Apg.getAlgorithmInfo(key));
-        String keyId1Str = Apg.getSmallFingerPrint(key.getKeyID());
-        String keyId2Str = Apg.getSmallFingerPrint(key.getKeyID() >> 32);
+        mAlgorithm.setText(PGPHelper.getAlgorithmInfo(key));
+        String keyId1Str = PGPHelper.getSmallFingerPrint(key.getKeyID());
+        String keyId2Str = PGPHelper.getSmallFingerPrint(key.getKeyID() >> 32);
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
         Vector<Choice> choices = new Vector<Choice>();
@@ -160,8 +160,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         // Set value in choice dropdown to key
         int selectId = 0;
-        if (Apg.isEncryptionKey(key)) {
-            if (Apg.isSigningKey(key)) {
+        if (PGPHelper.isEncryptionKey(key)) {
+            if (PGPHelper.isSigningKey(key)) {
                 selectId = Id.choice.usage.sign_and_encrypt;
             } else {
                 selectId = Id.choice.usage.encrypt_only;
@@ -184,14 +184,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(Apg.getCreationDate(key));
+        cal.setTime(PGPHelper.getCreationDate(key));
         mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
         cal = new GregorianCalendar();
-        Date date = Apg.getExpiryDate(key);
+        Date date = PGPHelper.getExpiryDate(key);
         if (date == null) {
             setExpiryDate(null);
         } else {
-            cal.setTime(Apg.getExpiryDate(key));
+            cal.setTime(PGPHelper.getExpiryDate(key));
             setExpiryDate(cal);
         }
 

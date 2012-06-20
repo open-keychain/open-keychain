@@ -17,8 +17,8 @@
 package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.ui.widget.SelectSecretKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -62,8 +62,8 @@ public class SelectSecretKeyListActivity extends BaseActivity {
         mList.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent data = new Intent();
-                data.putExtra(Apg.EXTRA_KEY_ID, id);
-                data.putExtra(Apg.EXTRA_USER_ID, (String) mList.getItemAtPosition(position));
+                data.putExtra(PGPHelper.EXTRA_KEY_ID, id);
+                data.putExtra(PGPHelper.EXTRA_USER_ID, (String) mList.getItemAtPosition(position));
                 setResult(RESULT_OK, data);
                 finish();
             }

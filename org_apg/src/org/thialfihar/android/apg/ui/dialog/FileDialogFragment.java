@@ -18,7 +18,8 @@ package org.thialfihar.android.apg.ui.dialog;
 
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.util.Utils;
+import org.thialfihar.android.apg.helper.FileHelper;
+import org.thialfihar.android.apg.helper.OtherHelper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -51,7 +52,7 @@ public class FileDialogFragment extends DialogFragment {
     public static final int MESSAGE_OKAY = 1;
 
     public static final String MESSAGE_DATA_FILENAME = "filename";
-    public static final String MESSAGE_CHECKED = "checked";
+    public static final String MESSAGE_DATA_CHECKED = "checked";
 
     /**
      * Creates new instance of this file dialog fragment
@@ -107,7 +108,7 @@ public class FileDialogFragment extends DialogFragment {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
-                Utils.openFile(activity, mFilename.getText().toString(), "text/plain", requestCode);
+                FileHelper.openFile(activity, mFilename.getText().toString(), "text/plain", requestCode);
             }
         });
 
@@ -135,7 +136,7 @@ public class FileDialogFragment extends DialogFragment {
                 // return resulting data back to activity
                 Bundle data = new Bundle();
                 data.putString(MESSAGE_DATA_FILENAME, mFilename.getText().toString());
-                data.putBoolean(MESSAGE_CHECKED, checked);
+                data.putBoolean(MESSAGE_DATA_CHECKED, checked);
 
                 sendMessageToHandler(MESSAGE_OKAY, data);
 

@@ -20,8 +20,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Preferences;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -121,11 +121,11 @@ public class MailListActivity extends ListActivity {
                 String data = messageCursor.getString(bodyIndex);
                 data = Html.fromHtml(data).toString();
                 boolean signedOnly = false;
-                Matcher matcher = Apg.PGP_MESSAGE.matcher(data);
+                Matcher matcher = PGPHelper.PGP_MESSAGE.matcher(data);
                 if (matcher.matches()) {
                     data = matcher.group(1);
                 } else {
-                    matcher = Apg.PGP_SIGNED_MESSAGE.matcher(data);
+                    matcher = PGPHelper.PGP_SIGNED_MESSAGE.matcher(data);
                     if (matcher.matches()) {
                         data = matcher.group(1);
                         signedOnly = true;
@@ -149,11 +149,11 @@ public class MailListActivity extends ListActivity {
         getListView().setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
-                intent.setAction(Apg.Intent.DECRYPT);
+                intent.setAction(PGPHelper.Intent.DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
-                intent.putExtra(Apg.EXTRA_TEXT, message.data);
-                intent.putExtra(Apg.EXTRA_SUBJECT, message.subject);
-                intent.putExtra(Apg.EXTRA_REPLY_TO, message.replyTo);
+                intent.putExtra(PGPHelper.EXTRA_TEXT, message.data);
+                intent.putExtra(PGPHelper.EXTRA_SUBJECT, message.subject);
+                intent.putExtra(PGPHelper.EXTRA_REPLY_TO, message.replyTo);
                 startActivity(intent);
             }
         });

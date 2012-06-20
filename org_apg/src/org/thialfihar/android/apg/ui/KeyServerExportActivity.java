@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2011 Senecaso
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,11 +18,11 @@ package org.thialfihar.android.apg.ui;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import com.actionbarsherlock.view.MenuItem;
 
@@ -49,7 +51,10 @@ public class KeyServerExportActivity extends BaseActivity {
         switch (item.getItemId()) {
 
         case android.R.id.home:
-            startActivity(new Intent(this, PublicKeyListActivity.class));
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, PublicKeyListActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
 
         default:
@@ -94,11 +99,11 @@ public class KeyServerExportActivity extends BaseActivity {
 
         HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
 
-        int keyRingId = getIntent().getIntExtra(Apg.EXTRA_KEY_ID, -1);
+        int keyRingId = getIntent().getIntExtra(PGPHelper.EXTRA_KEY_ID, -1);
 
-        PGPKeyRing keyring = Apg.getKeyRing(keyRingId);
+        PGPKeyRing keyring = PGPHelper.getKeyRing(keyRingId);
         if (keyring != null && keyring instanceof PGPPublicKeyRing) {
-            boolean uploaded = Apg.uploadKeyRingToServer(server, (PGPPublicKeyRing) keyring);
+            boolean uploaded = PGPHelper.uploadKeyRingToServer(server, (PGPPublicKeyRing) keyring);
             if (!uploaded) {
                 error = "Unable to export key to selected server";
             }
@@ -107,7 +112,7 @@ public class KeyServerExportActivity extends BaseActivity {
         data.putInt(Constants.extras.STATUS, Id.message.export_done);
 
         if (error != null) {
-            data.putString(Apg.EXTRA_ERROR, error);
+            data.putString(PGPHelper.EXTRA_ERROR, error);
         }
 
         msg.setData(data);
@@ -119,7 +124,7 @@ public class KeyServerExportActivity extends BaseActivity {
         super.doneCallback(msg);
 
         Bundle data = msg.getData();
-        String error = data.getString(Apg.EXTRA_ERROR);
+        String error = data.getString(PGPHelper.EXTRA_ERROR);
         if (error != null) {
             Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
                     .show();

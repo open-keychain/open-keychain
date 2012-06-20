@@ -18,10 +18,10 @@ package org.thialfihar.android.apg.ui;
 
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.Preferences;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.widget.IntegerListPreference;
 import org.thialfihar.android.apg.R;
@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceScreen;
-
 
 public class PreferencesActivity extends SherlockPreferenceActivity {
     private IntegerListPreference mPassPhraseCacheTtl = null;
@@ -56,6 +55,7 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         addPreferencesFromResource(R.xml.apg_preferences);
 
@@ -68,7 +68,7 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
                         mPassPhraseCacheTtl.setValue(newValue.toString());
                         mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
                         mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
-                        
+
                         // restart cache service with new ttl
                         PassphraseCacheService.startCacheService(PreferencesActivity.this);
                         return false;
@@ -194,8 +194,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
                         Intent intent = new Intent(PreferencesActivity.this,
-                                KeyServerPreferenceActivity.class);
-                        intent.putExtra(Apg.EXTRA_KEY_SERVERS, mPreferences.getKeyServers());
+                                PreferencesKeyServerActivity.class);
+                        intent.putExtra(PGPHelper.EXTRA_KEY_SERVERS, mPreferences.getKeyServers());
                         startActivityForResult(intent, Id.request.key_server_preference);
                         return false;
                     }
@@ -209,7 +209,7 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
             if (resultCode == RESULT_CANCELED || data == null) {
                 return;
             }
-            String servers[] = data.getStringArrayExtra(Apg.EXTRA_KEY_SERVERS);
+            String servers[] = data.getStringArrayExtra(PGPHelper.EXTRA_KEY_SERVERS);
             mPreferences.setKeyServers(servers);
             mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers,
                     servers.length));
@@ -228,7 +228,10 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         switch (item.getItemId()) {
 
         case android.R.id.home:
-            startActivity(new Intent(this, MainActivity.class));
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             return true;
 
         default:

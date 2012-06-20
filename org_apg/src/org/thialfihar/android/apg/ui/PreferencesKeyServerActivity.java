@@ -18,13 +18,17 @@ package org.thialfihar.android.apg.ui;
 
 import java.util.Vector;
 
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Apg;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.ui.widget.Editor;
 import org.thialfihar.android.apg.ui.widget.KeyServerEditor;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +37,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
-public class KeyServerPreferenceActivity extends BaseActivity implements OnClickListener,
+public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
         EditorListener {
     private LayoutInflater mInflater;
     private ViewGroup mEditors;
@@ -45,9 +48,59 @@ public class KeyServerPreferenceActivity extends BaseActivity implements OnClick
     private TextView mSummary;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, PreferencesActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+
+            return true;
+
+        case Id.menu.option.okay:
+            okClicked();
+
+            return true;
+
+        case Id.menu.option.cancel:
+            cancelClicked();
+
+            return true;
+
+        default:
+            break;
+
+        }
+        return false;
+    }
+
+    /**
+     * ActionBar menu is created based on class variables to change it at runtime
+     * 
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        menu.add(1, Id.menu.option.cancel, 0, android.R.string.cancel).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        menu.add(1, Id.menu.option.okay, 1, android.R.string.ok).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        return true;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.key_server_preference);
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
 
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -61,7 +114,7 @@ public class KeyServerPreferenceActivity extends BaseActivity implements OnClick
         mAdd.setOnClickListener(this);
 
         Intent intent = getIntent();
-        String servers[] = intent.getStringArrayExtra(Apg.EXTRA_KEY_SERVERS);
+        String servers[] = intent.getStringArrayExtra(PGPHelper.EXTRA_KEY_SERVERS);
         if (servers != null) {
             for (int i = 0; i < servers.length; ++i) {
                 KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
@@ -71,20 +124,6 @@ public class KeyServerPreferenceActivity extends BaseActivity implements OnClick
                 mEditors.addView(view);
             }
         }
-
-        Button okButton = (Button) findViewById(R.id.btn_ok);
-        okButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                okClicked();
-            }
-        });
-
-        Button cancelButton = (Button) findViewById(R.id.btn_cancel);
-        cancelButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                cancelClicked();
-            }
-        });
     }
 
     public void onDeleted(Editor editor) {
@@ -114,15 +153,8 @@ public class KeyServerPreferenceActivity extends BaseActivity implements OnClick
             }
         }
         String[] dummy = new String[0];
-        data.putExtra(Apg.EXTRA_KEY_SERVERS, servers.toArray(dummy));
+        data.putExtra(PGPHelper.EXTRA_KEY_SERVERS, servers.toArray(dummy));
         setResult(RESULT_OK, data);
         finish();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // override this, so no option menu is added (as would be in BaseActivity), since
-        // we're still in preferences
-        return true;
     }
 }

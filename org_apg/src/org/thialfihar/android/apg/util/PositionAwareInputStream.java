@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg;
+package org.thialfihar.android.apg.util;
 
 import java.io.IOException;
 import java.io.InputStream;

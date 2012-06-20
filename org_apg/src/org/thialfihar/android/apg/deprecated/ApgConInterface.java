@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.util;
+package org.thialfihar.android.apg.deprecated;
 
 public interface ApgConInterface {
     public static interface OnCallFinishListener {

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.service;
+package org.thialfihar.android.apg.deprecated;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,19 +25,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.thialfihar.android.apg.Apg;
-import org.thialfihar.android.apg.service.IApgService2;
+import org.thialfihar.android.apg.deprecated.IApgService2;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.InputData;
 import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.service.IApgService2.Stub;
+import org.thialfihar.android.apg.deprecated.IApgService2.Stub;
 import org.thialfihar.android.apg.Id.database;
 import org.thialfihar.android.apg.R.string;
+import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
+import org.thialfihar.android.apg.util.InputData;
 
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -204,7 +204,7 @@ public class ApgService2 extends PassphraseCacheService {
             typeWhere = KeyRings.TABLE_NAME + "." + KeyRings.TYPE + " = ?";
             typeVal = new String[] { "" + pParams.get("key_type") };
         }
-        return qb.query(Apg.getDatabase().db(), (String[]) pParams.get("columns"), typeWhere,
+        return qb.query(PGPHelper.getDatabase().db(), (String[]) pParams.get("columns"), typeWhere,
                 typeVal, null, null, orderBy);
     }
 
@@ -253,7 +253,7 @@ public class ApgService2 extends PassphraseCacheService {
             long curMkey = mCursor.getLong(0);
             String curUser = mCursor.getString(1);
 
-            String curFprint = Apg.getSmallFingerPrint(curMkey);
+            String curFprint = PGPHelper.getSmallFingerPrint(curMkey);
             if (LOCAL_LOGV)
                 Log.v(TAG, "current user: " + curUser + " (" + curFprint + ")");
             if (pSearchKeys.contains(curFprint) || pSearchKeys.contains(curUser)) {
@@ -427,7 +427,7 @@ public class ApgService2 extends PassphraseCacheService {
     }
 
     private boolean prepareArgs(String pCall, Bundle pArgs, Bundle pReturn) {
-        Apg.initialize(getBaseContext());
+        PGPHelper.initialize(getBaseContext());
 
         /* add default return values for all functions */
         addDefaultReturns(pReturn);
@@ -493,7 +493,7 @@ public class ApgService2 extends PassphraseCacheService {
         if (LOCAL_LOGV)
             Log.v(TAG, "About to encrypt");
         try {
-            Apg.encrypt(getBaseContext(), // context
+            PGPHelper.encrypt(getBaseContext(), // context
                     in, // input stream
                     out, // output stream
                     pArgs.getBoolean(arg.ARMORED_OUTPUT.name()), // ARMORED_OUTPUT
@@ -569,8 +569,8 @@ public class ApgService2 extends PassphraseCacheService {
             ArrayList<String> ids = new ArrayList<String>();
             while (cursor.moveToNext()) {
                 if (LOCAL_LOGV)
-                    Log.v(TAG, "adding key " + Apg.getSmallFingerPrint(cursor.getLong(0)));
-                fPrints.add(Apg.getSmallFingerPrint(cursor.getLong(0)));
+                    Log.v(TAG, "adding key " + PGPHelper.getSmallFingerPrint(cursor.getLong(0)));
+                fPrints.add(PGPHelper.getSmallFingerPrint(cursor.getLong(0)));
                 ids.add(cursor.getString(1));
             }
             cursor.close();
@@ -625,7 +625,7 @@ public class ApgService2 extends PassphraseCacheService {
             if (LOCAL_LOGV)
                 Log.v(TAG, "About to decrypt");
             try {
-                Apg.decrypt(getBaseContext(), in, out, passphrase, null, // progress
+                PGPHelper.decrypt(getBaseContext(), in, out, passphrase, null, // progress
                         pArgs.getString(arg.SYMMETRIC_PASSPHRASE.name()) != null // symmetric
                 );
             } catch (Exception e) {

@@ -18,6 +18,13 @@ package org.thialfihar.android.apg;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 
+/**
+ * 
+ * TODO:
+ * 
+ * - refactor ids, some are not needed and can be done with xml
+ * 
+ */
 public final class Id {
 
     public static final String TAG = "APG";
@@ -83,7 +90,7 @@ public final class Id {
     // public static final int query_done = 0x21070010;
     // public static final int unknown_signature_key = 0x21070011;
     // }
-    
+
     // use only lower 16 bits due to compatibility lib
     public static final class request {
         public static final int public_keys = 0x00007001;
@@ -96,18 +103,18 @@ public final class Id {
         public static final int import_from_qr_code = 0x00007008;
         public static final int sign_key = 0x00007009;
     }
-    
-//    public static final class request {
-//        public static final int public_keys = 0x21070001;
-//        public static final int secret_keys = 0x21070002;
-//        public static final int filename = 0x21070003;
-//        public static final int output_filename = 0x21070004;
-//        public static final int key_server_preference = 0x21070005;
-//        public static final int look_up_key_id = 0x21070006;
-//        public static final int export_to_server = 0x21070007;
-//        public static final int import_from_qr_code = 0x21070008;
-//        public static final int sign_key = 0x21070009;
-//    }
+
+    // public static final class request {
+    // public static final int public_keys = 0x21070001;
+    // public static final int secret_keys = 0x21070002;
+    // public static final int filename = 0x21070003;
+    // public static final int output_filename = 0x21070004;
+    // public static final int key_server_preference = 0x21070005;
+    // public static final int look_up_key_id = 0x21070006;
+    // public static final int export_to_server = 0x21070007;
+    // public static final int import_from_qr_code = 0x21070008;
+    // public static final int sign_key = 0x21070009;
+    // }
 
     public static final class dialog {
         public static final int pass_phrase = 0x21070001;

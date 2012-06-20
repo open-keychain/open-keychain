@@ -20,9 +20,9 @@ package org.thialfihar.android.apg.ui;
 import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.thialfihar.android.apg.Apg;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.helper.PGPHelper;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -48,19 +48,19 @@ public class MainActivity extends SherlockActivity {
 
     public void encryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
-        intent.setAction(Apg.Intent.ENCRYPT);
+        intent.setAction(PGPHelper.Intent.ENCRYPT);
         startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
     }
 
     public void decryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
-        intent.setAction(Apg.Intent.DECRYPT);
+        intent.setAction(PGPHelper.Intent.DECRYPT);
         startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
     }
 
     public void scanQrcodeOnClick(View view) {
         Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-        intent.setAction(Apg.Intent.IMPORT_FROM_QR_CODE);
+        intent.setAction(PGPHelper.Intent.IMPORT_FROM_QR_CODE);
         startActivityForResult(intent, Id.request.import_from_qr_code);
     }
 

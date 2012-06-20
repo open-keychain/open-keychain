@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.thialfihar.android.apg.util;
+package org.thialfihar.android.apg.deprecated;
 
-import org.thialfihar.android.apg.service.IApgService2;
-import org.thialfihar.android.apg.util.ApgConInterface.OnCallFinishListener;
+import org.thialfihar.android.apg.deprecated.ApgConInterface.OnCallFinishListener;
+import org.thialfihar.android.apg.deprecated.IApgService2;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
