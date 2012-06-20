@@ -769,16 +769,18 @@ public class EncryptActivity extends SherlockFragmentActivity {
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
         }
 
-        // choose default settings, action and data bundle by target
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN);
+
+        // choose default settings, target and data bundle by target
         if (mContentUri != null) {
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_STREAM);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
             data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
 
         } else if (mEncryptTarget == Id.target.file) {
             useAsciiArmour = mAsciiArmour.isChecked();
             compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
 
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_FILE);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
@@ -790,7 +792,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             useAsciiArmour = true;
             compressionId = Preferences.getPreferences(this).getDefaultMessageCompression();
 
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN_BYTES);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
 
             if (mData != null) {
                 data.putByteArray(ApgService.MESSAGE_BYTES, mData);

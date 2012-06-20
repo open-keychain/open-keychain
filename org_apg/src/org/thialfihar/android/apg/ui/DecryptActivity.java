@@ -677,13 +677,16 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_DECRYPT_VERIFY);
+
         // choose action based on input: decrypt stream, file or bytes
         if (mContentUri != null) {
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_DECRYPT_STREAM);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
+
             data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
 
         } else if (mDecryptTarget == Id.target.file) {
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_DECRYPT_FILE);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
@@ -692,7 +695,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             data.putString(ApgService.OUTPUT_FILE, mOutputFilename);
 
         } else {
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_DECRYPT_BYTES);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
 
             if (mData != null) {
                 data.putByteArray(ApgService.CIPHERTEXT_BYTES, mData);

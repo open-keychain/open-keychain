@@ -21,11 +21,11 @@ import java.io.File;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.deprecated.AskForPassphrase;
 import org.thialfihar.android.apg.deprecated.PausableThread;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;

@@ -82,10 +82,10 @@ import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
 import org.thialfihar.android.apg.util.Primes;
+import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 import org.thialfihar.android.apg.util.KeyServer.AddKeyException;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.R;
 
 import android.app.Activity;

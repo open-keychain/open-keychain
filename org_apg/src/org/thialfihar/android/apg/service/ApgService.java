@@ -24,13 +24,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
@@ -39,6 +39,7 @@ import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.util.InputData;
+import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -55,24 +56,21 @@ import org.thialfihar.android.apg.util.Log;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-
-/**
- * TODO:
- * 
- * - ProgressDialogUpdater rework???
- * 
- * - put recurring things into private functions when possible
- * 
- * 
- */
 public class ApgService extends IntentService implements ProgressDialogUpdater {
 
-    // extras that can be given by intent
+    /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
     public static final String EXTRA_ACTION = "action";
     public static final String EXTRA_DATA = "data";
 
-    // keys for data bundle
+    /* keys for data bundle */
+
+    // encrypt and decrypt
+    public static final String TARGET = "type";
+    // possible targets:
+    public static final int TARGET_BYTES = 1;
+    public static final int TARGET_FILE = 2;
+    public static final int TARGET_STREAM = 3;
 
     // encrypt
     public static final String SECRET_KEY_ID = "secretKeyId";
@@ -110,14 +108,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
 
-    // possible EXTRA_ACTIONs
-    public static final int ACTION_ENCRYPT_SIGN_BYTES = 10;
-    public static final int ACTION_ENCRYPT_SIGN_FILE = 11;
-    public static final int ACTION_ENCRYPT_SIGN_STREAM = 12;
+    /* possible EXTRA_ACTIONs */
+    public static final int ACTION_ENCRYPT_SIGN = 10;
 
-    public static final int ACTION_DECRYPT_BYTES = 20;
-    public static final int ACTION_DECRYPT_FILE = 21;
-    public static final int ACTION_DECRYPT_STREAM = 22;
+    public static final int ACTION_DECRYPT_VERIFY = 20;
 
     public static final int ACTION_SAVE_KEYRING = 30;
     public static final int ACTION_GENERATE_KEY = 31;
@@ -125,7 +119,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     public static final int ACTION_DELETE_FILE_SECURELY = 40;
 
-    // possible data keys as result
+    /* possible data keys as result send over messenger */
     // keys
     public static final String RESULT_NEW_KEY = "newKey";
     public static final String RESULT_NEW_KEY2 = "newKey2";
@@ -178,6 +172,285 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
         // execute action from extra bundle
         switch (action) {
+        case ACTION_ENCRYPT_SIGN:
+
+            try {
+                /* Input */
+                int target = data.getInt(TARGET);
+
+                long secretKeyId = data.getLong(SECRET_KEY_ID);
+                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
+
+                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
+                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
+                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
+                int compressionId = data.getInt(COMPRESSION_ID);
+                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
+                boolean signOnly = data.getBoolean(SIGN_ONLY);
+
+                InputStream inStream = null;
+                long inLength = -1;
+                InputData inputData = null;
+                OutputStream outStream = null;
+                String streamFilename = null;
+                switch (target) {
+                case TARGET_BYTES: /* encrypting bytes directly */
+                    byte[] bytes = data.getByteArray(MESSAGE_BYTES);
+
+                    inStream = new ByteArrayInputStream(bytes);
+                    inLength = bytes.length;
+
+                    inputData = new InputData(inStream, inLength);
+                    outStream = new ByteArrayOutputStream();
+
+                    break;
+                case TARGET_FILE: /* encrypting file */
+                    String inputFile = data.getString(INPUT_FILE);
+                    String outputFile = data.getString(OUTPUT_FILE);
+
+                    // check if storage is ready
+                    if (!FileHelper.isStorageMounted(inputFile)
+                            || !FileHelper.isStorageMounted(outputFile)) {
+                        sendErrorToHandler(new GeneralException(
+                                getString(R.string.error_externalStorageNotReady)));
+                        return;
+                    }
+
+                    inStream = new FileInputStream(inputFile);
+                    File file = new File(inputFile);
+                    inLength = file.length();
+                    inputData = new InputData(inStream, inLength);
+
+                    outStream = new FileOutputStream(outputFile);
+
+                    break;
+
+                case TARGET_STREAM: /* Encrypting stream from content uri */
+                    Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
+
+                    // InputStream
+                    InputStream in = getContentResolver().openInputStream(providerUri);
+                    inLength = PGPMain.getLengthOfStream(in);
+                    inputData = new InputData(in, inLength);
+
+                    // OutputStream
+                    try {
+                        while (true) {
+                            streamFilename = PGPMain.generateRandomString(32);
+                            if (streamFilename == null) {
+                                throw new PGPMain.GeneralException(
+                                        "couldn't generate random file name");
+                            }
+                            openFileInput(streamFilename).close();
+                        }
+                    } catch (FileNotFoundException e) {
+                        // found a name that isn't used yet
+                    }
+                    outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+
+                    break;
+
+                default:
+                    throw new PGPMain.GeneralException("No target choosen!");
+
+                }
+
+                /* Operation */
+
+                if (generateSignature) {
+                    Log.d(Constants.TAG, "generating signature...");
+                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, false,
+                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
+                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                                    .getPreferences(this).getForceV3Signatures(), this);
+                } else if (signOnly) {
+                    Log.d(Constants.TAG, "sign only...");
+                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
+                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
+                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures(), this);
+                } else {
+                    Log.d(Constants.TAG, "encrypt...");
+                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
+                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
+                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
+                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
+                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
+                            passphrase);
+                }
+
+                outStream.close();
+
+                /* Output */
+
+                Bundle resultData = new Bundle();
+
+                switch (target) {
+                case TARGET_BYTES:
+                    if (useAsciiArmour) {
+                        String output = new String(
+                                ((ByteArrayOutputStream) outStream).toByteArray());
+                        if (generateSignature) {
+                            resultData.putString(RESULT_SIGNATURE_TEXT, output);
+                        } else {
+                            resultData.putString(RESULT_ENCRYPTED_MESSAGE, output);
+                        }
+                    } else {
+                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                        if (generateSignature) {
+                            resultData.putByteArray(RESULT_SIGNATURE_DATA, output);
+                        } else {
+                            resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
+                        }
+                    }
+
+                    break;
+                case TARGET_FILE:
+                    // nothing, file was written, just send okay
+
+                    break;
+                case TARGET_STREAM:
+                    String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
+                    resultData.putString(RESULT_URI, uri);
+
+                    break;
+                }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_DECRYPT_VERIFY:
+            try {
+                /* Input */
+                int target = data.getInt(TARGET);
+
+                long secretKeyId = data.getLong(SECRET_KEY_ID);
+                byte[] bytes = data.getByteArray(CIPHERTEXT_BYTES);
+                boolean signedOnly = data.getBoolean(SIGNED_ONLY);
+                boolean returnBytes = data.getBoolean(RETURN_BYTES);
+                boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
+
+                InputStream inStream = null;
+                long inLength = -1;
+                InputData inputData = null;
+                OutputStream outStream = null;
+                String streamFilename = null;
+                switch (target) {
+                case TARGET_BYTES: /* decrypting bytes directly */
+                    inStream = new ByteArrayInputStream(bytes);
+                    inLength = bytes.length;
+
+                    inputData = new InputData(inStream, inLength);
+                    outStream = new ByteArrayOutputStream();
+
+                    break;
+
+                case TARGET_FILE: /* decrypting file */
+                    String inputFile = data.getString(INPUT_FILE);
+                    String outputFile = data.getString(OUTPUT_FILE);
+
+                    // check if storage is ready
+                    if (!FileHelper.isStorageMounted(inputFile)
+                            || !FileHelper.isStorageMounted(outputFile)) {
+                        sendErrorToHandler(new GeneralException(
+                                getString(R.string.error_externalStorageNotReady)));
+                        return;
+                    }
+
+                    // InputStream
+                    inLength = -1;
+                    inStream = new FileInputStream(inputFile);
+                    File file = new File(inputFile);
+                    inLength = file.length();
+                    inputData = new InputData(inStream, inLength);
+
+                    // OutputStream
+                    outStream = new FileOutputStream(outputFile);
+
+                    break;
+
+                case TARGET_STREAM: /* decrypting stream from content uri */
+                    Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
+
+                    // InputStream
+                    InputStream in = getContentResolver().openInputStream(providerUri);
+                    inLength = PGPMain.getLengthOfStream(in);
+                    inputData = new InputData(in, inLength);
+
+                    // OutputStream
+                    try {
+                        while (true) {
+                            streamFilename = PGPMain.generateRandomString(32);
+                            if (streamFilename == null) {
+                                throw new PGPMain.GeneralException(
+                                        "couldn't generate random file name");
+                            }
+                            openFileInput(streamFilename).close();
+                        }
+                    } catch (FileNotFoundException e) {
+                        // found a name that isn't used yet
+                    }
+                    outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+
+                    break;
+
+                default:
+                    throw new PGPMain.GeneralException("No target choosen!");
+
+                }
+
+                /* Operation */
+
+                Bundle resultData = new Bundle();
+
+                // verifyText and decrypt returning additional resultData values for the
+                // verification of signatures
+                if (signedOnly) {
+                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
+                } else {
+                    resultData = PGPMain.decrypt(this, inputData, outStream,
+                            PGPMain.getCachedPassPhrase(secretKeyId), this,
+                            assumeSymmetricEncryption);
+                }
+
+                outStream.close();
+
+                /* Output */
+
+                switch (target) {
+                case TARGET_BYTES:
+                    if (returnBytes) {
+                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                        resultData.putByteArray(RESULT_DECRYPTED_DATA, output);
+                    } else {
+                        String output = new String(
+                                ((ByteArrayOutputStream) outStream).toByteArray());
+                        resultData.putString(RESULT_DECRYPTED_MESSAGE, output);
+                    }
+
+                    break;
+                case TARGET_FILE:
+                    // nothing, file was written, just send okay and verification bundle
+
+                    break;
+                case TARGET_STREAM:
+                    String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
+                    resultData.putString(RESULT_URI, uri);
+
+                    break;
+                }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
         case ACTION_SAVE_KEYRING:
 
             try {
@@ -263,215 +536,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
             break;
 
-        case ACTION_ENCRYPT_SIGN_BYTES:
-
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
-
-                byte[] bytes = data.getByteArray(MESSAGE_BYTES);
-
-                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
-                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
-                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
-                int compressionId = data.getInt(COMPRESSION_ID);
-                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
-                boolean signOnly = data.getBoolean(SIGN_ONLY);
-
-                /* Operation */
-                ByteArrayInputStream inStream = new ByteArrayInputStream(bytes);
-                int inLength = bytes.length;
-
-                InputData inputData = new InputData(inStream, inLength);
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-                if (generateSignature) {
-                    Log.d(Constants.TAG, "generate signature...");
-                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, false,
-                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
-                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures(), this);
-                } else if (signOnly) {
-                    Log.d(Constants.TAG, "sign only...");
-                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
-                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures(), this);
-                } else {
-                    Log.d(Constants.TAG, "encrypt...");
-                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
-                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
-                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
-                            passphrase);
-                }
-
-                outStream.close();
-
-                /* Output */
-                Bundle resultData = new Bundle();
-
-                if (useAsciiArmour) {
-                    String output = new String(outStream.toByteArray());
-                    if (generateSignature) {
-                        resultData.putString(RESULT_SIGNATURE_TEXT, output);
-                    } else {
-                        resultData.putString(RESULT_ENCRYPTED_MESSAGE, output);
-                    }
-                } else {
-                    byte output[] = outStream.toByteArray();
-                    if (generateSignature) {
-                        resultData.putByteArray(RESULT_SIGNATURE_DATA, output);
-                    } else {
-                        resultData.putByteArray(RESULT_ENCRYPTED_DATA, output);
-                    }
-                }
-
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-            break;
-
-        case ACTION_ENCRYPT_SIGN_FILE:
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
-
-                String inputFile = data.getString(INPUT_FILE);
-                String outputFile = data.getString(OUTPUT_FILE);
-
-                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
-                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
-                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
-                int compressionId = data.getInt(COMPRESSION_ID);
-                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
-                boolean signOnly = data.getBoolean(SIGN_ONLY);
-
-                /* Operation */
-                // check if storage is ready
-                if (!FileHelper.isStorageMounted(inputFile)
-                        || !FileHelper.isStorageMounted(outputFile)) {
-                    sendErrorToHandler(new GeneralException(
-                            getString(R.string.error_externalStorageNotReady)));
-                    return;
-                }
-
-                // InputStream
-                long inLength = -1;
-                FileInputStream inStream = new FileInputStream(inputFile);
-                File file = new File(inputFile);
-                inLength = file.length();
-                InputData inputData = new InputData(inStream, inLength);
-
-                // OutputStream
-                FileOutputStream outStream = new FileOutputStream(outputFile);
-
-                if (generateSignature) {
-                    Log.d(Constants.TAG, "generate signature...");
-                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, true,
-                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
-                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures(), this);
-                } else if (signOnly) {
-                    Log.d(Constants.TAG, "sign only...");
-                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
-                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures(), this);
-                } else {
-                    Log.d(Constants.TAG, "encrypt...");
-                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
-                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
-                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
-                            passphrase);
-                }
-
-                outStream.close();
-
-                /* Output */
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-            break;
-
-        case ACTION_ENCRYPT_SIGN_STREAM:
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
-
-                Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
-
-                boolean useAsciiArmour = data.getBoolean(USE_ASCII_AMOR);
-                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
-                long signatureKeyId = data.getLong(SIGNATURE_KEY_ID);
-                int compressionId = data.getInt(COMPRESSION_ID);
-                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
-                boolean signOnly = data.getBoolean(SIGN_ONLY);
-
-                /* Operation */
-                // InputStream
-                InputStream in = getContentResolver().openInputStream(providerUri);
-                long inLength = PGPMain.getLengthOfStream(in);
-                InputData inputData = new InputData(in, inLength);
-
-                // OutputStream
-                String streamFilename = null;
-                try {
-                    while (true) {
-                        streamFilename = PGPMain.generateRandomString(32);
-                        if (streamFilename == null) {
-                            throw new PGPMain.GeneralException("couldn't generate random file name");
-                        }
-                        openFileInput(streamFilename).close();
-                    }
-                } catch (FileNotFoundException e) {
-                    // found a name that isn't used yet
-                }
-                FileOutputStream outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-
-                if (generateSignature) {
-                    PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, true,
-                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
-                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures(), this);
-                } else if (signOnly) {
-                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
-                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures(), this);
-                } else {
-                    PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
-                            Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(),
-                            compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
-                            passphrase);
-                }
-
-                outStream.close();
-
-                /* Output */
-                Bundle resultData = new Bundle();
-
-                String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
-                resultData.putString(RESULT_URI, uri);
-
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-            break;
-
         case ACTION_DELETE_FILE_SECURELY:
             try {
                 /* Input */
@@ -490,156 +554,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 /* Output */
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-            break;
-
-        case ACTION_DECRYPT_BYTES:
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                byte[] bytes = data.getByteArray(CIPHERTEXT_BYTES);
-                boolean signedOnly = data.getBoolean(SIGNED_ONLY);
-                boolean returnBytes = data.getBoolean(RETURN_BYTES);
-                boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
-
-                /* Operation */
-                ByteArrayInputStream inStream = new ByteArrayInputStream(bytes);
-                int inLength = bytes.length;
-
-                InputData inputData = new InputData(inStream, inLength);
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-                Bundle resultData = new Bundle();
-
-                // verifyText and decrypt returning additional resultData values for the
-                // verification of signatures
-                if (signedOnly) {
-                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
-                } else {
-                    resultData = PGPMain.decrypt(this, inputData, outStream,
-                            PGPMain.getCachedPassPhrase(secretKeyId), this,
-                            assumeSymmetricEncryption);
-                }
-
-                outStream.close();
-
-                /* Output */
-                if (returnBytes) {
-                    byte output[] = outStream.toByteArray();
-                    resultData.putByteArray(RESULT_DECRYPTED_DATA, output);
-                } else {
-                    String output = new String(outStream.toByteArray());
-                    resultData.putString(RESULT_DECRYPTED_MESSAGE, output);
-                }
-
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-
-            break;
-
-        case ACTION_DECRYPT_FILE:
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                boolean signedOnly = data.getBoolean(SIGNED_ONLY);
-                boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
-
-                String inputFile = data.getString(INPUT_FILE);
-                String outputFile = data.getString(OUTPUT_FILE);
-
-                /* Operation */
-                // check if storage is ready
-                if (!FileHelper.isStorageMounted(inputFile)
-                        || !FileHelper.isStorageMounted(outputFile)) {
-                    sendErrorToHandler(new GeneralException(
-                            getString(R.string.error_externalStorageNotReady)));
-                    return;
-                }
-
-                // InputStream
-                long inLength = -1;
-                FileInputStream inStream = new FileInputStream(inputFile);
-                File file = new File(inputFile);
-                inLength = file.length();
-                InputData inputData = new InputData(inStream, inLength);
-
-                // OutputStream
-                FileOutputStream outStream = new FileOutputStream(outputFile);
-
-                Bundle resultData = new Bundle();
-
-                // verifyText and decrypt returning additional output values for the
-                // verification of signatures
-                if (signedOnly) {
-                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
-                } else {
-                    resultData = PGPMain.decrypt(this, inputData, outStream,
-                            PGPMain.getCachedPassPhrase(secretKeyId), this,
-                            assumeSymmetricEncryption);
-                }
-
-                outStream.close();
-
-                /* Output */
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
-            } catch (Exception e) {
-                sendErrorToHandler(e);
-            }
-            break;
-
-        case ACTION_DECRYPT_STREAM:
-            try {
-                /* Input */
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                boolean signedOnly = data.getBoolean(SIGNED_ONLY);
-                boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
-                Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
-
-                /* Operation */
-                // InputStream
-                InputStream in = getContentResolver().openInputStream(providerUri);
-                long inLength = PGPMain.getLengthOfStream(in);
-                InputData inputData = new InputData(in, inLength);
-
-                // OutputStream
-                String streamFilename = null;
-                try {
-                    while (true) {
-                        streamFilename = PGPMain.generateRandomString(32);
-                        if (streamFilename == null) {
-                            throw new PGPMain.GeneralException("couldn't generate random file name");
-                        }
-                        openFileInput(streamFilename).close();
-                    }
-                } catch (FileNotFoundException e) {
-                    // found a name that isn't used yet
-                }
-                FileOutputStream outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-
-                Bundle resultData = new Bundle();
-
-                // verifyText and decrypt returning additional output values for the
-                // verification of signatures
-                if (signedOnly) {
-                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
-                } else {
-                    resultData = PGPMain.decrypt(this, inputData, outStream,
-                            PGPMain.getCachedPassPhrase(secretKeyId), this,
-                            assumeSymmetricEncryption);
-                }
-
-                outStream.close();
-
-                /* Output */
-                String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
-                resultData.putString(RESULT_URI, uri);
-
-                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
