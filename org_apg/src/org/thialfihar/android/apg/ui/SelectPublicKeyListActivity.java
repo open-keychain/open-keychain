@@ -18,6 +18,7 @@ package org.thialfihar.android.apg.ui;
 
 import java.util.Vector;
 
+import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -37,6 +38,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SelectPublicKeyListActivity extends BaseActivity {
+
+    // Not used in sourcode, but listed in AndroidManifest!
+    public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
+            + "SELECT_PUBLIC_KEYS";
+
     protected ListView mList;
     protected SelectPublicKeyListAdapter mListAdapter;
     protected View mFilterLayout;

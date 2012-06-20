@@ -19,13 +19,13 @@ import java.util.Vector;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.KeyServer.InsufficientQuery;
-import org.thialfihar.android.apg.KeyServer.KeyInfo;
-import org.thialfihar.android.apg.KeyServer.QueryException;
-import org.thialfihar.android.apg.KeyServer.TooManyResponses;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.util.HkpKeyServer;
+import org.thialfihar.android.apg.util.KeyServer.InsufficientQuery;
+import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
+import org.thialfihar.android.apg.util.KeyServer.QueryException;
+import org.thialfihar.android.apg.util.KeyServer.TooManyResponses;
 
 import com.actionbarsherlock.view.MenuItem;
 
@@ -54,6 +54,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class KeyServerQueryActivity extends BaseActivity {
+
+    // possible intent actions for this activity
+    public static final String ACTION_LOOK_UP_KEY_ID = Constants.INTENT_PREFIX + "LOOK_UP_KEY_ID";
+    public static final String ACTION_LOOK_UP_KEY_ID_AND_RETURN = Constants.INTENT_PREFIX
+            + "LOOK_UP_KEY_ID_AND_RETURN";
+
     private ListView mList;
     private EditText mQuery;
     private Button mSearch;
@@ -121,8 +127,8 @@ public class KeyServerQueryActivity extends BaseActivity {
         });
 
         Intent intent = getIntent();
-        if (PGPHelper.Intent.LOOK_UP_KEY_ID.equals(intent.getAction())
-                || PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
+        if (ACTION_LOOK_UP_KEY_ID.equals(intent.getAction())
+                || ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
             long keyId = intent.getLongExtra(PGPHelper.EXTRA_KEY_ID, 0);
             if (keyId != 0) {
                 String query = "0x" + PGPHelper.keyToHex(keyId);
@@ -208,7 +214,7 @@ public class KeyServerQueryActivity extends BaseActivity {
             }
         } else if (mQueryType == Id.keyserver.get) {
             Intent orgIntent = getIntent();
-            if (PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
+            if (ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
                 if (mKeyData != null) {
                     Intent intent = new Intent();
                     intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
@@ -220,7 +226,7 @@ public class KeyServerQueryActivity extends BaseActivity {
             } else {
                 if (mKeyData != null) {
                     Intent intent = new Intent(this, PublicKeyListActivity.class);
-                    intent.setAction(PGPHelper.Intent.IMPORT);
+                    intent.setAction(KeyListActivity.ACTION_IMPORT);
                     intent.putExtra(PGPHelper.EXTRA_TEXT, mKeyData);
                     startActivity(intent);
                 }

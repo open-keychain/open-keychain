@@ -71,7 +71,7 @@ public class PublicKeyListActivity extends KeyListActivity {
         }
         case Id.menu.option.scanQRCode: {
             Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-            intent.setAction(PGPHelper.Intent.IMPORT_FROM_QR_CODE);
+            intent.setAction(ImportFromQRCodeActivity.IMPORT_FROM_QR_CODE);
             startActivityForResult(intent, Id.request.import_from_qr_code);
 
             return true;
@@ -124,7 +124,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             }
 
             Intent intent = new Intent(this, KeyServerQueryActivity.class);
-            intent.setAction(PGPHelper.Intent.LOOK_UP_KEY_ID_AND_RETURN);
+            intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
             intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
             startActivityForResult(intent, Id.request.look_up_key_id);
 
@@ -136,7 +136,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
 
             Intent intent = new Intent(this, KeyServerExportActivity.class);
-            intent.setAction(PGPHelper.Intent.EXPORT_KEY_TO_SERVER);
+            intent.setAction(KeyServerExportActivity.ACTION_EXPORT_KEY_TO_SERVER);
             intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyRingId);
             startActivityForResult(intent, Id.request.export_to_server);
 
@@ -180,7 +180,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             }
 
             Intent intent = new Intent(this, PublicKeyListActivity.class);
-            intent.setAction(PGPHelper.Intent.IMPORT);
+            intent.setAction(PublicKeyListActivity.ACTION_IMPORT);
             intent.putExtra(PGPHelper.EXTRA_TEXT, data.getStringExtra(PGPHelper.EXTRA_TEXT));
             handleIntent(intent);
             break;

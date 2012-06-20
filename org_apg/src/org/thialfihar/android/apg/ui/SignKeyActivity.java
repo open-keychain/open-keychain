@@ -33,10 +33,10 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.util.HkpKeyServer;
 
 import com.actionbarsherlock.view.MenuItem;
 

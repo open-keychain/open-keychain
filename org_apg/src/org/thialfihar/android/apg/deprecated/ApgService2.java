@@ -27,12 +27,12 @@ import java.util.Iterator;
 
 import org.thialfihar.android.apg.deprecated.IApgService2;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.deprecated.IApgService2.Stub;
 import org.thialfihar.android.apg.Id.database;
 import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;

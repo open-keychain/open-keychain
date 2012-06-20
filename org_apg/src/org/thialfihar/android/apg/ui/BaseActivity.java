@@ -23,10 +23,10 @@ import java.io.IOException;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.PausableThread;
-import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
+import org.thialfihar.android.apg.deprecated.PausableThread;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.passphrase.AskForPassphrase;
 import org.thialfihar.android.apg.passphrase.PassphraseCacheService;
 

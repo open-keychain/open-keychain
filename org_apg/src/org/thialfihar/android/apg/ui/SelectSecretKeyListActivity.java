@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg.ui;
 
+import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -36,6 +37,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class SelectSecretKeyListActivity extends BaseActivity {
+
+    // Not used in sourcode, but listed in AndroidManifest!
+    public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
+            + "SELECT_SECRET_KEY";
+
     protected ListView mList;
     protected SelectSecretKeyListAdapter mListAdapter;
     protected View mFilterLayout;

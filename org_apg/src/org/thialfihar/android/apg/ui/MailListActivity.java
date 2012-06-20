@@ -20,8 +20,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.Preferences;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -149,7 +149,7 @@ public class MailListActivity extends ListActivity {
         getListView().setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
                 Intent intent = new Intent(MailListActivity.this, DecryptActivity.class);
-                intent.setAction(PGPHelper.Intent.DECRYPT);
+                intent.setAction(DecryptActivity.ACTION_DECRYPT);
                 Message message = (Message) ((MailboxAdapter) getListAdapter()).getItem(position);
                 intent.putExtra(PGPHelper.EXTRA_TEXT, message.data);
                 intent.putExtra(PGPHelper.EXTRA_SUBJECT, message.subject);

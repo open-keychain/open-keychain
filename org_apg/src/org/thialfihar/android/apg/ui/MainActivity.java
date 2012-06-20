@@ -48,19 +48,19 @@ public class MainActivity extends SherlockActivity {
 
     public void encryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
-        intent.setAction(PGPHelper.Intent.ENCRYPT);
+        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
         startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
     }
 
     public void decryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
-        intent.setAction(PGPHelper.Intent.DECRYPT);
+        intent.setAction(DecryptActivity.ACTION_DECRYPT);
         startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
     }
 
     public void scanQrcodeOnClick(View view) {
         Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-        intent.setAction(PGPHelper.Intent.IMPORT_FROM_QR_CODE);
+        intent.setAction(ImportFromQRCodeActivity.IMPORT_FROM_QR_CODE);
         startActivityForResult(intent, Id.request.import_from_qr_code);
     }
 

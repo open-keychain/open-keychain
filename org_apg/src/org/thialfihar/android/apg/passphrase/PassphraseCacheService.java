@@ -14,8 +14,8 @@
 
 package org.thialfihar.android.apg.passphrase;
 
-import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.Preferences;
 
 import android.app.Service;
 import android.content.Context;

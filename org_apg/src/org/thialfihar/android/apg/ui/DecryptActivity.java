@@ -16,17 +16,11 @@
 
 package org.thialfihar.android.apg.ui;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.PausableThread;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.OtherHelper;
-import org.thialfihar.android.apg.helper.PGPHelper.GeneralException;
-import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
@@ -34,7 +28,6 @@ import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Compatibility;
-import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -45,7 +38,6 @@ import com.actionbarsherlock.view.MenuItem;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -73,12 +65,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.Security;
-import java.security.SignatureException;
 import java.util.regex.Matcher;
 
 public class DecryptActivity extends SherlockFragmentActivity {
+
+    // possible intent actions for this activity
+    public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
+    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
+    public static final String ACTION_DECRYPT_AND_RETURN = Constants.INTENT_PREFIX
+            + "DECRYPT_AND_RETURN";
+
     private long mSignatureKeyId = 0;
 
     private Intent mIntent;
@@ -191,7 +187,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         final ActionBar actionBar = getSupportActionBar();
         Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
                 + getCallingPackage());
-        if (getCallingPackage() != null && getCallingPackage().equals(PGPHelper.PACKAGE_NAME)) {
+        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         } else {
@@ -282,7 +278,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             } catch (IOException e) {
                 // ignore, then
             }
-        } else if (PGPHelper.Intent.DECRYPT.equals(mIntent.getAction())) {
+        } else if (ACTION_DECRYPT.equals(mIntent.getAction())) {
             Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
@@ -328,7 +324,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             }
             mReplyTo = extras.getString(PGPHelper.EXTRA_REPLY_TO);
             mSubject = extras.getString(PGPHelper.EXTRA_SUBJECT);
-        } else if (PGPHelper.Intent.DECRYPT_FILE.equals(mIntent.getAction())) {
+        } else if (ACTION_DECRYPT_FILE.equals(mIntent.getAction())) {
             mInputFilename = mIntent.getDataString();
             if ("file".equals(mIntent.getScheme())) {
                 mInputFilename = Uri.decode(mInputFilename.substring(7));
@@ -340,7 +336,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             while (mSource.getCurrentView().getId() != R.id.sourceFile) {
                 mSource.showNext();
             }
-        } else if (PGPHelper.Intent.DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
+        } else if (ACTION_DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
             mContentUri = mIntent.getData();
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
@@ -405,7 +401,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 PGPPublicKeyRing key = PGPHelper.getPublicKeyRing(mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
-                    intent.setAction(PGPHelper.Intent.LOOK_UP_KEY_ID);
+                    intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
                     intent.putExtra(PGPHelper.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }
@@ -521,7 +517,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         mSignedOnly = false;
 
         getDecryptionKeyFromInputStream();
-        
+
         Log.d(Constants.TAG, "secretKeyId: " + getSecretKeyId());
 
         // if we need a symmetric passphrase or a passphrase to use a sekret key ask for it
@@ -633,7 +629,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private void replyClicked() {
         Intent intent = new Intent(this, EncryptActivity.class);
-        intent.setAction(PGPHelper.Intent.ENCRYPT);
+        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
         String data = mMessage.getText().toString();
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
@@ -1047,7 +1043,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 public void onClick(DialogInterface dialog, int id) {
                     removeDialog(Id.dialog.lookup_unknown_key);
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
-                    intent.setAction(PGPHelper.Intent.LOOK_UP_KEY_ID);
+                    intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
                     intent.putExtra(PGPHelper.EXTRA_KEY_ID, mUnknownSignatureKeyId);
                     startActivityForResult(intent, Id.request.look_up_key_id);
                 }

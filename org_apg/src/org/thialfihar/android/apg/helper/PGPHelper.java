@@ -72,7 +72,6 @@ import org.thialfihar.android.apg.Id.type;
 import org.thialfihar.android.apg.Id.choice.algorithm;
 import org.thialfihar.android.apg.Id.choice.compression;
 import org.thialfihar.android.apg.Id.choice.usage;
-import org.thialfihar.android.apg.KeyServer.AddKeyException;
 import org.thialfihar.android.apg.R.string;
 import org.thialfihar.android.apg.passphrase.CachedPassPhrase;
 import org.thialfihar.android.apg.provider.DataProvider;
@@ -85,14 +84,15 @@ import org.thialfihar.android.apg.ui.BaseActivity;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
+import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.IterableIterator;
+import org.thialfihar.android.apg.util.KeyServer;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
 import org.thialfihar.android.apg.util.Primes;
+import org.thialfihar.android.apg.util.KeyServer.AddKeyException;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.KeyServer;
 import org.thialfihar.android.apg.ProgressDialogUpdater;
 import org.thialfihar.android.apg.R;
 
@@ -153,30 +153,6 @@ public class PGPHelper {
     static {
         // register spongy castle provider
         Security.addProvider(new BouncyCastleProvider());
-    }
-
-    public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
-
-    private static final String INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
-
-    public static class Intent {
-        public static final String DECRYPT = INTENT_PREFIX + "DECRYPT";
-        public static final String ENCRYPT = INTENT_PREFIX + "ENCRYPT";
-        public static final String DECRYPT_FILE = INTENT_PREFIX + "DECRYPT_FILE";
-        public static final String ENCRYPT_FILE = INTENT_PREFIX + "ENCRYPT_FILE";
-        public static final String DECRYPT_AND_RETURN = INTENT_PREFIX + "DECRYPT_AND_RETURN";
-        public static final String ENCRYPT_AND_RETURN = INTENT_PREFIX + "ENCRYPT_AND_RETURN";
-        public static final String SELECT_PUBLIC_KEYS = INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
-        public static final String SELECT_SECRET_KEY = INTENT_PREFIX + "SELECT_SECRET_KEY";
-        public static final String IMPORT = INTENT_PREFIX + "IMPORT";
-        public static final String LOOK_UP_KEY_ID = INTENT_PREFIX + "LOOK_UP_KEY_ID";
-        public static final String LOOK_UP_KEY_ID_AND_RETURN = INTENT_PREFIX
-                + "LOOK_UP_KEY_ID_AND_RETURN";
-        public static final String GENERATE_SIGNATURE = INTENT_PREFIX + "GENERATE_SIGNATURE";
-        public static final String EXPORT_KEY_TO_SERVER = INTENT_PREFIX + "EXPORT_KEY_TO_SERVER";
-        public static final String IMPORT_FROM_QR_CODE = INTENT_PREFIX + "IMPORT_FROM_QR_CODE";
-        public static final String CREATE_KEY = INTENT_PREFIX + "CREATE_KEY";
-        public static final String EDIT_KEY = INTENT_PREFIX + "EDIT_KEY";
     }
 
     public static final String EXTRA_TEXT = "text";
@@ -2267,7 +2243,7 @@ public class PGPHelper {
 
     public static boolean isReleaseVersion(Context context) {
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
             if (pi.versionCode % 100 == 99) {
                 return true;
             } else {
@@ -2284,7 +2260,7 @@ public class PGPHelper {
             return VERSION;
         }
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(PACKAGE_NAME, 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
             VERSION = pi.versionName;
             return VERSION;
         } catch (NameNotFoundException e) {

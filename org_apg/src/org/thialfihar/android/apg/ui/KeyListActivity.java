@@ -69,6 +69,9 @@ import java.io.OutputStream;
 import java.util.Vector;
 
 public class KeyListActivity extends BaseActivity {
+
+    public static final String ACTION_IMPORT = Constants.INTENT_PREFIX + "IMPORT";
+
     protected ExpandableListView mList;
     protected KeyListAdapter mListAdapter;
     protected View mFilterLayout;
@@ -139,7 +142,7 @@ public class KeyListActivity extends BaseActivity {
         mListAdapter = new KeyListAdapter(this, searchString);
         mList.setAdapter(mListAdapter);
 
-        if (PGPHelper.Intent.IMPORT.equals(intent.getAction())) {
+        if (ACTION_IMPORT.equals(intent.getAction())) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
             } else {

@@ -19,10 +19,10 @@ package org.thialfihar.android.apg.ui;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.HkpKeyServer;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.util.HkpKeyServer;
 
 import com.actionbarsherlock.view.MenuItem;
 
@@ -42,6 +42,10 @@ import android.widget.Toast;
  * Sends the selected public key to a key server
  */
 public class KeyServerExportActivity extends BaseActivity {
+
+    // Not used in sourcode, but listed in AndroidManifest!
+    public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
+            + "EXPORT_KEY_TO_SERVER";
 
     private Button export;
     private Spinner keyServer;

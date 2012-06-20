@@ -23,9 +23,9 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.Preferences;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
@@ -67,6 +67,15 @@ import java.io.File;
 import java.util.Vector;
 
 public class EncryptActivity extends SherlockFragmentActivity {
+
+    // possible intent actions for this activity
+    public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
+    public static final String ACTION_ENCRYPT_AND_RETURN = Constants.INTENT_PREFIX
+            + "ENCRYPT_AND_RETURN";
+    public static final String ACTION_GENERATE_SIGNATURE = Constants.INTENT_PREFIX
+            + "GENERATE_SIGNATURE";
+
     private Intent mIntent = null;
     private String mSubject = null;
     private String mSendTo = null;
@@ -185,7 +194,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         final ActionBar actionBar = getSupportActionBar();
         Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
                 + getCallingPackage());
-        if (getCallingPackage() != null && getCallingPackage().equals(PGPHelper.PACKAGE_NAME)) {
+        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         } else {
@@ -335,22 +344,22 @@ public class EncryptActivity extends SherlockFragmentActivity {
         });
 
         mIntent = getIntent();
-        if (PGPHelper.Intent.ENCRYPT.equals(mIntent.getAction())
-                || PGPHelper.Intent.ENCRYPT_FILE.equals(mIntent.getAction())
-                || PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+        if (ACTION_ENCRYPT.equals(mIntent.getAction())
+                || ACTION_ENCRYPT_FILE.equals(mIntent.getAction())
+                || ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
             mContentUri = mIntent.getData();
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
                 extras = new Bundle();
             }
 
-            if (PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                    || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 mReturnResult = true;
             }
 
-            if (PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 mGenerateSignature = true;
                 mOverrideAsciiArmour = true;
                 mAsciiArmourDemand = false;
@@ -411,9 +420,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 }
             }
 
-            if (PGPHelper.Intent.ENCRYPT.equals(mIntent.getAction())
-                    || PGPHelper.Intent.ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || PGPHelper.Intent.GENERATE_SIGNATURE.equals(mIntent.getAction())) {
+            if (ACTION_ENCRYPT.equals(mIntent.getAction())
+                    || ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
+                    || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
                 if (textData != null) {
                     mMessage.setText(textData);
                 }
@@ -422,7 +431,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                     mSource.showNext();
                 }
-            } else if (PGPHelper.Intent.ENCRYPT_FILE.equals(mIntent.getAction())) {
+            } else if (ACTION_ENCRYPT_FILE.equals(mIntent.getAction())) {
                 if ("file".equals(mIntent.getScheme())) {
                     mInputFilename = Uri.decode(mIntent.getDataString().replace("file://", ""));
                     mFilename.setText(mInputFilename);

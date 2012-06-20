@@ -164,13 +164,13 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     private void createKey() {
         PGPHelper.setEditPassPhrase("");
-        Intent intent = new Intent(PGPHelper.Intent.CREATE_KEY);
+        Intent intent = new Intent(EditKeyActivity.ACTION_CREATE_KEY);
         startActivityForResult(intent, Id.message.create_key);
     }
 
     private void editKey() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        Intent intent = new Intent(PGPHelper.Intent.EDIT_KEY);
+        Intent intent = new Intent(EditKeyActivity.ACTION_EDIT_KEY);
         intent.putExtra(PGPHelper.EXTRA_KEY_ID, keyId);
         startActivityForResult(intent, Id.message.edit_key);
     }

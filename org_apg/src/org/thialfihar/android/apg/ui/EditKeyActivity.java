@@ -64,6 +64,11 @@ import java.util.Iterator;
 import java.util.Vector;
 
 public class EditKeyActivity extends SherlockFragmentActivity {
+
+    // possible intent actions for this activity
+    public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
+    public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
+
     private Intent mIntent = null;
     private ActionBar mActionBar;
 
@@ -133,7 +138,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         mActionBar.setDisplayShowTitleEnabled(true);
 
         // set actionbar without home button if called from another app
-        if (getCallingPackage() != null && getCallingPackage().equals(PGPHelper.PACKAGE_NAME)) {
+        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
             mActionBar.setDisplayHomeAsUpEnabled(true);
             mActionBar.setHomeButtonEnabled(true);
         } else {
@@ -154,8 +159,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         // Handle intents
         Bundle extras = mIntent.getExtras();
-        if (PGPHelper.Intent.CREATE_KEY.equals(mIntent.getAction())) {
-
+        if (ACTION_CREATE_KEY.equals(mIntent.getAction())) {
             mActionBar.setTitle(R.string.title_createKey);
 
             mCurrentPassPhrase = "";
@@ -244,8 +248,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     }
                 }
             }
-        } else if (PGPHelper.Intent.EDIT_KEY.equals(mIntent.getAction())) {
-
+        } else if (ACTION_EDIT_KEY.equals(mIntent.getAction())) {
             mActionBar.setTitle(R.string.title_editKey);
 
             mCurrentPassPhrase = PGPHelper.getEditPassPhrase();
@@ -468,8 +471,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param userIdsView
      * @return
      */
-    private Vector<String> getUserIds(SectionView userIdsView)
-            throws PGPHelper.GeneralException {
+    private Vector<String> getUserIds(SectionView userIdsView) throws PGPHelper.GeneralException {
         Vector<String> userIds = new Vector<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
@@ -507,8 +509,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (!gotMainUserId) {
-            throw new PGPHelper.GeneralException(
-                    getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new PGPHelper.GeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         return userIds;
@@ -520,8 +521,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<PGPSecretKey> getKeys(SectionView keysView)
-            throws PGPHelper.GeneralException {
+    private Vector<PGPSecretKey> getKeys(SectionView keysView) throws PGPHelper.GeneralException {
         Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
@@ -544,8 +544,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<Integer> getKeysUsages(SectionView keysView)
-            throws PGPHelper.GeneralException {
+    private Vector<Integer> getKeysUsages(SectionView keysView) throws PGPHelper.GeneralException {
         Vector<Integer> getKeysUsages = new Vector<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();

@@ -169,7 +169,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.GeneralActivity"
+            android:name=".deprecated.GeneralActivity"
             android:configChanges="keyboardHidden|orientation|keyboard"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Dialog" >
