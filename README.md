@@ -54,6 +54,11 @@ see https://github.com/rtyley/spongycastle
 
 # Notes
 
+## Eclipse: "GC overhead limit exceeded"
+
+If you have problems starting APG from Eclipse, consider increasing the memory limits in eclipse.ini.
+See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exceeded for more information.
+
 ## Generate pressed dashboard icons
 
 1. Open svg file in Inkscape

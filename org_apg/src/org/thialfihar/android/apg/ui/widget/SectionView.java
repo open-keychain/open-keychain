@@ -292,6 +292,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
                     // take only the key from this ring
                     PGPSecretKey newKey = null;
+                    @SuppressWarnings("unchecked")
                     Iterator<PGPSecretKey> it = newKeyRing.getSecretKeys();
 
                     if (isMasterKey) {

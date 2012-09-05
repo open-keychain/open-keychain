@@ -525,7 +525,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // if we need a symmetric passphrase or a passphrase to use a sekret key ask for it
         if (getSecretKeyId() == Id.key.symmetric
                 || PGPMain.getCachedPassPhrase(getSecretKeyId()) == null) {
-            // showDialog(Id.dialog.pass_phrase);
             showPassphraseDialog();
         } else {
             if (mDecryptTarget == Id.target.file) {
@@ -1019,22 +1018,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-        // case Id.dialog.output_filename: {
-        // return FileDialog.build(this, getString(R.string.title_decryptToFile),
-        // getString(R.string.specifyFileToDecryptTo), mOutputFilename,
-        // new FileDialog.OnClickListener() {
-        // public void onOkClick(String filename, boolean checked) {
-        // removeDialog(Id.dialog.output_filename);
-        // mOutputFilename = filename;
-        // decryptStart();
-        // }
-        //
-        // public void onCancelClick() {
-        // removeDialog(Id.dialog.output_filename);
-        // }
-        // }, getString(R.string.filemanager_titleSave),
-        // getString(R.string.filemanager_btnSave), null, Id.request.output_filename);
-        // }
 
         case Id.dialog.lookup_unknown_key: {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);

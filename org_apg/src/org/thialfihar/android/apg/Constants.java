@@ -29,6 +29,8 @@ public final class Constants {
     /*
      * TODO:
      * 
+     * this would require patching K9Mail
+     * 
      * better naming scheme would be:
      * 
      * - x.action.DECRYPT (with action as preferred in Android)

@@ -67,7 +67,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     /* keys for data bundle */
 
     // encrypt and decrypt
-    public static final String TARGET = "type";
+    public static final String TARGET = "target";
     // possible targets:
     public static final int TARGET_BYTES = 1;
     public static final int TARGET_FILE = 2;

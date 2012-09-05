@@ -27,6 +27,7 @@ import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
+import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
 import org.thialfihar.android.apg.ui.widget.UserIdEditor;
@@ -38,13 +39,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import org.thialfihar.android.apg.util.Log;
@@ -55,7 +54,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -227,11 +225,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                                                     .getByteArray(ApgService.RESULT_NEW_KEY2));
 
                                     // add master key
+                                    @SuppressWarnings("unchecked")
                                     Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
                                     mKeys.add(masterIt.next());
                                     mKeysUsages.add(Id.choice.usage.sign_only);
 
                                     // add sub key
+                                    @SuppressWarnings("unchecked")
                                     Iterator<PGPSecretKey> subIt = subKeyRing.getSecretKeys();
                                     subIt.next(); // masterkey
                                     mKeys.add(subIt.next());
@@ -296,7 +296,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                showDialog(Id.dialog.new_pass_phrase);
+                showSetPassphraseDialog();
             }
         });
 
@@ -319,6 +319,43 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         if (mBuildLayout) {
             buildLayout();
         }
+    }
+
+    /**
+     * Shows the dialog to set a new passphrase
+     */
+    private void showSetPassphraseDialog() {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == SetPassphraseDialogFragment.MESSAGE_OKAY) {
+                    Bundle data = message.getData();
+
+                    // set new returned passphrase!
+                    mNewPassPhrase = data
+                            .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
+
+                    updatePassPhraseButtonText();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        // set title based on isPassphraseSet()
+        int title = -1;
+        if (isPassphraseSet()) {
+            title = R.string.title_changePassPhrase;
+        } else {
+            title = R.string.title_setPassPhrase;
+        }
+
+        SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
+                messenger, title);
+
+        setPassphraseDialog.show(getSupportFragmentManager(), "setPassphraseDialog");
     }
 
     /**
@@ -360,64 +397,63 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case Id.dialog.new_pass_phrase: {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            if (isPassphraseSet()) {
-                alert.setTitle(R.string.title_changePassPhrase);
-            } else {
-                alert.setTitle(R.string.title_setPassPhrase);
-            }
-            alert.setMessage(R.string.enterPassPhraseTwice);
-
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.passphrase, null);
-            final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
-            final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
-
-            alert.setView(view);
-
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    removeDialog(Id.dialog.new_pass_phrase);
-
-                    String passPhrase1 = "" + input1.getText();
-                    String passPhrase2 = "" + input2.getText();
-                    if (!passPhrase1.equals(passPhrase2)) {
-                        showDialog(Id.dialog.pass_phrases_do_not_match);
-                        return;
-                    }
-
-                    if (passPhrase1.equals("")) {
-                        showDialog(Id.dialog.no_pass_phrase);
-                        return;
-                    }
-
-                    mNewPassPhrase = passPhrase1;
-                    updatePassPhraseButtonText();
-                }
-            });
-
-            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    removeDialog(Id.dialog.new_pass_phrase);
-                }
-            });
-
-            return alert.create();
-        }
-
-        default: {
-            return super.onCreateDialog(id);
-        }
-        }
-    }
+    // @Override
+    // protected Dialog onCreateDialog(int id) {
+    // switch (id) {
+    // case Id.dialog.new_pass_phrase: {
+    // AlertDialog.Builder alert = new AlertDialog.Builder(this);
+    //
+    // if (isPassphraseSet()) {
+    // alert.setTitle(R.string.title_changePassPhrase);
+    // } else {
+    // alert.setTitle(R.string.title_setPassPhrase);
+    // }
+    // alert.setMessage(R.string.enterPassPhraseTwice);
+    //
+    // LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    // View view = inflater.inflate(R.layout.passphrase, null);
+    // final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
+    // final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
+    //
+    // alert.setView(view);
+    //
+    // alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+    // public void onClick(DialogInterface dialog, int id) {
+    // removeDialog(Id.dialog.new_pass_phrase);
+    //
+    // String passPhrase1 = "" + input1.getText();
+    // String passPhrase2 = "" + input2.getText();
+    // if (!passPhrase1.equals(passPhrase2)) {
+    // showDialog(Id.dialog.pass_phrases_do_not_match);
+    // return;
+    // }
+    //
+    // if (passPhrase1.equals("")) {
+    // showDialog(Id.dialog.no_pass_phrase);
+    // return;
+    // }
+    //
+    // mNewPassPhrase = passPhrase1;
+    // updatePassPhraseButtonText();
+    // }
+    // });
+    //
+    // alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+    // public void onClick(DialogInterface dialog, int id) {
+    // removeDialog(Id.dialog.new_pass_phrase);
+    // }
+    // });
+    //
+    // return alert.create();
+    // }
+    //
+    // default: {
+    // return super.onCreateDialog(id);
+    // }
+    // }
+    // }
 
     private void saveClicked() {
-
         try {
             if (!isPassphraseSet()) {
                 throw new PGPMain.GeneralException(this.getString(R.string.setAPassPhrase));
@@ -460,7 +496,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             Messenger messenger = new Messenger(saveHandler);
             intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-            mSavingDialog.show(getSupportFragmentManager(), "dialog");
+            mSavingDialog.show(getSupportFragmentManager(), "savingDialog");
 
             // start service with intent
             startService(intent);
@@ -488,8 +524,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new PGPMain.GeneralException(
-                        this.getString(R.string.error_userIdNeedsAName));
+                throw new PGPMain.GeneralException(this.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
                 throw new PGPMain.GeneralException(
                         this.getString(R.string.error_userIdNeedsAnEmailAddress));
