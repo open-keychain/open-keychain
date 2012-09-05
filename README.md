@@ -8,26 +8,22 @@ I will try to reintegrate the various forks and develope a new user interface an
 
 Fork APG and do a merge request. I will merge your changes back into the main project.
 
-# Build using Ant
+# Build
 
-## Command Line
+## Build with Ant
 
-1. Execute "ant -Dsdk.dir=/opt/android-sdk/ release" in the folder org_apg with the appropriate paths. 
-
-## Local.properties
-
-1. Alternatively you could add a file local.properties in org_apg folder with the following lines, altered to your locations of the SDK:
-
+1. Add a file called local.properties in org_apg folder with the following lines, altered to your locations of the SDK:
+``
     sdk.dir=/opt/android-sdk
-
+``
 2. execute "ant release"
 
-# Build using Eclipse
+## Build with Eclipse
 
-1. New -> Android Project -> Create project from existing source, choose com_actionbarsherlock 
-2. New -> Android Project -> Create project from existing source, choose org_apg
+1. File -> Import -> Android -> Existing Android Code Into Workspace, choose com_actionbarsherlock 
+2. File -> Import -> Android -> Existing Android Code Into Workspace, choose org_apg
 3. Add com_actionbarsherlock as Android Lib (Properties of org_apg -> Android -> Library -> add)
-5. Now APG+ can be build
+5. APG can now be build
 
 # Libraries
 
