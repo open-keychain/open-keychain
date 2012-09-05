@@ -12,10 +12,7 @@ Fork APG and do a merge request. I will merge your changes back into the main pr
 
 ## Build with Ant
 
-1. Add a file called local.properties in org_apg folder with the following lines, altered to your locations of the SDK:
-``
-    sdk.dir=/opt/android-sdk
-``
+1. Add a file called local.properties in org_apg folder with the following lines, altered to your locations of the SDK: ``sdk.dir=/opt/android-sdk``
 2. execute "ant release"
 
 ## Build with Eclipse
