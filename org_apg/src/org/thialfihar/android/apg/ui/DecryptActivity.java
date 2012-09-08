@@ -37,10 +37,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -752,7 +749,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     Bundle returnData = message.getData();
 
                     // if key is unknown show lookup dialog
-                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY) && mLookupUnknownKey) {
+                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY)
+                            && mLookupUnknownKey) {
                         mUnknownSignatureKeyId = returnData
                                 .getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
                         lookupUnknownKey(mUnknownSignatureKeyId);
@@ -879,6 +877,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // this request is returned after LookupUnknownKeyDialogFragment started
         // KeyServerQueryActivity and user looked uo key
         case Id.request.look_up_key_id: {
+            Log.d(Constants.TAG, "Returning from Lookup Key...");
             // decrypt again without lookup
             mLookupUnknownKey = false;
             decryptStart();
