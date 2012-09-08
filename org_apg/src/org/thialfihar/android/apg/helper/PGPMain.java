@@ -1636,8 +1636,8 @@ public class PGPMain {
     }
 
     public static Bundle verifyText(Context context, InputData data, OutputStream outStream,
-            ProgressDialogUpdater progress) throws IOException, GeneralException, PGPException,
-            SignatureException {
+            boolean lookupUnknownKey, ProgressDialogUpdater progress) throws IOException,
+            GeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1686,7 +1686,15 @@ public class PGPMain {
             if (signatureKeyId == 0) {
                 signatureKeyId = signature.getKeyID();
             }
-            if (signatureKey == null) {
+            // if key is not known and we want to lookup unknown ones...
+            if (signatureKey == null && lookupUnknownKey) {
+                
+                returnData = new Bundle();
+                returnData.putLong(ApgService.RESULT_SIGNATURE_KEY_ID, signatureKeyId);
+                returnData.putBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY, true);
+                
+                return returnData;
+                
                 // TODO: reimplement!
                 // Bundle pauseData = new Bundle();
                 // pauseData.putInt(Constants.extras.STATUS, Id.message.unknown_signature_key);

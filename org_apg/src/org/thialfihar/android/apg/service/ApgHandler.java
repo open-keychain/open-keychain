@@ -31,10 +31,6 @@ public class ApgHandler extends Handler {
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_EXCEPTION = 2;
     public static final int MESSAGE_UPDATE_PROGRESS = 3;
-    
-    // used in decrypt
-    public static final int MESSAGE_UNKOWN_KEY = 4;
-
 
     // possible data keys for messages
     public static final String DATA_ERROR = "error";

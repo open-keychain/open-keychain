@@ -26,6 +26,7 @@ import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
+import org.thialfihar.android.apg.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Compatibility;
@@ -128,6 +129,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private ProgressDialogFragment mDecryptingDialog;
     private FileDialogFragment mFileDialog;
+
+    private boolean mLookupUnknownKey = true;
 
     public void setSecretKeyId(long id) {
         mSecretKeyId = id;
@@ -603,7 +606,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 inStream = new ByteArrayInputStream(mData);
             } else {
                 inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
-
             }
         }
 
@@ -666,6 +668,31 @@ public class DecryptActivity extends SherlockFragmentActivity {
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
     }
 
+    private void lookupUnknownKey(long unknownKeyId) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_OKAY) {
+                    // the result is handled by onActivityResult() as LookupUnknownKeyDialogFragment
+                    // starts a new Intent which then returns data
+                } else if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_CANCEL) {
+                    // decrypt again, but don't lookup unknown keys!
+                    mLookupUnknownKey = false;
+                    decryptStart();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        LookupUnknownKeyDialogFragment lookupKeyDialog = LookupUnknownKeyDialogFragment
+                .newInstance(messenger, unknownKeyId);
+
+        lookupKeyDialog.show(getSupportFragmentManager(), "unknownKeyDialog");
+    }
+
     private void decryptStart() {
         Log.d(Constants.TAG, "decryptStart");
 
@@ -682,7 +709,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
             data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
 
             data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
-
         } else if (mDecryptTarget == Id.target.file) {
             data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
 
@@ -691,7 +717,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
             data.putString(ApgService.INPUT_FILE, mInputFilename);
             data.putString(ApgService.OUTPUT_FILE, mOutputFilename);
-
         } else {
             data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
 
@@ -706,6 +731,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         data.putLong(ApgService.SECRET_KEY_ID, getSecretKeyId());
 
         data.putBoolean(ApgService.SIGNED_ONLY, mSignedOnly);
+        data.putBoolean(ApgService.LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
         data.putBoolean(ApgService.RETURN_BYTES, mReturnBinary);
         data.putBoolean(ApgService.ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 
@@ -724,6 +750,14 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
+
+                    // if key is unknown show lookup dialog
+                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY) && mLookupUnknownKey) {
+                        mUnknownSignatureKeyId = returnData
+                                .getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
+                        lookupUnknownKey(mUnknownSignatureKeyId);
+                        return;
+                    }
 
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
@@ -842,14 +876,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
             return;
         }
 
-        // this request is returned after the LookupUnknownKeyDialogFragment was displayed and the
-        // user choose okay
+        // this request is returned after LookupUnknownKeyDialogFragment started
+        // KeyServerQueryActivity and user looked uo key
         case Id.request.look_up_key_id: {
-            // TODO
-            // PausableThread thread = getRunningThread();
-            // if (thread != null && thread.isPaused()) {
-            // thread.unpause();
-            // }
+            // decrypt again without lookup
+            mLookupUnknownKey = false;
+            decryptStart();
             return;
         }
 
@@ -861,47 +893,4 @@ public class DecryptActivity extends SherlockFragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-
-        case Id.dialog.lookup_unknown_key: {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-            alert.setIcon(android.R.drawable.ic_dialog_alert);
-            alert.setTitle(R.string.title_unknownSignatureKey);
-            alert.setMessage(getString(R.string.lookupUnknownKey,
-                    PGPHelper.getSmallFingerPrint(mUnknownSignatureKeyId)));
-
-            alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    removeDialog(Id.dialog.lookup_unknown_key);
-                    Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
-                    intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-                    intent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, mUnknownSignatureKeyId);
-                    startActivityForResult(intent, Id.request.look_up_key_id);
-                }
-            });
-            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    removeDialog(Id.dialog.lookup_unknown_key);
-                    // TODO
-                    // PausableThread thread = getRunningThread();
-                    // if (thread != null && thread.isPaused()) {
-                    // thread.unpause();
-                    // }
-                }
-            });
-            alert.setCancelable(true);
-
-            return alert.create();
-        }
-
-        default: {
-            break;
-        }
-        }
-
-        return super.onCreateDialog(id);
-    }
 }

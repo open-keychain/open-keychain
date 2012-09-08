@@ -86,11 +86,12 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String OUTPUT_FILE = "outputFile";
     public static final String PROVIDER_URI = "providerUri";
 
-    // decrypt
+    // decrypt/verify
     public static final String SIGNED_ONLY = "signedOnly";
     public static final String RETURN_BYTES = "returnBinary";
     public static final String CIPHERTEXT_BYTES = "ciphertextBytes";
     public static final String ASSUME_SYMMETRIC = "assumeSymmetric";
+    public static final String LOOKUP_UNKNOWN_KEY = "lookup_unknown_key";
 
     // edit keys
     public static final String NEW_PASSPHRASE = "newPassphrase";
@@ -132,14 +133,16 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String RESULT_ENCRYPTED_DATA = "encryptedData";
     public static final String RESULT_URI = "resultUri";
 
-    // decrypt
+    // decrypt/verify
     public static final String RESULT_DECRYPTED_MESSAGE = "decryptedMessage";
     public static final String RESULT_DECRYPTED_DATA = "decryptedData";
     public static final String RESULT_SIGNATURE = "signature";
     public static final String RESULT_SIGNATURE_KEY_ID = "signatureKeyId";
     public static final String RESULT_SIGNATURE_USER_ID = "signatureUserId";
+
     public static final String RESULT_SIGNATURE_SUCCESS = "signatureSuccess";
     public static final String RESULT_SIGNATURE_UNKNOWN = "signatureUnknown";
+    public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookupKey";
 
     Messenger mMessenger;
 
@@ -340,6 +343,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 boolean returnBytes = data.getBoolean(RETURN_BYTES);
                 boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
 
+                boolean lookupUnknownKey = data.getBoolean(LOOKUP_UNKNOWN_KEY);
+
                 InputStream inStream = null;
                 long inLength = -1;
                 InputData inputData = null;
@@ -416,7 +421,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 if (signedOnly) {
-                    resultData = PGPMain.verifyText(this, inputData, outStream, this);
+                    resultData = PGPMain.verifyText(this, inputData, outStream, lookupUnknownKey,
+                            this);
                 } else {
                     resultData = PGPMain.decrypt(this, inputData, outStream,
                             PGPMain.getCachedPassPhrase(secretKeyId), this,
