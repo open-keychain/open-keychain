@@ -71,7 +71,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         // not needed later:
         mPreferences = Preferences.getPreferences(this);
 
-        PGPMain.initialize(this);
+        // PGPMain.initialize(this);
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File dir = new File(Constants.path.APP_DIR);

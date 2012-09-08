@@ -95,7 +95,11 @@ public class OtherHelper {
                 String key = iterator.next();
                 Object value = bundle.get(key);
 
-                Log.d(Constants.TAG, key + " : " + value.toString());
+                if (value != null) {
+                    Log.d(Constants.TAG, key + " : " + value.toString());
+                } else {
+                    Log.d(Constants.TAG, key + " : null");
+                }
             }
             Log.d(Constants.TAG, "------------------------------");
         }

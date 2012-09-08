@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg;
 
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import android.app.Application;
@@ -28,6 +29,10 @@ public class ApgApplication extends Application {
 
         /* Start passphrase cache service */
         PassphraseCacheService.startCacheService(this);
+
+        // TODO: Do it better than this!
+        // this initializes the database to be used in PGPMain
+        PGPMain.initialize(this);
     }
 
 }

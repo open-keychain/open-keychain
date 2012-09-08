@@ -397,62 +397,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
     }
 
-    // @Override
-    // protected Dialog onCreateDialog(int id) {
-    // switch (id) {
-    // case Id.dialog.new_pass_phrase: {
-    // AlertDialog.Builder alert = new AlertDialog.Builder(this);
-    //
-    // if (isPassphraseSet()) {
-    // alert.setTitle(R.string.title_changePassPhrase);
-    // } else {
-    // alert.setTitle(R.string.title_setPassPhrase);
-    // }
-    // alert.setMessage(R.string.enterPassPhraseTwice);
-    //
-    // LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    // View view = inflater.inflate(R.layout.passphrase, null);
-    // final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
-    // final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
-    //
-    // alert.setView(view);
-    //
-    // alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-    // public void onClick(DialogInterface dialog, int id) {
-    // removeDialog(Id.dialog.new_pass_phrase);
-    //
-    // String passPhrase1 = "" + input1.getText();
-    // String passPhrase2 = "" + input2.getText();
-    // if (!passPhrase1.equals(passPhrase2)) {
-    // showDialog(Id.dialog.pass_phrases_do_not_match);
-    // return;
-    // }
-    //
-    // if (passPhrase1.equals("")) {
-    // showDialog(Id.dialog.no_pass_phrase);
-    // return;
-    // }
-    //
-    // mNewPassPhrase = passPhrase1;
-    // updatePassPhraseButtonText();
-    // }
-    // });
-    //
-    // alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-    // public void onClick(DialogInterface dialog, int id) {
-    // removeDialog(Id.dialog.new_pass_phrase);
-    // }
-    // });
-    //
-    // return alert.create();
-    // }
-    //
-    // default: {
-    // return super.onCreateDialog(id);
-    // }
-    // }
-    // }
-
     private void saveClicked() {
         try {
             if (!isPassphraseSet()) {

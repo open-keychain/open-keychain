@@ -428,7 +428,7 @@ public class ApgService2 extends PassphraseCacheService {
     }
 
     private boolean prepareArgs(String pCall, Bundle pArgs, Bundle pReturn) {
-        PGPMain.initialize(getBaseContext());
+        // PGPMain.initialize(getBaseContext());
 
         /* add default return values for all functions */
         addDefaultReturns(pReturn);

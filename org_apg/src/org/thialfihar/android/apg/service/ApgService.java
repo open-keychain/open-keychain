@@ -320,6 +320,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
                 }
 
+                OtherHelper.logDebugBundle(resultData, "resultData");
+
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
@@ -448,6 +450,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
                 }
 
+                OtherHelper.logDebugBundle(resultData, "resultData");
+
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
@@ -507,6 +511,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
                         PGPConversionHelper.PGPSecretKeyRingToBytes(newKeyRing));
+
+                OtherHelper.logDebugBundle(resultData, "resultData");
+
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
@@ -533,6 +540,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         PGPConversionHelper.PGPSecretKeyRingToBytes(masterKeyRing));
                 resultData.putByteArray(RESULT_NEW_KEY2,
                         PGPConversionHelper.PGPSecretKeyRingToBytes(subKeyRing));
+
+                OtherHelper.logDebugBundle(resultData, "resultData");
+
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);

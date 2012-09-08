@@ -522,7 +522,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         Log.d(Constants.TAG, "secretKeyId: " + getSecretKeyId());
 
-        // if we need a symmetric passphrase or a passphrase to use a sekret key ask for it
+        // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
         if (getSecretKeyId() == Id.key.symmetric
                 || PGPMain.getCachedPassPhrase(getSecretKeyId()) == null) {
             showPassphraseDialog();
@@ -664,7 +664,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 Id.request.output_filename);
 
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
-
     }
 
     private void decryptStart() {
@@ -724,7 +723,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
                 if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
                     // get returned data bundle
-                    Bundle data = message.getData();
+                    Bundle returnData = message.getData();
 
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
@@ -737,15 +736,15 @@ public class DecryptActivity extends SherlockFragmentActivity {
                             Toast.LENGTH_SHORT).show();
                     if (mReturnResult) {
                         Intent intent = new Intent();
-                        intent.putExtras(data);
+                        intent.putExtras(returnData);
                         setResult(RESULT_OK, intent);
                         finish();
                         return;
                     }
 
                     switch (mDecryptTarget) {
-                    case Id.target.message: {
-                        String decryptedMessage = data
+                    case Id.target.message:
+                        String decryptedMessage = returnData
                                 .getString(ApgService.RESULT_DECRYPTED_MESSAGE);
                         mMessage.setText(decryptedMessage);
                         mMessage.setHorizontallyScrolling(false);
@@ -754,9 +753,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         // build new action bar
                         invalidateOptionsMenu();
                         break;
-                    }
 
-                    case Id.target.file: {
+                    case Id.target.file:
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
@@ -764,17 +762,16 @@ public class DecryptActivity extends SherlockFragmentActivity {
                             deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                         }
                         break;
-                    }
 
-                    default: {
+                    default:
                         // shouldn't happen
                         break;
-                    }
+
                     }
 
-                    if (data.getBoolean(ApgService.RESULT_SIGNATURE)) {
-                        String userId = data.getString(ApgService.RESULT_SIGNATURE_USER_ID);
-                        mSignatureKeyId = data.getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
+                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE)) {
+                        String userId = returnData.getString(ApgService.RESULT_SIGNATURE_USER_ID);
+                        mSignatureKeyId = returnData.getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
                         mUserIdRest
                                 .setText("id: " + PGPHelper.getSmallFingerPrint(mSignatureKeyId));
                         if (userId == null) {
@@ -787,9 +784,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         }
                         mUserId.setText(userId);
 
-                        if (data.getBoolean(ApgService.RESULT_SIGNATURE_SUCCESS)) {
+                        if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                        } else if (data.getBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN)) {
+                        } else if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
                                     R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
@@ -813,159 +810,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // start service with intent
         startService(intent);
     }
-
-    // @Override
-    // public void run() {
-    // String error = null;
-    // Security.addProvider(new BouncyCastleProvider());
-    //
-    // Bundle data = new Bundle();
-    // Message msg = new Message();
-    // fillDataSource();
-    // fillDataDestination();
-    // try {
-    // InputData in = mDataSource.getInputData(this, true);
-    // OutputStream out = mDataDestination.getOutputStream(this);
-    //
-    // if (mSignedOnly) {
-    // data = Apg.verifyText(this, in, out, this);
-    // } else {
-    // data = Apg.decrypt(this, in, out, Apg.getCachedPassPhrase(getSecretKeyId()), this,
-    // mAssumeSymmetricEncryption);
-    // }
-    //
-    // out.close();
-    //
-    // if (mDataDestination.getStreamFilename() != null) {
-    // data.putString(Apg.EXTRA_RESULT_URI, "content://" + DataProvider.AUTHORITY
-    // + "/data/" + mDataDestination.getStreamFilename());
-    // } else if (mDecryptTarget == Id.target.message) {
-    // if (mReturnBinary) {
-    // data.putByteArray(Apg.EXTRA_DECRYPTED_DATA,
-    // ((ByteArrayOutputStream) out).toByteArray());
-    // } else {
-    // data.putString(Apg.EXTRA_DECRYPTED_MESSAGE, new String(
-    // ((ByteArrayOutputStream) out).toByteArray()));
-    // }
-    // }
-    // } catch (PGPException e) {
-    // error = "" + e;
-    // } catch (IOException e) {
-    // error = "" + e;
-    // } catch (SignatureException e) {
-    // error = "" + e;
-    // } catch (Apg.GeneralException e) {
-    // error = "" + e;
-    // }
-    //
-    // data.putInt(Constants.extras.STATUS, Id.message.done);
-    //
-    // if (error != null) {
-    // data.putString(Apg.EXTRA_ERROR, error);
-    // }
-    //
-    // msg.setData(data);
-    // sendMessage(msg);
-    // }
-    //
-    // @Override
-    // public void handlerCallback(Message msg) {
-    // Bundle data = msg.getData();
-    // if (data == null) {
-    // return;
-    // }
-    //
-    // if (data.getInt(Constants.extras.STATUS) == Id.message.unknown_signature_key) {
-    // mUnknownSignatureKeyId = data.getLong(Constants.extras.KEY_ID);
-    // showDialog(Id.dialog.lookup_unknown_key);
-    // return;
-    // }
-    //
-    // super.handlerCallback(msg);
-    // }
-    //
-    // @Override
-    // public void doneCallback(Message msg) {
-    // super.doneCallback(msg);
-    //
-    // Bundle data = msg.getData();
-    // removeDialog(Id.dialog.decrypting);
-    // mSignatureKeyId = 0;
-    // mSignatureLayout.setVisibility(View.GONE);
-    // mReplyEnabled = false;
-    //
-    // // build new action bar
-    // invalidateOptionsMenu();
-    //
-    // String error = data.getString(Apg.EXTRA_ERROR);
-    // if (error != null) {
-    // Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-    // .show();
-    // return;
-    // }
-    //
-    // Toast.makeText(this, R.string.decryptionSuccessful, Toast.LENGTH_SHORT).show();
-    // if (mReturnResult) {
-    // Intent intent = new Intent();
-    // intent.putExtras(data);
-    // setResult(RESULT_OK, intent);
-    // finish();
-    // return;
-    // }
-    //
-    // switch (mDecryptTarget) {
-    // case Id.target.message: {
-    // String decryptedMessage = data.getString(Apg.EXTRA_DECRYPTED_MESSAGE);
-    // mMessage.setText(decryptedMessage);
-    // mMessage.setHorizontallyScrolling(false);
-    // mReplyEnabled = false;
-    //
-    // // build new action bar
-    // invalidateOptionsMenu();
-    // break;
-    // }
-    //
-    // case Id.target.file: {
-    // if (mDeleteAfter.isChecked()) {
-    // //TODO
-    // // setDeleteFile(mInputFilename);
-    // // showDialog(Id.dialog.delete_file);
-    // }
-    // break;
-    // }
-    //
-    // default: {
-    // // shouldn't happen
-    // break;
-    // }
-    // }
-    //
-    // if (data.getBoolean(Apg.EXTRA_SIGNATURE)) {
-    // String userId = data.getString(Apg.EXTRA_SIGNATURE_USER_ID);
-    // mSignatureKeyId = data.getLong(Apg.EXTRA_SIGNATURE_KEY_ID);
-    // mUserIdRest.setText("id: " + Apg.getSmallFingerPrint(mSignatureKeyId));
-    // if (userId == null) {
-    // userId = getResources().getString(R.string.unknownUserId);
-    // }
-    // String chunks[] = userId.split(" <", 2);
-    // userId = chunks[0];
-    // if (chunks.length > 1) {
-    // mUserIdRest.setText("<" + chunks[1]);
-    // }
-    // mUserId.setText(userId);
-    //
-    // if (data.getBoolean(Apg.EXTRA_SIGNATURE_SUCCESS)) {
-    // mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-    // } else if (data.getBoolean(Apg.EXTRA_SIGNATURE_UNKNOWN)) {
-    // mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-    // Toast.makeText(this, R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
-    // .show();
-    // } else {
-    // mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-    // }
-    // mSignatureLayout.setVisibility(View.VISIBLE);
-    // }
-    // }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -998,6 +842,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
             return;
         }
 
+        // this request is returned after the LookupUnknownKeyDialogFragment was displayed and the
+        // user choose okay
         case Id.request.look_up_key_id: {
             // TODO
             // PausableThread thread = getRunningThread();
