@@ -527,12 +527,6 @@ public class PGPMain {
             progress.setProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
         }
 
-        // deprecated method:
-        // PGPKeyRingGenerator keyGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
-        // masterKeyPair, mainUserId, PGPEncryptedData.CAST5, newPassPhrase.toCharArray(),
-        // hashedPacketsGen.generate(), unhashedPacketsGen.generate(), new SecureRandom(),
-        // new BouncyCastleProvider().getName());
-
         // define hashing and signing algos
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
                 HashAlgorithmTags.SHA1);
@@ -559,11 +553,6 @@ public class PGPMain {
             PBESecretKeyDecryptor keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
                     .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
             PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
-
-            // deprecated method:
-            // PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey.getAlgorithm(),
-            // subPublicKey.getKey(new BouncyCastleProvider()), subPrivateKey.getKey(),
-            // subPublicKey.getCreationTime());
 
             // TODO: now used without algorithm and creation time?!
             PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
@@ -804,18 +793,6 @@ public class PGPMain {
             return null;
         }
         return PGPConversionHelper.BytesToPGPSecretKeyRing(data);
-
-        // deprecated method:
-        // try {
-        // return new PGPSecretKeyRing(data);
-        // } catch (IOException e) {
-        // // no good way to handle this, return null
-        // // TODO: some info?
-        // } catch (PGPException e) {
-        // // no good way to handle this, return null
-        // // TODO: some info?
-        // }
-        // return null;
     }
 
     public static PGPPublicKeyRing getPublicKeyRing(long keyId) {
@@ -824,15 +801,6 @@ public class PGPMain {
             return null;
         }
         return PGPConversionHelper.BytesToPGPPublicKeyRing(data);
-
-        // deprecated method:
-        // try {
-        // return new PGPPublicKeyRing(data);
-        // } catch (IOException e) {
-        // // no good way to handle this, return null
-        // // TODO: some info?
-        // }
-        // return null;
     }
 
     public static PGPSecretKey getSecretKey(long keyId) {
@@ -956,10 +924,6 @@ public class PGPMain {
 
         PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
-        // deprecated method:
-        // PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(symmetricAlgorithm, true,
-        // new SecureRandom(), new BouncyCastleProvider());
-
         if (encryptionKeyIds.length == 0) {
             // symmetric encryption
             Log.d(Constants.TAG, "encryptionKeyIds length is 0 -> symmetric encryption");
@@ -967,9 +931,6 @@ public class PGPMain {
             JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator = new JcePBEKeyEncryptionMethodGenerator(
                     passPhrase.toCharArray());
             cPk.addMethod(symmetricEncryptionGenerator);
-
-            // deprecated method:
-            // cPk.addMethod(passPhrase.toCharArray());
         }
         for (int i = 0; i < encryptionKeyIds.length; ++i) {
             PGPPublicKey key = PGPHelper.getEncryptPublicKey(encryptionKeyIds[i]);
@@ -978,9 +939,6 @@ public class PGPMain {
                 JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator = new JcePublicKeyKeyEncryptionMethodGenerator(
                         key);
                 cPk.addMethod(pubKeyEncryptionGenerator);
-
-                // deprecated method:
-                // cPk.addMethod(key);
             }
         }
         encryptOut = cPk.open(out, new byte[1 << 16]);
@@ -1440,8 +1398,6 @@ public class PGPMain {
 
             clear = pbe.getDataStream(decryptorFactory);
 
-            // deprecated method:
-            // clear = pbe.getDataStream(passPhrase.toCharArray(), new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
         } else {
@@ -1491,8 +1447,6 @@ public class PGPMain {
 
             clear = pbe.getDataStream(decryptorFactory);
 
-            // deprecated method:
-            // clear = pbe.getDataStream(privateKey, new BouncyCastleProvider());
             encryptedData = pbe;
             currentProgress += 5;
         }
@@ -1546,9 +1500,6 @@ public class PGPMain {
                         .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
 
                 signature.init(contentVerifierBuilderProvider, signatureKey);
-
-                // deprecated method:
-                // signature.initVerify(signatureKey, new BouncyCastleProvider());
             } else {
                 returnData.putBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN, true);
             }
@@ -1688,24 +1639,13 @@ public class PGPMain {
             }
             // if key is not known and we want to lookup unknown ones...
             if (signatureKey == null && lookupUnknownKey) {
-                
+
                 returnData = new Bundle();
                 returnData.putLong(ApgService.RESULT_SIGNATURE_KEY_ID, signatureKeyId);
                 returnData.putBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY, true);
-                
+
+                // return directly now, decrypt will be done again after importing unknown key
                 return returnData;
-                
-                // TODO: reimplement!
-                // Bundle pauseData = new Bundle();
-                // pauseData.putInt(Constants.extras.STATUS, Id.message.unknown_signature_key);
-                // pauseData.putLong(Constants.extras.KEY_ID, signatureKeyId);
-                // Message msg = new Message();
-                // msg.setData(pauseData);
-                // context.sendMessage(msg);
-                // // pause here
-                // context.getRunningThread().pause();
-                // // see whether the key was found in the meantime
-                // signatureKey = getPublicKey(signature.getKeyID());
             }
 
             if (signatureKey == null) {
@@ -1735,9 +1675,6 @@ public class PGPMain {
                 .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
 
         signature.init(contentVerifierBuilderProvider, signatureKey);
-
-        // deprecated method:
-        // signature.initVerify(signatureKey, new BouncyCastleProvider());
 
         InputStream sigIn = new BufferedInputStream(new ByteArrayInputStream(clearText));
 
