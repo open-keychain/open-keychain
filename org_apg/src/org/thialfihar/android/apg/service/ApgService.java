@@ -63,8 +63,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.widget.CheckBox;
-import android.widget.Spinner;
 
 import org.thialfihar.android.apg.util.Log;
 
@@ -777,7 +775,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 String keyServer = data.getString(QUERY_KEY_SERVER);
 
                 String queryString = data.getString(QUERY_KEY_STRING);
-                long queryId = data.getLong(QUERY_KEY_ID);
+                long keyId = data.getLong(QUERY_KEY_ID);
 
                 /* Operation */
 
@@ -789,7 +787,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                     resultData.putParcelableArrayList(RESULT_QUERY_KEY_SEARCH_RESULT, searchResult);
                 } else if (queryType == Id.keyserver.get) {
-                    String keyData = server.get(queryId);
+                    String keyData = server.get(keyId);
 
                     resultData.putString(RESULT_QUERY_KEY_KEY_DATA, keyData);
                 }
@@ -806,8 +804,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 /* Input */
 
-                long masterKeyId = data.getInt(SIGN_KEY_MASTER_KEY_ID);
-                long pubKeyId = data.getInt(SIGN_KEY_PUB_KEY_ID);
+                long masterKeyId = data.getLong(SIGN_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getLong(SIGN_KEY_PUB_KEY_ID);
 
                 /* Operation */
 
@@ -835,19 +833,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     PGPPublicKey signedKey = PGPPublicKey.addCertification(
                             pubring.getPublicKey(pubKeyId), sGen.generate());
                     pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
-
-                    // check if we need to send the key to the server or not
-                    // CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
-                    // if (sendKey.isChecked()) {
-                    // Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
-                    // HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
-                    //
-                    // /*
-                    // * upload the newly signed key to the key server
-                    // */
-                    //
-                    // PGPMain.uploadKeyRingToServer(server, pubring);
-                    // }
 
                     // store the signed key in our local cache
                     int retval = PGPMain.storeKeyRingInCache(pubring);

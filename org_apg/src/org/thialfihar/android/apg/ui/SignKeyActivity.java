@@ -16,22 +16,10 @@
 
 package org.thialfihar.android.apg.ui;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
 import java.util.Iterator;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
-import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -40,10 +28,9 @@ import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
-import org.thialfihar.android.apg.util.HkpKeyServer;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -75,23 +62,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
     // TODO: remove when using new intentservice:
     public static final String EXTRA_ERROR = "error";
 
-    private long pubKeyId = 0;
-    private long masterKeyId = 0;
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case android.R.id.home:
-            startActivity(new Intent(this, PublicKeyListActivity.class));
-            return true;
-
-        default:
-            break;
-
-        }
-        return false;
-    }
+    private long mPubKeyId = 0;
+    private long mMasterKeyId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +71,11 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
         // check we havent already signed it
         setContentView(R.layout.sign_key_layout);
+
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
 
         final Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -132,14 +109,14 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
             @Override
             public void onClick(View v) {
-                if (pubKeyId != 0) {
+                if (mPubKeyId != 0) {
                     initiateSigning();
                 }
             }
         });
 
-        pubKeyId = getIntent().getLongExtra(EXTRA_KEY_ID, 0);
-        if (pubKeyId == 0) {
+        mPubKeyId = getIntent().getLongExtra(EXTRA_KEY_ID, 0);
+        if (mPubKeyId == 0) {
             finish(); // nothing to do if we dont know what key to sign
         } else {
             // kick off the SecretKey selection activity so the user chooses which key to sign with
@@ -179,16 +156,16 @@ public class SignKeyActivity extends SherlockFragmentActivity {
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
+        PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(mPubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
 
             @SuppressWarnings("unchecked")
-            Iterator<PGPSignature> itr = pubring.getPublicKey(pubKeyId).getSignatures();
+            Iterator<PGPSignature> itr = pubring.getPublicKey(mPubKeyId).getSignatures();
             while (itr.hasNext()) {
                 PGPSignature sig = itr.next();
-                if (sig.getKeyID() == masterKeyId) {
+                if (sig.getKeyID() == mMasterKeyId) {
                     alreadySigned = true;
                     break;
                 }
@@ -198,9 +175,9 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                 /*
                  * get the user's passphrase for this key (if required)
                  */
-                String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
+                String passphrase = PGPMain.getCachedPassPhrase(mMasterKeyId);
                 if (passphrase == null) {
-                    showPassphraseDialog(masterKeyId);
+                    showPassphraseDialog(mMasterKeyId);
                     return; // bail out; need to wait until the user has entered the passphrase
                             // before trying again
                 } else {
@@ -246,18 +223,14 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
-        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ID, keyRingId);
-
-        Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
-        String server = (String) keyServer.getSelectedItem();
-        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
+        data.putLong(ApgService.SIGN_KEY_MASTER_KEY_ID, mMasterKeyId);
+        data.putLong(ApgService.SIGN_KEY_PUB_KEY_ID, mPubKeyId);
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
         // Message is received after signing is done in ApgService
         ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_signing,
-                ProgressDialog.STYLE_HORIZONTAL) {
+                ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -301,7 +274,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ID, pubKeyId);
+        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ID, mPubKeyId);
 
         Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
         String server = (String) keyServer.getSelectedItem();
@@ -433,7 +406,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         switch (requestCode) {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
-                masterKeyId = data.getLongExtra(EXTRA_KEY_ID, 0);
+                mMasterKeyId = data.getLongExtra(EXTRA_KEY_ID, 0);
 
                 // re-enable the sign button so the user can initiate the sign process
                 Button sign = (Button) findViewById(R.id.sign);
@@ -448,22 +421,4 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         }
         }
     }
-    //
-    // @Override
-    // public void doneCallback(Message msg) {
-    // super.doneCallback(msg);
-    //
-    // removeDialog(Id.dialog.signing);
-    //
-    // Bundle data = msg.getData();
-    // String error = data.getString(EXTRA_ERROR);
-    // if (error != null) {
-    // Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-    // .show();
-    // return;
-    // }
-    //
-    // Toast.makeText(this, R.string.keySignSuccess, Toast.LENGTH_SHORT).show();
-    // finish();
-    // }
 }

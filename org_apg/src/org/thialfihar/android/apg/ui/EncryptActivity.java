@@ -703,7 +703,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
-
+        
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
                     messenger, mSecretKeyId);

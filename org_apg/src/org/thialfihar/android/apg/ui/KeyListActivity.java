@@ -163,6 +163,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
             showExportKeysDialog(false);
             return true;
         }
+        
+        case Id.menu.option.search:
+            startSearch("", false, null, false);
+            return true;
 
         default: {
             return super.onOptionsItemSelected(item);

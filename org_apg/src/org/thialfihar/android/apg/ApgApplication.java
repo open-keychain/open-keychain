@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg;
 
+import java.io.File;
 import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -23,6 +24,7 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import android.app.Application;
+import android.os.Environment;
 
 public class ApgApplication extends Application {
 
@@ -40,6 +42,15 @@ public class ApgApplication extends Application {
         // TODO: Do it better than this!
         // this initializes the database to be used in PGPMain
         PGPMain.initialize(this);
+        
+        // Create APG directory on sdcard if not existing
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File dir = new File(Constants.path.APP_DIR);
+            if (!dir.exists() && !dir.mkdirs()) {
+                // ignore this for now, it's not crucial
+                // that the directory doesn't exist at this point
+            }
+        }
     }
 
 }

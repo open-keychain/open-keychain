@@ -24,6 +24,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ui.widget.SelectPublicKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -36,7 +37,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectPublicKeyListActivity extends BaseActivity {
+public class SelectPublicKeyListActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX

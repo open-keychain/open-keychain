@@ -22,6 +22,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.ui.widget.SelectSecretKeyListAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 
 import android.app.SearchManager;
@@ -35,7 +36,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectSecretKeyListActivity extends BaseActivity {
+public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
