@@ -723,9 +723,9 @@ public class PGPMain {
             // nothing to do, we are done
         }
 
-        returnData.putInt("added", newKeys);
-        returnData.putInt("updated", oldKeys);
-        returnData.putInt("bad", badKeys);
+        returnData.putInt(ApgService.RESULT_IMPORT_ADDED, newKeys);
+        returnData.putInt(ApgService.RESULT_IMPORT_UPDATED, oldKeys);
+        returnData.putInt(ApgService.RESULT_IMPORT_BAD, badKeys);
 
         if (progress != null)
             progress.setProgress(R.string.progress_done, 100, 100);

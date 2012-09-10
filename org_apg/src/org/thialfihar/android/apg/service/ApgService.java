@@ -161,6 +161,11 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String RESULT_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookupKey";
 
+    // import
+    public static final String RESULT_IMPORT_ADDED = "added";
+    public static final String RESULT_IMPORT_UPDATED = "updated";
+    public static final String RESULT_IMPORT_BAD = "bad";
+
     Messenger mMessenger;
 
     public ApgService() {

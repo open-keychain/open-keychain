@@ -12,30 +12,33 @@
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" >
-        
-        
+
         <Button
             android:id="@+id/import_from_qr_code_import"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="importOnClick"
             android:text="@string/import_from_qr_code_import" />
 
         <Button
             android:id="@+id/import_from_qr_code_import_sign_and_upload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="signAndUploadOnClick"
             android:text="@string/import_from_qr_code_import_sign_and_upload" />
 
         <Button
             android:id="@+id/import_from_qr_code_scan_again"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="scanAgainOnClick"
             android:text="@string/import_from_qr_code_scan_again" />
 
         <Button
             android:id="@+id/import_from_qr_code_finish"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="finishOnClick"
             android:text="@string/import_from_qr_code_finish" />
     </LinearLayout>
 

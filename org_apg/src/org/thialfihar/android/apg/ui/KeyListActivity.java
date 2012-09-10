@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -312,9 +313,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    int added = returnData.getInt("added");
-                    int updated = returnData.getInt("updated");
-                    int bad = returnData.getInt("bad");
+                    int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
+                    int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
+                    int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
                     String toastMessage;
                     if (added > 0 && updated > 0) {
                         toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Senecaso
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,45 +17,39 @@
 
 package org.thialfihar.android.apg.ui;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.PGPMain;
-import org.thialfihar.android.apg.util.HkpKeyServer;
-import org.thialfihar.android.apg.util.KeyServer.QueryException;
+import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.R;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
+
 import org.thialfihar.android.apg.util.Log;
 
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
-public class ImportFromQRCodeActivity extends BaseActivity {
+public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_FROM_QR_CODE";
 
-    public static final String EXTRA_KEY_ID = "keyId";
+    // public static final String EXTRA_KEY_ID = "keyId";
 
-    // TODO: remove when using new intentservice:
-    public static final String EXTRA_ERROR = "error";
-
-    private static final String TAG = "ImportFromQRCodeActivity";
-
-    private final Bundle status = new Bundle();
-    private final Message msg = new Message();
+    private String mScannedContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,10 +116,101 @@ public class ImportFromQRCodeActivity extends BaseActivity {
     // }
     // }
 
-    private void importAndSign(final long keyId, final String expectedFingerprint) {
+    public void scanAgainOnClick(View view) {
+        new IntentIntegrator(this).initiateScan();
+    }
 
-        // setContentView(R.layout.import_from_qr_code);
+    public void finishOnClick(View view) {
+        finish();
+    }
 
+    public void importOnClick(View view) {
+        Log.d(Constants.TAG, "import key started");
+
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(this, ApgService.class);
+
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        // data.putInt(ApgService.IMPORT_KEY_TYPE, Id.type.public_key);
+
+        data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
+        data.putByteArray(ApgService.IMPORT_BYTES, mScannedContent.getBytes());
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        // create progress dialog
+        ProgressDialogFragment importingDialog = ProgressDialogFragment.newInstance(
+                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
+
+        // Message is received after importing is done in ApgService
+        ApgHandler saveHandler = new ApgHandler(this, importingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
+                    int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
+                    int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
+                    String toastMessage;
+                    if (added > 0 && updated > 0) {
+                        toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
+                    } else if (added > 0) {
+                        toastMessage = getString(R.string.keysAdded, added);
+                    } else if (updated > 0) {
+                        toastMessage = getString(R.string.keysUpdated, updated);
+                    } else {
+                        toastMessage = getString(R.string.noKeysAddedOrUpdated);
+                    }
+                    Toast.makeText(ImportFromQRCodeActivity.this, toastMessage, Toast.LENGTH_SHORT)
+                            .show();
+                    if (bad > 0) {
+                        AlertDialog.Builder alert = new AlertDialog.Builder(
+                                ImportFromQRCodeActivity.this);
+
+                        alert.setIcon(android.R.drawable.ic_dialog_alert);
+                        alert.setTitle(R.string.warning);
+                        alert.setMessage(ImportFromQRCodeActivity.this.getString(
+                                R.string.badKeysEncountered, bad));
+
+                        alert.setPositiveButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        alert.setCancelable(true);
+                        alert.create().show();
+                    }
+                }
+            };
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        importingDialog.show(getSupportFragmentManager(), "importingDialog");
+
+        // start service with intent
+        startService(intent);
+    }
+
+    public void signAndUploadOnClick(View view) {
+        // first, import!
+        importOnClick(view);
+
+        // TODO: implement sign and upload!
+        Toast.makeText(ImportFromQRCodeActivity.this, "Not implemented right now!",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -139,9 +225,9 @@ public class ImportFromQRCodeActivity extends BaseActivity {
                 setContentView(R.layout.import_from_qr_code);
                 TextView contentView = (TextView) findViewById(R.id.import_from_qr_code_content);
 
-                String content = scanResult.getContents();
+                mScannedContent = scanResult.getContents();
 
-                contentView.setText(content);
+                contentView.setText(mScannedContent);
                 // String[] bits = scanResult.getContents().split(",");
                 // if (bits.length != 2) {
                 // return; // dont know how to handle this. Not a valid code
@@ -157,35 +243,9 @@ public class ImportFromQRCodeActivity extends BaseActivity {
             break;
         }
 
-        case Id.request.sign_key: {
-            // signals the end of processing. Signature was either applied, or it wasnt
-            status.putInt(Constants.extras.STATUS, Id.message.done);
-
-            msg.setData(status);
-            sendMessage(msg);
-
-            break;
-        }
-
         default: {
             super.onActivityResult(requestCode, resultCode, data);
         }
         }
-    }
-
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
-
-        Bundle data = msg.getData();
-        String error = data.getString(EXTRA_ERROR);
-        if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-
-        Toast.makeText(this, R.string.keySignSuccess, Toast.LENGTH_SHORT).show(); // TODO
-        finish();
     }
 }
