@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -66,7 +67,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     /* keys for data bundle */
 
-    // encrypt and decrypt
+    // encrypt, decrypt, import export
     public static final String TARGET = "target";
     // possible targets:
     public static final int TARGET_BYTES = 1;
@@ -91,7 +92,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String RETURN_BYTES = "returnBinary";
     public static final String CIPHERTEXT_BYTES = "ciphertextBytes";
     public static final String ASSUME_SYMMETRIC = "assumeSymmetric";
-    public static final String LOOKUP_UNKNOWN_KEY = "lookup_unknown_key";
+    public static final String LOOKUP_UNKNOWN_KEY = "lookupUnknownKey";
 
     // edit keys
     public static final String NEW_PASSPHRASE = "newPassphrase";
@@ -103,12 +104,25 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // generate key
     public static final String ALGORITHM = "algorithm";
-    public static final String KEY_SIZE = "key_size";
+    public static final String KEY_SIZE = "keySize";
     public static final String SYMMETRIC_PASSPHRASE = "passphrase";
     public static final String MASTER_KEY = "masterKey";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
+
+    // import key
+    public static final String IMPORT_INPUT_STREAM = "importInputStream";
+    public static final String IMPORT_FILENAME = "importFilename";
+    public static final String IMPORT_BYTES = "importBytes";
+    public static final String IMPORT_KEY_TYPE = "importKeyType";
+
+    // export key
+    public static final String EXPORT_OUTPUT_STREAM = "exportOutputStream";
+    public static final String EXPORT_FILENAME = "exportFilename";
+    public static final String EXPORT_KEY_TYPE = "exportKeyType";
+    public static final String EXPORT_ALL = "exportAll";
+    public static final String EXPORT_KEY_RING_ID = "exportKeyRingId";
 
     /* possible EXTRA_ACTIONs */
     public static final int ACTION_ENCRYPT_SIGN = 10;
@@ -120,6 +134,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final int ACTION_GENERATE_DEFAULT_RSA_KEYS = 32;
 
     public static final int ACTION_DELETE_FILE_SECURELY = 40;
+
+    public static final int ACTION_IMPORT_KEY = 50;
+    public static final int ACTION_EXPORT_KEY = 51;
 
     /* possible data keys as result send over messenger */
     // keys
@@ -574,6 +591,104 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 /* Output */
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_IMPORT_KEY:
+            try {
+
+                /* Input */
+                int target = data.getInt(TARGET);
+
+                int keyType = Id.type.public_key;
+                if (data.containsKey(IMPORT_KEY_TYPE)) {
+                    keyType = data.getInt(IMPORT_KEY_TYPE);
+                }
+
+                /* Operation */
+                InputStream inStream = null;
+                long inLength = -1;
+                InputData inputData = null;
+                switch (target) {
+                case TARGET_BYTES: /* import key from bytes directly */
+                    byte[] bytes = data.getByteArray(IMPORT_BYTES);
+
+                    inStream = new ByteArrayInputStream(bytes);
+                    inLength = bytes.length;
+
+                    inputData = new InputData(inStream, inLength);
+
+                    break;
+                case TARGET_FILE: /* import key from file */
+                    String inputFile = data.getString(IMPORT_FILENAME);
+
+                    inStream = new FileInputStream(inputFile);
+                    File file = new File(inputFile);
+                    inLength = file.length();
+                    inputData = new InputData(inStream, inLength);
+
+                    break;
+
+                case TARGET_STREAM:
+                    // TODO: not implemented
+                    break;
+                }
+
+                Bundle resultData = new Bundle();
+                resultData = PGPMain.importKeyRings(this, keyType, inputData, this);
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_EXPORT_KEY:
+            try {
+
+                /* Input */
+                int keyType = Id.type.public_key;
+                if (data.containsKey(EXPORT_KEY_TYPE)) {
+                    keyType = data.getInt(EXPORT_KEY_TYPE);
+                }
+
+                String outputFile = data.getString(EXPORT_FILENAME);
+
+                boolean exportAll = data.getBoolean(EXPORT_ALL);
+                int keyRingId = -1;
+                if (!exportAll) {
+                    keyRingId = data.getInt(EXPORT_KEY_RING_ID);
+                }
+
+                /* Operation */
+
+                // check if storage is ready
+                if (!FileHelper.isStorageMounted(outputFile)) {
+                    sendErrorToHandler(new GeneralException(
+                            getString(R.string.error_externalStorageNotReady)));
+                    return;
+                }
+
+                // OutputStream
+                FileOutputStream outStream = new FileOutputStream(outputFile);
+
+                Vector<Integer> keyRingIds = new Vector<Integer>();
+                if (exportAll) {
+                    keyRingIds = PGPMain
+                            .getKeyRingIds(keyType == Id.type.public_key ? Id.database.type_public
+                                    : Id.database.type_secret);
+                } else {
+                    keyRingIds.add(keyRingId);
+                }
+
+                Bundle resultData = new Bundle();
+                resultData = PGPMain.exportKeyRings(this, keyRingIds, outStream, this);
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

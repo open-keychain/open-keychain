@@ -16,9 +16,6 @@
 
 package org.thialfihar.android.apg.ui;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -26,14 +23,19 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
+import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
+import org.thialfihar.android.apg.ui.dialog.DeleteKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
-import org.thialfihar.android.apg.util.InputData;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.R;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -59,24 +61,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Vector;
 
-public class KeyListActivity extends BaseActivity {
+public class KeyListActivity extends SherlockFragmentActivity {
 
     public static final String ACTION_IMPORT = Constants.INTENT_PREFIX + "IMPORT";
 
     public static final String EXTRA_TEXT = "text";
-
-    // TODO: remove when using new intentservice:
-    public static final String EXTRA_ERROR = "error";
 
     protected ExpandableListView mList;
     protected KeyListAdapter mListAdapter;
@@ -251,7 +242,7 @@ public class KeyListActivity extends BaseActivity {
 
         case Id.menu.delete: {
             mSelectedItem = groupPosition;
-            showDialog(Id.dialog.delete_key);
+            showDeleteKeyDialog();
             return true;
         }
 
@@ -261,177 +252,87 @@ public class KeyListActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
+    private void showDeleteKeyDialog() {
+        final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
+        mSelectedItem = -1;
 
-        switch (id) {
-        case Id.dialog.delete_key: {
-            final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
-            mSelectedItem = -1;
-            // TODO: better way to do this?
-            String userId = "<unknown>";
-            Object keyRing = PGPMain.getKeyRing(keyRingId);
-            if (keyRing != null) {
-                if (keyRing instanceof PGPPublicKeyRing) {
-                    userId = PGPHelper.getMainUserIdSafe(this,
-                            PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing));
-                } else {
-                    userId = PGPHelper.getMainUserIdSafe(this,
-                            PGPHelper.getMasterKey((PGPSecretKeyRing) keyRing));
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    refreshList();
                 }
             }
+        };
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.warning);
-            builder.setMessage(getString(
-                    mKeyType == Id.type.public_key ? R.string.keyDeletionConfirmation
-                            : R.string.secretKeyDeletionConfirmation, userId));
-            builder.setIcon(android.R.drawable.ic_dialog_alert);
-            builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    deleteKey(keyRingId);
-                    removeDialog(Id.dialog.delete_key);
-                }
-            });
-            builder.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            removeDialog(Id.dialog.delete_key);
-                        }
-                    });
-            return builder.create();
-        }
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
 
-        default: {
-            return super.onCreateDialog(id);
-        }
-        }
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                keyRingId, mKeyType);
+
+        deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
     public void importKeys() {
-        showDialog(Id.dialog.importing);
-        mTask = Id.task.import_keys;
-        startThread();
-    }
+        Log.d(Constants.TAG, "importKeys started");
 
-    public void exportKeys() {
-        showDialog(Id.dialog.exporting);
-        mTask = Id.task.export_keys;
-        startThread();
-    }
+        // Send all information needed to service to import key in other thread
+        Intent intent = new Intent(this, ApgService.class);
 
-    @Override
-    public void run() {
-        String error = null;
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
+
+        // fill values for this action
         Bundle data = new Bundle();
-        Message msg = new Message();
 
-        try {
-            InputStream importInputStream = null;
-            OutputStream exportOutputStream = null;
-            long size = 0;
-            if (mTask == Id.task.import_keys) {
-                if (mImportData != null) {
-                    byte[] bytes = mImportData.getBytes();
-                    size = bytes.length;
-                    importInputStream = new ByteArrayInputStream(bytes);
-                } else {
-                    File file = new File(mImportFilename);
-                    size = file.length();
-                    importInputStream = new FileInputStream(file);
-                }
-            } else {
-                exportOutputStream = new FileOutputStream(mExportFilename);
-            }
+        data.putInt(ApgService.IMPORT_KEY_TYPE, mKeyType);
 
-            if (mTask == Id.task.import_keys) {
-                data = PGPMain.importKeyRings(this, mKeyType, new InputData(importInputStream,
-                        size), this);
-            } else {
-                Vector<Integer> keyRingIds = new Vector<Integer>();
-                if (mSelectedItem == -1) {
-                    keyRingIds = PGPMain
-                            .getKeyRingIds(mKeyType == Id.type.public_key ? Id.database.type_public
-                                    : Id.database.type_secret);
-                } else {
-                    int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
-                    keyRingIds.add(keyRingId);
-                    mSelectedItem = -1;
-                }
-                data = PGPMain.exportKeyRings(this, keyRingIds, exportOutputStream, this);
-            }
-        } catch (FileNotFoundException e) {
-            error = getString(R.string.error_fileNotFound);
-        } catch (IOException e) {
-            error = "" + e;
-        } catch (PGPException e) {
-            error = "" + e;
-        } catch (PGPMain.GeneralException e) {
-            error = "" + e;
-        }
-
-        mImportData = null;
-
-        if (mTask == Id.task.import_keys) {
-            data.putInt(Constants.extras.STATUS, Id.message.import_done);
+        if (mImportData != null) {
+            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
+            data.putByteArray(ApgService.IMPORT_BYTES, mImportData.getBytes());
         } else {
-            data.putInt(Constants.extras.STATUS, Id.message.export_done);
+            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
+            data.putString(ApgService.IMPORT_FILENAME, mImportFilename);
         }
 
-        if (error != null) {
-            data.putString(EXTRA_ERROR, error);
-        }
+        intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        msg.setData(data);
-        sendMessage(msg);
-    }
+        // create progress dialog
+        ProgressDialogFragment importingDialog = ProgressDialogFragment.newInstance(
+                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
 
-    protected void deleteKey(int keyRingId) {
-        PGPMain.deleteKey(keyRingId);
-        refreshList();
-    }
+        // Message is received after importing is done in ApgService
+        ApgHandler saveHandler = new ApgHandler(this, importingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
 
-    protected void refreshList() {
-        mListAdapter.rebuild(true);
-        mListAdapter.notifyDataSetChanged();
-    }
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
 
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
-
-        Bundle data = msg.getData();
-        if (data != null) {
-            int type = data.getInt(Constants.extras.STATUS);
-            switch (type) {
-            case Id.message.import_done: {
-                removeDialog(Id.dialog.importing);
-
-                String error = data.getString(EXTRA_ERROR);
-                if (error != null) {
-                    Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    int added = data.getInt("added");
-                    int updated = data.getInt("updated");
-                    int bad = data.getInt("bad");
-                    String message;
+                    int added = returnData.getInt("added");
+                    int updated = returnData.getInt("updated");
+                    int bad = returnData.getInt("bad");
+                    String toastMessage;
                     if (added > 0 && updated > 0) {
-                        message = getString(R.string.keysAddedAndUpdated, added, updated);
+                        toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
                     } else if (added > 0) {
-                        message = getString(R.string.keysAdded, added);
+                        toastMessage = getString(R.string.keysAdded, added);
                     } else if (updated > 0) {
-                        message = getString(R.string.keysUpdated, updated);
+                        toastMessage = getString(R.string.keysUpdated, updated);
                     } else {
-                        message = getString(R.string.noKeysAddedOrUpdated);
+                        toastMessage = getString(R.string.noKeysAddedOrUpdated);
                     }
-                    Toast.makeText(KeyListActivity.this, message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                     if (bad > 0) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                        AlertDialog.Builder alert = new AlertDialog.Builder(KeyListActivity.this);
 
                         alert.setIcon(android.R.drawable.ic_dialog_alert);
                         alert.setTitle(R.string.warning);
-                        alert.setMessage(this.getString(R.string.badKeysEncountered, bad));
+                        alert.setMessage(KeyListActivity.this.getString(
+                                R.string.badKeysEncountered, bad));
 
                         alert.setPositiveButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
@@ -443,41 +344,94 @@ public class KeyListActivity extends BaseActivity {
                         alert.create().show();
                     } else if (mDeleteAfterImport) {
                         // everything went well, so now delete, if that was turned on
-                        setDeleteFile(mImportFilename);
-                        showDialog(Id.dialog.delete_file);
+                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                .newInstance(mImportFilename);
+                        deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                     }
+                    refreshList();
+
                 }
-                refreshList();
-                break;
-            }
+            };
+        };
 
-            case Id.message.export_done: {
-                removeDialog(Id.dialog.exporting);
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-                String error = data.getString(EXTRA_ERROR);
-                if (error != null) {
-                    Toast.makeText(KeyListActivity.this, getString(R.string.errorMessage, error),
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    int exported = data.getInt("exported");
-                    String message;
-                    if (exported == 1) {
-                        message = getString(R.string.keyExported);
-                    } else if (exported > 0) {
-                        message = getString(R.string.keysExported, exported);
-                    } else {
-                        message = getString(R.string.noKeysExported);
-                    }
-                    Toast.makeText(KeyListActivity.this, message, Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
+        // show progress dialog
+        importingDialog.show(getSupportFragmentManager(), "importingDialog");
 
-            default: {
-                break;
-            }
-            }
+        // start service with intent
+        startService(intent);
+    }
+
+    public void exportKeys() {
+        Log.d(Constants.TAG, "exportKeys started");
+
+        // Send all information needed to service to export key in other thread
+        Intent intent = new Intent(this, ApgService.class);
+
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_EXPORT_KEY);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        data.putString(ApgService.EXPORT_FILENAME, mExportFilename);
+        data.putInt(ApgService.EXPORT_KEY_TYPE, mKeyType);
+
+        if (mSelectedItem == -1) {
+            data.putBoolean(ApgService.EXPORT_ALL, true);
+        } else {
+            int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
+            data.putInt(ApgService.EXPORT_KEY_RING_ID, keyRingId);
+            mSelectedItem = -1;
         }
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        // create progress dialog
+        ProgressDialogFragment exportingDialog = ProgressDialogFragment.newInstance(
+                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL);
+
+        // Message is received after exporting is done in ApgService
+        ApgHandler exportHandler = new ApgHandler(this, exportingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    int exported = returnData.getInt("exported");
+                    String toastMessage;
+                    if (exported == 1) {
+                        toastMessage = getString(R.string.keyExported);
+                    } else if (exported > 0) {
+                        toastMessage = getString(R.string.keysExported, exported);
+                    } else {
+                        toastMessage = getString(R.string.noKeysExported);
+                    }
+                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
+
+                }
+            };
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(exportHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        exportingDialog.show(getSupportFragmentManager(), "exportingDialog");
+
+        // start service with intent
+        startService(intent);
+    }
+
+    protected void refreshList() {
+        mListAdapter.rebuild(true);
+        mListAdapter.notifyDataSetChanged();
     }
 
     protected class KeyListAdapter extends BaseExpandableListAdapter {

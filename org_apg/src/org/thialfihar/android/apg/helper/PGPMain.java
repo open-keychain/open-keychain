@@ -662,7 +662,7 @@ public class PGPMain {
         }
     }
 
-    public static Bundle importKeyRings(Activity context, int type, InputData data,
+    public static Bundle importKeyRings(Context context, int type, InputData data,
             ProgressDialogUpdater progress) throws GeneralException, FileNotFoundException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
@@ -733,7 +733,7 @@ public class PGPMain {
         return returnData;
     }
 
-    public static Bundle exportKeyRings(Activity context, Vector<Integer> keyRingIds,
+    public static Bundle exportKeyRings(Context context, Vector<Integer> keyRingIds,
             OutputStream outStream, ProgressDialogUpdater progress) throws GeneralException,
             FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();

@@ -17,6 +17,7 @@
 
 package org.thialfihar.android.apg.helper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
@@ -34,8 +36,10 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
+import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.util.IterableIterator;
+import org.thialfihar.android.apg.util.Log;
 
 import android.content.Context;
 
@@ -186,7 +190,7 @@ public class PGPHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(long masterKeyId) {
-        //TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
+        // TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
         PGPPublicKeyRing keyRing = PGPMain.getPublicKeyRing(masterKeyId);
         if (keyRing == null) {
             return null;
@@ -199,7 +203,7 @@ public class PGPHelper {
     }
 
     public static PGPSecretKey getSigningKey(long masterKeyId) {
-        //TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
+        // TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
         PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(masterKeyId);
         if (keyRing == null) {
             return null;
@@ -380,12 +384,42 @@ public class PGPHelper {
 
     }
 
+    public static String getPubkeyAsArmoredString(long keyId) {
+        PGPPublicKey key = PGPMain.getPublicKey(keyId);
+        // if it is no public key get it from your own keys...
+        if (key == null) {
+            PGPSecretKey secretKey = PGPMain.getSecretKey(keyId);
+            if (secretKey == null) {
+                Log.e(Constants.TAG, "Key could not be found!");
+                return null;
+            }
+            key = secretKey.getPublicKey();
+        }
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+        String armouredKey = null;
+        try {
+            aos.write(key.getEncoded());
+            aos.close();
+
+            armouredKey = bos.toString("UTF-8");
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Problems while encoding key as armored string", e);
+        }
+
+        Log.d(Constants.TAG, "key:" + armouredKey);
+
+        return armouredKey;
+    }
+
     public static String getFingerPrint(long keyId) {
         PGPPublicKey key = PGPMain.getPublicKey(keyId);
         if (key == null) {
             PGPSecretKey secretKey = PGPMain.getSecretKey(keyId);
             if (secretKey == null) {
-                return "";
+                Log.e(Constants.TAG, "Key could not be found!");
+                return null;
             }
             key = secretKey.getPublicKey();
         }

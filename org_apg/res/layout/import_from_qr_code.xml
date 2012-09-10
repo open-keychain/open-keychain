@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true" >
+
+    <LinearLayout
+        android:id="@+id/import_from_qr_code_footer"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+        
+        
+        <Button
+            android:id="@+id/import_from_qr_code_import"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/import_from_qr_code_import" />
+
+        <Button
+            android:id="@+id/import_from_qr_code_import_sign_and_upload"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/import_from_qr_code_import_sign_and_upload" />
+
+        <Button
+            android:id="@+id/import_from_qr_code_scan_again"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/import_from_qr_code_scan_again" />
+
+        <Button
+            android:id="@+id/import_from_qr_code_finish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/import_from_qr_code_finish" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/import_from_qr_code_footer"
+        android:fillViewport="true" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
+
+            <TextView
+                android:id="@+id/import_from_qr_code_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

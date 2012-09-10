@@ -17,9 +17,6 @@
 
 package org.thialfihar.android.apg.ui;
 
-import java.security.Security;
-
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 
@@ -33,9 +30,6 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends SherlockActivity {
-    static {
-        Security.addProvider(new BouncyCastleProvider());
-    }
 
     public void manageKeysOnClick(View view) {
         startActivity(new Intent(this, PublicKeyListActivity.class));

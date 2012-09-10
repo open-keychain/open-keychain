@@ -693,7 +693,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private void decryptStart() {
         Log.d(Constants.TAG, "decryptStart");
 
-        // Send all information needed to service to edit key in other thread
+        // Send all information needed to service to decrypt in other thread
         Intent intent = new Intent(this, ApgService.class);
 
         // fill values for this action

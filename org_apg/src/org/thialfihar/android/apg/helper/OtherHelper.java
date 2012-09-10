@@ -86,22 +86,26 @@ public class OtherHelper {
      */
     public static void logDebugBundle(Bundle bundle, String bundleName) {
         if (Constants.DEBUG) {
-            Set<String> ks = bundle.keySet();
-            Iterator<String> iterator = ks.iterator();
+            if (bundle != null) {
+                Set<String> ks = bundle.keySet();
+                Iterator<String> iterator = ks.iterator();
 
-            Log.d(Constants.TAG, "Bundle " + bundleName + ":");
-            Log.d(Constants.TAG, "------------------------------");
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                Object value = bundle.get(key);
+                Log.d(Constants.TAG, "Bundle " + bundleName + ":");
+                Log.d(Constants.TAG, "------------------------------");
+                while (iterator.hasNext()) {
+                    String key = iterator.next();
+                    Object value = bundle.get(key);
 
-                if (value != null) {
-                    Log.d(Constants.TAG, key + " : " + value.toString());
-                } else {
-                    Log.d(Constants.TAG, key + " : null");
+                    if (value != null) {
+                        Log.d(Constants.TAG, key + " : " + value.toString());
+                    } else {
+                        Log.d(Constants.TAG, key + " : null");
+                    }
                 }
+                Log.d(Constants.TAG, "------------------------------");
+            } else {
+                Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
-            Log.d(Constants.TAG, "------------------------------");
         }
     }
 }

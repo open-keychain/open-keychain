@@ -34,7 +34,7 @@
     <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Passphrase</string>
     <string name="title_setPassPhrase">Set Passphrase</string>
-    <string name="title_sendEmail">"Send Mail..."</string>
+    <string name="title_sendEmail">"Send Mail…"</string>
     <string name="title_encryptToFile">Encrypt To File</string>
     <string name="title_decryptToFile">Decrypt To File</string>
     <string name="title_importKeys">Import Keys</string>
@@ -100,7 +100,7 @@
     <string name="menu_keyServer">Key Server</string>
     <string name="menu_updateKey">Update</string>
     <string name="menu_exportKeyToServer">Export To Server</string>
-    <string name="menu_share">Share with QR Code</string>
+    <string name="menu_share">Share public key with QR Code</string>
     <string name="menu_scanQRCode">Scan QR Code</string>
     <string name="menu_signKey">Sign Key</string>
 
@@ -173,10 +173,10 @@
     <string name="dsa">DSA</string>
     <string name="elgamal">ElGamal</string>
     <string name="rsa">RSA</string>
-    <string name="filemanager_titleOpen">Open...</string>
-    <string name="filemanager_titleSave">Save As...</string>
-    <string name="filemanager_titleEncrypt">Select File To Encrypt...</string>
-    <string name="filemanager_titleDecrypt">Select File To Decrypt...</string>
+    <string name="filemanager_titleOpen">Open…</string>
+    <string name="filemanager_titleSave">Save As…</string>
+    <string name="filemanager_titleEncrypt">Select File To Encrypt…</string>
+    <string name="filemanager_titleDecrypt">Select File To Decrypt…</string>
     <string name="filemanager_btnOpen">Open</string>
     <string name="filemanager_btnSave">Save</string>
     <string name="warning">Warning</string>
@@ -260,41 +260,41 @@
     <string name="error_savingKeys">error saving some key(s)</string>
     <string name="error_couldNotExtractPrivateKey">could not extract private key</string>
 
-    <!-- progress_lowerCase: lowercase, phrases, usually ending in '...' -->
+    <!-- progress_lowerCase: lowercase, phrases, usually ending in '…' -->
     <string name="progress_done">done.</string>
-    <string name="progress_initializing">initializing...</string>
-    <string name="progress_saving">saving...</string>
-    <string name="progress_importing">importing...</string>
-    <string name="progress_exporting">exporting...</string>
-    <string name="progress_generating">generating key, this can take a while...</string>
-    <string name="progress_buildingKey">building key...</string>
-    <string name="progress_preparingMasterKey">preparing master key...</string>
-    <string name="progress_certifyingMasterKey">certifying master key...</string>
-    <string name="progress_buildingMasterKeyRing">building master key ring...</string>
-    <string name="progress_addingSubKeys">adding sub keys...</string>
-    <string name="progress_savingKeyRing">saving key ring...</string>
-    <string name="progress_importingSecretKeys">importing secret keys...</string>
-    <string name="progress_importingPublicKeys">importing public keys...</string>
-    <string name="progress_reloadingKeys">reloading keys...</string>
-    <string name="progress_exportingKey">exporting key...</string>
-    <string name="progress_exportingKeys">exporting keys...</string>
-    <string name="progress_extractingSignatureKey">extracting signature key...</string>
-    <string name="progress_extractingKey">extracting key...</string>
-    <string name="progress_preparingStreams">preparing streams...</string>
-    <string name="progress_encrypting">encrypting data...</string>
-    <string name="progress_decrypting">decrypting data...</string>
-    <string name="progress_preparingSignature">preparing signature...</string>
-    <string name="progress_generatingSignature">generating signature...</string>
-    <string name="progress_processingSignature">processing signature...</string>
-    <string name="progress_verifyingSignature">verifying signature...</string>
-    <string name="progress_signing">signing...</string>
-    <string name="progress_readingData">reading data...</string>
-    <string name="progress_findingKey">finding key...</string>
-    <string name="progress_decompressingData">decompressing data...</string>
-    <string name="progress_verifyingIntegrity">verifying integrity...</string>
-    <string name="progress_deletingSecurely">deleting \'%s\' securely...</string>
-    <string name="progress_querying">querying...</string>
-    <string name="progress_queryingServer">querying %s...</string>
+    <string name="progress_initializing">initializing…</string>
+    <string name="progress_saving">saving…</string>
+    <string name="progress_importing">importing…</string>
+    <string name="progress_exporting">exporting…</string>
+    <string name="progress_generating">generating key, this can take a while…</string>
+    <string name="progress_buildingKey">building key…</string>
+    <string name="progress_preparingMasterKey">preparing master key…</string>
+    <string name="progress_certifyingMasterKey">certifying master key…</string>
+    <string name="progress_buildingMasterKeyRing">building master key ring…</string>
+    <string name="progress_addingSubKeys">adding sub keys…</string>
+    <string name="progress_savingKeyRing">saving key ring…</string>
+    <string name="progress_importingSecretKeys">importing secret keys…</string>
+    <string name="progress_importingPublicKeys">importing public keys…</string>
+    <string name="progress_reloadingKeys">reloading keys…</string>
+    <string name="progress_exportingKey">exporting key…</string>
+    <string name="progress_exportingKeys">exporting keys…</string>
+    <string name="progress_extractingSignatureKey">extracting signature key…</string>
+    <string name="progress_extractingKey">extracting key…</string>
+    <string name="progress_preparingStreams">preparing streams…</string>
+    <string name="progress_encrypting">encrypting data…</string>
+    <string name="progress_decrypting">decrypting data…</string>
+    <string name="progress_preparingSignature">preparing signature…</string>
+    <string name="progress_generatingSignature">generating signature…</string>
+    <string name="progress_processingSignature">processing signature…</string>
+    <string name="progress_verifyingSignature">verifying signature…</string>
+    <string name="progress_signing">signing…</string>
+    <string name="progress_readingData">reading data…</string>
+    <string name="progress_findingKey">finding key…</string>
+    <string name="progress_decompressingData">decompressing data…</string>
+    <string name="progress_verifyingIntegrity">verifying integrity…</string>
+    <string name="progress_deletingSecurely">deleting \'%s\' securely…</string>
+    <string name="progress_querying">querying…</string>
+    <string name="progress_queryingServer">querying %s…</string>
 
     <!-- permission strings -->
     <string name="permission_read_key_details_label">Read key details from APG.</string>
@@ -316,7 +316,7 @@
     <string name="slow">slow</string>
     <string name="very_slow">very slow</string>
 
-    <!-- APG Fork -->
+    <!-- APG 2.0 -->
 
 
     <!-- Dashboard -->
@@ -332,5 +332,12 @@
     <string name="help_tab_changelog">Changelog</string>
     <string name="help_tab_about">About</string>
     <string name="help_about_version">Version:</string>
+
+    <!-- Import from QR Code -->
+
+    <string name="import_from_qr_code_import">Import key (only locally)</string>
+    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload key</string>
+    <string name="import_from_qr_code_scan_again">Scan qr code again</string>
+    <string name="import_from_qr_code_finish">Finish</string>
 
 </resources>

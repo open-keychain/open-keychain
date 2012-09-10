@@ -19,16 +19,19 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.deprecated.AskForPassphrase;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
+import org.thialfihar.android.apg.util.Log;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
@@ -39,6 +42,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import com.google.zxing.integration.android.IntentIntegrator;
 
 public class SecretKeyListActivity extends KeyListActivity implements OnChildClickListener {
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mExportFilename = Constants.path.APP_DIR + "/secexport.asc";
@@ -86,7 +90,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
             menu.add(0, Id.menu.export, 1, R.string.menu_exportKey);
             menu.add(0, Id.menu.delete, 2, R.string.menu_deleteKey);
-            menu.add(0, Id.menu.share, 2, R.string.menu_share);
+            menu.add(0, Id.menu.share_qr_code, 2, R.string.menu_share);
         }
     }
 
@@ -107,12 +111,13 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             return true;
         }
 
-        case Id.menu.share: {
+        case Id.menu.share_qr_code: {
             mSelectedItem = groupPosition;
 
             long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
                     .getGroupId(mSelectedItem);
-            String msg = keyId + "," + PGPHelper.getFingerPrint(keyId);
+            // String msg = keyId + "," + PGPHelper.getFingerPrint(keyId);
+            String msg = PGPHelper.getPubkeyAsArmoredString(keyId);
 
             new IntentIntegrator(this).shareText(msg);
         }
@@ -130,37 +135,43 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
         return true;
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case Id.dialog.pass_phrase: {
-            long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
-                    .getGroupId(mSelectedItem);
-            return AskForPassphrase.createDialog(this, keyId, this);
-        }
-
-        default: {
-            return super.onCreateDialog(id);
-        }
-        }
-    }
-
     public void checkPassPhraseAndEdit() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
         String passPhrase = PGPMain.getCachedPassPhrase(keyId);
         if (passPhrase == null) {
-            showDialog(Id.dialog.pass_phrase);
+            showPassphraseDialog(keyId);
         } else {
             PGPMain.setEditPassPhrase(passPhrase);
             editKey();
         }
     }
 
-    @Override
-    public void passPhraseCallback(long keyId, String passPhrase) {
-        super.passPhraseCallback(keyId, passPhrase);
-        PGPMain.setEditPassPhrase(passPhrase);
-        editKey();
+    private void showPassphraseDialog(final long secretKeyId) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    String passPhrase = PGPMain.getCachedPassPhrase(secretKeyId);
+                    PGPMain.setEditPassPhrase(passPhrase);
+                    editKey();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                    messenger, secretKeyId);
+
+            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
+        } catch (PGPMain.GeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
     }
 
     private void createKey() {

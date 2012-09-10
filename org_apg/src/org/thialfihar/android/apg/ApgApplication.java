@@ -16,12 +16,19 @@
 
 package org.thialfihar.android.apg;
 
+import java.security.Security;
+
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import android.app.Application;
 
 public class ApgApplication extends Application {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     @Override
     public void onCreate() {

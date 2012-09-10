@@ -35,7 +35,7 @@ public final class Id {
         public static final int edit = 0x21070003;
         public static final int update = 0x21070004;
         public static final int exportToServer = 0x21070005;
-        public static final int share = 0x21070006;
+        public static final int share_qr_code = 0x21070006;
         public static final int signKey = 0x21070007;
 
         public static final class option {
