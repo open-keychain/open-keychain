@@ -18,6 +18,7 @@
 package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.service.ApgHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
@@ -37,7 +38,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -49,13 +52,48 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
 
     // public static final String EXTRA_KEY_ID = "keyId";
 
+    private TextView mContentView;
+
     private String mScannedContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.import_from_qr_code);
+        mContentView = (TextView) findViewById(R.id.import_from_qr_code_content);
+
+        // set actionbar without home button if called from another app
+        final ActionBar actionBar = getSupportActionBar();
+        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
+                + getCallingPackage());
+        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        } else {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
+        }
+
+        // start scanning
         new IntentIntegrator(this).initiateScan();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+
+        default: {
+            return super.onOptionsItemSelected(item);
+        }
+        }
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
@@ -127,81 +165,83 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
     public void importOnClick(View view) {
         Log.d(Constants.TAG, "import key started");
 
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        if (mScannedContent != null) {
+            // Send all information needed to service to import key in other thread
+            Intent intent = new Intent(this, ApgService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
+            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
 
-        // fill values for this action
-        Bundle data = new Bundle();
+            // fill values for this action
+            Bundle data = new Bundle();
 
-        // data.putInt(ApgService.IMPORT_KEY_TYPE, Id.type.public_key);
+            data.putInt(ApgService.IMPORT_KEY_TYPE, Id.type.public_key);
 
-        data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
-        data.putByteArray(ApgService.IMPORT_BYTES, mScannedContent.getBytes());
+            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
+            data.putByteArray(ApgService.IMPORT_BYTES, mScannedContent.getBytes());
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+            intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        ProgressDialogFragment importingDialog = ProgressDialogFragment.newInstance(
-                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
+            // create progress dialog
+            ProgressDialogFragment importingDialog = ProgressDialogFragment.newInstance(
+                    R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
 
-        // Message is received after importing is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, importingDialog) {
-            public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
-                super.handleMessage(message);
+            // Message is received after importing is done in ApgService
+            ApgHandler saveHandler = new ApgHandler(this, importingDialog) {
+                public void handleMessage(Message message) {
+                    // handle messages by standard ApgHandler first
+                    super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
+                    if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                        // get returned data bundle
+                        Bundle returnData = message.getData();
 
-                    int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
-                    int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
-                    int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
-                    String toastMessage;
-                    if (added > 0 && updated > 0) {
-                        toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
-                    } else if (added > 0) {
-                        toastMessage = getString(R.string.keysAdded, added);
-                    } else if (updated > 0) {
-                        toastMessage = getString(R.string.keysUpdated, updated);
-                    } else {
-                        toastMessage = getString(R.string.noKeysAddedOrUpdated);
+                        int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
+                        int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
+                        int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
+                        String toastMessage;
+                        if (added > 0 && updated > 0) {
+                            toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
+                        } else if (added > 0) {
+                            toastMessage = getString(R.string.keysAdded, added);
+                        } else if (updated > 0) {
+                            toastMessage = getString(R.string.keysUpdated, updated);
+                        } else {
+                            toastMessage = getString(R.string.noKeysAddedOrUpdated);
+                        }
+                        Toast.makeText(ImportFromQRCodeActivity.this, toastMessage,
+                                Toast.LENGTH_SHORT).show();
+                        if (bad > 0) {
+                            AlertDialog.Builder alert = new AlertDialog.Builder(
+                                    ImportFromQRCodeActivity.this);
+
+                            alert.setIcon(android.R.drawable.ic_dialog_alert);
+                            alert.setTitle(R.string.warning);
+                            alert.setMessage(ImportFromQRCodeActivity.this.getString(
+                                    R.string.badKeysEncountered, bad));
+
+                            alert.setPositiveButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            alert.setCancelable(true);
+                            alert.create().show();
+                        }
                     }
-                    Toast.makeText(ImportFromQRCodeActivity.this, toastMessage, Toast.LENGTH_SHORT)
-                            .show();
-                    if (bad > 0) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(
-                                ImportFromQRCodeActivity.this);
-
-                        alert.setIcon(android.R.drawable.ic_dialog_alert);
-                        alert.setTitle(R.string.warning);
-                        alert.setMessage(ImportFromQRCodeActivity.this.getString(
-                                R.string.badKeysEncountered, bad));
-
-                        alert.setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        alert.setCancelable(true);
-                        alert.create().show();
-                    }
-                }
+                };
             };
-        };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-        // show progress dialog
-        importingDialog.show(getSupportFragmentManager(), "importingDialog");
+            // show progress dialog
+            importingDialog.show(getSupportFragmentManager(), "importingDialog");
 
-        // start service with intent
-        startService(intent);
+            // start service with intent
+            startService(intent);
+        }
     }
 
     public void signAndUploadOnClick(View view) {
@@ -221,13 +261,9 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
                     data);
             if (scanResult != null && scanResult.getFormatName() != null) {
 
-                // show layout
-                setContentView(R.layout.import_from_qr_code);
-                TextView contentView = (TextView) findViewById(R.id.import_from_qr_code_content);
-
                 mScannedContent = scanResult.getContents();
 
-                contentView.setText(mScannedContent);
+                mContentView.setText(mScannedContent);
                 // String[] bits = scanResult.getContents().split(",");
                 // if (bits.length != 2) {
                 // return; // dont know how to handle this. Not a valid code
@@ -237,7 +273,6 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
                 // String expectedFingerprint = bits[1];
 
                 // importAndSign(keyId, expectedFingerprint);
-
             }
 
             break;

@@ -17,19 +17,21 @@
 
 package org.thialfihar.android.apg.ui;
 
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
-import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPMain;
-import org.thialfihar.android.apg.util.HkpKeyServer;
+import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -42,16 +44,13 @@ import android.widget.Toast;
  * 
  * Sends the selected public key to a key server
  */
-public class KeyServerExportActivity extends BaseActivity {
+public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
             + "EXPORT_KEY_TO_SERVER";
 
     public static final String EXTRA_KEY_ID = "keyId";
-
-    // TODO: remove when using new intentservice:
-    public static final String EXTRA_ERROR = "error";
 
     private Button export;
     private Spinner keyServer;
@@ -84,7 +83,8 @@ public class KeyServerExportActivity extends BaseActivity {
         keyServer = (Spinner) findViewById(R.id.keyServer);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
+                android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
+                        .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         keyServer.setAdapter(adapter);
         if (adapter.getCount() > 0) {
@@ -96,52 +96,55 @@ public class KeyServerExportActivity extends BaseActivity {
         export.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startThread();
+                uploadKey();
             }
         });
     }
 
-    @Override
-    public void run() {
-        String error = null;
-        Bundle data = new Bundle();
-        Message msg = new Message();
+    private void uploadKey() {
+        // Send all information needed to service to upload key in other thread
+        Intent intent = new Intent(this, ApgService.class);
 
-        HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_UPLOAD_KEY);
+
+        // fill values for this action
+        Bundle data = new Bundle();
 
         int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
+        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ID, keyRingId);
 
-        PGPKeyRing keyring = PGPMain.getKeyRing(keyRingId);
-        if (keyring != null && keyring instanceof PGPPublicKeyRing) {
-            boolean uploaded = PGPMain.uploadKeyRingToServer(server, (PGPPublicKeyRing) keyring);
-            if (!uploaded) {
-                error = "Unable to export key to selected server";
-            }
-        }
+        String server = (String) keyServer.getSelectedItem();
+        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
 
-        data.putInt(Constants.extras.STATUS, Id.message.export_done);
+        intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        if (error != null) {
-            data.putString(EXTRA_ERROR, error);
-        }
+        // create progress dialog
+        ProgressDialogFragment uploadingDialog = ProgressDialogFragment.newInstance(
+                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
 
-        msg.setData(data);
-        sendMessage(msg);
-    }
+        // Message is received after uploading is done in ApgService
+        ApgHandler saveHandler = new ApgHandler(this, uploadingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
 
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
 
-        Bundle data = msg.getData();
-        String error = data.getString(EXTRA_ERROR);
-        if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
+                    Toast.makeText(KeyServerUploadActivity.this, R.string.keySendSuccess,
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            };
+        };
 
-        Toast.makeText(this, R.string.keySendSuccess, Toast.LENGTH_SHORT).show();
-        finish();
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        uploadingDialog.show(getSupportFragmentManager(), "uploadingDialog");
+
+        // start service with intent
+        startService(intent);
     }
 }

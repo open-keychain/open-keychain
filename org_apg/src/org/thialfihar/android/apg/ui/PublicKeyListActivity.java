@@ -136,9 +136,9 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
 
-            Intent intent = new Intent(this, KeyServerExportActivity.class);
-            intent.setAction(KeyServerExportActivity.ACTION_EXPORT_KEY_TO_SERVER);
-            intent.putExtra(KeyServerExportActivity.EXTRA_KEY_ID, keyRingId);
+            Intent intent = new Intent(this, KeyServerUploadActivity.class);
+            intent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
+            intent.putExtra(KeyServerUploadActivity.EXTRA_KEY_ID, keyRingId);
             startActivityForResult(intent, Id.request.export_to_server);
 
             return true;

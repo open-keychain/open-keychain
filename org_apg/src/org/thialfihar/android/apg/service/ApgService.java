@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
@@ -40,6 +42,7 @@ import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.DataProvider;
+import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
@@ -124,6 +127,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String EXPORT_ALL = "exportAll";
     public static final String EXPORT_KEY_RING_ID = "exportKeyRingId";
 
+    // upload key
+    public static final String UPLOAD_KEY_SERVER = "uploadKeyServer";
+    public static final String UPLOAD_KEY_KEYRING_ID = "uploadKeyRingId";
+
     /* possible EXTRA_ACTIONs */
     public static final int ACTION_ENCRYPT_SIGN = 10;
 
@@ -137,6 +144,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     public static final int ACTION_IMPORT_KEY = 50;
     public static final int ACTION_EXPORT_KEY = 51;
+
+    public static final int ACTION_UPLOAD_KEY = 60;
 
     /* possible data keys as result send over messenger */
     // keys
@@ -694,6 +703,36 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 resultData = PGPMain.exportKeyRings(this, keyRingIds, outStream, this);
 
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_UPLOAD_KEY:
+            try {
+
+                /* Input */
+                
+                int keyRingId = data.getInt(UPLOAD_KEY_KEYRING_ID);
+                String keyServer = data.getString(UPLOAD_KEY_SERVER);
+
+                /* Operation */
+
+                HkpKeyServer server = new HkpKeyServer(keyServer);
+
+                PGPKeyRing keyring = PGPMain.getKeyRing(keyRingId);
+                if (keyring != null && keyring instanceof PGPPublicKeyRing) {
+                    boolean uploaded = PGPMain.uploadKeyRingToServer(server,
+                            (PGPPublicKeyRing) keyring);
+                    if (!uploaded) {
+                        sendErrorToHandler(new GeneralException(
+                                "Unable to export key to selected server"));
+                        return;
+                    }
+                }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

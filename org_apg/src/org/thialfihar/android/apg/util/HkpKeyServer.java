@@ -108,7 +108,6 @@ public class HkpKeyServer extends KeyServer {
         return raw.toString(encoding);
     }
 
-    // TODO: replace this with httpclient
     private String query(String request) throws QueryException, HttpError {
         InetAddress ips[];
         try {
@@ -141,7 +140,6 @@ public class HkpKeyServer extends KeyServer {
         throw new QueryException("querying server(s) for '" + mHost + "' failed");
     }
 
-    // TODO: replace this with httpclient
     @Override
     public List<KeyInfo> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery {
