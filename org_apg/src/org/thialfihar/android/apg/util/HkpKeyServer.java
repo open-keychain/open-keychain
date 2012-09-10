@@ -29,7 +29,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,9 +140,9 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public List<KeyInfo> search(String query) throws QueryException, TooManyResponses,
+    public ArrayList<KeyInfo> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery {
-        Vector<KeyInfo> results = new Vector<KeyInfo>();
+        ArrayList<KeyInfo> results = new ArrayList<KeyInfo>();
 
         if (query.length() < 3) {
             throw new InsufficientQuery();
@@ -185,7 +184,7 @@ public class HkpKeyServer extends KeyServer {
             String chunks[] = matcher.group(4).split("-");
             info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
                     Integer.parseInt(chunks[1]), Integer.parseInt(chunks[2])).getTime();
-            info.userIds = new Vector<String>();
+            info.userIds = new ArrayList<String>();
             if (matcher.group(5).startsWith("*** KEY")) {
                 info.revoked = matcher.group(5);
             } else {

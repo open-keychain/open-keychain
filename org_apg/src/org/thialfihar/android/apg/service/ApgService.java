@@ -44,6 +44,7 @@ import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.DataProvider;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
+import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
 import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
 import android.app.IntentService;
@@ -131,6 +132,12 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String UPLOAD_KEY_SERVER = "uploadKeyServer";
     public static final String UPLOAD_KEY_KEYRING_ID = "uploadKeyRingId";
 
+    // query key
+    public static final String QUERY_KEY_SERVER = "queryKeyServer";
+    public static final String QUERY_KEY_TYPE = "queryKeyType";
+    public static final String QUERY_KEY_STRING = "queryKeyString";
+    public static final String QUERY_KEY_ID = "queryKeyId";
+
     /* possible EXTRA_ACTIONs */
     public static final int ACTION_ENCRYPT_SIGN = 10;
 
@@ -146,6 +153,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final int ACTION_EXPORT_KEY = 51;
 
     public static final int ACTION_UPLOAD_KEY = 60;
+    public static final int ACTION_QUERY_KEY = 61;
 
     /* possible data keys as result send over messenger */
     // keys
@@ -174,6 +182,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String RESULT_IMPORT_ADDED = "added";
     public static final String RESULT_IMPORT_UPDATED = "updated";
     public static final String RESULT_IMPORT_BAD = "bad";
+
+    // query
+    public static final String RESULT_QUERY_KEY_KEY_DATA = "queryKeyKeyData";
+    public static final String RESULT_QUERY_KEY_SEARCH_RESULT = "queryKeySearchResult";
 
     Messenger mMessenger;
 
@@ -713,7 +725,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
 
                 /* Input */
-                
+
                 int keyRingId = data.getInt(UPLOAD_KEY_KEYRING_ID);
                 String keyServer = data.getString(UPLOAD_KEY_SERVER);
 
@@ -733,6 +745,39 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 }
 
                 sendMessageToHandler(ApgHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_QUERY_KEY:
+            try {
+
+                /* Input */
+
+                int queryType = data.getInt(QUERY_KEY_TYPE);
+                String keyServer = data.getString(QUERY_KEY_SERVER);
+
+                String queryString = data.getString(QUERY_KEY_STRING);
+                long queryId = data.getLong(QUERY_KEY_ID);
+
+                /* Operation */
+
+                Bundle resultData = new Bundle();
+
+                HkpKeyServer server = new HkpKeyServer(keyServer);
+                if (queryType == Id.keyserver.search) {
+                    ArrayList<KeyInfo> searchResult = server.search(queryString);
+
+                    resultData.putParcelableArrayList(RESULT_QUERY_KEY_SEARCH_RESULT, searchResult);
+                } else if (queryType == Id.keyserver.get) {
+                    String keyData = server.get(queryId);
+
+                    resultData.putString(RESULT_QUERY_KEY_KEY_DATA, keyData);
+                }
+
+                sendMessageToHandler(ApgHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

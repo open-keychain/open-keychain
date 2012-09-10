@@ -18,6 +18,9 @@ package org.thialfihar.android.apg.util;
 
 import java.math.BigInteger;
 
+/**
+ * Primes for ElGamal
+ */
 public final class Primes {
     // taken from http://www.ietf.org/rfc/rfc3526.txt
     public static final String P1536 =

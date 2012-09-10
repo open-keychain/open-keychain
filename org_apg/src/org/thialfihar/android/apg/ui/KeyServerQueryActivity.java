@@ -14,28 +14,30 @@
 
 package org.thialfihar.android.apg.ui;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.util.HkpKeyServer;
-import org.thialfihar.android.apg.util.KeyServer.InsufficientQuery;
+import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
+import org.thialfihar.android.apg.util.Log;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
-import org.thialfihar.android.apg.util.KeyServer.QueryException;
-import org.thialfihar.android.apg.util.KeyServer.TooManyResponses;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -53,7 +55,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class KeyServerQueryActivity extends BaseActivity {
+public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
     // possible intent actions for this activity
     public static final String ACTION_LOOK_UP_KEY_ID = Constants.INTENT_PREFIX + "LOOK_UP_KEY_ID";
@@ -62,8 +64,7 @@ public class KeyServerQueryActivity extends BaseActivity {
 
     public static final String EXTRA_KEY_ID = "keyId";
 
-    // TODO: remove when using new intentservice:
-    public static final String EXTRA_ERROR = "error";
+    // TODO: Change?
     public static final String EXTRA_TEXT = "text";
 
     private ListView mList;
@@ -110,7 +111,8 @@ public class KeyServerQueryActivity extends BaseActivity {
 
         mKeyServer = (Spinner) findViewById(R.id.keyServer);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
+                android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
+                        .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeyServer.setAdapter(adapter);
         if (adapter.getCount() > 0) {
@@ -145,99 +147,108 @@ public class KeyServerQueryActivity extends BaseActivity {
     }
 
     private void search(String query) {
-        showDialog(Id.dialog.querying);
         mQueryType = Id.keyserver.search;
         mQueryString = query;
-        mAdapter.setKeys(new Vector<KeyInfo>());
-        startThread();
+        mAdapter.setKeys(new ArrayList<KeyInfo>());
+
+        start();
     }
 
     private void get(long keyId) {
-        showDialog(Id.dialog.querying);
         mQueryType = Id.keyserver.get;
         mQueryId = keyId;
-        startThread();
+
+        start();
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        ProgressDialog progress = (ProgressDialog) super.onCreateDialog(id);
-        progress.setMessage(this.getString(R.string.progress_queryingServer,
-                (String) mKeyServer.getSelectedItem()));
-        return progress;
-    }
+    private void start() {
+        Log.d(Constants.TAG, "start search with service");
 
-    @Override
-    public void run() {
-        String error = null;
+        // Send all information needed to service to query keys in other thread
+        Intent intent = new Intent(this, ApgService.class);
+
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_QUERY_KEY);
+
+        // fill values for this action
         Bundle data = new Bundle();
-        Message msg = new Message();
 
-        try {
-            HkpKeyServer server = new HkpKeyServer((String) mKeyServer.getSelectedItem());
-            if (mQueryType == Id.keyserver.search) {
-                mSearchResult = server.search(mQueryString);
-            } else if (mQueryType == Id.keyserver.get) {
-                mKeyData = server.get(mQueryId);
-            }
-        } catch (QueryException e) {
-            error = "" + e;
-        } catch (InsufficientQuery e) {
-            error = "Insufficient query.";
-        } catch (TooManyResponses e) {
-            error = "Too many responses.";
-        }
+        String server = (String) mKeyServer.getSelectedItem();
+        data.putString(ApgService.QUERY_KEY_SERVER, server);
 
-        data.putInt(Constants.extras.STATUS, Id.message.done);
-
-        if (error != null) {
-            data.putString(EXTRA_ERROR, error);
-        }
-
-        msg.setData(data);
-        sendMessage(msg);
-    }
-
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
-
-        removeDialog(Id.dialog.querying);
-
-        Bundle data = msg.getData();
-        String error = data.getString(EXTRA_ERROR);
-        if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
+        data.putInt(ApgService.QUERY_KEY_TYPE, mQueryType);
 
         if (mQueryType == Id.keyserver.search) {
-            if (mSearchResult != null) {
-                Toast.makeText(this, getString(R.string.keysFound, mSearchResult.size()),
-                        Toast.LENGTH_SHORT).show();
-                mAdapter.setKeys(mSearchResult);
-            }
+            data.putString(ApgService.QUERY_KEY_STRING, mQueryString);
         } else if (mQueryType == Id.keyserver.get) {
-            Intent orgIntent = getIntent();
-            if (ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
-                if (mKeyData != null) {
-                    Intent intent = new Intent();
-                    intent.putExtra(EXTRA_TEXT, mKeyData);
-                    setResult(RESULT_OK, intent);
-                } else {
-                    setResult(RESULT_CANCELED);
-                }
-                finish();
-            } else {
-                if (mKeyData != null) {
-                    Intent intent = new Intent(this, PublicKeyListActivity.class);
-                    intent.setAction(KeyListActivity.ACTION_IMPORT);
-                    intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
-                    startActivity(intent);
-                }
-            }
+            data.putLong(ApgService.QUERY_KEY_ID, mQueryId);
         }
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        // create progress dialog
+        ProgressDialogFragment queryingDialog = ProgressDialogFragment.newInstance(
+                R.string.progress_querying, ProgressDialog.STYLE_SPINNER);
+
+        // Message is received after querying is done in ApgService
+        ApgHandler saveHandler = new ApgHandler(this, queryingDialog) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    if (mQueryType == Id.keyserver.search) {
+                        mSearchResult = returnData
+                                .getParcelableArrayList(ApgService.RESULT_QUERY_KEY_SEARCH_RESULT);
+                    } else if (mQueryType == Id.keyserver.get) {
+                        mKeyData = returnData.getString(ApgService.RESULT_QUERY_KEY_KEY_DATA);
+                    }
+
+                    // TODO: IMPROVE CODE!!! some global variables can be avoided!!!
+                    if (mQueryType == Id.keyserver.search) {
+                        if (mSearchResult != null) {
+                            Toast.makeText(KeyServerQueryActivity.this,
+                                    getString(R.string.keysFound, mSearchResult.size()),
+                                    Toast.LENGTH_SHORT).show();
+                            mAdapter.setKeys(mSearchResult);
+                        }
+                    } else if (mQueryType == Id.keyserver.get) {
+                        Intent orgIntent = getIntent();
+                        if (ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
+                            if (mKeyData != null) {
+                                Intent intent = new Intent();
+                                intent.putExtra(EXTRA_TEXT, mKeyData);
+                                setResult(RESULT_OK, intent);
+                            } else {
+                                setResult(RESULT_CANCELED);
+                            }
+                            finish();
+                        } else {
+                            if (mKeyData != null) {
+                                Intent intent = new Intent(KeyServerQueryActivity.this,
+                                        PublicKeyListActivity.class);
+                                intent.setAction(KeyListActivity.ACTION_IMPORT);
+                                intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
+                                startActivity(intent);
+                            }
+                        }
+                    }
+
+                }
+            };
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        queryingDialog.show(getSupportFragmentManager(), "queryingDialog");
+
+        // start service with intent
+        startService(intent);
     }
 
     public class KeyInfoListAdapter extends BaseAdapter {
@@ -248,7 +259,7 @@ public class KeyServerQueryActivity extends BaseActivity {
         public KeyInfoListAdapter(Activity activity) {
             mActivity = activity;
             mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mKeys = new Vector<KeyInfo>();
+            mKeys = new ArrayList<KeyInfo>();
         }
 
         public void setKeys(List<KeyInfo> keys) {
