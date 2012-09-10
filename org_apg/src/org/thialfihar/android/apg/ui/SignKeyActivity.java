@@ -36,13 +36,22 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
+import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
+
 import org.thialfihar.android.apg.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -59,7 +68,7 @@ import android.widget.Toast;
  * 
  * signs the specified public key with the specified secret master key
  */
-public class SignKeyActivity extends BaseActivity {
+public class SignKeyActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_KEY_ID = "keyId";
 
@@ -93,7 +102,8 @@ public class SignKeyActivity extends BaseActivity {
 
         final Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, mPreferences.getKeyServers());
+                android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
+                        .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         keyServer.setAdapter(adapter);
 
@@ -139,6 +149,32 @@ public class SignKeyActivity extends BaseActivity {
         }
     }
 
+    private void showPassphraseDialog(final long secretKeyId) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    startSigning();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                    messenger, secretKeyId);
+
+            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
+        } catch (PGPMain.GeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
+    }
+
     /**
      * handles the UI bits of the signing process on the UI thread
      */
@@ -164,7 +200,7 @@ public class SignKeyActivity extends BaseActivity {
                  */
                 String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
                 if (passphrase == null) {
-                    showDialog(Id.dialog.pass_phrase);
+                    showPassphraseDialog(masterKeyId);
                     return; // bail out; need to wait until the user has entered the passphrase
                             // before trying again
                 } else {
@@ -172,14 +208,14 @@ public class SignKeyActivity extends BaseActivity {
                 }
             } else {
                 final Bundle status = new Bundle();
-                Message msg = new Message();
+                // Message msg = new Message();
 
-                status.putString(EXTRA_ERROR, "Key has already been signed");
+                // status.putString(EXTRA_ERROR, "Key has already been signed");
 
-                status.putInt(Constants.extras.STATUS, Id.message.done);
+                // status.putInt(Constants.extras.STATUS, Id.message.done);
 
-                msg.setData(status);
-                sendMessage(msg);
+                // msg.setData(status);
+                // sendMessage(msg);
 
                 setResult(Id.return_value.error);
                 finish();
@@ -187,110 +223,210 @@ public class SignKeyActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public long getSecretKeyId() {
-        return masterKeyId;
-    }
-
-    @Override
-    public void passPhraseCallback(long keyId, String passPhrase) {
-        super.passPhraseCallback(keyId, passPhrase);
-        startSigning();
-    }
+    // @Override
+    // public long getSecretKeyId() {
+    // return masterKeyId;
+    // }
+    //
+    // @Override
+    // public void passPhraseCallback(long keyId, String passPhrase) {
+    // super.passPhraseCallback(keyId, passPhrase);
+    // startSigning();
+    // }
 
     /**
      * kicks off the actual signing process on a background thread
      */
     private void startSigning() {
-        showDialog(Id.dialog.signing);
-        startThread();
+        // Send all information needed to service to sign key in other thread
+        Intent intent = new Intent(this, ApgService.class);
+
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SIGN_KEY);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
+        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ID, keyRingId);
+
+        Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+        String server = (String) keyServer.getSelectedItem();
+        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
+
+        intent.putExtra(ApgService.EXTRA_DATA, data);
+
+        // Message is received after signing is done in ApgService
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_signing,
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+
+                    Toast.makeText(SignKeyActivity.this, R.string.keySignSuccess,
+                            Toast.LENGTH_SHORT).show();
+
+                    // check if we need to send the key to the server or not
+                    CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+                    if (sendKey.isChecked()) {
+                        /*
+                         * upload the newly signed key to the key server
+                         */
+                        uploadKey();
+                    } else {
+                        finish();
+                    }
+                }
+            };
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
+
+        // start service with intent
+        startService(intent);
     }
 
-    @Override
-    public void run() {
-        final Bundle status = new Bundle();
-        Message msg = new Message();
+    private void uploadKey() {
+        // Send all information needed to service to upload key in other thread
+        Intent intent = new Intent(this, ApgService.class);
 
-        try {
-            String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
-            if (passphrase == null || passphrase.length() <= 0) {
-                status.putString(EXTRA_ERROR, "Unable to obtain passphrase");
-            } else {
-                PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
+        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_UPLOAD_KEY);
 
-                /*
-                 * sign the incoming key
-                 */
-                PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
-                PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
-                        BouncyCastleProvider.PROVIDER_NAME);
-                PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
-                        .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
-                sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
+        // fill values for this action
+        Bundle data = new Bundle();
 
-                PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ID, pubKeyId);
 
-                PGPSignatureSubpacketVector packetVector = spGen.generate();
-                sGen.setHashedSubpackets(packetVector);
+        Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+        String server = (String) keyServer.getSelectedItem();
+        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
 
-                PGPPublicKey signedKey = PGPPublicKey.addCertification(
-                        pubring.getPublicKey(pubKeyId), sGen.generate());
-                pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
+        intent.putExtra(ApgService.EXTRA_DATA, data);
 
-                // check if we need to send the key to the server or not
-                CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
-                if (sendKey.isChecked()) {
-                    Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
-                    HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
+        // Message is received after uploading is done in ApgService
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_exporting,
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard ApgHandler first
+                super.handleMessage(message);
 
-                    /*
-                     * upload the newly signed key to the key server
-                     */
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
 
-                    PGPMain.uploadKeyRingToServer(server, pubring);
+                    Toast.makeText(SignKeyActivity.this, R.string.keySendSuccess,
+                            Toast.LENGTH_SHORT).show();
+
+                    finish();
                 }
+            };
+        };
 
-                // store the signed key in our local cache
-                int retval = PGPMain.storeKeyRingInCache(pubring);
-                if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                    status.putString(EXTRA_ERROR, "Failed to store signed key in local cache");
-                }
-            }
-        } catch (PGPException e) {
-            Log.e(Constants.TAG, "Failed to sign key", e);
-            status.putString(EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.STATUS, Id.message.done);
-            return;
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(Constants.TAG, "Failed to sign key", e);
-            status.putString(EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.STATUS, Id.message.done);
-            return;
-        } catch (NoSuchProviderException e) {
-            Log.e(Constants.TAG, "Failed to sign key", e);
-            status.putString(EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.STATUS, Id.message.done);
-            return;
-        } catch (SignatureException e) {
-            Log.e(Constants.TAG, "Failed to sign key", e);
-            status.putString(EXTRA_ERROR, "Failed to sign key");
-            status.putInt(Constants.extras.STATUS, Id.message.done);
-            return;
-        }
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-        status.putInt(Constants.extras.STATUS, Id.message.done);
+        // show progress dialog
+        saveHandler.showProgressDialog(this);
 
-        msg.setData(status);
-        sendMessage(msg);
-
-        if (status.containsKey(EXTRA_ERROR)) {
-            setResult(Id.return_value.error);
-        } else {
-            setResult(Id.return_value.ok);
-        }
-
-        finish();
+        // start service with intent
+        startService(intent);
     }
+
+    // private void startSigning() {
+    // showDialog(Id.dialog.signing);
+    // startThread();
+    // }
+
+    // @Override
+    // public void run() {
+    // final Bundle status = new Bundle();
+    // Message msg = new Message();
+    //
+    // try {
+    // String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
+    // if (passphrase == null || passphrase.length() <= 0) {
+    // status.putString(EXTRA_ERROR, "Unable to obtain passphrase");
+    // } else {
+    // PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
+    //
+    // /*
+    // * sign the incoming key
+    // */
+    // PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
+    // PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
+    // BouncyCastleProvider.PROVIDER_NAME);
+    // PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
+    // .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
+    // sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
+    //
+    // PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+    //
+    // PGPSignatureSubpacketVector packetVector = spGen.generate();
+    // sGen.setHashedSubpackets(packetVector);
+    //
+    // PGPPublicKey signedKey = PGPPublicKey.addCertification(
+    // pubring.getPublicKey(pubKeyId), sGen.generate());
+    // pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
+    //
+    // // check if we need to send the key to the server or not
+    // CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+    // if (sendKey.isChecked()) {
+    // Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+    // HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
+    //
+    // /*
+    // * upload the newly signed key to the key server
+    // */
+    //
+    // PGPMain.uploadKeyRingToServer(server, pubring);
+    // }
+    //
+    // // store the signed key in our local cache
+    // int retval = PGPMain.storeKeyRingInCache(pubring);
+    // if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
+    // status.putString(EXTRA_ERROR, "Failed to store signed key in local cache");
+    // }
+    // }
+    // } catch (PGPException e) {
+    // Log.e(Constants.TAG, "Failed to sign key", e);
+    // status.putString(EXTRA_ERROR, "Failed to sign key");
+    // status.putInt(Constants.extras.STATUS, Id.message.done);
+    // return;
+    // } catch (NoSuchAlgorithmException e) {
+    // Log.e(Constants.TAG, "Failed to sign key", e);
+    // status.putString(EXTRA_ERROR, "Failed to sign key");
+    // status.putInt(Constants.extras.STATUS, Id.message.done);
+    // return;
+    // } catch (NoSuchProviderException e) {
+    // Log.e(Constants.TAG, "Failed to sign key", e);
+    // status.putString(EXTRA_ERROR, "Failed to sign key");
+    // status.putInt(Constants.extras.STATUS, Id.message.done);
+    // return;
+    // } catch (SignatureException e) {
+    // Log.e(Constants.TAG, "Failed to sign key", e);
+    // status.putString(EXTRA_ERROR, "Failed to sign key");
+    // status.putInt(Constants.extras.STATUS, Id.message.done);
+    // return;
+    // }
+    //
+    // status.putInt(Constants.extras.STATUS, Id.message.done);
+    //
+    // msg.setData(status);
+    // sendMessage(msg);
+    //
+    // if (status.containsKey(EXTRA_ERROR)) {
+    // setResult(Id.return_value.error);
+    // } else {
+    // setResult(Id.return_value.ok);
+    // }
+    //
+    // finish();
+    // }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -312,22 +448,22 @@ public class SignKeyActivity extends BaseActivity {
         }
         }
     }
-
-    @Override
-    public void doneCallback(Message msg) {
-        super.doneCallback(msg);
-
-        removeDialog(Id.dialog.signing);
-
-        Bundle data = msg.getData();
-        String error = data.getString(EXTRA_ERROR);
-        if (error != null) {
-            Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
-                    .show();
-            return;
-        }
-
-        Toast.makeText(this, R.string.keySignSuccess, Toast.LENGTH_SHORT).show();
-        finish();
-    }
+    //
+    // @Override
+    // public void doneCallback(Message msg) {
+    // super.doneCallback(msg);
+    //
+    // removeDialog(Id.dialog.signing);
+    //
+    // Bundle data = msg.getData();
+    // String error = data.getString(EXTRA_ERROR);
+    // if (error != null) {
+    // Toast.makeText(this, getString(R.string.errorMessage, error), Toast.LENGTH_SHORT)
+    // .show();
+    // return;
+    // }
+    //
+    // Toast.makeText(this, R.string.keySignSuccess, Toast.LENGTH_SHORT).show();
+    // finish();
+    // }
 }

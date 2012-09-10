@@ -118,7 +118,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
         // Message is received after uploading is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_importing,
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_exporting,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first

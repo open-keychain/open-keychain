@@ -28,10 +28,18 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -55,6 +63,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.widget.CheckBox;
+import android.widget.Spinner;
+
 import org.thialfihar.android.apg.util.Log;
 
 /**
@@ -138,6 +149,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String QUERY_KEY_STRING = "queryKeyString";
     public static final String QUERY_KEY_ID = "queryKeyId";
 
+    // sign key
+    public static final String SIGN_KEY_MASTER_KEY_ID = "signKeyMasterKeyId";
+    public static final String SIGN_KEY_PUB_KEY_ID = "signKeyPubKeyId";
+
     /* possible EXTRA_ACTIONs */
     public static final int ACTION_ENCRYPT_SIGN = 10;
 
@@ -154,6 +169,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     public static final int ACTION_UPLOAD_KEY = 60;
     public static final int ACTION_QUERY_KEY = 61;
+
+    public static final int ACTION_SIGN_KEY = 70;
 
     /* possible data keys as result send over messenger */
     // keys
@@ -778,6 +795,69 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 }
 
                 sendMessageToHandler(ApgServiceHandler.MESSAGE_OKAY, resultData);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+
+            break;
+
+        case ACTION_SIGN_KEY:
+            try {
+
+                /* Input */
+
+                long masterKeyId = data.getInt(SIGN_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getInt(SIGN_KEY_PUB_KEY_ID);
+
+                /* Operation */
+
+                String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
+                if (passphrase == null || passphrase.length() <= 0) {
+                    sendErrorToHandler(new GeneralException("Unable to obtain passphrase"));
+                } else {
+                    PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
+
+                    /*
+                     * sign the incoming key
+                     */
+                    PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
+                    PGPPrivateKey signingKey = secretKey.extractPrivateKey(
+                            passphrase.toCharArray(), BouncyCastleProvider.PROVIDER_NAME);
+                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
+                            .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
+                    sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
+
+                    PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
+
+                    PGPSignatureSubpacketVector packetVector = spGen.generate();
+                    sGen.setHashedSubpackets(packetVector);
+
+                    PGPPublicKey signedKey = PGPPublicKey.addCertification(
+                            pubring.getPublicKey(pubKeyId), sGen.generate());
+                    pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
+
+                    // check if we need to send the key to the server or not
+                    // CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+                    // if (sendKey.isChecked()) {
+                    // Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+                    // HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
+                    //
+                    // /*
+                    // * upload the newly signed key to the key server
+                    // */
+                    //
+                    // PGPMain.uploadKeyRingToServer(server, pubring);
+                    // }
+
+                    // store the signed key in our local cache
+                    int retval = PGPMain.storeKeyRingInCache(pubring);
+                    if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
+                        sendErrorToHandler(new GeneralException(
+                                "Failed to store signed key in local cache"));
+                    }
+                }
+
+                sendMessageToHandler(ApgServiceHandler.MESSAGE_OKAY);
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
