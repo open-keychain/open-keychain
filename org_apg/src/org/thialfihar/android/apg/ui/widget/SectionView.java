@@ -21,7 +21,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
@@ -277,12 +277,12 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 ProgressDialog.STYLE_SPINNER);
 
         // Message is received after generating is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(mActivity, mGeneratingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(mActivity, mGeneratingDialog) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
                     PGPSecretKeyRing newKeyRing = PGPConversionHelper.BytesToPGPSecretKeyRing(data

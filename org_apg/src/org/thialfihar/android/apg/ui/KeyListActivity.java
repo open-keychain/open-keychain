@@ -24,12 +24,11 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.DeleteKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -299,17 +298,14 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        ProgressDialogFragment importingDialog = ProgressDialogFragment.newInstance(
-                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
-
         // Message is received after importing is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, importingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_importing,
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
@@ -360,7 +356,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        importingDialog.show(getSupportFragmentManager(), "importingDialog");
+        saveHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);
@@ -390,17 +386,14 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        ProgressDialogFragment exportingDialog = ProgressDialogFragment.newInstance(
-                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL);
-
         // Message is received after exporting is done in ApgService
-        ApgHandler exportHandler = new ApgHandler(this, exportingDialog) {
+        ApgServiceHandler exportHandler = new ApgServiceHandler(this, R.string.progress_exporting,
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
@@ -424,7 +417,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        exportingDialog.show(getSupportFragmentManager(), "exportingDialog");
+        exportHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);

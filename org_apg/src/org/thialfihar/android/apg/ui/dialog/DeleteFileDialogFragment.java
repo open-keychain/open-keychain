@@ -17,7 +17,7 @@
 package org.thialfihar.android.apg.ui.dialog;
 
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 
 import android.app.AlertDialog;
@@ -83,12 +83,12 @@ public class DeleteFileDialogFragment extends DialogFragment {
                         R.string.progress_deletingSecurely, ProgressDialog.STYLE_HORIZONTAL);
 
                 // Message is received after deleting is done in ApgService
-                ApgHandler saveHandler = new ApgHandler(activity, deletingDialog) {
+                ApgServiceHandler saveHandler = new ApgServiceHandler(activity, deletingDialog) {
                     public void handleMessage(Message message) {
                         // handle messages by standard ApgHandler first
                         super.handleMessage(message);
 
-                        if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                        if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                             Toast.makeText(activity, R.string.fileDeleteSuccessful,
                                     Toast.LENGTH_SHORT).show();
                         }

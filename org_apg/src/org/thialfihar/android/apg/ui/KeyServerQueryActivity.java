@@ -22,9 +22,8 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Log;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
 
@@ -185,17 +184,14 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        ProgressDialogFragment queryingDialog = ProgressDialogFragment.newInstance(
-                R.string.progress_querying, ProgressDialog.STYLE_SPINNER);
-
         // Message is received after querying is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, queryingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_querying,
+                ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
@@ -245,7 +241,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        queryingDialog.show(getSupportFragmentManager(), "queryingDialog");
+        saveHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);

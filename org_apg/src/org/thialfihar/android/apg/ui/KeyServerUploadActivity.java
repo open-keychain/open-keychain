@@ -20,9 +20,8 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -118,17 +117,14 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        ProgressDialogFragment uploadingDialog = ProgressDialogFragment.newInstance(
-                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL);
-
         // Message is received after uploading is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, uploadingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_importing,
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
 
                     Toast.makeText(KeyServerUploadActivity.this, R.string.keySendSuccess,
                             Toast.LENGTH_SHORT).show();
@@ -142,7 +138,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        uploadingDialog.show(getSupportFragmentManager(), "uploadingDialog");
+        saveHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);

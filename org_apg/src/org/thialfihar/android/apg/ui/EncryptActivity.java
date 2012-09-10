@@ -27,12 +27,11 @@ import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Choice;
 import org.thialfihar.android.apg.util.Compatibility;
 import org.thialfihar.android.apg.R;
@@ -138,7 +137,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private long mSecretKeyId = Id.key.none;
 
-    private ProgressDialogFragment mEncryptingDialog;
     private FileDialogFragment mFileDialog;
 
     public void setSecretKeyId(long id) {
@@ -819,17 +817,14 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        mEncryptingDialog = ProgressDialogFragment.newInstance(R.string.progress_encrypting,
-                ProgressDialog.STYLE_HORIZONTAL);
-
         // Message is received after encrypting is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, mEncryptingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_encrypting,
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle data = message.getData();
 
@@ -895,7 +890,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        mEncryptingDialog.show(getSupportFragmentManager(), "encryptingDialog");
+        saveHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);

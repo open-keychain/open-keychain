@@ -22,7 +22,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
@@ -124,7 +124,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private long mSecretKeyId = Id.key.none;
 
-    private ProgressDialogFragment mDecryptingDialog;
     private FileDialogFragment mFileDialog;
 
     private boolean mLookupUnknownKey = true;
@@ -734,17 +733,14 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-        // create progress dialog
-        mDecryptingDialog = ProgressDialogFragment.newInstance(R.string.progress_decrypting,
-                ProgressDialog.STYLE_HORIZONTAL);
-
         // Message is received after encrypting is done in ApgService
-        ApgHandler saveHandler = new ApgHandler(this, mDecryptingDialog) {
+        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_decrypting,
+                ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
@@ -837,7 +833,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
-        mDecryptingDialog.show(getSupportFragmentManager(), "decryptingDialog");
+        saveHandler.showProgressDialog(this);
 
         // start service with intent
         startService(intent);

@@ -24,7 +24,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
-import org.thialfihar.android.apg.service.ApgHandler;
+import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
@@ -87,9 +87,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private Button mChangePassPhrase;
 
     private CheckBox mNoPassphrase;
-
-    private ProgressDialogFragment mSavingDialog;
-    private ProgressDialogFragment mGeneratingDialog;
 
     Vector<String> mUserIds;
     Vector<PGPSecretKey> mKeys;
@@ -204,17 +201,14 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                         intent.putExtra(ApgService.EXTRA_DATA, data);
 
-                        // show progress dialog
-                        mGeneratingDialog = ProgressDialogFragment.newInstance(
-                                R.string.progress_generating, ProgressDialog.STYLE_SPINNER);
-
                         // Message is received after generating is done in ApgService
-                        ApgHandler saveHandler = new ApgHandler(this, mGeneratingDialog) {
+                        ApgServiceHandler saveHandler = new ApgServiceHandler(this,
+                                R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
                             public void handleMessage(Message message) {
                                 // handle messages by standard ApgHandler first
                                 super.handleMessage(message);
 
-                                if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                                     // get new key from data bundle returned from service
                                     Bundle data = message.getData();
                                     PGPSecretKeyRing masterKeyRing = PGPConversionHelper
@@ -246,7 +240,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                         Messenger messenger = new Messenger(saveHandler);
                         intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-                        mGeneratingDialog.show(getSupportFragmentManager(), "dialog");
+                        saveHandler.showProgressDialog(this);
 
                         // start service with intent
                         startService(intent);
@@ -420,17 +414,14 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             intent.putExtra(ApgService.EXTRA_DATA, data);
 
-            // show progress dialog
-            mSavingDialog = ProgressDialogFragment.newInstance(R.string.progress_saving,
-                    ProgressDialog.STYLE_HORIZONTAL);
-
             // Message is received after saving is done in ApgService
-            ApgHandler saveHandler = new ApgHandler(this, mSavingDialog) {
+            ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_saving,
+                    ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);
 
-                    if (message.arg1 == ApgHandler.MESSAGE_OKAY) {
+                    if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                         finish();
                     }
                 };
@@ -440,7 +431,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             Messenger messenger = new Messenger(saveHandler);
             intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
 
-            mSavingDialog.show(getSupportFragmentManager(), "savingDialog");
+            saveHandler.showProgressDialog(this);
 
             // start service with intent
             startService(intent);
