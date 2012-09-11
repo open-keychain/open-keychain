@@ -45,7 +45,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         ProgressDialogUpdater, AskForPassphrase.PassPhraseCallbackInterface {
 
     private ProgressDialog mProgressDialog = null;
-    private PausableThread mRunningThread = null;
+    // private PausableThread mRunningThread = null;
     private Thread mDeletingThread = null;
 
     private long mSecretKeyId = 0;
@@ -373,14 +373,14 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
     // mHandler.sendMessage(msg);
     // }
 
-    public PausableThread getRunningThread() {
-        return mRunningThread;
-    }
-
-    public void startThread() {
-        mRunningThread = new PausableThread(this);
-        mRunningThread.start();
-    }
+    // public PausableThread getRunningThread() {
+    // return mRunningThread;
+    // }
+    //
+    // public void startThread() {
+    // mRunningThread = new PausableThread(this);
+    // mRunningThread.start();
+    // }
 
     public void run() {
 

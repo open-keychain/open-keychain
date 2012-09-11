@@ -42,7 +42,6 @@ import org.thialfihar.android.apg.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class PassphraseDialogFragment extends DialogFragment {
@@ -92,8 +91,7 @@ public class PassphraseDialogFragment extends DialogFragment {
     private static boolean hasPassphrase(long secretKeyId) {
         // check if the key has no passphrase
         try {
-            PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPMain
-                    .getSecretKeyRing(secretKeyId));
+            PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 
             Log.d(Constants.TAG, "Check if key has no passphrase...");
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -132,7 +130,7 @@ public class PassphraseDialogFragment extends DialogFragment {
 
         if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
             secretKey = null;
-            alert.setMessage(getString(R.string.passPhraseForSymmetricEncryption));
+            alert.setMessage(R.string.passPhraseForSymmetricEncryption);
         } else {
             secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
             if (secretKey == null) {
@@ -147,21 +145,16 @@ public class PassphraseDialogFragment extends DialogFragment {
                 return alert.create();
             }
             String userId = PGPHelper.getMainUserIdSafe(activity, secretKey);
+
+            Log.d(Constants.TAG, "User id: '" + userId + "'");
             alert.setMessage(getString(R.string.passPhraseFor, userId));
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.passphrase, null);
-        final EditText input = (EditText) view.findViewById(R.id.passphrase_passphrase);
-
-        final TextView labelNotUsed = (TextView) view
-                .findViewById(R.id.passphrase_label_passphrase_again);
-        labelNotUsed.setVisibility(View.GONE);
-        final EditText inputNotUsed = (EditText) view
-                .findViewById(R.id.passphrase_passphrase_again);
-        inputNotUsed.setVisibility(View.GONE);
-
         alert.setView(view);
+
+        final EditText input = (EditText) view.findViewById(R.id.passphrase_passphrase);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -172,7 +165,8 @@ public class PassphraseDialogFragment extends DialogFragment {
                 if (secretKey != null) {
                     try {
                         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                .setProvider("SC").build(passPhrase.toCharArray());
+                                .setProvider(PGPMain.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                        passPhrase.toCharArray());
                         PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
                         if (testKey == null) {
                             Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,

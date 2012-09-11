@@ -22,7 +22,6 @@ import org.thialfihar.android.apg.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
@@ -80,9 +79,8 @@ public class SetPassphraseDialogFragment extends DialogFragment {
         alert.setTitle(title);
         alert.setMessage(R.string.enterPassPhraseTwice);
 
-        LayoutInflater inflater = (LayoutInflater) activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.passphrase, null);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View view = inflater.inflate(R.layout.passphrase_repeat, null);
         final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
         final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
 

@@ -20,6 +20,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.FileHelper;
+import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
@@ -28,11 +29,9 @@ import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.util.Compatibility;
 import org.thialfihar.android.apg.R;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -185,16 +184,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         setContentView(R.layout.decrypt);
 
         // set actionbar without home button if called from another app
-        final ActionBar actionBar = getSupportActionBar();
-        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
-                + getCallingPackage());
-        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        } else {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
-        }
+        OtherHelper.setActionBarBackButton(this);
 
         mSource = (ViewFlipper) findViewById(R.id.source);
         mSourceLabel = (TextView) findViewById(R.id.sourceLabel);

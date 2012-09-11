@@ -32,23 +32,27 @@ import android.view.View;
 public class MainActivity extends SherlockActivity {
 
     public void manageKeysOnClick(View view) {
-        startActivity(new Intent(this, PublicKeyListActivity.class));
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(new Intent(this, PublicKeyListActivity.class), 0);
     }
 
     public void myKeysOnClick(View view) {
-        startActivity(new Intent(this, SecretKeyListActivity.class));
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(new Intent(this, SecretKeyListActivity.class), 0);
     }
 
     public void encryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
     }
 
     public void decryptOnClick(View view) {
         Intent intent = new Intent(MainActivity.this, DecryptActivity.class);
         intent.setAction(DecryptActivity.ACTION_DECRYPT);
-        startActivityForResult(intent, 0); // used instead of startActivity to get callingPackage
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
     }
 
     public void scanQrcodeOnClick(View view) {

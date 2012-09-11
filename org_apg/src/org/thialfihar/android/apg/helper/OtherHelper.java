@@ -27,6 +27,9 @@ import java.util.Set;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.util.Log;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -106,6 +109,26 @@ public class OtherHelper {
             } else {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
+        }
+    }
+
+    /**
+     * Set actionbar without home button if called from another app
+     * 
+     * @param activity
+     */
+    public static void setActionBarBackButton(SherlockFragmentActivity activity) {
+        // set actionbar without home button if called from another app
+        final ActionBar actionBar = activity.getSupportActionBar();
+        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
+                + activity.getCallingPackage());
+        if (activity.getCallingPackage() != null
+                && activity.getCallingPackage().equals(Constants.PACKAGE_NAME)) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        } else {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeButtonEnabled(false);
         }
     }
 }

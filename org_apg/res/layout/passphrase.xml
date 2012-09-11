@@ -15,47 +15,25 @@
      limitations under the License.
 -->
 
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:stretchColumns="1" >
+    android:paddingRight="16dp" >
 
-    <TableRow>
+    <TextView
+        android:id="@+id/passphrase_label_passphrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="4dp"
+        android:text="@string/label_passPhrase" />
 
-        <TextView
-            android:id="@+id/passphrase_label_passphrase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="4dp"
-            android:text="@string/label_passPhrase" />
+    <EditText
+        android:id="@+id/passphrase_passphrase"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:padding="4dp" />
 
-        <EditText
-            android:id="@+id/passphrase_passphrase"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:padding="4dp" />
-    </TableRow>
-
-    <TableRow>
-
-        <TextView
-            android:id="@+id/passphrase_label_passphrase_again"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:padding="4dp"
-            android:text="@string/label_passPhraseAgain" />
-
-        <EditText
-            android:id="@+id/passphrase_passphrase_again"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:padding="4dp" />
-    </TableRow>
-
-</TableLayout>
+</LinearLayout>

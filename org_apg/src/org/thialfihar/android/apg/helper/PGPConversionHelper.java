@@ -43,9 +43,7 @@ public class PGPConversionHelper {
             try {
                 key.encode(os);
             } catch (IOException e) {
-                Log.e(Constants.TAG,
-                        "Error while converting PGPSecretKey to byte[]: " + e.getMessage());
-                e.printStackTrace();
+                Log.e(Constants.TAG, "Error while converting PGPSecretKey to byte[]!", e);
             }
         }
 
@@ -68,7 +66,7 @@ public class PGPConversionHelper {
                 Log.e(Constants.TAG, "No keys given!");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "Error while converting to PGPSecretKeyRing!", e);
         }
 
         return keyRing;
@@ -88,7 +86,7 @@ public class PGPConversionHelper {
                 Log.e(Constants.TAG, "No keys given!");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "Error while converting to PGPPublicKeyRing!", e);
         }
 
         return keyRing;
@@ -135,7 +133,7 @@ public class PGPConversionHelper {
         try {
             return key.getEncoded();
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Encoding failed: ", e);
+            Log.e(Constants.TAG, "Encoding failed", e);
 
             return null;
         }
@@ -151,7 +149,7 @@ public class PGPConversionHelper {
         try {
             return keyRing.getEncoded();
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Encoding failed: ", e);
+            Log.e(Constants.TAG, "Encoding failed", e);
 
             return null;
         }

@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.KeyRings;
@@ -93,6 +94,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.key_list);
 
+        // set actionbar without home button if called from another app
+        OtherHelper.setActionBarBackButton(this);
+
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
         mList = (ExpandableListView) findViewById(R.id.list);
@@ -152,18 +156,24 @@ public class KeyListActivity extends SherlockFragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+
         case Id.menu.option.import_keys: {
-            // showDialog(Id.dialog.import_keys);
             showImportKeysDialog();
             return true;
         }
 
         case Id.menu.option.export_keys: {
-            // showDialog(Id.dialog.export_keys);
             showExportKeysDialog(false);
             return true;
         }
-        
+
         case Id.menu.option.search:
             startSearch("", false, null, false);
             return true;
@@ -401,7 +411,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    int exported = returnData.getInt("exported");
+                    int exported = returnData.getInt(ApgService.RESULT_EXPORT);
                     String toastMessage;
                     if (exported == 1) {
                         toastMessage = getString(R.string.keyExported);
@@ -724,7 +734,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
                     mFileDialog.setFilename(path);
                 } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
                 }
             }
             return;

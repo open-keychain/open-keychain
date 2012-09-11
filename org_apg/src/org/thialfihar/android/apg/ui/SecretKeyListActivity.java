@@ -117,7 +117,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             long keyId = ((KeyListAdapter) mList.getExpandableListAdapter())
                     .getGroupId(mSelectedItem);
             // String msg = keyId + "," + PGPHelper.getFingerPrint(keyId);
-            String msg = PGPHelper.getPubkeyAsArmoredString(keyId);
+            String msg = PGPHelper.getPubkeyAsArmoredString(this, keyId);
 
             new IntentIntegrator(this).shareText(msg);
         }

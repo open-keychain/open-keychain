@@ -233,16 +233,16 @@ public class PGPHelper {
 
     public static String getMainUserIdSafe(Context context, PGPPublicKey key) {
         String userId = getMainUserId(key);
-        if (userId == null) {
-            userId = context.getResources().getString(R.string.unknownUserId);
+        if (userId == null || userId.equals("")) {
+            userId = context.getString(R.string.unknownUserId);
         }
         return userId;
     }
 
     public static String getMainUserIdSafe(Context context, PGPSecretKey key) {
         String userId = getMainUserId(key);
-        if (userId == null) {
-            userId = context.getResources().getString(R.string.unknownUserId);
+        if (userId == null || userId.equals("")) {
+            userId = context.getString(R.string.unknownUserId);
         }
         return userId;
     }
@@ -384,7 +384,7 @@ public class PGPHelper {
 
     }
 
-    public static String getPubkeyAsArmoredString(long keyId) {
+    public static String getPubkeyAsArmoredString(Context context, long keyId) {
         PGPPublicKey key = PGPMain.getPublicKey(keyId);
         // if it is no public key get it from your own keys...
         if (key == null) {
@@ -398,6 +398,8 @@ public class PGPHelper {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+        aos.setHeader("Version", PGPMain.getFullVersion(context));
+
         String armouredKey = null;
         try {
             aos.write(key.getEncoded());

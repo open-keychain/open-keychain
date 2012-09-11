@@ -193,7 +193,7 @@
     <string name="passPhrasesDoNotMatch">The passphrases didn\'t match.</string>
     <string name="passPhraseMustNotBeEmpty">Empty passphrases are not allowed.</string>
     <string name="passPhraseForSymmetricEncryption">Symmetric encryption.</string>
-    <string name="passPhraseFor">%s</string>
+    <string name="passPhraseFor">Enter passphrase for \'%s\'</string>
     <string name="fileDeleteConfirmation">Are you sure you want to delete\n%s?</string>
     <string name="fileDeleteSuccessful">Successfully deleted.</string>
     <string name="noFileSelected">Select a file first.</string>

@@ -29,6 +29,7 @@ import android.os.Environment;
 public class ApgApplication extends Application {
 
     static {
+        // Define Java Security Provider to be Bouncy Castle
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -42,7 +43,7 @@ public class ApgApplication extends Application {
         // TODO: Do it better than this!
         // this initializes the database to be used in PGPMain
         PGPMain.initialize(this);
-        
+
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File dir = new File(Constants.path.APP_DIR);

@@ -28,18 +28,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
-import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -197,6 +189,9 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String RESULT_IMPORT_ADDED = "added";
     public static final String RESULT_IMPORT_UPDATED = "updated";
     public static final String RESULT_IMPORT_BAD = "bad";
+
+    // export
+    public static final String RESULT_EXPORT = "exported";
 
     // query
     public static final String RESULT_QUERY_KEY_KEY_DATA = "queryKeyKeyData";
@@ -740,12 +735,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
 
                 /* Input */
-
                 int keyRingId = data.getInt(UPLOAD_KEY_KEYRING_ID);
                 String keyServer = data.getString(UPLOAD_KEY_SERVER);
 
                 /* Operation */
-
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
                 PGPKeyRing keyring = PGPMain.getKeyRing(keyRingId);
@@ -770,7 +763,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
 
                 /* Input */
-
                 int queryType = data.getInt(QUERY_KEY_TYPE);
                 String keyServer = data.getString(QUERY_KEY_SERVER);
 
@@ -778,7 +770,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 long keyId = data.getLong(QUERY_KEY_ID);
 
                 /* Operation */
-
                 Bundle resultData = new Bundle();
 
                 HkpKeyServer server = new HkpKeyServer(keyServer);
@@ -803,43 +794,16 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
 
                 /* Input */
-
                 long masterKeyId = data.getLong(SIGN_KEY_MASTER_KEY_ID);
                 long pubKeyId = data.getLong(SIGN_KEY_PUB_KEY_ID);
 
                 /* Operation */
+                PGPPublicKeyRing signedPubKeyRing = PGPMain.signKey(this, masterKeyId, pubKeyId);
 
-                String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
-                if (passphrase == null || passphrase.length() <= 0) {
-                    sendErrorToHandler(new GeneralException("Unable to obtain passphrase"));
-                } else {
-                    PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
-
-                    /*
-                     * sign the incoming key
-                     */
-                    PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
-                    PGPPrivateKey signingKey = secretKey.extractPrivateKey(
-                            passphrase.toCharArray(), BouncyCastleProvider.PROVIDER_NAME);
-                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
-                            .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
-                    sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
-
-                    PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-
-                    PGPSignatureSubpacketVector packetVector = spGen.generate();
-                    sGen.setHashedSubpackets(packetVector);
-
-                    PGPPublicKey signedKey = PGPPublicKey.addCertification(
-                            pubring.getPublicKey(pubKeyId), sGen.generate());
-                    pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
-
-                    // store the signed key in our local cache
-                    int retval = PGPMain.storeKeyRingInCache(pubring);
-                    if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                        sendErrorToHandler(new GeneralException(
-                                "Failed to store signed key in local cache"));
-                    }
+                // store the signed key in our local cache
+                int retval = PGPMain.storeKeyRingInCache(signedPubKeyRing);
+                if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
+                    throw new GeneralException("Failed to store signed key in local cache");
                 }
 
                 sendMessageToHandler(ApgServiceHandler.MESSAGE_OKAY);

@@ -21,12 +21,12 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
@@ -138,14 +138,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayShowTitleEnabled(true);
 
-        // set actionbar without home button if called from another app
-        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
-            mActionBar.setDisplayHomeAsUpEnabled(true);
-            mActionBar.setHomeButtonEnabled(true);
-        } else {
-            mActionBar.setDisplayHomeAsUpEnabled(false);
-            mActionBar.setHomeButtonEnabled(false);
-        }
+     // set actionbar without home button if called from another app
+        OtherHelper.setActionBarBackButton(this);
 
         // find views
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);

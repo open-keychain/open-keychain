@@ -73,7 +73,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         final int keyType = getArguments().getInt(ARG_KEY_TYPE);
 
         // TODO: better way to do this?
-        String userId = "<unknown>";
+        String userId = activity.getString(R.string.unknownUserId);
         Object keyRing = PGPMain.getKeyRing(deleteKeyRingId);
         if (keyRing != null) {
             if (keyRing instanceof PGPPublicKeyRing) {
