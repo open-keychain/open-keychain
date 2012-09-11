@@ -42,7 +42,7 @@ import android.os.Handler;
 import android.os.Message;
 
 public class BaseActivity extends SherlockFragmentActivity implements Runnable,
-        ProgressDialogUpdater, AskForPassphrase.PassPhraseCallbackInterface {
+        ProgressDialogUpdater {
 
     private ProgressDialog mProgressDialog = null;
     // private PausableThread mRunningThread = null;
@@ -363,11 +363,11 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
     //
     // Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     // }
-
-    public void passPhraseCallback(long keyId, String passPhrase) {
-        // TODO: Not needed anymore, now implemented in AskForSecretKeyPass
-        PGPMain.setCachedPassPhrase(keyId, passPhrase);
-    }
+    //
+    // public void passPhraseCallback(long keyId, String passPhrase) {
+    // // TODO: Not needed anymore, now implemented in AskForSecretKeyPass
+    // PGPMain.setCachedPassPhrase(keyId, passPhrase);
+    // }
 
     // public void sendMessage(Message msg) {
     // mHandler.sendMessage(msg);

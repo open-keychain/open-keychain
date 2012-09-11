@@ -30,6 +30,7 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
@@ -659,7 +660,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 return;
             }
 
-            if (getSecretKeyId() != 0 && PGPMain.getCachedPassPhrase(getSecretKeyId()) == null) {
+            if (getSecretKeyId() != 0
+                    && PassphraseCacheService.getCachedPassphrase(this, getSecretKeyId()) == null) {
                 showPassphraseDialog();
 
                 return;
@@ -697,7 +699,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    messenger, mSecretKeyId);
+                    EncryptActivity.this, messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PGPMain.GeneralException e) {

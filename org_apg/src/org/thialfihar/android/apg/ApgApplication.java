@@ -38,7 +38,8 @@ public class ApgApplication extends Application {
         super.onCreate();
 
         /* Start passphrase cache service */
-        PassphraseCacheService.startCacheService(this);
+        // TODO: not needed anymore!
+        // PassphraseCacheService.startCacheService(this);
 
         // TODO: Do it better than this!
         // this initializes the database to be used in PGPMain

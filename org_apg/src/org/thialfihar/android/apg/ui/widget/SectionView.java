@@ -23,6 +23,7 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
 import org.thialfihar.android.apg.util.Choice;
@@ -259,7 +260,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         String passPhrase;
         if (mEditors.getChildCount() > 0) {
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
-            passPhrase = PGPMain.getCachedPassPhrase(masterKey.getKeyID());
+            passPhrase = PassphraseCacheService
+                    .getCachedPassphrase(mActivity, masterKey.getKeyID());
 
             data.putByteArray(ApgService.MASTER_KEY,
                     PGPConversionHelper.PGPSecretKeyToBytes(masterKey));

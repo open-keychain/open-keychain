@@ -29,12 +29,19 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import org.thialfihar.android.apg.util.Log;
+
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
 
-public class SetPassphraseDialogFragment extends DialogFragment {
+public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private Messenger mMessenger;
 
     private static final String ARG_MESSENGER = "messenger";
@@ -43,6 +50,9 @@ public class SetPassphraseDialogFragment extends DialogFragment {
     public static final int MESSAGE_OKAY = 1;
 
     public static final String MESSAGE_NEW_PASSPHRASE = "new_passphrase";
+
+    private EditText mPassphraseEditText;
+    private EditText mPassphraseAgainEditText;
 
     /**
      * Creates new instance of this dialog fragment
@@ -81,17 +91,17 @@ public class SetPassphraseDialogFragment extends DialogFragment {
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.passphrase_repeat, null);
-        final EditText input1 = (EditText) view.findViewById(R.id.passphrase_passphrase);
-        final EditText input2 = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
-
         alert.setView(view);
+
+        mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
+        mPassphraseAgainEditText = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                String passPhrase1 = input1.getText().toString();
-                String passPhrase2 = input2.getText().toString();
+                String passPhrase1 = mPassphraseEditText.getText().toString();
+                String passPhrase2 = mPassphraseAgainEditText.getText().toString();
                 if (!passPhrase1.equals(passPhrase2)) {
                     Toast.makeText(
                             activity,
@@ -125,6 +135,32 @@ public class SetPassphraseDialogFragment extends DialogFragment {
         });
 
         return alert.create();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle arg0) {
+        super.onActivityCreated(arg0);
+
+        // request focus and open soft keyboard
+        mPassphraseEditText.requestFocus();
+        getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        mPassphraseAgainEditText.setOnEditorActionListener(this);
+    }
+
+    /**
+     * Associate the "done" button on the soft keyboard with the okay button in the view
+     */
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (EditorInfo.IME_ACTION_DONE == actionId) {
+            AlertDialog dialog = ((AlertDialog) getDialog());
+            Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+            bt.performClick();
+            return true;
+        }
+        return false;
     }
 
     /**

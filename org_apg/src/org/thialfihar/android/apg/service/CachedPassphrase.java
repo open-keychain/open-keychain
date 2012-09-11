@@ -15,19 +15,27 @@
 package org.thialfihar.android.apg.service;
 
 public class CachedPassphrase {
-    public final long timestamp;
-    public final String passPhrase;
+    private final long timestamp;
+    private final String passphrase;
 
     public CachedPassphrase(long timestamp, String passPhrase) {
         super();
         this.timestamp = timestamp;
-        this.passPhrase = passPhrase;
+        this.passphrase = passPhrase;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getPassphrase() {
+        return passphrase;
     }
 
     @Override
     public int hashCode() {
         int hc1 = (int) (this.timestamp & 0xffffffff);
-        int hc2 = (this.passPhrase == null ? 0 : this.passPhrase.hashCode());
+        int hc2 = (this.passphrase == null ? 0 : this.passphrase.hashCode());
         return (hc1 + hc2) * hc2 + hc1;
     }
 
@@ -42,12 +50,12 @@ public class CachedPassphrase {
             return false;
         }
 
-        if (passPhrase != o.passPhrase) {
-            if (passPhrase == null || o.passPhrase == null) {
+        if (passphrase != o.passphrase) {
+            if (passphrase == null || o.passphrase == null) {
                 return false;
             }
 
-            if (!passPhrase.equals(o.passPhrase)) {
+            if (!passphrase.equals(o.passphrase)) {
                 return false;
             }
         }

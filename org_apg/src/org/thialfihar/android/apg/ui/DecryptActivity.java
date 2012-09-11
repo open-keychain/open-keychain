@@ -25,6 +25,7 @@ import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.LookupUnknownKeyDialogFragment;
@@ -513,7 +514,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
         if (getSecretKeyId() == Id.key.symmetric
-                || PGPMain.getCachedPassPhrase(getSecretKeyId()) == null) {
+                || PassphraseCacheService.getCachedPassphrase(this, getSecretKeyId()) == null) {
             showPassphraseDialog();
         } else {
             if (mDecryptTarget == Id.target.file) {
@@ -548,7 +549,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(returnHandler);
 
         try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
                     messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");

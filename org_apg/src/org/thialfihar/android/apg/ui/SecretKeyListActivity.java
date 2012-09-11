@@ -21,6 +21,7 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 import org.thialfihar.android.apg.util.Log;
 
@@ -137,7 +138,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
     public void checkPassPhraseAndEdit() {
         long keyId = ((KeyListAdapter) mList.getExpandableListAdapter()).getGroupId(mSelectedItem);
-        String passPhrase = PGPMain.getCachedPassPhrase(keyId);
+        String passPhrase = PassphraseCacheService.getCachedPassphrase(this, keyId);
         if (passPhrase == null) {
             showPassphraseDialog(keyId);
         } else {
@@ -152,7 +153,8 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    String passPhrase = PGPMain.getCachedPassPhrase(secretKeyId);
+                    String passPhrase = PassphraseCacheService.getCachedPassphrase(
+                            SecretKeyListActivity.this, secretKeyId);
                     PGPMain.setEditPassPhrase(passPhrase);
                     editKey();
                 }
@@ -164,7 +166,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    messenger, secretKeyId);
+                    SecretKeyListActivity.this, messenger, secretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PGPMain.GeneralException e) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
+     Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
      Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +50,7 @@
         android:theme="@style/Theme.Sherlock.Light.ForceOverflow" >
         <activity
             android:name=".ui.MainActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +60,7 @@
         </activity>
         <activity
             android:name=".ui.PublicKeyListActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_managePublicKeys"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -73,7 +74,7 @@
         </activity>
         <activity
             android:name=".ui.SecretKeyListActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manageSecretKeys"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -87,7 +88,7 @@
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_editKey"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
@@ -100,7 +101,7 @@
         </activity>
         <activity
             android:name=".ui.SelectPublicKeyListActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_selectRecipients"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
@@ -119,7 +120,7 @@
         </activity>
         <activity
             android:name=".ui.SelectSecretKeyListActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -137,7 +138,7 @@
         </activity>
         <activity
             android:name=".ui.EncryptActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
@@ -154,7 +155,7 @@
         </activity>
         <activity
             android:name=".ui.DecryptActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
@@ -170,7 +171,7 @@
         </activity>
         <activity
             android:name=".deprecated.GeneralActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Dialog" >
             <intent-filter>
@@ -202,39 +203,39 @@
         </activity>
         <activity
             android:name=".ui.MailListActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_mailInbox" />
         <activity
             android:name=".ui.KeyServerQueryActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_keyServerQuery" />
         <activity
             android:name=".ui.KeyServerUploadActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_sendKey" />
         <activity
             android:name=".ui.PreferencesActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_preferences" />
         <activity
             android:name=".ui.PreferencesKeyServerActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_keyServerPreference"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SignKeyActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_signKey" />
         <activity
             android:name=".ui.ImportFromQRCodeActivity"
-            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_importFromQRCode" />
         <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
-        <service android:name=".service.password.PassphraseCacheService" />
+        <service android:name=".service.PassphraseCacheService" />
         <service android:name=".service.ApgService" />
 
         <!-- TODO: need to be moved into new service model -->

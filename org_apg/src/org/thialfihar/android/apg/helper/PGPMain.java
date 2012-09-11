@@ -78,7 +78,6 @@ import org.thialfihar.android.apg.provider.KeyRings;
 import org.thialfihar.android.apg.provider.Keys;
 import org.thialfihar.android.apg.provider.UserIds;
 import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.service.CachedPassphrase;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
@@ -121,9 +120,7 @@ import java.security.Security;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -185,7 +182,6 @@ public class PGPMain {
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
 
-    private static HashMap<Long, CachedPassphrase> mPassPhraseCache = new HashMap<Long, CachedPassphrase>();
     private static String mEditPassPhrase = null;
 
     private static Database mDatabase = null;
@@ -222,58 +218,6 @@ public class PGPMain {
 
     public static String getEditPassPhrase() {
         return mEditPassPhrase;
-    }
-
-    public static void setCachedPassPhrase(long keyId, String passPhrase) {
-        mPassPhraseCache.put(keyId, new CachedPassphrase(new Date().getTime(), passPhrase));
-    }
-
-    public static String getCachedPassPhrase(long keyId) {
-        long realId = keyId;
-        if (realId != Id.key.symmetric) {
-            PGPSecretKeyRing keyRing = getSecretKeyRing(keyId);
-            if (keyRing == null) {
-                return null;
-            }
-            PGPSecretKey masterKey = PGPHelper.getMasterKey(keyRing);
-            if (masterKey == null) {
-                return null;
-            }
-            realId = masterKey.getKeyID();
-        }
-        CachedPassphrase cpp = mPassPhraseCache.get(realId);
-        if (cpp == null) {
-            return null;
-        }
-        // set it again to reset the cache life cycle
-        setCachedPassPhrase(realId, cpp.passPhrase);
-        return cpp.passPhrase;
-    }
-
-    public static int cleanUpCache(int ttl, int initialDelay) {
-        int delay = initialDelay;
-        long realTtl = ttl * 1000;
-        long now = new Date().getTime();
-        Vector<Long> oldKeys = new Vector<Long>();
-        for (Map.Entry<Long, CachedPassphrase> pair : mPassPhraseCache.entrySet()) {
-            long lived = now - pair.getValue().timestamp;
-            if (lived >= realTtl) {
-                oldKeys.add(pair.getKey());
-            } else {
-                // see, whether the remaining time for this cache entry improves our
-                // check delay
-                long nextCheck = realTtl - lived + 1000;
-                if (nextCheck < delay) {
-                    delay = (int) nextCheck;
-                }
-            }
-        }
-
-        for (long keyId : oldKeys) {
-            mPassPhraseCache.remove(keyId);
-        }
-
-        return delay;
     }
 
     /**
@@ -1268,11 +1212,10 @@ public class PGPMain {
             progress.setProgress(R.string.progress_done, 100, 100);
     }
 
-    public static PGPPublicKeyRing signKey(Context context, long masterKeyId, long pubKeyId)
-            throws GeneralException, NoSuchAlgorithmException, NoSuchProviderException,
-            PGPException, SignatureException {
-        String signaturePassPhrase = PGPMain.getCachedPassPhrase(masterKeyId);
-        if (signaturePassPhrase == null || signaturePassPhrase.length() <= 0) {
+    public static PGPPublicKeyRing signKey(Context context, long masterKeyId, long pubKeyId,
+            String passphrase) throws GeneralException, NoSuchAlgorithmException,
+            NoSuchProviderException, PGPException, SignatureException {
+        if (passphrase == null || passphrase.length() <= 0) {
             throw new GeneralException("Unable to obtain passphrase");
         } else {
             PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
@@ -1283,7 +1226,7 @@ public class PGPMain {
             }
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassPhrase.toCharArray());
+                    BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
             PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new GeneralException(

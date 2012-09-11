@@ -31,6 +31,7 @@ import org.thialfihar.android.apg.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
@@ -38,13 +39,22 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.util.Log;
+
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager.LayoutParams;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-public class PassphraseDialogFragment extends DialogFragment {
+public class PassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
 
     private Messenger mMessenger;
 
@@ -52,6 +62,8 @@ public class PassphraseDialogFragment extends DialogFragment {
     private static final String ARG_SECRET_KEY_ID = "secret_key_id";
 
     public static final int MESSAGE_OKAY = 1;
+
+    private EditText mPassphraseEditText;
 
     /**
      * Creates new instance of this dialog fragment
@@ -63,11 +75,11 @@ public class PassphraseDialogFragment extends DialogFragment {
      * @return
      * @throws GeneralException
      */
-    public static PassphraseDialogFragment newInstance(Messenger messenger, long secretKeyId)
-            throws GeneralException {
+    public static PassphraseDialogFragment newInstance(Context context, Messenger messenger,
+            long secretKeyId) throws GeneralException {
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
-            if (!hasPassphrase(secretKeyId)) {
+            if (!hasPassphrase(context, secretKeyId)) {
                 throw new PGPMain.GeneralException("No passphrase! No passphrase dialog needed!");
             }
         }
@@ -88,7 +100,7 @@ public class PassphraseDialogFragment extends DialogFragment {
      * @param secretKeyId
      * @return true if it has a passphrase
      */
-    private static boolean hasPassphrase(long secretKeyId) {
+    private static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {
             PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
@@ -101,7 +113,7 @@ public class PassphraseDialogFragment extends DialogFragment {
                 Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
 
                 // cache empty passphrase
-                PGPMain.setCachedPassPhrase(secretKey.getKeyID(), "");
+                PassphraseCacheService.addCachedPassphrase(context, secretKey.getKeyID(), "");
 
                 return false;
             }
@@ -110,6 +122,11 @@ public class PassphraseDialogFragment extends DialogFragment {
         }
 
         return true;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     /**
@@ -154,13 +171,13 @@ public class PassphraseDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.passphrase, null);
         alert.setView(view);
 
-        final EditText input = (EditText) view.findViewById(R.id.passphrase_passphrase);
+        mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                String passPhrase = input.getText().toString();
+                String passPhrase = mPassphraseEditText.getText().toString();
                 long keyId;
                 if (secretKey != null) {
                     try {
@@ -185,7 +202,7 @@ public class PassphraseDialogFragment extends DialogFragment {
 
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
-                PGPMain.setCachedPassPhrase(keyId, passPhrase);
+                PassphraseCacheService.addCachedPassphrase(activity, keyId, passPhrase);
 
                 sendMessageToHandler(MESSAGE_OKAY);
             }
@@ -198,6 +215,32 @@ public class PassphraseDialogFragment extends DialogFragment {
         });
 
         return alert.create();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle arg0) {
+        super.onActivityCreated(arg0);
+
+        // request focus and open soft keyboard
+        mPassphraseEditText.requestFocus();
+        getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        mPassphraseEditText.setOnEditorActionListener(this);
+    }
+
+    /**
+     * Associate the "done" button on the soft keyboard with the okay button in the view
+     */
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (EditorInfo.IME_ACTION_DONE == actionId) {
+            AlertDialog dialog = ((AlertDialog) getDialog());
+            Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+            bt.performClick();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -218,4 +261,5 @@ public class PassphraseDialogFragment extends DialogFragment {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
     }
+
 }

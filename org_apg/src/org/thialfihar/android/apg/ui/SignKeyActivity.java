@@ -27,6 +27,7 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
+import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -141,7 +142,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(returnHandler);
 
         try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
                     messenger, secretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
@@ -175,7 +176,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                 /*
                  * get the user's passphrase for this key (if required)
                  */
-                String passphrase = PGPMain.getCachedPassPhrase(mMasterKeyId);
+                String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
                 if (passphrase == null) {
                     showPassphraseDialog(mMasterKeyId);
                     return; // bail out; need to wait until the user has entered the passphrase

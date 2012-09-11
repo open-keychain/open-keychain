@@ -70,6 +70,25 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     public static final String EXTRA_ACTION = "action";
     public static final String EXTRA_DATA = "data";
 
+    /* possible EXTRA_ACTIONs */
+    public static final int ACTION_ENCRYPT_SIGN = 10;
+
+    public static final int ACTION_DECRYPT_VERIFY = 20;
+
+    public static final int ACTION_SAVE_KEYRING = 30;
+    public static final int ACTION_GENERATE_KEY = 31;
+    public static final int ACTION_GENERATE_DEFAULT_RSA_KEYS = 32;
+
+    public static final int ACTION_DELETE_FILE_SECURELY = 40;
+
+    public static final int ACTION_IMPORT_KEY = 50;
+    public static final int ACTION_EXPORT_KEY = 51;
+
+    public static final int ACTION_UPLOAD_KEY = 60;
+    public static final int ACTION_QUERY_KEY = 61;
+
+    public static final int ACTION_SIGN_KEY = 70;
+
     /* keys for data bundle */
 
     // encrypt, decrypt, import export
@@ -142,25 +161,6 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
     // sign key
     public static final String SIGN_KEY_MASTER_KEY_ID = "signKeyMasterKeyId";
     public static final String SIGN_KEY_PUB_KEY_ID = "signKeyPubKeyId";
-
-    /* possible EXTRA_ACTIONs */
-    public static final int ACTION_ENCRYPT_SIGN = 10;
-
-    public static final int ACTION_DECRYPT_VERIFY = 20;
-
-    public static final int ACTION_SAVE_KEYRING = 30;
-    public static final int ACTION_GENERATE_KEY = 31;
-    public static final int ACTION_GENERATE_DEFAULT_RSA_KEYS = 32;
-
-    public static final int ACTION_DELETE_FILE_SECURELY = 40;
-
-    public static final int ACTION_IMPORT_KEY = 50;
-    public static final int ACTION_EXPORT_KEY = 51;
-
-    public static final int ACTION_UPLOAD_KEY = 60;
-    public static final int ACTION_QUERY_KEY = 61;
-
-    public static final int ACTION_SIGN_KEY = 70;
 
     /* possible data keys as result send over messenger */
     // keys
@@ -320,19 +320,21 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
                     PGPMain.generateSignature(this, inputData, outStream, useAsciiArmour, false,
-                            secretKeyId, PGPMain.getCachedPassPhrase(secretKeyId), Preferences
-                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures(), this);
+                            secretKeyId, PassphraseCacheService.getCachedPassphrase(this,
+                                    secretKeyId), Preferences.getPreferences(this)
+                                    .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                                    .getForceV3Signatures(), this);
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
-                    PGPMain.signText(this, inputData, outStream, secretKeyId, PGPMain
-                            .getCachedPassPhrase(secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures(), this);
+                    PGPMain.signText(this, inputData, outStream, secretKeyId,
+                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
+                            Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                                    .getPreferences(this).getForceV3Signatures(), this);
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     PGPMain.encrypt(this, inputData, outStream, useAsciiArmour, encryptionKeyIds,
-                            signatureKeyId, PGPMain.getCachedPassPhrase(signatureKeyId), this,
+                            signatureKeyId,
+                            PassphraseCacheService.getCachedPassphrase(this, signatureKeyId), this,
                             Preferences.getPreferences(this).getDefaultEncryptionAlgorithm(),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(),
                             compressionId, Preferences.getPreferences(this).getForceV3Signatures(),
@@ -478,7 +480,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                             this);
                 } else {
                     resultData = PGPMain.decrypt(this, inputData, outStream,
-                            PGPMain.getCachedPassPhrase(secretKeyId), this,
+                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId), this,
                             assumeSymmetricEncryption);
                 }
 
@@ -539,7 +541,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 PGPMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
                         newPassPhrase, this);
-                PGPMain.setCachedPassPhrase(masterKeyId, newPassPhrase);
+                PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
                 /* Output */
                 sendMessageToHandler(ApgServiceHandler.MESSAGE_OKAY);
@@ -798,7 +800,11 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 long pubKeyId = data.getLong(SIGN_KEY_PUB_KEY_ID);
 
                 /* Operation */
-                PGPPublicKeyRing signedPubKeyRing = PGPMain.signKey(this, masterKeyId, pubKeyId);
+                String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
+                        masterKeyId);
+
+                PGPPublicKeyRing signedPubKeyRing = PGPMain.signKey(this, masterKeyId, pubKeyId,
+                        signaturePassPhrase);
 
                 // store the signed key in our local cache
                 int retval = PGPMain.storeKeyRingInCache(signedPubKeyRing);

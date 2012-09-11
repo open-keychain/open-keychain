@@ -33,6 +33,7 @@
         android:id="@+id/passphrase_passphrase"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:imeOptions="actionDone"
         android:inputType="textPassword"
         android:padding="4dp" />
 
