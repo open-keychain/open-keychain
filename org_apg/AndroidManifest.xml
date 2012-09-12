@@ -168,39 +168,102 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
+
+            <!--
+                General remarks about file ending conventions:
+                - *.gpg for binary files
+                - *.asc for ascii armored files
+                
+                The actual content can be anything.
+                The file ending only shows if it is binary or ascii encoded.
+                
+                Remarks about the ugly android:pathPattern:
+                We are matching all files with a specific file ending.
+                This is done in an ugly way because of Android limitations.
+                Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
+                and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
+                for more information.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+            </intent-filter>
         </activity>
-        <activity
-            android:name=".deprecated.GeneralActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Dialog" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.SEND" />
+        <!-- <activity -->
+        <!-- android:name=".deprecated.GeneralActivity" -->
+        <!-- android:configChanges="orientation|screenSize|keyboardHidden|keyboard" -->
+        <!-- android:label="@string/app_name" -->
+        <!-- android:theme="@android:style/Theme.Dialog" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.VIEW" /> -->
+        <!-- <action android:name="android.intent.action.SEND" /> -->
 
-                <category android:name="android.intent.category.DEFAULT" />
 
-                <data
-                    android:mimeType="*/*"
-                    android:scheme="file" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.SEND" />
+        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <action android:name="android.intent.action.SEND" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+        <!-- <data -->
+        <!-- android:mimeType="*/*" -->
+        <!-- android:scheme="file" /> -->
+        <!-- </intent-filter> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.VIEW" /> -->
+        <!-- <action android:name="android.intent.action.SEND" /> -->
 
-                <data
-                    android:mimeType="text/*"
-                    android:scheme="" />
-            </intent-filter>
-        </activity>
+
+        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+        <!-- </intent-filter> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.VIEW" /> -->
+        <!-- <action android:name="android.intent.action.SEND" /> -->
+
+
+        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+
+
+        <!-- <data -->
+        <!-- android:mimeType="text/*" -->
+        <!-- android:scheme="" /> -->
+        <!-- </intent-filter> -->
+        <!-- </activity> -->
         <activity
             android:name=".ui.MailListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
