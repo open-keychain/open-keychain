@@ -251,26 +251,39 @@ public class DecryptActivity extends SherlockFragmentActivity {
             mSource.showNext();
         }
 
+        boolean decryptImmediately = false;
+
         mIntent = getIntent();
+
+        // handled separately from other actions as it uses mIntent.setAction()
         if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
-            Uri uri = mIntent.getData();
-            try {
-                InputStream attachment = getContentResolver().openInputStream(uri);
-                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-                byte bytes[] = new byte[1 << 16];
-                int length;
-                while ((length = attachment.read(bytes)) > 0) {
-                    byteOut.write(bytes, 0, length);
-                }
-                byteOut.close();
-                String data = new String(byteOut.toByteArray());
-                mMessage.setText(data);
-            } catch (FileNotFoundException e) {
-                // ignore, then
-            } catch (IOException e) {
-                // ignore, then
-            }
-        } else if (ACTION_DECRYPT.equals(mIntent.getAction())) {
+
+            // TODO: old implementation of ACTION_VIEW. Is this used in K9?
+
+            // Uri uri = mIntent.getData();
+            // try {
+            // InputStream attachment = getContentResolver().openInputStream(uri);
+            // ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            // byte bytes[] = new byte[1 << 16];
+            // int length;
+            // while ((length = attachment.read(bytes)) > 0) {
+            // byteOut.write(bytes, 0, length);
+            // }
+            // byteOut.close();
+            // String data = new String(byteOut.toByteArray());
+            // mMessage.setText(data);
+            // } catch (FileNotFoundException e) {
+            // // ignore, then
+            // } catch (IOException e) {
+            // // ignore, then
+            // }
+
+            // same as ACTION_DECRYPT_FILE but decrypt it immediately
+            mIntent.setAction(ACTION_DECRYPT_FILE);
+            decryptImmediately = true;
+        }
+
+        if (ACTION_DECRYPT.equals(mIntent.getAction())) {
             Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
             Bundle extras = mIntent.getExtras();
             if (extras == null) {
@@ -317,10 +330,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             mReplyTo = extras.getString(EXTRA_REPLY_TO);
             mSubject = extras.getString(EXTRA_SUBJECT);
         } else if (ACTION_DECRYPT_FILE.equals(mIntent.getAction())) {
-            mInputFilename = mIntent.getDataString();
-            if ("file".equals(mIntent.getScheme())) {
-                mInputFilename = Uri.decode(mInputFilename.substring(7));
-            }
+            mInputFilename = mIntent.getData().getPath();
             mFilename.setText(mInputFilename);
             guessOutputFilename();
             mSource.setInAnimation(null);
@@ -420,8 +430,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         updateSource();
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage
-                && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)) {
+        if (decryptImmediately
+                || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
+                        .length() > 0 || mData != null || mContentUri != null))) {
             decryptClicked();
         }
     }

@@ -44,7 +44,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -143,9 +142,15 @@ public class KeyListActivity extends SherlockFragmentActivity {
         mListAdapter = new KeyListAdapter(this, searchString);
         mList.setAdapter(mListAdapter);
 
+        // handled separately from other actions as it uses intent.setAction()
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            // same as ACTION_IMPORT invoked from a file manager
+            intent.setAction(ACTION_IMPORT);
+        }
+
         if (ACTION_IMPORT.equals(intent.getAction())) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = Uri.decode(intent.getDataString().replace("file://", ""));
+                mImportFilename = intent.getData().getPath();
             } else {
                 mImportData = intent.getStringExtra(EXTRA_TEXT);
             }

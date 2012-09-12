@@ -18,10 +18,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.thialfihar.android.apg"
     android:installLocation="auto"
-    android:versionCode="50"
+    android:versionCode="20000"
     android:versionName="2.0" >
 
-    <!-- APG 2 starting with versionCode 50! -->
+    <!--
+        General remarks
+        ===============
+        - APG 2 starting with versionCode 20000! 
+        
+    
+        Registration of APG to file types
+        =================================
+    	General remarks about file ending conventions:
+        - *.gpg for binary files
+        - *.asc for ascii armored files
+        
+        The actual content can be anything.
+        The file ending only shows if it is binary or ascii encoded.
+        
+        Remarks about the ugly android:pathPattern:
+        We are matching all files with a specific file ending.
+        This is done in an ugly way because of Android limitations.
+        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
+        and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
+        for more information.
+    -->
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -66,6 +87,55 @@
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+            </intent-filter>
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
             </intent-filter>
 
             <meta-data
@@ -168,23 +238,7 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
-
-            <!--
-                General remarks about file ending conventions:
-                - *.gpg for binary files
-                - *.asc for ascii armored files
-                
-                The actual content can be anything.
-                The file ending only shows if it is binary or ascii encoded.
-                
-                Remarks about the ugly android:pathPattern:
-                We are matching all files with a specific file ending.
-                This is done in an ugly way because of Android limitations.
-                Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
-                and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
-                for more information.
-            -->
-            <intent-filter>
+            <intent-filter android:label="@string/intent_decrypt_file" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -205,7 +259,7 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:label="@string/intent_decrypt_file" >
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -227,47 +281,6 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
             </intent-filter>
         </activity>
-        <!-- <activity -->
-        <!-- android:name=".deprecated.GeneralActivity" -->
-        <!-- android:configChanges="orientation|screenSize|keyboardHidden|keyboard" -->
-        <!-- android:label="@string/app_name" -->
-        <!-- android:theme="@android:style/Theme.Dialog" > -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.VIEW" /> -->
-        <!-- <action android:name="android.intent.action.SEND" /> -->
-
-
-        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-
-
-        <!-- <data -->
-        <!-- android:mimeType="*/*" -->
-        <!-- android:scheme="file" /> -->
-        <!-- </intent-filter> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.VIEW" /> -->
-        <!-- <action android:name="android.intent.action.SEND" /> -->
-
-
-        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-        <!-- </intent-filter> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.intent.action.VIEW" /> -->
-        <!-- <action android:name="android.intent.action.SEND" /> -->
-
-
-        <!-- <category android:name="android.intent.category.DEFAULT" /> -->
-
-
-        <!-- <data -->
-        <!-- android:mimeType="text/*" -->
-        <!-- android:scheme="" /> -->
-        <!-- </intent-filter> -->
-        <!-- </activity> -->
-        <activity
-            android:name=".ui.MailListActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_mailInbox" />
         <activity
             android:name=".ui.KeyServerQueryActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -301,6 +314,11 @@
         <service android:name=".service.PassphraseCacheService" />
         <service android:name=".service.ApgService" />
 
+        <provider
+            android:name=".provider.DataProvider"
+            android:authorities="org.thialfihar.android.apg.provider"
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+
         <!-- TODO: need to be moved into new service model -->
         <service
             android:name=".deprecated.ApgService2"
@@ -317,10 +335,6 @@
                 android:value="2" />
         </service>
 
-        <provider
-            android:name=".provider.DataProvider"
-            android:authorities="org.thialfihar.android.apg.provider"
-            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
         <provider
             android:name=".deprecated.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"

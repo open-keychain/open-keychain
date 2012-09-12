@@ -432,11 +432,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     mSource.showNext();
                 }
             } else if (ACTION_ENCRYPT_FILE.equals(mIntent.getAction())) {
-                if ("file".equals(mIntent.getScheme())) {
-                    mInputFilename = Uri.decode(mIntent.getDataString().replace("file://", ""));
-                    mFilename.setText(mInputFilename);
-                    guessOutputFilename();
-                }
+                mInputFilename = mIntent.getData().getPath();
+                mFilename.setText(mInputFilename);
+                guessOutputFilename();
                 mSource.setInAnimation(null);
                 mSource.setOutAnimation(null);
                 while (mSource.getCurrentView().getId() != R.id.sourceFile) {
