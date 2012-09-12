@@ -24,6 +24,7 @@
     <!--
         General remarks
         ===============
+        - Last APG 1 version was 10900 (1.0.9 beta 00)
         - APG 2 starting with versionCode 20000! 
         
     
@@ -88,6 +89,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+            <!-- APG's own Actions -->
             <intent-filter android:label="@string/intent_import_key" >
                 <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
 
@@ -95,6 +97,7 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
+            <!-- Linking "Import key" to file types -->
             <intent-filter android:label="@string/intent_import_key" >
                 <action android:name="android.intent.action.VIEW" />
 
@@ -212,11 +215,21 @@
             android:label="@string/title_encrypt"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
+
+            <!-- APG's own Actions -->
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_FILE" />
                 <action android:name="org.thialfihar.android.apg.intent.ENCRYPT_AND_RETURN" />
                 <action android:name="org.thialfihar.android.apg.intent.GENERATE_SIGNATURE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <!-- Android's Send Action -->
+            <intent-filter android:label="@string/intent_send_encrypt" >
+                <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -229,6 +242,8 @@
             android:label="@string/title_decrypt"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
+
+            <!-- APG's own Actions -->
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT" />
                 <action android:name="org.thialfihar.android.apg.intent.DECRYPT_FILE" />
@@ -238,6 +253,15 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
+            <!-- Android's Send Action -->
+            <intent-filter android:label="@string/intent_send_decrypt" >
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <!-- Linking "Decrypt" to file types -->
             <intent-filter android:label="@string/intent_decrypt_file" >
                 <action android:name="android.intent.action.VIEW" />
 

@@ -86,7 +86,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
 
-    private Intent mIntent = null;
     private String mSubject = null;
     private String mSendTo = null;
 
@@ -343,104 +342,31 @@ public class EncryptActivity extends SherlockFragmentActivity {
             }
         });
 
-        mIntent = getIntent();
-        if (ACTION_ENCRYPT.equals(mIntent.getAction())
-                || ACTION_ENCRYPT_FILE.equals(mIntent.getAction())
-                || ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
-            mContentUri = mIntent.getData();
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                extras = new Bundle();
-            }
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
 
-            if (ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
-                mReturnResult = true;
-            }
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    intent.setAction(ACTION_ENCRYPT);
+                    intent.putExtra(EXTRA_TEXT, sharedText);
+                    intent.putExtra(EXTRA_ASCII_ARMOUR, true);
+                    handleActionEncryptSign(intent);
+                }
+            } else {
+                Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (uri != null) {
+                    // TODO: Implement for binary
 
-            if (ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
-                mGenerateSignature = true;
-                mOverrideAsciiArmour = true;
-                mAsciiArmourDemand = false;
-            }
-
-            if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
-                mAsciiArmourDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
-                mOverrideAsciiArmour = true;
-                mAsciiArmour.setChecked(mAsciiArmourDemand);
-            }
-
-            mData = extras.getByteArray(EXTRA_DATA);
-            String textData = null;
-            if (mData == null) {
-                textData = extras.getString(EXTRA_TEXT);
-            }
-            mSendTo = extras.getString(EXTRA_SEND_TO);
-            mSubject = extras.getString(EXTRA_SUBJECT);
-            long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
-            long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
-            if (signatureKeyId != 0) {
-                PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(signatureKeyId);
-                PGPSecretKey masterKey = null;
-                if (keyRing != null) {
-                    masterKey = PGPHelper.getMasterKey(keyRing);
-                    if (masterKey != null) {
-                        Vector<PGPSecretKey> signKeys = PGPHelper.getUsableSigningKeys(keyRing);
-                        if (signKeys.size() > 0) {
-                            setSecretKeyId(masterKey.getKeyID());
-                        }
-                    }
                 }
             }
-
-            if (encryptionKeyIds != null) {
-                Vector<Long> goodIds = new Vector<Long>();
-                for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                    PGPPublicKeyRing keyRing = PGPMain.getPublicKeyRing(encryptionKeyIds[i]);
-                    PGPPublicKey masterKey = null;
-                    if (keyRing == null) {
-                        continue;
-                    }
-                    masterKey = PGPHelper.getMasterKey(keyRing);
-                    if (masterKey == null) {
-                        continue;
-                    }
-                    Vector<PGPPublicKey> encryptKeys = PGPHelper.getUsableEncryptKeys(keyRing);
-                    if (encryptKeys.size() == 0) {
-                        continue;
-                    }
-                    goodIds.add(masterKey.getKeyID());
-                }
-                if (goodIds.size() > 0) {
-                    mEncryptionKeyIds = new long[goodIds.size()];
-                    for (int i = 0; i < goodIds.size(); ++i) {
-                        mEncryptionKeyIds[i] = goodIds.get(i);
-                    }
-                }
-            }
-
-            if (ACTION_ENCRYPT.equals(mIntent.getAction())
-                    || ACTION_ENCRYPT_AND_RETURN.equals(mIntent.getAction())
-                    || ACTION_GENERATE_SIGNATURE.equals(mIntent.getAction())) {
-                if (textData != null) {
-                    mMessage.setText(textData);
-                }
-                mSource.setInAnimation(null);
-                mSource.setOutAnimation(null);
-                while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
-                    mSource.showNext();
-                }
-            } else if (ACTION_ENCRYPT_FILE.equals(mIntent.getAction())) {
-                mInputFilename = mIntent.getData().getPath();
-                mFilename.setText(mInputFilename);
-                guessOutputFilename();
-                mSource.setInAnimation(null);
-                mSource.setOutAnimation(null);
-                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
-                    mSource.showNext();
-                }
-            }
+        } else if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_FILE.equals(action)
+                || ACTION_ENCRYPT_AND_RETURN.equals(action)
+                || ACTION_GENERATE_SIGNATURE.equals(action)) {
+            handleActionEncryptSign(intent);
         }
 
         updateView();
@@ -466,6 +392,107 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 && (mMessage.getText().length() > 0 || mData != null || mContentUri != null)
                 && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || getSecretKeyId() != 0)) {
             encryptClicked();
+        }
+    }
+
+    /**
+     * Handles all actions with this intent
+     * 
+     * @param intent
+     */
+    private void handleActionEncryptSign(Intent intent) {
+        String action = intent.getAction();
+
+        mContentUri = intent.getData();
+        Bundle extras = intent.getExtras();
+        if (extras == null) {
+            extras = new Bundle();
+        }
+
+        if (ACTION_ENCRYPT_AND_RETURN.equals(action) || ACTION_GENERATE_SIGNATURE.equals(action)) {
+            mReturnResult = true;
+        }
+
+        if (ACTION_GENERATE_SIGNATURE.equals(action)) {
+            mGenerateSignature = true;
+            mOverrideAsciiArmour = true;
+            mAsciiArmourDemand = false;
+        }
+
+        if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
+            mAsciiArmourDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
+            mOverrideAsciiArmour = true;
+            mAsciiArmour.setChecked(mAsciiArmourDemand);
+        }
+
+        mData = extras.getByteArray(EXTRA_DATA);
+        String textData = null;
+        if (mData == null) {
+            textData = extras.getString(EXTRA_TEXT);
+        }
+        mSendTo = extras.getString(EXTRA_SEND_TO);
+        mSubject = extras.getString(EXTRA_SUBJECT);
+        long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
+        long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
+        if (signatureKeyId != 0) {
+            PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(signatureKeyId);
+            PGPSecretKey masterKey = null;
+            if (keyRing != null) {
+                masterKey = PGPHelper.getMasterKey(keyRing);
+                if (masterKey != null) {
+                    Vector<PGPSecretKey> signKeys = PGPHelper.getUsableSigningKeys(keyRing);
+                    if (signKeys.size() > 0) {
+                        setSecretKeyId(masterKey.getKeyID());
+                    }
+                }
+            }
+        }
+
+        if (encryptionKeyIds != null) {
+            Vector<Long> goodIds = new Vector<Long>();
+            for (int i = 0; i < encryptionKeyIds.length; ++i) {
+                PGPPublicKeyRing keyRing = PGPMain.getPublicKeyRing(encryptionKeyIds[i]);
+                PGPPublicKey masterKey = null;
+                if (keyRing == null) {
+                    continue;
+                }
+                masterKey = PGPHelper.getMasterKey(keyRing);
+                if (masterKey == null) {
+                    continue;
+                }
+                Vector<PGPPublicKey> encryptKeys = PGPHelper.getUsableEncryptKeys(keyRing);
+                if (encryptKeys.size() == 0) {
+                    continue;
+                }
+                goodIds.add(masterKey.getKeyID());
+            }
+            if (goodIds.size() > 0) {
+                mEncryptionKeyIds = new long[goodIds.size()];
+                for (int i = 0; i < goodIds.size(); ++i) {
+                    mEncryptionKeyIds[i] = goodIds.get(i);
+                }
+            }
+        }
+
+        if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_AND_RETURN.equals(action)
+                || ACTION_GENERATE_SIGNATURE.equals(action)) {
+            if (textData != null) {
+                mMessage.setText(textData);
+            }
+            mSource.setInAnimation(null);
+            mSource.setOutAnimation(null);
+            while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
+                mSource.showNext();
+            }
+        } else if (ACTION_ENCRYPT_FILE.equals(action)) {
+            mInputFilename = intent.getData().getPath();
+            mFilename.setText(mInputFilename);
+            guessOutputFilename();
+            mSource.setInAnimation(null);
+            mSource.setOutAnimation(null);
+            while (mSource.getCurrentView().getId() != R.id.sourceFile) {
+                mSource.showNext();
+            }
         }
     }
 

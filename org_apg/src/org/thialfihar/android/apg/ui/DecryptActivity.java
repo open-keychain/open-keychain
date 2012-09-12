@@ -58,11 +58,9 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 
@@ -82,8 +80,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     public static final String EXTRA_BINARY = "binary";
 
     private long mSignatureKeyId = 0;
-
-    private Intent mIntent;
 
     private boolean mReturnResult = false;
     private String mReplyTo = null;
@@ -253,10 +249,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         boolean decryptImmediately = false;
 
-        mIntent = getIntent();
+        // Get intent, action and MIME type
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
 
-        // handled separately from other actions as it uses mIntent.setAction()
-        if (Intent.ACTION_VIEW.equals(mIntent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(action)) {
 
             // TODO: old implementation of ACTION_VIEW. Is this used in K9?
 
@@ -279,100 +277,29 @@ public class DecryptActivity extends SherlockFragmentActivity {
             // }
 
             // same as ACTION_DECRYPT_FILE but decrypt it immediately
-            mIntent.setAction(ACTION_DECRYPT_FILE);
+            handleActionDecryptFile(intent);
             decryptImmediately = true;
-        }
-
-        if (ACTION_DECRYPT.equals(mIntent.getAction())) {
-            Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                Log.d(Constants.TAG, "extra bundle was null");
-                extras = new Bundle();
+        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    intent.putExtra(EXTRA_TEXT, sharedText);
+                    handleActionDecrypt(intent);
+                    decryptImmediately = true;
+                }
             } else {
-                Log.d(Constants.TAG, "got extras");
-            }
+                Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (uri != null) {
+                    // TODO: Implement for binary
 
-            mData = extras.getByteArray(EXTRA_DATA);
-            String textData = null;
-            if (mData == null) {
-                Log.d(Constants.TAG, "EXTRA_DATA was null");
-                textData = extras.getString(EXTRA_TEXT);
-            } else {
-                Log.d(Constants.TAG, "Got data from EXTRA_DATA");
-            }
-            if (textData != null) {
-                Log.d(Constants.TAG, "textData null, matching text ...");
-                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(textData);
-                if (matcher.matches()) {
-                    Log.d(Constants.TAG, "PGP_MESSAGE matched");
-                    textData = matcher.group(1);
-                    // replace non breakable spaces
-                    textData = textData.replaceAll("\\xa0", " ");
-                    mMessage.setText(textData);
-                } else {
-                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(textData);
-                    if (matcher.matches()) {
-                        Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
-                        textData = matcher.group(1);
-                        // replace non breakable spaces
-                        textData = textData.replaceAll("\\xa0", " ");
-                        mMessage.setText(textData);
-
-                        mDecryptString = getString(R.string.btn_verify);
-                        // build new action bar
-                        invalidateOptionsMenu();
-                    } else {
-                        Log.d(Constants.TAG, "Nothing matched!");
-                    }
                 }
             }
-            mReplyTo = extras.getString(EXTRA_REPLY_TO);
-            mSubject = extras.getString(EXTRA_SUBJECT);
-        } else if (ACTION_DECRYPT_FILE.equals(mIntent.getAction())) {
-            mInputFilename = mIntent.getData().getPath();
-            mFilename.setText(mInputFilename);
-            guessOutputFilename();
-            mSource.setInAnimation(null);
-            mSource.setOutAnimation(null);
-            while (mSource.getCurrentView().getId() != R.id.sourceFile) {
-                mSource.showNext();
-            }
-        } else if (ACTION_DECRYPT_AND_RETURN.equals(mIntent.getAction())) {
-            mContentUri = mIntent.getData();
-            Bundle extras = mIntent.getExtras();
-            if (extras == null) {
-                extras = new Bundle();
-            }
-
-            mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
-
-            if (mContentUri == null) {
-                mData = extras.getByteArray(EXTRA_DATA);
-                String data = extras.getString(EXTRA_TEXT);
-                if (data != null) {
-                    Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
-                    if (matcher.matches()) {
-                        data = matcher.group(1);
-                        // replace non breakable spaces
-                        data = data.replaceAll("\\xa0", " ");
-                        mMessage.setText(data);
-                    } else {
-                        matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
-                        if (matcher.matches()) {
-                            data = matcher.group(1);
-                            // replace non breakable spaces
-                            data = data.replaceAll("\\xa0", " ");
-                            mMessage.setText(data);
-                            mDecryptString = getString(R.string.btn_verify);
-
-                            // build new action bar
-                            invalidateOptionsMenu();
-                        }
-                    }
-                }
-            }
-            mReturnResult = true;
+        } else if (ACTION_DECRYPT.equals(action)) {
+            handleActionDecrypt(intent);
+        } else if (ACTION_DECRYPT_FILE.equals(action)) {
+            handleActionDecryptFile(intent);
+        } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
+            handleActionDecryptAndReturn(intent);
         }
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
@@ -435,6 +362,118 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         .length() > 0 || mData != null || mContentUri != null))) {
             decryptClicked();
         }
+    }
+
+    /**
+     * Handles activity intent with ACTION_DECRYPT
+     * 
+     * @param intent
+     */
+    private void handleActionDecrypt(Intent intent) {
+        Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
+
+        Bundle extras = intent.getExtras();
+        if (extras == null) {
+            Log.d(Constants.TAG, "extra bundle was null");
+            extras = new Bundle();
+        } else {
+            Log.d(Constants.TAG, "got extras");
+        }
+
+        mData = extras.getByteArray(EXTRA_DATA);
+        String textData = null;
+        if (mData == null) {
+            Log.d(Constants.TAG, "EXTRA_DATA was null");
+            textData = extras.getString(EXTRA_TEXT);
+        } else {
+            Log.d(Constants.TAG, "Got data from EXTRA_DATA");
+        }
+        if (textData != null) {
+            Log.d(Constants.TAG, "textData null, matching text ...");
+            Matcher matcher = PGPMain.PGP_MESSAGE.matcher(textData);
+            if (matcher.matches()) {
+                Log.d(Constants.TAG, "PGP_MESSAGE matched");
+                textData = matcher.group(1);
+                // replace non breakable spaces
+                textData = textData.replaceAll("\\xa0", " ");
+                mMessage.setText(textData);
+            } else {
+                matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(textData);
+                if (matcher.matches()) {
+                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
+                    textData = matcher.group(1);
+                    // replace non breakable spaces
+                    textData = textData.replaceAll("\\xa0", " ");
+                    mMessage.setText(textData);
+
+                    mDecryptString = getString(R.string.btn_verify);
+                    // build new action bar
+                    invalidateOptionsMenu();
+                } else {
+                    Log.d(Constants.TAG, "Nothing matched!");
+                }
+            }
+        }
+        mReplyTo = extras.getString(EXTRA_REPLY_TO);
+        mSubject = extras.getString(EXTRA_SUBJECT);
+    }
+
+    /**
+     * Handles activity intent with ACTION_DECRYPT_FILE
+     * 
+     * @param intent
+     */
+    private void handleActionDecryptFile(Intent intent) {
+        mInputFilename = intent.getData().getPath();
+        mFilename.setText(mInputFilename);
+        guessOutputFilename();
+        mSource.setInAnimation(null);
+        mSource.setOutAnimation(null);
+        while (mSource.getCurrentView().getId() != R.id.sourceFile) {
+            mSource.showNext();
+        }
+    }
+
+    /**
+     * Handles activity intent with ACTION_DECRYPT_AND_RETURN
+     * 
+     * @param intent
+     */
+    private void handleActionDecryptAndReturn(Intent intent) {
+        mContentUri = intent.getData();
+        Bundle extras = intent.getExtras();
+        if (extras == null) {
+            extras = new Bundle();
+        }
+
+        mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
+
+        if (mContentUri == null) {
+            mData = extras.getByteArray(EXTRA_DATA);
+            String data = extras.getString(EXTRA_TEXT);
+            if (data != null) {
+                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
+                if (matcher.matches()) {
+                    data = matcher.group(1);
+                    // replace non breakable spaces
+                    data = data.replaceAll("\\xa0", " ");
+                    mMessage.setText(data);
+                } else {
+                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
+                    if (matcher.matches()) {
+                        data = matcher.group(1);
+                        // replace non breakable spaces
+                        data = data.replaceAll("\\xa0", " ");
+                        mMessage.setText(data);
+                        mDecryptString = getString(R.string.btn_verify);
+
+                        // build new action bar
+                        invalidateOptionsMenu();
+                    }
+                }
+            }
+        }
+        mReturnResult = true;
     }
 
     private void guessOutputFilename() {
