@@ -53,14 +53,14 @@ public class PassphraseCacheService extends Service {
 
     private BroadcastReceiver mIntentReceiver;
 
-    // TODO: This is static to be easily retrieved by getCachedPassphrase()
-    // To avoid static we would need a messenger from the service back to the activity?
+    // This is static to be easily retrieved by getCachedPassphrase() without the need of callback
+    // functions
     private static HashMap<Long, String> mPassphraseCache = new HashMap<Long, String>();
 
     /**
      * This caches a new passphrase by sending a new command to the service. An android service is
-     * only run once. Thus when it is already started new commands just add new BroadcastReceivers
-     * for cached passphrases
+     * only run once. Thus, when the service is already started, new commands just add new events to
+     * the alarm manager for new passphrases to let them timeout in the future.
      * 
      * @param context
      * @param keyId
@@ -113,8 +113,8 @@ public class PassphraseCacheService extends Service {
 
     /**
      * Register BroadcastReceiver that is unregistered when service is destroyed. This
-     * BroadcastReceiver hears on intents with ACTION_PASSPHRASE_CACHE_SERVICE to timeout
-     * passphrases in memory.
+     * BroadcastReceiver hears on intents with ACTION_PASSPHRASE_CACHE_SERVICE to then timeout
+     * specific passphrases in memory.
      */
     private void registerReceiver() {
         if (mIntentReceiver == null) {
@@ -139,7 +139,7 @@ public class PassphraseCacheService extends Service {
     }
 
     /**
-     * Build pending intent that is executed by alarm manager when one passphrase times out
+     * Build pending intent that is executed by alarm manager to time out a specific passphrase
      * 
      * @param context
      * @param keyId

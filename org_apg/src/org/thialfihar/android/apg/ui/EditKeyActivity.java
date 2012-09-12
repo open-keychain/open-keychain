@@ -138,7 +138,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayShowTitleEnabled(true);
 
-     // set actionbar without home button if called from another app
+        // set actionbar without home button if called from another app
         OtherHelper.setActionBarBackButton(this);
 
         // find views
