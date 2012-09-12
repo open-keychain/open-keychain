@@ -59,14 +59,14 @@ public class Preferences {
         editor.commit();
     }
 
-    public int getPassPhraseCacheTtl() {
+    public long getPassPhraseCacheTtl() {
         int ttl = mSharedPreferences.getInt(Constants.pref.PASS_PHRASE_CACHE_TTL, 180);
         // fix the value if it was set to "never" in previous versions, which currently is not
         // supported
         if (ttl == 0) {
             ttl = 180;
         }
-        return ttl;
+        return (long) ttl;
     }
 
     public void setPassPhraseCacheTtl(int value) {
