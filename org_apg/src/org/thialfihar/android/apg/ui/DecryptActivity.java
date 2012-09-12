@@ -254,10 +254,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
         String action = intent.getAction();
         String type = intent.getType();
 
+        mContentUri = intent.getData();
+
         if (Intent.ACTION_VIEW.equals(action)) {
+            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
 
             // TODO: old implementation of ACTION_VIEW. Is this used in K9?
-
             // Uri uri = mIntent.getData();
             // try {
             // InputStream attachment = getContentResolver().openInputStream(uri);
@@ -280,7 +282,10 @@ public class DecryptActivity extends SherlockFragmentActivity {
             handleActionDecryptFile(intent);
             decryptImmediately = true;
         } else if (Intent.ACTION_SEND.equals(action) && type != null) {
+            // Android's Action when sending to APG Decrypt
+
             if ("text/plain".equals(type)) {
+                // plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     intent.putExtra(EXTRA_TEXT, sharedText);
@@ -288,10 +293,10 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     decryptImmediately = true;
                 }
             } else {
+                // binary via content provider (could also be files)
                 Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 if (uri != null) {
-                    // TODO: Implement for binary
-
+                    mContentUri = uri;
                 }
             }
         } else if (ACTION_DECRYPT.equals(action)) {
@@ -440,7 +445,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
      * @param intent
      */
     private void handleActionDecryptAndReturn(Intent intent) {
-        mContentUri = intent.getData();
         Bundle extras = intent.getExtras();
         if (extras == null) {
             extras = new Bundle();
@@ -745,7 +749,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         if (mContentUri != null) {
             data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
 
-            data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
+            data.putParcelable(ApgService.PROVIDER_URI, mContentUri);
         } else if (mDecryptTarget == Id.target.file) {
             data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
 

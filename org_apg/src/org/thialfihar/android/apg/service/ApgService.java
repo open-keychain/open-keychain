@@ -286,7 +286,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
 
                 case TARGET_STREAM: /* Encrypting stream from content uri */
-                    Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
+                    Uri providerUri = (Uri) data.getParcelable(PROVIDER_URI);
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);
@@ -440,7 +440,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
 
                 case TARGET_STREAM: /* decrypting stream from content uri */
-                    Uri providerUri = Uri.parse(data.getString(PROVIDER_URI));
+                    Uri providerUri = (Uri) data.getParcelable(PROVIDER_URI);
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);

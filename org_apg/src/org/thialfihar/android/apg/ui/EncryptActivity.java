@@ -346,9 +346,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
+        mContentUri = intent.getData();
 
         if (Intent.ACTION_SEND.equals(action) && type != null) {
+            // Android's Action when sending to APG Encrypt
+
             if ("text/plain".equals(type)) {
+                // plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     intent.setAction(ACTION_ENCRYPT);
@@ -357,15 +361,18 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     handleActionEncryptSign(intent);
                 }
             } else {
+                // binary via content provider (could also be files)
                 Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 if (uri != null) {
-                    // TODO: Implement for binary
-
+                    mContentUri = uri;
+                    handleActionEncryptSign(intent);
                 }
             }
         } else if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_FILE.equals(action)
                 || ACTION_ENCRYPT_AND_RETURN.equals(action)
                 || ACTION_GENERATE_SIGNATURE.equals(action)) {
+            // APG's own Actions
+
             handleActionEncryptSign(intent);
         }
 
@@ -402,8 +409,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
      */
     private void handleActionEncryptSign(Intent intent) {
         String action = intent.getAction();
-
-        mContentUri = intent.getData();
         Bundle extras = intent.getExtras();
         if (extras == null) {
             extras = new Bundle();
@@ -790,7 +795,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         // choose default settings, target and data bundle by target
         if (mContentUri != null) {
             data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
-            data.putString(ApgService.PROVIDER_URI, mContentUri.toString());
+            data.putParcelable(ApgService.PROVIDER_URI, mContentUri);
 
         } else if (mEncryptTarget == Id.target.file) {
             useAsciiArmour = mAsciiArmour.isChecked();

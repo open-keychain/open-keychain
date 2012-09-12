@@ -28,7 +28,7 @@
         - APG 2 starting with versionCode 20000! 
         
     
-        Registration of APG to file types
+        Association of file types to APG 
         =================================
     	General remarks about file ending conventions:
         - *.gpg for binary files

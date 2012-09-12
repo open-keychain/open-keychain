@@ -142,20 +142,33 @@ public class KeyListActivity extends SherlockFragmentActivity {
         mListAdapter = new KeyListAdapter(this, searchString);
         mList.setAdapter(mListAdapter);
 
-        // handled separately from other actions as it uses intent.setAction()
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            // same as ACTION_IMPORT invoked from a file manager
-            intent.setAction(ACTION_IMPORT);
-        }
+        // Get intent, action
+        // Intent intent = getIntent();
+        String action = intent.getAction();
 
-        if (ACTION_IMPORT.equals(intent.getAction())) {
-            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = intent.getData().getPath();
-            } else {
-                mImportData = intent.getStringExtra(EXTRA_TEXT);
-            }
-            importKeys();
+        if (Intent.ACTION_VIEW.equals(action)) {
+            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+
+            handleActionImport(intent);
+        } else if (ACTION_IMPORT.equals(action)) {
+            // APG's own Actions
+
+            handleActionImport(intent);
         }
+    }
+
+    /**
+     * Handles import action
+     * 
+     * @param intent
+     */
+    private void handleActionImport(Intent intent) {
+        if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
+            mImportFilename = intent.getData().getPath();
+        } else {
+            mImportData = intent.getStringExtra(EXTRA_TEXT);
+        }
+        importKeys();
     }
 
     @Override
