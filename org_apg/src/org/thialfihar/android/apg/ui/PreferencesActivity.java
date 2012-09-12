@@ -21,7 +21,6 @@ import org.spongycastle.openpgp.PGPEncryptedData;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.widget.IntegerListPreference;
 import org.thialfihar.android.apg.R;
 

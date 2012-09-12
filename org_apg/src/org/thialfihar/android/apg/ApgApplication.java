@@ -21,7 +21,6 @@ import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 import org.thialfihar.android.apg.helper.PGPMain;
-import org.thialfihar.android.apg.service.PassphraseCacheService;
 
 import android.app.Application;
 import android.os.Environment;
@@ -36,10 +35,6 @@ public class ApgApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        /* Start passphrase cache service */
-        // TODO: not needed anymore!
-        // PassphraseCacheService.startCacheService(this);
 
         // TODO: Do it better than this!
         // this initializes the database to be used in PGPMain

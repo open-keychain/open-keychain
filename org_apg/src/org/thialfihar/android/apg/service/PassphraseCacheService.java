@@ -16,6 +16,7 @@
 
 package org.thialfihar.android.apg.service;
 
+import java.util.Date;
 import java.util.HashMap;
 
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -35,10 +36,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 public class PassphraseCacheService extends Service {
+    public static final String TAG = Constants.TAG + ": PassphraseCacheService";
+
     public static final String BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE = Constants.INTENT_PREFIX
             + "PASSPHRASE_CACHE_SERVICE";
 
@@ -53,7 +55,7 @@ public class PassphraseCacheService extends Service {
 
     // TODO: This is static to be easily retrieved by getCachedPassphrase()
     // To avoid static we would need a messenger from the service back to the activity?
-    private static HashMap<Long, CachedPassphrase> mPassphraseCache = new HashMap<Long, CachedPassphrase>();
+    private static HashMap<Long, String> mPassphraseCache = new HashMap<Long, String>();
 
     /**
      * This caches a new passphrase by sending a new command to the service. An android service is
@@ -65,7 +67,7 @@ public class PassphraseCacheService extends Service {
      * @param passphrase
      */
     public static void addCachedPassphrase(Context context, long keyId, String passphrase) {
-        Log.d(Constants.TAG, "cacheNewPassphrase() for " + keyId);
+        Log.d(TAG, "cacheNewPassphrase() for " + keyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassPhraseCacheTtl());
@@ -98,14 +100,15 @@ public class PassphraseCacheService extends Service {
         }
 
         // get cached passphrase
-        CachedPassphrase cpp = mPassphraseCache.get(realId);
-        if (cpp == null) {
+        String cachedPassphrase = mPassphraseCache.get(realId);
+        if (cachedPassphrase == null) {
             return null;
         }
         // set it again to reset the cache life cycle
-        addCachedPassphrase(context, realId, cpp.getPassphrase());
+        Log.d(TAG, "Cache passphrase again when getting it!");
+        addCachedPassphrase(context, realId, cachedPassphrase);
 
-        return cpp.getPassphrase();
+        return cachedPassphrase;
     }
 
     /**
@@ -120,6 +123,8 @@ public class PassphraseCacheService extends Service {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
 
+                    Log.d(TAG, "Received broadcast...");
+
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                         timeout(context, keyId);
@@ -129,7 +134,7 @@ public class PassphraseCacheService extends Service {
 
             IntentFilter filter = new IntentFilter();
             filter.addAction(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
-            LocalBroadcastManager.getInstance(this).registerReceiver(mIntentReceiver, filter);
+            registerReceiver(mIntentReceiver, filter);
         }
     }
 
@@ -151,7 +156,7 @@ public class PassphraseCacheService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(Constants.TAG, "PassphraseCacheService created!");
+        Log.d(TAG, "onCreate()");
     }
 
     /**
@@ -159,7 +164,7 @@ public class PassphraseCacheService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Constants.TAG, "PassphraseCacheService started");
+        Log.d(TAG, "onStartCommand()");
 
         // register broadcastreceiver
         registerReceiver();
@@ -169,14 +174,13 @@ public class PassphraseCacheService extends Service {
             long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
             String passphrase = intent.getStringExtra(EXTRA_PASSPHRASE);
 
-            Log.d(Constants.TAG, "received intent with keyId: " + keyId + ", ttl: " + ttl);
+            Log.d(TAG, "Received intent in onStartCommand() with keyId: " + keyId + ", ttl: " + ttl);
 
             // add keyId and passphrase to memory
-            mPassphraseCache.put(keyId,
-                    new CachedPassphrase(System.currentTimeMillis(), passphrase));
+            mPassphraseCache.put(keyId, passphrase);
 
             // register new alarm with keyId for this passphrase
-            long triggerTime = System.currentTimeMillis() + ttl;
+            long triggerTime = new Date().getTime() + (ttl * 1000);
             AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, keyId));
         }
@@ -191,23 +195,23 @@ public class PassphraseCacheService extends Service {
      * @param keyId
      */
     private void timeout(Context context, long keyId) {
-        Log.d(Constants.TAG, "Timeout of " + keyId);
-
         // remove passphrase corresponding to keyId from memory
         mPassphraseCache.remove(keyId);
 
+        Log.d(TAG, "Timeout of " + keyId + ", removed from memory!");
+
         // stop whole service if no cached passphrases remaining
         if (mPassphraseCache.isEmpty()) {
-            Log.d(Constants.TAG, "No passphrases remaining in memory, stopping service!");
+            Log.d(TAG, "No passphrases remaining in memory, stopping service!");
             stopSelf();
         }
     }
 
     @Override
     public void onDestroy() {
-        Log.d(Constants.TAG, "PassphraseCacheService destroyed!");
+        Log.d(TAG, "onDestroy()");
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mIntentReceiver);
+        unregisterReceiver(mIntentReceiver);
     }
 
     public class PassphraseCacheBinder extends Binder {
