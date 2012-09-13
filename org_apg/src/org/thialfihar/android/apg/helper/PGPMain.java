@@ -220,6 +220,19 @@ public class PGPMain {
         return mEditPassPhrase;
     }
 
+    public static void updateProgress(ProgressDialogUpdater progress, int message, int current,
+            int total) {
+        if (progress != null) {
+            progress.setProgress(message, current, total);
+        }
+    }
+
+    public static void updateProgress(ProgressDialogUpdater progress, int current, int total) {
+        if (progress != null) {
+            progress.setProgress(current, total);
+        }
+    }
+
     /**
      * Creates new secret key. The returned PGPSecretKeyRing contains only one newly generated key
      * when this key is the new masterkey. If a masterkey is supplied in the parameters
@@ -309,7 +322,6 @@ public class PGPMain {
 
         PGPKeyRingGenerator ringGen = null;
         if (masterSecretKey == null) {
-
             // build keyRing with only this one master key in it!
             ringGen = new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
                     sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
@@ -336,71 +348,16 @@ public class PGPMain {
             throws PGPMain.GeneralException, NoSuchProviderException, PGPException,
             NoSuchAlgorithmException, SignatureException, IOException, Database.GeneralException {
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_buildingKey, 0, 100);
+        updateProgress(progress, R.string.progress_buildingKey, 0, 100);
 
         if (oldPassPhrase == null || oldPassPhrase.equals("")) {
             oldPassPhrase = "";
         }
-
         if (newPassPhrase == null || newPassPhrase.equals("")) {
             newPassPhrase = "";
         }
 
-        // TODO: What is with this code?
-        // Vector<String> userIds = new Vector<String>();
-        // Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
-
-        // ViewGroup userIdEditors = userIdsView.getEditors();
-        // ViewGroup keyEditors = keysView.getEditors();
-        //
-        // boolean gotMainUserId = false;
-        // for (int i = 0; i < userIdEditors.getChildCount(); ++i) {
-        // UserIdEditor editor = (UserIdEditor) userIdEditors.getChildAt(i);
-        // String userId = null;
-        // try {
-        // userId = editor.getValue();
-        // } catch (UserIdEditor.NoNameException e) {
-        // throw new Apg.GeneralException(context.getString(R.string.error_userIdNeedsAName));
-        // } catch (UserIdEditor.NoEmailException e) {
-        // throw new Apg.GeneralException(
-        // context.getString(R.string.error_userIdNeedsAnEmailAddress));
-        // } catch (UserIdEditor.InvalidEmailException e) {
-        // throw new Apg.GeneralException("" + e);
-        // }
-        //
-        // if (userId.equals("")) {
-        // continue;
-        // }
-        //
-        // if (editor.isMainUserId()) {
-        // userIds.insertElementAt(userId, 0);
-        // gotMainUserId = true;
-        // } else {
-        // userIds.add(userId);
-        // }
-        // }
-
-        // if (userIds.size() == 0) {
-        // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsAUserId));
-        // }
-        //
-        // if (!gotMainUserId) {
-        // throw new Apg.GeneralException(
-        // context.getString(R.string.error_mainUserIdMustNotBeEmpty));
-        // }
-
-        // if (keyEditors.getChildCount() == 0) {
-        // throw new Apg.GeneralException(context.getString(R.string.error_keyNeedsMasterKey));
-        // }
-        //
-        // for (int i = 0; i < keyEditors.getChildCount(); ++i) {
-        // KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
-        // keys.add(editor.getValue());
-        // }
-
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingMasterKey, 10, 100);
+        updateProgress(progress, R.string.progress_preparingMasterKey, 10, 100);
 
         int usageId = keysUsages.get(0);
         boolean canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
@@ -411,20 +368,17 @@ public class PGPMain {
         PGPSecretKey masterKey = keys.get(0);
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
-        // TODO: why was this done?:
-        // PGPPublicKey tmpKey = masterKey.getPublicKey();
-        // PGPPublicKey masterPublicKey = new PGPPublicKey(tmpKey.getAlgorithm(),
-        // tmpKey.getKey(new BouncyCastleProvider()), tmpKey.getCreationTime());
+        // Somehow, the PGPPublicKey already has an empty certification attached to it, we remove
+        // that now before adding the new ones
+        masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, "");
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
         PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_certifyingMasterKey, 20, 100);
-        for (int i = 0; i < userIds.size(); ++i) {
-            String userId = userIds.get(i);
+        updateProgress(progress, R.string.progress_certifyingMasterKey, 20, 100);
 
+        for (String userId : userIds) {
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                     masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA1)
                     .setProvider(BOUNCY_CASTLE_PROVIDER_NAME);
@@ -437,7 +391,7 @@ public class PGPMain {
             masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, certification);
         }
 
-        // TODO: cross-certify the master key with every sub key
+        // TODO: cross-certify the master key with every sub key (APG 1)
 
         PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
 
@@ -454,7 +408,7 @@ public class PGPMain {
         hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
         hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
 
-        // TODO: this doesn't work quite right yet
+        // TODO: this doesn't work quite right yet (APG 1)
         // if (keyEditor.getExpiryDate() != null) {
         // GregorianCalendar creationDate = new GregorianCalendar();
         // creationDate.setTime(getCreationDate(masterKey));
@@ -467,9 +421,7 @@ public class PGPMain {
         // hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
         // }
 
-        if (progress != null) {
-            progress.setProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
-        }
+        updateProgress(progress, R.string.progress_buildingMasterKeyRing, 30, 100);
 
         // define hashing and signing algos
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
@@ -486,11 +438,11 @@ public class PGPMain {
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
                 unhashedPacketsGen.generate(), certificationSignerBuilder, keyEncryptor);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_addingSubKeys, 40, 100);
+        updateProgress(progress, R.string.progress_addingSubKeys, 40, 100);
+
         for (int i = 1; i < keys.size(); ++i) {
-            if (progress != null)
-                progress.setProgress(40 + 50 * (i - 1) / (keys.size() - 1), 100);
+            updateProgress(progress, 40 + 50 * (i - 1) / (keys.size() - 1), 100);
+
             PGPSecretKey subKey = keys.get(i);
             PGPPublicKey subPublicKey = subKey.getPublicKey();
 
@@ -498,7 +450,7 @@ public class PGPMain {
                     .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
             PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
 
-            // TODO: now used without algorithm and creation time?!
+            // TODO: now used without algorithm and creation time?! (APG 1)
             PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
 
             hashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -517,7 +469,7 @@ public class PGPMain {
             }
             hashedPacketsGen.setKeyFlags(true, keyFlags);
 
-            // TODO: this doesn't work quite right yet
+            // TODO: this doesn't work quite right yet (APG 1)
             // if (keyEditor.getExpiryDate() != null) {
             // GregorianCalendar creationDate = new GregorianCalendar();
             // creationDate.setTime(getCreationDate(masterKey));
@@ -536,13 +488,12 @@ public class PGPMain {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_savingKeyRing, 90, 100);
+        updateProgress(progress, R.string.progress_savingKeyRing, 90, 100);
+
         mDatabase.saveKeyRing(secretKeyRing);
         mDatabase.saveKeyRing(publicKeyRing);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
     }
 
     public static int storeKeyRingInCache(PGPKeyRing keyring) {
@@ -655,9 +606,8 @@ public class PGPMain {
                     ++badKeys;
                 }
 
-                if (progress != null) {
-                    progress.setProgress((int) (100 * progressIn.position() / data.getSize()), 100);
-                }
+                updateProgress(progress, (int) (100 * progressIn.position() / data.getSize()), 100);
+
                 // TODO: needed?
                 // obj = objectFactory.nextObject();
 
@@ -671,8 +621,7 @@ public class PGPMain {
         returnData.putInt(ApgService.RESULT_IMPORT_UPDATED, oldKeys);
         returnData.putInt(ApgService.RESULT_IMPORT_BAD, badKeys);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
 
         return returnData;
     }
@@ -683,11 +632,9 @@ public class PGPMain {
         Bundle returnData = new Bundle();
 
         if (keyRingIds.size() == 1) {
-            if (progress != null)
-                progress.setProgress(R.string.progress_exportingKey, 0, 100);
+            updateProgress(progress, R.string.progress_exportingKey, 0, 100);
         } else {
-            if (progress != null)
-                progress.setProgress(R.string.progress_exportingKeys, 0, 100);
+            updateProgress(progress, R.string.progress_exportingKeys, 0, 100);
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -698,8 +645,7 @@ public class PGPMain {
 
         int numKeys = 0;
         for (int i = 0; i < keyRingIds.size(); ++i) {
-            if (progress != null)
-                progress.setProgress(i * 100 / keyRingIds.size(), 100);
+            updateProgress(progress, i * 100 / keyRingIds.size(), 100);
             Object obj = mDatabase.getKeyRing(keyRingIds.get(i));
             PGPPublicKeyRing publicKeyRing;
             PGPSecretKeyRing secretKeyRing;
@@ -718,8 +664,7 @@ public class PGPMain {
         out.close();
         returnData.putInt(ApgService.RESULT_EXPORT, numKeys);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
 
         return returnData;
     }
@@ -859,8 +804,7 @@ public class PGPMain {
                         context.getString(R.string.error_couldNotExtractPrivateKey));
             }
         }
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingStreams, 5, 100);
+        updateProgress(progress, R.string.progress_preparingStreams, 5, 100);
 
         // encrypt and compress input file content
         JcePGPDataEncryptorBuilder encryptorBuilder = new JcePGPDataEncryptorBuilder(
@@ -934,8 +878,7 @@ public class PGPMain {
         // file name not needed, so empty string
         OutputStream pOut = literalGen.open(bcpgOut, PGPLiteralData.BINARY, "", new Date(),
                 new byte[1 << 16]);
-        if (progress != null)
-            progress.setProgress(R.string.progress_encrypting, 20, 100);
+        updateProgress(progress, R.string.progress_encrypting, 20, 100);
 
         long done = 0;
         int n = 0;
@@ -952,16 +895,14 @@ public class PGPMain {
             }
             done += n;
             if (data.getSize() != 0) {
-                if (progress != null)
-                    progress.setProgress((int) (20 + (95 - 20) * done / data.getSize()), 100);
+                updateProgress(progress, (int) (20 + (95 - 20) * done / data.getSize()), 100);
             }
         }
 
         literalGen.close();
 
         if (signatureKeyId != Id.key.none) {
-            if (progress != null)
-                progress.setProgress(R.string.progress_generatingSignature, 95, 100);
+            updateProgress(progress, R.string.progress_generatingSignature, 95, 100);
             if (forceV3Signature) {
                 signatureV3Generator.generate().encode(pOut);
             } else {
@@ -976,8 +917,7 @@ public class PGPMain {
             armorOut.close();
         }
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
     }
 
     public static void signText(Context context, InputData data, OutputStream outStream,
@@ -1015,11 +955,9 @@ public class PGPMain {
             armorOut.close();
             throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
         }
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingStreams, 0, 100);
+        updateProgress(progress, R.string.progress_preparingStreams, 0, 100);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingSignature, 30, 100);
+        updateProgress(progress, R.string.progress_preparingSignature, 30, 100);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
@@ -1042,8 +980,7 @@ public class PGPMain {
             signatureGenerator.setHashedSubpackets(spGen.generate());
         }
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_signing, 40, 100);
+        updateProgress(progress, R.string.progress_signing, 40, 100);
 
         armorOut.beginClearText(hashAlgorithm);
 
@@ -1086,8 +1023,7 @@ public class PGPMain {
         }
         armorOut.close();
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
     }
 
     public static void generateSignature(Context context, InputData data, OutputStream outStream,
@@ -1132,11 +1068,9 @@ public class PGPMain {
         if (signaturePrivateKey == null) {
             throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
         }
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingStreams, 0, 100);
+        updateProgress(progress, R.string.progress_preparingStreams, 0, 100);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_preparingSignature, 30, 100);
+        updateProgress(progress, R.string.progress_preparingSignature, 30, 100);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
@@ -1164,8 +1098,7 @@ public class PGPMain {
             signatureGenerator.setHashedSubpackets(spGen.generate());
         }
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_signing, 40, 100);
+        updateProgress(progress, R.string.progress_signing, 40, 100);
 
         InputStream inStream = data.getInputStream();
         if (binary) {
@@ -1382,8 +1315,7 @@ public class PGPMain {
                         context.getString(R.string.error_noSymmetricEncryptionPacket));
             }
 
-            if (progress != null)
-                progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
+            updateProgress(progress, R.string.progress_preparingStreams, currentProgress, 100);
 
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
                     .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build();
@@ -1419,8 +1351,7 @@ public class PGPMain {
             }
 
             currentProgress += 5;
-            if (progress != null)
-                progress.setProgress(R.string.progress_extractingKey, currentProgress, 100);
+            updateProgress(progress, R.string.progress_extractingKey, currentProgress, 100);
             PGPPrivateKey privateKey = null;
             try {
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
@@ -1434,8 +1365,7 @@ public class PGPMain {
                         context.getString(R.string.error_couldNotExtractPrivateKey));
             }
             currentProgress += 5;
-            if (progress != null)
-                progress.setProgress(R.string.progress_preparingStreams, currentProgress, 100);
+            updateProgress(progress, R.string.progress_preparingStreams, currentProgress, 100);
 
             PublicKeyDataDecryptorFactory decryptorFactory = new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(privateKey);
@@ -1546,8 +1476,7 @@ public class PGPMain {
                     currentProgress = (int) (startProgress + (endProgress - startProgress)
                             * (data.getStreamPosition() - startPos) / (data.getSize() - startPos));
                 }
-                if (progress != null)
-                    progress.setProgress(currentProgress, 100);
+                updateProgress(progress, currentProgress, 100);
             }
 
             if (signature != null) {
@@ -1576,8 +1505,7 @@ public class PGPMain {
             // no integrity check
         }
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
         return returnData;
     }
 
@@ -1589,8 +1517,7 @@ public class PGPMain {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ArmoredInputStream aIn = new ArmoredInputStream(data.getInputStream());
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 0, 100);
+        updateProgress(progress, R.string.progress_done, 0, 100);
 
         // mostly taken from ClearSignedFileProcessor
         ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
@@ -1615,8 +1542,7 @@ public class PGPMain {
 
         returnData.putBoolean(ApgService.RESULT_SIGNATURE, true);
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_processingSignature, 60, 100);
+        updateProgress(progress, R.string.progress_processingSignature, 60, 100);
         PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
@@ -1690,8 +1616,7 @@ public class PGPMain {
 
         returnData.putBoolean(ApgService.RESULT_SIGNATURE_SUCCESS, signature.verify());
 
-        if (progress != null)
-            progress.setProgress(R.string.progress_done, 100, 100);
+        updateProgress(progress, R.string.progress_done, 100, 100);
         return returnData;
     }
 

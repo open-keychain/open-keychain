@@ -148,6 +148,7 @@ public class Database extends SQLiteOpenHelper {
                                KeyRings.TYPE + " " + KeyRings.TYPE_type + ", " +
                                KeyRings.WHO_ID + " " + KeyRings.WHO_ID_type + ", " +
                                KeyRings.KEY_RING_DATA + " " + KeyRings.KEY_RING_DATA_type + ");");
+                    
 
                     db.execSQL("CREATE TABLE " + Keys.TABLE_NAME + " (" +
                                Keys._ID + " " + Keys._ID_type + "," +

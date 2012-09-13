@@ -529,13 +529,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 if (newPassPhrase == null) {
                     newPassPhrase = oldPassPhrase;
                 }
-                @SuppressWarnings("unchecked")
-                ArrayList<String> userIds = (ArrayList<String>) data.getSerializable(USER_IDS);
+                ArrayList<String> userIds = data.getStringArrayList(USER_IDS);
                 ArrayList<PGPSecretKey> keys = PGPConversionHelper.BytesToPGPSecretKeyList(data
                         .getByteArray(KEYS));
-                @SuppressWarnings("unchecked")
-                ArrayList<Integer> keysUsages = (ArrayList<Integer>) data
-                        .getSerializable(KEYS_USAGES);
+                ArrayList<Integer> keysUsages = data.getIntegerArrayList(KEYS_USAGES);
                 long masterKeyId = data.getLong(MASTER_KEY_ID);
 
                 /* Operation */

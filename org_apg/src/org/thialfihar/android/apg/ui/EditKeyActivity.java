@@ -58,6 +58,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -73,7 +74,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
     public static final String EXTRA_KEY_ID = "keyId";
 
-    private Intent mIntent = null;
     private ActionBar mActionBar;
 
     private PGPSecretKeyRing mKeyRing = null;
@@ -150,136 +150,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         mKeysUsages = new Vector<Integer>();
 
         // Catch Intents opened from other apps
-        mIntent = getIntent();
-
-        // Handle intents
-        Bundle extras = mIntent.getExtras();
-        if (ACTION_CREATE_KEY.equals(mIntent.getAction())) {
-            mActionBar.setTitle(R.string.title_createKey);
-
-            mCurrentPassPhrase = "";
-
-            if (extras != null) {
-                // if userId is given, prefill the fields
-                if (extras.containsKey(EXTRA_USER_IDS)) {
-                    Log.d(Constants.TAG, "UserIds are given!");
-                    mUserIds.add(extras.getString(EXTRA_USER_IDS));
-                }
-
-                // if no passphrase is given
-                if (extras.containsKey(EXTRA_NO_PASSPHRASE)) {
-                    boolean noPassphrase = extras.getBoolean(EXTRA_NO_PASSPHRASE);
-                    if (noPassphrase) {
-                        // check "no passphrase" checkbox and remove button
-                        mNoPassphrase.setChecked(true);
-                        mChangePassPhrase.setVisibility(View.GONE);
-                    }
-                }
-
-                // generate key
-                if (extras.containsKey(EXTRA_GENERATE_DEFAULT_KEYS)) {
-                    boolean generateDefaultKeys = extras.getBoolean(EXTRA_GENERATE_DEFAULT_KEYS);
-                    if (generateDefaultKeys) {
-
-                        // build layout in handler after generating keys not directly in onCreate
-                        mBuildLayout = false;
-
-                        // Send all information needed to service generate keys in other thread
-                        Intent intent = new Intent(this, ApgService.class);
-                        intent.putExtra(ApgService.EXTRA_ACTION,
-                                ApgService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
-
-                        // fill values for this action
-                        Bundle data = new Bundle();
-                        data.putString(ApgService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
-
-                        intent.putExtra(ApgService.EXTRA_DATA, data);
-
-                        // Message is received after generating is done in ApgService
-                        ApgServiceHandler saveHandler = new ApgServiceHandler(this,
-                                R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
-                            public void handleMessage(Message message) {
-                                // handle messages by standard ApgHandler first
-                                super.handleMessage(message);
-
-                                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
-                                    // get new key from data bundle returned from service
-                                    Bundle data = message.getData();
-                                    PGPSecretKeyRing masterKeyRing = PGPConversionHelper
-                                            .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgService.RESULT_NEW_KEY));
-                                    PGPSecretKeyRing subKeyRing = PGPConversionHelper
-                                            .BytesToPGPSecretKeyRing(data
-                                                    .getByteArray(ApgService.RESULT_NEW_KEY2));
-
-                                    // add master key
-                                    @SuppressWarnings("unchecked")
-                                    Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
-                                    mKeys.add(masterIt.next());
-                                    mKeysUsages.add(Id.choice.usage.sign_only);
-
-                                    // add sub key
-                                    @SuppressWarnings("unchecked")
-                                    Iterator<PGPSecretKey> subIt = subKeyRing.getSecretKeys();
-                                    subIt.next(); // masterkey
-                                    mKeys.add(subIt.next());
-                                    mKeysUsages.add(Id.choice.usage.encrypt_only);
-
-                                    buildLayout();
-                                }
-                            };
-                        };
-
-                        // Create a new Messenger for the communication back
-                        Messenger messenger = new Messenger(saveHandler);
-                        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
-
-                        saveHandler.showProgressDialog(this);
-
-                        // start service with intent
-                        startService(intent);
-                    }
-                }
-            }
-        } else if (ACTION_EDIT_KEY.equals(mIntent.getAction())) {
-            mActionBar.setTitle(R.string.title_editKey);
-
-            mCurrentPassPhrase = PGPMain.getEditPassPhrase();
-            if (mCurrentPassPhrase == null) {
-                mCurrentPassPhrase = "";
-            }
-
-            if (mCurrentPassPhrase.equals("")) {
-                // check "no passphrase" checkbox and remove button
-                mNoPassphrase.setChecked(true);
-                mChangePassPhrase.setVisibility(View.GONE);
-            }
-
-            if (extras != null) {
-
-                if (extras.containsKey(EXTRA_KEY_ID)) {
-                    long keyId = mIntent.getExtras().getLong(EXTRA_KEY_ID);
-
-                    if (keyId != 0) {
-                        PGPSecretKey masterKey = null;
-                        mKeyRing = PGPMain.getSecretKeyRing(keyId);
-                        if (mKeyRing != null) {
-                            masterKey = PGPHelper.getMasterKey(mKeyRing);
-                            for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
-                                    mKeyRing.getSecretKeys())) {
-                                mKeys.add(key);
-                                mKeysUsages.add(-1); // get usage when view is created
-                            }
-                        }
-                        if (masterKey != null) {
-                            for (String userId : new IterableIterator<String>(
-                                    masterKey.getUserIDs())) {
-                                mUserIds.add(userId);
-                            }
-                        }
-                    }
-                }
-            }
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if (ACTION_CREATE_KEY.equals(action)) {
+            handleActionCreateKey(intent);
+        } else if (ACTION_EDIT_KEY.equals(action)) {
+            handleActionEditKey(intent);
         }
 
         mChangePassPhrase.setOnClickListener(new OnClickListener() {
@@ -306,6 +182,149 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         if (mBuildLayout) {
             buildLayout();
+        }
+    }
+
+    /**
+     * Handle intent action to create new key
+     * 
+     * @param intent
+     */
+    private void handleActionCreateKey(Intent intent) {
+        Bundle extras = intent.getExtras();
+
+        mActionBar.setTitle(R.string.title_createKey);
+
+        mCurrentPassPhrase = "";
+
+        if (extras != null) {
+            // if userId is given, prefill the fields
+            if (extras.containsKey(EXTRA_USER_IDS)) {
+                Log.d(Constants.TAG, "UserIds are given!");
+                mUserIds.add(extras.getString(EXTRA_USER_IDS));
+            }
+
+            // if no passphrase is given
+            if (extras.containsKey(EXTRA_NO_PASSPHRASE)) {
+                boolean noPassphrase = extras.getBoolean(EXTRA_NO_PASSPHRASE);
+                if (noPassphrase) {
+                    // check "no passphrase" checkbox and remove button
+                    mNoPassphrase.setChecked(true);
+                    mChangePassPhrase.setVisibility(View.GONE);
+                }
+            }
+
+            // generate key
+            if (extras.containsKey(EXTRA_GENERATE_DEFAULT_KEYS)) {
+                boolean generateDefaultKeys = extras.getBoolean(EXTRA_GENERATE_DEFAULT_KEYS);
+                if (generateDefaultKeys) {
+
+                    // build layout in handler after generating keys not directly in onCreate
+                    mBuildLayout = false;
+
+                    // Send all information needed to service generate keys in other thread
+                    Intent serviceIntent = new Intent(this, ApgService.class);
+                    serviceIntent.putExtra(ApgService.EXTRA_ACTION,
+                            ApgService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
+
+                    // fill values for this action
+                    Bundle data = new Bundle();
+                    data.putString(ApgService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
+
+                    serviceIntent.putExtra(ApgService.EXTRA_DATA, data);
+
+                    // Message is received after generating is done in ApgService
+                    ApgServiceHandler saveHandler = new ApgServiceHandler(this,
+                            R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
+                        public void handleMessage(Message message) {
+                            // handle messages by standard ApgHandler first
+                            super.handleMessage(message);
+
+                            if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                                // get new key from data bundle returned from service
+                                Bundle data = message.getData();
+                                PGPSecretKeyRing masterKeyRing = PGPConversionHelper
+                                        .BytesToPGPSecretKeyRing(data
+                                                .getByteArray(ApgService.RESULT_NEW_KEY));
+                                PGPSecretKeyRing subKeyRing = PGPConversionHelper
+                                        .BytesToPGPSecretKeyRing(data
+                                                .getByteArray(ApgService.RESULT_NEW_KEY2));
+
+                                // add master key
+                                @SuppressWarnings("unchecked")
+                                Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
+                                mKeys.add(masterIt.next());
+                                mKeysUsages.add(Id.choice.usage.sign_only);
+
+                                // add sub key
+                                @SuppressWarnings("unchecked")
+                                Iterator<PGPSecretKey> subIt = subKeyRing.getSecretKeys();
+                                subIt.next(); // masterkey
+                                mKeys.add(subIt.next());
+                                mKeysUsages.add(Id.choice.usage.encrypt_only);
+
+                                buildLayout();
+                            }
+                        };
+                    };
+
+                    // Create a new Messenger for the communication back
+                    Messenger messenger = new Messenger(saveHandler);
+                    serviceIntent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+
+                    saveHandler.showProgressDialog(this);
+
+                    // start service with intent
+                    startService(serviceIntent);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle intent action to edit existing key
+     * 
+     * @param intent
+     */
+    private void handleActionEditKey(Intent intent) {
+        Bundle extras = intent.getExtras();
+
+        mActionBar.setTitle(R.string.title_editKey);
+
+        mCurrentPassPhrase = PGPMain.getEditPassPhrase();
+        if (mCurrentPassPhrase == null) {
+            mCurrentPassPhrase = "";
+        }
+
+        if (mCurrentPassPhrase.equals("")) {
+            // check "no passphrase" checkbox and remove button
+            mNoPassphrase.setChecked(true);
+            mChangePassPhrase.setVisibility(View.GONE);
+        }
+
+        if (extras != null) {
+            if (extras.containsKey(EXTRA_KEY_ID)) {
+                long keyId = extras.getLong(EXTRA_KEY_ID);
+
+                if (keyId != 0) {
+                    PGPSecretKey masterKey = null;
+                    mKeyRing = PGPMain.getSecretKeyRing(keyId);
+                    if (mKeyRing != null) {
+                        masterKey = PGPHelper.getMasterKey(mKeyRing);
+                        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
+                                mKeyRing.getSecretKeys())) {
+                            mKeys.add(key);
+                            mKeysUsages.add(-1); // get usage when view is created
+                        }
+                    }
+                    if (masterKey != null) {
+                        for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
+                            Log.d(Constants.TAG, "Added userId " + userId);
+                            mUserIds.add(userId);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -400,10 +419,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             Bundle data = new Bundle();
             data.putString(ApgService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
             data.putString(ApgService.NEW_PASSPHRASE, mNewPassPhrase);
-            data.putSerializable(ApgService.USER_IDS, getUserIds(mUserIdsView));
-            Vector<PGPSecretKey> keys = getKeys(mKeysView);
+            data.putStringArrayList(ApgService.USER_IDS, getUserIds(mUserIdsView));
+            ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
             data.putByteArray(ApgService.KEYS, PGPConversionHelper.PGPSecretKeyListToBytes(keys));
-            data.putSerializable(ApgService.KEYS_USAGES, getKeysUsages(mKeysView));
+            data.putIntegerArrayList(ApgService.KEYS_USAGES, getKeysUsages(mKeysView));
             data.putLong(ApgService.MASTER_KEY_ID, getMasterKeyId());
 
             intent.putExtra(ApgService.EXTRA_DATA, data);
@@ -441,8 +460,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param userIdsView
      * @return
      */
-    private Vector<String> getUserIds(SectionView userIdsView) throws PGPMain.GeneralException {
-        Vector<String> userIds = new Vector<String>();
+    private ArrayList<String> getUserIds(SectionView userIdsView) throws PGPMain.GeneralException {
+        ArrayList<String> userIds = new ArrayList<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
 
@@ -466,7 +485,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             }
 
             if (editor.isMainUserId()) {
-                userIds.insertElementAt(userId, 0);
+                userIds.add(0, userId);
                 gotMainUserId = true;
             } else {
                 userIds.add(userId);
@@ -490,8 +509,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.GeneralException {
-        Vector<PGPSecretKey> keys = new Vector<PGPSecretKey>();
+    private ArrayList<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.GeneralException {
+        ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
@@ -513,8 +532,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private Vector<Integer> getKeysUsages(SectionView keysView) throws PGPMain.GeneralException {
-        Vector<Integer> getKeysUsages = new Vector<Integer>();
+    private ArrayList<Integer> getKeysUsages(SectionView keysView) throws PGPMain.GeneralException {
+        ArrayList<Integer> getKeysUsages = new ArrayList<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();
 

@@ -42,6 +42,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
 
     // see http://www.regular-expressions.info/email.html
     // RFC 2822 if we omit the syntax using double quotes and square brackets
+    // android.util.Patterns.EMAIL_ADDRESS is only available as of Android 2.2+
     private static final Pattern EMAIL_PATTERN = Pattern
             .compile(
                     "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",

@@ -37,7 +37,7 @@ public class PGPConversionHelper {
      * @param keys
      * @return
      */
-    public static byte[] PGPSecretKeyListToBytes(Vector<PGPSecretKey> keys) {
+    public static byte[] PGPSecretKeyListToBytes(ArrayList<PGPSecretKey> keys) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         for (PGPSecretKey key : keys) {
             try {
