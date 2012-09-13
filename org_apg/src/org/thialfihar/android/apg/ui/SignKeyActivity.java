@@ -60,9 +60,6 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_KEY_ID = "keyId";
 
-    // TODO: remove when using new intentservice:
-    public static final String EXTRA_ERROR = "error";
-
     private long mPubKeyId = 0;
     private long mMasterKeyId = 0;
 
@@ -185,32 +182,13 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                     startSigning();
                 }
             } else {
-                final Bundle status = new Bundle();
-                // Message msg = new Message();
+                Toast.makeText(this, "Key has already been signed", Toast.LENGTH_SHORT).show();
 
-                // status.putString(EXTRA_ERROR, "Key has already been signed");
-
-                // status.putInt(Constants.extras.STATUS, Id.message.done);
-
-                // msg.setData(status);
-                // sendMessage(msg);
-
-                setResult(Id.return_value.error);
+                setResult(RESULT_CANCELED);
                 finish();
             }
         }
     }
-
-    // @Override
-    // public long getSecretKeyId() {
-    // return masterKeyId;
-    // }
-    //
-    // @Override
-    // public void passPhraseCallback(long keyId, String passPhrase) {
-    // super.passPhraseCallback(keyId, passPhrase);
-    // startSigning();
-    // }
 
     /**
      * kicks off the actual signing process on a background thread
@@ -310,97 +288,6 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // start service with intent
         startService(intent);
     }
-
-    // private void startSigning() {
-    // showDialog(Id.dialog.signing);
-    // startThread();
-    // }
-
-    // @Override
-    // public void run() {
-    // final Bundle status = new Bundle();
-    // Message msg = new Message();
-    //
-    // try {
-    // String passphrase = PGPMain.getCachedPassPhrase(masterKeyId);
-    // if (passphrase == null || passphrase.length() <= 0) {
-    // status.putString(EXTRA_ERROR, "Unable to obtain passphrase");
-    // } else {
-    // PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
-    //
-    // /*
-    // * sign the incoming key
-    // */
-    // PGPSecretKey secretKey = PGPMain.getSecretKey(masterKeyId);
-    // PGPPrivateKey signingKey = secretKey.extractPrivateKey(passphrase.toCharArray(),
-    // BouncyCastleProvider.PROVIDER_NAME);
-    // PGPSignatureGenerator sGen = new PGPSignatureGenerator(secretKey.getPublicKey()
-    // .getAlgorithm(), PGPUtil.SHA256, BouncyCastleProvider.PROVIDER_NAME);
-    // sGen.initSign(PGPSignature.DIRECT_KEY, signingKey);
-    //
-    // PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-    //
-    // PGPSignatureSubpacketVector packetVector = spGen.generate();
-    // sGen.setHashedSubpackets(packetVector);
-    //
-    // PGPPublicKey signedKey = PGPPublicKey.addCertification(
-    // pubring.getPublicKey(pubKeyId), sGen.generate());
-    // pubring = PGPPublicKeyRing.insertPublicKey(pubring, signedKey);
-    //
-    // // check if we need to send the key to the server or not
-    // CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
-    // if (sendKey.isChecked()) {
-    // Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
-    // HkpKeyServer server = new HkpKeyServer((String) keyServer.getSelectedItem());
-    //
-    // /*
-    // * upload the newly signed key to the key server
-    // */
-    //
-    // PGPMain.uploadKeyRingToServer(server, pubring);
-    // }
-    //
-    // // store the signed key in our local cache
-    // int retval = PGPMain.storeKeyRingInCache(pubring);
-    // if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-    // status.putString(EXTRA_ERROR, "Failed to store signed key in local cache");
-    // }
-    // }
-    // } catch (PGPException e) {
-    // Log.e(Constants.TAG, "Failed to sign key", e);
-    // status.putString(EXTRA_ERROR, "Failed to sign key");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // return;
-    // } catch (NoSuchAlgorithmException e) {
-    // Log.e(Constants.TAG, "Failed to sign key", e);
-    // status.putString(EXTRA_ERROR, "Failed to sign key");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // return;
-    // } catch (NoSuchProviderException e) {
-    // Log.e(Constants.TAG, "Failed to sign key", e);
-    // status.putString(EXTRA_ERROR, "Failed to sign key");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // return;
-    // } catch (SignatureException e) {
-    // Log.e(Constants.TAG, "Failed to sign key", e);
-    // status.putString(EXTRA_ERROR, "Failed to sign key");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // return;
-    // }
-    //
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    //
-    // msg.setData(status);
-    // sendMessage(msg);
-    //
-    // if (status.containsKey(EXTRA_ERROR)) {
-    // setResult(Id.return_value.error);
-    // } else {
-    // setResult(Id.return_value.ok);
-    // }
-    //
-    // finish();
-    // }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

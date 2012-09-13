@@ -43,8 +43,8 @@ public class SelectPublicKeyListActivity extends SherlockFragmentActivity {
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
             + "SELECT_PUBLIC_KEYS";
 
-    public static final String EXTRA_SELECTION = "selection";
-    public static final String EXTRA_USER_IDS = "userIds";
+    public static final String RESULT_EXTRA_SELECTION = "selection";
+    public static final String RESULT_EXTRA_USER_IDS = "userIds";
 
     protected ListView mList;
     protected SelectPublicKeyListAdapter mListAdapter;
@@ -98,7 +98,7 @@ public class SelectPublicKeyListActivity extends SherlockFragmentActivity {
         }
 
         long selectedKeyIds[] = null;
-        selectedKeyIds = intent.getLongArrayExtra(EXTRA_SELECTION);
+        selectedKeyIds = intent.getLongArrayExtra(RESULT_EXTRA_SELECTION);
 
         if (selectedKeyIds == null) {
             Vector<Long> vector = new Vector<Long>();
@@ -160,8 +160,8 @@ public class SelectPublicKeyListActivity extends SherlockFragmentActivity {
             selectedKeyIds[i] = keys.get(i);
         }
         String userIdArray[] = new String[0];
-        data.putExtra(EXTRA_SELECTION, selectedKeyIds);
-        data.putExtra(EXTRA_USER_IDS, userIds.toArray(userIdArray));
+        data.putExtra(RESULT_EXTRA_SELECTION, selectedKeyIds);
+        data.putExtra(RESULT_EXTRA_USER_IDS, userIds.toArray(userIdArray));
         setResult(RESULT_OK, data);
         finish();
     }

@@ -994,7 +994,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 initialKeyIds[i] = keyIds.get(i);
             }
         }
-        intent.putExtra(SelectPublicKeyListActivity.EXTRA_SELECTION, initialKeyIds);
+        intent.putExtra(SelectPublicKeyListActivity.RESULT_EXTRA_SELECTION, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -1038,7 +1038,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 mEncryptionKeyIds = bundle
-                        .getLongArray(SelectPublicKeyListActivity.EXTRA_SELECTION);
+                        .getLongArray(SelectPublicKeyListActivity.RESULT_EXTRA_SELECTION);
             }
             updateView();
             break;
@@ -1047,7 +1047,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.RESULT_EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

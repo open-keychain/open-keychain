@@ -176,7 +176,7 @@ public class PublicKeyListActivity extends KeyListActivity {
         switch (requestCode) {
         case Id.request.look_up_key_id: {
             if (resultCode == RESULT_CANCELED || data == null
-                    || data.getStringExtra(KeyServerQueryActivity.EXTRA_TEXT) == null) {
+                    || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
                 return;
             }
 

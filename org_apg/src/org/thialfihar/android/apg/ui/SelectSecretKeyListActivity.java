@@ -42,8 +42,8 @@ public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
             + "SELECT_SECRET_KEY";
 
-    public static final String EXTRA_USER_ID = "userId";
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String RESULT_EXTRA_USER_ID = "userId";
+    public static final String RESULT_EXTRA_KEY_ID = "keyId";
 
     protected ListView mList;
     protected SelectSecretKeyListAdapter mListAdapter;
@@ -71,8 +71,8 @@ public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
         mList.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent data = new Intent();
-                data.putExtra(EXTRA_KEY_ID, id);
-                data.putExtra(EXTRA_USER_ID, (String) mList.getItemAtPosition(position));
+                data.putExtra(RESULT_EXTRA_KEY_ID, id);
+                data.putExtra(RESULT_EXTRA_USER_ID, (String) mList.getItemAtPosition(position));
                 setResult(RESULT_OK, data);
                 finish();
             }

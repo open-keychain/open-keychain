@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.R;
@@ -63,16 +64,7 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
         mContentView = (TextView) findViewById(R.id.import_from_qr_code_content);
 
         // set actionbar without home button if called from another app
-        final ActionBar actionBar = getSupportActionBar();
-        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
-                + getCallingPackage());
-        if (getCallingPackage() != null && getCallingPackage().equals(Constants.PACKAGE_NAME)) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        } else {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
-        }
+        OtherHelper.setActionBarBackButton(this);
 
         // start scanning
         new IntentIntegrator(this).initiateScan();

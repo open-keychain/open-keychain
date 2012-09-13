@@ -63,8 +63,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_KEY_ID = "keyId";
 
-    // TODO: Change?
-    public static final String EXTRA_TEXT = "text";
+    public static final String RESULT_EXTRA_TEXT = "text";
 
     private ListView mList;
     private EditText mQuery;
@@ -134,8 +133,8 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         });
 
         Intent intent = getIntent();
-        if (ACTION_LOOK_UP_KEY_ID.equals(intent.getAction())
-                || ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (ACTION_LOOK_UP_KEY_ID.equals(action) || ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(action)) {
             long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
             if (keyId != 0) {
                 String query = "0x" + PGPHelper.keyToHex(keyId);
@@ -215,7 +214,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         if (ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(orgIntent.getAction())) {
                             if (mKeyData != null) {
                                 Intent intent = new Intent();
-                                intent.putExtra(EXTRA_TEXT, mKeyData);
+                                intent.putExtra(RESULT_EXTRA_TEXT, mKeyData);
                                 setResult(RESULT_OK, intent);
                             } else {
                                 setResult(RESULT_CANCELED);

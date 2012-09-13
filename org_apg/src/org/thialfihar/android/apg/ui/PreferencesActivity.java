@@ -66,10 +66,6 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
                         mPassPhraseCacheTtl.setValue(newValue.toString());
                         mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
                         mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
-
-                        // restart cache service with new ttl
-                        // TODO: not needed anymore!
-                        // PassphraseCacheService.startCacheService(PreferencesActivity.this);
                         return false;
                     }
                 });
