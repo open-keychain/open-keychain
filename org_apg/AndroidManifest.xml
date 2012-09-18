@@ -46,7 +46,7 @@
     -->
 
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="8"
         android:targetSdkVersion="14" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -339,7 +339,7 @@
         <service android:name=".service.ApgService" />
 
         <provider
-            android:name=".provider.DataProvider"
+            android:name=".deprecated.DataProvider"
             android:authorities="org.thialfihar.android.apg.provider"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
 

@@ -72,11 +72,6 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
-import org.thialfihar.android.apg.provider.DataProvider;
-import org.thialfihar.android.apg.provider.Database;
-import org.thialfihar.android.apg.provider.KeyRings;
-import org.thialfihar.android.apg.provider.Keys;
-import org.thialfihar.android.apg.provider.UserIds;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
@@ -142,21 +137,21 @@ public class PGPMain {
     // Not BC due to the use of Spongy Castle for Android
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = "SC";
 
-    public static final String AUTHORITY = DataProvider.AUTHORITY;
+    // public static final String AUTHORITY = DataProvider.AUTHORITY;
 
-    public static final Uri CONTENT_URI_SECRET_KEY_RINGS = Uri.parse("content://" + AUTHORITY
-            + "/key_rings/secret/");
-    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/secret/key_id/");
-    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_EMAILS = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/secret/emails/");
-
-    public static final Uri CONTENT_URI_PUBLIC_KEY_RINGS = Uri.parse("content://" + AUTHORITY
-            + "/key_rings/public/");
-    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/public/key_id/");
-    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/public/emails/");
+    // public static final Uri CONTENT_URI_SECRET_KEY_RINGS = Uri.parse("content://" + AUTHORITY
+    // + "/key_rings/secret/");
+    // public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID = Uri.parse("content://"
+    // + AUTHORITY + "/key_rings/secret/key_id/");
+    // public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_EMAILS = Uri.parse("content://"
+    // + AUTHORITY + "/key_rings/secret/emails/");
+    //
+    // public static final Uri CONTENT_URI_PUBLIC_KEY_RINGS = Uri.parse("content://" + AUTHORITY
+    // + "/key_rings/public/");
+    // public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID = Uri.parse("content://"
+    // + AUTHORITY + "/key_rings/public/key_id/");
+    // public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
+    // + AUTHORITY + "/key_rings/public/emails/");
 
     private static String VERSION = null;
 
@@ -184,12 +179,12 @@ public class PGPMain {
 
     private static String mEditPassPhrase = null;
 
-    private static Database mDatabase = null;
+    // private static Database mDatabase = null;
 
-    public static class GeneralException extends Exception {
+    public static class ApgGeneralException extends Exception {
         static final long serialVersionUID = 0xf812773342L;
 
-        public GeneralException(String message) {
+        public ApgGeneralException(String message) {
             super(message);
         }
     }
@@ -202,15 +197,15 @@ public class PGPMain {
         }
     }
 
-    public static void initialize(Context context) {
-        if (mDatabase == null) {
-            mDatabase = new Database(context);
-        }
-    }
-
-    public static Database getDatabase() {
-        return mDatabase;
-    }
+    // public static void initialize(Context context) {
+    // if (mDatabase == null) {
+    // mDatabase = new Database(context);
+    // }
+    // }
+    //
+    // public static Database getDatabase() {
+    // return mDatabase;
+    // }
 
     public static void setEditPassPhrase(String passPhrase) {
         mEditPassPhrase = passPhrase;
@@ -248,16 +243,16 @@ public class PGPMain {
      * @throws NoSuchAlgorithmException
      * @throws PGPException
      * @throws NoSuchProviderException
-     * @throws GeneralException
+     * @throws ApgGeneralException
      * @throws InvalidAlgorithmParameterException
      */
     public static PGPSecretKeyRing createKey(Context context, int algorithmChoice, int keySize,
             String passPhrase, PGPSecretKey masterSecretKey) throws NoSuchAlgorithmException,
-            PGPException, NoSuchProviderException, GeneralException,
+            PGPException, NoSuchProviderException, ApgGeneralException,
             InvalidAlgorithmParameterException {
 
         if (keySize < 512) {
-            throw new GeneralException(context.getString(R.string.error_keySizeMinimum512bit));
+            throw new ApgGeneralException(context.getString(R.string.error_keySizeMinimum512bit));
         }
 
         if (passPhrase == null) {
@@ -277,7 +272,7 @@ public class PGPMain {
 
         case Id.choice.algorithm.elgamal: {
             if (masterSecretKey == null) {
-                throw new GeneralException(
+                throw new ApgGeneralException(
                         context.getString(R.string.error_masterKeyMustNotBeElGamal));
             }
             keyGen = KeyPairGenerator.getInstance("ELGAMAL", BOUNCY_CASTLE_PROVIDER_NAME);
@@ -300,7 +295,7 @@ public class PGPMain {
         }
 
         default: {
-            throw new GeneralException(context.getString(R.string.error_unknownAlgorithmChoice));
+            throw new ApgGeneralException(context.getString(R.string.error_unknownAlgorithmChoice));
         }
         }
 
@@ -345,8 +340,8 @@ public class PGPMain {
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
             ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
             String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)
-            throws PGPMain.GeneralException, NoSuchProviderException, PGPException,
-            NoSuchAlgorithmException, SignatureException, IOException, Database.GeneralException {
+            throws ApgGeneralException, NoSuchProviderException, PGPException,
+            NoSuchAlgorithmException, SignatureException, IOException {
 
         updateProgress(progress, R.string.progress_buildingKey, 0, 100);
 
@@ -526,7 +521,7 @@ public class PGPMain {
             }
         } catch (IOException e) {
             status = Id.return_value.error;
-        } catch (Database.GeneralException e) {
+        } catch (ApgGeneralException.GeneralException e) {
             status = Id.return_value.error;
         }
 
@@ -558,7 +553,7 @@ public class PGPMain {
     }
 
     public static Bundle importKeyRings(Context context, int type, InputData data,
-            ProgressDialogUpdater progress) throws GeneralException, FileNotFoundException,
+            ProgressDialogUpdater progress) throws ApgGeneralException, FileNotFoundException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
@@ -571,7 +566,7 @@ public class PGPMain {
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));
+            throw new ApgGeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
@@ -594,7 +589,7 @@ public class PGPMain {
                 }
 
                 if (status == Id.return_value.error) {
-                    throw new GeneralException(context.getString(R.string.error_savingKeys));
+                    throw new ApgGeneralException(context.getString(R.string.error_savingKeys));
                 }
 
                 // update the counts to display to the user at the end
@@ -627,7 +622,7 @@ public class PGPMain {
     }
 
     public static Bundle exportKeyRings(Context context, Vector<Integer> keyRingIds,
-            OutputStream outStream, ProgressDialogUpdater progress) throws GeneralException,
+            OutputStream outStream, ProgressDialogUpdater progress) throws ApgGeneralException,
             FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
@@ -638,7 +633,7 @@ public class PGPMain {
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new GeneralException(context.getString(R.string.error_externalStorageNotReady));
+            throw new ApgGeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
         ArmoredOutputStream out = new ArmoredOutputStream(outStream);
         out.setHeader("Version", getFullVersion(context));
@@ -758,7 +753,7 @@ public class PGPMain {
             boolean armored, long encryptionKeyIds[], long signatureKeyId,
             String signaturePassPhrase, ProgressDialogUpdater progress, int symmetricAlgorithm,
             int hashAlgorithm, int compression, boolean forceV3Signature, String passPhrase)
-            throws IOException, GeneralException, PGPException, NoSuchProviderException,
+            throws IOException, ApgGeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
 
         if (encryptionKeyIds == null) {
@@ -780,7 +775,7 @@ public class PGPMain {
         PGPPrivateKey signaturePrivateKey = null;
 
         if (encryptionKeyIds.length == 0 && passPhrase == null) {
-            throw new GeneralException(
+            throw new ApgGeneralException(
                     context.getString(R.string.error_noEncryptionKeysOrPassPhrase));
         }
 
@@ -788,11 +783,12 @@ public class PGPMain {
             signingKeyRing = getSecretKeyRing(signatureKeyId);
             signingKey = PGPHelper.getSigningKey(signatureKeyId);
             if (signingKey == null) {
-                throw new GeneralException(context.getString(R.string.error_signatureFailed));
+                throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
             }
 
             if (signaturePassPhrase == null) {
-                throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
+                throw new ApgGeneralException(
+                        context.getString(R.string.error_noSignaturePassPhrase));
             }
             if (progress != null)
                 progress.setProgress(R.string.progress_extractingSignatureKey, 0, 100);
@@ -800,7 +796,7 @@ public class PGPMain {
                     BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassPhrase.toCharArray());
             signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
-                throw new GeneralException(
+                throw new ApgGeneralException(
                         context.getString(R.string.error_couldNotExtractPrivateKey));
             }
         }
@@ -922,7 +918,7 @@ public class PGPMain {
 
     public static void signText(Context context, InputData data, OutputStream outStream,
             long signatureKeyId, String signaturePassPhrase, int hashAlgorithm,
-            boolean forceV3Signature, ProgressDialogUpdater progress) throws GeneralException,
+            boolean forceV3Signature, ProgressDialogUpdater progress) throws ApgGeneralException,
             PGPException, IOException, NoSuchAlgorithmException, SignatureException {
 
         ArmoredOutputStream armorOut = new ArmoredOutputStream(outStream);
@@ -934,26 +930,27 @@ public class PGPMain {
 
         if (signatureKeyId == 0) {
             armorOut.close();
-            throw new GeneralException(context.getString(R.string.error_noSignatureKey));
+            throw new ApgGeneralException(context.getString(R.string.error_noSignatureKey));
         }
 
         signingKeyRing = getSecretKeyRing(signatureKeyId);
         signingKey = PGPHelper.getSigningKey(signatureKeyId);
         if (signingKey == null) {
             armorOut.close();
-            throw new GeneralException(context.getString(R.string.error_signatureFailed));
+            throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
         }
 
         if (signaturePassPhrase == null) {
             armorOut.close();
-            throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
+            throw new ApgGeneralException(context.getString(R.string.error_noSignaturePassPhrase));
         }
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassPhrase.toCharArray());
         signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
             armorOut.close();
-            throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
+            throw new ApgGeneralException(
+                    context.getString(R.string.error_couldNotExtractPrivateKey));
         }
         updateProgress(progress, R.string.progress_preparingStreams, 0, 100);
 
@@ -1029,7 +1026,7 @@ public class PGPMain {
     public static void generateSignature(Context context, InputData data, OutputStream outStream,
             boolean armored, boolean binary, long signatureKeyId, String signaturePassPhrase,
             int hashAlgorithm, boolean forceV3Signature, ProgressDialogUpdater progress)
-            throws GeneralException, PGPException, IOException, NoSuchAlgorithmException,
+            throws ApgGeneralException, PGPException, IOException, NoSuchAlgorithmException,
             SignatureException {
 
         OutputStream out = null;
@@ -1049,24 +1046,25 @@ public class PGPMain {
         PGPPrivateKey signaturePrivateKey = null;
 
         if (signatureKeyId == 0) {
-            throw new GeneralException(context.getString(R.string.error_noSignatureKey));
+            throw new ApgGeneralException(context.getString(R.string.error_noSignatureKey));
         }
 
         signingKeyRing = getSecretKeyRing(signatureKeyId);
         signingKey = PGPHelper.getSigningKey(signatureKeyId);
         if (signingKey == null) {
-            throw new GeneralException(context.getString(R.string.error_signatureFailed));
+            throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
         }
 
         if (signaturePassPhrase == null) {
-            throw new GeneralException(context.getString(R.string.error_noSignaturePassPhrase));
+            throw new ApgGeneralException(context.getString(R.string.error_noSignaturePassPhrase));
         }
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassPhrase.toCharArray());
         signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
-            throw new GeneralException(context.getString(R.string.error_couldNotExtractPrivateKey));
+            throw new ApgGeneralException(
+                    context.getString(R.string.error_couldNotExtractPrivateKey));
         }
         updateProgress(progress, R.string.progress_preparingStreams, 0, 100);
 
@@ -1146,23 +1144,23 @@ public class PGPMain {
     }
 
     public static PGPPublicKeyRing signKey(Context context, long masterKeyId, long pubKeyId,
-            String passphrase) throws GeneralException, NoSuchAlgorithmException,
+            String passphrase) throws ApgGeneralException, NoSuchAlgorithmException,
             NoSuchProviderException, PGPException, SignatureException {
         if (passphrase == null || passphrase.length() <= 0) {
-            throw new GeneralException("Unable to obtain passphrase");
+            throw new ApgGeneralException("Unable to obtain passphrase");
         } else {
             PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
 
             PGPSecretKey signingKey = PGPHelper.getSigningKey(masterKeyId);
             if (signingKey == null) {
-                throw new GeneralException(context.getString(R.string.error_signatureFailed));
+                throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
             }
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
             PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
-                throw new GeneralException(
+                throw new ApgGeneralException(
                         context.getString(R.string.error_couldNotExtractPrivateKey));
             }
 
@@ -1190,7 +1188,7 @@ public class PGPMain {
     }
 
     public static long getDecryptionKeyId(Context context, InputStream inputStream)
-            throws GeneralException, NoAsymmetricEncryptionException, IOException {
+            throws ApgGeneralException, NoAsymmetricEncryptionException, IOException {
         InputStream in = PGPUtil.getDecoderStream(inputStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
@@ -1204,7 +1202,7 @@ public class PGPMain {
         }
 
         if (enc == null) {
-            throw new GeneralException(context.getString(R.string.error_invalidData));
+            throw new ApgGeneralException(context.getString(R.string.error_invalidData));
         }
 
         // TODO: currently we always only look at the first known key
@@ -1236,7 +1234,7 @@ public class PGPMain {
     }
 
     public static boolean hasSymmetricEncryption(Context context, InputStream inputStream)
-            throws GeneralException, IOException {
+            throws ApgGeneralException, IOException {
         InputStream in = PGPUtil.getDecoderStream(inputStream);
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
@@ -1250,7 +1248,7 @@ public class PGPMain {
         }
 
         if (enc == null) {
-            throw new GeneralException(context.getString(R.string.error_invalidData));
+            throw new ApgGeneralException(context.getString(R.string.error_invalidData));
         }
 
         Iterator<?> it = enc.getEncryptedDataObjects();
@@ -1266,7 +1264,7 @@ public class PGPMain {
 
     public static Bundle decrypt(Context context, InputData data, OutputStream outStream,
             String passPhrase, ProgressDialogUpdater progress, boolean assumeSymmetric)
-            throws IOException, GeneralException, PGPException, SignatureException {
+            throws IOException, ApgGeneralException, PGPException, SignatureException {
         if (passPhrase == null) {
             passPhrase = "";
         }
@@ -1288,7 +1286,7 @@ public class PGPMain {
         }
 
         if (enc == null) {
-            throw new GeneralException(context.getString(R.string.error_invalidData));
+            throw new ApgGeneralException(context.getString(R.string.error_invalidData));
         }
 
         InputStream clear = null;
@@ -1311,7 +1309,7 @@ public class PGPMain {
             }
 
             if (pbe == null) {
-                throw new GeneralException(
+                throw new ApgGeneralException(
                         context.getString(R.string.error_noSymmetricEncryptionPacket));
             }
 
@@ -1347,7 +1345,7 @@ public class PGPMain {
             }
 
             if (secretKey == null) {
-                throw new GeneralException(context.getString(R.string.error_noSecretKeyFound));
+                throw new ApgGeneralException(context.getString(R.string.error_noSecretKeyFound));
             }
 
             currentProgress += 5;
@@ -1361,7 +1359,7 @@ public class PGPMain {
                 throw new PGPException(context.getString(R.string.error_wrongPassPhrase));
             }
             if (privateKey == null) {
-                throw new GeneralException(
+                throw new ApgGeneralException(
                         context.getString(R.string.error_couldNotExtractPrivateKey));
             }
             currentProgress += 5;
@@ -1511,7 +1509,7 @@ public class PGPMain {
 
     public static Bundle verifyText(Context context, InputData data, OutputStream outStream,
             boolean lookupUnknownKey, ProgressDialogUpdater progress) throws IOException,
-            GeneralException, PGPException, SignatureException {
+            ApgGeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1547,7 +1545,7 @@ public class PGPMain {
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            throw new GeneralException(context.getString(R.string.error_corruptData));
+            throw new ApgGeneralException(context.getString(R.string.error_corruptData));
         }
         PGPSignature signature = null;
         long signatureKeyId = 0;

@@ -35,13 +35,15 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.deprecated.DataProvider;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
+import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
-import org.thialfihar.android.apg.provider.DataProvider;
+import org.thialfihar.android.apg.provider.ApgContract.DataStream;
+import org.thialfihar.android.apg.provider.ApgProvider;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
@@ -271,7 +273,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     // check if storage is ready
                     if (!FileHelper.isStorageMounted(inputFile)
                             || !FileHelper.isStorageMounted(outputFile)) {
-                        sendErrorToHandler(new GeneralException(
+                        sendErrorToHandler(new ApgGeneralException(
                                 getString(R.string.error_externalStorageNotReady)));
                         return;
                     }
@@ -298,7 +300,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         while (true) {
                             streamFilename = PGPMain.generateRandomString(32);
                             if (streamFilename == null) {
-                                throw new PGPMain.GeneralException(
+                                throw new PGPMain.ApgGeneralException(
                                         "couldn't generate random file name");
                             }
                             openFileInput(streamFilename).close();
@@ -311,7 +313,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
 
                 default:
-                    throw new PGPMain.GeneralException("No target choosen!");
+                    throw new PGPMain.ApgGeneralException("No target choosen!");
 
                 }
 
@@ -372,7 +374,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                     break;
                 case TARGET_STREAM:
-                    String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
+                    String uri = DataStream.buildDataStreamUri(streamFilename).toString();
                     resultData.putString(RESULT_URI, uri);
 
                     break;
@@ -422,7 +424,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     // check if storage is ready
                     if (!FileHelper.isStorageMounted(inputFile)
                             || !FileHelper.isStorageMounted(outputFile)) {
-                        sendErrorToHandler(new GeneralException(
+                        sendErrorToHandler(new ApgGeneralException(
                                 getString(R.string.error_externalStorageNotReady)));
                         return;
                     }
@@ -452,7 +454,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         while (true) {
                             streamFilename = PGPMain.generateRandomString(32);
                             if (streamFilename == null) {
-                                throw new PGPMain.GeneralException(
+                                throw new PGPMain.ApgGeneralException(
                                         "couldn't generate random file name");
                             }
                             openFileInput(streamFilename).close();
@@ -465,7 +467,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     break;
 
                 default:
-                    throw new PGPMain.GeneralException("No target choosen!");
+                    throw new PGPMain.ApgGeneralException("No target choosen!");
 
                 }
 
@@ -505,7 +507,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                     break;
                 case TARGET_STREAM:
-                    String uri = "content://" + DataProvider.AUTHORITY + "/data/" + streamFilename;
+                    String uri = DataStream.buildDataStreamUri(streamFilename).toString();
                     resultData.putString(RESULT_URI, uri);
 
                     break;
@@ -617,10 +619,10 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 try {
                     PGPMain.deleteFileSecurely(this, new File(deleteFile), this);
                 } catch (FileNotFoundException e) {
-                    throw new PGPMain.GeneralException(getString(R.string.error_fileNotFound,
+                    throw new PGPMain.ApgGeneralException(getString(R.string.error_fileNotFound,
                             deleteFile));
                 } catch (IOException e) {
-                    throw new PGPMain.GeneralException(getString(R.string.error_fileDeleteFailed,
+                    throw new PGPMain.ApgGeneralException(getString(R.string.error_fileDeleteFailed,
                             deleteFile));
                 }
 
@@ -703,7 +705,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 // check if storage is ready
                 if (!FileHelper.isStorageMounted(outputFile)) {
-                    sendErrorToHandler(new GeneralException(
+                    sendErrorToHandler(new ApgGeneralException(
                             getString(R.string.error_externalStorageNotReady)));
                     return;
                 }
@@ -745,7 +747,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);
                     if (!uploaded) {
-                        sendErrorToHandler(new GeneralException(
+                        sendErrorToHandler(new ApgGeneralException(
                                 "Unable to export key to selected server"));
                         return;
                     }
@@ -806,7 +808,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 // store the signed key in our local cache
                 int retval = PGPMain.storeKeyRingInCache(signedPubKeyRing);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
-                    throw new GeneralException("Failed to store signed key in local cache");
+                    throw new ApgGeneralException("Failed to store signed key in local cache");
                 }
 
                 sendMessageToHandler(ApgServiceHandler.MESSAGE_OKAY);

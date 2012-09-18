@@ -407,7 +407,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private void saveClicked() {
         try {
             if (!isPassphraseSet()) {
-                throw new PGPMain.GeneralException(this.getString(R.string.setAPassPhrase));
+                throw new PGPMain.ApgGeneralException(this.getString(R.string.setAPassPhrase));
             }
 
             // Send all information needed to service to edit key in other thread
@@ -448,7 +448,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             // start service with intent
             startService(intent);
-        } catch (PGPMain.GeneralException e) {
+        } catch (PGPMain.ApgGeneralException e) {
             Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
                     Toast.LENGTH_SHORT).show();
         }
@@ -460,7 +460,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param userIdsView
      * @return
      */
-    private ArrayList<String> getUserIds(SectionView userIdsView) throws PGPMain.GeneralException {
+    private ArrayList<String> getUserIds(SectionView userIdsView) throws PGPMain.ApgGeneralException {
         ArrayList<String> userIds = new ArrayList<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
@@ -472,12 +472,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new PGPMain.GeneralException(this.getString(R.string.error_userIdNeedsAName));
+                throw new PGPMain.ApgGeneralException(this.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
-                throw new PGPMain.GeneralException(
+                throw new PGPMain.ApgGeneralException(
                         this.getString(R.string.error_userIdNeedsAnEmailAddress));
             } catch (UserIdEditor.InvalidEmailException e) {
-                throw new PGPMain.GeneralException(e.getMessage());
+                throw new PGPMain.ApgGeneralException(e.getMessage());
             }
 
             if (userId.equals("")) {
@@ -493,11 +493,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (userIds.size() == 0) {
-            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsAUserId));
+            throw new PGPMain.ApgGeneralException(getString(R.string.error_keyNeedsAUserId));
         }
 
         if (!gotMainUserId) {
-            throw new PGPMain.GeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new PGPMain.ApgGeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         return userIds;
@@ -509,13 +509,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private ArrayList<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.GeneralException {
+    private ArrayList<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.ApgGeneralException {
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PGPMain.ApgGeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -532,13 +532,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private ArrayList<Integer> getKeysUsages(SectionView keysView) throws PGPMain.GeneralException {
+    private ArrayList<Integer> getKeysUsages(SectionView keysView) throws PGPMain.ApgGeneralException {
         ArrayList<Integer> getKeysUsages = new ArrayList<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PGPMain.GeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PGPMain.ApgGeneralException(getString(R.string.error_keyNeedsMasterKey));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {

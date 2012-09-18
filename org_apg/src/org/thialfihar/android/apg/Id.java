@@ -147,10 +147,10 @@ public final class Id {
         public static final int export_keys = 0x21070002;
     }
 
-    public static final class database {
-        public static final int type_public = 0;
-        public static final int type_secret = 1;
-    }
+//    public static final class database {
+//        public static final int type_public = 0;
+//        public static final int type_secret = 1;
+//    }
 
     public static final class type {
         public static final int public_key = 0x21070001;

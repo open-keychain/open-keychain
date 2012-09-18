@@ -23,7 +23,7 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
-import org.thialfihar.android.apg.helper.PGPMain.GeneralException;
+import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -73,14 +73,14 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
      * @param messenger
      *            to communicate back after caching the passphrase
      * @return
-     * @throws GeneralException
+     * @throws ApgGeneralException
      */
     public static PassphraseDialogFragment newInstance(Context context, Messenger messenger,
-            long secretKeyId) throws GeneralException {
+            long secretKeyId) throws ApgGeneralException {
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
             if (!hasPassphrase(context, secretKeyId)) {
-                throw new PGPMain.GeneralException("No passphrase! No passphrase dialog needed!");
+                throw new PGPMain.ApgGeneralException("No passphrase! No passphrase dialog needed!");
             }
         }
 

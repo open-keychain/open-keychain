@@ -26,8 +26,7 @@ public class Compatibility {
     private static final String clipboardLabel = "APG";
 
     /**
-     * Wrapper around ClipboardManager based on Android version using Reflection API, from
-     * http://www.projectsexception.com/blog/?p=87
+     * Wrapper around ClipboardManager based on Android version using Reflection API
      * 
      * @param context
      * @param text

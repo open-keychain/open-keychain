@@ -143,7 +143,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                     messenger, secretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PGPMain.GeneralException e) {
+        } catch (PGPMain.ApgGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);

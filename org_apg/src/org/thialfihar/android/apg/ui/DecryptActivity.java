@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -607,7 +608,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PGPMain.GeneralException e) {
+        } catch (PGPMain.ApgGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
@@ -654,13 +655,13 @@ public class DecryptActivity extends SherlockFragmentActivity {
             try {
                 setSecretKeyId(PGPMain.getDecryptionKeyId(this, inStream));
                 if (getSecretKeyId() == Id.key.none) {
-                    throw new PGPMain.GeneralException(getString(R.string.error_noSecretKeyFound));
+                    throw new PGPMain.ApgGeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (PGPMain.NoAsymmetricEncryptionException e) {
                 setSecretKeyId(Id.key.symmetric);
                 if (!PGPMain.hasSymmetricEncryption(this, inStream)) {
-                    throw new PGPMain.GeneralException(
+                    throw new PGPMain.ApgGeneralException(
                             getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;
