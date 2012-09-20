@@ -35,7 +35,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.deprecated.DataProvider;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
@@ -43,7 +42,7 @@ import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.ApgContract.DataStream;
-import org.thialfihar.android.apg.provider.ApgProvider;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
@@ -622,8 +621,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                     throw new PGPMain.ApgGeneralException(getString(R.string.error_fileNotFound,
                             deleteFile));
                 } catch (IOException e) {
-                    throw new PGPMain.ApgGeneralException(getString(R.string.error_fileDeleteFailed,
-                            deleteFile));
+                    throw new PGPMain.ApgGeneralException(getString(
+                            R.string.error_fileDeleteFailed, deleteFile));
                 }
 
                 /* Output */
@@ -715,9 +714,11 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
                 Vector<Integer> keyRingIds = new Vector<Integer>();
                 if (exportAll) {
-                    keyRingIds = PGPMain
-                            .getKeyRingIds(keyType == Id.type.public_key ? Id.database.type_public
-                                    : Id.database.type_secret);
+                    if (keyType == Id.type.public_key) {
+                        keyRingIds = ProviderHelper.getPublicKeyRingsRowIds(this);
+                    } else {
+                        keyRingIds = ProviderHelper.getSecretKeyRingsRowIds(this);
+                    }
                 } else {
                     keyRingIds.add(keyRingId);
                 }
@@ -742,8 +743,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPKeyRing keyring = PGPMain.getKeyRing(keyRingId);
-                if (keyring != null && keyring instanceof PGPPublicKeyRing) {
+                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+                if (keyring != null) {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);
                     if (!uploaded) {

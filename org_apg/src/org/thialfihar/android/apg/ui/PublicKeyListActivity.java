@@ -22,6 +22,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -115,8 +116,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            Object keyRing = PGPMain.getKeyRing(keyRingId);
-            if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+            if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
             if (keyId == 0) {
@@ -148,8 +149,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            Object keyRing = PGPMain.getKeyRing(keyRingId);
-            if (keyRing != null && keyRing instanceof PGPPublicKeyRing) {
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+            if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
 

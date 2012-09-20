@@ -25,6 +25,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
@@ -154,7 +155,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(mPubKeyId);
+        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;

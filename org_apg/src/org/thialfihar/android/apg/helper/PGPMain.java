@@ -72,6 +72,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
@@ -152,8 +153,6 @@ public class PGPMain {
     // + AUTHORITY + "/key_rings/public/key_id/");
     // public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
     // + AUTHORITY + "/key_rings/public/emails/");
-
-    private static String VERSION = null;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[] {
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
@@ -521,8 +520,6 @@ public class PGPMain {
             }
         } catch (IOException e) {
             status = Id.return_value.error;
-        } catch (ApgGeneralException.GeneralException e) {
-            status = Id.return_value.error;
         }
 
         return status;
@@ -641,18 +638,20 @@ public class PGPMain {
         int numKeys = 0;
         for (int i = 0; i < keyRingIds.size(); ++i) {
             updateProgress(progress, i * 100 / keyRingIds.size(), 100);
-            Object obj = mDatabase.getKeyRing(keyRingIds.get(i));
-            PGPPublicKeyRing publicKeyRing;
-            PGPSecretKeyRing secretKeyRing;
 
-            if (obj instanceof PGPSecretKeyRing) {
-                secretKeyRing = (PGPSecretKeyRing) obj;
-                secretKeyRing.encode(out);
-            } else if (obj instanceof PGPPublicKeyRing) {
-                publicKeyRing = (PGPPublicKeyRing) obj;
+            // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
+            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRing(context,
+                    keyRingIds.get(i));
+            if (publicKeyRing != null) {
                 publicKeyRing.encode(out);
             } else {
-                continue;
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRing(context,
+                        keyRingIds.get(i));
+                if (secretKeyRing != null) {
+                    secretKeyRing.encode(out);
+                } else {
+                    continue;
+                }
             }
             ++numKeys;
         }
@@ -664,90 +663,69 @@ public class PGPMain {
         return returnData;
     }
 
-    public static void deleteKey(int keyRingId) {
-        mDatabase.deleteKeyRing(keyRingId);
-    }
+    // public static PGPKeyRing getKeyRing(int keyRingId) {
+    // return (PGPKeyRing) mDatabase.getKeyRing(keyRingId);
+    // }
 
-    public static PGPKeyRing getKeyRing(int keyRingId) {
-        return (PGPKeyRing) mDatabase.getKeyRing(keyRingId);
-    }
+    // public static PGPSecretKeyRing getSecretKeyRing(long keyId) {
+    // byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_secret, keyId);
+    // if (data == null) {
+    // return null;
+    // }
+    // return PGPConversionHelper.BytesToPGPSecretKeyRing(data);
+    // }
+    //
+    // public static PGPPublicKeyRing getPublicKeyRing(long keyId) {
+    // byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_public, keyId);
+    // if (data == null) {
+    // return null;
+    // }
+    // return PGPConversionHelper.BytesToPGPPublicKeyRing(data);
+    // }
 
-    public static PGPSecretKeyRing getSecretKeyRing(long keyId) {
-        byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_secret, keyId);
-        if (data == null) {
-            return null;
-        }
-        return PGPConversionHelper.BytesToPGPSecretKeyRing(data);
-    }
+    // public static Vector<Integer> getKeyRingIds(int type) {
+    // SQLiteDatabase db = mDatabase.db();
+    // Vector<Integer> keyIds = new Vector<Integer>();
+    // Cursor c = db.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID }, KeyRings.TYPE
+    // + " = ?", new String[] { "" + type }, null, null, null);
+    // if (c != null && c.moveToFirst()) {
+    // do {
+    // keyIds.add(c.getInt(0));
+    // } while (c.moveToNext());
+    // }
+    //
+    // if (c != null) {
+    // c.close();
+    // }
+    //
+    // return keyIds;
+    // }
 
-    public static PGPPublicKeyRing getPublicKeyRing(long keyId) {
-        byte[] data = mDatabase.getKeyRingDataFromKeyId(Id.database.type_public, keyId);
-        if (data == null) {
-            return null;
-        }
-        return PGPConversionHelper.BytesToPGPPublicKeyRing(data);
-    }
-
-    public static PGPSecretKey getSecretKey(long keyId) {
-        PGPSecretKeyRing keyRing = getSecretKeyRing(keyId);
-        if (keyRing == null) {
-            return null;
-        }
-        return keyRing.getSecretKey(keyId);
-    }
-
-    public static PGPPublicKey getPublicKey(long keyId) {
-        PGPPublicKeyRing keyRing = getPublicKeyRing(keyId);
-        if (keyRing == null) {
-            return null;
-        }
-
-        return keyRing.getPublicKey(keyId);
-    }
-
-    public static Vector<Integer> getKeyRingIds(int type) {
-        SQLiteDatabase db = mDatabase.db();
-        Vector<Integer> keyIds = new Vector<Integer>();
-        Cursor c = db.query(KeyRings.TABLE_NAME, new String[] { KeyRings._ID }, KeyRings.TYPE
-                + " = ?", new String[] { "" + type }, null, null, null);
-        if (c != null && c.moveToFirst()) {
-            do {
-                keyIds.add(c.getInt(0));
-            } while (c.moveToNext());
-        }
-
-        if (c != null) {
-            c.close();
-        }
-
-        return keyIds;
-    }
-
-    public static String getMainUserId(long keyId, int type) {
-        SQLiteDatabase db = mDatabase.db();
-        Cursor c = db.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON ("
-                + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."
-                + Keys.KEY_RING_ID + ") " + " INNER JOIN " + Keys.TABLE_NAME + " AS masterKey ON ("
-                + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + "masterKey."
-                + Keys.KEY_RING_ID + " AND " + "masterKey." + Keys.IS_MASTER_KEY + " = '1') "
-                + " INNER JOIN " + UserIds.TABLE_NAME + " ON (" + UserIds.TABLE_NAME + "."
-                + UserIds.KEY_ID + " = " + "masterKey." + Keys._ID + " AND " + UserIds.TABLE_NAME
-                + "." + UserIds.RANK + " = '0')", new String[] { UserIds.USER_ID }, Keys.TABLE_NAME
-                + "." + Keys.KEY_ID + " = ? AND " + KeyRings.TABLE_NAME + "." + KeyRings.TYPE
-                + " = ?", new String[] { "" + keyId, "" + type, }, null, null, null);
-        String userId = "";
-        if (c != null && c.moveToFirst()) {
-            do {
-                userId = c.getString(0);
-            } while (c.moveToNext());
-        }
-
-        if (c != null) {
-            c.close();
-        }
-
-        return userId;
-    }
+    // public static String getMainUserId(long keyId, int type) {
+    // SQLiteDatabase db = mDatabase.db();
+    // Cursor c = db.query(Keys.TABLE_NAME + " INNER JOIN " + KeyRings.TABLE_NAME + " ON ("
+    // + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + Keys.TABLE_NAME + "."
+    // + Keys.KEY_RING_ID + ") " + " INNER JOIN " + Keys.TABLE_NAME + " AS masterKey ON ("
+    // + KeyRings.TABLE_NAME + "." + KeyRings._ID + " = " + "masterKey."
+    // + Keys.KEY_RING_ID + " AND " + "masterKey." + Keys.IS_MASTER_KEY + " = '1') "
+    // + " INNER JOIN " + UserIds.TABLE_NAME + " ON (" + UserIds.TABLE_NAME + "."
+    // + UserIds.KEY_ID + " = " + "masterKey." + Keys._ID + " AND " + UserIds.TABLE_NAME
+    // + "." + UserIds.RANK + " = '0')", new String[] { UserIds.USER_ID }, Keys.TABLE_NAME
+    // + "." + Keys.KEY_ID + " = ? AND " + KeyRings.TABLE_NAME + "." + KeyRings.TYPE
+    // + " = ?", new String[] { "" + keyId, "" + type, }, null, null, null);
+    // String userId = "";
+    // if (c != null && c.moveToFirst()) {
+    // do {
+    // userId = c.getString(0);
+    // } while (c.moveToNext());
+    // }
+    //
+    // if (c != null) {
+    // c.close();
+    // }
+    //
+    // return userId;
+    // }
 
     public static void encrypt(Context context, InputData data, OutputStream outStream,
             boolean armored, long encryptionKeyIds[], long signatureKeyId,
@@ -780,8 +758,8 @@ public class PGPMain {
         }
 
         if (signatureKeyId != Id.key.none) {
-            signingKeyRing = getSecretKeyRing(signatureKeyId);
-            signingKey = PGPHelper.getSigningKey(signatureKeyId);
+            signingKeyRing = ProviderHelper.getPGPSecretKeyRing(context, signatureKeyId);
+            signingKey = PGPHelper.getSigningKey(context, signatureKeyId);
             if (signingKey == null) {
                 throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
             }
@@ -818,7 +796,7 @@ public class PGPMain {
             cPk.addMethod(symmetricEncryptionGenerator);
         }
         for (int i = 0; i < encryptionKeyIds.length; ++i) {
-            PGPPublicKey key = PGPHelper.getEncryptPublicKey(encryptionKeyIds[i]);
+            PGPPublicKey key = PGPHelper.getEncryptPublicKey(context, encryptionKeyIds[i]);
             if (key != null) {
 
                 JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator = new JcePublicKeyKeyEncryptionMethodGenerator(
@@ -933,8 +911,8 @@ public class PGPMain {
             throw new ApgGeneralException(context.getString(R.string.error_noSignatureKey));
         }
 
-        signingKeyRing = getSecretKeyRing(signatureKeyId);
-        signingKey = PGPHelper.getSigningKey(signatureKeyId);
+        signingKeyRing = ProviderHelper.getPGPSecretKeyRing(context, signatureKeyId);
+        signingKey = PGPHelper.getSigningKey(context, signatureKeyId);
         if (signingKey == null) {
             armorOut.close();
             throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
@@ -1049,8 +1027,8 @@ public class PGPMain {
             throw new ApgGeneralException(context.getString(R.string.error_noSignatureKey));
         }
 
-        signingKeyRing = getSecretKeyRing(signatureKeyId);
-        signingKey = PGPHelper.getSigningKey(signatureKeyId);
+        signingKeyRing = ProviderHelper.getPGPSecretKeyRing(context, signatureKeyId);
+        signingKey = PGPHelper.getSigningKey(context, signatureKeyId);
         if (signingKey == null) {
             throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
         }
@@ -1149,9 +1127,9 @@ public class PGPMain {
         if (passphrase == null || passphrase.length() <= 0) {
             throw new ApgGeneralException("Unable to obtain passphrase");
         } else {
-            PGPPublicKeyRing pubring = PGPMain.getPublicKeyRing(pubKeyId);
+            PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(context, pubKeyId);
 
-            PGPSecretKey signingKey = PGPHelper.getSigningKey(masterKeyId);
+            PGPSecretKey signingKey = PGPHelper.getSigningKey(context, masterKeyId);
             if (signingKey == null) {
                 throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
             }
@@ -1215,7 +1193,7 @@ public class PGPMain {
             if (obj instanceof PGPPublicKeyEncryptedData) {
                 gotAsymmetricEncryption = true;
                 PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
-                secretKey = getSecretKey(pbe.getKeyID());
+                secretKey = ProviderHelper.getPGPSecretKey(context, pbe.getKeyID());
                 if (secretKey != null) {
                     break;
                 }
@@ -1336,7 +1314,7 @@ public class PGPMain {
                 Object obj = it.next();
                 if (obj instanceof PGPPublicKeyEncryptedData) {
                     PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                    secretKey = getSecretKey(encData.getKeyID());
+                    secretKey = ProviderHelper.getPGPSecretKey(context, encData.getKeyID());
                     if (secretKey != null) {
                         pbe = encData;
                         break;
@@ -1397,7 +1375,7 @@ public class PGPMain {
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
-                signatureKey = getPublicKey(signature.getKeyID());
+                signatureKey = ProviderHelper.getPGPPublicKey(context, signature.getKeyID());
                 if (signatureKeyId == 0) {
                     signatureKeyId = signature.getKeyID();
                 }
@@ -1407,7 +1385,8 @@ public class PGPMain {
                     signatureIndex = i;
                     signatureKeyId = signature.getKeyID();
                     String userId = null;
-                    PGPPublicKeyRing sigKeyRing = getPublicKeyRing(signatureKeyId);
+                    PGPPublicKeyRing sigKeyRing = ProviderHelper.getPGPPublicKeyRing(context,
+                            signatureKeyId);
                     if (sigKeyRing != null) {
                         userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
                     }
@@ -1552,7 +1531,7 @@ public class PGPMain {
         PGPPublicKey signatureKey = null;
         for (int i = 0; i < sigList.size(); ++i) {
             signature = sigList.get(i);
-            signatureKey = getPublicKey(signature.getKeyID());
+            signatureKey = ProviderHelper.getPGPPublicKey(context, signature.getKeyID());
             if (signatureKeyId == 0) {
                 signatureKeyId = signature.getKeyID();
             }
@@ -1572,7 +1551,8 @@ public class PGPMain {
             } else {
                 signatureKeyId = signature.getKeyID();
                 String userId = null;
-                PGPPublicKeyRing sigKeyRing = getPublicKeyRing(signatureKeyId);
+                PGPPublicKeyRing sigKeyRing = ProviderHelper.getPGPPublicKeyRing(context,
+                        signatureKeyId);
                 if (sigKeyRing != null) {
                     userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
                 }
@@ -1799,15 +1779,13 @@ public class PGPMain {
     }
 
     public static String getVersion(Context context) {
-        if (VERSION != null) {
-            return VERSION;
-        }
+        String version = null;
         try {
             PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
-            VERSION = pi.versionName;
-            return VERSION;
+            version = pi.versionName;
+            return version;
         } catch (NameNotFoundException e) {
-            // impossible!
+            Log.e(Constants.TAG, "Version could not be retrieved!", e);
             return "0.0.0";
         }
     }

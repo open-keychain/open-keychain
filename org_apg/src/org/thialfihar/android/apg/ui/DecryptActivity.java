@@ -24,6 +24,7 @@ import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
@@ -333,7 +334,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (mSignatureKeyId == 0) {
                     return;
                 }
-                PGPPublicKeyRing key = PGPMain.getPublicKeyRing(mSignatureKeyId);
+                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRing(DecryptActivity.this,
+                        mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
                     intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
@@ -655,7 +657,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
             try {
                 setSecretKeyId(PGPMain.getDecryptionKeyId(this, inStream));
                 if (getSecretKeyId() == Id.key.none) {
-                    throw new PGPMain.ApgGeneralException(getString(R.string.error_noSecretKeyFound));
+                    throw new PGPMain.ApgGeneralException(
+                            getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (PGPMain.NoAsymmetricEncryptionException e) {

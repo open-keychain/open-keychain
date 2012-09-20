@@ -20,7 +20,6 @@ import java.io.File;
 import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.thialfihar.android.apg.helper.PGPMain;
 
 import android.app.Application;
 import android.os.Environment;
@@ -35,10 +34,6 @@ public class ApgApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // TODO: Do it better than this!
-        // this initializes the database to be used in PGPMain
-        PGPMain.initialize(this);
 
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {

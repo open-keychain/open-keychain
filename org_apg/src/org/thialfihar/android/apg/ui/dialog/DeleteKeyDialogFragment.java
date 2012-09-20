@@ -23,6 +23,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.Log;
 
 import android.app.AlertDialog;
@@ -93,8 +94,11 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // deleteKey(deleteKeyRingId);
-                PGPMain.deleteKey(deleteKeyRingId);
+                if (keyType == Id.type.public_key) {
+                    ProviderHelper.deletePublicKeyRing(activity, deleteKeyRingId);
+                } else {
+                    ProviderHelper.deleteSecretKeyRing(activity, deleteKeyRingId);
+                }
 
                 dismiss();
 

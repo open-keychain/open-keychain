@@ -28,6 +28,7 @@ import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
@@ -440,7 +441,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
         if (signatureKeyId != 0) {
-            PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(signatureKeyId);
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(this, signatureKeyId);
             PGPSecretKey masterKey = null;
             if (keyRing != null) {
                 masterKey = PGPHelper.getMasterKey(keyRing);
@@ -456,7 +457,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         if (encryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                PGPPublicKeyRing keyRing = PGPMain.getPublicKeyRing(encryptionKeyIds[i]);
+                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this,
+                        encryptionKeyIds[i]);
                 PGPPublicKey masterKey = null;
                 if (keyRing == null) {
                     continue;
@@ -956,7 +958,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else {
             String uid = getResources().getString(R.string.unknownUserId);
             String uidExtra = "";
-            PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(getSecretKeyId());
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(this, getSecretKeyId());
             if (keyRing != null) {
                 PGPSecretKey key = PGPHelper.getMasterKey(keyRing);
                 if (key != null) {

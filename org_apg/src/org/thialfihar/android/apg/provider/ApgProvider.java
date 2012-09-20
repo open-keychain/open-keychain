@@ -54,8 +54,8 @@ public class ApgProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     private static final int PUBLIC_KEY_RING = 101;
-    private static final int PUBLIC_KEY_RING_ID = 102;
-    private static final int PUBLIC_KEY_RING_BY_KEY_ID = 103;
+    private static final int PUBLIC_KEY_RING_ROW_ID = 102;
+    private static final int PUBLIC_KEY_RING_BY_KEY_ID = 103; // TODO: Is this row id???
     private static final int PUBLIC_KEY_RING_BY_EMAILS = 104;
     private static final int PUBLIC_KEY_RING_KEY = 111;
     private static final int PUBLIC_KEY_RING_KEY_RANK = 112;
@@ -63,7 +63,7 @@ public class ApgProvider extends ContentProvider {
     private static final int PUBLIC_KEY_RING_USER_ID_RANK = 122;
 
     private static final int SECRET_KEY_RING = 201;
-    private static final int SECRET_KEY_RING_ID = 202;
+    private static final int SECRET_KEY_RING_ROW_ID = 202;
     private static final int SECRET_KEY_RING_BY_KEY_ID = 203;
     private static final int SECRET_KEY_RING_BY_EMAILS = 204;
     private static final int SECRET_KEY_RING_KEY = 211;
@@ -95,7 +95,7 @@ public class ApgProvider extends ContentProvider {
                 PUBLIC_KEY_RING);
         matcher.addURI(authority,
                 ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/*",
-                PUBLIC_KEY_RING_ID);
+                PUBLIC_KEY_RING_ROW_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
                 + ApgContract.PATH_BY_KEY_ID + "/*", PUBLIC_KEY_RING_BY_KEY_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
@@ -143,7 +143,7 @@ public class ApgProvider extends ContentProvider {
                 SECRET_KEY_RING);
         matcher.addURI(authority,
                 ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/*",
-                SECRET_KEY_RING_ID);
+                SECRET_KEY_RING_ROW_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
                 + ApgContract.PATH_BY_KEY_ID + "/*", SECRET_KEY_RING_BY_KEY_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
@@ -208,7 +208,7 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING_BY_EMAILS:
             return PublicKeyRings.CONTENT_TYPE;
 
-        case PUBLIC_KEY_RING_ID:
+        case PUBLIC_KEY_RING_ROW_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
             return PublicKeyRings.CONTENT_ITEM_TYPE;
 
@@ -228,7 +228,7 @@ public class ApgProvider extends ContentProvider {
         case SECRET_KEY_RING_BY_EMAILS:
             return SecretKeyRings.CONTENT_TYPE;
 
-        case SECRET_KEY_RING_ID:
+        case SECRET_KEY_RING_ROW_ID:
         case SECRET_KEY_RING_BY_KEY_ID:
             return SecretKeyRings.CONTENT_ITEM_TYPE;
 
@@ -259,7 +259,7 @@ public class ApgProvider extends ContentProvider {
         int type;
         switch (match) {
         case PUBLIC_KEY_RING:
-        case PUBLIC_KEY_RING_ID:
+        case PUBLIC_KEY_RING_ROW_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_EMAILS:
         case PUBLIC_KEY_RING_KEY:
@@ -270,7 +270,7 @@ public class ApgProvider extends ContentProvider {
             break;
 
         case SECRET_KEY_RING:
-        case SECRET_KEY_RING_ID:
+        case SECRET_KEY_RING_ROW_ID:
         case SECRET_KEY_RING_BY_KEY_ID:
         case SECRET_KEY_RING_BY_EMAILS:
         case SECRET_KEY_RING_KEY:
@@ -304,9 +304,10 @@ public class ApgProvider extends ContentProvider {
         qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = " + getKeyType(match));
 
         switch (match) {
-        case PUBLIC_KEY_RING_ID:
-        case SECRET_KEY_RING_ID:
-            qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
+        case PUBLIC_KEY_RING_ROW_ID:
+        case SECRET_KEY_RING_ROW_ID:
+            qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ROW_ID
+                    + " = ");
             qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
             // break omitted intentionally
@@ -315,20 +316,19 @@ public class ApgProvider extends ContentProvider {
         case SECRET_KEY_RING:
             qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                     + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_ID + " AND " + Tables.USER_IDS
-                    + "." + UserIdsColumns.RANK + " = '0') ");
+                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
+                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + Tables.USERS
+                    + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = " + Tables.USERS
+                    + "." + UserIdsColumns.KEY_ROW_ID + " AND " + Tables.USERS + "."
+                    + UserIdsColumns.RANK + " = '0') ");
 
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
+            projectionMap.put(KeyRingsColumns.MASTER_KEY_ROW_ID, Tables.KEY_RINGS + "."
+                    + KeyRingsColumns.MASTER_KEY_ROW_ID);
+            projectionMap.put(UserIdsColumns.USER_ID, Tables.USERS + "." + UserIdsColumns.USER_ID);
 
             if (TextUtils.isEmpty(sortOrder)) {
-                sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                sortOrder = Tables.USERS + "." + UserIdsColumns.USER_ID + " ASC";
             }
 
             break;
@@ -337,19 +337,18 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING_BY_KEY_ID:
             qb.setTables(Tables.KEYS + " AS tmp INNER JOIN " + Tables.KEY_RINGS + " ON ("
                     + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + "tmp."
-                    + KeysColumns.KEY_RING_ID + ")" + " INNER JOIN " + Tables.KEYS + " ON " + "("
-                    + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_ID + " AND " + Tables.USER_IDS
-                    + "." + UserIdsColumns.RANK + " = '0') ");
+                    + KeysColumns.KEY_RING_ROW_ID + ")" + " INNER JOIN " + Tables.KEYS + " ON "
+                    + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
+                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
+                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + Tables.USERS
+                    + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = " + Tables.USERS
+                    + "." + UserIdsColumns.KEY_ROW_ID + " AND " + Tables.USERS + "."
+                    + UserIdsColumns.RANK + " = '0') ");
 
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
+            projectionMap.put(KeyRingsColumns.MASTER_KEY_ROW_ID, Tables.KEY_RINGS + "."
+                    + KeyRingsColumns.MASTER_KEY_ROW_ID);
+            projectionMap.put(UserIdsColumns.USER_ID, Tables.USERS + "." + UserIdsColumns.USER_ID);
 
             qb.appendWhere(" AND tmp." + KeysColumns.KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getPathSegments().get(3));
@@ -360,17 +359,16 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING_BY_EMAILS:
             qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                     + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_ID + " AND " + Tables.USER_IDS
-                    + "." + UserIdsColumns.RANK + " = '0') ");
+                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
+                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + Tables.USERS
+                    + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = " + Tables.USERS
+                    + "." + UserIdsColumns.KEY_ROW_ID + " AND " + Tables.USERS + "."
+                    + UserIdsColumns.RANK + " = '0') ");
 
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
+            projectionMap.put(KeyRingsColumns.MASTER_KEY_ROW_ID, Tables.KEY_RINGS + "."
+                    + KeyRingsColumns.MASTER_KEY_ROW_ID);
+            projectionMap.put(UserIdsColumns.USER_ID, Tables.USERS + "." + UserIdsColumns.USER_ID);
 
             String emails = uri.getPathSegments().get(3);
             String chunks[] = emails.split(" *, *");
@@ -391,7 +389,7 @@ public class ApgProvider extends ContentProvider {
 
             if (gotCondition) {
                 qb.appendWhere(" AND EXISTS (SELECT tmp." + BaseColumns._ID + " FROM "
-                        + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_ID + " = "
+                        + Tables.USERS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_ROW_ID + " = "
                         + Tables.KEYS + "." + BaseColumns._ID + " AND (" + emailWhere + "))");
             }
 
@@ -450,7 +448,7 @@ public class ApgProvider extends ContentProvider {
 
                 break;
             case PUBLIC_KEY_RING_USER_ID:
-                db.insertOrThrow(Tables.USER_IDS, null, values);
+                db.insertOrThrow(Tables.USERS, null, values);
                 rowUri = PublicUserIds.buildPublicUserIdsUri(values.getAsString(PublicUserIds._ID));
 
                 break;
@@ -470,7 +468,7 @@ public class ApgProvider extends ContentProvider {
 
                 break;
             case SECRET_KEY_RING_USER_ID:
-                db.insertOrThrow(Tables.USER_IDS, null, values);
+                db.insertOrThrow(Tables.USERS, null, values);
                 rowUri = SecretUserIds.buildSecretUserIdsUri(values.getAsString(SecretUserIds._ID));
 
                 break;
@@ -498,16 +496,13 @@ public class ApgProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
 
         switch (match) {
-        case PUBLIC_KEY_RING_ID:
-            // delete corresponding keys and userids
-            // db.delete(Tables.KEYS, whereClause, whereArgs)
-            // TODO
+        case PUBLIC_KEY_RING_ROW_ID:
+            // corresponding keys and userids are deleted by ON DELETE CASCADE
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
             break;
-        case SECRET_KEY_RING_ID:
-            // delete corresponding keys and userids
-            // TODO
+        case SECRET_KEY_RING_ROW_ID:
+            // corresponding keys and userids are deleted by ON DELETE CASCADE
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultSelection(uri, KeyTypes.SECRET, selection), selectionArgs);
             break;
@@ -532,13 +527,13 @@ public class ApgProvider extends ContentProvider {
         try {
             final int match = sUriMatcher.match(uri);
             switch (match) {
-            case PUBLIC_KEY_RING_ID:
+            case PUBLIC_KEY_RING_ROW_ID:
                 count = db.update(Tables.KEY_RINGS, values,
                         buildDefaultSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
                 break;
-            case SECRET_KEY_RING_ID:
+            case SECRET_KEY_RING_ROW_ID:
                 count = db.update(Tables.KEY_RINGS, values,
-                        buildDefaultSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
+                        buildDefaultSelection(uri, KeyTypes.SECRET, selection), selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

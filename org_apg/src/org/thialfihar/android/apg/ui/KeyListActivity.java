@@ -601,7 +601,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
             if (masterKeyId != -1) {
                 children.insertElementAt(
-                        new KeyChild(PGPHelper.getFingerPrint(fingerPrintId), true), 0);
+                        new KeyChild(PGPHelper.getFingerPrint(KeyListActivity.this, fingerPrintId), true), 0);
                 c = mDatabase.query(UserIds.TABLE_NAME, new String[] { UserIds.USER_ID, // 0
                         }, UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0", new String[] { ""
                                 + masterKeyId }, null, null, UserIds.RANK + " ASC");

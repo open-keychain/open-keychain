@@ -24,8 +24,8 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -88,7 +88,7 @@ public class PassphraseCacheService extends Service {
         // try to get real key id
         long realId = keyId;
         if (realId != Id.key.symmetric) {
-            PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(keyId);
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, keyId);
             if (keyRing == null) {
                 return null;
             }

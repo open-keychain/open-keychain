@@ -30,18 +30,20 @@ import android.provider.BaseColumns;
 import org.thialfihar.android.apg.util.Log;
 
 public class ApgDatabase extends SQLiteOpenHelper {
+    // APG1: "apg"
     private static final String DATABASE_NAME = "apg.db";
-    // Last APG 1 db version was 2
+    // APG1: 2
     private static final int DATABASE_VERSION = 3;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
         String KEYS = "keys";
-        String USER_IDS = "user_ids";
+        String USERS = "user_ids";
     }
 
+    // APG1: REFERENCES where not implemented
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
-            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY, " + KeyRingsColumns.MASTER_KEY_ID
+            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY, " + KeyRingsColumns.MASTER_KEY_ROW_ID
             + " INT64, " + KeyRingsColumns.TYPE + " INTEGER, " + KeyRingsColumns.WHO_ID
             + " INTEGER, " + KeyRingsColumns.KEY_RING_DATA + " BLOB)";
 
@@ -55,7 +57,7 @@ public class ApgDatabase extends SQLiteOpenHelper {
             + " INTEGER REFERENCES " + Tables.KEY_RINGS + " ON DELETE CASCADE, "
             + KeysColumns.KEY_DATA + " BLOB," + KeysColumns.RANK + " INTEGER)";
 
-    private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS
+    private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USERS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY, " + UserIdsColumns.KEY_ROW_ID
             + " INTEGER REFERENCES " + Tables.KEYS + " ON DELETE CASCADE, "
             + UserIdsColumns.USER_ID + " TEXT, " + UserIdsColumns.RANK + " INTEGER)";
@@ -129,9 +131,6 @@ public class ApgDatabase extends SQLiteOpenHelper {
             Log.w(Constants.TAG, "Upgrading database to version " + version);
 
             switch (version) {
-            case 1:
-
-                break;
 
             default:
                 break;

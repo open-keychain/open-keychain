@@ -25,6 +25,7 @@ import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
@@ -308,7 +309,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                 if (keyId != 0) {
                     PGPSecretKey masterKey = null;
-                    mKeyRing = PGPMain.getSecretKeyRing(keyId);
+                    mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, keyId);
                     if (mKeyRing != null) {
                         masterKey = PGPHelper.getMasterKey(mKeyRing);
                         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
@@ -460,7 +461,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param userIdsView
      * @return
      */
-    private ArrayList<String> getUserIds(SectionView userIdsView) throws PGPMain.ApgGeneralException {
+    private ArrayList<String> getUserIds(SectionView userIdsView)
+            throws PGPMain.ApgGeneralException {
         ArrayList<String> userIds = new ArrayList<String>();
 
         ViewGroup userIdEditors = userIdsView.getEditors();
@@ -472,7 +474,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new PGPMain.ApgGeneralException(this.getString(R.string.error_userIdNeedsAName));
+                throw new PGPMain.ApgGeneralException(
+                        this.getString(R.string.error_userIdNeedsAName));
             } catch (UserIdEditor.NoEmailException e) {
                 throw new PGPMain.ApgGeneralException(
                         this.getString(R.string.error_userIdNeedsAnEmailAddress));
@@ -497,7 +500,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (!gotMainUserId) {
-            throw new PGPMain.ApgGeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new PGPMain.ApgGeneralException(
+                    getString(R.string.error_mainUserIdMustNotBeEmpty));
         }
 
         return userIds;
@@ -509,7 +513,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private ArrayList<PGPSecretKey> getKeys(SectionView keysView) throws PGPMain.ApgGeneralException {
+    private ArrayList<PGPSecretKey> getKeys(SectionView keysView)
+            throws PGPMain.ApgGeneralException {
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
         ViewGroup keyEditors = keysView.getEditors();
@@ -532,7 +537,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param keysView
      * @return
      */
-    private ArrayList<Integer> getKeysUsages(SectionView keysView) throws PGPMain.ApgGeneralException {
+    private ArrayList<Integer> getKeysUsages(SectionView keysView)
+            throws PGPMain.ApgGeneralException {
         ArrayList<Integer> getKeysUsages = new ArrayList<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();

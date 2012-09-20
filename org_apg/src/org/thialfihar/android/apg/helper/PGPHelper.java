@@ -38,6 +38,7 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.IterableIterator;
 import org.thialfihar.android.apg.util.Log;
 
@@ -189,9 +190,8 @@ public class PGPHelper {
         return getExpiryDate(key.getPublicKey());
     }
 
-    public static PGPPublicKey getEncryptPublicKey(long masterKeyId) {
-        // TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
-        PGPPublicKeyRing keyRing = PGPMain.getPublicKeyRing(masterKeyId);
+    public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
+        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -202,9 +202,8 @@ public class PGPHelper {
         return encryptKeys.get(0);
     }
 
-    public static PGPSecretKey getSigningKey(long masterKeyId) {
-        // TODO: externalize getSecretKeyRing from PGPWrapper into a DatabaseHelper
-        PGPSecretKeyRing keyRing = PGPMain.getSecretKeyRing(masterKeyId);
+    public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -385,10 +384,10 @@ public class PGPHelper {
     }
 
     public static String getPubkeyAsArmoredString(Context context, long keyId) {
-        PGPPublicKey key = PGPMain.getPublicKey(keyId);
+        PGPPublicKey key = ProviderHelper.getPGPPublicKey(context, keyId);
         // if it is no public key get it from your own keys...
         if (key == null) {
-            PGPSecretKey secretKey = PGPMain.getSecretKey(keyId);
+            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKey(context, keyId);
             if (secretKey == null) {
                 Log.e(Constants.TAG, "Key could not be found!");
                 return null;
@@ -415,10 +414,11 @@ public class PGPHelper {
         return armouredKey;
     }
 
-    public static String getFingerPrint(long keyId) {
-        PGPPublicKey key = PGPMain.getPublicKey(keyId);
+    public static String getFingerPrint(Context context, long keyId) {
+        PGPPublicKey key = ProviderHelper.getPGPPublicKey(context, keyId);
+        // if it is no public key get it from your own keys...
         if (key == null) {
-            PGPSecretKey secretKey = PGPMain.getSecretKey(keyId);
+            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKey(context, keyId);
             if (secretKey == null) {
                 Log.e(Constants.TAG, "Key could not be found!");
                 return null;

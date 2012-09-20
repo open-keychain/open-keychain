@@ -17,6 +17,8 @@
 
 package org.thialfihar.android.apg.provider;
 
+import org.thialfihar.android.apg.Constants;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -32,10 +34,12 @@ import android.provider.BaseColumns;
  */
 public class ApgContract {
 
+    // APG1: all rows had a "c_" prefix
+
     interface KeyRingsColumns {
-        String MASTER_KEY_ID = "master_key_id"; // TODO: clarify
+        String MASTER_KEY_ROW_ID = "master_key_id"; // TODO: clarify
         String TYPE = "type"; // see KeyTypes
-        String WHO_ID = "who_id";
+        String WHO_ID = "who_id"; // TODO: is this used?
         String KEY_RING_DATA = "key_ring_data"; // blob
     }
 
@@ -51,8 +55,8 @@ public class ApgContract {
         String CREATION = "creation";
         String EXPIRY = "expiry";
         String KEY_RING_ROW_ID = "key_ring_id"; // foreign key to key_rings._ID
-        String KEY_DATA = "key_data";
-        String RANK = "key_data"; // blob
+        String KEY_DATA = "key_data"; // blob
+        String RANK = "rank"; // APG1: this was "key_data", TODO: Bug? Is this even used?
     }
 
     interface UserIdsColumns {
@@ -66,8 +70,8 @@ public class ApgContract {
         public static final int SECRET = 1;
     }
 
-    public static final String CONTENT_AUTHORITY = "org.thialfihar.android.apg.provider";
-    // public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME;
+    // APG1: "org.thialfihar.android.apg.provider";
+    public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME;
 
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
