@@ -441,7 +441,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
         if (signatureKeyId != 0) {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(this, signatureKeyId);
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, signatureKeyId);
             PGPSecretKey masterKey = null;
             if (keyRing != null) {
                 masterKey = PGPHelper.getMasterKey(keyRing);
@@ -457,7 +457,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         if (encryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this,
+                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this,
                         encryptionKeyIds[i]);
                 PGPPublicKey masterKey = null;
                 if (keyRing == null) {
@@ -958,7 +958,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else {
             String uid = getResources().getString(R.string.unknownUserId);
             String uidExtra = "";
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(this, getSecretKeyId());
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, getSecretKeyId());
             if (keyRing != null) {
                 PGPSecretKey key = PGPHelper.getMasterKey(keyRing);
                 if (key != null) {

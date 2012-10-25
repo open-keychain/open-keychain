@@ -334,7 +334,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (mSignatureKeyId == 0) {
                     return;
                 }
-                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRing(DecryptActivity.this,
+                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(DecryptActivity.this,
                         mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);

@@ -309,7 +309,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                 if (keyId != 0) {
                     PGPSecretKey masterKey = null;
-                    mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, keyId);
+                    mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, keyId);
                     if (mKeyRing != null) {
                         masterKey = PGPHelper.getMasterKey(mKeyRing);
                         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(

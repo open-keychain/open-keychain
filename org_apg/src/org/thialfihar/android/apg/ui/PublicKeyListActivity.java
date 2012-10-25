@@ -116,7 +116,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
             if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
@@ -149,7 +149,7 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
             if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }

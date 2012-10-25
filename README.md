@@ -43,7 +43,9 @@ On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
 ## Build Spongy Castle
 
-see https://github.com/rtyley/spongycastle
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android.
+
+see http://rtyley.github.com/spongycastle/
 
 # Notes
 

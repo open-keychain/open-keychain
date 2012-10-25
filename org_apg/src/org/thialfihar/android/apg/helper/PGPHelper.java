@@ -191,7 +191,7 @@ public class PGPHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
+        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -203,7 +203,7 @@ public class PGPHelper {
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }

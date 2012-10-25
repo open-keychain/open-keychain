@@ -22,25 +22,12 @@ import org.thialfihar.android.apg.Constants;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-/**
- * TODO:
- * 
- * Breaking compatibility?:
- * 
- * - change CONTENT_AUTHORITY
- * 
- * - change type names
- * 
- */
 public class ApgContract {
 
-    // APG1: all rows had a "c_" prefix
-
     interface KeyRingsColumns {
-        String MASTER_KEY_ROW_ID = "master_key_id"; // TODO: clarify
+        String MASTER_KEY_ID = "master_key_id"; // not a database id
         String TYPE = "type"; // see KeyTypes
-        String WHO_ID = "who_id"; // TODO: is this used?
-        String KEY_RING_DATA = "key_ring_data"; // blob
+        String KEY_RING_DATA = "key_ring_data"; // PGPPublicKeyRing / PGPSecretKeyRing blob
     }
 
     interface KeysColumns {
@@ -54,13 +41,13 @@ public class ApgContract {
         String IS_REVOKED = "is_revoked";
         String CREATION = "creation";
         String EXPIRY = "expiry";
-        String KEY_RING_ROW_ID = "key_ring_id"; // foreign key to key_rings._ID
-        String KEY_DATA = "key_data"; // blob
-        String RANK = "rank"; // APG1: this was "key_data", TODO: Bug? Is this even used?
+        String KEY_RING_ROW_ID = "key_ring_row_id"; // foreign key to key_rings._ID
+        String KEY_DATA = "key_data"; // PGPPublicKey / PGPSecretKey blob
+        String RANK = "rank";
     }
 
     interface UserIdsColumns {
-        String KEY_ROW_ID = "key_id"; // foreign key to keys._ID
+        String KEY_RING_ROW_ID = "key_ring_row_id"; // foreign key to key_rings._ID
         String USER_ID = "user_id"; // not a database id
         String RANK = "rank";
     }
@@ -70,7 +57,6 @@ public class ApgContract {
         public static final int SECRET = 1;
     }
 
-    // APG1: "org.thialfihar.android.apg.provider";
     public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME;
 
     private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
@@ -81,10 +67,9 @@ public class ApgContract {
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
 
+    public static final String PATH_BY_MASTER_KEY_ID = "master_key_id";
     public static final String PATH_BY_KEY_ID = "key_id";
     public static final String PATH_BY_EMAILS = "emails";
-
-    public static final String PATH_RANK = "#";
 
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
@@ -107,8 +92,13 @@ public class ApgContract {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).build();
         }
 
-        public static Uri buildPublicKeyRingsByKeyIdUri(String keyRowId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyRowId).build();
+        public static Uri buildPublicKeyRingsByMasterKeyIdUri(String masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_MASTER_KEY_ID)
+                    .appendPath(masterKeyId).build();
+        }
+
+        public static Uri buildPublicKeyRingsByKeyIdUri(String keyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyId).build();
         }
 
         public static Uri buildPublicKeyRingsByEmailsUri(String emails) {
@@ -134,8 +124,13 @@ public class ApgContract {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).build();
         }
 
-        public static Uri buildSecretKeyRingsByKeyIdUri(String keyRowId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyRowId).build();
+        public static Uri buildSecretKeyRingsByMasterKeyIdUri(String masterKeyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_MASTER_KEY_ID)
+                    .appendPath(masterKeyId).build();
+        }
+
+        public static Uri buildSecretKeyRingsByKeyIdUri(String keyId) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyId).build();
         }
 
         public static Uri buildSecretKeyRingsByEmailsUri(String emails) {
@@ -157,9 +152,9 @@ public class ApgContract {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS).build();
         }
 
-        public static Uri buildPublicKeysRankUri(String keyRingRowId) {
+        public static Uri buildPublicKeysUri(String keyRingRowId, String keyRowId) {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS)
-                    .appendPath(PATH_RANK).build();
+                    .appendPath(keyRowId).build();
         }
     }
 
@@ -177,9 +172,9 @@ public class ApgContract {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS).build();
         }
 
-        public static Uri buildSecretKeysRankUri(String keyRingRowId) {
+        public static Uri buildSecretKeysUri(String keyRingRowId, String keyRowId) {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS)
-                    .appendPath(PATH_RANK).build();
+                    .appendPath(keyRowId).build();
         }
     }
 
@@ -198,9 +193,9 @@ public class ApgContract {
                     .build();
         }
 
-        public static Uri buildPublicUserIdsRankUri(String keyRingRowId) {
+        public static Uri buildPublicUserIdsUri(String keyRingRowId, String userIdRowId) {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .appendPath(PATH_RANK).build();
+                    .appendPath(userIdRowId).build();
         }
     }
 
@@ -219,9 +214,9 @@ public class ApgContract {
                     .build();
         }
 
-        public static Uri buildSecretUserIdsRankUri(String keyRingRowId) {
+        public static Uri buildSecretUserIdsUri(String keyRingRowId, String userIdRowId) {
             return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .appendPath(PATH_RANK).build();
+                    .appendPath(userIdRowId).build();
         }
     }
 

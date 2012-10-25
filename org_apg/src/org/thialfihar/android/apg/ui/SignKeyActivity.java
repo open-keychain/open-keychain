@@ -155,7 +155,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
+        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, mPubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;

@@ -743,7 +743,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRing(this, keyRingId);
+                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
                 if (keyring != null) {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);
@@ -807,7 +807,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                         signaturePassPhrase);
 
                 // store the signed key in our local cache
-                int retval = PGPMain.storeKeyRingInCache(signedPubKeyRing);
+                int retval = PGPMain.storeKeyRingInCache(this, signedPubKeyRing);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
                     throw new ApgGeneralException("Failed to store signed key in local cache");
                 }

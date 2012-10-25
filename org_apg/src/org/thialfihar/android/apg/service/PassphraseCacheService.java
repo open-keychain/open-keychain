@@ -88,7 +88,7 @@ public class PassphraseCacheService extends Service {
         // try to get real key id
         long realId = keyId;
         if (realId != Id.key.symmetric) {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, keyId);
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context, keyId);
             if (keyRing == null) {
                 return null;
             }

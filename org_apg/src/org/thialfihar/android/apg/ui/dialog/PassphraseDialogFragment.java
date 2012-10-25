@@ -40,6 +40,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.util.Log;
 
@@ -103,7 +104,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     private static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {
-            PGPSecretKey secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
+            // TODO: by master key id???
+            PGPSecretKey secretKey = PGPHelper.getMasterKey(ProviderHelper
+                    .getPGPSecretKeyRingByMasterKeyId(context, secretKeyId));
+            // PGPSecretKey secretKey =
+            // PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 
             Log.d(Constants.TAG, "Check if key has no passphrase...");
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -149,7 +154,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             secretKey = null;
             alert.setMessage(R.string.passPhraseForSymmetricEncryption);
         } else {
-            secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
+            // TODO: by master key id???
+            secretKey = PGPHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
+                    activity, secretKeyId));
+            // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
+
             if (secretKey == null) {
                 alert.setTitle(R.string.title_keyNotFound);
                 alert.setMessage(getString(R.string.keyNotFound, secretKeyId));

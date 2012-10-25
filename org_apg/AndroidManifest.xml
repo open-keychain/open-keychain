@@ -339,6 +339,12 @@
         <service android:name=".service.ApgService" />
 
         <provider
+            android:name=".provider.ApgProvider"
+            android:authorities="org.thialfihar.android.apg.provider"
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+
+        <!-- DEPRECATED: -->
+        <provider
             android:name=".deprecated.DataProvider"
             android:authorities="org.thialfihar.android.apg.provider"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
