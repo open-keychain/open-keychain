@@ -24,7 +24,7 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.ui.MainActivity;
-import org.thialfihar.android.apg.ui.SelectSecretKeyListActivity;
+import org.thialfihar.android.apg.ui.SelectSecretKeyListActivityOld;
 import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -263,7 +263,7 @@ public class BaseActivity extends SherlockFragmentActivity implements Runnable,
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.RESULT_EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivityOld.RESULT_EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

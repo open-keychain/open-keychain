@@ -1001,7 +1001,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     }
 
     private void selectSecretKey() {
-        Intent intent = new Intent(this, SelectSecretKeyListActivity.class);
+        Intent intent = new Intent(this, SelectSecretKeyListActivityOld.class);
         startActivityForResult(intent, Id.request.secret_keys);
     }
 
@@ -1049,7 +1049,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivity.RESULT_EXTRA_KEY_ID));
+                setSecretKeyId(bundle.getLong(SelectSecretKeyListActivityOld.RESULT_EXTRA_KEY_ID));
             } else {
                 setSecretKeyId(Id.key.none);
             }

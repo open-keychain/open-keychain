@@ -33,12 +33,12 @@ public class MainActivity extends SherlockActivity {
 
     public void manageKeysOnClick(View view) {
         // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(new Intent(this, PublicKeyListActivity.class), 0);
+        startActivityForResult(new Intent(this, KeyListPublicActivity.class), 0);
     }
 
     public void myKeysOnClick(View view) {
         // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(new Intent(this, SecretKeyListActivity.class), 0);
+        startActivityForResult(new Intent(this, KeyListSecretActivity.class), 0);
     }
 
     public void encryptOnClick(View view) {

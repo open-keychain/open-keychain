@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.thialfihar.android.apg.ui;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -21,9 +5,10 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -35,12 +20,16 @@ import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
-public class PublicKeyListActivity extends KeyListActivity {
+public class KeyListPublicActivity extends KeyListActivity {
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.key_list_public_activity);
+
         mExportFilename = Constants.path.APP_DIR + "/pubexport.asc";
         mKeyType = Id.type.public_key;
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -116,7 +105,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this,
+                    keyRingId);
             if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
@@ -149,7 +139,8 @@ public class PublicKeyListActivity extends KeyListActivity {
             mSelectedItem = groupPosition;
             final int keyRingId = mListAdapter.getKeyRingId(groupPosition);
             long keyId = 0;
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this,
+                    keyRingId);
             if (keyRing != null) {
                 keyId = PGPHelper.getMasterKey((PGPPublicKeyRing) keyRing).getKeyID();
             }
@@ -181,10 +172,10 @@ public class PublicKeyListActivity extends KeyListActivity {
                 return;
             }
 
-            Intent intent = new Intent(this, PublicKeyListActivity.class);
-            intent.setAction(PublicKeyListActivity.ACTION_IMPORT);
-            intent.putExtra(PublicKeyListActivity.EXTRA_TEXT,
-                    data.getStringExtra(KeyListActivity.EXTRA_TEXT));
+            Intent intent = new Intent(this, KeyListPublicActivity.class);
+            intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
+            intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
+                    data.getStringExtra(KeyListActivityOld.EXTRA_TEXT));
             handleIntent(intent);
             break;
         }

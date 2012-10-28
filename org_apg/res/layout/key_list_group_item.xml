@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,40 +15,26 @@
      limitations under the License.
 -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:singleLine="true"
-    android:layout_marginRight="?android:attr/scrollbarSize"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight">
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_marginRight="?android:attr/scrollbarSize"
+    android:orientation="vertical"
+    android:paddingLeft="36dip"
+    android:singleLine="true" >
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
+    <TextView
+        android:id="@+id/mainUserId"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="36dip">
+        android:text="Main User ID"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/mainUserId"
-            android:text="Main User ID"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/mainUserIdRest"
-            android:text="&lt;user@somewhere.com&gt;"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/mainUserIdRest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;user@example.com>"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

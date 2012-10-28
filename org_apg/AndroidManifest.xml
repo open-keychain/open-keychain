@@ -81,7 +81,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.PublicKeyListActivity"
+            android:name=".ui.KeyListPublicActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_managePublicKeys"
             android:launchMode="singleTop"
@@ -146,7 +146,7 @@
                 android:resource="@xml/searchable_public_keys" />
         </activity>
         <activity
-            android:name=".ui.SecretKeyListActivity"
+            android:name=".ui.KeyListSecretActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manageSecretKeys"
             android:launchMode="singleTop"
@@ -340,35 +340,35 @@
 
         <provider
             android:name=".provider.ApgProvider"
-            android:authorities="org.thialfihar.android.apg.provider"
+            android:authorities="org.thialfihar.android.apg"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
 
         <!-- DEPRECATED: -->
-        <provider
-            android:name=".deprecated.DataProvider"
-            android:authorities="org.thialfihar.android.apg.provider"
-            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+<!--         <provider -->
+<!--             android:name=".deprecated.DataProvider" -->
+<!--             android:authorities="org.thialfihar.android.apg.provider" -->
+<!--             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" /> -->
 
         <!-- TODO: need to be moved into new service model -->
-        <service
-            android:name=".deprecated.ApgService2"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
-            android:process=":remote" >
-            <intent-filter>
-                <action android:name="org.thialfihar.android.apg.service.IApgService2" />
-            </intent-filter>
+<!--         <service -->
+<!--             android:name=".deprecated.ApgService2" -->
+<!--             android:enabled="true" -->
+<!--             android:exported="true" -->
+<!--             android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" -->
+<!--             android:process=":remote" > -->
+<!--             <intent-filter> -->
+<!--                 <action android:name="org.thialfihar.android.apg.service.IApgService2" /> -->
+<!--             </intent-filter> -->
 
-            <meta-data
-                android:name="api_version"
-                android:value="2" />
-        </service>
+<!--             <meta-data -->
+<!--                 android:name="api_version" -->
+<!--                 android:value="2" /> -->
+<!--         </service> -->
 
-        <provider
-            android:name=".deprecated.ApgServiceBlobProvider"
-            android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
-            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
+<!--         <provider -->
+<!--             android:name=".deprecated.ApgServiceBlobProvider" -->
+<!--             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider" -->
+<!--             android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" /> -->
     </application>
 
 </manifest>

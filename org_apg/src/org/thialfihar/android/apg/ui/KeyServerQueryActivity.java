@@ -83,7 +83,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         case android.R.id.home:
             // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, PublicKeyListActivity.class);
+            Intent intent = new Intent(this, KeyListPublicActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
@@ -223,9 +223,9 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         } else {
                             if (mKeyData != null) {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
-                                        PublicKeyListActivity.class);
-                                intent.setAction(KeyListActivity.ACTION_IMPORT);
-                                intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
+                                        KeyListPublicActivity.class);
+                                intent.setAction(KeyListActivityOld.ACTION_IMPORT);
+                                intent.putExtra(KeyListActivityOld.EXTRA_TEXT, mKeyData);
                                 startActivity(intent);
                             }
                         }

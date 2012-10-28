@@ -215,17 +215,21 @@ public class ProviderHelper {
         // delete old version of this keyRing, which also deletes all keys and userIds on cascade
         Uri deleteUri = PublicKeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long
                 .toString(masterKeyId));
-        context.getContentResolver().delete(deleteUri, null, null);
+
+        try {
+            context.getContentResolver().delete(deleteUri, null, null);
+        } catch (UnsupportedOperationException e) {
+            Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
+        }
 
         ContentValues values = new ContentValues();
         values.put(PublicKeyRings.MASTER_KEY_ID, masterKeyId);
         values.put(PublicKeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
         // insert new version of this keyRing
-        Uri uri = PublicKeyRings.buildPublicKeyRingsByMasterKeyIdUri(values
-                .getAsString(PublicKeyRings.MASTER_KEY_ID));
+        Uri uri = PublicKeyRings.buildPublicKeyRingsUri();
         Uri insertedUri = context.getContentResolver().insert(uri, values);
-        long keyRingRowId = Long.getLong(insertedUri.getLastPathSegment());
+        long keyRingRowId = Long.valueOf(insertedUri.getLastPathSegment());
 
         // save all keys and userIds included in keyRing object in database
         ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();
@@ -267,17 +271,21 @@ public class ProviderHelper {
         // delete old version of this keyRing, which also deletes all keys and userIds on cascade
         Uri deleteUri = SecretKeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long
                 .toString(masterKeyId));
-        context.getContentResolver().delete(deleteUri, null, null);
+
+        try {
+            context.getContentResolver().delete(deleteUri, null, null);
+        } catch (UnsupportedOperationException e) {
+            Log.e(Constants.TAG, "Key could not be deleted! Maybe we are creating a new one!", e);
+        }
 
         ContentValues values = new ContentValues();
         values.put(SecretKeyRings.MASTER_KEY_ID, masterKeyId);
         values.put(SecretKeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
         // insert new version of this keyRing
-        Uri uri = SecretKeyRings.buildSecretKeyRingsByMasterKeyIdUri(values
-                .getAsString(SecretKeyRings.MASTER_KEY_ID));
-        Uri insertedUri = context.getContentResolver().insert(uri, values);
-        long keyRingRowId = Long.getLong(insertedUri.getLastPathSegment());
+        Uri uri = SecretKeyRings.buildSecretKeyRingsUri();
+        Uri insertedUri = context.getContentResolver().insert(uri, values);        
+        long keyRingRowId = Long.valueOf(insertedUri.getLastPathSegment());
 
         // save all keys and userIds included in keyRing object in database
         ArrayList<ContentProviderOperation> operations = new ArrayList<ContentProviderOperation>();

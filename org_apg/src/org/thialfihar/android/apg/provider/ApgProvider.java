@@ -298,6 +298,29 @@ public class ApgProvider extends ContentProvider {
         return type;
     }
 
+    private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb,
+            HashMap<String, String> projectionMap, int match, String sortOrder) {
+        qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+        qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+
+        qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
+                + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
+                + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
+                + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + Tables.USER_IDS
+                + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS
+                + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
+                + UserIdsColumns.RANK + " = '0')");
+
+        projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
+        projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+
+        qb.setProjectionMap(projectionMap);
+
+        return qb;
+    }
+
     /** {@inheritDoc} */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -312,39 +335,34 @@ public class ApgProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
 
         switch (match) {
+        case PUBLIC_KEY_RING:
+        case SECRET_KEY_RING:
+            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+            if (TextUtils.isEmpty(sortOrder)) {
+                sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+            }
+
+            break;
+
         case PUBLIC_KEY_RING_BY_ROW_ID:
         case SECRET_KEY_RING_BY_ROW_ID:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = "
-                    + getKeyType(match));
+            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
 
-            qb.appendWhere(Tables.KEY_RINGS + "." + BaseColumns._ID + " = ");
+            qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
-            // break omitted intentionally
+            if (TextUtils.isEmpty(sortOrder)) {
+                sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+            }
+
+            break;
 
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
+            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+
+            qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-            // break omitted intentionally
-
-        case PUBLIC_KEY_RING:
-        case SECRET_KEY_RING:
-
-            qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
-                    + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
-                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0') ");
-
-            projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
 
             if (TextUtils.isEmpty(sortOrder)) {
                 sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
@@ -354,8 +372,8 @@ public class ApgProvider extends ContentProvider {
 
         case SECRET_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = "
-                    + getKeyType(match));
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
             qb.setTables(Tables.KEYS + " AS tmp INNER JOIN " + Tables.KEY_RINGS + " ON ("
                     + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + "tmp."
@@ -363,9 +381,9 @@ public class ApgProvider extends ContentProvider {
                     + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
                     + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
                     + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
-                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0') ");
+                    + Tables.USER_IDS + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID
+                    + " = " + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
+                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
 
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
             projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
@@ -373,15 +391,17 @@ public class ApgProvider extends ContentProvider {
             projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
                     + UserIdsColumns.USER_ID);
 
-            qb.appendWhere("tmp." + KeysColumns.KEY_ID + " = ");
+            qb.setProjectionMap(projectionMap);
+
+            qb.appendWhere(" AND tmp." + KeysColumns.KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
 
         case SECRET_KEY_RING_BY_EMAILS:
         case PUBLIC_KEY_RING_BY_EMAILS:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = "
-                    + getKeyType(match));
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
             qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                     + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
@@ -389,13 +409,15 @@ public class ApgProvider extends ContentProvider {
                     + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
                     + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
                     + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
-                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0') ");
+                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
 
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
             projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                     + KeyRingsColumns.MASTER_KEY_ID);
             projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
                     + UserIdsColumns.USER_ID);
+
+            qb.setProjectionMap(projectionMap);
 
             String emails = uri.getLastPathSegment();
             String chunks[] = emails.split(" *, *");
@@ -415,43 +437,55 @@ public class ApgProvider extends ContentProvider {
             }
 
             if (gotCondition) {
-                qb.appendWhere("EXISTS (SELECT tmp." + BaseColumns._ID + " FROM " + Tables.USER_IDS
-                        + " AS tmp WHERE tmp." + UserIdsColumns.KEY_RING_ROW_ID + " = "
-                        + Tables.KEYS + "." + BaseColumns._ID + " AND (" + emailWhere + "))");
+                qb.appendWhere(" AND EXISTS (SELECT tmp." + BaseColumns._ID + " FROM "
+                        + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_RING_ROW_ID
+                        + " = " + Tables.KEYS + "." + BaseColumns._ID + " AND (" + emailWhere
+                        + "))");
             }
+
+            break;
+
+        case PUBLIC_KEY_RING_KEY:
+        case SECRET_KEY_RING_KEY:
+            qb.setTables(Tables.KEYS);
+            qb.appendWhere(KeysColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+
+            qb.appendWhere(" AND " + KeysColumns.KEY_RING_ROW_ID + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
             break;
 
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
-            String keyRowId = uri.getLastPathSegment();
-            qb.appendWhere(BaseColumns._ID + " = " + keyRowId);
-
-            // break omitted intentionally
-
-        case PUBLIC_KEY_RING_KEY:
-        case SECRET_KEY_RING_KEY:
             qb.setTables(Tables.KEYS);
-            qb.appendWhere(KeysColumns.TYPE + " = " + getKeyType(match));
+            qb.appendWhere(KeysColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
-            String foreignKeyRingRowId = uri.getPathSegments().get(2);
-            qb.appendWhere(KeysColumns.KEY_RING_ROW_ID + " = " + foreignKeyRingRowId);
+            qb.appendWhere(" AND " + KeysColumns.KEY_RING_ROW_ID + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+
+            qb.appendWhere(" AND " + BaseColumns._ID + " = ");
+            qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+            break;
+
+        case PUBLIC_KEY_RING_USER_ID:
+        case SECRET_KEY_RING_USER_ID:
+            qb.setTables(Tables.USER_IDS);
+            qb.appendWhere(UserIdsColumns.KEY_RING_ROW_ID + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
             break;
 
         case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
-            String userIdRowId = uri.getLastPathSegment();
-            qb.appendWhere(BaseColumns._ID + " = " + userIdRowId);
-
-            // break omitted intentionally
-
-        case PUBLIC_KEY_RING_USER_ID:
-        case SECRET_KEY_RING_USER_ID:
             qb.setTables(Tables.USER_IDS);
+            qb.appendWhere(UserIdsColumns.KEY_RING_ROW_ID + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
-            String foreignKeyRowId = uri.getPathSegments().get(2);
-            qb.appendWhere(UserIdsColumns.KEY_RING_ROW_ID + " = " + foreignKeyRowId);
+            qb.appendWhere(" AND " + BaseColumns._ID + " = ");
+            qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
 
@@ -459,8 +493,6 @@ public class ApgProvider extends ContentProvider {
             throw new IllegalArgumentException("Unknown URI " + uri);
 
         }
-
-        qb.setProjectionMap(projectionMap);
 
         // If no sort order is specified use the default
         String orderBy;
@@ -474,6 +506,15 @@ public class ApgProvider extends ContentProvider {
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);
+
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG,
+                    "Query: "
+                            + qb.buildQuery(projection, selection, selectionArgs, null, null,
+                                    orderBy, null));
+            Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(c));
+        }
+
         return c;
     }
 
@@ -485,6 +526,7 @@ public class ApgProvider extends ContentProvider {
         final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
 
         Uri rowUri = null;
+        long rowId = -1;
         try {
             final int match = sUriMatcher.match(uri);
 
@@ -492,41 +534,39 @@ public class ApgProvider extends ContentProvider {
             case PUBLIC_KEY_RING:
                 values.put(PublicKeyRings.TYPE, KeyTypes.PUBLIC);
 
-                db.insertOrThrow(Tables.KEY_RINGS, null, values);
-                rowUri = PublicKeyRings.buildPublicKeyRingsUri(values
-                        .getAsString(PublicKeyRings._ID));
+                rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
+                rowUri = PublicKeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
 
                 break;
             case PUBLIC_KEY_RING_KEY:
                 values.put(PublicKeys.TYPE, KeyTypes.PUBLIC);
 
-                db.insertOrThrow(Tables.KEYS, null, values);
-                rowUri = PublicKeys.buildPublicKeysUri(values.getAsString(PublicKeys._ID));
+                rowId = db.insertOrThrow(Tables.KEYS, null, values);
+                rowUri = PublicKeys.buildPublicKeysUri(Long.toString(rowId));
 
                 break;
             case PUBLIC_KEY_RING_USER_ID:
-                db.insertOrThrow(Tables.USER_IDS, null, values);
-                rowUri = PublicUserIds.buildPublicUserIdsUri(values.getAsString(PublicUserIds._ID));
+                rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
+                rowUri = PublicUserIds.buildPublicUserIdsUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING:
                 values.put(SecretKeyRings.TYPE, KeyTypes.SECRET);
 
-                db.insertOrThrow(Tables.KEY_RINGS, null, values);
-                rowUri = SecretKeyRings.buildSecretKeyRingsUri(values
-                        .getAsString(SecretKeyRings._ID));
+                rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
+                rowUri = SecretKeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING_KEY:
                 values.put(SecretKeys.TYPE, KeyTypes.SECRET);
 
-                db.insertOrThrow(Tables.KEYS, null, values);
-                rowUri = SecretKeys.buildSecretKeysUri(values.getAsString(SecretKeys._ID));
+                rowId = db.insertOrThrow(Tables.KEYS, null, values);
+                rowUri = SecretKeys.buildSecretKeysUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING_USER_ID:
-                db.insertOrThrow(Tables.USER_IDS, null, values);
-                rowUri = SecretUserIds.buildSecretUserIdsUri(values.getAsString(SecretUserIds._ID));
+                rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
+                rowUri = SecretUserIds.buildSecretUserIdsUri(Long.toString(rowId));
 
                 break;
             default:

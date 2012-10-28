@@ -19,7 +19,7 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.ui.widget.SelectSecretKeyListAdapter;
+import org.thialfihar.android.apg.ui.widget.SelectSecretKeyListAdapterOld;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
+public class SelectSecretKeyListActivityOld extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
@@ -46,7 +46,7 @@ public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
     public static final String RESULT_EXTRA_KEY_ID = "keyId";
 
     protected ListView mList;
-    protected SelectSecretKeyListAdapter mListAdapter;
+    protected SelectSecretKeyListAdapterOld mListAdapter;
     protected View mFilterLayout;
     protected Button mClearFilterButton;
     protected TextView mFilterInfo;
@@ -113,12 +113,12 @@ public class SelectSecretKeyListActivity extends SherlockFragmentActivity {
             mFilterInfo.setText(getString(R.string.filterInfo, searchString));
         }
 
-        if (mListAdapter != null) {
-            mListAdapter.cleanup();
-        }
-
-        mListAdapter = new SelectSecretKeyListAdapter(this, mList, searchString);
-        mList.setAdapter(mListAdapter);
+//        if (mListAdapter != null) {
+//            mListAdapter.cleanup();
+//        }
+//
+//        mListAdapter = new SelectSecretKeyListAdapter(this, mList, searchString);
+//        mList.setAdapter(mListAdapter);
     }
 
     @Override

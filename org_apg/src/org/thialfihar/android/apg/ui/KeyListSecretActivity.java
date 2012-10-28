@@ -1,32 +1,20 @@
-/*
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.thialfihar.android.apg.ui;
 
-import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
+import org.thialfihar.android.apg.ui.widget.KeyListAdapter;
 import org.thialfihar.android.apg.util.Log;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,18 +26,18 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
-import android.widget.ExpandableListView.OnChildClickListener;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-
-public class SecretKeyListActivity extends KeyListActivity implements OnChildClickListener {
+public class KeyListSecretActivity extends KeyListActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.key_list_secret_activity);
+
         mExportFilename = Constants.path.APP_DIR + "/secexport.asc";
         mKeyType = Id.type.secret_key;
-        super.onCreate(savedInstanceState);
-        mList.setOnChildClickListener(this);
+
     }
 
     @Override
@@ -154,7 +142,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     String passPhrase = PassphraseCacheService.getCachedPassphrase(
-                            SecretKeyListActivity.this, secretKeyId);
+                            KeyListSecretActivity.this, secretKeyId);
                     PGPMain.setEditPassPhrase(passPhrase);
                     editKey();
                 }
@@ -166,7 +154,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    SecretKeyListActivity.this, messenger, secretKeyId);
+                    KeyListSecretActivity.this, messenger, secretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PGPMain.ApgGeneralException e) {
@@ -195,7 +183,7 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
         case Id.message.create_key: // intentionally no break
         case Id.message.edit_key: {
             if (resultCode == RESULT_OK) {
-                refreshList();
+                // refreshList();
             }
             break;
         }
@@ -207,4 +195,5 @@ public class SecretKeyListActivity extends KeyListActivity implements OnChildCli
 
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }
