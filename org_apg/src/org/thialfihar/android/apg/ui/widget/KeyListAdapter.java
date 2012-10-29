@@ -16,42 +16,44 @@
 
 package org.thialfihar.android.apg.ui.widget;
 
-import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeys;
-import org.thialfihar.android.apg.provider.ApgContract.PublicUserIds;
-import org.thialfihar.android.apg.provider.ApgContract.SecretKeys;
-import org.thialfihar.android.apg.provider.ApgContract.SecretUserIds;
+import org.thialfihar.android.apg.provider.ApgContract.Keys;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
+import org.thialfihar.android.apg.util.Log;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.MergeCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SimpleCursorTreeAdapter;
+import android.widget.CursorTreeAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class KeyListAdapter extends SimpleCursorTreeAdapter implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class KeyListAdapter extends CursorTreeAdapter {
     private Context mContext;
-    private LoaderManager mManager;
     private LayoutInflater mInflater;
 
-    // Id.type.public_key / Id.type.secret_key
     protected int mKeyType;
 
-    public KeyListAdapter(Context context, LoaderManager manager, Cursor groupCursor, int keyType) {
-        super(context, groupCursor, -1, null, null, -1, null, null);
+    public static int KEY_TYPE_PUBLIC = 0;
+    public static int KEY_TYPE_SECRET = 1;
+
+    private static final int KEY = 0;
+    private static final int USER_ID = 1;
+    private static final int FINGERPRINT = 2;
+
+    public KeyListAdapter(Context context, Cursor groupCursor, int keyType) {
+        super(groupCursor, context);
         mContext = context;
-        mManager = manager;
         mInflater = LayoutInflater.from(context);
         mKeyType = keyType;
     }
@@ -65,16 +67,11 @@ public class KeyListAdapter extends SimpleCursorTreeAdapter implements
     }
 
     /**
-     * Binds TextViews from view to results from database group cursor.
+     * Binds TextViews from group view to results from database group cursor.
      */
     @Override
     protected void bindGroupView(View view, Context context, Cursor cursor, boolean isExpanded) {
-        int userIdIndex;
-        if (mKeyType == Id.type.public_key) {
-            userIdIndex = cursor.getColumnIndex(PublicUserIds.USER_ID);
-        } else {
-            userIdIndex = cursor.getColumnIndex(SecretUserIds.USER_ID);
-        }
+        int userIdIndex = cursor.getColumnIndex(UserIds.USER_ID);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknownUserId);
@@ -105,131 +102,159 @@ public class KeyListAdapter extends SimpleCursorTreeAdapter implements
      */
     @Override
     public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
-
-        return mInflater.inflate(R.layout.key_list_child_item_master_key, null);
-    }
-
-    @Override
-    protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
-        int keyIdIndex;
-        if (mKeyType == Id.type.public_key) {
-            keyIdIndex = cursor.getColumnIndex(PublicKeys.KEY_ID);
+        // first entry is fingerprint
+        if (cursor.getPosition() == 0) {
+            return mInflater.inflate(R.layout.key_list_child_item_user_id, null);
         } else {
-            keyIdIndex = cursor.getColumnIndex(SecretKeys.KEY_ID);
+            // differentiate between keys and userIds in MergeCursor
+            if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {
+                // other layout for master key
+                int masterKeyIndex = cursor.getColumnIndex(Keys.IS_MASTER_KEY);
+                if (cursor.getInt(masterKeyIndex) == 1) {
+                    return mInflater.inflate(R.layout.key_list_child_item_master_key, null);
+                } else {
+                    return mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
+                }
+            } else {
+                return mInflater.inflate(R.layout.key_list_child_item_user_id, null);
+            }
         }
-
-        TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        String keyIdStr = PGPHelper.getSmallFingerPrint(cursor.getLong(keyIdIndex));
-        keyId.setText(keyIdStr);
     }
 
     /**
-     * Given the group, we return a cursor for all the children within that group
+     * Bind TextViews from view of childs to query results
+     */
+    @Override
+    protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
+        // first entry is fingerprint
+        if (cursor.getPosition() == 0) {
+            String fingerprint = PGPHelper.getFingerPrint(context,
+                    cursor.getLong(cursor.getColumnIndex(Keys.KEY_ID)));
+            fingerprint = fingerprint.replace("  ", "\n");
+
+            TextView userId = (TextView) view.findViewById(R.id.userId);
+            userId.setText(context.getString(R.string.fingerprint) + ":\n" + fingerprint);
+        } else {
+            // differentiate between keys and userIds in MergeCursor
+            if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {
+
+                String keyIdStr = PGPHelper.getSmallFingerPrint(cursor.getLong(cursor
+                        .getColumnIndex(Keys.KEY_ID)));
+                String algorithmStr = PGPHelper.getAlgorithmInfo(
+                        cursor.getInt(cursor.getColumnIndex(Keys.ALGORITHM)),
+                        cursor.getInt(cursor.getColumnIndex(Keys.KEY_SIZE)));
+
+                TextView keyId = (TextView) view.findViewById(R.id.keyId);
+                keyId.setText(keyIdStr);
+
+                TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
+                keyDetails.setText("(" + algorithmStr + ")");
+
+                ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
+                if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_ENCRYPT)) != 1) {
+                    encryptIcon.setVisibility(View.GONE);
+                }
+
+                ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
+                if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
+                    signIcon.setVisibility(View.GONE);
+                }
+            } else {
+                String userIdStr = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
+
+                TextView userId = (TextView) view.findViewById(R.id.userId);
+                userId.setText(userIdStr);
+            }
+        }
+    }
+
+    /**
+     * Given the group cursor, we start cursors for a fingerprint, keys, and userIds, which are
+     * merged together and form the child cursor
      */
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
+        // put keyRingRowId into a bundle to have it when querying child cursors
         final long idGroup = groupCursor.getLong(groupCursor.getColumnIndex(BaseColumns._ID));
         Bundle bundle = new Bundle();
-        bundle.putLong("idGroup", idGroup);
-        int groupPos = groupCursor.getPosition();
-        if (mManager.getLoader(groupPos) != null && !mManager.getLoader(groupPos).isReset()) {
-            mManager.restartLoader(groupPos, bundle, this);
-        } else {
-            mManager.initLoader(groupPos, bundle, this);
-        }
-        return null;
+        bundle.putLong("keyRingRowId", idGroup);
 
-        // OLD CODE:
-        // Vector<KeyChild> children = mChildren.get(groupPosition);
-        // if (children != null) {
-        // return children;
-        // }
+        Cursor fingerprintCursor = getChildCursor(bundle, FINGERPRINT);
+        Cursor keyCursor = getChildCursor(bundle, KEY);
+        Cursor userIdCursor = getChildCursor(bundle, USER_ID);
 
-        // mCursor.moveToPosition(groupPosition);
-        // children = new Vector<KeyChild>();
-        // Cursor c = mDatabase.query(Keys.TABLE_NAME, new String[] { Keys._ID, // 0
-        // Keys.KEY_ID, // 1
-        // Keys.IS_MASTER_KEY, // 2
-        // Keys.ALGORITHM, // 3
-        // Keys.KEY_SIZE, // 4
-        // Keys.CAN_SIGN, // 5
-        // Keys.CAN_ENCRYPT, // 6
-        // }, Keys.KEY_RING_ID + " = ?", new String[] { mCursor.getString(0) }, null, null,
-        // Keys.RANK + " ASC");
+        MergeCursor mergeCursor = new MergeCursor(new Cursor[] { fingerprintCursor, keyCursor,
+                userIdCursor });
+        Log.d(Constants.TAG, "mergeCursor:" + DatabaseUtils.dumpCursorToString(mergeCursor));
 
-        // int masterKeyId = -1;
-        // long fingerPrintId = -1;
-        // for (int i = 0; i < c.getCount(); ++i) {
-        // c.moveToPosition(i);
-        // children.add(new KeyChild(c.getLong(1), c.getInt(2) == 1, c.getInt(3), c.getInt(4),
-        // c.getInt(5) == 1, c.getInt(6) == 1));
-        // if (i == 0) {
-        // masterKeyId = c.getInt(0);
-        // fingerPrintId = c.getLong(1);
-        // }
-        // }
-        // c.close();
-        //
-        // if (masterKeyId != -1) {
-        // children.insertElementAt(
-        // new KeyChild(PGPHelper.getFingerPrint(KeyListActivity.this, fingerPrintId),
-        // true), 0);
-        // c = mDatabase.query(UserIds.TABLE_NAME, new String[] { UserIds.USER_ID, // 0
-        // }, UserIds.KEY_ID + " = ? AND " + UserIds.RANK + " > 0", new String[] { ""
-        // + masterKeyId }, null, null, UserIds.RANK + " ASC");
-        //
-        // for (int i = 0; i < c.getCount(); ++i) {
-        // c.moveToPosition(i);
-        // children.add(new KeyChild(c.getString(0)));
-        // }
-        // c.close();
-        // }
-
-        // mChildren.set(groupPosition, children);
-        // return children;
+        return mergeCursor;
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int groupPos, Bundle bundle) {
-        long idGroup = bundle.getLong("idGroup");
+    /**
+     * This builds a cursor for a specific type of children
+     * 
+     * @param bundle
+     * @param type
+     * @return
+     */
+    private Cursor getChildCursor(Bundle bundle, int type) {
+        long keyRingRowId = bundle.getLong("keyRingRowId");
 
         Uri uri = null;
         String[] projection = null;
-        String orderBy = null;
-        if (mKeyType == Id.type.public_key) {
-            projection = new String[] { PublicKeys._ID, // 0
-                    PublicKeys.KEY_ID, // 1
-                    PublicKeys.IS_MASTER_KEY, // 2
-                    PublicKeys.ALGORITHM, // 3
-                    PublicKeys.KEY_SIZE, // 4
-                    PublicKeys.CAN_SIGN, // 5
-                    PublicKeys.CAN_ENCRYPT, // 6
-            };
-            orderBy = PublicKeys.RANK + " ASC";
+        String sortOrder = null;
+        String selection = null;
 
-            uri = PublicKeys.buildPublicKeysUri(String.valueOf(idGroup));
-        } else {
-            projection = new String[] { SecretKeys._ID, // 0
-                    SecretKeys.KEY_ID, // 1
-                    SecretKeys.IS_MASTER_KEY, // 2
-                    SecretKeys.ALGORITHM, // 3
-                    SecretKeys.KEY_SIZE, // 4
-                    SecretKeys.CAN_SIGN, // 5
-                    SecretKeys.CAN_ENCRYPT, // 6
-            };
-            orderBy = SecretKeys.RANK + " ASC";
-            
-            uri = SecretKeys.buildSecretKeysUri(String.valueOf(idGroup));
+        switch (type) {
+        case FINGERPRINT:
+            projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
+                    Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
+            sortOrder = Keys.RANK + " ASC";
+
+            // use only master key for fingerprint
+            selection = Keys.IS_MASTER_KEY + " = 1 ";
+
+            if (mKeyType == KEY_TYPE_PUBLIC) {
+                uri = Keys.buildPublicKeysUri(String.valueOf(keyRingRowId));
+            } else {
+                uri = Keys.buildSecretKeysUri(String.valueOf(keyRingRowId));
+            }
+            break;
+
+        case KEY:
+            projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
+                    Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
+            sortOrder = Keys.RANK + " ASC";
+
+            if (mKeyType == KEY_TYPE_PUBLIC) {
+                uri = Keys.buildPublicKeysUri(String.valueOf(keyRingRowId));
+            } else {
+                uri = Keys.buildSecretKeysUri(String.valueOf(keyRingRowId));
+            }
+
+            break;
+
+        case USER_ID:
+            projection = new String[] { UserIds._ID, UserIds.USER_ID, UserIds.RANK, };
+            sortOrder = UserIds.RANK + " ASC";
+
+            // not the main user id:
+            selection = UserIds.RANK + " > 0 ";
+
+            if (mKeyType == KEY_TYPE_PUBLIC) {
+                uri = UserIds.buildPublicUserIdsUri(String.valueOf(keyRingRowId));
+            } else {
+                uri = UserIds.buildSecretUserIdsUri(String.valueOf(keyRingRowId));
+            }
+
+            break;
+
+        default:
+            return null;
+
         }
-        return new CursorLoader(mContext, uri, projection, null, null, orderBy);
+
+        return mContext.getContentResolver().query(uri, projection, selection, null, sortOrder);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        setChildrenCursor(loader.getId(), cursor);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
 }

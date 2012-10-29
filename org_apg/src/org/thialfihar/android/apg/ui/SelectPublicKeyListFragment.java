@@ -2,14 +2,12 @@ package org.thialfihar.android.apg.ui;
 
 import java.util.Date;
 
-import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeyRings;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeys;
-import org.thialfihar.android.apg.provider.ApgContract.PublicUserIds;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
+import org.thialfihar.android.apg.provider.ApgContract.Keys;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.ui.widget.SelectPublicKeyCursorAdapter;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import android.database.Cursor;
@@ -58,7 +56,7 @@ public class SelectPublicKeyListFragment extends SherlockListFragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
-    static final String SORT_ORDER = PublicUserIds.USER_ID + " ASC";
+    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
 
     // static final String SELECTION =
 
@@ -66,7 +64,7 @@ public class SelectPublicKeyListFragment extends SherlockListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = PublicKeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -74,15 +72,15 @@ public class SelectPublicKeyListFragment extends SherlockListFragment implements
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
         String[] projection = new String[] {
-                PublicKeyRings._ID, // 0
-                PublicKeyRings.MASTER_KEY_ID, // 1
-                PublicUserIds.USER_ID, // 2
-                "(SELECT COUNT(" + PublicKeys._ID + ") WHERE " + PublicKeys.IS_REVOKED
-                        + " = '0' AND " + PublicKeys.CAN_ENCRYPT + " = '1')", // 3
-                "(SELECT COUNT(" + PublicKeys._ID + ") WHERE " + PublicKeys.IS_REVOKED
-                        + " = '0' AND " + PublicKeys.CAN_ENCRYPT + " = '1' AND "
-                        + PublicKeys.CREATION + " <= '" + now + "' AND " + "(" + PublicKeys.EXPIRY
-                        + " IS NULL OR " + PublicKeys.EXPIRY + " >= '" + now + "'))", // 4
+                KeyRings._ID, // 0
+                KeyRings.MASTER_KEY_ID, // 1
+                UserIds.USER_ID, // 2
+                "(SELECT COUNT(" + Keys._ID + ") WHERE " + Keys.IS_REVOKED + " = '0' AND "
+                        + Keys.CAN_ENCRYPT + " = '1')", // 3
+                "(SELECT COUNT(" + Keys._ID + ") WHERE " + Keys.IS_REVOKED + " = '0' AND "
+                        + Keys.CAN_ENCRYPT + " = '1' AND " + Keys.CREATION + " <= '" + now
+                        + "' AND " + "(" + Keys.EXPIRY + " IS NULL OR " + Keys.EXPIRY + " >= '"
+                        + now + "'))", // 4
         };
 
         return new CursorLoader(getActivity(), baseUri, projection, null, null, SORT_ORDER);

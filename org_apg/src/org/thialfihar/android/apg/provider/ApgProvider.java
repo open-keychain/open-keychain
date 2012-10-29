@@ -23,15 +23,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRingsColumns;
 import org.thialfihar.android.apg.provider.ApgContract.KeyTypes;
 import org.thialfihar.android.apg.provider.ApgContract.KeysColumns;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeyRings;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeys;
-import org.thialfihar.android.apg.provider.ApgContract.PublicUserIds;
-import org.thialfihar.android.apg.provider.ApgContract.SecretKeyRings;
-import org.thialfihar.android.apg.provider.ApgContract.SecretKeys;
-import org.thialfihar.android.apg.provider.ApgContract.SecretUserIds;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
+import org.thialfihar.android.apg.provider.ApgContract.Keys;
 import org.thialfihar.android.apg.provider.ApgContract.UserIdsColumns;
 import org.thialfihar.android.apg.provider.ApgDatabase.Tables;
 import org.thialfihar.android.apg.util.Log;
@@ -189,7 +186,7 @@ public class ApgProvider extends ContentProvider {
          * data stream
          * 
          * <pre>
-         * data/*
+         * data / _
          * </pre>
          */
         matcher.addURI(authority, ApgContract.BASE_DATA + "/*", DATA_STREAM);
@@ -214,45 +211,33 @@ public class ApgProvider extends ContentProvider {
         switch (match) {
         case PUBLIC_KEY_RING:
         case PUBLIC_KEY_RING_BY_EMAILS:
-            return PublicKeyRings.CONTENT_TYPE;
+        case SECRET_KEY_RING:
+        case SECRET_KEY_RING_BY_EMAILS:
+            return KeyRings.CONTENT_TYPE;
 
         case PUBLIC_KEY_RING_BY_ROW_ID:
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
-            return PublicKeyRings.CONTENT_ITEM_TYPE;
-
-        case PUBLIC_KEY_RING_KEY:
-            return PublicKeys.CONTENT_TYPE;
-
-        case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
-            return PublicKeys.CONTENT_ITEM_TYPE;
-
-        case PUBLIC_KEY_RING_USER_ID:
-            return PublicUserIds.CONTENT_TYPE;
-
-        case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
-            return PublicUserIds.CONTENT_ITEM_TYPE;
-
-        case SECRET_KEY_RING:
-        case SECRET_KEY_RING_BY_EMAILS:
-            return SecretKeyRings.CONTENT_TYPE;
-
         case SECRET_KEY_RING_BY_ROW_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_KEY_ID:
-            return SecretKeyRings.CONTENT_ITEM_TYPE;
+            return KeyRings.CONTENT_ITEM_TYPE;
 
+        case PUBLIC_KEY_RING_KEY:
         case SECRET_KEY_RING_KEY:
-            return SecretKeys.CONTENT_TYPE;
+            return Keys.CONTENT_TYPE;
 
+        case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
-            return SecretKeys.CONTENT_ITEM_TYPE;
+            return Keys.CONTENT_ITEM_TYPE;
 
+        case PUBLIC_KEY_RING_USER_ID:
         case SECRET_KEY_RING_USER_ID:
-            return SecretUserIds.CONTENT_TYPE;
+            return UserIds.CONTENT_TYPE;
 
+        case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
-            return SecretUserIds.CONTENT_ITEM_TYPE;
+            return UserIds.CONTENT_ITEM_TYPE;
 
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -314,6 +299,8 @@ public class ApgProvider extends ContentProvider {
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.MASTER_KEY_ID);
+        projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.KEY_RING_DATA);
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
 
         qb.setProjectionMap(projectionMap);
@@ -338,6 +325,7 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING:
         case SECRET_KEY_RING:
             qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+
             if (TextUtils.isEmpty(sortOrder)) {
                 sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
             }
@@ -372,29 +360,14 @@ public class ApgProvider extends ContentProvider {
 
         case SECRET_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
 
-            qb.setTables(Tables.KEYS + " AS tmp INNER JOIN " + Tables.KEY_RINGS + " ON ("
-                    + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + "tmp."
-                    + KeysColumns.KEY_RING_ROW_ID + ")" + " INNER JOIN " + Tables.KEYS + " ON "
-                    + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID
-                    + " = " + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
-                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
-
-            projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
-
-            qb.setProjectionMap(projectionMap);
-
-            qb.appendWhere(" AND tmp." + KeysColumns.KEY_ID + " = ");
+            qb.appendWhere(" AND " + Tables.KEYS + KeysColumns.KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+            if (TextUtils.isEmpty(sortOrder)) {
+                sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+            }
 
             break;
 
@@ -414,6 +387,8 @@ public class ApgProvider extends ContentProvider {
             projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
             projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                     + KeyRingsColumns.MASTER_KEY_ID);
+            projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
+                    + KeyRingsColumns.KEY_RING_DATA);
             projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
                     + UserIdsColumns.USER_ID);
 
@@ -532,41 +507,41 @@ public class ApgProvider extends ContentProvider {
 
             switch (match) {
             case PUBLIC_KEY_RING:
-                values.put(PublicKeyRings.TYPE, KeyTypes.PUBLIC);
+                values.put(KeyRings.TYPE, KeyTypes.PUBLIC);
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
-                rowUri = PublicKeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+                rowUri = KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
 
                 break;
             case PUBLIC_KEY_RING_KEY:
-                values.put(PublicKeys.TYPE, KeyTypes.PUBLIC);
+                values.put(Keys.TYPE, KeyTypes.PUBLIC);
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
-                rowUri = PublicKeys.buildPublicKeysUri(Long.toString(rowId));
+                rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
 
                 break;
             case PUBLIC_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
-                rowUri = PublicUserIds.buildPublicUserIdsUri(Long.toString(rowId));
+                rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING:
-                values.put(SecretKeyRings.TYPE, KeyTypes.SECRET);
+                values.put(KeyRings.TYPE, KeyTypes.SECRET);
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
-                rowUri = SecretKeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+                rowUri = KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING_KEY:
-                values.put(SecretKeys.TYPE, KeyTypes.SECRET);
+                values.put(Keys.TYPE, KeyTypes.SECRET);
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
-                rowUri = SecretKeys.buildSecretKeysUri(Long.toString(rowId));
+                rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
 
                 break;
             case SECRET_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
-                rowUri = SecretUserIds.buildSecretUserIdsUri(Long.toString(rowId));
+                rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
 
                 break;
             default:

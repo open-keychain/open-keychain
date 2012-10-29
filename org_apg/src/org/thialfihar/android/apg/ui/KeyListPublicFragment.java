@@ -1,16 +1,9 @@
 package org.thialfihar.android.apg.ui;
 
-import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.R.id;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeyRings;
-import org.thialfihar.android.apg.provider.ApgContract.PublicKeys;
-import org.thialfihar.android.apg.provider.ApgContract.PublicUserIds;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.ui.widget.ExpandableListFragment;
 import org.thialfihar.android.apg.ui.widget.KeyListAdapter;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.app.SherlockListFragment;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -47,7 +40,7 @@ public class KeyListPublicFragment extends ExpandableListFragment implements
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        mAdapter = new KeyListAdapter(mActivity, getLoaderManager(), null, Id.type.public_key);
+        mAdapter = new KeyListAdapter(mActivity, null, KeyListAdapter.KEY_TYPE_PUBLIC);
         setListAdapter(mAdapter);
 
         // Start out with a progress indicator.
@@ -59,16 +52,16 @@ public class KeyListPublicFragment extends ExpandableListFragment implements
     }
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] { PublicKeyRings._ID,
-            PublicKeyRings.MASTER_KEY_ID, PublicUserIds.USER_ID };
+    static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            UserIds.USER_ID };
 
-    static final String SORT_ORDER = PublicUserIds.USER_ID + " ASC";
+    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = PublicKeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.

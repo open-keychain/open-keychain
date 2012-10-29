@@ -74,113 +74,97 @@ public class ApgContract {
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
 
-    public static class PublicKeyRings implements KeyRingsColumns, BaseColumns {
+    public static class KeyRings implements KeyRingsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_PUBLIC).build();
+                .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.public.key_ring";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key_ring";
 
         /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.public.key_ring";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
 
         public static Uri buildPublicKeyRingsUri() {
-            return CONTENT_URI.buildUpon().build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
         }
 
         public static Uri buildPublicKeyRingsUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(keyRingRowId).build();
         }
 
         public static Uri buildPublicKeyRingsByMasterKeyIdUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_MASTER_KEY_ID)
-                    .appendPath(masterKeyId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC)
+                    .appendPath(PATH_BY_MASTER_KEY_ID).appendPath(masterKeyId).build();
         }
 
         public static Uri buildPublicKeyRingsByKeyIdUri(String keyId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(PATH_BY_KEY_ID)
+                    .appendPath(keyId).build();
         }
 
         public static Uri buildPublicKeyRingsByEmailsUri(String emails) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_EMAILS).appendPath(emails).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(PATH_BY_EMAILS)
+                    .appendPath(emails).build();
         }
-    }
-
-    public static class SecretKeyRings implements KeyRingsColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_SECRET).build();
-
-        /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.secret.key_ring";
-
-        /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.secret.key_ring";
 
         public static Uri buildSecretKeyRingsUri() {
-            return CONTENT_URI.buildUpon().build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
         }
 
         public static Uri buildSecretKeyRingsUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId).build();
         }
 
         public static Uri buildSecretKeyRingsByMasterKeyIdUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_MASTER_KEY_ID)
-                    .appendPath(masterKeyId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET)
+                    .appendPath(PATH_BY_MASTER_KEY_ID).appendPath(masterKeyId).build();
         }
 
         public static Uri buildSecretKeyRingsByKeyIdUri(String keyId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(keyId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_KEY_ID)
+                    .appendPath(keyId).build();
         }
 
         public static Uri buildSecretKeyRingsByEmailsUri(String emails) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_EMAILS).appendPath(emails).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_EMAILS)
+                    .appendPath(emails).build();
         }
     }
 
-    public static class PublicKeys implements KeysColumns, BaseColumns {
+    public static class Keys implements KeysColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_PUBLIC).build();
+                .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.public.key";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key";
 
         /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.public.key";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key";
 
         public static Uri buildPublicKeysUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(keyRingRowId)
+                    .appendPath(PATH_KEYS).build();
         }
 
         public static Uri buildPublicKeysUri(String keyRingRowId, String keyRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS)
-                    .appendPath(keyRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(keyRingRowId)
+                    .appendPath(PATH_KEYS).appendPath(keyRowId).build();
         }
-    }
-
-    public static class SecretKeys implements KeysColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_SECRET).build();
-
-        /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.secret.key";
-
-        /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.secret.key";
 
         public static Uri buildSecretKeysUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
+                    .appendPath(PATH_KEYS).build();
         }
 
         public static Uri buildSecretKeysUri(String keyRingRowId, String keyRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_KEYS)
-                    .appendPath(keyRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
+                    .appendPath(PATH_KEYS).appendPath(keyRowId).build();
         }
     }
 
-    public static class PublicUserIds implements UserIdsColumns, BaseColumns {
+    public static class UserIds implements UserIdsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_PUBLIC).build();
+                .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
@@ -189,34 +173,23 @@ public class ApgContract {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
 
         public static Uri buildPublicUserIdsUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(keyRingRowId)
+                    .appendPath(PATH_USER_IDS).build();
         }
 
         public static Uri buildPublicUserIdsUri(String keyRingRowId, String userIdRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .appendPath(userIdRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(keyRingRowId)
+                    .appendPath(PATH_USER_IDS).appendPath(userIdRowId).build();
         }
-    }
-
-    public static class SecretUserIds implements UserIdsColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(BASE_KEY_RINGS).appendPath(PATH_SECRET).build();
-
-        /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
-
-        /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
 
         public static Uri buildSecretUserIdsUri(String keyRingRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
+                    .appendPath(PATH_USER_IDS).build();
         }
 
         public static Uri buildSecretUserIdsUri(String keyRingRowId, String userIdRowId) {
-            return CONTENT_URI.buildUpon().appendPath(keyRingRowId).appendPath(PATH_USER_IDS)
-                    .appendPath(userIdRowId).build();
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
+                    .appendPath(PATH_USER_IDS).appendPath(userIdRowId).build();
         }
     }
 

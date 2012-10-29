@@ -1,8 +1,7 @@
 package org.thialfihar.android.apg.ui;
 
-import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.provider.ApgContract.SecretKeyRings;
-import org.thialfihar.android.apg.provider.ApgContract.SecretUserIds;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.ui.widget.ExpandableListFragment;
 import org.thialfihar.android.apg.ui.widget.KeyListAdapter;
 
@@ -41,7 +40,7 @@ public class KeyListSecretFragment extends ExpandableListFragment implements
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        mAdapter = new KeyListAdapter(mActivity, getLoaderManager(), null, Id.type.secret_key);
+        mAdapter = new KeyListAdapter(mActivity, null, KeyListAdapter.KEY_TYPE_SECRET);
         setListAdapter(mAdapter);
 
         // Start out with a progress indicator.
@@ -53,16 +52,16 @@ public class KeyListSecretFragment extends ExpandableListFragment implements
     }
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] { SecretKeyRings._ID,
-            SecretKeyRings.MASTER_KEY_ID, SecretUserIds.USER_ID };
+    static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            UserIds.USER_ID };
 
-    static final String SORT_ORDER = SecretUserIds.USER_ID + " ASC";
+    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = SecretKeyRings.buildSecretKeyRingsUri();
+        Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
