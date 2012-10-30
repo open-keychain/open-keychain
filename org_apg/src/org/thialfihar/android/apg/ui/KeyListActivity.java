@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Constants;
@@ -5,7 +22,6 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.service.ApgService;
 import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.ui.KeyListActivityOld.KeyListAdapter;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.DeleteKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
@@ -20,15 +36,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.ExpandableListView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class KeyListActivity extends SherlockFragmentActivity {
@@ -37,14 +48,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_TEXT = "text";
 
-    protected ExpandableListView mList;
-    protected KeyListAdapter mListAdapter;
-    protected View mFilterLayout;
-    protected Button mClearFilterButton;
-    protected TextView mFilterInfo;
-
-    protected int mSelectedItem = -1;
-    // protected int mTask = 0;
+    // protected View mFilterLayout;
+    // protected Button mClearFilterButton;
+    // protected TextView mFilterInfo;
 
     protected String mImportFilename = Constants.path.APP_DIR + "/";
     protected String mExportFilename = Constants.path.APP_DIR + "/";
@@ -52,7 +58,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
     protected String mImportData;
     protected boolean mDeleteAfterImport = false;
 
-    protected int mKeyType = Id.type.public_key;
+    protected int mKeyType;
 
     FileDialogFragment mFileDialog;
 
@@ -124,6 +130,44 @@ public class KeyListActivity extends SherlockFragmentActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+        case Id.request.filename: {
+            if (resultCode == RESULT_OK && data != null) {
+                try {
+                    String path = data.getData().getPath();
+                    Log.d(Constants.TAG, "path=" + path);
+
+                    // set filename used in export/import dialogs
+                    mFileDialog.setFilename(path);
+                } catch (NullPointerException e) {
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                }
+            }
+            return;
+        }
+
+        default: {
+            break;
+        }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
+                .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
@@ -140,13 +184,13 @@ public class KeyListActivity extends SherlockFragmentActivity {
         }
 
         case Id.menu.option.export_keys: {
-            showExportKeysDialog(false);
+            showExportKeysDialog(-1);
             return true;
         }
 
-//        case Id.menu.option.search:
-//            startSearch("", false, null, false);
-//            return true;
+        // case Id.menu.option.search:
+        // startSearch("", false, null, false);
+        // return true;
 
         default: {
             return super.onOptionsItemSelected(item);
@@ -154,7 +198,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
         }
     }
 
-    private void showImportKeysDialog() {
+    /**
+     * Show to dialog from where to import keys
+     */
+    public void showImportKeysDialog() {
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
@@ -179,11 +226,27 @@ public class KeyListActivity extends SherlockFragmentActivity {
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
     }
 
-    private void showExportKeysDialog(boolean singleKeyExport) {
-        String title = (singleKeyExport ? getString(R.string.title_exportKey)
-                : getString(R.string.title_exportKeys));
-        String message = getString(mKeyType == Id.type.public_key ? R.string.specifyFileToExportTo
-                : R.string.specifyFileToExportSecretKeysTo);
+    /**
+     * Show dialog where to export keys
+     * 
+     * @param keyRingId
+     *            if -1 export all keys
+     */
+    public void showExportKeysDialog(final long keyRingId) {
+        String title = null;
+        if (keyRingId != -1) {
+            // single key export
+            title = getString(R.string.title_exportKey);
+        } else {
+            title = getString(R.string.title_exportKeys);
+        }
+
+        String message = null;
+        if (mKeyType == Id.type.public_key) {
+            message = getString(R.string.specifyFileToExportTo);
+        } else {
+            message = getString(R.string.specifyFileToExportSecretKeysTo);
+        }
 
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
@@ -193,7 +256,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    exportKeys();
+                    exportKeys(keyRingId);
                 }
             }
         };
@@ -207,45 +270,18 @@ public class KeyListActivity extends SherlockFragmentActivity {
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
     }
 
-    @Override
-    public boolean onContextItemSelected(android.view.MenuItem menuItem) {
-        ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) menuItem.getMenuInfo();
-        int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-        int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-
-        if (type != ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-            return super.onContextItemSelected(menuItem);
-        }
-
-        switch (menuItem.getItemId()) {
-        case Id.menu.export: {
-            mSelectedItem = groupPosition;
-            showExportKeysDialog(true);
-            return true;
-        }
-
-        case Id.menu.delete: {
-            mSelectedItem = groupPosition;
-            showDeleteKeyDialog();
-            return true;
-        }
-
-        default: {
-            return super.onContextItemSelected(menuItem);
-        }
-        }
-    }
-
-    private void showDeleteKeyDialog() {
-        final int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
-        mSelectedItem = -1;
-
+    /**
+     * Show dialog to delete key
+     * 
+     * @param keyRingId
+     */
+    public void showDeleteKeyDialog(long keyRingId) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-//                    refreshList();
+                    // refreshList();
                 }
             }
         };
@@ -259,6 +295,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
         deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }
 
+    /**
+     * Import keys with mImportData
+     */
     public void importKeys() {
         Log.d(Constants.TAG, "importKeys started");
 
@@ -306,8 +345,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     } else {
                         toastMessage = getString(R.string.noKeysAddedOrUpdated);
                     }
-                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                     if (bad > 0) {
                         AlertDialog.Builder alert = new AlertDialog.Builder(KeyListActivity.this);
 
@@ -330,7 +368,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                                 .newInstance(mImportFilename);
                         deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                     }
-//                    refreshList();
+                    // refreshList();
 
                 }
             };
@@ -347,7 +385,13 @@ public class KeyListActivity extends SherlockFragmentActivity {
         startService(intent);
     }
 
-    public void exportKeys() {
+    /**
+     * Export keys
+     * 
+     * @param keyRingId
+     *            if -1 export all keys
+     */
+    public void exportKeys(long keyRingId) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -361,12 +405,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
         data.putString(ApgService.EXPORT_FILENAME, mExportFilename);
         data.putInt(ApgService.EXPORT_KEY_TYPE, mKeyType);
 
-        if (mSelectedItem == -1) {
+        if (keyRingId == -1) {
             data.putBoolean(ApgService.EXPORT_ALL, true);
         } else {
-            int keyRingId = mListAdapter.getKeyRingId(mSelectedItem);
-            data.putInt(ApgService.EXPORT_KEY_RING_ID, keyRingId);
-            mSelectedItem = -1;
+            data.putLong(ApgService.EXPORT_KEY_RING_ID, keyRingId);
         }
 
         intent.putExtra(ApgService.EXTRA_DATA, data);
@@ -391,8 +433,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     } else {
                         toastMessage = getString(R.string.noKeysExported);
                     }
-                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
 
                 }
             };

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -57,19 +58,19 @@ public class PGPConversionHelper {
      * @param keysBytes
      * @return
      */
-    public static PGPSecretKeyRing BytesToPGPSecretKeyRing(byte[] keysBytes) {
-        PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
-        PGPSecretKeyRing keyRing = null;
-        try {
-            if ((keyRing = (PGPSecretKeyRing) factory.nextObject()) == null) {
-                Log.e(Constants.TAG, "No keys given!");
-            }
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while converting to PGPSecretKeyRing!", e);
-        }
-
-        return keyRing;
-    }
+    // public static PGPSecretKeyRing BytesToPGPSecretKeyRing(byte[] keysBytes) {
+    // PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
+    // PGPSecretKeyRing keyRing = null;
+    // try {
+    // if ((keyRing = (PGPSecretKeyRing) factory.nextObject()) == null) {
+    // Log.e(Constants.TAG, "No keys given!");
+    // }
+    // } catch (IOException e) {
+    // Log.e(Constants.TAG, "Error while converting to PGPSecretKeyRing!", e);
+    // }
+    //
+    // return keyRing;
+    // }
 
     /**
      * Convert from byte[] to PGPPublicKeyRing
@@ -77,11 +78,11 @@ public class PGPConversionHelper {
      * @param keysBytes
      * @return
      */
-    public static PGPPublicKeyRing BytesToPGPPublicKeyRing(byte[] keysBytes) {
+    public static PGPKeyRing BytesToPGPKeyRing(byte[] keysBytes) {
         PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
-        PGPPublicKeyRing keyRing = null;
+        PGPKeyRing keyRing = null;
         try {
-            if ((keyRing = (PGPPublicKeyRing) factory.nextObject()) == null) {
+            if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {
                 Log.e(Constants.TAG, "No keys given!");
             }
         } catch (IOException e) {
@@ -98,7 +99,7 @@ public class PGPConversionHelper {
      * @return
      */
     public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
-        PGPSecretKeyRing keyRing = BytesToPGPSecretKeyRing(keysBytes);
+        PGPSecretKeyRing keyRing = (PGPSecretKeyRing) BytesToPGPKeyRing(keysBytes);
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
 
         @SuppressWarnings("unchecked")

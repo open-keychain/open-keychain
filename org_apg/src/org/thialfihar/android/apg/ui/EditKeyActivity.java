@@ -244,11 +244,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                             if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
                                 // get new key from data bundle returned from service
                                 Bundle data = message.getData();
-                                PGPSecretKeyRing masterKeyRing = PGPConversionHelper
-                                        .BytesToPGPSecretKeyRing(data
+                                PGPSecretKeyRing masterKeyRing = (PGPSecretKeyRing) PGPConversionHelper
+                                        .BytesToPGPKeyRing(data
                                                 .getByteArray(ApgService.RESULT_NEW_KEY));
-                                PGPSecretKeyRing subKeyRing = PGPConversionHelper
-                                        .BytesToPGPSecretKeyRing(data
+                                PGPSecretKeyRing subKeyRing = (PGPSecretKeyRing) PGPConversionHelper
+                                        .BytesToPGPKeyRing(data
                                                 .getByteArray(ApgService.RESULT_NEW_KEY2));
 
                                 // add master key

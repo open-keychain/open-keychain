@@ -1,4 +1,7 @@
 /*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -224,8 +227,8 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                             if (mKeyData != null) {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
                                         KeyListPublicActivity.class);
-                                intent.setAction(KeyListActivityOld.ACTION_IMPORT);
-                                intent.putExtra(KeyListActivityOld.EXTRA_TEXT, mKeyData);
+                                intent.setAction(KeyListActivity.ACTION_IMPORT);
+                                intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
                                 startActivity(intent);
                             }
                         }

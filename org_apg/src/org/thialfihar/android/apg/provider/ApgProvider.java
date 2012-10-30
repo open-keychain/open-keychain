@@ -245,7 +245,7 @@ public class ApgProvider extends ContentProvider {
     }
 
     /**
-     * Returns weather the key is a public or secret one
+     * Returns type of the query (secret/public)
      * 
      * @param uri
      * @return
@@ -254,6 +254,7 @@ public class ApgProvider extends ContentProvider {
         int type;
         switch (match) {
         case PUBLIC_KEY_RING:
+        case PUBLIC_KEY_RING_BY_ROW_ID:
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_EMAILS:
@@ -265,6 +266,7 @@ public class ApgProvider extends ContentProvider {
             break;
 
         case SECRET_KEY_RING:
+        case SECRET_KEY_RING_BY_ROW_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_KEY_ID:
         case SECRET_KEY_RING_BY_EMAILS:

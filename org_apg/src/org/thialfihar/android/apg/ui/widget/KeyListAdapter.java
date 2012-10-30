@@ -17,6 +17,7 @@
 package org.thialfihar.android.apg.ui.widget;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -29,7 +30,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.MergeCursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.BaseColumns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,12 +44,9 @@ public class KeyListAdapter extends CursorTreeAdapter {
 
     protected int mKeyType;
 
-    public static int KEY_TYPE_PUBLIC = 0;
-    public static int KEY_TYPE_SECRET = 1;
-
-    private static final int KEY = 0;
-    private static final int USER_ID = 1;
-    private static final int FINGERPRINT = 2;
+    private static final int CHILD_KEY = 0;
+    private static final int CHILD_USER_ID = 1;
+    private static final int CHILD_FINGERPRINT = 2;
 
     public KeyListAdapter(Context context, Cursor groupCursor, int keyType) {
         super(groupCursor, context);
@@ -170,18 +167,15 @@ public class KeyListAdapter extends CursorTreeAdapter {
 
     /**
      * Given the group cursor, we start cursors for a fingerprint, keys, and userIds, which are
-     * merged together and form the child cursor
+     * merged together and build the child cursor
      */
     @Override
     protected Cursor getChildrenCursor(Cursor groupCursor) {
-        // put keyRingRowId into a bundle to have it when querying child cursors
-        final long idGroup = groupCursor.getLong(groupCursor.getColumnIndex(BaseColumns._ID));
-        Bundle bundle = new Bundle();
-        bundle.putLong("keyRingRowId", idGroup);
+        final long keyRingRowId = groupCursor.getLong(groupCursor.getColumnIndex(BaseColumns._ID));
 
-        Cursor fingerprintCursor = getChildCursor(bundle, FINGERPRINT);
-        Cursor keyCursor = getChildCursor(bundle, KEY);
-        Cursor userIdCursor = getChildCursor(bundle, USER_ID);
+        Cursor fingerprintCursor = getChildCursor(keyRingRowId, CHILD_FINGERPRINT);
+        Cursor keyCursor = getChildCursor(keyRingRowId, CHILD_KEY);
+        Cursor userIdCursor = getChildCursor(keyRingRowId, CHILD_USER_ID);
 
         MergeCursor mergeCursor = new MergeCursor(new Cursor[] { fingerprintCursor, keyCursor,
                 userIdCursor });
@@ -193,20 +187,19 @@ public class KeyListAdapter extends CursorTreeAdapter {
     /**
      * This builds a cursor for a specific type of children
      * 
-     * @param bundle
+     * @param keyRingRowId
+     *            foreign row id of the keyRing
      * @param type
      * @return
      */
-    private Cursor getChildCursor(Bundle bundle, int type) {
-        long keyRingRowId = bundle.getLong("keyRingRowId");
-
+    private Cursor getChildCursor(long keyRingRowId, int type) {
         Uri uri = null;
         String[] projection = null;
         String sortOrder = null;
         String selection = null;
 
         switch (type) {
-        case FINGERPRINT:
+        case CHILD_FINGERPRINT:
             projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
                     Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
             sortOrder = Keys.RANK + " ASC";
@@ -214,19 +207,19 @@ public class KeyListAdapter extends CursorTreeAdapter {
             // use only master key for fingerprint
             selection = Keys.IS_MASTER_KEY + " = 1 ";
 
-            if (mKeyType == KEY_TYPE_PUBLIC) {
+            if (mKeyType == Id.type.public_key) {
                 uri = Keys.buildPublicKeysUri(String.valueOf(keyRingRowId));
             } else {
                 uri = Keys.buildSecretKeysUri(String.valueOf(keyRingRowId));
             }
             break;
 
-        case KEY:
+        case CHILD_KEY:
             projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
                     Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
             sortOrder = Keys.RANK + " ASC";
 
-            if (mKeyType == KEY_TYPE_PUBLIC) {
+            if (mKeyType == Id.type.public_key) {
                 uri = Keys.buildPublicKeysUri(String.valueOf(keyRingRowId));
             } else {
                 uri = Keys.buildSecretKeysUri(String.valueOf(keyRingRowId));
@@ -234,14 +227,14 @@ public class KeyListAdapter extends CursorTreeAdapter {
 
             break;
 
-        case USER_ID:
+        case CHILD_USER_ID:
             projection = new String[] { UserIds._ID, UserIds.USER_ID, UserIds.RANK, };
             sortOrder = UserIds.RANK + " ASC";
 
-            // not the main user id:
+            // not the main user id
             selection = UserIds.RANK + " > 0 ";
 
-            if (mKeyType == KEY_TYPE_PUBLIC) {
+            if (mKeyType == Id.type.public_key) {
                 uri = UserIds.buildPublicUserIdsUri(String.valueOf(keyRingRowId));
             } else {
                 uri = UserIds.buildSecretUserIdsUri(String.valueOf(keyRingRowId));

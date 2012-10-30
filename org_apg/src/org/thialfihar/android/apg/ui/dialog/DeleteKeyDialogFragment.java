@@ -48,13 +48,13 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteKeyDialogFragment newInstance(Messenger messenger, int deleteKeyRingRowId,
+    public static DeleteKeyDialogFragment newInstance(Messenger messenger, long deleteKeyRingRowId,
             int keyType) {
         DeleteKeyDialogFragment frag = new DeleteKeyDialogFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_MESSENGER, messenger);
-        args.putInt(ARG_DELETE_KEY_RING_ROW_ID, deleteKeyRingRowId);
+        args.putLong(ARG_DELETE_KEY_RING_ROW_ID, deleteKeyRingRowId);
         args.putInt(ARG_KEY_TYPE, keyType);
 
         frag.setArguments(args);
@@ -69,7 +69,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
 
-        final int deleteKeyRingRowId = getArguments().getInt(ARG_DELETE_KEY_RING_ROW_ID);
+        final long deleteKeyRingRowId = getArguments().getLong(ARG_DELETE_KEY_RING_ROW_ID);
         final int keyType = getArguments().getInt(ARG_KEY_TYPE);
 
         // TODO: better way to do this?

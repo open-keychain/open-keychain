@@ -47,7 +47,7 @@ public class ProviderHelper {
 
             byte[] data = cursor.getBlob(keyRingDataCol);
             if (data != null) {
-                keyRing = PGPConversionHelper.BytesToPGPPublicKeyRing(data);
+                keyRing = PGPConversionHelper.BytesToPGPKeyRing(data);
             }
         }
 
@@ -393,6 +393,36 @@ public class ProviderHelper {
     public static void deleteSecretKeyRing(Context context, long rowId) {
         ContentResolver cr = context.getContentResolver();
         cr.delete(KeyRings.buildSecretKeyRingsUri(Long.toString(rowId)), null, null);
+    }
+
+    public static long getPublicMasterKeyId(Context context, long keyRingRowId) {
+        Uri queryUri = KeyRings.buildPublicKeyRingsUri(String.valueOf(keyRingRowId));
+        return getMasterKeyId(context, queryUri, keyRingRowId);
+    }
+
+    public static long getSecretMasterKeyId(Context context, long keyRingRowId) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
+        return getMasterKeyId(context, queryUri, keyRingRowId);
+    }
+
+    private static long getMasterKeyId(Context context, Uri queryUri, long keyRingRowId) {
+        String[] projection = new String[] { KeyRings.MASTER_KEY_ID };
+
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(queryUri, projection, null, null, null);
+
+        long masterKeyId = -1;
+        if (cursor != null && cursor.moveToFirst()) {
+            int masterKeyIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
+
+            masterKeyId = cursor.getLong(masterKeyIdCol);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return masterKeyId;
     }
 
 }

@@ -228,7 +228,8 @@
     <string name="keySignSuccess">Successfully signed key</string>
     <string name="qrScanImportSuccess">Successfully validated and imported key</string>
     <string name="listInformation">Long press one entry in this list to show more options!</string>
-
+    <string name="listEmpty">This list is empty!</string>
+    
     <!--
          error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found"
