@@ -50,15 +50,17 @@ public class ApgDatabase extends SQLiteOpenHelper {
             + " INTEGER, " + KeysColumns.ALGORITHM + " INTEGER, " + KeysColumns.KEY_SIZE
             + " INTEGER, " + KeysColumns.CAN_SIGN + " INTEGER, " + KeysColumns.CAN_ENCRYPT
             + " INTEGER, " + KeysColumns.IS_REVOKED + " INTEGER, " + KeysColumns.CREATION
-            + " INTEGER, " + KeysColumns.EXPIRY + " INTEGER, " + KeysColumns.KEY_RING_ROW_ID
-            + " INTEGER REFERENCES " + Tables.KEY_RINGS + " ON DELETE CASCADE, "
-            + KeysColumns.KEY_DATA + " BLOB," + KeysColumns.RANK + " INTEGER)";
+            + " INTEGER, " + KeysColumns.EXPIRY + " INTEGER, " + KeysColumns.KEY_DATA + " BLOB,"
+            + KeysColumns.RANK + " INTEGER, " + KeysColumns.KEY_RING_ROW_ID
+            + " INTEGER NOT NULL, FOREIGN KEY(" + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES "
+            + Tables.KEY_RINGS + "(" + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER REFERENCES " + Tables.KEY_RINGS
-            + " ON DELETE CASCADE, " + UserIdsColumns.USER_ID + " TEXT, " + UserIdsColumns.RANK
-            + " INTEGER)";
+            + UserIdsColumns.USER_ID + " TEXT, " + UserIdsColumns.RANK + " INTEGER, "
+            + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
+            + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
+            + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     ApgDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
