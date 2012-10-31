@@ -28,7 +28,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -743,7 +742,8 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, keyRingId);
+                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this,
+                        keyRingId);
                 if (keyring != null) {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);

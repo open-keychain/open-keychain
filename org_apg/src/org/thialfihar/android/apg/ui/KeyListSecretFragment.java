@@ -73,23 +73,6 @@ public class KeyListSecretFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // TODO: better inflate menu from xml
-        // android.view.MenuInflater inflater = (android.view.MenuInflater) mActivity
-        // .getMenuInflater();
-        // menu.setHeaderTitle(R.string.checkbox_list_context_title);
-        // inflater.inflate(R.menu.checkbox_list_context, menu);
-
-        // ExpandableListView.ExpandableListContextMenuInfo info =
-        // (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-        // int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-        //
-        // if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-        // // TODO: user id? menu.setHeaderTitle("Key");
-        // menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
-        // menu.add(0, Id.menu.export, 1, R.string.menu_exportKey);
-        // menu.add(0, Id.menu.delete, 2, R.string.menu_deleteKey);
-        // menu.add(0, Id.menu.share_qr_code, 2, R.string.menu_share);
-        // }
 
         menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
         menu.add(0, Id.menu.share_qr_code, 2, R.string.menu_share);

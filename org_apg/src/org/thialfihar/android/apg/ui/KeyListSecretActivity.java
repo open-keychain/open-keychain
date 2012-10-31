@@ -112,32 +112,13 @@ public class KeyListSecretActivity extends KeyListActivity {
     private void createKey() {
         PGPMain.setEditPassPhrase("");
         Intent intent = new Intent(EditKeyActivity.ACTION_CREATE_KEY);
-        startActivityForResult(intent, Id.message.create_key);
+        startActivityForResult(intent, 0);
     }
 
     private void editKey(long keyId) {
         Intent intent = new Intent(EditKeyActivity.ACTION_EDIT_KEY);
         intent.putExtra(EditKeyActivity.EXTRA_KEY_ID, keyId);
-        startActivityForResult(intent, Id.message.edit_key);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case Id.message.create_key: // intentionally no break
-        case Id.message.edit_key: {
-            if (resultCode == RESULT_OK) {
-                // refreshList();
-            }
-            break;
-        }
-
-        default: {
-            break;
-        }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+        startActivityForResult(intent, 0);
     }
 
 }

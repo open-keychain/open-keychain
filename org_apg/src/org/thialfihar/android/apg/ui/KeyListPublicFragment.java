@@ -73,12 +73,6 @@ public class KeyListPublicFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // TODO: better inflate menu from xml
-        // android.view.MenuInflater inflater = (android.view.MenuInflater) mActivity
-        // .getMenuInflater();
-        // menu.setHeaderTitle(R.string.checkbox_list_context_title);
-        // inflater.inflate(R.menu.checkbox_list_context, menu);
-
         menu.add(0, Id.menu.update, 1, R.string.menu_updateKey);
         menu.add(0, Id.menu.exportToServer, 1, R.string.menu_exportKeyToServer);
         menu.add(0, Id.menu.signKey, 1, R.string.menu_signKey);

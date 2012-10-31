@@ -311,10 +311,10 @@ public class PGPMain {
 
         updateProgress(progress, R.string.progress_buildingKey, 0, 100);
 
-        if (oldPassPhrase == null || oldPassPhrase.equals("")) {
+        if (oldPassPhrase == null) {
             oldPassPhrase = "";
         }
-        if (newPassPhrase == null || newPassPhrase.equals("")) {
+        if (newPassPhrase == null) {
             newPassPhrase = "";
         }
 
@@ -329,9 +329,13 @@ public class PGPMain {
         PGPSecretKey masterKey = keys.get(0);
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
-        // Somehow, the PGPPublicKey already has an empty certification attached to it, we remove
-        // that now before adding the new ones
-        masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, "");
+        // Somehow, the PGPPublicKey already has an empty certification attached to it when the
+        // keyRing is generated the first time, we remove that when it exists, before adding the new
+        // ones
+        PGPPublicKey masterPublicKeyRmCert = PGPPublicKey.removeCertification(masterPublicKey, "");
+        if (masterPublicKeyRmCert != null) {
+            masterPublicKey = masterPublicKeyRmCert;
+        }
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
@@ -611,13 +615,13 @@ public class PGPMain {
             updateProgress(progress, i * 100 / keyRingIds.size(), 100);
 
             // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
-            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                    keyRingIds.get(i));
+            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
+                    context, keyRingIds.get(i));
             if (publicKeyRing != null) {
                 publicKeyRing.encode(out);
             } else {
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                        keyRingIds.get(i));
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
+                        context, keyRingIds.get(i));
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(out);
                 } else {
@@ -729,7 +733,8 @@ public class PGPMain {
         }
 
         if (signatureKeyId != Id.key.none) {
-            signingKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context, signatureKeyId);
+            signingKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
+                    signatureKeyId);
             signingKey = PGPHelper.getSigningKey(context, signatureKeyId);
             if (signingKey == null) {
                 throw new ApgGeneralException(context.getString(R.string.error_signatureFailed));
@@ -1098,7 +1103,8 @@ public class PGPMain {
         if (passphrase == null || passphrase.length() <= 0) {
             throw new ApgGeneralException("Unable to obtain passphrase");
         } else {
-            PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context, pubKeyId);
+            PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
+                    pubKeyId);
 
             PGPSecretKey signingKey = PGPHelper.getSigningKey(context, masterKeyId);
             if (signingKey == null) {
@@ -1356,10 +1362,10 @@ public class PGPMain {
                     signatureIndex = i;
                     signatureKeyId = signature.getKeyID();
                     String userId = null;
-                    PGPPublicKeyRing sigKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                            signatureKeyId);
-                    if (sigKeyRing != null) {
-                        userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
+                    PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
+                            context, signatureKeyId);
+                    if (signKeyRing != null) {
+                        userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(signKeyRing));
                     }
                     returnData.putString(ApgService.RESULT_SIGNATURE_USER_ID, userId);
                     break;
@@ -1522,10 +1528,10 @@ public class PGPMain {
             } else {
                 signatureKeyId = signature.getKeyID();
                 String userId = null;
-                PGPPublicKeyRing sigKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                        signatureKeyId);
-                if (sigKeyRing != null) {
-                    userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(sigKeyRing));
+                PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
+                        context, signatureKeyId);
+                if (signKeyRing != null) {
+                    userId = PGPHelper.getMainUserId(PGPHelper.getMasterKey(signKeyRing));
                 }
                 returnData.putString(ApgService.RESULT_SIGNATURE_USER_ID, userId);
                 break;

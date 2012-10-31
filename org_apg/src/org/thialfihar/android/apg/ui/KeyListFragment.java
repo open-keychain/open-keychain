@@ -51,12 +51,6 @@ public class KeyListFragment extends ExpandableListFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        // TODO: better inflate menu from xml
-        // android.view.MenuInflater inflater = (android.view.MenuInflater) mActivity
-        // .getMenuInflater();
-        // menu.setHeaderTitle(R.string.checkbox_list_context_title);
-        // inflater.inflate(R.menu.checkbox_list_context, menu);
-
         menu.add(0, Id.menu.export, 0, R.string.menu_exportKey);
         menu.add(0, Id.menu.delete, 1, R.string.menu_deleteKey);
     }

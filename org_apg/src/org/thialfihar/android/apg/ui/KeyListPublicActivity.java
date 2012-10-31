@@ -58,7 +58,7 @@ public class KeyListPublicActivity extends KeyListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case Id.menu.option.key_server: {
-            startActivity(new Intent(this, KeyServerQueryActivity.class));
+            startActivityForResult(new Intent(this, KeyServerQueryActivity.class), 0);
 
             return true;
         }
