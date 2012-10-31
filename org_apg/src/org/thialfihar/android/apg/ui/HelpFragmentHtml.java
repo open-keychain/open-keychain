@@ -16,18 +16,24 @@
 
 package org.thialfihar.android.apg.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import net.nightwhistler.htmlspanner.HtmlSpanner;
+import net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView;
+
+import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.helper.OtherHelper;
+import org.thialfihar.android.apg.util.Log;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 
@@ -68,12 +74,13 @@ public class HelpFragmentHtml extends SherlockFragment {
         htmlFile = getArguments().getInt(ARG_HTML_FILE);
 
         // load html from html file from /res/raw
-        String helpText = OtherHelper.readContentFromResource(this.getActivity(), htmlFile);
+        InputStream inputStreamText = OtherHelper.getInputStreamFromResource(this.getActivity(),
+                htmlFile);
 
         mActivity = getActivity();
 
         ScrollView scroller = new ScrollView(mActivity);
-        TextView text = new TextView(mActivity);
+        JellyBeanSpanFixTextView text = new JellyBeanSpanFixTextView(mActivity);
 
         // padding
         int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, mActivity
@@ -83,7 +90,13 @@ public class HelpFragmentHtml extends SherlockFragment {
         scroller.addView(text);
 
         // load html into textview
-        text.setText(Html.fromHtml(helpText));
+        HtmlSpanner htmlSpanner = new HtmlSpanner();
+        htmlSpanner.setStripExtraWhiteSpace(true);
+        try {
+            text.setText(htmlSpanner.fromHtml(inputStreamText));
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Error while reading raw resources as stream", e);
+        }
 
         // make links work
         text.setMovementMethod(LinkMovementMethod.getInstance());

@@ -16,6 +16,12 @@
 
 package org.thialfihar.android.apg.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import net.nightwhistler.htmlspanner.HtmlSpanner;
+import net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView;
+
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
@@ -24,7 +30,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import org.thialfihar.android.apg.util.Log;
 import android.view.LayoutInflater;
@@ -52,15 +57,23 @@ public class HelpFragmentAbout extends SherlockFragment {
         View view = inflater.inflate(R.layout.help_fragment_about, container, false);
 
         // load html from html file from /res/raw
-        String aboutText = OtherHelper.readContentFromResource(this.getActivity(), R.raw.help_about);
+        InputStream inputStreamText = OtherHelper.getInputStreamFromResource(this.getActivity(),
+                R.raw.help_about);
 
         TextView versionText = (TextView) view.findViewById(R.id.help_about_version);
         versionText.setText(getString(R.string.help_about_version) + " " + getVersion());
 
-        TextView aboutTextView = (TextView) view.findViewById(R.id.help_about_text);
+        JellyBeanSpanFixTextView aboutTextView = (JellyBeanSpanFixTextView) view
+                .findViewById(R.id.help_about_text);
 
         // load html into textview
-        aboutTextView.setText(Html.fromHtml(aboutText));
+        HtmlSpanner htmlSpanner = new HtmlSpanner();
+        htmlSpanner.setStripExtraWhiteSpace(true);
+        try {
+            aboutTextView.setText(htmlSpanner.fromHtml(inputStreamText));
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Error while reading raw resources as stream", e);
+        }
 
         // make links work
         aboutTextView.setMovementMethod(LinkMovementMethod.getInstance());

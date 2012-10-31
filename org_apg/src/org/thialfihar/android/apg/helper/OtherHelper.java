@@ -36,30 +36,17 @@ import android.os.Bundle;
 public class OtherHelper {
 
     /**
-     * Reads html files from /res/raw/example.html to output them as string. See
-     * http://www.monocube.com/2011/02/08/android-tutorial-html-file-in-webview/
+     * Gets input stream of raw resource
      * 
      * @param context
      *            current context
      * @param resourceID
      *            of html file to read
-     * @return content of html file with formatting
+     * @return input stream of resource
      */
-    public static String readContentFromResource(Context context, int resourceID) {
+    public static InputStream getInputStreamFromResource(Context context, int resourceID) {
         InputStream raw = context.getResources().openRawResource(resourceID);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        int i;
-        try {
-            i = raw.read();
-            while (i != -1) {
-                stream.write(i);
-                i = raw.read();
-            }
-            raw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stream.toString();
+        return raw;
     }
 
     /**
@@ -147,7 +134,7 @@ public class OtherHelper {
             output[1] = "<" + chunks[1];
         }
         output[0] = userId;
-        
+
         return output;
     }
 
