@@ -150,7 +150,7 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "uploadKeyServer";
-    public static final String UPLOAD_KEY_KEYRING_ID = "uploadKeyRingId";
+    public static final String UPLOAD_KEY_KEYRING_ROW_ID = "uploadKeyRingId";
 
     // query key
     public static final String QUERY_KEY_SERVER = "queryKeyServer";
@@ -736,14 +736,13 @@ public class ApgService extends IntentService implements ProgressDialogUpdater {
             try {
 
                 /* Input */
-                int keyRingId = data.getInt(UPLOAD_KEY_KEYRING_ID);
+                int keyRingRowId = data.getInt(UPLOAD_KEY_KEYRING_ROW_ID);
                 String keyServer = data.getString(UPLOAD_KEY_SERVER);
 
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this,
-                        keyRingId);
+                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRing(this, keyRingRowId);
                 if (keyring != null) {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);

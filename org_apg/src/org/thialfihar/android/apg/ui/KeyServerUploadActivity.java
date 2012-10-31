@@ -49,7 +49,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
     public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
             + "EXPORT_KEY_TO_SERVER";
 
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_KEYRING_ROW_ID = "keyId";
 
     private Button export;
     private Spinner keyServer;
@@ -109,8 +109,8 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        int keyRingId = getIntent().getIntExtra(EXTRA_KEY_ID, -1);
-        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ID, keyRingId);
+        int keyRingId = getIntent().getIntExtra(EXTRA_KEYRING_ROW_ID, -1);
+        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ROW_ID, keyRingId);
 
         String server = (String) keyServer.getSelectedItem();
         data.putString(ApgService.UPLOAD_KEY_SERVER, server);

@@ -582,7 +582,7 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
             defaultSelection = KeyRings.MASTER_KEY_ID + "=" + uri.getLastPathSegment();
-
+            // corresponding keys and userIds are deleted by ON DELETE CASCADE
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
                     selectionArgs);
@@ -622,6 +622,16 @@ public class ApgProvider extends ContentProvider {
             case PUBLIC_KEY_RING_BY_ROW_ID:
             case SECRET_KEY_RING_BY_ROW_ID:
                 defaultSelection = BaseColumns._ID + "=" + uri.getLastPathSegment();
+
+                count = db.update(
+                        Tables.KEY_RINGS,
+                        values,
+                        buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
+                                selection), selectionArgs);
+                break;
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
+            case SECRET_KEY_RING_BY_MASTER_KEY_ID:
+                defaultSelection = KeyRings.MASTER_KEY_ID + "=" + uri.getLastPathSegment();
 
                 count = db.update(
                         Tables.KEY_RINGS,

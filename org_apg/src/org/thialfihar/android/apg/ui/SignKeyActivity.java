@@ -254,7 +254,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ID, mPubKeyId);
+        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ROW_ID, mPubKeyId);
 
         Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
         String server = (String) keyServer.getSelectedItem();
