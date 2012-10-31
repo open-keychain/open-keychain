@@ -309,6 +309,8 @@ public class PGPMain {
             throws ApgGeneralException, NoSuchProviderException, PGPException,
             NoSuchAlgorithmException, SignatureException, IOException {
 
+        Log.d(Constants.TAG, "userIds: " + userIds.toString());
+
         updateProgress(progress, R.string.progress_buildingKey, 0, 100);
 
         if (oldPassPhrase == null) {
@@ -327,15 +329,23 @@ public class PGPMain {
         String mainUserId = userIds.get(0);
 
         PGPSecretKey masterKey = keys.get(0);
-        PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
-        // Somehow, the PGPPublicKey already has an empty certification attached to it when the
-        // keyRing is generated the first time, we remove that when it exists, before adding the new
-        // ones
-        PGPPublicKey masterPublicKeyRmCert = PGPPublicKey.removeCertification(masterPublicKey, "");
-        if (masterPublicKeyRmCert != null) {
-            masterPublicKey = masterPublicKeyRmCert;
-        }
+        // this removes all userIds and certifications previously attached to the masterPublicKey
+        PGPPublicKey tmpKey = masterKey.getPublicKey();
+        PGPPublicKey masterPublicKey = new PGPPublicKey(tmpKey.getAlgorithm(),
+                tmpKey.getKey(new BouncyCastleProvider()), tmpKey.getCreationTime());
+
+        // already done by code above:
+        // PGPPublicKey masterPublicKey = masterKey.getPublicKey();
+        // // Somehow, the PGPPublicKey already has an empty certification attached to it when the
+        // // keyRing is generated the first time, we remove that when it exists, before adding the
+        // new
+        // // ones
+        // PGPPublicKey masterPublicKeyRmCert = PGPPublicKey.removeCertification(masterPublicKey,
+        // "");
+        // if (masterPublicKeyRmCert != null) {
+        // masterPublicKey = masterPublicKeyRmCert;
+        // }
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
