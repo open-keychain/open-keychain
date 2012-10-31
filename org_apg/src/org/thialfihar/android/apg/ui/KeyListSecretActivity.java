@@ -33,10 +33,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View;
-import android.widget.ExpandableListView;
 
 public class KeyListSecretActivity extends KeyListActivity {
 
@@ -49,8 +45,6 @@ public class KeyListSecretActivity extends KeyListActivity {
         setContentView(R.layout.key_list_secret_activity);
 
         mExportFilename = Constants.path.APP_DIR + "/secexport.asc";
-
-        // mList.setOnChildClickListener(this);
     }
 
     @Override
@@ -76,14 +70,6 @@ public class KeyListSecretActivity extends KeyListActivity {
         }
     }
 
-    //
-    // public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
-    // int childPosition, long id) {
-    // mSelectedItem = groupPosition;
-    // checkPassPhraseAndEdit();
-    // return true;
-    // }
-    //
     public void checkPassPhraseAndEdit(long keyId) {
         String passPhrase = PassphraseCacheService.getCachedPassphrase(this, keyId);
         if (passPhrase == null) {

@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorTreeAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class KeyListAdapter extends CursorTreeAdapter {
@@ -99,41 +100,37 @@ public class KeyListAdapter extends CursorTreeAdapter {
      */
     @Override
     public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
-        // first entry is fingerprint
-        if (cursor.getPosition() == 0) {
-            return mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-        } else {
-            // differentiate between keys and userIds in MergeCursor
-            if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {
-                // other layout for master key
-                int masterKeyIndex = cursor.getColumnIndex(Keys.IS_MASTER_KEY);
-                if (cursor.getInt(masterKeyIndex) == 1) {
-                    return mInflater.inflate(R.layout.key_list_child_item_master_key, null);
-                } else {
-                    return mInflater.inflate(R.layout.key_list_child_item_sub_key, null);
-                }
-            } else {
-                return mInflater.inflate(R.layout.key_list_child_item_user_id, null);
-            }
-        }
+        return mInflater.inflate(R.layout.key_list_child_item, null);
     }
 
     /**
-     * Bind TextViews from view of childs to query results
+     * Bind TextViews from view of childs based on query results
      */
     @Override
     protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
+        LinearLayout keyLayout = (LinearLayout) view.findViewById(R.id.keyLayout);
+        LinearLayout userIdLayout = (LinearLayout) view.findViewById(R.id.userIdLayout);
+
         // first entry is fingerprint
         if (cursor.getPosition() == 0) {
+            // show only userId layout
+            keyLayout.setVisibility(View.GONE);
+            userIdLayout.setVisibility(View.VISIBLE);
+
             String fingerprint = PGPHelper.getFingerPrint(context,
                     cursor.getLong(cursor.getColumnIndex(Keys.KEY_ID)));
             fingerprint = fingerprint.replace("  ", "\n");
 
             TextView userId = (TextView) view.findViewById(R.id.userId);
+            if (userId == null) {
+                Log.d(Constants.TAG, "userId is null!");
+            }
             userId.setText(context.getString(R.string.fingerprint) + ":\n" + fingerprint);
         } else {
             // differentiate between keys and userIds in MergeCursor
             if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {
+                keyLayout.setVisibility(View.VISIBLE);
+                userIdLayout.setVisibility(View.GONE);
 
                 String keyIdStr = PGPHelper.getSmallFingerPrint(cursor.getLong(cursor
                         .getColumnIndex(Keys.KEY_ID)));
@@ -147,16 +144,30 @@ public class KeyListAdapter extends CursorTreeAdapter {
                 TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
                 keyDetails.setText("(" + algorithmStr + ")");
 
+                ImageView masterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
+                if (cursor.getInt(cursor.getColumnIndex(Keys.IS_MASTER_KEY)) != 1) {
+                    masterKeyIcon.setVisibility(View.INVISIBLE);
+                } else {
+                    masterKeyIcon.setVisibility(View.VISIBLE);
+                }
+
                 ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
                 if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_ENCRYPT)) != 1) {
                     encryptIcon.setVisibility(View.GONE);
+                } else {
+                    encryptIcon.setVisibility(View.VISIBLE);
                 }
 
                 ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
                 if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
                     signIcon.setVisibility(View.GONE);
+                } else {
+                    signIcon.setVisibility(View.VISIBLE);
                 }
             } else {
+                keyLayout.setVisibility(View.GONE);
+                userIdLayout.setVisibility(View.VISIBLE);
+
                 String userIdStr = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
 
                 TextView userId = (TextView) view.findViewById(R.id.userId);
