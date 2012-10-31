@@ -569,29 +569,34 @@ public class ApgProvider extends ContentProvider {
         int count;
         final int match = sUriMatcher.match(uri);
 
+        String defaultSelection = null;
         switch (match) {
         case PUBLIC_KEY_RING_BY_ROW_ID:
-            // corresponding keys and userIds are deleted by ON DELETE CASCADE
-            count = db.delete(Tables.KEY_RINGS,
-                    buildDefaultKeyRingsSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
-            break;
         case SECRET_KEY_RING_BY_ROW_ID:
+            defaultSelection = BaseColumns._ID + "=" + uri.getLastPathSegment();
             // corresponding keys and userIds are deleted by ON DELETE CASCADE
             count = db.delete(Tables.KEY_RINGS,
-                    buildDefaultKeyRingsSelection(uri, KeyTypes.SECRET, selection), selectionArgs);
+                    buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
+                    selectionArgs);
+            break;
+        case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
+        case SECRET_KEY_RING_BY_MASTER_KEY_ID:
+            defaultSelection = KeyRings.MASTER_KEY_ID + "=" + uri.getLastPathSegment();
+
+            count = db.delete(Tables.KEY_RINGS,
+                    buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
+                    selectionArgs);
             break;
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
-            count = db.delete(Tables.KEYS,
-                    buildDefaultKeysSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
             count = db.delete(Tables.KEYS,
-                    buildDefaultKeysSelection(uri, KeyTypes.SECRET, selection), selectionArgs);
+                    buildDefaultKeysSelection(uri, getKeyType(match), selection), selectionArgs);
+            break;
         case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
-            count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
-                    selectionArgs);
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
                     selectionArgs);
+            break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -609,32 +614,29 @@ public class ApgProvider extends ContentProvider {
 
         final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
 
+        String defaultSelection = null;
         int count = 0;
         try {
             final int match = sUriMatcher.match(uri);
             switch (match) {
             case PUBLIC_KEY_RING_BY_ROW_ID:
-                count = db.update(Tables.KEY_RINGS, values,
-                        buildDefaultKeyRingsSelection(uri, KeyTypes.PUBLIC, selection),
-                        selectionArgs);
-                break;
             case SECRET_KEY_RING_BY_ROW_ID:
-                count = db.update(Tables.KEY_RINGS, values,
-                        buildDefaultKeyRingsSelection(uri, KeyTypes.SECRET, selection),
-                        selectionArgs);
+                defaultSelection = BaseColumns._ID + "=" + uri.getLastPathSegment();
+
+                count = db.update(
+                        Tables.KEY_RINGS,
+                        values,
+                        buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
+                                selection), selectionArgs);
                 break;
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
-                count = db.update(Tables.KEYS, values,
-                        buildDefaultKeysSelection(uri, KeyTypes.PUBLIC, selection), selectionArgs);
-                break;
             case SECRET_KEY_RING_KEY_BY_ROW_ID:
-                count = db.update(Tables.KEYS, values,
-                        buildDefaultKeysSelection(uri, KeyTypes.SECRET, selection), selectionArgs);
+                count = db
+                        .update(Tables.KEYS, values,
+                                buildDefaultKeysSelection(uri, getKeyType(match), selection),
+                                selectionArgs);
                 break;
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
-                count = db.update(Tables.USER_IDS, values,
-                        buildDefaultUserIdsSelection(uri, selection), selectionArgs);
-                break;
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
                 count = db.update(Tables.USER_IDS, values,
                         buildDefaultUserIdsSelection(uri, selection), selectionArgs);
@@ -660,9 +662,8 @@ public class ApgProvider extends ContentProvider {
      * @param selection
      * @return
      */
-    private String buildDefaultKeyRingsSelection(Uri uri, Integer keyType, String selection) {
-        String rowId = uri.getLastPathSegment();
-
+    private String buildDefaultKeyRingsSelection(String defaultSelection, Integer keyType,
+            String selection) {
         String andType = "";
         if (keyType != null) {
             andType = " AND " + KeyRingsColumns.TYPE + "=" + keyType;
@@ -673,7 +674,7 @@ public class ApgProvider extends ContentProvider {
             andSelection = " AND (" + selection + ")";
         }
 
-        return BaseColumns._ID + "=" + rowId + andType + andSelection;
+        return defaultSelection + andType + andSelection;
     }
 
     /**
