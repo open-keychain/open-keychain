@@ -18,7 +18,6 @@
 package org.thialfihar.android.apg.ui;
 
 import java.util.Date;
-import java.util.Vector;
 
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -31,22 +30,22 @@ import org.thialfihar.android.apg.ui.widget.SelectKeyCursorAdapter;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class SelectPublicKeyFragment extends SherlockListFragment implements
+public class SelectSecretKeyFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private SelectPublicKeyActivity mActivity;
+    private SelectSecretKeyActivity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
-
-    private long mSelectedMasterKeyIds[];
 
     public final static String PROJECTION_ROW_AVAILABLE = "available";
     public final static String PROJECTION_ROW_VALID = "valid";
@@ -58,19 +57,25 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = (SelectPublicKeyActivity) getSherlockActivity();
+        mActivity = (SelectSecretKeyActivity) getSherlockActivity();
         mListView = getListView();
 
-        // get selected master key ids, which are given to activity by intent
-        mSelectedMasterKeyIds = mActivity.getSelectedMasterKeyIds();
+        mListView.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                long masterKeyId = mAdapter.getMasterKeyId(position);
+                String userId = mAdapter.getUserId(position);
 
-        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                // return data to activity, which results in finishing it
+                mActivity.afterListSelection(masterKeyId, userId);
+            }
+        });
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.listEmpty));
 
-        mAdapter = new SelectKeyCursorAdapter(mActivity, mListView, null, Id.type.public_key);
+        mAdapter = new SelectKeyCursorAdapter(mActivity, mListView, null, Id.type.secret_key);
 
         setListAdapter(mAdapter);
 
@@ -80,67 +85,6 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    /**
-     * Selects items based on master key ids in list view
-     * 
-     * @param masterKeyIds
-     */
-    private void preselectMasterKeyIds(long[] masterKeyIds) {
-        if (masterKeyIds != null) {
-            for (int i = 0; i < mListView.getCount(); ++i) {
-                long keyId = mAdapter.getMasterKeyId(i);
-                for (int j = 0; j < masterKeyIds.length; ++j) {
-                    if (keyId == masterKeyIds[j]) {
-                        mListView.setItemChecked(i, true);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns all selected master key ids
-     * 
-     * @return
-     */
-    public long[] getSelectedMasterKeyIds() {
-        // mListView.getCheckedItemIds() would give the row ids of the KeyRings not the master key
-        // ids!
-        Vector<Long> vector = new Vector<Long>();
-        for (int i = 0; i < mListView.getCount(); ++i) {
-            if (mListView.isItemChecked(i)) {
-                vector.add(mAdapter.getMasterKeyId(i));
-            }
-        }
-
-        // convert to long array
-        long[] selectedMasterKeyIds = new long[vector.size()];
-        for (int i = 0; i < vector.size(); ++i) {
-            selectedMasterKeyIds[i] = vector.get(i);
-        }
-
-        return selectedMasterKeyIds;
-    }
-
-    /**
-     * Returns all selected user ids
-     * 
-     * @return
-     */
-    public String[] getSelectedUserIds() {
-        Vector<String> userIds = new Vector<String>();
-        for (int i = 0; i < mListView.getCount(); ++i) {
-            if (mListView.isItemChecked(i)) {
-                userIds.add((String) mAdapter.getUserId(i));
-            }
-        }
-
-        // make empty array to not return null
-        String userIdArray[] = new String[0];
-        return userIds.toArray(userIdArray);
     }
 
     @Override
@@ -156,47 +100,27 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
-                        + Keys.IS_REVOKED + " = '0' AND  tmp." + Keys.CAN_ENCRYPT + " = '1') AS "
+                        + Keys.IS_REVOKED + " = '0' AND  tmp." + Keys.CAN_SIGN + " = '1') AS "
                         + PROJECTION_ROW_AVAILABLE,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
-                        + Keys.IS_REVOKED + " = '0' AND " + Keys.CAN_ENCRYPT + " = '1' AND tmp."
+                        + Keys.IS_REVOKED + " = '0' AND " + Keys.CAN_SIGN + " = '1' AND tmp."
                         + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY
                         + " IS NULL OR tmp." + Keys.EXPIRY + " >= '" + now + "')) AS "
                         + PROJECTION_ROW_VALID, };
 
-        String inMasterKeyList = null;
-        if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {
-            inMasterKeyList = KeyRings.MASTER_KEY_ID + " IN (";
-            for (int i = 0; i < mSelectedMasterKeyIds.length; ++i) {
-                if (i != 0) {
-                    inMasterKeyList += ", ";
-                }
-                inMasterKeyList += DatabaseUtils.sqlEscapeString("" + mSelectedMasterKeyIds[i]);
-            }
-            inMasterKeyList += ")";
-        }
-
         // if (searchString != null && searchString.trim().length() > 0) {
         // String[] chunks = searchString.trim().split(" +");
-        // qb.appendWhere("(EXISTS (SELECT tmp." + UserIds._ID + " FROM " + UserIds.TABLE_NAME
+        // qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " + UserIds.TABLE_NAME
         // + " AS tmp WHERE " + "tmp." + UserIds.KEY_ID + " = " + Keys.TABLE_NAME + "."
         // + Keys._ID);
         // for (int i = 0; i < chunks.length; ++i) {
         // qb.appendWhere(" AND tmp." + UserIds.USER_ID + " LIKE ");
         // qb.appendWhereEscapeString("%" + chunks[i] + "%");
         // }
-        // qb.appendWhere("))");
-        //
-        // if (inIdList != null) {
-        // qb.appendWhere(" OR (" + inIdList + ")");
-        // }
+        // qb.appendWhere(")");
         // }
 
         String orderBy = UserIds.USER_ID + " ASC";
-        if (inMasterKeyList != null) {
-            // sort by selected master keys
-            orderBy = inMasterKeyList + " DESC, " + orderBy;
-        }
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -215,9 +139,6 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
         } else {
             setListShownNoAnimation(true);
         }
-
-        // preselect given master keys
-        preselectMasterKeyIds(mSelectedMasterKeyIds);
     }
 
     @Override

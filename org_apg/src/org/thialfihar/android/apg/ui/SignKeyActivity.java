@@ -120,7 +120,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         } else {
             // kick off the SecretKey selection activity so the user chooses which key to sign with
             // first
-            Intent intent = new Intent(this, SelectSecretKeyListActivityOld.class);
+            Intent intent = new Intent(this, SelectSecretKeyActivity.class);
             startActivityForResult(intent, Id.request.secret_keys);
         }
     }

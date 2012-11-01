@@ -17,6 +17,7 @@
 
 package org.thialfihar.android.apg.ui.widget;
 
+import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -34,17 +35,20 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectPublicKeyCursorAdapter extends CursorAdapter {
+public class SelectKeyCursorAdapter extends CursorAdapter {
+
+    protected int mKeyType;
 
     private LayoutInflater mInflater;
     private ListView mListView;
 
     @SuppressWarnings("deprecation")
-    public SelectPublicKeyCursorAdapter(Context context, ListView listView, Cursor c) {
+    public SelectKeyCursorAdapter(Context context, ListView listView, Cursor c, int keyType) {
         super(context, c);
 
         mInflater = LayoutInflater.from(context);
         mListView = listView;
+        mKeyType = keyType;
     }
 
     public String getUserId(int position) {
@@ -59,7 +63,8 @@ public class SelectPublicKeyCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        boolean enabled = cursor.getInt(cursor.getColumnIndex(SelectPublicKeyFragment.ROW_VALID)) > 0;
+        boolean valid = cursor.getInt(cursor
+                .getColumnIndex(SelectPublicKeyFragment.PROJECTION_ROW_VALID)) > 0;
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknownUserId);
@@ -87,38 +92,49 @@ public class SelectPublicKeyCursorAdapter extends CursorAdapter {
             mainUserIdRest.setVisibility(View.GONE);
         }
 
-        if (enabled) {
-            status.setText(R.string.canEncrypt);
+        if (valid) {
+            if (mKeyType == Id.type.public_key) {
+                status.setText(R.string.canEncrypt);
+            } else {
+                status.setText(R.string.canSign);
+            }
         } else {
-            if (cursor.getInt(cursor.getColumnIndex(SelectPublicKeyFragment.ROW_AVAILABLE)) > 0) {
-                // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or expired
+            if (cursor.getInt(cursor
+                    .getColumnIndex(SelectPublicKeyFragment.PROJECTION_ROW_AVAILABLE)) > 0) {
+                // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or
+                // expired
                 status.setText(R.string.expired);
             } else {
                 status.setText(R.string.noKey);
             }
         }
 
-        status.setText(status.getText() + " ");
-
         CheckBox selected = (CheckBox) view.findViewById(R.id.selected);
+        if (mKeyType == Id.type.public_key) {
+            selected.setVisibility(View.VISIBLE);
 
-        if (!enabled) {
-            mListView.setItemChecked(cursor.getPosition(), false);
+            if (!valid) {
+                mListView.setItemChecked(cursor.getPosition(), false);
+            }
+
+            selected.setChecked(mListView.isItemChecked(cursor.getPosition()));
+            selected.setEnabled(valid);
+        } else {
+            selected.setVisibility(View.GONE);
         }
 
-        selected.setChecked(mListView.isItemChecked(cursor.getPosition()));
+        status.setText(status.getText() + " ");
 
-        view.setEnabled(enabled);
-        mainUserId.setEnabled(enabled);
-        mainUserIdRest.setEnabled(enabled);
-        keyId.setEnabled(enabled);
-        selected.setEnabled(enabled);
-        status.setEnabled(enabled);
+        view.setEnabled(valid);
+        mainUserId.setEnabled(valid);
+        mainUserIdRest.setEnabled(valid);
+        keyId.setEnabled(valid);
+        status.setEnabled(valid);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.select_public_key_item, null);
+        return mInflater.inflate(R.layout.select_key_item, null);
     }
 
 }

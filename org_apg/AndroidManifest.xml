@@ -192,7 +192,7 @@
                 android:resource="@xml/searchable_public_keys" />
         </activity>
         <activity
-            android:name=".ui.SelectSecretKeyListActivity"
+            android:name=".ui.SelectSecretKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >

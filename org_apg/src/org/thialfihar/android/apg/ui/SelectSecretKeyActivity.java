@@ -29,24 +29,20 @@ import com.actionbarsherlock.view.MenuItem;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class SelectPublicKeyActivity extends SherlockFragmentActivity {
+public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
-    public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
-            + "SELECT_PUBLIC_KEYS";
+    public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
+            + "SELECT_SECRET_KEY";
 
-    public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
-    public static final String RESULT_EXTRA_USER_IDS = "userIds";
-
-    SelectPublicKeyFragment mSelectFragment;
-
-    long selectedKeyIds[];
+    public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String RESULT_EXTRA_USER_ID = "userId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.select_public_key_activity);
+        setContentView(R.layout.select_secret_key_activity);
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
@@ -55,10 +51,6 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-        mSelectFragment = (SelectPublicKeyFragment) getSupportFragmentManager().findFragmentById(
-                R.id.select_public_key_fragment);
-
-        //
         // mFilterLayout = findViewById(R.id.layout_filter);
         // mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         // mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
@@ -70,6 +62,20 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // });
 
         handleIntent(getIntent());
+    }
+
+    /**
+     * This is executed by SelectSecretKeyFragment after clicking on an item
+     * 
+     * @param masterKeyId
+     * @param userId
+     */
+    public void afterListSelection(long masterKeyId, String userId) {
+        Intent data = new Intent();
+        data.putExtra(RESULT_EXTRA_MASTER_KEY_ID, masterKeyId);
+        data.putExtra(RESULT_EXTRA_USER_ID, (String) userId);
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Override
@@ -87,9 +93,6 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // }
         // }
 
-        // preselected master keys
-        selectedKeyIds = intent.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS);
-
         // if (searchString == null) {
         // mFilterLayout.setVisibility(View.GONE);
         // } else {
@@ -98,36 +101,10 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // }
     }
 
-    /**
-     * returns preselected key ids, this is used in the fragment
-     * 
-     * @return
-     */
-    public long[] getSelectedMasterKeyIds() {
-        return selectedKeyIds;
-    }
-
-    private void cancelClicked() {
-        setResult(RESULT_CANCELED, null);
-        finish();
-    }
-
-    private void okClicked() {
-        Intent data = new Intent();
-        data.putExtra(RESULT_EXTRA_MASTER_KEY_IDS, mSelectFragment.getSelectedMasterKeyIds());
-        data.putExtra(RESULT_EXTRA_USER_IDS, mSelectFragment.getSelectedUserIds());
-        setResult(RESULT_OK, data);
-        finish();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
                 android.R.drawable.ic_menu_search);
-        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.okay, 1, R.string.btn_okay).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
     }
 
@@ -142,14 +119,6 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            return true;
-
-        case Id.menu.option.okay:
-            okClicked();
-            return true;
-
-        case Id.menu.option.cancel:
-            cancelClicked();
             return true;
 
         default:
