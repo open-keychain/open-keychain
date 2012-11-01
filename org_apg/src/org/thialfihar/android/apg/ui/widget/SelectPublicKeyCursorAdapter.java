@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,60 +20,47 @@ package org.thialfihar.android.apg.ui.widget;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
+import org.thialfihar.android.apg.provider.ApgContract.UserIds;
+import org.thialfihar.android.apg.ui.SelectPublicKeyFragment;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class SelectPublicKeyCursorAdapter extends CursorAdapter {
 
     private LayoutInflater mInflater;
-//    private int mActivityIndex;
-//    private int mTimeIndex;
-//    private int mActionIndex;
-//    private int mAmountIndex;
+    private ListView mListView;
 
-    public SelectPublicKeyCursorAdapter(Context context, Cursor c) {
+    @SuppressWarnings("deprecation")
+    public SelectPublicKeyCursorAdapter(Context context, ListView listView, Cursor c) {
         super(context, c);
-//
-//        mActivityIndex = c.getColumnIndex(Notes.ACTIVITY);
-//        mTimeIndex = c.getColumnIndex(Notes.TIME);
-//        mActionIndex = c.getColumnIndex(Notes.ACTION);
-//        mAmountIndex = c.getColumnIndex(Notes.AMOUNT);
 
         mInflater = LayoutInflater.from(context);
+        mListView = listView;
+    }
+
+    public String getUserId(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getString(mCursor.getColumnIndex(UserIds.USER_ID));
+    }
+
+    public long getMasterKeyId(int position) {
+        mCursor.moveToPosition(position);
+        return mCursor.getLong(mCursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // TextView activity = (TextView) view.findViewById(android.R.id.text1);
-        // TextView time = (TextView) view.findViewById(android.R.id.text2);
-        // TextView actionAndAmount = (TextView) view.findViewById(R.id.text3);
-        //
-        // activity.setText(cursor.getString(mActivityIndex));
-        //
-        // long lTime = cursor.getLong(mTimeIndex);
-        // Calendar cal = Calendar.getInstance();
-        // cal.setTimeInMillis(lTime);
-        // time.setText(cal.get(Calendar.HOUR_OF_DAY) + “:” + String.format(“%02d”,
-        // cal.get(Calendar.MINUTE)));
-        //
-        // String amount = cursor.getString(mAmountIndex);
-        // if ( amount.length() > 0){
-        // actionAndAmount.setText(cursor.getString(mActionIndex) + ” (” + amount + “)”);
-        // } else {
-        // actionAndAmount.setText(cursor.getString(mActionIndex));
-        // }
-        
-//        boolean enabled = isEnabled(position);
+        boolean enabled = cursor.getInt(cursor.getColumnIndex(SelectPublicKeyFragment.ROW_VALID)) > 0;
 
-        
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknownUserId);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
@@ -82,7 +70,7 @@ public class SelectPublicKeyCursorAdapter extends CursorAdapter {
         TextView status = (TextView) view.findViewById(R.id.status);
         status.setText(R.string.unknownStatus);
 
-        String userId = cursor.getString(2); // USER_ID
+        String userId = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
         if (userId != null) {
             String[] userIdSplit = OtherHelper.splitUserId(userId);
 
@@ -92,45 +80,45 @@ public class SelectPublicKeyCursorAdapter extends CursorAdapter {
             mainUserId.setText(userIdSplit[0]);
         }
 
-        long masterKeyId = cursor.getLong(1); // MASTER_KEY_ID
+        long masterKeyId = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
         keyId.setText(PGPHelper.getSmallFingerPrint(masterKeyId));
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);
         }
 
-//        if (enabled) {
-//            status.setText(R.string.canEncrypt);
-//        } else {
-            if (cursor.getInt(3) > 0) {
-                // has some CAN_ENCRYPT keys, but col(4) = 0, so must be revoked or expired
+        if (enabled) {
+            status.setText(R.string.canEncrypt);
+        } else {
+            if (cursor.getInt(cursor.getColumnIndex(SelectPublicKeyFragment.ROW_AVAILABLE)) > 0) {
+                // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or expired
                 status.setText(R.string.expired);
             } else {
                 status.setText(R.string.noKey);
             }
-//        }
+        }
 
         status.setText(status.getText() + " ");
 
         CheckBox selected = (CheckBox) view.findViewById(R.id.selected);
 
-//        if (!enabled) {
-//            mParent.setItemChecked(position, false);
-//        }
+        if (!enabled) {
+            mListView.setItemChecked(cursor.getPosition(), false);
+        }
 
-//        selected.setChecked(mParent.isItemChecked(position));
+        selected.setChecked(mListView.isItemChecked(cursor.getPosition()));
 
-//        view.setEnabled(enabled);
-//        mainUserId.setEnabled(enabled);
-//        mainUserIdRest.setEnabled(enabled);
-//        keyId.setEnabled(enabled);
-//        selected.setEnabled(enabled);
-//        status.setEnabled(enabled);
+        view.setEnabled(enabled);
+        mainUserId.setEnabled(enabled);
+        mainUserIdRest.setEnabled(enabled);
+        keyId.setEnabled(enabled);
+        selected.setEnabled(enabled);
+        status.setEnabled(enabled);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.select_public_key, null);
+        return mInflater.inflate(R.layout.select_public_key_item, null);
     }
 
 }

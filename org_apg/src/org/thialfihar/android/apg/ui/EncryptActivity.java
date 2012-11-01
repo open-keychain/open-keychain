@@ -441,7 +441,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         long encryptionKeyIds[] = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
         if (signatureKeyId != 0) {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, signatureKeyId);
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this,
+                    signatureKeyId);
             PGPSecretKey masterKey = null;
             if (keyRing != null) {
                 masterKey = PGPHelper.getMasterKey(keyRing);
@@ -958,7 +959,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else {
             String uid = getResources().getString(R.string.unknownUserId);
             String uidExtra = "";
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, getSecretKeyId());
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this,
+                    getSecretKeyId());
             if (keyRing != null) {
                 PGPSecretKey key = PGPHelper.getMasterKey(keyRing);
                 if (key != null) {
@@ -979,7 +981,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     }
 
     private void selectPublicKeys() {
-        Intent intent = new Intent(this, SelectPublicKeyListActivity.class);
+        Intent intent = new Intent(this, SelectPublicKeyActivity.class);
         Vector<Long> keyIds = new Vector<Long>();
         if (getSecretKeyId() != 0) {
             keyIds.add(getSecretKeyId());
@@ -996,7 +998,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 initialKeyIds[i] = keyIds.get(i);
             }
         }
-        intent.putExtra(SelectPublicKeyListActivity.RESULT_EXTRA_SELECTION, initialKeyIds);
+        intent.putExtra(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 
@@ -1040,7 +1042,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (resultCode == RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 mEncryptionKeyIds = bundle
-                        .getLongArray(SelectPublicKeyListActivity.RESULT_EXTRA_SELECTION);
+                        .getLongArray(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS);
             }
             updateView();
             break;

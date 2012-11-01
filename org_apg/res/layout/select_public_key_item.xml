@@ -46,7 +46,7 @@
 
         <TextView
             android:id="@+id/mainUserIdRest"
-            android:text="&lt;user@somewhere.com&gt;"
+            android:text="&lt;user@example.com&gt;"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

@@ -173,7 +173,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.SelectPublicKeyListActivity"
+            android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_selectRecipients"
             android:launchMode="singleTop"
