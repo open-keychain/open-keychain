@@ -23,7 +23,6 @@ import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
-import org.thialfihar.android.apg.ui.SelectPublicKeyFragment;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -41,6 +40,9 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
 
     private LayoutInflater mInflater;
     private ListView mListView;
+
+    public final static String PROJECTION_ROW_AVAILABLE = "available";
+    public final static String PROJECTION_ROW_VALID = "valid";
 
     @SuppressWarnings("deprecation")
     public SelectKeyCursorAdapter(Context context, ListView listView, Cursor c, int keyType) {
@@ -64,7 +66,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         boolean valid = cursor.getInt(cursor
-                .getColumnIndex(SelectPublicKeyFragment.PROJECTION_ROW_VALID)) > 0;
+                .getColumnIndex(PROJECTION_ROW_VALID)) > 0;
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknownUserId);
@@ -100,7 +102,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
             }
         } else {
             if (cursor.getInt(cursor
-                    .getColumnIndex(SelectPublicKeyFragment.PROJECTION_ROW_AVAILABLE)) > 0) {
+                    .getColumnIndex(PROJECTION_ROW_AVAILABLE)) > 0) {
                 // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or
                 // expired
                 status.setText(R.string.expired);

@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
+import android.view.View;
 import android.widget.ListView;
 
 public class SelectPublicKeyFragment extends SherlockListFragment implements
@@ -47,9 +48,6 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
     private ListView mListView;
 
     private long mSelectedMasterKeyIds[];
-
-    public final static String PROJECTION_ROW_AVAILABLE = "available";
-    public final static String PROJECTION_ROW_VALID = "valid";
 
     /**
      * Define Adapter and Loader on create of Activity
@@ -80,6 +78,15 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    /**
+     * Workaround for Android 4.1. Items are not checked in layout. See
+     * http://code.google.com/p/android/issues/detail?id=35885
+     */
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        l.setItemChecked(position, l.isItemChecked(position));
     }
 
     /**
@@ -157,12 +164,12 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
                 UserIds.USER_ID,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
                         + Keys.IS_REVOKED + " = '0' AND  tmp." + Keys.CAN_ENCRYPT + " = '1') AS "
-                        + PROJECTION_ROW_AVAILABLE,
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
                         + Keys.IS_REVOKED + " = '0' AND " + Keys.CAN_ENCRYPT + " = '1' AND tmp."
                         + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY
                         + " IS NULL OR tmp." + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + PROJECTION_ROW_VALID, };
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {

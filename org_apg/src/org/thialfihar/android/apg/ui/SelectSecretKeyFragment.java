@@ -47,9 +47,6 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
 
-    public final static String PROJECTION_ROW_AVAILABLE = "available";
-    public final static String PROJECTION_ROW_VALID = "valid";
-
     /**
      * Define Adapter and Loader on create of Activity
      */
@@ -101,12 +98,12 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
                 UserIds.USER_ID,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
                         + Keys.IS_REVOKED + " = '0' AND  tmp." + Keys.CAN_SIGN + " = '1') AS "
-                        + PROJECTION_ROW_AVAILABLE,
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
                 "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
                         + Keys.IS_REVOKED + " = '0' AND " + Keys.CAN_SIGN + " = '1' AND tmp."
                         + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY
                         + " IS NULL OR tmp." + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + PROJECTION_ROW_VALID, };
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         // if (searchString != null && searchString.trim().length() > 0) {
         // String[] chunks = searchString.trim().split(" +");

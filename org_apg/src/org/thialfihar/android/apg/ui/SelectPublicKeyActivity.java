@@ -40,7 +40,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
     SelectPublicKeyFragment mSelectFragment;
 
-    long selectedKeyIds[];
+    long selectedMasterKeyIds[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,15 +87,15 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // }
         // }
 
-        // preselected master keys
-        selectedKeyIds = intent.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS);
-
         // if (searchString == null) {
         // mFilterLayout.setVisibility(View.GONE);
         // } else {
         // mFilterLayout.setVisibility(View.VISIBLE);
         // mFilterInfo.setText(getString(R.string.filterInfo, searchString));
         // }
+
+        // preselected master keys
+        selectedMasterKeyIds = intent.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS);
     }
 
     /**
@@ -104,7 +104,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
      * @return
      */
     public long[] getSelectedMasterKeyIds() {
-        return selectedKeyIds;
+        return selectedMasterKeyIds;
     }
 
     private void cancelClicked() {
