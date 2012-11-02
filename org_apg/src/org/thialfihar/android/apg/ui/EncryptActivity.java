@@ -998,7 +998,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 initialKeyIds[i] = keyIds.get(i);
             }
         }
-        intent.putExtra(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS, initialKeyIds);
+        intent.putExtra(SelectPublicKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, initialKeyIds);
         startActivityForResult(intent, Id.request.public_keys);
     }
 

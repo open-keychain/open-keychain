@@ -22,6 +22,7 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -230,6 +231,11 @@ public class PGPMain {
 
         switch (algorithmChoice) {
         case Id.choice.algorithm.dsa: {
+            if (masterSecretKey != null
+                    && masterSecretKey.getPublicKey().getAlgorithm() != PublicKeyAlgorithmTags.DSA) {
+                throw new ApgGeneralException(
+                        context.getString(R.string.error_couldNotAddDSASubkey));
+            }
             keyGen = KeyPairGenerator.getInstance("DSA", BOUNCY_CASTLE_PROVIDER_NAME);
             keyGen.initialize(keySize, new SecureRandom());
             algorithm = PGPPublicKey.DSA;
@@ -241,7 +247,7 @@ public class PGPMain {
                 throw new ApgGeneralException(
                         context.getString(R.string.error_masterKeyMustNotBeElGamal));
             }
-            keyGen = KeyPairGenerator.getInstance("ELGAMAL", BOUNCY_CASTLE_PROVIDER_NAME);
+            keyGen = KeyPairGenerator.getInstance("ElGamal", BOUNCY_CASTLE_PROVIDER_NAME);
             BigInteger p = Primes.getBestPrime(keySize);
             BigInteger g = new BigInteger("2");
 
@@ -271,8 +277,6 @@ public class PGPMain {
         // define hashing and signing algos
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
                 HashAlgorithmTags.SHA1);
-        PGPContentSignerBuilder certificationSignerBuilder = new JcaPGPContentSignerBuilder(keyPair
-                .getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
 
         // Build key encrypter and decrypter based on passphrase
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
@@ -282,17 +286,24 @@ public class PGPMain {
                 BOUNCY_CASTLE_PROVIDER_NAME).build(passPhrase.toCharArray());
 
         PGPKeyRingGenerator ringGen = null;
+        PGPContentSignerBuilder certificationSignerBuilder = null;
         if (masterSecretKey == null) {
+            certificationSignerBuilder = new JcaPGPContentSignerBuilder(keyPair.getPublicKey()
+                    .getAlgorithm(), HashAlgorithmTags.SHA1);
+            
             // build keyRing with only this one master key in it!
-            ringGen = new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION, keyPair, "",
+            ringGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, keyPair, "",
                     sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
         } else {
             PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
             PGPPrivateKey masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
             PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
 
+            certificationSignerBuilder = new JcaPGPContentSignerBuilder(masterKeyPair
+                    .getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
+
             // build keyRing with master key and new key as subkey (certified by masterkey)
-            ringGen = new PGPKeyRingGenerator(PGPSignature.DEFAULT_CERTIFICATION, masterKeyPair,
+            ringGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, masterKeyPair,
                     "", sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
 
             ringGen.addSubKey(keyPair);

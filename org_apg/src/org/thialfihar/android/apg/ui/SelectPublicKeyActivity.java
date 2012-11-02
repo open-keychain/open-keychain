@@ -35,6 +35,8 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
             + "SELECT_PUBLIC_KEYS";
 
+    public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "masterKeyIds";
+
     public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
     public static final String RESULT_EXTRA_USER_IDS = "userIds";
 
@@ -95,7 +97,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // }
 
         // preselected master keys
-        selectedMasterKeyIds = intent.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS);
+        selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
     }
 
     /**
