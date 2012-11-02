@@ -22,7 +22,6 @@ import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.bcpg.PublicKeyAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -231,11 +230,6 @@ public class PGPMain {
 
         switch (algorithmChoice) {
         case Id.choice.algorithm.dsa: {
-            if (masterSecretKey != null
-                    && masterSecretKey.getPublicKey().getAlgorithm() != PublicKeyAlgorithmTags.DSA) {
-                throw new ApgGeneralException(
-                        context.getString(R.string.error_couldNotAddDSASubkey));
-            }
             keyGen = KeyPairGenerator.getInstance("DSA", BOUNCY_CASTLE_PROVIDER_NAME);
             keyGen.initialize(keySize, new SecureRandom());
             algorithm = PGPPublicKey.DSA;
@@ -290,7 +284,7 @@ public class PGPMain {
         if (masterSecretKey == null) {
             certificationSignerBuilder = new JcaPGPContentSignerBuilder(keyPair.getPublicKey()
                     .getAlgorithm(), HashAlgorithmTags.SHA1);
-            
+
             // build keyRing with only this one master key in it!
             ringGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, keyPair, "",
                     sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
