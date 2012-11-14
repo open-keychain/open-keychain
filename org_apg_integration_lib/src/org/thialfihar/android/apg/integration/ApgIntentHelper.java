@@ -184,7 +184,7 @@ public class ApgIntentHelper {
                 apgData.setEncryptionKeys(null);
                 break;
             }
-            apgData.setEncryptionKeys(data.getLongArrayExtra(Constants.EXTRA_SELECTION));
+            apgData.setEncryptionKeys(data.getLongArrayExtra(Constants.RESULT_EXTRA_MASTER_KEY_IDS));
             break;
 
         case Constants.ENCRYPT_MESSAGE:

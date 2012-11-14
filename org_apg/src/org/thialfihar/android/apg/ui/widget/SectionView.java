@@ -20,8 +20,8 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.ProgressDialogFragment;
 import org.thialfihar.android.apg.ui.widget.Editor.EditorListener;
@@ -249,9 +249,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private void createKey() {
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(mActivity, ApgService.class);
+        Intent intent = new Intent(mActivity, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_GENERATE_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_GENERATE_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -262,32 +262,32 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             passPhrase = PassphraseCacheService
                     .getCachedPassphrase(mActivity, masterKey.getKeyID());
 
-            data.putByteArray(ApgService.MASTER_KEY,
+            data.putByteArray(ApgIntentService.MASTER_KEY,
                     PGPConversionHelper.PGPSecretKeyToBytes(masterKey));
         } else {
             passPhrase = "";
         }
-        data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
-        data.putInt(ApgService.ALGORITHM, mNewKeyAlgorithmChoice.getId());
-        data.putInt(ApgService.KEY_SIZE, mNewKeySize);
+        data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, passPhrase);
+        data.putInt(ApgIntentService.ALGORITHM, mNewKeyAlgorithmChoice.getId());
+        data.putInt(ApgIntentService.KEY_SIZE, mNewKeySize);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // show progress dialog
         mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
                 ProgressDialog.STYLE_SPINNER);
 
         // Message is received after generating is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(mActivity, mGeneratingDialog) {
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(mActivity, mGeneratingDialog) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
                     PGPSecretKeyRing newKeyRing = (PGPSecretKeyRing) PGPConversionHelper
-                            .BytesToPGPKeyRing(data.getByteArray(ApgService.RESULT_NEW_KEY));
+                            .BytesToPGPKeyRing(data.getByteArray(ApgIntentService.RESULT_NEW_KEY));
 
                     boolean isMasterKey = (mEditors.getChildCount() == 0);
 
@@ -317,7 +317,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         mGeneratingDialog.show(mActivity.getSupportFragmentManager(), "dialog");
 

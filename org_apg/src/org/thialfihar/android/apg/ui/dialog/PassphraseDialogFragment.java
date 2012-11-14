@@ -104,9 +104,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     private static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {
-            // TODO: by master key id???
             PGPSecretKey secretKey = PGPHelper.getMasterKey(ProviderHelper
-                    .getPGPSecretKeyRingByMasterKeyId(context, secretKeyId));
+                    .getPGPSecretKeyRingByKeyId(context, secretKeyId));
             // PGPSecretKey secretKey =
             // PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 

@@ -20,8 +20,8 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -102,29 +102,29 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
     private void uploadKey() {
         // Send all information needed to service to upload key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_UPLOAD_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_UPLOAD_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
         int keyRingId = getIntent().getIntExtra(EXTRA_KEYRING_ROW_ID, -1);
-        data.putInt(ApgService.UPLOAD_KEY_KEYRING_ROW_ID, keyRingId);
+        data.putInt(ApgIntentService.UPLOAD_KEY_KEYRING_ROW_ID, keyRingId);
 
         String server = (String) keyServer.getSelectedItem();
-        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
+        data.putString(ApgIntentService.UPLOAD_KEY_SERVER, server);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after uploading is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_exporting,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_exporting,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
 
                     Toast.makeText(KeyServerUploadActivity.this, R.string.keySendSuccess,
                             Toast.LENGTH_SHORT).show();
@@ -135,7 +135,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

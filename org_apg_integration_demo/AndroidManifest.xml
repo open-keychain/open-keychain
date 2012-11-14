@@ -27,6 +27,10 @@
             android:name=".IntentDemoActivity"
             android:label="Intent Demo 1"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".AidlDemoActivity"
+            android:label="Aidl Demo"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

@@ -26,8 +26,8 @@ import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.provider.ProviderHelper;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
 import org.thialfihar.android.apg.ui.widget.KeyEditor;
 import org.thialfihar.android.apg.ui.widget.SectionView;
@@ -224,32 +224,32 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     mBuildLayout = false;
 
                     // Send all information needed to service generate keys in other thread
-                    Intent serviceIntent = new Intent(this, ApgService.class);
-                    serviceIntent.putExtra(ApgService.EXTRA_ACTION,
-                            ApgService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
+                    Intent serviceIntent = new Intent(this, ApgIntentService.class);
+                    serviceIntent.putExtra(ApgIntentService.EXTRA_ACTION,
+                            ApgIntentService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
 
                     // fill values for this action
                     Bundle data = new Bundle();
-                    data.putString(ApgService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
+                    data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
 
-                    serviceIntent.putExtra(ApgService.EXTRA_DATA, data);
+                    serviceIntent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
                     // Message is received after generating is done in ApgService
-                    ApgServiceHandler saveHandler = new ApgServiceHandler(this,
+                    ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
                             R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
                         public void handleMessage(Message message) {
                             // handle messages by standard ApgHandler first
                             super.handleMessage(message);
 
-                            if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                            if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                                 // get new key from data bundle returned from service
                                 Bundle data = message.getData();
                                 PGPSecretKeyRing masterKeyRing = (PGPSecretKeyRing) PGPConversionHelper
                                         .BytesToPGPKeyRing(data
-                                                .getByteArray(ApgService.RESULT_NEW_KEY));
+                                                .getByteArray(ApgIntentService.RESULT_NEW_KEY));
                                 PGPSecretKeyRing subKeyRing = (PGPSecretKeyRing) PGPConversionHelper
                                         .BytesToPGPKeyRing(data
-                                                .getByteArray(ApgService.RESULT_NEW_KEY2));
+                                                .getByteArray(ApgIntentService.RESULT_NEW_KEY2));
 
                                 // add master key
                                 @SuppressWarnings("unchecked")
@@ -271,7 +271,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                     // Create a new Messenger for the communication back
                     Messenger messenger = new Messenger(saveHandler);
-                    serviceIntent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+                    serviceIntent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
                     saveHandler.showProgressDialog(this);
 
@@ -412,30 +412,30 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             }
 
             // Send all information needed to service to edit key in other thread
-            Intent intent = new Intent(this, ApgService.class);
+            Intent intent = new Intent(this, ApgIntentService.class);
 
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SAVE_KEYRING);
+            intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_SAVE_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
-            data.putString(ApgService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
-            data.putString(ApgService.NEW_PASSPHRASE, mNewPassPhrase);
-            data.putStringArrayList(ApgService.USER_IDS, getUserIds(mUserIdsView));
+            data.putString(ApgIntentService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
+            data.putString(ApgIntentService.NEW_PASSPHRASE, mNewPassPhrase);
+            data.putStringArrayList(ApgIntentService.USER_IDS, getUserIds(mUserIdsView));
             ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
-            data.putByteArray(ApgService.KEYS, PGPConversionHelper.PGPSecretKeyListToBytes(keys));
-            data.putIntegerArrayList(ApgService.KEYS_USAGES, getKeysUsages(mKeysView));
-            data.putLong(ApgService.MASTER_KEY_ID, getMasterKeyId());
+            data.putByteArray(ApgIntentService.KEYS, PGPConversionHelper.PGPSecretKeyListToBytes(keys));
+            data.putIntegerArrayList(ApgIntentService.KEYS_USAGES, getKeysUsages(mKeysView));
+            data.putLong(ApgIntentService.MASTER_KEY_ID, getMasterKeyId());
 
-            intent.putExtra(ApgService.EXTRA_DATA, data);
+            intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
             // Message is received after saving is done in ApgService
-            ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_saving,
+            ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_saving,
                     ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);
 
-                    if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                    if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                         finish();
                     }
                 };
@@ -443,7 +443,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+            intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
             saveHandler.showProgressDialog(this);
 

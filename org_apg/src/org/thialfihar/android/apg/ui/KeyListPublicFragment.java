@@ -90,7 +90,7 @@ public class KeyListPublicFragment extends KeyListFragment implements
         switch (item.getItemId()) {
         case Id.menu.update:
             long updateKeyId = 0;
-            PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRing(mKeyListActivity,
+            PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(mKeyListActivity,
                     keyRingRowId);
             if (updateKeyRing != null) {
                 updateKeyId = PGPHelper.getMasterKey(updateKeyRing).getKeyID();
@@ -119,7 +119,7 @@ public class KeyListPublicFragment extends KeyListFragment implements
 
         case Id.menu.signKey:
             long keyId = 0;
-            PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRing(mKeyListActivity,
+            PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(mKeyListActivity,
                     keyRingRowId);
             if (signKeyRing != null) {
                 keyId = PGPHelper.getMasterKey(signKeyRing).getKeyID();

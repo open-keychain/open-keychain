@@ -26,8 +26,8 @@ import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.provider.ProviderHelper;
-import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
 
@@ -196,26 +196,26 @@ public class SignKeyActivity extends SherlockFragmentActivity {
      */
     private void startSigning() {
         // Send all information needed to service to sign key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_SIGN_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_SIGN_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putLong(ApgService.SIGN_KEY_MASTER_KEY_ID, mMasterKeyId);
-        data.putLong(ApgService.SIGN_KEY_PUB_KEY_ID, mPubKeyId);
+        data.putLong(ApgIntentService.SIGN_KEY_MASTER_KEY_ID, mMasterKeyId);
+        data.putLong(ApgIntentService.SIGN_KEY_PUB_KEY_ID, mPubKeyId);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_signing,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_signing,
                 ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
 
                     Toast.makeText(SignKeyActivity.this, R.string.keySignSuccess,
                             Toast.LENGTH_SHORT).show();
@@ -236,7 +236,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);
@@ -247,29 +247,29 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
     private void uploadKey() {
         // Send all information needed to service to upload key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_UPLOAD_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_UPLOAD_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putLong(ApgService.UPLOAD_KEY_KEYRING_ROW_ID, mPubKeyId);
+        data.putLong(ApgIntentService.UPLOAD_KEY_KEYRING_ROW_ID, mPubKeyId);
 
         Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
         String server = (String) keyServer.getSelectedItem();
-        data.putString(ApgService.UPLOAD_KEY_SERVER, server);
+        data.putString(ApgIntentService.UPLOAD_KEY_SERVER, server);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after uploading is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_exporting,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_exporting,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
 
                     Toast.makeText(SignKeyActivity.this, R.string.keySendSuccess,
                             Toast.LENGTH_SHORT).show();
@@ -281,7 +281,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

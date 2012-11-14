@@ -76,11 +76,11 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         String userId = activity.getString(R.string.unknownUserId);
 
         if (keyType == Id.type.public_key) {
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(activity,
+            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,
                     deleteKeyRingRowId);
             userId = PGPHelper.getMainUserIdSafe(activity, PGPHelper.getMasterKey(keyRing));
         } else {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(activity,
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByRowId(activity,
                     deleteKeyRingRowId);
             userId = PGPHelper.getMainUserIdSafe(activity, PGPHelper.getMasterKey(keyRing));
         }

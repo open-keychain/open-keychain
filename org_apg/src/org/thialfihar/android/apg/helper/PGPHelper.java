@@ -384,10 +384,10 @@ public class PGPHelper {
     }
 
     public static String getPubkeyAsArmoredString(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKey(context, keyId);
+        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
         // if it is no public key get it from your own keys...
         if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKey(context, keyId);
+            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
             if (secretKey == null) {
                 Log.e(Constants.TAG, "Key could not be found!");
                 return null;
@@ -415,10 +415,10 @@ public class PGPHelper {
     }
 
     public static String getFingerPrint(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKey(context, keyId);
+        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
         // if it is no public key get it from your own keys...
         if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKey(context, keyId);
+            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
             if (secretKey == null) {
                 Log.e(Constants.TAG, "Key could not be found!");
                 return null;

@@ -59,12 +59,4 @@ public final class Constants {
         public static final String KEY_SERVERS = "pool.sks-keyservers.net, subkeys.pgp.net, pgp.mit.edu";
     }
 
-    // TODO: rework!
-    public static final class extras {
-        public static final String PROGRESS = "progress";
-        public static final String PROGRESS_MAX = "max";
-        public static final String STATUS = "status";
-        public static final String MESSAGE = "message";
-        public static final String KEY_ID = "keyId";
-    }
 }

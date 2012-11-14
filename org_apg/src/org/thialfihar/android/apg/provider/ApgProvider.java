@@ -286,17 +286,21 @@ public class ApgProvider extends ContentProvider {
     }
 
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb,
-            HashMap<String, String> projectionMap, int match, String sortOrder) {
+            HashMap<String, String> projectionMap, int match, boolean isMasterKey, String sortOrder) {
         qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
         qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
+        String isMasterKeyQuery = "";
+        if (isMasterKey) {
+            isMasterKeyQuery = " AND " + Tables.KEYS + "." + KeysColumns.IS_MASTER_KEY + " = '1'";
+        }
+
         qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                 + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN " + Tables.USER_IDS
-                + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS
-                + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
-                + UserIdsColumns.RANK + " = '0')");
+                + KeysColumns.KEY_RING_ROW_ID + isMasterKeyQuery + ") " + " INNER JOIN "
+                + Tables.USER_IDS + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = "
+                + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
+                + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
 
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
@@ -326,7 +330,7 @@ public class ApgProvider extends ContentProvider {
         switch (match) {
         case PUBLIC_KEY_RING:
         case SECRET_KEY_RING:
-            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
 
             if (TextUtils.isEmpty(sortOrder)) {
                 sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
@@ -336,7 +340,7 @@ public class ApgProvider extends ContentProvider {
 
         case PUBLIC_KEY_RING_BY_ROW_ID:
         case SECRET_KEY_RING_BY_ROW_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
 
             qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -349,7 +353,7 @@ public class ApgProvider extends ContentProvider {
 
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
 
             qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -362,9 +366,9 @@ public class ApgProvider extends ContentProvider {
 
         case SECRET_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, sortOrder);
+            qb = buildKeyRingQuery(qb, projectionMap, match, false, sortOrder);
 
-            qb.appendWhere(" AND " + Tables.KEYS + KeysColumns.KEY_ID + " = ");
+            qb.appendWhere(" AND " + Tables.KEYS + "." + KeysColumns.KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             if (TextUtils.isEmpty(sortOrder)) {

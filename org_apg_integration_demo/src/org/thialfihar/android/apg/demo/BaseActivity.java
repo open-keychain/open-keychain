@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
 public class BaseActivity extends PreferenceActivity {
     private Activity mActivity;
@@ -60,7 +59,7 @@ public class BaseActivity extends PreferenceActivity {
         mAidlDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Toast.makeText(mActivity, "Currently not implemented!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(mActivity, AidlDemoActivity.class));
 
                 return false;
             }

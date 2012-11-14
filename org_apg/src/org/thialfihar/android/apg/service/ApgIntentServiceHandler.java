@@ -26,7 +26,7 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-public class ApgServiceHandler extends Handler {
+public class ApgIntentServiceHandler extends Handler {
 
     // possible messages send from this service to handler on ui
     public static final int MESSAGE_OKAY = 1;
@@ -43,16 +43,16 @@ public class ApgServiceHandler extends Handler {
     Activity mActivity;
     ProgressDialogFragment mProgressDialogFragment;
 
-    public ApgServiceHandler(Activity activity) {
+    public ApgIntentServiceHandler(Activity activity) {
         this.mActivity = activity;
     }
 
-    public ApgServiceHandler(Activity activity, ProgressDialogFragment progressDialogFragment) {
+    public ApgIntentServiceHandler(Activity activity, ProgressDialogFragment progressDialogFragment) {
         this.mActivity = activity;
         this.mProgressDialogFragment = progressDialogFragment;
     }
 
-    public ApgServiceHandler(Activity activity, int progressDialogMessageId, int progressDialogStyle) {
+    public ApgIntentServiceHandler(Activity activity, int progressDialogMessageId, int progressDialogStyle) {
         this.mActivity = activity;
         this.mProgressDialogFragment = ProgressDialogFragment.newInstance(progressDialogMessageId,
                 progressDialogStyle);

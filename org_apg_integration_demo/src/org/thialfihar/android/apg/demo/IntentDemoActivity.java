@@ -28,11 +28,12 @@ import android.widget.TextView;
 
 public class IntentDemoActivity extends Activity {
     Activity mActivity;
-    ApgIntentHelper mApgIntentHelper;
+
     TextView mMessageTextView;
     TextView mCiphertextTextView;
     TextView mDataTextView;
 
+    ApgIntentHelper mApgIntentHelper;
     ApgData mApgData;
 
     /**
@@ -45,34 +46,34 @@ public class IntentDemoActivity extends Activity {
         setContentView(R.layout.intent_demo);
 
         mActivity = this;
-        mApgIntentHelper = new ApgIntentHelper(mActivity);
+
         mMessageTextView = (TextView) findViewById(R.id.intent_demo_message);
         mCiphertextTextView = (TextView) findViewById(R.id.intent_demo_ciphertext);
-
         mDataTextView = (TextView) findViewById(R.id.intent_demo_data);
 
+        mApgIntentHelper = new ApgIntentHelper(mActivity);
         mApgData = new ApgData();
     }
 
-    public void intentDemoCreateNewKeyOnClick(View view) {
+    public void createNewKeyOnClick(View view) {
         // mApgIntentHelper.createNewKey();
-        mApgIntentHelper.createNewKey("test <+491711111111@cryptocall.org>", true, true);
+        mApgIntentHelper.createNewKey("test <user@example.com>", true, true);
     }
 
-    public void intentDemoSelectSecretKeyOnClick(View view) {
+    public void selectSecretKeyOnClick(View view) {
         mApgIntentHelper.selectSecretKey();
     }
 
-    public void intentDemoSelectEncryptionKeysOnClick(View view) {
-        mApgIntentHelper.selectEncryptionKeys("usera@example.com");
+    public void selectEncryptionKeysOnClick(View view) {
+        mApgIntentHelper.selectEncryptionKeys("user@example.com");
     }
 
-    public void intentDemoEncryptOnClick(View view) {
+    public void encryptOnClick(View view) {
         mApgIntentHelper.encrypt(mMessageTextView.getText().toString(),
                 mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId());
     }
 
-    public void intentDemoDecryptOnClick(View view) {
+    public void decryptOnClick(View view) {
         mApgIntentHelper.decrypt(mCiphertextTextView.getText().toString());
     }
 

@@ -25,8 +25,8 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.Preferences;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.util.Log;
 import org.thialfihar.android.apg.util.KeyServer.KeyInfo;
 
@@ -166,42 +166,42 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         Log.d(Constants.TAG, "start search with service");
 
         // Send all information needed to service to query keys in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_QUERY_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_QUERY_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
         String server = (String) mKeyServer.getSelectedItem();
-        data.putString(ApgService.QUERY_KEY_SERVER, server);
+        data.putString(ApgIntentService.QUERY_KEY_SERVER, server);
 
-        data.putInt(ApgService.QUERY_KEY_TYPE, mQueryType);
+        data.putInt(ApgIntentService.QUERY_KEY_TYPE, mQueryType);
 
         if (mQueryType == Id.keyserver.search) {
-            data.putString(ApgService.QUERY_KEY_STRING, mQueryString);
+            data.putString(ApgIntentService.QUERY_KEY_STRING, mQueryString);
         } else if (mQueryType == Id.keyserver.get) {
-            data.putLong(ApgService.QUERY_KEY_ID, mQueryId);
+            data.putLong(ApgIntentService.QUERY_KEY_ID, mQueryId);
         }
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after querying is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_querying,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_querying,
                 ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
                     if (mQueryType == Id.keyserver.search) {
                         mSearchResult = returnData
-                                .getParcelableArrayList(ApgService.RESULT_QUERY_KEY_SEARCH_RESULT);
+                                .getParcelableArrayList(ApgIntentService.RESULT_QUERY_KEY_SEARCH_RESULT);
                     } else if (mQueryType == Id.keyserver.get) {
-                        mKeyData = returnData.getString(ApgService.RESULT_QUERY_KEY_KEY_DATA);
+                        mKeyData = returnData.getString(ApgIntentService.RESULT_QUERY_KEY_KEY_DATA);
                     }
 
                     // TODO: IMPROVE CODE!!! some global variables can be avoided!!!
@@ -240,7 +240,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

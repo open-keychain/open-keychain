@@ -20,8 +20,8 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.helper.OtherHelper;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.R;
 
 import android.app.AlertDialog;
@@ -157,34 +157,34 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
 
         if (mScannedContent != null) {
             // Send all information needed to service to import key in other thread
-            Intent intent = new Intent(this, ApgService.class);
+            Intent intent = new Intent(this, ApgIntentService.class);
 
-            intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
+            intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_IMPORT_KEY);
 
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putInt(ApgService.IMPORT_KEY_TYPE, Id.type.public_key);
+            data.putInt(ApgIntentService.IMPORT_KEY_TYPE, Id.type.public_key);
 
-            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
-            data.putByteArray(ApgService.IMPORT_BYTES, mScannedContent.getBytes());
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
+            data.putByteArray(ApgIntentService.IMPORT_BYTES, mScannedContent.getBytes());
 
-            intent.putExtra(ApgService.EXTRA_DATA, data);
+            intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
             // Message is received after importing is done in ApgService
-            ApgServiceHandler saveHandler = new ApgServiceHandler(this,
+            ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
                     R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);
 
-                    if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                    if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                         // get returned data bundle
                         Bundle returnData = message.getData();
 
-                        int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
-                        int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
-                        int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
+                        int added = returnData.getInt(ApgIntentService.RESULT_IMPORT_ADDED);
+                        int updated = returnData.getInt(ApgIntentService.RESULT_IMPORT_UPDATED);
+                        int bad = returnData.getInt(ApgIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {
                             toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
@@ -221,7 +221,7 @@ public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
-            intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+            intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
             // show progress dialog
             saveHandler.showProgressDialog(this);

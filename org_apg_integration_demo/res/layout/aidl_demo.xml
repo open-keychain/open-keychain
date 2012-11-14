@@ -7,51 +7,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-        
+
         <Button
-            android:id="@+id/intent_demo_create_new_key"
+            android:id="@+id/aidl_demo_create_new_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="createNewKeyOnClick"
             android:text="Create new key" />
 
         <Button
-            android:id="@+id/intent_demo_select_secret_key"
+            android:id="@+id/aidl_demo_select_secret_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="selectSecretKeyOnClick"
             android:text="Select secret key" />
 
         <Button
-            android:id="@+id/intent_demo_select_encryption_key"
+            android:id="@+id/aidl_demo_select_encryption_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="selectEncryptionKeysOnClick"
             android:text="Select encryption key(s)" />
 
         <EditText
-            android:id="@+id/intent_demo_message"
+            android:id="@+id/aidl_demo_message"
             android:layout_width="match_parent"
             android:layout_height="150dip"
             android:text="message"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
         <EditText
-            android:id="@+id/intent_demo_ciphertext"
+            android:id="@+id/aidl_demo_ciphertext"
             android:layout_width="match_parent"
             android:layout_height="150dip"
             android:text="ciphertext"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
         <Button
-            android:id="@+id/intent_demo_encrypt"
+            android:id="@+id/aidl_demo_encrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="encryptOnClick"
             android:text="Encrypt" />
 
         <Button
-            android:id="@+id/intent_demo_decrypt"
+            android:id="@+id/aidl_demo_decrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="decryptOnClick"
@@ -63,7 +63,7 @@
             android:text="APG Data:" />
 
         <TextView
-            android:id="@+id/intent_demo_data"
+            android:id="@+id/aidl_demo_data"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:minLines="10" />

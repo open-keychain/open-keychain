@@ -70,6 +70,10 @@ public class Constants {
     public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
     public static final String EXTRA_INTENT_VERSION = "intentVersion";
+    
+    
+    public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
+    public static final String RESULT_EXTRA_USER_IDS = "userIds";
 
     public static final String INTENT_VERSION = "1";
 
@@ -79,13 +83,4 @@ public class Constants {
     public static final int SELECT_SECRET_KEY = 0x21070004;
     public static final int CREATE_KEY = 0x21070005;
     public static final int EDIT_KEY = 0x21070006;
-
-
-    // public static Pattern PGP_MESSAGE = Pattern.compile(
-    // ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);
-
-    // public static Pattern PGP_SIGNED_MESSAGE = Pattern
-    // .compile(
-    // ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
-    // Pattern.DOTALL);
 }

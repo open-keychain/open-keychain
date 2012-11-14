@@ -29,8 +29,8 @@ import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.Preferences;
 import org.thialfihar.android.apg.provider.ProviderHelper;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
@@ -768,14 +768,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private void encryptStart() {
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        boolean useAsciiArmour = true;
+        boolean useAsciiArmor = true;
         long encryptionKeyIds[] = null;
-        long signatureKeyId = Id.key.none;
         int compressionId = 0;
         boolean signOnly = false;
 
@@ -786,78 +785,76 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 passPhrase = null;
             }
 
-            data.putString(ApgService.SYMMETRIC_PASSPHRASE, passPhrase);
+            data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, passPhrase);
         } else {
             encryptionKeyIds = mEncryptionKeyIds;
-            signatureKeyId = getSecretKeyId();
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
         }
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_ENCRYPT_SIGN);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_ENCRYPT_SIGN);
 
         // choose default settings, target and data bundle by target
         if (mContentUri != null) {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
-            data.putParcelable(ApgService.PROVIDER_URI, mContentUri);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_STREAM);
+            data.putParcelable(ApgIntentService.PROVIDER_URI, mContentUri);
 
         } else if (mEncryptTarget == Id.target.file) {
-            useAsciiArmour = mAsciiArmour.isChecked();
+            useAsciiArmor = mAsciiArmour.isChecked();
             compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
 
-            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
 
-            data.putString(ApgService.INPUT_FILE, mInputFilename);
-            data.putString(ApgService.OUTPUT_FILE, mOutputFilename);
+            data.putString(ApgIntentService.INPUT_FILE, mInputFilename);
+            data.putString(ApgIntentService.OUTPUT_FILE, mOutputFilename);
 
         } else {
-            useAsciiArmour = true;
+            useAsciiArmor = true;
             compressionId = Preferences.getPreferences(this).getDefaultMessageCompression();
 
-            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
 
             if (mData != null) {
-                data.putByteArray(ApgService.MESSAGE_BYTES, mData);
+                data.putByteArray(ApgIntentService.MESSAGE_BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
                 if (signOnly && !mReturnResult) {
                     fixBadCharactersForGmail(message);
                 }
-                data.putByteArray(ApgService.MESSAGE_BYTES, message.getBytes());
+                data.putByteArray(ApgIntentService.MESSAGE_BYTES, message.getBytes());
             }
         }
 
         if (mOverrideAsciiArmour) {
-            useAsciiArmour = mAsciiArmourDemand;
+            useAsciiArmor = mAsciiArmourDemand;
         }
 
-        data.putLong(ApgService.SECRET_KEY_ID, getSecretKeyId());
-        data.putBoolean(ApgService.USE_ASCII_AMOR, useAsciiArmour);
-        data.putLongArray(ApgService.ENCRYPTION_KEYS_IDS, encryptionKeyIds);
-        data.putLong(ApgService.SIGNATURE_KEY_ID, signatureKeyId);
-        data.putInt(ApgService.COMPRESSION_ID, compressionId);
-        data.putBoolean(ApgService.GENERATE_SIGNATURE, mGenerateSignature);
-        data.putBoolean(ApgService.SIGN_ONLY, signOnly);
+        data.putLong(ApgIntentService.SECRET_KEY_ID, getSecretKeyId());
+        data.putBoolean(ApgIntentService.USE_ASCII_AMOR, useAsciiArmor);
+        data.putLongArray(ApgIntentService.ENCRYPTION_KEYS_IDS, encryptionKeyIds);
+        data.putInt(ApgIntentService.COMPRESSION_ID, compressionId);
+        data.putBoolean(ApgIntentService.GENERATE_SIGNATURE, mGenerateSignature);
+        data.putBoolean(ApgIntentService.SIGN_ONLY, signOnly);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_encrypting,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_encrypting,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle data = message.getData();
 
                     String output;
                     switch (mEncryptTarget) {
                     case Id.target.clipboard:
-                        output = data.getString(ApgService.RESULT_ENCRYPTED_MESSAGE);
+                        output = data.getString(ApgIntentService.RESULT_ENCRYPTED_STRING);
                         Log.d(Constants.TAG, "output: " + output);
                         Compatibility.copyToClipboard(EncryptActivity.this, output);
                         Toast.makeText(EncryptActivity.this,
@@ -874,7 +871,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                             return;
                         }
 
-                        output = data.getString(ApgService.RESULT_ENCRYPTED_MESSAGE);
+                        output = data.getString(ApgIntentService.RESULT_ENCRYPTED_STRING);
                         Log.d(Constants.TAG, "output: " + output);
 
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
@@ -913,7 +910,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

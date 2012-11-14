@@ -25,8 +25,8 @@ import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.ProviderHelper;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
-import org.thialfihar.android.apg.service.ApgService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.service.PassphraseCacheService;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
@@ -115,7 +115,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private String mOutputFilename = null;
 
     private Uri mContentUri = null;
-    private byte[] mData = null;
+    private byte[] mDataBytes = null;
     private boolean mReturnBinary = false;
 
     private long mUnknownSignatureKeyId = 0;
@@ -125,14 +125,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private FileDialogFragment mFileDialog;
 
     private boolean mLookupUnknownKey = true;
-
-    public void setSecretKeyId(long id) {
-        mSecretKeyId = id;
-    }
-
-    public long getSecretKeyId() {
-        return mSecretKeyId;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -334,8 +326,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (mSignatureKeyId == 0) {
                     return;
                 }
-                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(DecryptActivity.this,
-                        mSignatureKeyId);
+                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRingByKeyId(
+                        DecryptActivity.this, mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
                     intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
@@ -367,7 +359,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         if (decryptImmediately
                 || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                        .length() > 0 || mData != null || mContentUri != null))) {
+                        .length() > 0 || mDataBytes != null || mContentUri != null))) {
             decryptClicked();
         }
     }
@@ -388,9 +380,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
             Log.d(Constants.TAG, "got extras");
         }
 
-        mData = extras.getByteArray(EXTRA_DATA);
+        mDataBytes = extras.getByteArray(EXTRA_DATA);
         String textData = null;
-        if (mData == null) {
+        if (mDataBytes == null) {
             Log.d(Constants.TAG, "EXTRA_DATA was null");
             textData = extras.getString(EXTRA_TEXT);
         } else {
@@ -456,7 +448,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
 
         if (mContentUri == null) {
-            mData = extras.getByteArray(EXTRA_DATA);
+            mDataBytes = extras.getByteArray(EXTRA_DATA);
             String data = extras.getString(EXTRA_TEXT);
             if (data != null) {
                 Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
@@ -567,11 +559,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         getDecryptionKeyFromInputStream();
 
-        Log.d(Constants.TAG, "secretKeyId: " + getSecretKeyId());
-
         // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
-        if (getSecretKeyId() == Id.key.symmetric
-                || PassphraseCacheService.getCachedPassphrase(this, getSecretKeyId()) == null) {
+        if (mSecretKeyId == Id.key.symmetric
+                || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
             showPassphraseDialog();
         } else {
             if (mDecryptTarget == Id.target.file) {
@@ -618,7 +608,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
     }
 
     /**
-     * TODO: externalize this into ApgService???
+     * TODO: Rework function, remove global variables
      */
     private void getDecryptionKeyFromInputStream() {
         InputStream inStream = null;
@@ -646,23 +636,24 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (mData != null) {
-                inStream = new ByteArrayInputStream(mData);
+            if (mDataBytes != null) {
+                inStream = new ByteArrayInputStream(mDataBytes);
             } else {
                 inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
             }
         }
 
+        // get decryption key for this inStream
         try {
             try {
-                setSecretKeyId(PGPMain.getDecryptionKeyId(this, inStream));
-                if (getSecretKeyId() == Id.key.none) {
+                mSecretKeyId = PGPMain.getDecryptionKeyId(this, inStream);
+                if (mSecretKeyId == Id.key.none) {
                     throw new PGPMain.ApgGeneralException(
                             getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (PGPMain.NoAsymmetricEncryptionException e) {
-                setSecretKeyId(Id.key.symmetric);
+                mSecretKeyId = Id.key.symmetric;
                 if (!PGPMain.hasSymmetricEncryption(this, inStream)) {
                     throw new PGPMain.ApgGeneralException(
                             getString(R.string.error_noKnownEncryptionFound));
@@ -684,7 +675,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
         intent.putExtra(EncryptActivity.EXTRA_SUBJECT, "Re: " + mSubject);
         intent.putExtra(EncryptActivity.EXTRA_SEND_TO, mReplyTo);
-        intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, getSecretKeyId());
+        intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, mSecretKeyId);
         intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
         startActivity(intent);
     }
@@ -742,62 +733,62 @@ public class DecryptActivity extends SherlockFragmentActivity {
         Log.d(Constants.TAG, "decryptStart");
 
         // Send all information needed to service to decrypt in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_DECRYPT_VERIFY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_DECRYPT_VERIFY);
 
         // choose action based on input: decrypt stream, file or bytes
         if (mContentUri != null) {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_STREAM);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_STREAM);
 
-            data.putParcelable(ApgService.PROVIDER_URI, mContentUri);
+            data.putParcelable(ApgIntentService.PROVIDER_URI, mContentUri);
         } else if (mDecryptTarget == Id.target.file) {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
 
-            data.putString(ApgService.INPUT_FILE, mInputFilename);
-            data.putString(ApgService.OUTPUT_FILE, mOutputFilename);
+            data.putString(ApgIntentService.INPUT_FILE, mInputFilename);
+            data.putString(ApgIntentService.OUTPUT_FILE, mOutputFilename);
         } else {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
 
-            if (mData != null) {
-                data.putByteArray(ApgService.CIPHERTEXT_BYTES, mData);
+            if (mDataBytes != null) {
+                data.putByteArray(ApgIntentService.CIPHERTEXT_BYTES, mDataBytes);
             } else {
                 String message = mMessage.getText().toString();
-                data.putByteArray(ApgService.CIPHERTEXT_BYTES, message.getBytes());
+                data.putByteArray(ApgIntentService.CIPHERTEXT_BYTES, message.getBytes());
             }
         }
 
-        data.putLong(ApgService.SECRET_KEY_ID, getSecretKeyId());
+        data.putLong(ApgIntentService.SECRET_KEY_ID, mSecretKeyId);
 
-        data.putBoolean(ApgService.SIGNED_ONLY, mSignedOnly);
-        data.putBoolean(ApgService.LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
-        data.putBoolean(ApgService.RETURN_BYTES, mReturnBinary);
-        data.putBoolean(ApgService.ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
+        data.putBoolean(ApgIntentService.SIGNED_ONLY, mSignedOnly);
+        data.putBoolean(ApgIntentService.LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
+        data.putBoolean(ApgIntentService.RETURN_BYTES, mReturnBinary);
+        data.putBoolean(ApgIntentService.ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_decrypting,
-                ProgressDialog.STYLE_HORIZONTAL) {
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
+                R.string.progress_decrypting, ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
                     // if key is unknown show lookup dialog
-                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_LOOKUP_KEY)
+                    if (returnData.getBoolean(ApgIntentService.RESULT_SIGNATURE_LOOKUP_KEY)
                             && mLookupUnknownKey) {
                         mUnknownSignatureKeyId = returnData
-                                .getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
+                                .getLong(ApgIntentService.RESULT_SIGNATURE_KEY_ID);
                         lookupUnknownKey(mUnknownSignatureKeyId);
                         return;
                     }
@@ -822,7 +813,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     switch (mDecryptTarget) {
                     case Id.target.message:
                         String decryptedMessage = returnData
-                                .getString(ApgService.RESULT_DECRYPTED_MESSAGE);
+                                .getString(ApgIntentService.RESULT_DECRYPTED_STRING);
                         mMessage.setText(decryptedMessage);
                         mMessage.setHorizontallyScrolling(false);
                         mReplyEnabled = false;
@@ -846,9 +837,11 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
                     }
 
-                    if (returnData.getBoolean(ApgService.RESULT_SIGNATURE)) {
-                        String userId = returnData.getString(ApgService.RESULT_SIGNATURE_USER_ID);
-                        mSignatureKeyId = returnData.getLong(ApgService.RESULT_SIGNATURE_KEY_ID);
+                    if (returnData.getBoolean(ApgIntentService.RESULT_SIGNATURE)) {
+                        String userId = returnData
+                                .getString(ApgIntentService.RESULT_SIGNATURE_USER_ID);
+                        mSignatureKeyId = returnData
+                                .getLong(ApgIntentService.RESULT_SIGNATURE_KEY_ID);
                         mUserIdRest
                                 .setText("id: " + PGPHelper.getSmallFingerPrint(mSignatureKeyId));
                         if (userId == null) {
@@ -861,9 +854,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         }
                         mUserId.setText(userId);
 
-                        if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_SUCCESS)) {
+                        if (returnData.getBoolean(ApgIntentService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                        } else if (returnData.getBoolean(ApgService.RESULT_SIGNATURE_UNKNOWN)) {
+                        } else if (returnData.getBoolean(ApgIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
                                     R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
@@ -879,7 +872,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);

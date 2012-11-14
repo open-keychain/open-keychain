@@ -85,10 +85,10 @@ public class PassphraseCacheService extends Service {
      * @return
      */
     public static String getCachedPassphrase(Context context, long keyId) {
-        // try to get real key id
-        long realId = keyId;
-        if (realId != Id.key.symmetric) {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context, keyId);
+        // try to get master key id which is used as an identifier for cached passphrases
+        long masterKeyId = keyId;
+        if (masterKeyId != Id.key.symmetric) {
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(context, keyId);
             if (keyRing == null) {
                 return null;
             }
@@ -96,17 +96,17 @@ public class PassphraseCacheService extends Service {
             if (masterKey == null) {
                 return null;
             }
-            realId = masterKey.getKeyID();
+            masterKeyId = masterKey.getKeyID();
         }
 
         // get cached passphrase
-        String cachedPassphrase = mPassphraseCache.get(realId);
+        String cachedPassphrase = mPassphraseCache.get(masterKeyId);
         if (cachedPassphrase == null) {
             return null;
         }
         // set it again to reset the cache life cycle
         Log.d(TAG, "Cache passphrase again when getting it!");
-        addCachedPassphrase(context, realId, cachedPassphrase);
+        addCachedPassphrase(context, masterKeyId, cachedPassphrase);
 
         return cachedPassphrase;
     }

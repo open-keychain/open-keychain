@@ -20,8 +20,8 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.service.ApgService;
-import org.thialfihar.android.apg.service.ApgServiceHandler;
+import org.thialfihar.android.apg.service.ApgIntentService;
+import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.DeleteKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
@@ -302,39 +302,39 @@ public class KeyListActivity extends SherlockFragmentActivity {
         Log.d(Constants.TAG, "importKeys started");
 
         // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_IMPORT_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_IMPORT_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putInt(ApgService.IMPORT_KEY_TYPE, mKeyType);
+        data.putInt(ApgIntentService.IMPORT_KEY_TYPE, mKeyType);
 
         if (mImportData != null) {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_BYTES);
-            data.putByteArray(ApgService.IMPORT_BYTES, mImportData.getBytes());
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
+            data.putByteArray(ApgIntentService.IMPORT_BYTES, mImportData.getBytes());
         } else {
-            data.putInt(ApgService.TARGET, ApgService.TARGET_FILE);
-            data.putString(ApgService.IMPORT_FILENAME, mImportFilename);
+            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
+            data.putString(ApgIntentService.IMPORT_FILENAME, mImportFilename);
         }
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after importing is done in ApgService
-        ApgServiceHandler saveHandler = new ApgServiceHandler(this, R.string.progress_importing,
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_importing,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    int added = returnData.getInt(ApgService.RESULT_IMPORT_ADDED);
-                    int updated = returnData.getInt(ApgService.RESULT_IMPORT_UPDATED);
-                    int bad = returnData.getInt(ApgService.RESULT_IMPORT_BAD);
+                    int added = returnData.getInt(ApgIntentService.RESULT_IMPORT_ADDED);
+                    int updated = returnData.getInt(ApgIntentService.RESULT_IMPORT_UPDATED);
+                    int bad = returnData.getInt(ApgIntentService.RESULT_IMPORT_BAD);
                     String toastMessage;
                     if (added > 0 && updated > 0) {
                         toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
@@ -376,7 +376,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         saveHandler.showProgressDialog(this);
@@ -395,36 +395,36 @@ public class KeyListActivity extends SherlockFragmentActivity {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
-        Intent intent = new Intent(this, ApgService.class);
+        Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgService.EXTRA_ACTION, ApgService.ACTION_EXPORT_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_EXPORT_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putString(ApgService.EXPORT_FILENAME, mExportFilename);
-        data.putInt(ApgService.EXPORT_KEY_TYPE, mKeyType);
+        data.putString(ApgIntentService.EXPORT_FILENAME, mExportFilename);
+        data.putInt(ApgIntentService.EXPORT_KEY_TYPE, mKeyType);
 
         if (keyRingId == -1) {
-            data.putBoolean(ApgService.EXPORT_ALL, true);
+            data.putBoolean(ApgIntentService.EXPORT_ALL, true);
         } else {
-            data.putLong(ApgService.EXPORT_KEY_RING_ID, keyRingId);
+            data.putLong(ApgIntentService.EXPORT_KEY_RING_ID, keyRingId);
         }
 
-        intent.putExtra(ApgService.EXTRA_DATA, data);
+        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after exporting is done in ApgService
-        ApgServiceHandler exportHandler = new ApgServiceHandler(this, R.string.progress_exporting,
+        ApgIntentServiceHandler exportHandler = new ApgIntentServiceHandler(this, R.string.progress_exporting,
                 ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
 
-                if (message.arg1 == ApgServiceHandler.MESSAGE_OKAY) {
+                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    int exported = returnData.getInt(ApgService.RESULT_EXPORT);
+                    int exported = returnData.getInt(ApgIntentService.RESULT_EXPORT);
                     String toastMessage;
                     if (exported == 1) {
                         toastMessage = getString(R.string.keyExported);
@@ -441,7 +441,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(exportHandler);
-        intent.putExtra(ApgService.EXTRA_MESSENGER, messenger);
+        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
 
         // show progress dialog
         exportHandler.showProgressDialog(this);
