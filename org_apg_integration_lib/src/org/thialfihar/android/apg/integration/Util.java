@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010-2011 K-9 Mail Contributors
  * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010-2011 K-9 Mail Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

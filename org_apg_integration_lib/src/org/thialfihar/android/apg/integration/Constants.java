@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2010-2011 K-9 Mail Contributors
  * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,70 +16,12 @@
 
 package org.thialfihar.android.apg.integration;
 
-import android.net.Uri;
-
 public class Constants {
     public static final String NAME = "apg";
+
+    public static final String TAG = "APG Integration Lib";
 
     public static final String APG_PACKAGE_NAME = "org.thialfihar.android.apg";
     public static final int MIN_REQUIRED_VERSION = 50;
 
-    public static final String AUTHORITY = "org.thialfihar.android.apg.provider";
-    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/secret/key_id/");
-    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_EMAILS = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/secret/emails/");
-
-    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/public/key_id/");
-    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
-            + AUTHORITY + "/key_rings/public/emails/");
-
-    public static final String APG_INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
-
-    public static class Intent {
-        public static final String DECRYPT = APG_INTENT_PREFIX + "DECRYPT";
-        public static final String ENCRYPT = APG_INTENT_PREFIX + "ENCRYPT";
-        public static final String DECRYPT_FILE = APG_INTENT_PREFIX + "DECRYPT_FILE";
-        public static final String ENCRYPT_FILE = APG_INTENT_PREFIX + "ENCRYPT_FILE";
-        public static final String DECRYPT_AND_RETURN = APG_INTENT_PREFIX + "DECRYPT_AND_RETURN";
-        public static final String ENCRYPT_AND_RETURN = APG_INTENT_PREFIX + "ENCRYPT_AND_RETURN";
-        public static final String SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
-        public static final String SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
-        public static final String CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
-        public static final String EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
-    }
-
-    public static final String EXTRA_TEXT = "text";
-    public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_ERROR = "error";
-    public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
-    public static final String EXTRA_ENCRYPTED_MESSAGE = "encryptedMessage";
-    public static final String EXTRA_SIGNATURE = "signature";
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
-    public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
-    public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
-    public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
-    public static final String EXTRA_USER_ID = "userId";
-    public static final String EXTRA_USER_IDS = "userIds";
-    public static final String EXTRA_KEY_ID = "keyId";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
-    public static final String EXTRA_SELECTION = "selection";
-    public static final String EXTRA_MESSAGE = "message";
-    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
-    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
-    public static final String EXTRA_INTENT_VERSION = "intentVersion";
-    
-    
-    public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
-    public static final String RESULT_EXTRA_USER_IDS = "userIds";
-
-    public static final String INTENT_VERSION = "1";
-
-    public static final int DECRYPT_MESSAGE = 0x21070001;
-    public static final int ENCRYPT_MESSAGE = 0x21070002;
-    public static final int SELECT_PUBLIC_KEYS = 0x21070003;
-    public static final int SELECT_SECRET_KEY = 0x21070004;
-    public static final int CREATE_KEY = 0x21070005;
-    public static final int EDIT_KEY = 0x21070006;
 }

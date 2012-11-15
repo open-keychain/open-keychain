@@ -70,11 +70,20 @@ public class IntentDemoActivity extends Activity {
 
     public void encryptOnClick(View view) {
         mApgIntentHelper.encrypt(mMessageTextView.getText().toString(),
-                mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId());
+                mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId(), false);
+    }
+
+    public void encryptAndReturnOnClick(View view) {
+        mApgIntentHelper.encrypt(mMessageTextView.getText().toString(),
+                mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId(), true);
     }
 
     public void decryptOnClick(View view) {
-        mApgIntentHelper.decrypt(mCiphertextTextView.getText().toString());
+        mApgIntentHelper.decrypt(mCiphertextTextView.getText().toString(), false);
+    }
+
+    public void decryptAndReturnOnClick(View view) {
+        mApgIntentHelper.decrypt(mCiphertextTextView.getText().toString(), true);
     }
 
     @Override

@@ -422,7 +422,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             data.putString(ApgIntentService.NEW_PASSPHRASE, mNewPassPhrase);
             data.putStringArrayList(ApgIntentService.USER_IDS, getUserIds(mUserIdsView));
             ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
-            data.putByteArray(ApgIntentService.KEYS, PGPConversionHelper.PGPSecretKeyListToBytes(keys));
+            data.putByteArray(ApgIntentService.KEYS, PGPConversionHelper.PGPSecretKeyArrayListToBytes(keys));
             data.putIntegerArrayList(ApgIntentService.KEYS_USAGES, getKeysUsages(mKeysView));
             data.putLong(ApgIntentService.MASTER_KEY_ID, getMasterKeyId());
 

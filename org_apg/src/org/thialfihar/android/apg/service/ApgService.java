@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.thialfihar.android.apg.service;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +33,6 @@ import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.Log;
-import org.thialfihar.android.apg.util.ProgressDialogUpdater;
 
 import android.app.Service;
 import android.content.Context;
@@ -32,7 +47,7 @@ import android.os.RemoteException;
  * - is this service thread safe? Probably not!
  * 
  */
-public class ApgService extends Service implements ProgressDialogUpdater {
+public class ApgService extends Service {
     Context mContext;
 
     @Override
@@ -53,6 +68,14 @@ public class ApgService extends Service implements ProgressDialogUpdater {
         return mBinder;
     }
 
+    private static void writeToOutputStream(InputStream is, OutputStream os) throws IOException {
+        byte[] buffer = new byte[8];
+        int len = 0;
+        while ((len = is.read(buffer)) != -1) {
+            os.write(buffer, 0, len);
+        }
+    }
+
     void encryptAndSignImplementation(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
             int compression, long[] encryptionKeyIds, String encryptionPassphrase,
             int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
@@ -61,6 +84,19 @@ public class ApgService extends Service implements ProgressDialogUpdater {
 
         try {
             // TODO use inputUri
+            
+//            InputStream inStream = null;
+//          if (isBlob) {
+//              ContentResolver cr = getContentResolver();
+//              try {
+//                  inStream = cr.openInputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+//              } catch (Exception e) {
+//                  Log.e(TAG, "... exception on opening blob", e);
+//              }
+//          } else {
+//              inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+//          }
+//          InputData in = new InputData(inStream, 0); // XXX Size second param?
 
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -69,12 +105,25 @@ public class ApgService extends Service implements ProgressDialogUpdater {
 
             OutputStream output = new ByteArrayOutputStream();
 
-            PGPMain.encryptAndSign(mContext, ApgService.this, input, output, useAsciiArmor,
-                    compression, encryptionKeyIds, encryptionPassphrase,
-                    symmetricEncryptionAlgorithm, signatureKeyId, signatureHashAlgorithm,
-                    signatureForceV3, signaturePassphrase);
+            PGPMain.encryptAndSign(mContext, null, input, output, useAsciiArmor, compression,
+                    encryptionKeyIds, encryptionPassphrase, symmetricEncryptionAlgorithm,
+                    signatureKeyId, signatureHashAlgorithm, signatureForceV3, signaturePassphrase);
 
             output.close();
+            
+//            if (isBlob) {
+//              ContentResolver cr = getContentResolver();
+//              try {
+//                  OutputStream outStream = cr.openOutputStream(Uri.parse(pArgs.getString(arg.BLOB
+//                          .name())));
+//                  writeToOutputStream(new ByteArrayInputStream(out.toString().getBytes()), outStream);
+//                  outStream.close();
+//              } catch (Exception e) {
+//                  Log.e(TAG, "... exception on writing blob", e);
+//              }
+//          } else {
+//              pReturn.putString(ret.RESULT.name(), out.toString());
+//          }
 
             byte[] outputBytes = ((ByteArrayOutputStream) output).toByteArray();
 
@@ -103,8 +152,8 @@ public class ApgService extends Service implements ProgressDialogUpdater {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
-            Bundle outputBundle = PGPMain.decryptAndVerify(mContext, ApgService.this, inputData,
-                    outputStream, passphrase, assumeSymmetric);
+            Bundle outputBundle = PGPMain.decryptAndVerify(mContext, null, inputData, outputStream,
+                    passphrase, assumeSymmetric);
 
             outputStream.close();
 
@@ -148,15 +197,13 @@ public class ApgService extends Service implements ProgressDialogUpdater {
             try {
                 secretKeyId = PGPMain.getDecryptionKeyId(ApgService.this, inputStream);
                 if (secretKeyId == Id.key.none) {
-                    throw new PGPMain.ApgGeneralException(
-                            getString(R.string.error_noSecretKeyFound));
+                    throw new ApgGeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 symmetric = false;
             } catch (PGPMain.NoAsymmetricEncryptionException e) {
                 secretKeyId = Id.key.symmetric;
                 if (!PGPMain.hasSymmetricEncryption(ApgService.this, inputStream)) {
-                    throw new PGPMain.ApgGeneralException(
-                            getString(R.string.error_noKnownEncryptionFound));
+                    throw new ApgGeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 symmetric = true;
             }
@@ -276,21 +323,4 @@ public class ApgService extends Service implements ProgressDialogUpdater {
         }
     }
 
-    @Override
-    public void setProgress(String message, int current, int total) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setProgress(int resourceId, int current, int total) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setProgress(int current, int total) {
-        // TODO Auto-generated method stub
-
-    }
 }

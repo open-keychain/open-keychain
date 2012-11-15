@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2010-2011 K-9 Mail Contributors
  * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010-2011 K-9 Mail Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,59 @@
 
 package org.thialfihar.android.apg.integration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ContentUris;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 public class ApgIntentHelper {
+
+    public static final String APG_INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
+
+    // Intents
+    public static final String ACTION_DECRYPT = APG_INTENT_PREFIX + "DECRYPT";
+    public static final String ACTION_ENCRYPT = APG_INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_DECRYPT_FILE = APG_INTENT_PREFIX + "DECRYPT_FILE";
+    public static final String ACTION_ENCRYPT_FILE = APG_INTENT_PREFIX + "ENCRYPT_FILE";
+    public static final String ACTION_DECRYPT_AND_RETURN = APG_INTENT_PREFIX + "DECRYPT_AND_RETURN";
+    public static final String ACTION_ENCRYPT_AND_RETURN = APG_INTENT_PREFIX + "ENCRYPT_AND_RETURN";
+    public static final String ACTION_SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
+    public static final String ACTION_SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
+    public static final String ACTION_CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
+    public static final String ACTION_EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
+
+    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_ERROR = "error";
+    public static final String EXTRA_DECRYPTED_MESSAGE = "decryptedMessage";
+    public static final String EXTRA_ENCRYPTED_MESSAGE = "encryptedMessage";
+    public static final String EXTRA_SIGNATURE = "signature";
+    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
+    public static final String EXTRA_SIGNATURE_USER_ID = "signatureUserId";
+    public static final String EXTRA_SIGNATURE_SUCCESS = "signatureSuccess";
+    public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
+    public static final String EXTRA_USER_ID = "userId";
+    public static final String EXTRA_USER_IDS = "userIds";
+    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
+    public static final String EXTRA_SELECTION = "selection";
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
+    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
+    public static final String EXTRA_INTENT_VERSION = "intentVersion";
+
+    public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
+    public static final String RESULT_EXTRA_USER_IDS = "userIds";
+
+    public static final String INTENT_VERSION = "1";
+
+    public static final int DECRYPT_MESSAGE = 0x21070001;
+    public static final int ENCRYPT_MESSAGE = 0x21070002;
+    public static final int SELECT_PUBLIC_KEYS = 0x21070003;
+    public static final int SELECT_SECRET_KEY = 0x21070004;
+    public static final int CREATE_KEY = 0x21070005;
+    public static final int EDIT_KEY = 0x21070006;
+
     private Activity activity;
 
     public ApgIntentHelper(Activity activity) {
@@ -44,16 +84,16 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean createNewKey(String userIds, boolean noPassphrase, boolean generateDefaultKeys) {
-        Intent intent = new Intent(Constants.Intent.CREATE_KEY);
+        Intent intent = new Intent(ACTION_CREATE_KEY);
         if (userIds != null) {
-            intent.putExtra(Constants.EXTRA_USER_IDS, userIds);
+            intent.putExtra(EXTRA_USER_IDS, userIds);
         }
-        intent.putExtra(Constants.EXTRA_NO_PASSPHRASE, noPassphrase);
-        intent.putExtra(Constants.EXTRA_GENERATE_DEFAULT_KEYS, generateDefaultKeys);
+        intent.putExtra(EXTRA_NO_PASSPHRASE, noPassphrase);
+        intent.putExtra(EXTRA_GENERATE_DEFAULT_KEYS, generateDefaultKeys);
 
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, Constants.CREATE_KEY);
+            activity.startActivityForResult(intent, CREATE_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -77,11 +117,11 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean editKey(long keyId) {
-        Intent intent = new Intent(Constants.Intent.EDIT_KEY);
-        intent.putExtra(Constants.EXTRA_KEY_ID, keyId);
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        Intent intent = new Intent(ACTION_EDIT_KEY);
+        intent.putExtra(EXTRA_KEY_ID, keyId);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, Constants.EDIT_KEY);
+            activity.startActivityForResult(intent, EDIT_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -95,10 +135,10 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean selectSecretKey() {
-        Intent intent = new Intent(Constants.Intent.SELECT_SECRET_KEY);
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        Intent intent = new Intent(ACTION_SELECT_SECRET_KEY);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, Constants.SELECT_SECRET_KEY);
+            activity.startActivityForResult(intent, SELECT_SECRET_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -118,15 +158,21 @@ public class ApgIntentHelper {
      *            id of the signature key
      * @return true when activity was found and executed successfully
      */
-    public boolean encrypt(String data, long[] encryptionKeyIds, long signatureKeyId) {
-        Intent intent = new Intent(Constants.Intent.ENCRYPT_AND_RETURN);
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+    public boolean encrypt(String data, long[] encryptionKeyIds, long signatureKeyId,
+            boolean returnResult) {
+        Intent intent = new Intent();
+        if (returnResult) {
+            intent.setAction(ACTION_ENCRYPT_AND_RETURN);
+        } else {
+            intent.setAction(ACTION_ENCRYPT);
+        }
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         intent.setType("text/plain");
-        intent.putExtra(Constants.EXTRA_TEXT, data);
-        intent.putExtra(Constants.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-        intent.putExtra(Constants.EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
+        intent.putExtra(EXTRA_TEXT, data);
+        intent.putExtra(EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+        intent.putExtra(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
         try {
-            activity.startActivityForResult(intent, Constants.ENCRYPT_MESSAGE);
+            activity.startActivityForResult(intent, ENCRYPT_MESSAGE);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -142,16 +188,21 @@ public class ApgIntentHelper {
      * @param pgpData
      * @return true when activity was found and executed successfully
      */
-    public boolean decrypt(String data) {
-        Intent intent = new Intent(Constants.Intent.DECRYPT_AND_RETURN);
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+    public boolean decrypt(String data, boolean returnResult) {
+        Intent intent = new Intent();
+        if (returnResult) {
+            intent.setAction(ACTION_DECRYPT_AND_RETURN);
+        } else {
+            intent.setAction(ACTION_DECRYPT);
+        }
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         intent.setType("text/plain");
         if (data == null) {
             return false;
         }
         try {
-            intent.putExtra(Constants.EXTRA_TEXT, data);
-            activity.startActivityForResult(intent, Constants.DECRYPT_MESSAGE);
+            intent.putExtra(EXTRA_TEXT, data);
+            activity.startActivityForResult(intent, DECRYPT_MESSAGE);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -170,44 +221,42 @@ public class ApgIntentHelper {
     public boolean onActivityResult(int requestCode, int resultCode, Intent data, ApgData apgData) {
 
         switch (requestCode) {
-        case Constants.SELECT_SECRET_KEY:
+        case SELECT_SECRET_KEY:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 // user canceled!
                 break;
             }
-            apgData.setSignatureKeyId(data.getLongExtra(Constants.EXTRA_KEY_ID, 0));
-            apgData.setSignatureUserId(data.getStringExtra(Constants.EXTRA_USER_ID));
+            apgData.setSignatureKeyId(data.getLongExtra(EXTRA_KEY_ID, 0));
+            apgData.setSignatureUserId(data.getStringExtra(EXTRA_USER_ID));
             break;
 
-        case Constants.SELECT_PUBLIC_KEYS:
+        case SELECT_PUBLIC_KEYS:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 apgData.setEncryptionKeys(null);
                 break;
             }
-            apgData.setEncryptionKeys(data.getLongArrayExtra(Constants.RESULT_EXTRA_MASTER_KEY_IDS));
+            apgData.setEncryptionKeys(data.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS));
             break;
 
-        case Constants.ENCRYPT_MESSAGE:
+        case ENCRYPT_MESSAGE:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 apgData.setEncryptionKeys(null);
                 break;
             }
-            apgData.setEncryptedData(data.getStringExtra(Constants.EXTRA_ENCRYPTED_MESSAGE));
+            apgData.setEncryptedData(data.getStringExtra(EXTRA_ENCRYPTED_MESSAGE));
             break;
 
-        case Constants.DECRYPT_MESSAGE:
+        case DECRYPT_MESSAGE:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 break;
             }
 
-            apgData.setSignatureUserId(data.getStringExtra(Constants.EXTRA_SIGNATURE_USER_ID));
-            apgData.setSignatureKeyId(data.getLongExtra(Constants.EXTRA_SIGNATURE_KEY_ID, 0));
-            apgData.setSignatureSuccess(data.getBooleanExtra(Constants.EXTRA_SIGNATURE_SUCCESS,
-                    false));
-            apgData.setSignatureUnknown(data.getBooleanExtra(Constants.EXTRA_SIGNATURE_UNKNOWN,
-                    false));
+            apgData.setSignatureUserId(data.getStringExtra(EXTRA_SIGNATURE_USER_ID));
+            apgData.setSignatureKeyId(data.getLongExtra(EXTRA_SIGNATURE_KEY_ID, 0));
+            apgData.setSignatureSuccess(data.getBooleanExtra(EXTRA_SIGNATURE_SUCCESS, false));
+            apgData.setSignatureUnknown(data.getBooleanExtra(EXTRA_SIGNATURE_UNKNOWN, false));
 
-            apgData.setDecryptedData(data.getStringExtra(Constants.EXTRA_DECRYPTED_MESSAGE));
+            apgData.setDecryptedData(data.getStringExtra(EXTRA_DECRYPTED_MESSAGE));
             break;
 
         default:
@@ -238,46 +287,23 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean selectEncryptionKeys(String emails, ApgData apgData) {
-        Intent intent = new Intent(Constants.Intent.SELECT_PUBLIC_KEYS);
-        intent.putExtra(Constants.EXTRA_INTENT_VERSION, Constants.INTENT_VERSION);
+        Intent intent = new Intent(ACTION_SELECT_PUBLIC_KEYS);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
 
         long[] initialKeyIds = null;
         if (apgData == null || !apgData.hasEncryptionKeys()) {
-            List<Long> keyIds = new ArrayList<Long>();
-            if (apgData != null && apgData.hasSignatureKey()) {
-                keyIds.add(apgData.getSignatureKeyId());
-            }
 
-            try {
-                Uri contentUri = Uri.withAppendedPath(
-                        Constants.CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS, emails);
-                Cursor c = activity.getContentResolver().query(contentUri,
-                        new String[] { "master_key_id" }, null, null, null);
-                if (c != null) {
-                    while (c.moveToNext()) {
-                        keyIds.add(c.getLong(0));
-                    }
-                }
+            ContentProviderHelper cPHelper = new ContentProviderHelper(activity);
 
-                if (c != null) {
-                    c.close();
-                }
-            } catch (SecurityException e) {
-                insufficientPermissions();
-            }
-            if (!keyIds.isEmpty()) {
-                initialKeyIds = new long[keyIds.size()];
-                for (int i = 0, size = keyIds.size(); i < size; ++i) {
-                    initialKeyIds[i] = keyIds.get(i);
-                }
-            }
+            initialKeyIds = cPHelper.getPublicKeyIdsFromEmail(emails);
+
         } else {
             initialKeyIds = apgData.getEncryptionKeys();
         }
-        intent.putExtra(Constants.EXTRA_SELECTION, initialKeyIds);
+        intent.putExtra(EXTRA_SELECTION, initialKeyIds);
 
         try {
-            activity.startActivityForResult(intent, Constants.SELECT_PUBLIC_KEYS);
+            activity.startActivityForResult(intent, SELECT_PUBLIC_KEYS);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -285,162 +311,8 @@ public class ApgIntentHelper {
         }
     }
 
-    /**
-     * Get secret key ids based on a given email.
-     * 
-     * @param context
-     * @param email
-     *            The email in question.
-     * @return key ids
-     */
-    public long[] getSecretKeyIdsFromEmail(String email) {
-        long ids[] = null;
-        try {
-            Uri contentUri = Uri.withAppendedPath(Constants.CONTENT_URI_SECRET_KEY_RING_BY_EMAILS,
-                    email);
-            Cursor c = activity.getContentResolver().query(contentUri,
-                    new String[] { "master_key_id" }, null, null, null);
-            if (c != null && c.getCount() > 0) {
-                ids = new long[c.getCount()];
-                while (c.moveToNext()) {
-                    ids[c.getPosition()] = c.getLong(0);
-                }
-            }
-
-            if (c != null) {
-                c.close();
-            }
-        } catch (SecurityException e) {
-            insufficientPermissions();
-        }
-
-        return ids;
-    }
-
-    /**
-     * Get public key ids based on a given email.
-     * 
-     * @param context
-     * @param email
-     *            The email in question.
-     * @return key ids
-     */
-    public long[] getPublicKeyIdsFromEmail(String email) {
-        long ids[] = null;
-        try {
-            Uri contentUri = Uri.withAppendedPath(Constants.CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS,
-                    email);
-            Cursor c = activity.getContentResolver().query(contentUri,
-                    new String[] { "master_key_id" }, null, null, null);
-            if (c != null && c.getCount() > 0) {
-                ids = new long[c.getCount()];
-                while (c.moveToNext()) {
-                    ids[c.getPosition()] = c.getLong(0);
-                }
-            }
-
-            if (c != null) {
-                c.close();
-            }
-        } catch (SecurityException e) {
-            insufficientPermissions();
-        }
-
-        return ids;
-    }
-
-    /**
-     * Find out if a given email has a secret key.
-     * 
-     * @param context
-     * @param email
-     *            The email in question.
-     * @return true if there is a secret key for this email.
-     */
-    public boolean hasSecretKeyForEmail(String email) {
-        try {
-            Uri contentUri = Uri.withAppendedPath(Constants.CONTENT_URI_SECRET_KEY_RING_BY_EMAILS,
-                    email);
-            Cursor c = activity.getContentResolver().query(contentUri,
-                    new String[] { "master_key_id" }, null, null, null);
-            if (c != null && c.getCount() > 0) {
-                c.close();
-                return true;
-            }
-            if (c != null) {
-                c.close();
-            }
-        } catch (SecurityException e) {
-            insufficientPermissions();
-        }
-        return false;
-    }
-
-    /**
-     * Find out if a given email has a public key.
-     * 
-     * @param context
-     * @param email
-     *            The email in question.
-     * @return true if there is a public key for this email.
-     */
-    public boolean hasPublicKeyForEmail(String email) {
-        try {
-            Uri contentUri = Uri.withAppendedPath(Constants.CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS,
-                    email);
-            Cursor c = activity.getContentResolver().query(contentUri,
-                    new String[] { "master_key_id" }, null, null, null);
-            if (c != null && c.getCount() > 0) {
-                c.close();
-                return true;
-            }
-            if (c != null) {
-                c.close();
-            }
-        } catch (SecurityException e) {
-            insufficientPermissions();
-        }
-        return false;
-    }
-
-    /**
-     * Get the user id based on the key id.
-     * 
-     * @param context
-     * @param keyId
-     * @return user id
-     */
-    public String getUserId(long keyId) {
-        String userId = null;
-        try {
-            Uri contentUri = ContentUris.withAppendedId(
-                    Constants.CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID, keyId);
-            Cursor c = activity.getContentResolver().query(contentUri, new String[] { "user_id" },
-                    null, null, null);
-            if (c != null && c.moveToFirst()) {
-                userId = c.getString(0);
-            }
-
-            if (c != null) {
-                c.close();
-            }
-        } catch (SecurityException e) {
-            insufficientPermissions();
-        }
-
-        if (userId == null) {
-            userId = "unknown";
-        }
-        return userId;
-    }
-
     private void activityNotFound() {
         Toast.makeText(activity, "APG Activity not found! Is APG installed correctly?",
                 Toast.LENGTH_LONG).show();
-    }
-
-    private void insufficientPermissions() {
-        Toast.makeText(activity, "Permission to access APG Provider is missing!", Toast.LENGTH_LONG)
-                .show();
     }
 }

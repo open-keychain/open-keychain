@@ -13,13 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package org.thialfihar.android.apg.service;
 
-interface IApgHelperHandler {
+package org.thialfihar.android.apg.provider;
 
-    oneway void onSuccessGetDecryptionKey(in long secretKeyId, in boolean symmetric);
-    
-    
-    oneway void onException(in int exceptionNumber, in String message);
+import org.thialfihar.android.apg.Constants;
+
+import android.net.Uri;
+import android.provider.BaseColumns;
+
+public class ApgServiceBlobContract {
+
+    interface BlobsColumns {
+        String KEY = "key";
+    }
+
+    public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".blobs";
+
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    public static class Blobs implements BlobsColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI;
+    }
+
+    private ApgServiceBlobContract() {
+    }
 }

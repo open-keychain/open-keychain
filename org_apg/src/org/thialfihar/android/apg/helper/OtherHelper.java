@@ -16,8 +16,6 @@
 
 package org.thialfihar.android.apg.helper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;

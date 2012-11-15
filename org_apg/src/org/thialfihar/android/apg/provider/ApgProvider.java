@@ -35,7 +35,6 @@ import org.thialfihar.android.apg.util.Log;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -199,8 +198,7 @@ public class ApgProvider extends ContentProvider {
     /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
-        final Context context = getContext();
-        mApgDatabase = new ApgDatabase(context);
+        mApgDatabase = new ApgDatabase(getContext());
         return true;
     }
 
@@ -315,6 +313,7 @@ public class ApgProvider extends ContentProvider {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("deprecation")
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {

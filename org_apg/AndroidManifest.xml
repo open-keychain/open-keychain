@@ -356,6 +356,13 @@
             android:name=".provider.ApgProvider"
             android:authorities="org.thialfihar.android.apg"
             android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+        
+        
+        <!-- TODO: authority! -->
+        <provider
+            android:name=".provider.ApgServiceBlobProvider"
+            android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
+            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
 
         <!-- DEPRECATED: -->
         <!-- <provider -->
@@ -381,11 +388,6 @@
         <!-- android:value="2" /> -->
         <!-- </service> -->
 
-
-        <!-- <provider -->
-        <!-- android:name=".deprecated.ApgServiceBlobProvider" -->
-        <!-- android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider" -->
-        <!-- android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" /> -->
     </application>
 
 </manifest>

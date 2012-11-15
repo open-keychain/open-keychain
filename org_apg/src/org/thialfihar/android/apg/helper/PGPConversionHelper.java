@@ -23,7 +23,6 @@ import java.util.Iterator;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
@@ -31,49 +30,9 @@ import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.util.Log;
 
 public class PGPConversionHelper {
-    /**
-     * Converts Vector<PGPSecretKey> to a byte[]
-     * 
-     * @param keys
-     * @return
-     */
-    public static byte[] PGPSecretKeyListToBytes(ArrayList<PGPSecretKey> keys) {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        for (PGPSecretKey key : keys) {
-            try {
-                key.encode(os);
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Error while converting PGPSecretKey to byte[]!", e);
-            }
-        }
-
-        byte[] keysBytes = os.toByteArray();
-
-        return keysBytes;
-    }
 
     /**
-     * Convert from byte[] to PGPSecretKeyRing
-     * 
-     * @param keysBytes
-     * @return
-     */
-    // public static PGPSecretKeyRing BytesToPGPSecretKeyRing(byte[] keysBytes) {
-    // PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
-    // PGPSecretKeyRing keyRing = null;
-    // try {
-    // if ((keyRing = (PGPSecretKeyRing) factory.nextObject()) == null) {
-    // Log.e(Constants.TAG, "No keys given!");
-    // }
-    // } catch (IOException e) {
-    // Log.e(Constants.TAG, "Error while converting to PGPSecretKeyRing!", e);
-    // }
-    //
-    // return keyRing;
-    // }
-
-    /**
-     * Convert from byte[] to PGPPublicKeyRing
+     * Convert from byte[] to PGPKeyRing
      * 
      * @param keysBytes
      * @return
@@ -86,7 +45,7 @@ public class PGPConversionHelper {
                 Log.e(Constants.TAG, "No keys given!");
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while converting to PGPPublicKeyRing!", e);
+            Log.e(Constants.TAG, "Error while converting to PGPKeyRing!", e);
         }
 
         return keyRing;
@@ -114,6 +73,8 @@ public class PGPConversionHelper {
     /**
      * Convert from byte[] to PGPSecretKey
      * 
+     * Singles keys are encoded as keyRings with one single key in it by Bouncy Castle
+     * 
      * @param keysBytes
      * @return
      */
@@ -121,6 +82,25 @@ public class PGPConversionHelper {
         PGPSecretKey key = BytesToPGPSecretKeyList(keyBytes).get(0);
 
         return key;
+    }
+
+    /**
+     * Convert from ArrayList<PGPSecretKey> to byte[]
+     * 
+     * @param keys
+     * @return
+     */
+    public static byte[] PGPSecretKeyArrayListToBytes(ArrayList<PGPSecretKey> keys) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        for (PGPSecretKey key : keys) {
+            try {
+                key.encode(os);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "Error while converting ArrayList<PGPSecretKey> to byte[]!", e);
+            }
+        }
+
+        return os.toByteArray();
     }
 
     /**

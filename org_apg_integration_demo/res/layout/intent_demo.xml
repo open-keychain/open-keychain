@@ -7,7 +7,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-        
+
+        <Button
+            android:id="@+id/Button02"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="encryptOnClick"
+            android:text="Encrypt" />
+
         <Button
             android:id="@+id/intent_demo_create_new_key"
             android:layout_width="match_parent"
@@ -51,11 +58,25 @@
             android:text="Encrypt" />
 
         <Button
+            android:id="@+id/intent_demo_encrypt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="encryptAndReturnOnClick"
+            android:text="Encrypt and return result" />
+
+        <Button
             android:id="@+id/intent_demo_decrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="decryptOnClick"
             android:text="Decrypt" />
+
+        <Button
+            android:id="@+id/intent_demo_decrypt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="decryptAndReturnOnClick"
+            android:text="Decrypt and return result" />
 
         <TextView
             android:layout_width="match_parent"
