@@ -58,3 +58,51 @@ See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exc
 
 1. Open svg file in Inkscape
 2. Extensions -> Color -> darker (2 times!)
+
+# Security Concept
+
+## Basic goals
+
+* Never (even with permissions) give out actual PGPSecretKey/PGPSecretKeyRing blobs
+* Intents without permissions should only work based on user interaction (e.g. click a button in a dialog)
+
+Android primitives to exchange data: Intent, Intent with return values, Send (also an Intent), Content Provider, AIDL
+
+## Intents
+
+### Without permission
+
+* android.intent.action.VIEW connected to .gpg and .asc files: Import Key and Decrypt
+* android.intent.action.SEND connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
+* IMPORT
+* EDIT_KEY
+* SELECT_PUBLIC_KEYS
+* SELECT_SECRET_KEY
+* ENCRYPT
+* ENCRYPT_FILE
+* DECRYPT
+* DECRYPT_FILE
+
+### With permission
+
+* CREATE_KEY
+* ENCRYPT_AND_RETURN
+* GENERATE_SIGNATURE
+* DECRYPT_AND_RETURN
+
+## Content Provider
+
+* The whole content provider requires a permission (only read)
+* Don't give out blobs
+* Make an internal and external content provider (or pathes with <path-permission>)
+* Look at android:grantUriPermissions especially for ApgServiceBlobProvider
+* Only give out android:readPermission
+
+## Remote Service
+
+* The whole service requires a permission
+
+## Resulting permission
+
+* Read key information (not the actual keys)(content provider)
+* Encrypt/Sign/Decrypt/Create keys (intents, remote service) without user interaction
