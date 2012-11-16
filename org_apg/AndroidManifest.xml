@@ -374,31 +374,6 @@
             android:name=".provider.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
             android:permission="org.thialfihar.android.apg.permission.ACCESS_API" />
-
-        <!-- DEPRECATED: -->
-        <!-- <provider -->
-        <!-- android:name=".deprecated.DataProvider" -->
-        <!-- android:authorities="org.thialfihar.android.apg.provider" -->
-        <!-- android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" /> -->
-
-
-        <!-- TODO: need to be moved into new service model -->
-        <!-- <service -->
-        <!-- android:name=".deprecated.ApgService2" -->
-        <!-- android:enabled="true" -->
-        <!-- android:exported="true" -->
-        <!-- android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" -->
-        <!-- android:process=":remote" > -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="org.thialfihar.android.apg.service.IApgService2" /> -->
-        <!-- </intent-filter> -->
-
-
-        <!-- <meta-data -->
-        <!-- android:name="api_version" -->
-        <!-- android:value="2" /> -->
-        <!-- </service> -->
-
     </application>
 
 </manifest>

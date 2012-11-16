@@ -295,7 +295,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                     // OutputStream
                     try {
                         while (true) {
-                            streamFilename = PGPMain.generateRandomString(32);
+                            streamFilename = PGPMain.generateRandomFilename(32);
                             if (streamFilename == null) {
                                 throw new PGPMain.ApgGeneralException(
                                         "couldn't generate random file name");
@@ -448,7 +448,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                     // OutputStream
                     try {
                         while (true) {
-                            streamFilename = PGPMain.generateRandomString(32);
+                            streamFilename = PGPMain.generateRandomFilename(32);
                             if (streamFilename == null) {
                                 throw new PGPMain.ApgGeneralException(
                                         "couldn't generate random file name");

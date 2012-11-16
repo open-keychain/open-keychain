@@ -1746,12 +1746,15 @@ public class PGPMain {
         return "APG v" + getVersion(context);
     }
 
-    public static String generateRandomString(int length) {
+    /**
+     * Generate a random filename
+     * 
+     * @param length
+     * @return
+     */
+    public static String generateRandomFilename(int length) {
         SecureRandom random = new SecureRandom();
-        /*
-         * try { random = SecureRandom.getInstance("SHA1PRNG", new BouncyCastleProvider()); } catch
-         * (NoSuchAlgorithmException e) { // TODO: need to handle this case somehow return null; }
-         */
+
         byte bytes[] = new byte[length];
         random.nextBytes(bytes);
         String result = "";
@@ -1772,6 +1775,14 @@ public class PGPMain {
         return result;
     }
 
+    /**
+     * Go once through stream to get length of stream. The length is later used to display progress
+     * when encrypting/decrypting
+     * 
+     * @param in
+     * @return
+     * @throws IOException
+     */
     public static long getLengthOfStream(InputStream in) throws IOException {
         long size = 0;
         long n = 0;
@@ -1782,6 +1793,17 @@ public class PGPMain {
         return size;
     }
 
+    /**
+     * Deletes file securely by overwriting it with random data before deleting it.
+     * 
+     * TODO: Does this really help on flash storage?
+     * 
+     * @param context
+     * @param progress
+     * @param file
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void deleteFileSecurely(Context context, ProgressDialogUpdater progress, File file)
             throws FileNotFoundException, IOException {
         long length = file.length();

@@ -254,10 +254,11 @@ public class DecryptActivity extends SherlockFragmentActivity {
         String action = intent.getAction();
         String type = intent.getType();
 
-        mContentUri = intent.getData();
-
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+
+            // This gets the Uri, where an inputStream can be opened from
+            mContentUri = intent.getData();
 
             // TODO: old implementation of ACTION_VIEW. Is this used in K9?
             // Uri uri = mIntent.getData();
@@ -893,7 +894,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         case Id.request.filename: {
             if (resultCode == RESULT_OK && data != null) {
                 try {
-                    String path = data.getData().getPath();
+                    String path = FileHelper.getPath(this, data.getData());
                     Log.d(Constants.TAG, "path=" + path);
 
                     mFilename.setText(path);
