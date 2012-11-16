@@ -23,13 +23,17 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.util.Log;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.Toast;
 
 public class OtherHelper {
 
@@ -114,6 +118,45 @@ public class OtherHelper {
         } else {
             actionBar.setDisplayHomeAsUpEnabled(false);
             actionBar.setHomeButtonEnabled(false);
+        }
+    }
+
+    /**
+     * Check if the calling package has the needed permission to invoke an intent with specific
+     * restricted actions.
+     * 
+     * If pkgName is null, this will also deny the use of the given action
+     * 
+     * @param activity
+     * @param pkgName
+     * @param permName
+     * @param action
+     * @param restrictedActions
+     */
+    public static void checkPackagePermissionForActions(Activity activity, String pkgName,
+            String permName, String action, String[] restrictedActions) {
+        if (action != null) {
+            PackageManager pkgManager = activity.getPackageManager();
+
+            for (int i = 0; i < restrictedActions.length; i++) {
+                if (restrictedActions[i].equals(action)) {
+                    if (pkgName != null
+                            && pkgManager.checkPermission(permName, pkgName) == PackageManager.PERMISSION_GRANTED) {
+                        Log.d(Constants.TAG, pkgName + " has permission " + permName + ". Action "
+                                + action + " was granted!");
+                    } else {
+                        String error = pkgName + " does NOT have permission " + permName + ". Action "
+                                + action + " was NOT granted!";
+                        Log.e(Constants.TAG, error);
+                        Toast.makeText(activity, activity.getString(R.string.errorMessage, error),
+                                Toast.LENGTH_LONG).show();
+
+                        // end activity
+                        activity.setResult(Activity.RESULT_CANCELED, null);
+                        activity.finish();
+                    }
+                }
+            }
         }
     }
 

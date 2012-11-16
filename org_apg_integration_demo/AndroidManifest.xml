@@ -4,8 +4,8 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <!-- permission to access provider and service, intents are public! -->
-    <uses-permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
+    <uses-permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DATABASE" />
+    <uses-permission android:name="org.thialfihar.android.apg.permission.ACCESS_API" />
 
     <uses-sdk
         android:minSdkVersion="7"

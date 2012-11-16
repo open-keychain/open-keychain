@@ -229,7 +229,7 @@
     <string name="qrScanImportSuccess">Successfully validated and imported key</string>
     <string name="listInformation">Long press one entry in this list to show more options!</string>
     <string name="listEmpty">This list is empty!</string>
-    
+
     <!--
          error_lowerCase: phrases, no punctuation, all lowercase,
          they will be put after "errorMessage", e.g. "Error: file not found"
@@ -260,7 +260,7 @@
     <string name="error_wrongPassPhrase">wrong passphrase</string>
     <string name="error_savingKeys">error saving some key(s)</string>
     <string name="error_couldNotExtractPrivateKey">could not extract private key</string>
-    
+
     <!-- progress_lowerCase: lowercase, phrases, usually ending in '…' -->
     <string name="progress_done">done.</string>
     <string name="progress_initializing">initializing…</string>
@@ -298,11 +298,13 @@
     <string name="progress_queryingServer">querying %s…</string>
 
     <!-- permission strings -->
-    <string name="permission_read_key_details_label">Read key details from APG.</string>
-    <string name="permission_read_key_details_description">Read key details of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
-    <string name="permission_store_blobs_label">Store blobs to en/decrypt with APG.</string>
-    <string name="permission_store_blobs_description">Store and read files on the android file system through APG. It cannot read files of other applications.</string>
-
+    <string name="permission_group_label">APG</string>
+    <string name="permission_group_description">Permissions to use APG</string>
+    <string name="permission_read_key_database_label">Read key details of public and secret keys (The keys themselves can NOT be read.)</string>
+    <string name="permission_read_key_database_description">Read key details of public and secret keys stored in APG, such as key ID and user IDs. The keys themselves can NOT be read.</string>
+    <string name="permission_access_api_label">Encrypt/Sign/Decrypt/Create keys without user interaction</string>
+    <string name="permission_access_api_description">Encrypt/Sign/Decrypt/Create keys (by using Intents or Remote Service) without user interaction</string>
+    
     <!-- action strings -->
     <string name="action_encrypt">Encrypt</string>
     <string name="action_decrypt">Decrypt</string>

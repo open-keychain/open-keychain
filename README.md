@@ -59,7 +59,7 @@ See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exc
 1. Open svg file in Inkscape
 2. Extensions -> Color -> darker (2 times!)
 
-# Security Concept
+# Security Model
 
 ## Basic goals
 
@@ -83,7 +83,7 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * DECRYPT
 * DECRYPT_FILE
 
-### With permission
+### With permission ACCESS_API
 
 * CREATE_KEY
 * ENCRYPT_AND_RETURN
@@ -100,9 +100,9 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 
 ## Remote Service
 
-* The whole service requires a permission
+* The whole service requires the permission ACCESS_API
 
 ## Resulting permission
 
-* Read key information (not the actual keys)(content provider)
-* Encrypt/Sign/Decrypt/Create keys (intents, remote service) without user interaction
+* READ_KEY_DATABASE: Read key information (not the actual keys)(content provider)
+* ACCESS_API: Encrypt/Sign/Decrypt/Create keys without user interaction (intents, remote service)

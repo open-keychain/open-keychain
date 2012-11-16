@@ -197,6 +197,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // check permissions for intent actions without user interaction
+        String[] restrictedActions = new String[] { ACTION_ENCRYPT_AND_RETURN,
+                ACTION_GENERATE_SIGNATURE };
+        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
+                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
+
         setContentView(R.layout.encrypt);
 
         // set actionbar without home button if called from another app
@@ -841,8 +848,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in ApgService
-        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_encrypting,
-                ProgressDialog.STYLE_HORIZONTAL) {
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
+                R.string.progress_encrypting, ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);

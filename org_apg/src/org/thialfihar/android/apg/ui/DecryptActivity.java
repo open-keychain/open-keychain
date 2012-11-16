@@ -172,6 +172,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // check permissions for intent actions without user interaction
+        String[] restrictedActions = new String[] { ACTION_DECRYPT_AND_RETURN };
+        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
+                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
+
         setContentView(R.layout.decrypt);
 
         // set actionbar without home button if called from another app

@@ -53,15 +53,23 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
 
+    <permission-group
+        android:name="org.thialfihar.android.apg.permission-group.APG"
+        android:description="@string/permission_group_description"
+        android:icon="@drawable/icon"
+        android:label="@string/permission_group_label" />
+
     <permission
-        android:name="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
-        android:description="@string/permission_read_key_details_description"
-        android:label="@string/permission_read_key_details_label"
+        android:name="org.thialfihar.android.apg.permission.READ_KEY_DATABASE"
+        android:description="@string/permission_read_key_database_description"
+        android:label="@string/permission_read_key_database_label"
+        android:permissionGroup="org.thialfihar.android.apg.permission-group.APG"
         android:protectionLevel="dangerous" />
     <permission
-        android:name="org.thialfihar.android.apg.permission.STORE_BLOBS"
-        android:description="@string/permission_store_blobs_description"
-        android:label="@string/permission_store_blobs_label"
+        android:name="org.thialfihar.android.apg.permission.ACCESS_API"
+        android:description="@string/permission_access_api_description"
+        android:label="@string/permission_access_api_label"
+        android:permissionGroup="org.thialfihar.android.apg.permission-group.APG"
         android:protectionLevel="dangerous" />
 
     <application
@@ -341,7 +349,7 @@
             android:name=".service.ApgService"
             android:enabled="true"
             android:exported="true"
-            android:permission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS"
+            android:permission="org.thialfihar.android.apg.permission.ACCESS_API"
             android:process=":remote" >
             <intent-filter>
                 <action android:name="org.thialfihar.android.apg.service.IApgService" />
@@ -353,16 +361,19 @@
         </service>
 
         <provider
-            android:name=".provider.ApgProvider"
+            android:name=".provider.ApgProviderInternal"
+            android:authorities="org.thialfihar.android.apg.internal"
+            android:exported="false" />
+        <provider
+            android:name=".provider.ApgProviderExternal"
             android:authorities="org.thialfihar.android.apg"
-            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DETAILS" />
-        
-        
+            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DATABASE" />
+
         <!-- TODO: authority! -->
         <provider
             android:name=".provider.ApgServiceBlobProvider"
             android:authorities="org.thialfihar.android.apg.provider.apgserviceblobprovider"
-            android:permission="org.thialfihar.android.apg.permission.STORE_BLOBS" />
+            android:permission="org.thialfihar.android.apg.permission.ACCESS_API" />
 
         <!-- DEPRECATED: -->
         <!-- <provider -->

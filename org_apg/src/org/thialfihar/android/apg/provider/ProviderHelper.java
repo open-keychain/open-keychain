@@ -232,7 +232,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY, operations);
+            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL, operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {
@@ -288,7 +288,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY, operations);
+            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL, operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {

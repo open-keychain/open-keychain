@@ -134,6 +134,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // check permissions for intent actions without user interaction
+        String[] restrictedActions = new String[] { ACTION_CREATE_KEY };
+        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
+                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
+
         setContentView(R.layout.edit_key);
 
         mActionBar = getSupportActionBar();
@@ -422,15 +428,16 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             data.putString(ApgIntentService.NEW_PASSPHRASE, mNewPassPhrase);
             data.putStringArrayList(ApgIntentService.USER_IDS, getUserIds(mUserIdsView));
             ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
-            data.putByteArray(ApgIntentService.KEYS, PGPConversionHelper.PGPSecretKeyArrayListToBytes(keys));
+            data.putByteArray(ApgIntentService.KEYS,
+                    PGPConversionHelper.PGPSecretKeyArrayListToBytes(keys));
             data.putIntegerArrayList(ApgIntentService.KEYS_USAGES, getKeysUsages(mKeysView));
             data.putLong(ApgIntentService.MASTER_KEY_ID, getMasterKeyId());
 
             intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
             // Message is received after saving is done in ApgService
-            ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_saving,
-                    ProgressDialog.STYLE_HORIZONTAL) {
+            ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
+                    R.string.progress_saving, ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);

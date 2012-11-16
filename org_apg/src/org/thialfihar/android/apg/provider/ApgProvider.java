@@ -47,8 +47,6 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 public class ApgProvider extends ContentProvider {
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
-
     private static final int PUBLIC_KEY_RING = 101;
     private static final int PUBLIC_KEY_RING_BY_ROW_ID = 102;
     private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID = 103;
@@ -75,13 +73,22 @@ public class ApgProvider extends ContentProvider {
 
     private static final int DATA_STREAM = 301;
 
+    protected static boolean sInternalProvider;
+    protected static UriMatcher sUriMatcher;
+
     /**
      * Build and return a {@link UriMatcher} that catches all {@link Uri} variations supported by
      * this {@link ContentProvider}.
      */
-    private static UriMatcher buildUriMatcher() {
+    protected static UriMatcher buildUriMatcher(boolean internalProvider) {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = ApgContract.CONTENT_AUTHORITY;
+
+        String authority;
+        if (internalProvider) {
+            authority = ApgContract.CONTENT_AUTHORITY_INTERNAL;
+        } else {
+            authority = ApgContract.CONTENT_AUTHORITY_EXTERNAL;
+        }
 
         /**
          * public key rings
@@ -283,8 +290,66 @@ public class ApgProvider extends ContentProvider {
         return type;
     }
 
-    private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb,
-            HashMap<String, String> projectionMap, int match, boolean isMasterKey, String sortOrder) {
+    /**
+     * Set result of query to specific columns, don't show blob column for external content provider
+     * 
+     * @return
+     */
+    private HashMap<String, String> getProjectionMapForKeyRings() {
+        HashMap<String, String> projectionMap = new HashMap<String, String>();
+
+        projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
+        // only give out keyRing blob when we are using the internal content provider
+        if (sInternalProvider) {
+            projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
+                    + KeyRingsColumns.KEY_RING_DATA);
+        }
+        projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+
+        return projectionMap;
+    }
+
+    /**
+     * Set result of query to specific columns, don't show blob column for external content provider
+     * 
+     * @return
+     */
+    private HashMap<String, String> getProjectionMapForKeys() {
+        HashMap<String, String> projectionMap = new HashMap<String, String>();
+
+        projectionMap.put(BaseColumns._ID, BaseColumns._ID);
+        projectionMap.put(KeysColumns.KEY_ID, KeysColumns.KEY_ID);
+        projectionMap.put(KeysColumns.IS_MASTER_KEY, KeysColumns.IS_MASTER_KEY);
+        projectionMap.put(KeysColumns.ALGORITHM, KeysColumns.ALGORITHM);
+        projectionMap.put(KeysColumns.KEY_SIZE, KeysColumns.KEY_SIZE);
+        projectionMap.put(KeysColumns.CAN_SIGN, KeysColumns.CAN_SIGN);
+        projectionMap.put(KeysColumns.CAN_ENCRYPT, KeysColumns.CAN_ENCRYPT);
+        projectionMap.put(KeysColumns.IS_REVOKED, KeysColumns.IS_REVOKED);
+        projectionMap.put(KeysColumns.CREATION, KeysColumns.CREATION);
+        projectionMap.put(KeysColumns.EXPIRY, KeysColumns.EXPIRY);
+        projectionMap.put(KeysColumns.KEY_RING_ROW_ID, KeysColumns.KEY_RING_ROW_ID);
+        // only give out keyRing blob when we are using the internal content provider
+        if (sInternalProvider) {
+            projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
+        }
+        projectionMap.put(KeysColumns.RANK, KeysColumns.RANK);
+
+        return projectionMap;
+    }
+
+    /**
+     * Builds default query for keyRings: KeyRings table is joined with Keys and UserIds
+     * 
+     * @param qb
+     * @param match
+     * @param isMasterKey
+     * @param sortOrder
+     * @return
+     */
+    private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match,
+            boolean isMasterKey, String sortOrder) {
         qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
         qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
@@ -300,14 +365,7 @@ public class ApgProvider extends ContentProvider {
                 + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
                 + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
 
-        projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                + KeyRingsColumns.MASTER_KEY_ID);
-        projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
-                + KeyRingsColumns.KEY_RING_DATA);
-        projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
-
-        qb.setProjectionMap(projectionMap);
+        qb.setProjectionMap(getProjectionMapForKeyRings());
 
         return qb;
     }
@@ -322,14 +380,12 @@ public class ApgProvider extends ContentProvider {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         SQLiteDatabase db = mApgDatabase.getReadableDatabase();
 
-        HashMap<String, String> projectionMap = new HashMap<String, String>();
-
         int match = sUriMatcher.match(uri);
 
         switch (match) {
         case PUBLIC_KEY_RING:
         case SECRET_KEY_RING:
-            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
+            qb = buildKeyRingQuery(qb, match, true, sortOrder);
 
             if (TextUtils.isEmpty(sortOrder)) {
                 sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
@@ -339,7 +395,7 @@ public class ApgProvider extends ContentProvider {
 
         case PUBLIC_KEY_RING_BY_ROW_ID:
         case SECRET_KEY_RING_BY_ROW_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
+            qb = buildKeyRingQuery(qb, match, true, sortOrder);
 
             qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -352,7 +408,7 @@ public class ApgProvider extends ContentProvider {
 
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, true, sortOrder);
+            qb = buildKeyRingQuery(qb, match, true, sortOrder);
 
             qb.appendWhere(" AND " + Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -365,7 +421,7 @@ public class ApgProvider extends ContentProvider {
 
         case SECRET_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
-            qb = buildKeyRingQuery(qb, projectionMap, match, false, sortOrder);
+            qb = buildKeyRingQuery(qb, match, false, sortOrder);
 
             qb.appendWhere(" AND " + Tables.KEYS + "." + KeysColumns.KEY_ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -389,15 +445,7 @@ public class ApgProvider extends ContentProvider {
                     + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
                     + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
 
-            projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-            projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.MASTER_KEY_ID);
-            projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.KEY_RING_DATA);
-            projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "."
-                    + UserIdsColumns.USER_ID);
-
-            qb.setProjectionMap(projectionMap);
+            qb.setProjectionMap(getProjectionMapForKeyRings());
 
             String emails = uri.getLastPathSegment();
             String chunks[] = emails.split(" *, *");
@@ -434,6 +482,8 @@ public class ApgProvider extends ContentProvider {
             qb.appendWhere(" AND " + KeysColumns.KEY_RING_ROW_ID + " = ");
             qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
+            qb.setProjectionMap(getProjectionMapForKeys());
+
             break;
 
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
@@ -447,6 +497,8 @@ public class ApgProvider extends ContentProvider {
 
             qb.appendWhere(" AND " + BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+            qb.setProjectionMap(getProjectionMapForKeys());
 
             break;
 

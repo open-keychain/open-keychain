@@ -20,11 +20,15 @@ import android.os.Environment;
 
 public final class Constants {
 
+    public static final boolean DEBUG = true;
+
     public static final String TAG = "APG";
 
     public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
 
-    public static final boolean DEBUG = true;
+    public static final String PERMISSION_ACCESS_KEY_DATABASE = PACKAGE_NAME
+            + ".permission.ACCESS_KEY_DATABASE";
+    public static final String PERMISSION_ACCESS_API = PACKAGE_NAME + ".permission.ACCESS_API";
 
     /*
      * TODO:
@@ -37,7 +41,7 @@ public final class Constants {
      * 
      * - even better and shorter (without .android.): org.apg.action.DECRYPT
      */
-    public static final String INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
+    public static final String INTENT_PREFIX = PACKAGE_NAME + ".intent.";
 
     public static final class path {
         public static final String APP_DIR = Environment.getExternalStorageDirectory() + "/APG";

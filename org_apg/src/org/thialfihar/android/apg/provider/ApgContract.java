@@ -57,9 +57,11 @@ public class ApgContract {
         public static final int SECRET = 1;
     }
 
-    public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME;
+    public static final String CONTENT_AUTHORITY_EXTERNAL = Constants.PACKAGE_NAME;
+    public static final String CONTENT_AUTHORITY_INTERNAL = Constants.PACKAGE_NAME + ".internal";
 
-    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI_INTERNAL = Uri.parse("content://"
+            + CONTENT_AUTHORITY_INTERNAL);
 
     public static final String BASE_KEY_RINGS = "key_rings";
     public static final String BASE_DATA = "data";
@@ -75,7 +77,7 @@ public class ApgContract {
     public static final String PATH_KEYS = "keys";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
@@ -132,7 +134,7 @@ public class ApgContract {
     }
 
     public static class Keys implements KeysColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
@@ -163,7 +165,7 @@ public class ApgContract {
     }
 
     public static class UserIds implements UserIdsColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
         /** Use if multiple items get returned */
@@ -194,8 +196,8 @@ public class ApgContract {
     }
 
     public static class DataStream {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(BASE_DATA)
-                .build();
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_DATA).build();
 
         public static Uri buildDataStreamUri(String streamFilename) {
             return CONTENT_URI.buildUpon().appendPath(streamFilename).build();
