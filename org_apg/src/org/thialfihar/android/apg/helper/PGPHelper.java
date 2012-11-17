@@ -193,10 +193,12 @@ public class PGPHelper {
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
         PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context, masterKeyId);
         if (keyRing == null) {
+            Log.e(Constants.TAG, "keyRing is null!");
             return null;
         }
         Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
         if (encryptKeys.size() == 0) {
+            Log.e(Constants.TAG, "encryptKeys is null!");
             return null;
         }
         return encryptKeys.get(0);

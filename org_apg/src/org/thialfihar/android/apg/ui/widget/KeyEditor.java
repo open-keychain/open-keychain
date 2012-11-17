@@ -140,15 +140,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         Vector<Choice> choices = new Vector<Choice>();
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
+        boolean isDSAKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.DSA);
         if (!isElGamalKey) {
             choices.add(new Choice(Id.choice.usage.sign_only, getResources().getString(
                     R.string.choice_signOnly)));
         }
-        if (!mIsMasterKey) {
+        if (!mIsMasterKey && !isDSAKey) {
             choices.add(new Choice(Id.choice.usage.encrypt_only, getResources().getString(
                     R.string.choice_encryptOnly)));
         }
-        if (!isElGamalKey) {
+        if (!isElGamalKey && !isDSAKey) {
             choices.add(new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
                     R.string.choice_signAndEncrypt)));
         }

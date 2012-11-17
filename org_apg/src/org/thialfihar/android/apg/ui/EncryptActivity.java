@@ -77,7 +77,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = Constants.INTENT_PREFIX
             + "GENERATE_SIGNATURE";
 
-    public static final String ACTION_ENCRYPT_STREAM = Constants.INTENT_PREFIX + "ENCRYPT_STREAM";
+    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
     public static final String ACTION_ENCRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
             + "ENCRYPT_STREAM_AND_RETURN";
 
@@ -132,9 +132,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
-    private boolean mAsciiArmourDemand = false;
+    private boolean mAsciiArmorDemand = false;
     private boolean mOverrideAsciiArmour = false;
-    private Uri mIntentDataUri = null;
+    private Uri mStreamAndReturnUri = null;
     private byte[] mData = null;
 
     private boolean mGenerateSignature = false;
@@ -265,7 +265,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             } else {
                 // files via content provider, override uri and action
                 uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                action = ACTION_ENCRYPT_STREAM;
+                action = ACTION_ENCRYPT_FILE;
             }
         }
 
@@ -277,13 +277,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
         if (ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
             mGenerateSignature = true;
             mOverrideAsciiArmour = true;
-            mAsciiArmourDemand = false;
+            mAsciiArmorDemand = false;
         }
 
         if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
-            mAsciiArmourDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
+            mAsciiArmorDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
             mOverrideAsciiArmour = true;
-            mAsciiArmour.setChecked(mAsciiArmourDemand);
+            mAsciiArmour.setChecked(mAsciiArmorDemand);
         }
 
         mData = extras.getByteArray(EXTRA_DATA);
@@ -309,7 +309,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                 mSource.showNext();
             }
-        } else if (ACTION_ENCRYPT_STREAM.equals(action)) {
+        } else if (ACTION_ENCRYPT_FILE.equals(action)) {
             // get file path from uri
             String path = FileHelper.getPath(this, uri);
 
@@ -324,7 +324,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 }
             } else {
                 Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported");
+                        "Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_ENCRYPT_STREAM_AND_RETURN.");
                 Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
@@ -334,6 +334,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
             // use mIntentDataUri to encrypt any stream and return
             // TODO
+            
+            mStreamAndReturnUri = null;
         }
     }
 
@@ -687,9 +689,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_ENCRYPT_SIGN);
 
         // choose default settings, target and data bundle by target
-        if (mIntentDataUri != null) {
+        if (mStreamAndReturnUri != null) {
+            // mIntentDataUri is only defined when ACTION_ENCRYPT_STREAM_AND_RETURN is used
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_STREAM);
-            data.putParcelable(ApgIntentService.PROVIDER_URI, mIntentDataUri);
+            data.putParcelable(ApgIntentService.PROVIDER_URI, mStreamAndReturnUri);
 
         } else if (mEncryptTarget == Id.target.file) {
             useAsciiArmor = mAsciiArmour.isChecked();
@@ -721,7 +724,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         }
 
         if (mOverrideAsciiArmour) {
-            useAsciiArmor = mAsciiArmourDemand;
+            useAsciiArmor = mAsciiArmorDemand;
         }
 
         data.putLong(ApgIntentService.SECRET_KEY_ID, mSecretKeyId);

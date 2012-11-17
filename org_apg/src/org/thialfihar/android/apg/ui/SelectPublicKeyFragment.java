@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.provider.ApgDatabase;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.Keys;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
@@ -162,14 +163,19 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,
-                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
-                        + Keys.IS_REVOKED + " = '0' AND  tmp." + Keys.CAN_ENCRYPT + " = '1') AS "
+                "(SELECT COUNT(available_keys." + Keys._ID + ") FROM " + Tables.KEYS
+                        + " AS available_keys WHERE available_keys." + Keys.KEY_RING_ROW_ID + " = "
+                        + ApgDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
+                        + " AND available_keys." + Keys.IS_REVOKED + " = '0' AND  available_keys."
+                        + Keys.CAN_ENCRYPT + " = '1') AS "
                         + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
-                "(SELECT COUNT(tmp." + Keys._ID + ") FROM " + Tables.KEYS + " AS tmp WHERE tmp."
-                        + Keys.IS_REVOKED + " = '0' AND " + Keys.CAN_ENCRYPT + " = '1' AND tmp."
-                        + Keys.CREATION + " <= '" + now + "' AND " + "(tmp." + Keys.EXPIRY
-                        + " IS NULL OR tmp." + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                "(SELECT COUNT(valid_keys." + Keys._ID + ") FROM " + Tables.KEYS
+                        + " AS valid_keys WHERE valid_keys." + Keys.KEY_RING_ROW_ID + " = "
+                        + ApgDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND valid_keys."
+                        + Keys.IS_REVOKED + " = '0' AND valid_keys." + Keys.CAN_ENCRYPT
+                        + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
+                        + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
+                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {
