@@ -141,12 +141,13 @@ public class OtherHelper {
             for (int i = 0; i < restrictedActions.length; i++) {
                 if (restrictedActions[i].equals(action)) {
                     if (pkgName != null
-                            && pkgManager.checkPermission(permName, pkgName) == PackageManager.PERMISSION_GRANTED) {
+                            && (pkgManager.checkPermission(permName, pkgName) == PackageManager.PERMISSION_GRANTED || pkgName
+                                    .equals(Constants.PACKAGE_NAME))) {
                         Log.d(Constants.TAG, pkgName + " has permission " + permName + ". Action "
                                 + action + " was granted!");
                     } else {
-                        String error = pkgName + " does NOT have permission " + permName + ". Action "
-                                + action + " was NOT granted!";
+                        String error = pkgName + " does NOT have permission " + permName
+                                + ". Action " + action + " was NOT granted!";
                         Log.e(Constants.TAG, error);
                         Toast.makeText(activity, activity.getString(R.string.errorMessage, error),
                                 Toast.LENGTH_LONG).show();
