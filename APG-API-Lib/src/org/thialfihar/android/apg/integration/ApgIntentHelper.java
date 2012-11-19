@@ -50,7 +50,7 @@ public class ApgIntentHelper {
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String EXTRA_USER_ID = "userId";
     public static final String EXTRA_USER_IDS = "userIds";
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_KEY_ID = "masterKeyId";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
     public static final String EXTRA_MESSAGE = "message";
