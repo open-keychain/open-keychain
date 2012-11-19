@@ -31,6 +31,10 @@
             android:name=".AidlDemoActivity"
             android:label="Aidl Demo"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ContentProviderDemoActivity"
+            android:label="Content Provider Demo"
+            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

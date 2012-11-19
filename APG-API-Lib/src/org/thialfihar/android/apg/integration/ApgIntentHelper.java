@@ -293,7 +293,7 @@ public class ApgIntentHelper {
         long[] initialKeyIds = null;
         if (apgData == null || !apgData.hasEncryptionKeys()) {
 
-            ContentProviderHelper cPHelper = new ContentProviderHelper(activity);
+            ApgContentProviderHelper cPHelper = new ApgContentProviderHelper(activity);
 
             initialKeyIds = cPHelper.getPublicKeyIdsFromEmail(emails);
 

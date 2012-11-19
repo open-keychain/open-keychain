@@ -24,7 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.widget.Toast;
 
-public class ContentProviderHelper {
+public class ApgContentProviderHelper {
     public static final String AUTHORITY = Constants.APG_PACKAGE_NAME;
 
     public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID = Uri.parse("content://"
@@ -39,7 +39,7 @@ public class ContentProviderHelper {
 
     private Context activity;
 
-    public ContentProviderHelper(Activity activity) {
+    public ApgContentProviderHelper(Activity activity) {
         this.activity = activity;
     }
 

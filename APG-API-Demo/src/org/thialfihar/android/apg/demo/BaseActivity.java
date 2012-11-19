@@ -30,6 +30,7 @@ public class BaseActivity extends PreferenceActivity {
 
     private Preference mIntentDemo;
     private Preference mAidlDemo;
+    private Preference mContentProviderDemo;
 
     /**
      * Called when the activity is first created.
@@ -46,6 +47,7 @@ public class BaseActivity extends PreferenceActivity {
         // find preferences
         mIntentDemo = (Preference) findPreference("intent_demo");
         mAidlDemo = (Preference) findPreference("aidl_demo");
+        mContentProviderDemo = (Preference) findPreference("content_provider_demo");
 
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -60,6 +62,15 @@ public class BaseActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(mActivity, AidlDemoActivity.class));
+
+                return false;
+            }
+        });
+
+        mContentProviderDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(mActivity, ContentProviderDemoActivity.class));
 
                 return false;
             }

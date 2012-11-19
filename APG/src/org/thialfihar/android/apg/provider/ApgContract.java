@@ -58,7 +58,7 @@ public class ApgContract {
     }
 
     public static final String CONTENT_AUTHORITY_EXTERNAL = Constants.PACKAGE_NAME;
-    public static final String CONTENT_AUTHORITY_INTERNAL = Constants.PACKAGE_NAME + "_internal";
+    public static final String CONTENT_AUTHORITY_INTERNAL = Constants.PACKAGE_NAME + ".internal";
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri.parse("content://"
             + CONTENT_AUTHORITY_INTERNAL);

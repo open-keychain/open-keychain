@@ -73,14 +73,14 @@ public class ApgProvider extends ContentProvider {
 
     private static final int DATA_STREAM = 301;
 
-    protected static boolean sInternalProvider;
-    protected static UriMatcher sUriMatcher;
+    protected boolean mInternalProvider;
+    protected UriMatcher mUriMatcher;
 
     /**
      * Build and return a {@link UriMatcher} that catches all {@link Uri} variations supported by
      * this {@link ContentProvider}.
      */
-    protected static UriMatcher buildUriMatcher(boolean internalProvider) {
+    protected UriMatcher buildUriMatcher(boolean internalProvider) {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority;
@@ -205,6 +205,8 @@ public class ApgProvider extends ContentProvider {
     /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
+        mUriMatcher = buildUriMatcher(mInternalProvider);
+
         mApgDatabase = new ApgDatabase(getContext());
         return true;
     }
@@ -212,7 +214,7 @@ public class ApgProvider extends ContentProvider {
     /** {@inheritDoc} */
     @Override
     public String getType(Uri uri) {
-        final int match = sUriMatcher.match(uri);
+        final int match = mUriMatcher.match(uri);
         switch (match) {
         case PUBLIC_KEY_RING:
         case PUBLIC_KEY_RING_BY_EMAILS:
@@ -302,7 +304,7 @@ public class ApgProvider extends ContentProvider {
         projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.MASTER_KEY_ID);
         // only give out keyRing blob when we are using the internal content provider
-        if (sInternalProvider) {
+        if (mInternalProvider) {
             projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
                     + KeyRingsColumns.KEY_RING_DATA);
         }
@@ -331,7 +333,7 @@ public class ApgProvider extends ContentProvider {
         projectionMap.put(KeysColumns.EXPIRY, KeysColumns.EXPIRY);
         projectionMap.put(KeysColumns.KEY_RING_ROW_ID, KeysColumns.KEY_RING_ROW_ID);
         // only give out keyRing blob when we are using the internal content provider
-        if (sInternalProvider) {
+        if (mInternalProvider) {
             projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
         }
         projectionMap.put(KeysColumns.RANK, KeysColumns.RANK);
@@ -399,7 +401,7 @@ public class ApgProvider extends ContentProvider {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         SQLiteDatabase db = mApgDatabase.getReadableDatabase();
 
-        int match = sUriMatcher.match(uri);
+        int match = mUriMatcher.match(uri);
 
         switch (match) {
         case PUBLIC_KEY_RING:
@@ -579,7 +581,7 @@ public class ApgProvider extends ContentProvider {
         Uri rowUri = null;
         long rowId = -1;
         try {
-            final int match = sUriMatcher.match(uri);
+            final int match = mUriMatcher.match(uri);
 
             switch (match) {
             case PUBLIC_KEY_RING:
@@ -641,7 +643,7 @@ public class ApgProvider extends ContentProvider {
         final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
 
         int count;
-        final int match = sUriMatcher.match(uri);
+        final int match = mUriMatcher.match(uri);
 
         String defaultSelection = null;
         switch (match) {
@@ -691,7 +693,7 @@ public class ApgProvider extends ContentProvider {
         String defaultSelection = null;
         int count = 0;
         try {
-            final int match = sUriMatcher.match(uri);
+            final int match = mUriMatcher.match(uri);
             switch (match) {
             case PUBLIC_KEY_RING_BY_ROW_ID:
             case SECRET_KEY_RING_BY_ROW_ID:
@@ -814,7 +816,7 @@ public class ApgProvider extends ContentProvider {
 
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        int match = sUriMatcher.match(uri);
+        int match = mUriMatcher.match(uri);
         if (match != DATA_STREAM) {
             throw new FileNotFoundException();
         }

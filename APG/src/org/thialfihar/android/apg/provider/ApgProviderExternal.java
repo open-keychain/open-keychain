@@ -24,9 +24,8 @@ package org.thialfihar.android.apg.provider;
  */
 public class ApgProviderExternal extends ApgProvider {
 
-    static {
-        sInternalProvider = false;
-        sUriMatcher = buildUriMatcher(sInternalProvider);
+    public ApgProviderExternal() {
+        mInternalProvider = false;
     }
 
 }

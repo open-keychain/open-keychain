@@ -11,5 +11,10 @@
             android:key="aidl_demo"
             android:title="AIDL Demo" />
     </PreferenceCategory>
+    <PreferenceCategory android:title="Content Provider" >
+        <Preference
+            android:key="content_provider_demo"
+            android:title="Content Provider Demo" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

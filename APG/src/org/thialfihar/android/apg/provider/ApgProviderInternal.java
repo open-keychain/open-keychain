@@ -22,9 +22,8 @@ package org.thialfihar.android.apg.provider;
  */
 public class ApgProviderInternal extends ApgProvider {
 
-    static {
-        sInternalProvider = true;
-        sUriMatcher = buildUriMatcher(sInternalProvider);
+    public ApgProviderInternal() {
+        mInternalProvider = true;
     }
 
 }
