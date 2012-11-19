@@ -5,6 +5,7 @@ obj
 libs/armeabi
 lint.xml
 local.properties
+ant.properties
 
 #Eclipse
 .project
