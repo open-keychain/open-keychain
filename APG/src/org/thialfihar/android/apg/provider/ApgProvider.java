@@ -206,7 +206,6 @@ public class ApgProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mUriMatcher = buildUriMatcher(mInternalProvider);
-
         mApgDatabase = new ApgDatabase(getContext());
         return true;
     }
