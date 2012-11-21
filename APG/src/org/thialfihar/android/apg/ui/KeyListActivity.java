@@ -157,8 +157,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
-                .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        // TODO: reimplement!
+        // menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
+        // .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys).setShowAsAction(
@@ -322,8 +323,8 @@ public class KeyListActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after importing is done in ApgService
-        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_importing,
-                ProgressDialog.STYLE_HORIZONTAL) {
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
+                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -414,8 +415,8 @@ public class KeyListActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after exporting is done in ApgService
-        ApgIntentServiceHandler exportHandler = new ApgIntentServiceHandler(this, R.string.progress_exporting,
-                ProgressDialog.STYLE_HORIZONTAL) {
+        ApgIntentServiceHandler exportHandler = new ApgIntentServiceHandler(this,
+                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);

@@ -35,15 +35,17 @@ public class Compatibility {
         Object clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE);
         try {
             if ("android.text.ClipboardManager".equals(clipboard.getClass().getName())) {
-                Method method = clipboard.getClass().getMethod("setText", CharSequence.class);
-                method.invoke(clipboard, text);
+                Method methodSetText = clipboard.getClass()
+                        .getMethod("setText", CharSequence.class);
+                methodSetText.invoke(clipboard, text);
             } else if ("android.content.ClipboardManager".equals(clipboard.getClass().getName())) {
-                Class<?> clazz = Class.forName("android.content.ClipData");
-                Method method = clazz.getMethod("newPlainText", CharSequence.class,
-                        CharSequence.class);
-                Object clip = method.invoke(null, clipboardLabel, text);
-                method = clipboard.getClass().getMethod("setPrimaryClip", clazz);
-                method.invoke(clipboard, clip);
+                Class<?> classClipData = Class.forName("android.content.ClipData");
+                Method methodNewPlainText = classClipData.getMethod("newPlainText",
+                        CharSequence.class, CharSequence.class);
+                Object clip = methodNewPlainText.invoke(null, clipboardLabel, text);
+                methodNewPlainText = clipboard.getClass()
+                        .getMethod("setPrimaryClip", classClipData);
+                methodNewPlainText.invoke(clipboard, clip);
             }
         } catch (Exception e) {
             Log.e("ProjectsException", "There was and error copying the text to the clipboard: "
@@ -62,8 +64,8 @@ public class Compatibility {
         try {
             if ("android.text.ClipboardManager".equals(clipboard.getClass().getName())) {
                 // CharSequence text = clipboard.getText();
-                Method method = clipboard.getClass().getMethod("getText");
-                Object text = method.invoke(clipboard);
+                Method methodGetText = clipboard.getClass().getMethod("getText");
+                Object text = methodGetText.invoke(clipboard);
 
                 return (CharSequence) text;
             } else if ("android.content.ClipboardManager".equals(clipboard.getClass().getName())) {
@@ -72,7 +74,7 @@ public class Compatibility {
                 Object clipData = methodGetPrimaryClip.invoke(clipboard);
 
                 // ClipData.Item clipDataItem = clipData.getItemAt(0);
-                Method methodGetItemAt = clipData.getClass().getMethod("getItemAt", Integer.TYPE);
+                Method methodGetItemAt = clipData.getClass().getMethod("getItemAt", int.class);
                 Object clipDataItem = methodGetItemAt.invoke(clipData, 0);
 
                 // CharSequence text = clipDataItem.coerceToText(context);

@@ -60,7 +60,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         mSelectFragment = (SelectPublicKeyFragment) getSupportFragmentManager().findFragmentById(
                 R.id.select_public_key_fragment);
 
-        //
+        // TODO: reimplement!
         // mFilterLayout = findViewById(R.id.layout_filter);
         // mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         // mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
@@ -81,6 +81,8 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
     }
 
     private void handleIntent(Intent intent) {
+        // TODO: reimplement!
+
         // String searchString = null;
         // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
         // searchString = intent.getStringExtra(SearchManager.QUERY);
@@ -124,8 +126,9 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
-                android.R.drawable.ic_menu_search);
+        // TODO: reimplement!
+        // menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
+        // android.R.drawable.ic_menu_search);
         menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(1, Id.menu.option.okay, 1, R.string.btn_okay).setShowAsAction(

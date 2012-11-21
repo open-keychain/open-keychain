@@ -51,6 +51,7 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
+        // TODO: reimplement!
         // mFilterLayout = findViewById(R.id.layout_filter);
         // mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
         // mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
@@ -85,6 +86,8 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
     }
 
     private void handleIntent(Intent intent) {
+        // TODO: reimplement!
+
         // String searchString = null;
         // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
         // searchString = intent.getStringExtra(SearchManager.QUERY);
@@ -103,8 +106,9 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
-                android.R.drawable.ic_menu_search);
+        // TODO: reimplement!
+        // menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
+        // android.R.drawable.ic_menu_search);
         return true;
     }
 
