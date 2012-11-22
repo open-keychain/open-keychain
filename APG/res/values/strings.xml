@@ -112,7 +112,7 @@
     <string name="label_passPhrase">Passphrase</string>
     <string name="label_passPhraseAgain">Again</string>
     <string name="label_algorithm">Algorithm</string>
-    <string name="label_asciiArmour">ASCII Armour</string>
+    <string name="label_asciiArmour">ASCII Armor</string>
     <string name="label_selectPublicKeys">Public Key(s)</string>
     <string name="label_deleteAfterEncryption">Delete After Encryption</string>
     <string name="label_deleteAfterDecryption">Delete After Decryption</string>

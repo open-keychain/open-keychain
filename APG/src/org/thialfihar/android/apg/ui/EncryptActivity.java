@@ -95,7 +95,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private long mEncryptionKeyIds[] = null;
 
-    private boolean mReturnResult = false;
+    private boolean mEncryptImmediately = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
 
@@ -213,7 +213,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         updateSource();
         updateMode();
 
-        if (mReturnResult) {
+        if (mEncryptImmediately) {
             mSourcePrevious.setClickable(false);
             mSourcePrevious.setEnabled(false);
             mSourcePrevious.setVisibility(View.INVISIBLE);
@@ -228,7 +228,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         updateActionBarButtons();
 
-        if (mReturnResult
+        if (mEncryptImmediately
                 && (mMessage.getText().length() > 0 || mData != null)
                 && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || mSecretKeyId != 0)) {
             encryptClicked();
@@ -250,20 +250,23 @@ public class EncryptActivity extends SherlockFragmentActivity {
             extras = new Bundle();
         }
 
+        /*
+         * Android's Action
+         */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // Android's Action when sending to APG Encrypt
-
+            // When sending to APG Encrypt via share menu
             if ("text/plain".equals(type)) {
-                // plain text
+                // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
-                    // handle like normal text encryption, override action and extras
-                    action = ACTION_ENCRYPT;
+                    // handle like normal text encryption, override action and extras to later
+                    // execute ACTION_ENCRYPT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     extras.putBoolean(EXTRA_ASCII_ARMOUR, true);
+                    action = ACTION_ENCRYPT;
                 }
             } else {
-                // files via content provider, override uri and action
+                // Files via content provider, override uri and action
                 uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 action = ACTION_ENCRYPT_FILE;
             }
@@ -271,7 +274,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         if (ACTION_ENCRYPT_AND_RETURN.equals(action)
                 || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-            mReturnResult = true;
+            mEncryptImmediately = true;
         }
 
         if (ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
@@ -299,6 +302,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
         // preselect keys given by intent
         preselectKeys(signatureKeyId, encryptionKeyIds);
 
+        /**
+         * Main Actions
+         */
         if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_AND_RETURN.equals(action)
                 || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
             if (textData != null) {
@@ -330,11 +336,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 // end activity
                 finish();
             }
-
         } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
-            // use mIntentDataUri to encrypt any stream and return
-            // TODO
-            
+            // TODO: Set mStreamAndReturnUri that is used later to encrypt a stream!
+
             mStreamAndReturnUri = null;
         }
     }
@@ -461,7 +465,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSourceLabel.setText(R.string.label_message);
 
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                if (mReturnResult) {
+                if (mEncryptImmediately) {
                     setActionbarButtons(true, R.string.btn_encrypt, false, 0);
                 } else {
                     setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
@@ -472,7 +476,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     if (mSecretKeyId == 0) {
                         setActionbarButtons(false, 0, false, 0);
                     } else {
-                        if (mReturnResult) {
+                        if (mEncryptImmediately) {
                             setActionbarButtons(true, R.string.btn_sign, false, 0);
                         } else {
                             setActionbarButtons(true, R.string.btn_signAndEmail, true,
@@ -480,7 +484,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         }
                     }
                 } else {
-                    if (mReturnResult) {
+                    if (mEncryptImmediately) {
                         setActionbarButtons(true, R.string.btn_encrypt, false, 0);
                     } else {
                         setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
@@ -716,7 +720,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 data.putByteArray(ApgIntentService.MESSAGE_BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
-                if (signOnly && !mReturnResult) {
+                if (signOnly && !mEncryptImmediately) {
                     fixBadCharactersForGmail(message);
                 }
                 data.putByteArray(ApgIntentService.MESSAGE_BYTES, message.getBytes());
@@ -759,7 +763,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         break;
 
                     case Id.target.email:
-                        if (mReturnResult) {
+                        if (mEncryptImmediately) {
                             Intent intent = new Intent();
                             intent.putExtras(data);
                             setResult(RESULT_OK, intent);

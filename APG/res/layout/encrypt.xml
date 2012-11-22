@@ -34,132 +34,6 @@
             android:padding="4dp" >
 
             <ImageView
-                android:id="@+id/sourcePrevious"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_previous" />
-
-            <TextView
-                android:id="@+id/sourceLabel"
-                style="@style/SectionHeader"
-                android:layout_width="0dip"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:gravity="center_horizontal|center_vertical"
-                android:text="@string/label_message"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <ImageView
-                android:id="@+id/sourceNext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_next" />
-        </LinearLayout>
-
-        <ViewFlipper
-            android:id="@+id/source"
-            android:layout_width="fill_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1" >
-
-            <LinearLayout
-                android:id="@+id/sourceMessage"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:padding="4dp" >
-
-                <EditText
-                    android:id="@+id/message"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="top"
-                    android:inputType="text|textCapSentences|textMultiLine|textLongMessage" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/sourceFile"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical"
-                android:padding="4dp" >
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <EditText
-                        android:id="@+id/filename"
-                        android:layout_width="0dip"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:inputType="textNoSuggestions" />
-
-                    <ImageButton
-                        android:id="@+id/btn_browse"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_menu_filebrowser" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <TextView
-                        android:id="@+id/label_fileCompression"
-                        android:layout_width="0dip"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
-                        android:paddingRight="10dip"
-                        android:text="@string/label_fileCompression"
-                        android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                    <Spinner
-                        android:id="@+id/fileCompression"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <CheckBox
-                        android:id="@+id/deleteAfterEncryption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="@string/label_deleteAfterEncryption" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
-
-                    <CheckBox
-                        android:id="@+id/asciiArmour"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="@string/label_asciiArmour" />
-                </LinearLayout>
-            </LinearLayout>
-        </ViewFlipper>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp" >
-
-            <ImageView
                 android:id="@+id/modePrevious"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -300,6 +174,132 @@
                         android:inputType="textPassword" />
                 </TableRow>
             </TableLayout>
+        </ViewFlipper>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp" >
+
+            <ImageView
+                android:id="@+id/sourcePrevious"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_previous" />
+
+            <TextView
+                android:id="@+id/sourceLabel"
+                style="@style/SectionHeader"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@string/label_message"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <ImageView
+                android:id="@+id/sourceNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_next" />
+        </LinearLayout>
+
+        <ViewFlipper
+            android:id="@+id/source"
+            android:layout_width="fill_parent"
+            android:layout_height="0dip"
+            android:layout_weight="1" >
+
+            <LinearLayout
+                android:id="@+id/sourceMessage"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:padding="4dp" >
+
+                <EditText
+                    android:id="@+id/message"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="top"
+                    android:inputType="text|textCapSentences|textMultiLine|textLongMessage" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sourceFile"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical"
+                android:padding="4dp" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <EditText
+                        android:id="@+id/filename"
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:inputType="textNoSuggestions" />
+
+                    <ImageButton
+                        android:id="@+id/btn_browse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_menu_filebrowser" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:id="@+id/label_fileCompression"
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:paddingRight="10dip"
+                        android:text="@string/label_fileCompression"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                    <Spinner
+                        android:id="@+id/fileCompression"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <CheckBox
+                        android:id="@+id/deleteAfterEncryption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/label_deleteAfterEncryption" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <CheckBox
+                        android:id="@+id/asciiArmour"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/label_asciiArmour" />
+                </LinearLayout>
+            </LinearLayout>
         </ViewFlipper>
     </LinearLayout>
 

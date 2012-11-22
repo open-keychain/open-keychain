@@ -70,9 +70,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     // possible intent actions for this activity
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
-    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
     public static final String ACTION_DECRYPT_AND_RETURN = Constants.INTENT_PREFIX
             + "DECRYPT_AND_RETURN";
+
+    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
+    public static final String ACTION_DECRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
+            + "DECRYPT_STREAM_AND_RETURN";
 
     // possible extra keys
     public static final String EXTRA_TEXT = "text";
@@ -126,6 +129,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private boolean mLookupUnknownKey = true;
 
+    private boolean mDecryptImmediately = false;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -169,20 +174,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // check permissions for intent actions without user interaction
-        String[] restrictedActions = new String[] { ACTION_DECRYPT_AND_RETURN };
-        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
-                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
-
-        setContentView(R.layout.decrypt);
-
-        // set actionbar without home button if called from another app
-        OtherHelper.setActionBarBackButton(this);
-
+    private void initView() {
         mSource = (ViewFlipper) findViewById(R.id.source);
         mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
         mSourcePrevious = (ImageView) findViewById(R.id.sourcePrevious);
@@ -246,67 +238,26 @@ public class DecryptActivity extends SherlockFragmentActivity {
         while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
             mSource.showNext();
         }
+    }
 
-        boolean decryptImmediately = false;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        // Get intent, action and MIME type
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
+        // check permissions for intent actions without user interaction
+        String[] restrictedActions = new String[] { ACTION_DECRYPT_AND_RETURN };
+        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
+                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
 
-        if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+        setContentView(R.layout.decrypt);
 
-            // This gets the Uri, where an inputStream can be opened from
-            mContentUri = intent.getData();
+        // set actionbar without home button if called from another app
+        OtherHelper.setActionBarBackButton(this);
 
-            // TODO: old implementation of ACTION_VIEW. Is this used in K9?
-            // Uri uri = mIntent.getData();
-            // try {
-            // InputStream attachment = getContentResolver().openInputStream(uri);
-            // ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-            // byte bytes[] = new byte[1 << 16];
-            // int length;
-            // while ((length = attachment.read(bytes)) > 0) {
-            // byteOut.write(bytes, 0, length);
-            // }
-            // byteOut.close();
-            // String data = new String(byteOut.toByteArray());
-            // mMessage.setText(data);
-            // } catch (FileNotFoundException e) {
-            // // ignore, then
-            // } catch (IOException e) {
-            // // ignore, then
-            // }
+        initView();
 
-            // same as ACTION_DECRYPT_FILE but decrypt it immediately
-            handleActionDecryptFile(intent);
-            decryptImmediately = true;
-        } else if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // Android's Action when sending to APG Decrypt
-
-            if ("text/plain".equals(type)) {
-                // plain text
-                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
-                if (sharedText != null) {
-                    intent.putExtra(EXTRA_TEXT, sharedText);
-                    handleActionDecrypt(intent);
-                    decryptImmediately = true;
-                }
-            } else {
-                // binary via content provider (could also be files)
-                Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                if (uri != null) {
-                    mContentUri = uri;
-                }
-            }
-        } else if (ACTION_DECRYPT.equals(action)) {
-            handleActionDecrypt(intent);
-        } else if (ACTION_DECRYPT_FILE.equals(action)) {
-            handleActionDecryptFile(intent);
-        } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
-            handleActionDecryptAndReturn(intent);
-        }
+        // Handle intent actions
+        handleActions(getIntent());
 
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && mMessage.getText().length() == 0) {
@@ -364,7 +315,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         updateSource();
 
-        if (decryptImmediately
+        if (mDecryptImmediately
                 || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
                         .length() > 0 || mDataBytes != null || mContentUri != null))) {
             decryptClicked();
@@ -372,114 +323,167 @@ public class DecryptActivity extends SherlockFragmentActivity {
     }
 
     /**
-     * Handles activity intent with ACTION_DECRYPT
+     * Handles all actions with this intent
      * 
      * @param intent
      */
-    private void handleActionDecrypt(Intent intent) {
-        Log.d(Constants.TAG, "Apg Intent DECRYPT startet");
-
+    private void handleActions(Intent intent) {
+        String action = intent.getAction();
         Bundle extras = intent.getExtras();
+        String type = intent.getType();
+        Uri uri = intent.getData();
+
         if (extras == null) {
-            Log.d(Constants.TAG, "extra bundle was null");
             extras = new Bundle();
-        } else {
-            Log.d(Constants.TAG, "got extras");
         }
 
-        mDataBytes = extras.getByteArray(EXTRA_DATA);
-        String textData = null;
-        if (mDataBytes == null) {
-            Log.d(Constants.TAG, "EXTRA_DATA was null");
-            textData = extras.getString(EXTRA_TEXT);
-        } else {
-            Log.d(Constants.TAG, "Got data from EXTRA_DATA");
-        }
-        if (textData != null) {
-            Log.d(Constants.TAG, "textData null, matching text ...");
-            Matcher matcher = PGPMain.PGP_MESSAGE.matcher(textData);
-            if (matcher.matches()) {
-                Log.d(Constants.TAG, "PGP_MESSAGE matched");
-                textData = matcher.group(1);
-                // replace non breakable spaces
-                textData = textData.replaceAll("\\xa0", " ");
-                mMessage.setText(textData);
+        /*
+         * Android's Action
+         */
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            // When sending to APG Encrypt via share menu
+            if ("text/plain".equals(type)) {
+                // Plain text
+                String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+                if (sharedText != null) {
+                    // handle like normal text decryption, override action and extras to later
+                    // execute ACTION_DECRYPT in main actions
+                    extras.putString(EXTRA_TEXT, sharedText);
+                    action = ACTION_DECRYPT;
+                }
             } else {
-                matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(textData);
+                // Binary via content provider (could also be files)
+                // override uri to get stream from send
+                uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                action = ACTION_DECRYPT_FILE;
+            }
+        } else if (Intent.ACTION_VIEW.equals(action)) {
+            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+
+            // override action
+            action = ACTION_DECRYPT_FILE;
+
+            // EVERYTHING ELSE IS OLD CODE
+            // This gets the Uri, where an inputStream can be opened from
+            // mContentUri = intent.getData();
+
+            // TODO: old implementation of ACTION_VIEW. Is this used in K9?
+            // Uri uri = mIntent.getData();
+            // try {
+            // InputStream attachment = getContentResolver().openInputStream(uri);
+            // ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            // byte bytes[] = new byte[1 << 16];
+            // int length;
+            // while ((length = attachment.read(bytes)) > 0) {
+            // byteOut.write(bytes, 0, length);
+            // }
+            // byteOut.close();
+            // String data = new String(byteOut.toByteArray());
+            // mMessage.setText(data);
+            // } catch (FileNotFoundException e) {
+            // // ignore, then
+            // } catch (IOException e) {
+            // // ignore, then
+            // }
+
+            // same as ACTION_DECRYPT_FILE but decrypt it immediately
+            // handleActionDecryptFile(intent);
+            // mDecryptImmediately = true;
+        }
+
+        /**
+         * Main Actions
+         */
+        if (ACTION_DECRYPT.equals(action)) {
+            mDataBytes = extras.getByteArray(EXTRA_DATA);
+            String textData = null;
+            if (mDataBytes == null) {
+                Log.d(Constants.TAG, "EXTRA_DATA was null");
+                textData = extras.getString(EXTRA_TEXT);
+            } else {
+                Log.d(Constants.TAG, "Got data from EXTRA_DATA");
+            }
+            if (textData != null) {
+                Log.d(Constants.TAG, "textData null, matching text ...");
+                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
-                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
+                    Log.d(Constants.TAG, "PGP_MESSAGE matched");
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
                     mMessage.setText(textData);
-
-                    mDecryptString = getString(R.string.btn_verify);
-                    // build new action bar
-                    invalidateOptionsMenu();
                 } else {
-                    Log.d(Constants.TAG, "Nothing matched!");
+                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(textData);
+                    if (matcher.matches()) {
+                        Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
+                        textData = matcher.group(1);
+                        // replace non breakable spaces
+                        textData = textData.replaceAll("\\xa0", " ");
+                        mMessage.setText(textData);
+
+                        mDecryptString = getString(R.string.btn_verify);
+                        // build new action bar
+                        invalidateOptionsMenu();
+                    } else {
+                        Log.d(Constants.TAG, "Nothing matched!");
+                    }
                 }
             }
-        }
-        mReplyTo = extras.getString(EXTRA_REPLY_TO);
-        mSubject = extras.getString(EXTRA_SUBJECT);
-    }
+            mReplyTo = extras.getString(EXTRA_REPLY_TO);
+            mSubject = extras.getString(EXTRA_SUBJECT);
+        } else if (ACTION_DECRYPT_FILE.equals(action)) {
+            // get file path from uri
+            String path = FileHelper.getPath(this, uri);
 
-    /**
-     * Handles activity intent with ACTION_DECRYPT_FILE
-     * 
-     * @param intent
-     */
-    private void handleActionDecryptFile(Intent intent) {
-        mInputFilename = intent.getData().getPath();
-        mFilename.setText(mInputFilename);
-        guessOutputFilename();
-        mSource.setInAnimation(null);
-        mSource.setOutAnimation(null);
-        while (mSource.getCurrentView().getId() != R.id.sourceFile) {
-            mSource.showNext();
-        }
-    }
+            if (path != null) {
+                mInputFilename = path;
+                mFilename.setText(mInputFilename);
+                guessOutputFilename();
+                mSource.setInAnimation(null);
+                mSource.setOutAnimation(null);
+                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
+                    mSource.showNext();
+                }
+            } else {
+                Log.e(Constants.TAG,
+                        "Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_DECRYPT_STREAM_AND_RETURN.");
+                Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
+                        .show();
+                // end activity
+                finish();
+            }
+        } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
+            mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
 
-    /**
-     * Handles activity intent with ACTION_DECRYPT_AND_RETURN
-     * 
-     * @param intent
-     */
-    private void handleActionDecryptAndReturn(Intent intent) {
-        Bundle extras = intent.getExtras();
-        if (extras == null) {
-            extras = new Bundle();
-        }
-
-        mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
-
-        if (mContentUri == null) {
-            mDataBytes = extras.getByteArray(EXTRA_DATA);
-            String data = extras.getString(EXTRA_TEXT);
-            if (data != null) {
-                Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
-                if (matcher.matches()) {
-                    data = matcher.group(1);
-                    // replace non breakable spaces
-                    data = data.replaceAll("\\xa0", " ");
-                    mMessage.setText(data);
-                } else {
-                    matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
+            if (mContentUri == null) {
+                mDataBytes = extras.getByteArray(EXTRA_DATA);
+                String data = extras.getString(EXTRA_TEXT);
+                if (data != null) {
+                    Matcher matcher = PGPMain.PGP_MESSAGE.matcher(data);
                     if (matcher.matches()) {
                         data = matcher.group(1);
                         // replace non breakable spaces
                         data = data.replaceAll("\\xa0", " ");
                         mMessage.setText(data);
-                        mDecryptString = getString(R.string.btn_verify);
+                    } else {
+                        matcher = PGPMain.PGP_SIGNED_MESSAGE.matcher(data);
+                        if (matcher.matches()) {
+                            data = matcher.group(1);
+                            // replace non breakable spaces
+                            data = data.replaceAll("\\xa0", " ");
+                            mMessage.setText(data);
+                            mDecryptString = getString(R.string.btn_verify);
 
-                        // build new action bar
-                        invalidateOptionsMenu();
+                            // build new action bar
+                            invalidateOptionsMenu();
+                        }
                     }
                 }
             }
+            mReturnResult = true;
+        } else if (ACTION_DECRYPT_STREAM_AND_RETURN.equals(action)) {
+            // TODO: Implement decrypt stream
         }
-        mReturnResult = true;
     }
 
     private void guessOutputFilename() {

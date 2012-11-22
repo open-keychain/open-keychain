@@ -379,10 +379,9 @@ public class ApgProvider extends ContentProvider {
 
         qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                 + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                + KeysColumns.IS_MASTER_KEY + " = '1') " + " INNER JOIN " + Tables.USER_IDS
-                + " ON " + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS
-                + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
+                + KeysColumns.KEY_RING_ROW_ID + ") " + " INNER JOIN " + Tables.USER_IDS + " ON "
+                + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
+                + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
                 + UserIdsColumns.RANK + " = '0')");
 
         qb.setProjectionMap(getProjectionMapForKeyRings());
