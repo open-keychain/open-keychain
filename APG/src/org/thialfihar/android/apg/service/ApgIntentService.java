@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -145,7 +144,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
     public static final String EXPORT_FILENAME = "exportFilename";
     public static final String EXPORT_KEY_TYPE = "exportKeyType";
     public static final String EXPORT_ALL = "exportAll";
-    public static final String EXPORT_KEY_RING_ID = "exportKeyRingId";
+    public static final String EXPORT_KEY_RING_ROW_ID = "exportKeyRingId";
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "uploadKeyServer";
@@ -692,9 +691,9 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 String outputFile = data.getString(EXPORT_FILENAME);
 
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
-                int keyRingId = -1;
+                long keyRingRowId = -1;
                 if (!exportAll) {
-                    keyRingId = data.getInt(EXPORT_KEY_RING_ID);
+                    keyRingRowId = data.getLong(EXPORT_KEY_RING_ROW_ID);
                 }
 
                 /* Operation */
@@ -707,19 +706,21 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 // OutputStream
                 FileOutputStream outStream = new FileOutputStream(outputFile);
 
-                Vector<Integer> keyRingIds = new Vector<Integer>();
+                ArrayList<Long> keyRingRowIds = new ArrayList<Long>();
                 if (exportAll) {
+                    // get all key ring row ids based on export type
+
                     if (keyType == Id.type.public_key) {
-                        keyRingIds = ProviderHelper.getPublicKeyRingsRowIds(this);
+                        keyRingRowIds = ProviderHelper.getPublicKeyRingsRowIds(this);
                     } else {
-                        keyRingIds = ProviderHelper.getSecretKeyRingsRowIds(this);
+                        keyRingRowIds = ProviderHelper.getSecretKeyRingsRowIds(this);
                     }
                 } else {
-                    keyRingIds.add(keyRingId);
+                    keyRingRowIds.add(keyRingRowId);
                 }
 
                 Bundle resultData = new Bundle();
-                resultData = PGPMain.exportKeyRings(this, keyRingIds, outStream, this);
+                resultData = PGPMain.exportKeyRings(this, keyRingRowIds, outStream, this);
 
                 sendMessageToHandler(ApgIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

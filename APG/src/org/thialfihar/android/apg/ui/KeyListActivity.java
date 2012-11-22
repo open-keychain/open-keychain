@@ -69,22 +69,37 @@ public class KeyListActivity extends SherlockFragmentActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        handleIntent(getIntent());
+        handleActions(getIntent());
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
+    // TODO: needed?
+    // @Override
+    // protected void onNewIntent(Intent intent) {
+    // super.onNewIntent(intent);
+    // handleActions(intent);
+    // }
 
-    protected void handleIntent(Intent intent) {
+    protected void handleActions(Intent intent) {
+        String action = intent.getAction();
+        Bundle extras = intent.getExtras();
+
+        if (extras == null) {
+            extras = new Bundle();
+        }
+
+        /**
+         * Android Standard Actions
+         */
         String searchString = null;
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            searchString = intent.getStringExtra(SearchManager.QUERY);
+        if (Intent.ACTION_SEARCH.equals(action)) {
+            searchString = extras.getString(SearchManager.QUERY);
             if (searchString != null && searchString.trim().length() == 0) {
                 searchString = null;
             }
+        } else if (Intent.ACTION_VIEW.equals(action)) {
+            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+            // override action to delegate it to APGs ACTION_IMPORT
+            action = ACTION_IMPORT;
         }
 
         // if (searchString == null) {
@@ -100,33 +115,17 @@ public class KeyListActivity extends SherlockFragmentActivity {
         // mListAdapter = new KeyListAdapter(this, searchString);
         // mList.setAdapter(mListAdapter);
 
-        // Get intent, action
-        // Intent intent = getIntent();
-        String action = intent.getAction();
-
-        if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
-
-            handleActionImport(intent);
-        } else if (ACTION_IMPORT.equals(action)) {
-            // APG's own Actions
-
-            handleActionImport(intent);
+        /**
+         * APG's own Actions
+         */
+        if (ACTION_IMPORT.equals(action)) {
+            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
+                mImportFilename = intent.getData().getPath();
+            } else {
+                mImportData = intent.getStringExtra(EXTRA_TEXT);
+            }
+            importKeys();
         }
-    }
-
-    /**
-     * Handles import action
-     * 
-     * @param intent
-     */
-    private void handleActionImport(Intent intent) {
-        if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-            mImportFilename = intent.getData().getPath();
-        } else {
-            mImportData = intent.getStringExtra(EXTRA_TEXT);
-        }
-        importKeys();
     }
 
     @Override
@@ -230,12 +229,12 @@ public class KeyListActivity extends SherlockFragmentActivity {
     /**
      * Show dialog where to export keys
      * 
-     * @param keyRingId
+     * @param keyRingRowId
      *            if -1 export all keys
      */
-    public void showExportKeysDialog(final long keyRingId) {
+    public void showExportKeysDialog(final long keyRingRowId) {
         String title = null;
-        if (keyRingId != -1) {
+        if (keyRingRowId != -1) {
             // single key export
             title = getString(R.string.title_exportKey);
         } else {
@@ -257,7 +256,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    exportKeys(keyRingId);
+                    exportKeys(keyRingRowId);
                 }
             }
         };
@@ -389,10 +388,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
     /**
      * Export keys
      * 
-     * @param keyRingId
+     * @param keyRingRowId
      *            if -1 export all keys
      */
-    public void exportKeys(long keyRingId) {
+    public void exportKeys(long keyRingRowId) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -406,10 +405,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
         data.putString(ApgIntentService.EXPORT_FILENAME, mExportFilename);
         data.putInt(ApgIntentService.EXPORT_KEY_TYPE, mKeyType);
 
-        if (keyRingId == -1) {
+        if (keyRingRowId == -1) {
             data.putBoolean(ApgIntentService.EXPORT_ALL, true);
         } else {
-            data.putLong(ApgIntentService.EXPORT_KEY_RING_ID, keyRingId);
+            data.putLong(ApgIntentService.EXPORT_KEY_RING_ROW_ID, keyRingRowId);
         }
 
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);

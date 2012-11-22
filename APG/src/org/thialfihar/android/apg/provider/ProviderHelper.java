@@ -19,7 +19,6 @@ package org.thialfihar.android.apg.provider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -232,7 +231,8 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL, operations);
+            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL,
+                    operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {
@@ -288,7 +288,8 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL, operations);
+            context.getContentResolver().applyBatch(ApgContract.CONTENT_AUTHORITY_INTERNAL,
+                    operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {
@@ -415,16 +416,16 @@ public class ProviderHelper {
      * @param queryUri
      * @return
      */
-    private static Vector<Integer> getKeyRingsRowIds(Context context, Uri queryUri) {
+    private static ArrayList<Long> getKeyRingsRowIds(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri, new String[] { KeyRings._ID },
                 null, null, null);
 
-        Vector<Integer> keyIds = new Vector<Integer>();
+        ArrayList<Long> keyIds = new ArrayList<Long>();
         if (cursor != null) {
             int idCol = cursor.getColumnIndex(KeyRings._ID);
             if (cursor.moveToFirst()) {
                 do {
-                    keyIds.add(cursor.getInt(idCol));
+                    keyIds.add(cursor.getLong(idCol));
                 } while (cursor.moveToNext());
             }
         }
@@ -442,7 +443,7 @@ public class ProviderHelper {
      * @param context
      * @return
      */
-    public static Vector<Integer> getSecretKeyRingsRowIds(Context context) {
+    public static ArrayList<Long> getSecretKeyRingsRowIds(Context context) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri();
         return getKeyRingsRowIds(context, queryUri);
     }
@@ -453,7 +454,7 @@ public class ProviderHelper {
      * @param context
      * @return
      */
-    public static Vector<Integer> getPublicKeyRingsRowIds(Context context) {
+    public static ArrayList<Long> getPublicKeyRingsRowIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
         return getKeyRingsRowIds(context, queryUri);
     }

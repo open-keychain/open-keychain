@@ -89,7 +89,7 @@ public class KeyListPublicActivity extends KeyListActivity {
             intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
             intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
                     data.getStringExtra(KeyListActivity.EXTRA_TEXT));
-            handleIntent(intent);
+            handleActions(intent);
             break;
         }
 

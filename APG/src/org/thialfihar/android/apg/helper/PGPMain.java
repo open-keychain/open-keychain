@@ -114,7 +114,6 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 /**
@@ -608,12 +607,12 @@ public class PGPMain {
         return returnData;
     }
 
-    public static Bundle exportKeyRings(Context context, Vector<Integer> keyRingIds,
+    public static Bundle exportKeyRings(Context context, ArrayList<Long> keyRingRowIds,
             OutputStream outStream, ProgressDialogUpdater progress) throws ApgGeneralException,
             FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        if (keyRingIds.size() == 1) {
+        if (keyRingRowIds.size() == 1) {
             updateProgress(progress, R.string.progress_exportingKey, 0, 100);
         } else {
             updateProgress(progress, R.string.progress_exportingKeys, 0, 100);
@@ -626,17 +625,17 @@ public class PGPMain {
         out.setHeader("Version", getFullVersion(context));
 
         int numKeys = 0;
-        for (int i = 0; i < keyRingIds.size(); ++i) {
-            updateProgress(progress, i * 100 / keyRingIds.size(), 100);
+        for (int i = 0; i < keyRingRowIds.size(); ++i) {
+            updateProgress(progress, i * 100 / keyRingRowIds.size(), 100);
 
             // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
-            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
-                    context, keyRingIds.get(i));
+            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(context,
+                    keyRingRowIds.get(i));
             if (publicKeyRing != null) {
                 publicKeyRing.encode(out);
             } else {
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
-                        context, keyRingIds.get(i));
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByRowId(context,
+                        keyRingRowIds.get(i));
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(out);
                 } else {
