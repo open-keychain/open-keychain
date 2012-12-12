@@ -98,37 +98,37 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
     public static final int TARGET_STREAM = 3;
 
     // encrypt
-    public static final String SECRET_KEY_ID = "secretKeyId";
-    public static final String USE_ASCII_AMOR = "useAsciiAmor";
-    public static final String ENCRYPTION_KEYS_IDS = "encryptionKeysIds";
-    public static final String COMPRESSION_ID = "compressionId";
-    public static final String GENERATE_SIGNATURE = "generateSignature";
-    public static final String SIGN_ONLY = "signOnly";
-    public static final String MESSAGE_BYTES = "messageBytes";
-    public static final String INPUT_FILE = "inputFile";
-    public static final String OUTPUT_FILE = "outputFile";
-    public static final String PROVIDER_URI = "providerUri";
+    public static final String ENCRYPT_SECRET_KEY_ID = "secretKeyId";
+    public static final String ENCRYPT_USE_ASCII_AMOR = "useAsciiAmor";
+    public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryptionKeysIds";
+    public static final String ENCRYPT_COMPRESSION_ID = "compressionId";
+    public static final String ENCRYPT_GENERATE_SIGNATURE = "generateSignature";
+    public static final String ENCRYPT_SIGN_ONLY = "signOnly";
+    public static final String ENCRYPT_MESSAGE_BYTES = "messageBytes";
+    public static final String ENCRYPT_INPUT_FILE = "inputFile";
+    public static final String ENCRYPT_OUTPUT_FILE = "outputFile";
+    public static final String ENCRYPT_PROVIDER_URI = "providerUri";
 
     // decrypt/verify
-    public static final String SIGNED_ONLY = "signedOnly";
-    public static final String RETURN_BYTES = "returnBinary";
-    public static final String CIPHERTEXT_BYTES = "ciphertextBytes";
-    public static final String ASSUME_SYMMETRIC = "assumeSymmetric";
-    public static final String LOOKUP_UNKNOWN_KEY = "lookupUnknownKey";
+    public static final String DECRYPT_SIGNED_ONLY = "signedOnly";
+    public static final String DECRYPT_RETURN_BYTES = "returnBinary";
+    public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertextBytes";
+    public static final String DECRYPT_ASSUME_SYMMETRIC = "assumeSymmetric";
+    public static final String DECRYPT_LOOKUP_UNKNOWN_KEY = "lookupUnknownKey";
 
-    // edit keys
-    public static final String NEW_PASSPHRASE = "newPassphrase";
-    public static final String CURRENT_PASSPHRASE = "currentPassphrase";
-    public static final String USER_IDS = "userIds";
-    public static final String KEYS = "keys";
-    public static final String KEYS_USAGES = "keysUsages";
-    public static final String MASTER_KEY_ID = "masterKeyId";
+    // save keyring
+    public static final String SAVE_KEYRING_NEW_PASSPHRASE = "newPassphrase";
+    public static final String SAVE_KEYRING_CURRENT_PASSPHRASE = "currentPassphrase";
+    public static final String SAVE_KEYRING_USER_IDS = "userIds";
+    public static final String SAVE_KEYRING_KEYS = "keys";
+    public static final String SAVE_KEYRING_KEYS_USAGES = "keysUsages";
+    public static final String SAVE_KEYRING_MASTER_KEY_ID = "masterKeyId";
 
     // generate key
-    public static final String ALGORITHM = "algorithm";
-    public static final String KEY_SIZE = "keySize";
-    public static final String SYMMETRIC_PASSPHRASE = "passphrase";
-    public static final String MASTER_KEY = "masterKey";
+    public static final String GENERATE_KEY_ALGORITHM = "algorithm";
+    public static final String GENERATE_KEY_KEY_SIZE = "keySize";
+    public static final String GENERATE_KEY_SYMMETRIC_PASSPHRASE = "passphrase";
+    public static final String GENERATE_KEY_MASTER_KEY = "masterKey";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
@@ -238,14 +238,14 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                String encryptionPassphrase = data.getString(SYMMETRIC_PASSPHRASE);
+                long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
+                String encryptionPassphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
-                boolean useAsciiArmor = data.getBoolean(USE_ASCII_AMOR);
-                long encryptionKeyIds[] = data.getLongArray(ENCRYPTION_KEYS_IDS);
-                int compressionId = data.getInt(COMPRESSION_ID);
-                boolean generateSignature = data.getBoolean(GENERATE_SIGNATURE);
-                boolean signOnly = data.getBoolean(SIGN_ONLY);
+                boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_AMOR);
+                long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
+                int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
+                boolean generateSignature = data.getBoolean(ENCRYPT_GENERATE_SIGNATURE);
+                boolean signOnly = data.getBoolean(ENCRYPT_SIGN_ONLY);
 
                 InputStream inStream = null;
                 long inLength = -1;
@@ -254,7 +254,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 String streamFilename = null;
                 switch (target) {
                 case TARGET_BYTES: /* encrypting bytes directly */
-                    byte[] bytes = data.getByteArray(MESSAGE_BYTES);
+                    byte[] bytes = data.getByteArray(ENCRYPT_MESSAGE_BYTES);
 
                     inStream = new ByteArrayInputStream(bytes);
                     inLength = bytes.length;
@@ -264,8 +264,8 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
                     break;
                 case TARGET_FILE: /* encrypting file */
-                    String inputFile = data.getString(INPUT_FILE);
-                    String outputFile = data.getString(OUTPUT_FILE);
+                    String inputFile = data.getString(ENCRYPT_INPUT_FILE);
+                    String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
 
                     // check if storage is ready
                     if (!FileHelper.isStorageMounted(inputFile)
@@ -284,7 +284,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                     break;
 
                 case TARGET_STREAM: /* Encrypting stream from content uri */
-                    Uri providerUri = (Uri) data.getParcelable(PROVIDER_URI);
+                    Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);
@@ -390,13 +390,13 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                long secretKeyId = data.getLong(SECRET_KEY_ID);
-                byte[] bytes = data.getByteArray(CIPHERTEXT_BYTES);
-                boolean signedOnly = data.getBoolean(SIGNED_ONLY);
-                boolean returnBytes = data.getBoolean(RETURN_BYTES);
-                boolean assumeSymmetricEncryption = data.getBoolean(ASSUME_SYMMETRIC);
+                long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
+                byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
+                boolean signedOnly = data.getBoolean(DECRYPT_SIGNED_ONLY);
+                boolean returnBytes = data.getBoolean(DECRYPT_RETURN_BYTES);
+                boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
 
-                boolean lookupUnknownKey = data.getBoolean(LOOKUP_UNKNOWN_KEY);
+                boolean lookupUnknownKey = data.getBoolean(DECRYPT_LOOKUP_UNKNOWN_KEY);
 
                 InputStream inStream = null;
                 long inLength = -1;
@@ -414,8 +414,8 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                     break;
 
                 case TARGET_FILE: /* decrypting file */
-                    String inputFile = data.getString(INPUT_FILE);
-                    String outputFile = data.getString(OUTPUT_FILE);
+                    String inputFile = data.getString(ENCRYPT_INPUT_FILE);
+                    String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
 
                     // check if storage is ready
                     if (!FileHelper.isStorageMounted(inputFile)
@@ -437,7 +437,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                     break;
 
                 case TARGET_STREAM: /* decrypting stream from content uri */
-                    Uri providerUri = (Uri) data.getParcelable(PROVIDER_URI);
+                    Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);
@@ -521,16 +521,16 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             try {
                 /* Input */
-                String oldPassPhrase = data.getString(CURRENT_PASSPHRASE);
-                String newPassPhrase = data.getString(NEW_PASSPHRASE);
+                String oldPassPhrase = data.getString(SAVE_KEYRING_CURRENT_PASSPHRASE);
+                String newPassPhrase = data.getString(SAVE_KEYRING_NEW_PASSPHRASE);
                 if (newPassPhrase == null) {
                     newPassPhrase = oldPassPhrase;
                 }
-                ArrayList<String> userIds = data.getStringArrayList(USER_IDS);
+                ArrayList<String> userIds = data.getStringArrayList(SAVE_KEYRING_USER_IDS);
                 ArrayList<PGPSecretKey> keys = PGPConversionHelper.BytesToPGPSecretKeyList(data
-                        .getByteArray(KEYS));
-                ArrayList<Integer> keysUsages = data.getIntegerArrayList(KEYS_USAGES);
-                long masterKeyId = data.getLong(MASTER_KEY_ID);
+                        .getByteArray(SAVE_KEYRING_KEYS));
+                ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
+                long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
                 /* Operation */
                 PGPMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
@@ -549,13 +549,13 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             try {
                 /* Input */
-                int algorithm = data.getInt(ALGORITHM);
-                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
-                int keysize = data.getInt(KEY_SIZE);
+                int algorithm = data.getInt(GENERATE_KEY_ALGORITHM);
+                String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
+                int keysize = data.getInt(GENERATE_KEY_KEY_SIZE);
                 PGPSecretKey masterKey = null;
-                if (data.containsKey(MASTER_KEY)) {
+                if (data.containsKey(GENERATE_KEY_MASTER_KEY)) {
                     masterKey = PGPConversionHelper.BytesToPGPSecretKey(data
-                            .getByteArray(MASTER_KEY));
+                            .getByteArray(GENERATE_KEY_MASTER_KEY));
                 }
 
                 /* Operation */
@@ -580,7 +580,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
             // generate one RSA 2048 key for signing and one subkey for encrypting!
             try {
                 /* Input */
-                String passphrase = data.getString(SYMMETRIC_PASSPHRASE);
+                String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
                 /* Operation */
                 PGPSecretKeyRing masterKeyRing = PGPMain.createKey(this, Id.choice.algorithm.rsa,
@@ -739,7 +739,8 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByRowId(this, keyRingRowId);
+                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByRowId(this,
+                        keyRingRowId);
                 if (keyring != null) {
                     boolean uploaded = PGPMain.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);

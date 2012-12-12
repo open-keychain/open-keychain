@@ -22,8 +22,8 @@
     <string name="title_mailInbox">Mail Inbox</string>
     <string name="title_managePublicKeys">Manage Public Keys</string>
     <string name="title_manageSecretKeys">Manage Secret Keys</string>
-    <string name="title_selectRecipients">Select Recipients</string>
-    <string name="title_selectSignature">Select Signature</string>
+    <string name="title_selectRecipients">Select Public Key</string>
+    <string name="title_selectSignature">Select Secret Key</string>
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
@@ -324,8 +324,8 @@
 
 
     <!-- Dashboard -->
-    <string name="dashboard_manage_keys">Manage Keys</string>
-    <string name="dashboard_my_keys">My Keys</string>
+    <string name="dashboard_manage_keys">Manage Public Keys</string>
+    <string name="dashboard_my_keys">My Secret Keys</string>
     <string name="dashboard_encrypt">Encrypt</string>
     <string name="dashboard_decrypt">Decrypt</string>
     <string name="dashboard_help">Help</string>

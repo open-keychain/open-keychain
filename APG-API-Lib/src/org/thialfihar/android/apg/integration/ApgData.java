@@ -22,36 +22,36 @@ import java.util.Arrays;
 
 public class ApgData implements Serializable {
     private static final long serialVersionUID = 6314045536270848410L;
-    protected long mEncryptionKeyIds[] = null;
-    protected long mSignatureKeyId = 0;
-    protected String mSignatureUserId = null;
+    protected long mPublicKeyIds[] = null;
+    protected long mSecretKeyId = 0;
+    protected String mSecretKeyUserId = null;
     protected boolean mSignatureSuccess = false;
     protected boolean mSignatureUnknown = false;
     protected String mDecryptedData = null;
     protected String mEncryptedData = null;
 
-    public void setSignatureKeyId(long keyId) {
-        mSignatureKeyId = keyId;
+    public void setSecretKeyId(long keyId) {
+        mSecretKeyId = keyId;
     }
 
-    public long getSignatureKeyId() {
-        return mSignatureKeyId;
+    public long getSecretKeyId() {
+        return mSecretKeyId;
     }
 
-    public void setEncryptionKeys(long keyIds[]) {
-        mEncryptionKeyIds = keyIds;
+    public void setPublicKeys(long keyIds[]) {
+        mPublicKeyIds = keyIds;
     }
 
-    public long[] getEncryptionKeys() {
-        return mEncryptionKeyIds;
+    public long[] getPublicKeys() {
+        return mPublicKeyIds;
     }
 
-    public boolean hasSignatureKey() {
-        return mSignatureKeyId != 0;
+    public boolean hasSecretKey() {
+        return mSecretKeyId != 0;
     }
 
-    public boolean hasEncryptionKeys() {
-        return (mEncryptionKeyIds != null) && (mEncryptionKeyIds.length > 0);
+    public boolean hasPublicKeys() {
+        return (mPublicKeyIds != null) && (mPublicKeyIds.length > 0);
     }
 
     public String getEncryptedData() {
@@ -70,12 +70,12 @@ public class ApgData implements Serializable {
         mDecryptedData = data;
     }
 
-    public void setSignatureUserId(String userId) {
-        mSignatureUserId = userId;
+    public void setSecretKeyUserId(String userId) {
+        mSecretKeyUserId = userId;
     }
 
-    public String getSignatureUserId() {
-        return mSignatureUserId;
+    public String getSecretKeyUserId() {
+        return mSecretKeyUserId;
     }
 
     public boolean getSignatureSuccess() {
@@ -96,11 +96,11 @@ public class ApgData implements Serializable {
 
     @Override
     public String toString() {
-        String output = "mEncryptionKeyIds: " + Arrays.toString(mEncryptionKeyIds)
-                + "\nmSignatureKeyId: " + mSignatureKeyId + "\nmSignatureUserId: "
-                + mSignatureUserId + "\nmSignatureSuccess: " + mSignatureSuccess
-                + "\nmSignatureUnknown: " + mSignatureUnknown + "\nmDecryptedData: "
-                + mDecryptedData + "\nmEncryptedData: " + mEncryptedData;
+        String output = "mPublicKeyIds: " + Arrays.toString(mPublicKeyIds) + "\nmSecretKeyId: "
+                + mSecretKeyId + "\nmSecretKeyUserId: " + mSecretKeyUserId
+                + "\nmSignatureSuccess: " + mSignatureSuccess + "\nmSignatureUnknown: "
+                + mSignatureUnknown + "\nmDecryptedData: " + mDecryptedData + "\nmEncryptedData: "
+                + mEncryptedData;
 
         return output;
     }

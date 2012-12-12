@@ -27,12 +27,32 @@ public class ApgIntentHelper {
     public static final String APG_INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
 
     // Intents
-    public static final String ACTION_DECRYPT = APG_INTENT_PREFIX + "DECRYPT";
+    /**
+     * Encrypt
+     */
+    // without permission
     public static final String ACTION_ENCRYPT = APG_INTENT_PREFIX + "ENCRYPT";
-    public static final String ACTION_DECRYPT_FILE = APG_INTENT_PREFIX + "DECRYPT_FILE";
     public static final String ACTION_ENCRYPT_FILE = APG_INTENT_PREFIX + "ENCRYPT_FILE";
-    public static final String ACTION_DECRYPT_AND_RETURN = APG_INTENT_PREFIX + "DECRYPT_AND_RETURN";
+
+    // with permission
     public static final String ACTION_ENCRYPT_AND_RETURN = APG_INTENT_PREFIX + "ENCRYPT_AND_RETURN";
+    public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = APG_INTENT_PREFIX
+            + "GENERATE_SIGNATURE_AND_RETURN";
+    public static final String ACTION_ENCRYPT_STREAM_AND_RETURN = APG_INTENT_PREFIX
+            + "ENCRYPT_STREAM_AND_RETURN";
+
+    /**
+     * Decrypt
+     */
+    // without permission
+    public static final String ACTION_DECRYPT = APG_INTENT_PREFIX + "DECRYPT";
+    public static final String ACTION_DECRYPT_FILE = APG_INTENT_PREFIX + "DECRYPT_FILE";
+
+    // with permission
+    public static final String ACTION_DECRYPT_AND_RETURN = APG_INTENT_PREFIX + "DECRYPT_AND_RETURN";
+    public static final String ACTION_DECRYPT_STREAM_AND_RETURN = APG_INTENT_PREFIX
+            + "DECRYPT_STREAM_AND_RETURN";
+
     public static final String ACTION_SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
     public static final String ACTION_SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
     public static final String ACTION_CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
@@ -60,15 +80,19 @@ public class ApgIntentHelper {
 
     public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
     public static final String RESULT_EXTRA_USER_IDS = "userIds";
+    
+    // result from EditKey
+    public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String RESULT_EXTRA_USER_ID = "userId";
 
     public static final String INTENT_VERSION = "1";
 
-    public static final int DECRYPT_MESSAGE = 0x21070001;
-    public static final int ENCRYPT_MESSAGE = 0x21070002;
-    public static final int SELECT_PUBLIC_KEYS = 0x21070003;
-    public static final int SELECT_SECRET_KEY = 0x21070004;
-    public static final int CREATE_KEY = 0x21070005;
-    public static final int EDIT_KEY = 0x21070006;
+    public static final int DECRYPT_MESSAGE = 0x00007121;
+    public static final int ENCRYPT_MESSAGE = 0x00007122;
+    public static final int SELECT_PUBLIC_KEYS = 0x00007123;
+    public static final int SELECT_SECRET_KEY = 0x00007124;
+    public static final int CREATE_KEY = 0x00007125;
+    public static final int EDIT_KEY = 0x00007126;
 
     private Activity activity;
 
@@ -221,44 +245,53 @@ public class ApgIntentHelper {
     public boolean onActivityResult(int requestCode, int resultCode, Intent data, ApgData apgData) {
 
         switch (requestCode) {
+        case CREATE_KEY:
+            if (resultCode != Activity.RESULT_OK || data == null) {
+                // user canceled!
+                break;
+            }
+            apgData.setSecretKeyId(data.getLongExtra(RESULT_EXTRA_MASTER_KEY_ID, 0));
+            apgData.setSecretKeyUserId(data.getStringExtra(RESULT_EXTRA_USER_ID));
+
+            break;
         case SELECT_SECRET_KEY:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 // user canceled!
                 break;
             }
-            apgData.setSignatureKeyId(data.getLongExtra(EXTRA_KEY_ID, 0));
-            apgData.setSignatureUserId(data.getStringExtra(EXTRA_USER_ID));
-            break;
+            apgData.setSecretKeyId(data.getLongExtra(EXTRA_KEY_ID, 0));
+            apgData.setSecretKeyUserId(data.getStringExtra(EXTRA_USER_ID));
 
+            break;
         case SELECT_PUBLIC_KEYS:
             if (resultCode != Activity.RESULT_OK || data == null) {
-                apgData.setEncryptionKeys(null);
+                apgData.setPublicKeys(null);
                 break;
             }
-            apgData.setEncryptionKeys(data.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS));
-            break;
+            apgData.setPublicKeys(data.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS));
 
+            break;
         case ENCRYPT_MESSAGE:
             if (resultCode != Activity.RESULT_OK || data == null) {
-                apgData.setEncryptionKeys(null);
+                apgData.setPublicKeys(null);
                 break;
             }
             apgData.setEncryptedData(data.getStringExtra(EXTRA_ENCRYPTED_MESSAGE));
-            break;
 
+            break;
         case DECRYPT_MESSAGE:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 break;
             }
 
-            apgData.setSignatureUserId(data.getStringExtra(EXTRA_SIGNATURE_USER_ID));
-            apgData.setSignatureKeyId(data.getLongExtra(EXTRA_SIGNATURE_KEY_ID, 0));
+            apgData.setSecretKeyUserId(data.getStringExtra(EXTRA_SIGNATURE_USER_ID));
+            apgData.setSecretKeyId(data.getLongExtra(EXTRA_SIGNATURE_KEY_ID, 0));
             apgData.setSignatureSuccess(data.getBooleanExtra(EXTRA_SIGNATURE_SUCCESS, false));
             apgData.setSignatureUnknown(data.getBooleanExtra(EXTRA_SIGNATURE_UNKNOWN, false));
 
             apgData.setDecryptedData(data.getStringExtra(EXTRA_DECRYPTED_MESSAGE));
-            break;
 
+            break;
         default:
             return false;
         }
@@ -273,8 +306,8 @@ public class ApgIntentHelper {
      *            The emails that should be used for preselection.
      * @return true when activity was found and executed successfully
      */
-    public boolean selectEncryptionKeys(String emails) {
-        return selectEncryptionKeys(emails, null);
+    public boolean selectPublicKeys(String emails) {
+        return selectPublicKeys(emails, null);
     }
 
     /**
@@ -286,19 +319,17 @@ public class ApgIntentHelper {
      *            ApgData with encryption keys and signature keys preselected
      * @return true when activity was found and executed successfully
      */
-    public boolean selectEncryptionKeys(String emails, ApgData apgData) {
+    public boolean selectPublicKeys(String emails, ApgData apgData) {
         Intent intent = new Intent(ACTION_SELECT_PUBLIC_KEYS);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
 
         long[] initialKeyIds = null;
-        if (apgData == null || !apgData.hasEncryptionKeys()) {
-
+        if (apgData == null || !apgData.hasPublicKeys()) {
             ApgContentProviderHelper cPHelper = new ApgContentProviderHelper(activity);
 
             initialKeyIds = cPHelper.getPublicKeyIdsFromEmail(emails);
-
         } else {
-            initialKeyIds = apgData.getEncryptionKeys();
+            initialKeyIds = apgData.getPublicKeys();
         }
         intent.putExtra(EXTRA_SELECTION, initialKeyIds);
 

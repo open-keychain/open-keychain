@@ -16,8 +16,8 @@
  
 package org.thialfihar.android.apg.service;
 
-import org.thialfihar.android.apg.service.IApgEncryptDecryptHandler;
-import org.thialfihar.android.apg.service.IApgSignVerifyHandler;
+import org.thialfihar.android.apg.service.IApgEncryptSignHandler;
+import org.thialfihar.android.apg.service.IApgDecryptVerifyHandler;
 import org.thialfihar.android.apg.service.IApgHelperHandler;
 
 /**
@@ -50,7 +50,7 @@ interface IApgService {
      */
     oneway void encryptAsymmetric(in byte[] inputBytes, in String inputUri, in boolean useAsciiArmor,
             in int compression, in long[] encryptionKeyIds, in int symmetricEncryptionAlgorithm,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptSignHandler handler);
     
     /**
      * Same as encryptAsymmetric but using a passphrase for symmetric encryption
@@ -60,7 +60,7 @@ interface IApgService {
      */
     oneway void encryptSymmetric(in byte[] inputBytes, in String inputUri, in boolean useAsciiArmor,
             in int compression, in String encryptionPassphrase, in int symmetricEncryptionAlgorithm,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptSignHandler handler);
     
     /**
      * Encrypt and sign
@@ -97,7 +97,7 @@ interface IApgService {
             in boolean useAsciiArmor, in int compression, in long[] encryptionKeyIds,
             in int symmetricEncryptionAlgorithm, in long signatureKeyId, in int signatureHashAlgorithm,
             in boolean signatureForceV3, in String signaturePassphrase,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptSignHandler handler);
     
     /**
      * Same as encryptAndSignAsymmetric but using a passphrase for symmetric encryption
@@ -109,7 +109,7 @@ interface IApgService {
             in boolean useAsciiArmor, in int compression, in String encryptionPassphrase,
             in int symmetricEncryptionAlgorithm, in long signatureKeyId, in int signatureHashAlgorithm,
             in boolean signatureForceV3, in String signaturePassphrase,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptSignHandler handler);
     
     /**
      * Decrypts and verifies given input bytes. If no signature is present this method
@@ -125,7 +125,7 @@ interface IApgService {
      *            Handler where to return results to after successful encryption
      */
     oneway void decryptAndVerifyAsymmetric(in byte[] inputBytes, in String inputUri,
-            in String keyPassphrase, in IApgEncryptDecryptHandler handler);
+            in String keyPassphrase, in IApgDecryptVerifyHandler handler);
     
     /**
      * Same as decryptAndVerifyAsymmetric but for symmetric decryption.
@@ -134,7 +134,7 @@ interface IApgService {
      *            Passphrase to decrypt
      */
     oneway void decryptAndVerifySymmetric(in byte[] inputBytes, in String inputUri,
-            in String encryptionPassphrase, in IApgEncryptDecryptHandler handler);
+            in String encryptionPassphrase, in IApgDecryptVerifyHandler handler);
     
     /**
      *

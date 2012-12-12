@@ -76,27 +76,27 @@ public class ApgService extends Service {
         }
     }
 
-    void encryptAndSignImplementation(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
-            int compression, long[] encryptionKeyIds, String encryptionPassphrase,
-            int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
-            boolean signatureForceV3, String signaturePassphrase, IApgEncryptDecryptHandler handler)
-            throws RemoteException {
+    private void encryptAndSignImplementation(byte[] inputBytes, String inputUri,
+            boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
+            String encryptionPassphrase, int symmetricEncryptionAlgorithm, long signatureKeyId,
+            int signatureHashAlgorithm, boolean signatureForceV3, String signaturePassphrase,
+            IApgEncryptSignHandler handler) throws RemoteException {
 
         try {
             // TODO use inputUri
-            
-//            InputStream inStream = null;
-//          if (isBlob) {
-//              ContentResolver cr = getContentResolver();
-//              try {
-//                  inStream = cr.openInputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
-//              } catch (Exception e) {
-//                  Log.e(TAG, "... exception on opening blob", e);
-//              }
-//          } else {
-//              inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
-//          }
-//          InputData in = new InputData(inStream, 0); // XXX Size second param?
+
+            // InputStream inStream = null;
+            // if (isBlob) {
+            // ContentResolver cr = getContentResolver();
+            // try {
+            // inStream = cr.openInputStream(Uri.parse(pArgs.getString(arg.BLOB.name())));
+            // } catch (Exception e) {
+            // Log.e(TAG, "... exception on opening blob", e);
+            // }
+            // } else {
+            // inStream = new ByteArrayInputStream(pArgs.getString(arg.MESSAGE.name()).getBytes());
+            // }
+            // InputData in = new InputData(inStream, 0); // XXX Size second param?
 
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -110,20 +110,20 @@ public class ApgService extends Service {
                     signatureKeyId, signatureHashAlgorithm, signatureForceV3, signaturePassphrase);
 
             output.close();
-            
-//            if (isBlob) {
-//              ContentResolver cr = getContentResolver();
-//              try {
-//                  OutputStream outStream = cr.openOutputStream(Uri.parse(pArgs.getString(arg.BLOB
-//                          .name())));
-//                  writeToOutputStream(new ByteArrayInputStream(out.toString().getBytes()), outStream);
-//                  outStream.close();
-//              } catch (Exception e) {
-//                  Log.e(TAG, "... exception on writing blob", e);
-//              }
-//          } else {
-//              pReturn.putString(ret.RESULT.name(), out.toString());
-//          }
+
+            // if (isBlob) {
+            // ContentResolver cr = getContentResolver();
+            // try {
+            // OutputStream outStream = cr.openOutputStream(Uri.parse(pArgs.getString(arg.BLOB
+            // .name())));
+            // writeToOutputStream(new ByteArrayInputStream(out.toString().getBytes()), outStream);
+            // outStream.close();
+            // } catch (Exception e) {
+            // Log.e(TAG, "... exception on writing blob", e);
+            // }
+            // } else {
+            // pReturn.putString(ret.RESULT.name(), out.toString());
+            // }
 
             byte[] outputBytes = ((ByteArrayOutputStream) output).toByteArray();
 
@@ -140,8 +140,8 @@ public class ApgService extends Service {
         }
     }
 
-    public void decryptAndVerifyImplementation(byte[] inputBytes, String inputUri,
-            String passphrase, boolean assumeSymmetric, IApgEncryptDecryptHandler handler)
+    private void decryptAndVerifyImplementation(byte[] inputBytes, String inputUri,
+            String passphrase, boolean assumeSymmetric, IApgDecryptVerifyHandler handler)
             throws RemoteException {
 
         try {
@@ -232,7 +232,7 @@ public class ApgService extends Service {
         @Override
         public void encryptAsymmetric(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
                 int compression, long[] encryptionKeyIds, int symmetricEncryptionAlgorithm,
-                IApgEncryptDecryptHandler handler) throws RemoteException {
+                IApgEncryptSignHandler handler) throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
                     encryptionKeyIds, null, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
@@ -242,7 +242,7 @@ public class ApgService extends Service {
         @Override
         public void encryptSymmetric(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
                 int compression, String encryptionPassphrase, int symmetricEncryptionAlgorithm,
-                IApgEncryptDecryptHandler handler) throws RemoteException {
+                IApgEncryptSignHandler handler) throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
                     encryptionPassphrase, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
@@ -253,8 +253,8 @@ public class ApgService extends Service {
         public void encryptAndSignAsymmetric(byte[] inputBytes, String inputUri,
                 boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
                 int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
-                boolean signatureForceV3, String signaturePassphrase,
-                IApgEncryptDecryptHandler handler) throws RemoteException {
+                boolean signatureForceV3, String signaturePassphrase, IApgEncryptSignHandler handler)
+                throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
                     encryptionKeyIds, null, symmetricEncryptionAlgorithm, signatureKeyId,
@@ -265,8 +265,8 @@ public class ApgService extends Service {
         public void encryptAndSignSymmetric(byte[] inputBytes, String inputUri,
                 boolean useAsciiArmor, int compression, String encryptionPassphrase,
                 int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
-                boolean signatureForceV3, String signaturePassphrase,
-                IApgEncryptDecryptHandler handler) throws RemoteException {
+                boolean signatureForceV3, String signaturePassphrase, IApgEncryptSignHandler handler)
+                throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
                     encryptionPassphrase, symmetricEncryptionAlgorithm, signatureKeyId,
@@ -275,14 +275,14 @@ public class ApgService extends Service {
 
         @Override
         public void decryptAndVerifyAsymmetric(byte[] inputBytes, String inputUri,
-                String keyPassphrase, IApgEncryptDecryptHandler handler) throws RemoteException {
+                String keyPassphrase, IApgDecryptVerifyHandler handler) throws RemoteException {
 
             decryptAndVerifyImplementation(inputBytes, inputUri, keyPassphrase, false, handler);
         }
 
         @Override
         public void decryptAndVerifySymmetric(byte[] inputBytes, String inputUri,
-                String encryptionPassphrase, IApgEncryptDecryptHandler handler)
+                String encryptionPassphrase, IApgDecryptVerifyHandler handler)
                 throws RemoteException {
 
             decryptAndVerifyImplementation(inputBytes, inputUri, encryptionPassphrase, true,

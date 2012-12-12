@@ -77,7 +77,7 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.ForceOverflow" >
+        android:theme="@style/Theme.Sherlock.Light" >
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

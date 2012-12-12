@@ -70,18 +70,20 @@ import java.util.Vector;
 
 public class EncryptActivity extends SherlockFragmentActivity {
 
-    // possible intent actions for this activity
+    /* Intents */
+    // without permission
     public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
+    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
+
+    // with permission
     public static final String ACTION_ENCRYPT_AND_RETURN = Constants.INTENT_PREFIX
             + "ENCRYPT_AND_RETURN";
     public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = Constants.INTENT_PREFIX
-            + "GENERATE_SIGNATURE";
-
-    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
+            + "GENERATE_SIGNATURE_AND_RETURN";
     public static final String ACTION_ENCRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
             + "ENCRYPT_STREAM_AND_RETURN";
 
-    // possible extra keys
+    /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
     public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
@@ -339,7 +341,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
             // TODO: Set mStreamAndReturnUri that is used later to encrypt a stream!
 
-            mStreamAndReturnUri = null;
+            mStreamAndReturnUri = uri;
         }
     }
 
@@ -684,7 +686,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 passPhrase = null;
             }
 
-            data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, passPhrase);
+            data.putString(ApgIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
         } else {
             encryptionKeyIds = mEncryptionKeyIds;
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
@@ -696,7 +698,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         if (mStreamAndReturnUri != null) {
             // mIntentDataUri is only defined when ACTION_ENCRYPT_STREAM_AND_RETURN is used
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_STREAM);
-            data.putParcelable(ApgIntentService.PROVIDER_URI, mStreamAndReturnUri);
+            data.putParcelable(ApgIntentService.ENCRYPT_PROVIDER_URI, mStreamAndReturnUri);
 
         } else if (mEncryptTarget == Id.target.file) {
             useAsciiArmor = mAsciiArmour.isChecked();
@@ -707,8 +709,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
 
-            data.putString(ApgIntentService.INPUT_FILE, mInputFilename);
-            data.putString(ApgIntentService.OUTPUT_FILE, mOutputFilename);
+            data.putString(ApgIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
+            data.putString(ApgIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
 
         } else {
             useAsciiArmor = true;
@@ -717,13 +719,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
 
             if (mData != null) {
-                data.putByteArray(ApgIntentService.MESSAGE_BYTES, mData);
+                data.putByteArray(ApgIntentService.ENCRYPT_MESSAGE_BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
                 if (signOnly && !mEncryptImmediately) {
                     fixBadCharactersForGmail(message);
                 }
-                data.putByteArray(ApgIntentService.MESSAGE_BYTES, message.getBytes());
+                data.putByteArray(ApgIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
             }
         }
 
@@ -731,12 +733,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
             useAsciiArmor = mAsciiArmorDemand;
         }
 
-        data.putLong(ApgIntentService.SECRET_KEY_ID, mSecretKeyId);
-        data.putBoolean(ApgIntentService.USE_ASCII_AMOR, useAsciiArmor);
-        data.putLongArray(ApgIntentService.ENCRYPTION_KEYS_IDS, encryptionKeyIds);
-        data.putInt(ApgIntentService.COMPRESSION_ID, compressionId);
-        data.putBoolean(ApgIntentService.GENERATE_SIGNATURE, mGenerateSignature);
-        data.putBoolean(ApgIntentService.SIGN_ONLY, signOnly);
+        data.putLong(ApgIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
+        data.putBoolean(ApgIntentService.ENCRYPT_USE_ASCII_AMOR, useAsciiArmor);
+        data.putLongArray(ApgIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
+        data.putInt(ApgIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
+        data.putBoolean(ApgIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);
+        data.putBoolean(ApgIntentService.ENCRYPT_SIGN_ONLY, signOnly);
 
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 

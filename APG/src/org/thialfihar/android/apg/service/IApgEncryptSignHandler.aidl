@@ -16,11 +16,14 @@
  
 package org.thialfihar.android.apg.service;
 
-interface IApgSignVerifyHandler {
-    oneway void onSuccessSign(in byte[] outputBytes, in String outputUri);
+interface IApgEncryptSignHandler {
+    /**
+     * Either output or streamUri is given. One of them is null
+     *
+     */
+    oneway void onSuccessEncrypt(in byte[] outputBytes, in String outputUri);
     
-    oneway void onSuccessVerify(in boolean signature, in long signatureKeyId,
-            in String signatureUserId, in boolean signatureSuccess, in boolean signatureUnknown);
+    oneway void onSuccessSign(in byte[] outputBytes, in String outputUri);
     
     
     oneway void onException(in int exceptionNumber, in String message);

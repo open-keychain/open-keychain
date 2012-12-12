@@ -25,6 +25,7 @@ import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
+import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
 import org.thialfihar.android.apg.service.ApgIntentService;
@@ -75,6 +76,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
     public static final String EXTRA_KEY_ID = "keyId";
 
+    // results when saving key
+    public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String RESULT_EXTRA_USER_ID = "userId";
+
     private ActionBar mActionBar;
 
     private PGPSecretKeyRing mKeyRing = null;
@@ -121,7 +126,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             return true;
 
         case Id.menu.option.cancel:
-            finish();
+            cancelClicked();
             return true;
 
         default:
@@ -236,7 +241,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                     // fill values for this action
                     Bundle data = new Bundle();
-                    data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, mCurrentPassPhrase);
+                    data.putString(ApgIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE,
+                            mCurrentPassPhrase);
 
                     serviceIntent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
@@ -424,14 +430,16 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
             // fill values for this action
             Bundle data = new Bundle();
-            data.putString(ApgIntentService.CURRENT_PASSPHRASE, mCurrentPassPhrase);
-            data.putString(ApgIntentService.NEW_PASSPHRASE, mNewPassPhrase);
-            data.putStringArrayList(ApgIntentService.USER_IDS, getUserIds(mUserIdsView));
+            data.putString(ApgIntentService.SAVE_KEYRING_CURRENT_PASSPHRASE, mCurrentPassPhrase);
+            data.putString(ApgIntentService.SAVE_KEYRING_NEW_PASSPHRASE, mNewPassPhrase);
+            data.putStringArrayList(ApgIntentService.SAVE_KEYRING_USER_IDS,
+                    getUserIds(mUserIdsView));
             ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
-            data.putByteArray(ApgIntentService.KEYS,
+            data.putByteArray(ApgIntentService.SAVE_KEYRING_KEYS,
                     PGPConversionHelper.PGPSecretKeyArrayListToBytes(keys));
-            data.putIntegerArrayList(ApgIntentService.KEYS_USAGES, getKeysUsages(mKeysView));
-            data.putLong(ApgIntentService.MASTER_KEY_ID, getMasterKeyId());
+            data.putIntegerArrayList(ApgIntentService.SAVE_KEYRING_KEYS_USAGES,
+                    getKeysUsages(mKeysView));
+            data.putLong(ApgIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
 
             intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
@@ -443,6 +451,16 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     super.handleMessage(message);
 
                     if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
+                        Intent data = new Intent();
+                        data.putExtra(RESULT_EXTRA_MASTER_KEY_ID, getMasterKeyId());
+                        ArrayList<String> userIds = null;
+                        try {
+                            userIds = getUserIds(mUserIdsView);
+                        } catch (ApgGeneralException e) {
+                            Log.e(Constants.TAG, "exception while getting user ids", e);
+                        }
+                        data.putExtra(RESULT_EXTRA_USER_ID, userIds.get(0));
+                        setResult(RESULT_OK, data);
                         finish();
                     }
                 };
@@ -460,6 +478,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void cancelClicked() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     /**

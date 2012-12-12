@@ -23,7 +23,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.widget.Toast;
 
-public class Util {
+public class ApgUtil {
 
     /**
      * Check whether APG is installed and at a high enough version.
@@ -47,5 +47,26 @@ public class Util {
         }
 
         return false;
+    }
+
+    /**
+     * Splits userId string into naming part and email part
+     * 
+     * @param userId
+     * @return array with naming (0) and email (1)
+     */
+    public static String[] splitUserId(String userId) {
+        String[] output = new String[2];
+
+        String chunks[] = userId.split(" <", 2);
+        userId = chunks[0];
+        if (chunks.length > 1) {
+            output[1] = "<" + chunks[1];
+            output[1] = output[1].replaceAll("<", "");
+            output[1] = output[1].replaceAll(">", "");
+        }
+        output[0] = userId;
+
+        return output;
     }
 }

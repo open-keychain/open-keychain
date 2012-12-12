@@ -262,14 +262,14 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             passPhrase = PassphraseCacheService
                     .getCachedPassphrase(mActivity, masterKey.getKeyID());
 
-            data.putByteArray(ApgIntentService.MASTER_KEY,
+            data.putByteArray(ApgIntentService.GENERATE_KEY_MASTER_KEY,
                     PGPConversionHelper.PGPSecretKeyToBytes(masterKey));
         } else {
             passPhrase = "";
         }
-        data.putString(ApgIntentService.SYMMETRIC_PASSPHRASE, passPhrase);
-        data.putInt(ApgIntentService.ALGORITHM, mNewKeyAlgorithmChoice.getId());
-        data.putInt(ApgIntentService.KEY_SIZE, mNewKeySize);
+        data.putString(ApgIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
+        data.putInt(ApgIntentService.GENERATE_KEY_ALGORITHM, mNewKeyAlgorithmChoice.getId());
+        data.putInt(ApgIntentService.GENERATE_KEY_KEY_SIZE, mNewKeySize);
 
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 

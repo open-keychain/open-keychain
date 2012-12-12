@@ -281,7 +281,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    // refreshList();
+                    // no further actions needed
                 }
             }
         };
@@ -368,8 +368,6 @@ public class KeyListActivity extends SherlockFragmentActivity {
                                 .newInstance(mImportFilename);
                         deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                     }
-                    // refreshList();
-
                 }
             };
         };

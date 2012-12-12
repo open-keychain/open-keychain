@@ -68,16 +68,18 @@ import java.util.regex.Matcher;
 
 public class DecryptActivity extends SherlockFragmentActivity {
 
-    // possible intent actions for this activity
+    /* Intents */
+    // without permission
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
+    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
+
+    // with permission
     public static final String ACTION_DECRYPT_AND_RETURN = Constants.INTENT_PREFIX
             + "DECRYPT_AND_RETURN";
-
-    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
     public static final String ACTION_DECRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
             + "DECRYPT_STREAM_AND_RETURN";
 
-    // possible extra keys
+    /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
     public static final String EXTRA_REPLY_TO = "replyTo";
@@ -755,32 +757,32 @@ public class DecryptActivity extends SherlockFragmentActivity {
         if (mContentUri != null) {
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_STREAM);
 
-            data.putParcelable(ApgIntentService.PROVIDER_URI, mContentUri);
+            data.putParcelable(ApgIntentService.ENCRYPT_PROVIDER_URI, mContentUri);
         } else if (mDecryptTarget == Id.target.file) {
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
 
-            data.putString(ApgIntentService.INPUT_FILE, mInputFilename);
-            data.putString(ApgIntentService.OUTPUT_FILE, mOutputFilename);
+            data.putString(ApgIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
+            data.putString(ApgIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
         } else {
             data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
 
             if (mDataBytes != null) {
-                data.putByteArray(ApgIntentService.CIPHERTEXT_BYTES, mDataBytes);
+                data.putByteArray(ApgIntentService.DECRYPT_CIPHERTEXT_BYTES, mDataBytes);
             } else {
                 String message = mMessage.getText().toString();
-                data.putByteArray(ApgIntentService.CIPHERTEXT_BYTES, message.getBytes());
+                data.putByteArray(ApgIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
             }
         }
 
-        data.putLong(ApgIntentService.SECRET_KEY_ID, mSecretKeyId);
+        data.putLong(ApgIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
 
-        data.putBoolean(ApgIntentService.SIGNED_ONLY, mSignedOnly);
-        data.putBoolean(ApgIntentService.LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
-        data.putBoolean(ApgIntentService.RETURN_BYTES, mReturnBinary);
-        data.putBoolean(ApgIntentService.ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
+        data.putBoolean(ApgIntentService.DECRYPT_SIGNED_ONLY, mSignedOnly);
+        data.putBoolean(ApgIntentService.DECRYPT_LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
+        data.putBoolean(ApgIntentService.DECRYPT_RETURN_BYTES, mReturnBinary);
+        data.putBoolean(ApgIntentService.DECRYPT_ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
