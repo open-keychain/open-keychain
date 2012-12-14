@@ -62,10 +62,14 @@ See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exc
 
 ## Basic goals
 
-* Never (even with permissions) give out actual PGPSecretKey/PGPSecretKeyRing blobs
 * Intents without permissions should only work based on user interaction (e.g. click a button in a dialog)
 
 Android primitives to exchange data: Intent, Intent with return values, Send (also an Intent), Content Provider, AIDL
+
+## Permission
+
+* ACCESS_API: Encrypt/Sign/Decrypt/Create keys without user interaction (intents, remote service), Read key information (not the actual keys)(content provider)
+* ACCESS_KEYS: get and import actual public and secret keys (remote service)
 
 ## Intents
 
@@ -92,16 +96,13 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 ## Content Provider
 
 * The whole content provider requires a permission (only read)
-* Don't give out blobs
+* Don't give out blobs (keys can be accessed by ACCESS_KEYS via remote service)
 * Make an internal and external content provider (or pathes with <path-permission>)
 * Look at android:grantUriPermissions especially for ApgServiceBlobProvider
 * Only give out android:readPermission
 
-## Remote Service
+## ApgApiService (Remote Service)
+* ACCESS_API
 
-* The whole service requires the permission ACCESS_API
-
-## Resulting permission
-
-* READ_KEY_DATABASE: Read key information (not the actual keys)(content provider)
-* ACCESS_API: Encrypt/Sign/Decrypt/Create keys without user interaction (intents, remote service)
+## ApgKeyService (Remote Service)
+* ACCESS_KEYS

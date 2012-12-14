@@ -65,17 +65,17 @@ public class IntentDemoActivity extends Activity {
     }
 
     public void selectEncryptionKeysOnClick(View view) {
-        mApgIntentHelper.selectEncryptionKeys("user@example.com");
+        mApgIntentHelper.selectPublicKeys("user@example.com");
     }
 
     public void encryptOnClick(View view) {
-        mApgIntentHelper.encrypt(mMessageTextView.getText().toString(),
-                mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId(), false);
+        mApgIntentHelper.encrypt(mMessageTextView.getText().toString(), mApgData.getPublicKeys(),
+                mApgData.getSecretKeyId(), false);
     }
 
     public void encryptAndReturnOnClick(View view) {
-        mApgIntentHelper.encrypt(mMessageTextView.getText().toString(),
-                mApgData.getEncryptionKeys(), mApgData.getSignatureKeyId(), true);
+        mApgIntentHelper.encrypt(mMessageTextView.getText().toString(), mApgData.getPublicKeys(),
+                mApgData.getSecretKeyId(), true);
     }
 
     public void decryptOnClick(View view) {

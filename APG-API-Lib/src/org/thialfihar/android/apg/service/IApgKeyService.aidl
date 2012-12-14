@@ -16,15 +16,17 @@
  
 package org.thialfihar.android.apg.service;
 
-interface IApgEncryptSignHandler {
-    /**
-     * Either output or streamUri is given. One of them is null
-     *
-     */
-    oneway void onSuccessEncrypt(in byte[] outputBytes, in String outputUri);
-    
-    oneway void onSuccessSign(in byte[] outputBytes, in String outputUri);
-    
-    
-    oneway void onException(in int exceptionNumber, in String message);
+import org.thialfihar.android.apg.service.handler.IApgGetKeyringsHandler;
+
+/**
+ * All methods are oneway, which means they are asynchronous and non-blocking.
+ * Results are returned into given Handler, which has to be implemented on client side.
+ */
+interface IApgKeyService {
+
+    oneway void getPublicKeyRings(in long[] masterKeyIds, in boolean asAsciiArmoredStringArray,
+            in IApgGetKeyringsHandler handler);
+
+    oneway void getSecretKeyRings(in long[] masterKeyIds, in boolean asAsciiArmoredStringArray,
+            in IApgGetKeyringsHandler handler);
 }

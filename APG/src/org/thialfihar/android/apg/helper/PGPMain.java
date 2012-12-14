@@ -564,7 +564,7 @@ public class PGPMain {
         int oldKeys = 0;
         int badKeys = 0;
         try {
-            PGPKeyRing keyring = PGPHelper.decodeKeyRing(bufferedInput);
+            PGPKeyRing keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
             while (keyring != null) {
                 int status = Integer.MIN_VALUE; // out of bounds value
 
@@ -592,7 +592,7 @@ public class PGPMain {
                 // TODO: needed?
                 // obj = objectFactory.nextObject();
 
-                keyring = PGPHelper.decodeKeyRing(bufferedInput);
+                keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
             }
         } catch (EOFException e) {
             // nothing to do, we are done
@@ -636,6 +636,42 @@ public class PGPMain {
             } else {
                 PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByRowId(context,
                         keyRingRowIds.get(i));
+                if (secretKeyRing != null) {
+                    secretKeyRing.encode(out);
+                } else {
+                    continue;
+                }
+            }
+            ++numKeys;
+        }
+        out.close();
+        returnData.putInt(ApgIntentService.RESULT_EXPORT, numKeys);
+
+        updateProgress(progress, R.string.progress_done, 100, 100);
+
+        return returnData;
+    }
+
+    public static Bundle getKeyRings(Context context, long[] masterKeyIds,
+            OutputStream outStream, ProgressDialogUpdater progress) throws ApgGeneralException,
+            FileNotFoundException, PGPException, IOException {
+        Bundle returnData = new Bundle();
+
+        ArmoredOutputStream out = new ArmoredOutputStream(outStream);
+        out.setHeader("Version", getFullVersion(context));
+
+        int numKeys = 0;
+        for (int i = 0; i < masterKeyIds.length; ++i) {
+            updateProgress(progress, i * 100 / masterKeyIds.length, 100);
+
+            // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
+            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(context,
+                    masterKeyIds[i]);
+            if (publicKeyRing != null) {
+                publicKeyRing.encode(out);
+            } else {
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByRowId(context,
+                        masterKeyIds[i]);
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(out);
                 } else {

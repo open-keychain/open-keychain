@@ -14,12 +14,12 @@
  * limitations under the License.
  */
  
-package org.thialfihar.android.apg.service;
+package org.thialfihar.android.apg.service.handler;
 
-interface IApgHelperHandler {
+interface IApgGetDecryptionKeyIdHandler {
 
-    oneway void onSuccessGetDecryptionKey(in long secretKeyId, in boolean symmetric);
-    
-    
+    oneway void onSuccess(in long secretKeyId, in boolean symmetric);
+
+
     oneway void onException(in int exceptionNumber, in String message);
 }

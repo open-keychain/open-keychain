@@ -20,9 +20,11 @@ package org.thialfihar.android.apg.helper;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
@@ -38,24 +40,17 @@ import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.IterableIterator;
 import org.thialfihar.android.apg.util.Log;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
 
 public class PGPHelper {
-    public static PGPKeyRing decodeKeyRing(InputStream is) throws IOException {
-        InputStream in = PGPUtil.getDecoderStream(is);
-        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-        Object obj = objectFactory.nextObject();
-
-        if (obj instanceof PGPKeyRing) {
-            return (PGPKeyRing) obj;
-        }
-
-        return null;
-    }
 
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
@@ -191,7 +186,8 @@ public class PGPHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context, masterKeyId);
+        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
+                masterKeyId);
         if (keyRing == null) {
             Log.e(Constants.TAG, "keyRing is null!");
             return null;
@@ -205,7 +201,8 @@ public class PGPHelper {
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context, masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
+                masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -374,7 +371,7 @@ public class PGPHelper {
             } else if (i != 0 && i % 2 == 0) {
                 fingerPrint += " ";
             }
-            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase();
+            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase(Locale.US);
             while (chunk.length() < 2) {
                 chunk = "0" + chunk;
             }
@@ -383,37 +380,6 @@ public class PGPHelper {
 
         return fingerPrint;
 
-    }
-
-    public static String getPubkeyAsArmoredString(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
-        // if it is no public key get it from your own keys...
-        if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-            if (secretKey == null) {
-                Log.e(Constants.TAG, "Key could not be found!");
-                return null;
-            }
-            key = secretKey.getPublicKey();
-        }
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
-        aos.setHeader("Version", PGPMain.getFullVersion(context));
-
-        String armouredKey = null;
-        try {
-            aos.write(key.getEncoded());
-            aos.close();
-
-            armouredKey = bos.toString("UTF-8");
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Problems while encoding key as armored string", e);
-        }
-
-        Log.d(Constants.TAG, "key:" + armouredKey);
-
-        return armouredKey;
     }
 
     public static String getFingerPrint(Context context, long keyId) {
@@ -432,7 +398,7 @@ public class PGPHelper {
     }
 
     public static String getSmallFingerPrint(long keyId) {
-        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase();
+        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
         while (fingerPrint.length() < 8) {
             fingerPrint = "0" + fingerPrint;
         }
@@ -449,4 +415,5 @@ public class PGPHelper {
         String s1 = data.substring(0, len - 8);
         return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
     }
+
 }

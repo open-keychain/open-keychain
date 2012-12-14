@@ -18,16 +18,23 @@ package org.thialfihar.android.apg.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.Log;
+
+import android.content.Context;
 
 public class PGPConversionHelper {
 
@@ -134,4 +141,17 @@ public class PGPConversionHelper {
             return null;
         }
     }
+
+    public static PGPKeyRing decodeKeyRing(InputStream is) throws IOException {
+        InputStream in = PGPUtil.getDecoderStream(is);
+        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+        Object obj = objectFactory.nextObject();
+
+        if (obj instanceof PGPKeyRing) {
+            return (PGPKeyRing) obj;
+        }
+
+        return null;
+    }
+
 }

@@ -14,17 +14,12 @@
  * limitations under the License.
  */
  
-package org.thialfihar.android.apg.service;
+package org.thialfihar.android.apg.service.handler;
 
-interface IApgDecryptVerifyHandler {
+interface IApgGetDecryptionKeyIdHandler {
 
-    oneway void onSuccessDecrypt(in byte[] outputBytes, in String outputUri, in boolean signature,
-            in long signatureKeyId, in String signatureUserId, in boolean signatureSuccess,
-            in boolean signatureUnknown);
-    
-    oneway void onSuccessVerify(in boolean signature, in long signatureKeyId,
-            in String signatureUserId, in boolean signatureSuccess, in boolean signatureUnknown);
-    
-    
+    oneway void onSuccess(in long secretKeyId, in boolean symmetric);
+
+
     oneway void onException(in int exceptionNumber, in String message);
 }

@@ -60,9 +60,9 @@
         android:label="@string/permission_group_label" />
 
     <permission
-        android:name="org.thialfihar.android.apg.permission.READ_KEY_DATABASE"
-        android:description="@string/permission_read_key_database_description"
-        android:label="@string/permission_read_key_database_label"
+        android:name="org.thialfihar.android.apg.permission.ACCESS_KEYS"
+        android:description="@string/permission_access_keys_description"
+        android:label="@string/permission_access_keys_label"
         android:permissionGroup="org.thialfihar.android.apg.permission-group.APG"
         android:protectionLevel="dangerous" />
     <permission
@@ -346,13 +346,27 @@
         <service android:name=".service.PassphraseCacheService" />
         <service android:name=".service.ApgIntentService" />
         <service
-            android:name=".service.ApgService"
+            android:name="org.thialfihar.android.apg.service.ApgApiService"
             android:enabled="true"
             android:exported="true"
             android:permission="org.thialfihar.android.apg.permission.ACCESS_API"
-            android:process=":remote" >
+            android:process=":remoteapi" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.service.IApgService" />
+                <action android:name="org.thialfihar.android.apg.service.IApgApiService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="api_version"
+                android:value="3" />
+        </service>
+        <service
+            android:name="org.thialfihar.android.apg.service.ApgKeyService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="org.thialfihar.android.apg.permission.ACCESS_KEYS"
+            android:process=":remotekeys" >
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.service.IApgKeyService" />
             </intent-filter>
 
             <meta-data
@@ -367,7 +381,7 @@
         <provider
             android:name=".provider.ApgProviderExternal"
             android:authorities="org.thialfihar.android.apg"
-            android:readPermission="org.thialfihar.android.apg.permission.READ_KEY_DATABASE" />
+            android:readPermission="org.thialfihar.android.apg.permission.ACCESS_API" />
 
         <!-- TODO: authority! -->
         <provider

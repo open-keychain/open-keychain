@@ -1,14 +1,30 @@
+/*
+ * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 package org.thialfihar.android.apg.service;
 
-import org.thialfihar.android.apg.service.IApgEncryptDecryptHandler;
-import org.thialfihar.android.apg.service.IApgSignVerifyHandler;
-import org.thialfihar.android.apg.service.IApgHelperHandler;
+import org.thialfihar.android.apg.service.handler.IApgEncryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgDecryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgGetDecryptionKeyIdHandler;
 
 /**
  * All methods are oneway, which means they are asynchronous and non-blocking.
  * Results are returned into given Handler, which has to be implemented on client side.
  */
-interface IApgService {
+interface IApgApiService {
        
     /**
      * Encrypt
@@ -34,7 +50,7 @@ interface IApgService {
      */
     oneway void encryptAsymmetric(in byte[] inputBytes, in String inputUri, in boolean useAsciiArmor,
             in int compression, in long[] encryptionKeyIds, in int symmetricEncryptionAlgorithm,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptHandler handler);
     
     /**
      * Same as encryptAsymmetric but using a passphrase for symmetric encryption
@@ -44,7 +60,7 @@ interface IApgService {
      */
     oneway void encryptSymmetric(in byte[] inputBytes, in String inputUri, in boolean useAsciiArmor,
             in int compression, in String encryptionPassphrase, in int symmetricEncryptionAlgorithm,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptHandler handler);
     
     /**
      * Encrypt and sign
@@ -81,7 +97,7 @@ interface IApgService {
             in boolean useAsciiArmor, in int compression, in long[] encryptionKeyIds,
             in int symmetricEncryptionAlgorithm, in long signatureKeyId, in int signatureHashAlgorithm,
             in boolean signatureForceV3, in String signaturePassphrase,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptHandler handler);
     
     /**
      * Same as encryptAndSignAsymmetric but using a passphrase for symmetric encryption
@@ -93,7 +109,7 @@ interface IApgService {
             in boolean useAsciiArmor, in int compression, in String encryptionPassphrase,
             in int symmetricEncryptionAlgorithm, in long signatureKeyId, in int signatureHashAlgorithm,
             in boolean signatureForceV3, in String signaturePassphrase,
-            in IApgEncryptDecryptHandler handler);
+            in IApgEncryptHandler handler);
     
     /**
      * Decrypts and verifies given input bytes. If no signature is present this method
@@ -109,7 +125,7 @@ interface IApgService {
      *            Handler where to return results to after successful encryption
      */
     oneway void decryptAndVerifyAsymmetric(in byte[] inputBytes, in String inputUri,
-            in String keyPassphrase, in IApgEncryptDecryptHandler handler);
+            in String keyPassphrase, in IApgDecryptHandler handler);
     
     /**
      * Same as decryptAndVerifyAsymmetric but for symmetric decryption.
@@ -118,13 +134,13 @@ interface IApgService {
      *            Passphrase to decrypt
      */
     oneway void decryptAndVerifySymmetric(in byte[] inputBytes, in String inputUri,
-            in String encryptionPassphrase, in IApgEncryptDecryptHandler handler);
+            in String encryptionPassphrase, in IApgDecryptHandler handler);
     
     /**
      *
      */
-    oneway void getDecryptionKey(in byte[] inputBytes, in String inputUri,
-            in IApgHelperHandler handler);
+    oneway void getDecryptionKeyId(in byte[] inputBytes, in String inputUri,
+            in IApgGetDecryptionKeyIdHandler handler);
     
     
 }

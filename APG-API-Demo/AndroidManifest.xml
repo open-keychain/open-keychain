@@ -4,8 +4,8 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-permission android:name="org.thialfihar.android.apg.permission.READ_KEY_DATABASE" />
     <uses-permission android:name="org.thialfihar.android.apg.permission.ACCESS_API" />
+    <uses-permission android:name="org.thialfihar.android.apg.permission.ACCESS_KEYS" />
 
     <uses-sdk
         android:minSdkVersion="7"
@@ -29,7 +29,11 @@
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".AidlDemoActivity"
-            android:label="Aidl Demo"
+            android:label="Aidl Demo (ACCESS_API permission)"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".AidlDemoActivity2"
+            android:label="Aidl Demo (ACCESS_KEYS permission)"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ContentProviderDemoActivity"

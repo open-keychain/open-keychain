@@ -17,9 +17,10 @@
 
 package org.thialfihar.android.apg.ui;
 
+import java.util.ArrayList;
+
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
-import org.thialfihar.android.apg.helper.PGPHelper;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
@@ -87,25 +88,21 @@ public class KeyListSecretFragment extends KeyListFragment implements
         int groupPosition = ExpandableListView.getPackedPositionGroup(expInfo.packedPosition);
         long keyRingRowId = getExpandableListAdapter().getGroupId(groupPosition);
 
+        // get master key id using row id
+        long masterKeyId = ProviderHelper
+                .getSecretMasterKeyId(mKeyListSecretActivity, keyRingRowId);
+
         switch (item.getItemId()) {
         case Id.menu.edit:
-            // TODO: do it better directly with keyRingRowId?
-            long masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListSecretActivity,
-                    keyRingRowId);
-
             mKeyListSecretActivity.checkPassPhraseAndEdit(masterKeyId);
-            return true;
 
+            return true;
         case Id.menu.share_qr_code:
-            // TODO: do it better directly with keyRingRowId?
-            long masterKeyId2 = ProviderHelper.getSecretMasterKeyId(mKeyListSecretActivity,
-                    keyRingRowId);
+            ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(
+                    mKeyListSecretActivity, new long[] { masterKeyId });
+            new IntentIntegrator(mKeyListSecretActivity).shareText(keyringArmored.get(0));
 
-            String msg = PGPHelper.getPubkeyAsArmoredString(mKeyListSecretActivity, masterKeyId2);
-
-            new IntentIntegrator(mKeyListSecretActivity).shareText(msg);
             return true;
-
         default:
             return super.onContextItemSelected(item);
 

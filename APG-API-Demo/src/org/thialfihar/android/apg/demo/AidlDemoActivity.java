@@ -18,9 +18,10 @@ package org.thialfihar.android.apg.demo;
 
 import org.thialfihar.android.apg.integration.ApgData;
 import org.thialfihar.android.apg.integration.ApgIntentHelper;
-import org.thialfihar.android.apg.service.IApgEncryptDecryptHandler;
-import org.thialfihar.android.apg.service.IApgHelperHandler;
-import org.thialfihar.android.apg.service.IApgService;
+import org.thialfihar.android.apg.service.IApgApiService;
+import org.thialfihar.android.apg.service.handler.IApgDecryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgEncryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgGetDecryptionKeyIdHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -44,10 +45,10 @@ public class AidlDemoActivity extends Activity {
     ApgIntentHelper mApgIntentHelper;
     ApgData mApgData;
 
-    private IApgService service = null;
+    private IApgApiService service = null;
     private ServiceConnection svcConn = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder binder) {
-            service = IApgService.Stub.asInterface(binder);
+            service = IApgApiService.Stub.asInterface(binder);
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -69,7 +70,7 @@ public class AidlDemoActivity extends Activity {
         mApgIntentHelper = new ApgIntentHelper(mActivity);
         mApgData = new ApgData();
 
-        bindService(new Intent("org.thialfihar.android.apg.service.IApgService"), svcConn,
+        bindService(new Intent("org.thialfihar.android.apg.service.IApgApiService"), svcConn,
                 Context.BIND_AUTO_CREATE);
     }
 
@@ -77,8 +78,8 @@ public class AidlDemoActivity extends Activity {
         byte[] inputBytes = mMessageTextView.getText().toString().getBytes();
 
         try {
-            service.encryptAsymmetric(inputBytes, null, true, 0, mApgData.getEncryptionKeys(), 7,
-                    encryptDecryptHandler);
+            service.encryptAsymmetric(inputBytes, null, true, 0, mApgData.getPublicKeys(), 7,
+                    encryptHandler);
         } catch (RemoteException e) {
             exceptionImplementation(-1, e.toString());
         }
@@ -88,7 +89,7 @@ public class AidlDemoActivity extends Activity {
         byte[] inputBytes = mCiphertextTextView.getText().toString().getBytes();
 
         try {
-            service.decryptAndVerifyAsymmetric(inputBytes, null, null, encryptDecryptHandler);
+            service.decryptAndVerifyAsymmetric(inputBytes, null, null, decryptHandler);
         } catch (RemoteException e) {
             exceptionImplementation(-1, e.toString());
         }
@@ -116,7 +117,7 @@ public class AidlDemoActivity extends Activity {
         builder.setTitle("Exception!").setMessage(error).setPositiveButton("OK", null).show();
     }
 
-    private final IApgEncryptDecryptHandler.Stub encryptDecryptHandler = new IApgEncryptDecryptHandler.Stub() {
+    private final IApgEncryptHandler.Stub encryptHandler = new IApgEncryptHandler.Stub() {
 
         @Override
         public void onException(final int exceptionId, final String message) throws RemoteException {
@@ -128,8 +129,7 @@ public class AidlDemoActivity extends Activity {
         }
 
         @Override
-        public void onSuccessEncrypt(final byte[] outputBytes, String outputUri)
-                throws RemoteException {
+        public void onSuccess(final byte[] outputBytes, String outputUri) throws RemoteException {
             runOnUiThread(new Runnable() {
                 public void run() {
                     mApgData.setEncryptedData(new String(outputBytes));
@@ -138,8 +138,21 @@ public class AidlDemoActivity extends Activity {
             });
         }
 
+    };
+
+    private final IApgDecryptHandler.Stub decryptHandler = new IApgDecryptHandler.Stub() {
+
         @Override
-        public void onSuccessDecrypt(final byte[] outputBytes, String outputUri, boolean signature,
+        public void onException(final int exceptionId, final String message) throws RemoteException {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    exceptionImplementation(exceptionId, message);
+                }
+            });
+        }
+
+        @Override
+        public void onSuccess(final byte[] outputBytes, String outputUri, boolean signature,
                 long signatureKeyId, String signatureUserId, boolean signatureSuccess,
                 boolean signatureUnknown) throws RemoteException {
             runOnUiThread(new Runnable() {
@@ -153,7 +166,7 @@ public class AidlDemoActivity extends Activity {
 
     };
 
-    private final IApgHelperHandler.Stub helperHandler = new IApgHelperHandler.Stub() {
+    private final IApgGetDecryptionKeyIdHandler.Stub helperHandler = new IApgGetDecryptionKeyIdHandler.Stub() {
 
         @Override
         public void onException(final int exceptionId, final String message) throws RemoteException {
@@ -165,7 +178,7 @@ public class AidlDemoActivity extends Activity {
         }
 
         @Override
-        public void onSuccessGetDecryptionKey(long arg0, boolean arg1) throws RemoteException {
+        public void onSuccess(long arg0, boolean arg1) throws RemoteException {
             // TODO Auto-generated method stub
 
         }
@@ -182,7 +195,7 @@ public class AidlDemoActivity extends Activity {
     }
 
     public void selectEncryptionKeysOnClick(View view) {
-        mApgIntentHelper.selectEncryptionKeys("user@example.com");
+        mApgIntentHelper.selectPublicKeys("user@example.com");
 
     }
 

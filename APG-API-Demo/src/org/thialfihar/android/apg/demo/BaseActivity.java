@@ -29,8 +29,9 @@ public class BaseActivity extends PreferenceActivity {
     private Activity mActivity;
 
     private Preference mIntentDemo;
-    private Preference mAidlDemo;
     private Preference mContentProviderDemo;
+    private Preference mAidlDemo;
+    private Preference mAidlDemo2;
 
     /**
      * Called when the activity is first created.
@@ -46,13 +47,23 @@ public class BaseActivity extends PreferenceActivity {
 
         // find preferences
         mIntentDemo = (Preference) findPreference("intent_demo");
-        mAidlDemo = (Preference) findPreference("aidl_demo");
         mContentProviderDemo = (Preference) findPreference("content_provider_demo");
+        mAidlDemo = (Preference) findPreference("aidl_demo");
+        mAidlDemo2 = (Preference) findPreference("aidl_demo2");
 
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(mActivity, IntentDemoActivity.class));
+
+                return false;
+            }
+        });
+
+        mContentProviderDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(mActivity, ContentProviderDemoActivity.class));
 
                 return false;
             }
@@ -67,14 +78,15 @@ public class BaseActivity extends PreferenceActivity {
             }
         });
 
-        mContentProviderDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mAidlDemo2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, ContentProviderDemoActivity.class));
+                startActivity(new Intent(mActivity, AidlDemoActivity2.class));
 
                 return false;
             }
         });
+
     }
 
 }

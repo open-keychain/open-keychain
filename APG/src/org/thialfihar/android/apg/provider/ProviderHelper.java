@@ -16,10 +16,12 @@
 
 package org.thialfihar.android.apg.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -28,6 +30,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
+import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.provider.ApgContract.Keys;
@@ -40,6 +43,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
 
@@ -469,16 +473,38 @@ public class ProviderHelper {
         cr.delete(KeyRings.buildSecretKeyRingsUri(Long.toString(rowId)), null, null);
     }
 
+    /**
+     * Get master key id of keyring by its row id
+     * 
+     * @param context
+     * @param keyRingRowId
+     * @return
+     */
     public static long getPublicMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri(String.valueOf(keyRingRowId));
         return getMasterKeyId(context, queryUri, keyRingRowId);
     }
 
+    /**
+     * Get master key id of keyring by its row id
+     * 
+     * @param context
+     * @param keyRingRowId
+     * @return
+     */
     public static long getSecretMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
         return getMasterKeyId(context, queryUri, keyRingRowId);
     }
 
+    /**
+     * Private helper method to get master key id of keyring by its row id
+     * 
+     * @param context
+     * @param queryUri
+     * @param keyRingRowId
+     * @return
+     */
     private static long getMasterKeyId(Context context, Uri queryUri, long keyRingRowId) {
         String[] projection = new String[] { KeyRings.MASTER_KEY_ID };
 
@@ -499,4 +525,135 @@ public class ProviderHelper {
         return masterKeyId;
     }
 
+    public static ArrayList<String> getPublicKeyRingsAsArmoredString(Context context,
+            long[] masterKeyIds) {
+        return getKeyRingsAsArmoredString(context, KeyRings.buildPublicKeyRingsUri(), masterKeyIds);
+    }
+
+    public static ArrayList<String> getSecretKeyRingsAsArmoredString(Context context,
+            long[] masterKeyIds) {
+        return getKeyRingsAsArmoredString(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
+    }
+
+    private static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
+            long[] masterKeyIds) {
+        ArrayList<String> output = new ArrayList<String>();
+
+        if (masterKeyIds != null && masterKeyIds.length > 0) {
+
+            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, uri, masterKeyIds);
+
+            if (cursor != null) {
+                int masterIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
+                int dataCol = cursor.getColumnIndex(KeyRings.KEY_RING_DATA);
+                if (cursor.moveToFirst()) {
+                    do {
+                        Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
+
+                        // get actual keyring data blob and write it to ByteArrayOutputStream
+                        try {
+                            Object keyRing = null;
+                            byte[] data = cursor.getBlob(dataCol);
+                            if (data != null) {
+                                keyRing = PGPConversionHelper.BytesToPGPKeyRing(data);
+                            }
+
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+                            aos.setHeader("Version", PGPMain.getFullVersion(context));
+
+                            if (keyRing instanceof PGPSecretKeyRing) {
+                                aos.write(((PGPSecretKeyRing) keyRing).getEncoded());
+                            } else if (keyRing instanceof PGPPublicKeyRing) {
+                                aos.write(((PGPPublicKeyRing) keyRing).getEncoded());
+                            }
+                            aos.close();
+
+                            String armoredKey = bos.toString("UTF-8");
+
+                            Log.d(Constants.TAG, "armouredKey:" + armoredKey);
+
+                            output.add(armoredKey);
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "IOException", e);
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+
+            if (cursor != null) {
+                cursor.close();
+            }
+
+        } else {
+            Log.e(Constants.TAG, "No master keys given!");
+        }
+
+        return output;
+    }
+
+    public static byte[] getPublicKeyRingsAsByteArray(Context context, long[] masterKeyIds) {
+        return getKeyRingsAsByteArray(context, KeyRings.buildPublicKeyRingsUri(), masterKeyIds);
+    }
+
+    public static byte[] getSecretKeyRingsAsByteArray(Context context, long[] masterKeyIds) {
+        return getKeyRingsAsByteArray(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
+    }
+
+    private static byte[] getKeyRingsAsByteArray(Context context, Uri uri, long[] masterKeyIds) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        if (masterKeyIds != null && masterKeyIds.length > 0) {
+
+            Cursor cursor = getCursorWithSelectedKeyringMasterKeyIds(context, uri, masterKeyIds);
+
+            if (cursor != null) {
+                int masterIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
+                int dataCol = cursor.getColumnIndex(KeyRings.KEY_RING_DATA);
+                if (cursor.moveToFirst()) {
+                    do {
+                        Log.d(Constants.TAG, "masterKeyId: " + cursor.getLong(masterIdCol));
+
+                        // get actual keyring data blob and write it to ByteArrayOutputStream
+                        try {
+                            bos.write(cursor.getBlob(dataCol));
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "IOException", e);
+                        }
+                    } while (cursor.moveToNext());
+                }
+            }
+
+            if (cursor != null) {
+                cursor.close();
+            }
+
+        } else {
+            Log.e(Constants.TAG, "No master keys given!");
+        }
+
+        return bos.toByteArray();
+    }
+
+    private static Cursor getCursorWithSelectedKeyringMasterKeyIds(Context context, Uri baseUri,
+            long[] masterKeyIds) {
+        Cursor cursor = null;
+        if (masterKeyIds != null && masterKeyIds.length > 0) {
+
+            String inMasterKeyList = KeyRings.MASTER_KEY_ID + " IN (";
+            for (int i = 0; i < masterKeyIds.length; ++i) {
+                if (i != 0) {
+                    inMasterKeyList += ", ";
+                }
+                inMasterKeyList += DatabaseUtils.sqlEscapeString("" + masterKeyIds[i]);
+            }
+            inMasterKeyList += ")";
+
+            cursor = context.getContentResolver().query(baseUri,
+                    new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID, KeyRings.KEY_RING_DATA },
+                    inMasterKeyList, null, null);
+        }
+
+        return cursor;
+    }
 }

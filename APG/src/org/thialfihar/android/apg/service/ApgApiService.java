@@ -31,6 +31,9 @@ import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPMain;
 import org.thialfihar.android.apg.helper.PGPMain.ApgGeneralException;
+import org.thialfihar.android.apg.service.handler.IApgDecryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgEncryptHandler;
+import org.thialfihar.android.apg.service.handler.IApgGetDecryptionKeyIdHandler;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.Log;
 
@@ -47,20 +50,20 @@ import android.os.RemoteException;
  * - is this service thread safe? Probably not!
  * 
  */
-public class ApgService extends Service {
+public class ApgApiService extends Service {
     Context mContext;
 
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        Log.d(Constants.TAG, "ApgService, onCreate()");
+        Log.d(Constants.TAG, "ApgApiService, onCreate()");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(Constants.TAG, "ApgService, onDestroy()");
+        Log.d(Constants.TAG, "ApgApiService, onDestroy()");
     }
 
     @Override
@@ -68,19 +71,19 @@ public class ApgService extends Service {
         return mBinder;
     }
 
-    private static void writeToOutputStream(InputStream is, OutputStream os) throws IOException {
-        byte[] buffer = new byte[8];
-        int len = 0;
-        while ((len = is.read(buffer)) != -1) {
-            os.write(buffer, 0, len);
-        }
-    }
+    // private static void writeToOutputStream(InputStream is, OutputStream os) throws IOException {
+    // byte[] buffer = new byte[8];
+    // int len = 0;
+    // while ((len = is.read(buffer)) != -1) {
+    // os.write(buffer, 0, len);
+    // }
+    // }
 
     private void encryptAndSignImplementation(byte[] inputBytes, String inputUri,
             boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
             String encryptionPassphrase, int symmetricEncryptionAlgorithm, long signatureKeyId,
             int signatureHashAlgorithm, boolean signatureForceV3, String signaturePassphrase,
-            IApgEncryptSignHandler handler) throws RemoteException {
+            IApgEncryptHandler handler) throws RemoteException {
 
         try {
             // TODO use inputUri
@@ -128,7 +131,7 @@ public class ApgService extends Service {
             byte[] outputBytes = ((ByteArrayOutputStream) output).toByteArray();
 
             // return over handler on client side
-            handler.onSuccessEncrypt(outputBytes, null);
+            handler.onSuccess(outputBytes, null);
         } catch (Exception e) {
             Log.e(Constants.TAG, "ApgService, Exception!", e);
 
@@ -141,7 +144,7 @@ public class ApgService extends Service {
     }
 
     private void decryptAndVerifyImplementation(byte[] inputBytes, String inputUri,
-            String passphrase, boolean assumeSymmetric, IApgDecryptVerifyHandler handler)
+            String passphrase, boolean assumeSymmetric, IApgDecryptHandler handler)
             throws RemoteException {
 
         try {
@@ -170,7 +173,7 @@ public class ApgService extends Service {
                     .getBoolean(ApgIntentService.RESULT_SIGNATURE_UNKNOWN);
 
             // return over handler on client side
-            handler.onSuccessDecrypt(outputBytes, null, signature, signatureKeyId, signatureUserId,
+            handler.onSuccess(outputBytes, null, signature, signatureKeyId, signatureUserId,
                     signatureSuccess, signatureUnknown);
         } catch (Exception e) {
             Log.e(Constants.TAG, "ApgService, Exception!", e);
@@ -184,7 +187,7 @@ public class ApgService extends Service {
     }
 
     private void getDecryptionKeyImplementation(byte[] inputBytes, String inputUri,
-            IApgHelperHandler handler) {
+            IApgGetDecryptionKeyIdHandler handler) {
 
         // TODO: implement inputUri
 
@@ -195,20 +198,20 @@ public class ApgService extends Service {
             boolean symmetric;
 
             try {
-                secretKeyId = PGPMain.getDecryptionKeyId(ApgService.this, inputStream);
+                secretKeyId = PGPMain.getDecryptionKeyId(ApgApiService.this, inputStream);
                 if (secretKeyId == Id.key.none) {
                     throw new ApgGeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 symmetric = false;
             } catch (PGPMain.NoAsymmetricEncryptionException e) {
                 secretKeyId = Id.key.symmetric;
-                if (!PGPMain.hasSymmetricEncryption(ApgService.this, inputStream)) {
+                if (!PGPMain.hasSymmetricEncryption(ApgApiService.this, inputStream)) {
                     throw new ApgGeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 symmetric = true;
             }
 
-            handler.onSuccessGetDecryptionKey(secretKeyId, symmetric);
+            handler.onSuccess(secretKeyId, symmetric);
 
         } catch (Exception e) {
             Log.e(Constants.TAG, "ApgService, Exception!", e);
@@ -227,12 +230,12 @@ public class ApgService extends Service {
      * 
      * The real PGP code is located in PGPMain.
      */
-    private final IApgService.Stub mBinder = new IApgService.Stub() {
+    private final IApgApiService.Stub mBinder = new IApgApiService.Stub() {
 
         @Override
         public void encryptAsymmetric(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
                 int compression, long[] encryptionKeyIds, int symmetricEncryptionAlgorithm,
-                IApgEncryptSignHandler handler) throws RemoteException {
+                IApgEncryptHandler handler) throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
                     encryptionKeyIds, null, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
@@ -242,7 +245,7 @@ public class ApgService extends Service {
         @Override
         public void encryptSymmetric(byte[] inputBytes, String inputUri, boolean useAsciiArmor,
                 int compression, String encryptionPassphrase, int symmetricEncryptionAlgorithm,
-                IApgEncryptSignHandler handler) throws RemoteException {
+                IApgEncryptHandler handler) throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
                     encryptionPassphrase, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
@@ -253,7 +256,7 @@ public class ApgService extends Service {
         public void encryptAndSignAsymmetric(byte[] inputBytes, String inputUri,
                 boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
                 int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
-                boolean signatureForceV3, String signaturePassphrase, IApgEncryptSignHandler handler)
+                boolean signatureForceV3, String signaturePassphrase, IApgEncryptHandler handler)
                 throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
@@ -265,7 +268,7 @@ public class ApgService extends Service {
         public void encryptAndSignSymmetric(byte[] inputBytes, String inputUri,
                 boolean useAsciiArmor, int compression, String encryptionPassphrase,
                 int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
-                boolean signatureForceV3, String signaturePassphrase, IApgEncryptSignHandler handler)
+                boolean signatureForceV3, String signaturePassphrase, IApgEncryptHandler handler)
                 throws RemoteException {
 
             encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
@@ -275,23 +278,22 @@ public class ApgService extends Service {
 
         @Override
         public void decryptAndVerifyAsymmetric(byte[] inputBytes, String inputUri,
-                String keyPassphrase, IApgDecryptVerifyHandler handler) throws RemoteException {
+                String keyPassphrase, IApgDecryptHandler handler) throws RemoteException {
 
             decryptAndVerifyImplementation(inputBytes, inputUri, keyPassphrase, false, handler);
         }
 
         @Override
         public void decryptAndVerifySymmetric(byte[] inputBytes, String inputUri,
-                String encryptionPassphrase, IApgDecryptVerifyHandler handler)
-                throws RemoteException {
+                String encryptionPassphrase, IApgDecryptHandler handler) throws RemoteException {
 
             decryptAndVerifyImplementation(inputBytes, inputUri, encryptionPassphrase, true,
                     handler);
         }
 
         @Override
-        public void getDecryptionKey(byte[] inputBytes, String inputUri, IApgHelperHandler handler)
-                throws RemoteException {
+        public void getDecryptionKeyId(byte[] inputBytes, String inputUri,
+                IApgGetDecryptionKeyIdHandler handler) throws RemoteException {
 
             getDecryptionKeyImplementation(inputBytes, inputUri, handler);
         }
