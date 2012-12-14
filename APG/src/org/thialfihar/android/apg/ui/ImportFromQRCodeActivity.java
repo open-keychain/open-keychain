@@ -46,8 +46,7 @@ import com.google.zxing.integration.android.IntentResult;
 public class ImportFromQRCodeActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
-    public static final String IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
-            + "IMPORT_FROM_QR_CODE";
+    public static final String SCAN_QR_CODE = Constants.INTENT_PREFIX + "SCAN_QR_CODE";
 
     // public static final String EXTRA_KEY_ID = "keyId";
 

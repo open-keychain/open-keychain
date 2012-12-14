@@ -299,6 +299,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * 
      * @param intent
      */
+    @SuppressWarnings("unchecked")
     private void handleActionEditKey(Intent intent) {
         Bundle extras = intent.getExtras();
 

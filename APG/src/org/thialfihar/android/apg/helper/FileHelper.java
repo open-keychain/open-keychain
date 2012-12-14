@@ -16,8 +16,6 @@
 
 package org.thialfihar.android.apg.helper;
 
-import java.net.URISyntaxException;
-
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.util.Log;
@@ -90,7 +88,6 @@ public class FileHelper {
      * @author paulburke
      */
     public static String getPath(Context context, Uri uri) {
-
         Log.d(Constants.TAG + " File -",
                 "Authority: " + uri.getAuthority() + ", Fragment: " + uri.getFragment()
                         + ", Port: " + uri.getPort() + ", Query: " + uri.getQuery() + ", Scheme: "

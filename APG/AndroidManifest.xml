@@ -338,7 +338,13 @@
         <activity
             android:name=".ui.ImportFromQRCodeActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_importFromQRCode" />
+            android:label="@string/title_importFromQRCode" >
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SCAN_QR_CODE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />

@@ -53,10 +53,22 @@ public class ApgIntentHelper {
     public static final String ACTION_DECRYPT_STREAM_AND_RETURN = APG_INTENT_PREFIX
             + "DECRYPT_STREAM_AND_RETURN";
 
+    /**
+     * Select keys, without permission
+     */
     public static final String ACTION_SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
     public static final String ACTION_SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
+
+    /**
+     * Create key/edit key, without permission
+     */
     public static final String ACTION_CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
     public static final String ACTION_EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
+
+    /**
+     * Scan QR code, without permission
+     */
+    public static final String ACTION_SCAN_QR_CODE = APG_INTENT_PREFIX + "SCAN_QR_CODE";
 
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
@@ -80,7 +92,7 @@ public class ApgIntentHelper {
 
     public static final String RESULT_EXTRA_MASTER_KEY_IDS = "masterKeyIds";
     public static final String RESULT_EXTRA_USER_IDS = "userIds";
-    
+
     // result from EditKey
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
     public static final String RESULT_EXTRA_USER_ID = "userId";
@@ -98,6 +110,23 @@ public class ApgIntentHelper {
 
     public ApgIntentHelper(Activity activity) {
         this.activity = activity;
+    }
+
+    /**
+     * Open activity to scan qr code and import key in it
+     * 
+     * @return true when activity was found and executed successfully
+     */
+    public boolean scanQrCode() {
+        Intent intent = new Intent(ACTION_SCAN_QR_CODE);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        try {
+            activity.startActivityForResult(intent, -1);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
     }
 
     /**

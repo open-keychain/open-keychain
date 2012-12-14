@@ -64,7 +64,7 @@ public class KeyListPublicActivity extends KeyListActivity {
         }
         case Id.menu.option.scanQRCode: {
             Intent intent = new Intent(this, ImportFromQRCodeActivity.class);
-            intent.setAction(ImportFromQRCodeActivity.IMPORT_FROM_QR_CODE);
+            intent.setAction(ImportFromQRCodeActivity.SCAN_QR_CODE);
             startActivityForResult(intent, Id.request.import_from_qr_code);
 
             return true;

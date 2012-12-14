@@ -22,19 +22,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 
-import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.util.Log;
-
-import android.content.Context;
 
 public class PGPConversionHelper {
 
