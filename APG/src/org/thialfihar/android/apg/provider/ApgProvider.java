@@ -52,6 +52,7 @@ public class ApgProvider extends ContentProvider {
     private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID = 103;
     private static final int PUBLIC_KEY_RING_BY_KEY_ID = 104;
     private static final int PUBLIC_KEY_RING_BY_EMAILS = 105;
+    private static final int PUBLIC_KEY_RING_BY_LIKE_EMAIL = 106;
 
     private static final int PUBLIC_KEY_RING_KEY = 111;
     private static final int PUBLIC_KEY_RING_KEY_BY_ROW_ID = 112;
@@ -64,6 +65,7 @@ public class ApgProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_BY_MASTER_KEY_ID = 203;
     private static final int SECRET_KEY_RING_BY_KEY_ID = 204;
     private static final int SECRET_KEY_RING_BY_EMAILS = 205;
+    private static final int SECRET_KEY_RING_BY_LIKE_EMAIL = 206;
 
     private static final int SECRET_KEY_RING_KEY = 211;
     private static final int SECRET_KEY_RING_KEY_BY_ROW_ID = 212;
@@ -99,6 +101,7 @@ public class ApgProvider extends ContentProvider {
          * key_rings/public/master_key_id/_
          * key_rings/public/key_id/_
          * key_rings/public/emails/_
+         * key_rings/public/like_email/_
          * </pre>
          */
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC,
@@ -112,6 +115,8 @@ public class ApgProvider extends ContentProvider {
                 + ApgContract.PATH_BY_KEY_ID + "/*", PUBLIC_KEY_RING_BY_KEY_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
                 + ApgContract.PATH_BY_EMAILS + "/*", PUBLIC_KEY_RING_BY_EMAILS);
+        matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
+                + ApgContract.PATH_BY_LIKE_EMAIL + "/*", PUBLIC_KEY_RING_BY_LIKE_EMAIL);
 
         /**
          * public keys
@@ -148,6 +153,7 @@ public class ApgProvider extends ContentProvider {
          * key_rings/secret/master_key_id/_
          * key_rings/secret/key_id/_
          * key_rings/secret/emails/_
+         * key_rings/secret/like_email/_
          * </pre>
          */
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET,
@@ -161,6 +167,8 @@ public class ApgProvider extends ContentProvider {
                 + ApgContract.PATH_BY_KEY_ID + "/*", SECRET_KEY_RING_BY_KEY_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
                 + ApgContract.PATH_BY_EMAILS + "/*", SECRET_KEY_RING_BY_EMAILS);
+        matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
+                + ApgContract.PATH_BY_LIKE_EMAIL + "/*", SECRET_KEY_RING_BY_LIKE_EMAIL);
 
         /**
          * secret keys
@@ -217,8 +225,10 @@ public class ApgProvider extends ContentProvider {
         switch (match) {
         case PUBLIC_KEY_RING:
         case PUBLIC_KEY_RING_BY_EMAILS:
+        case PUBLIC_KEY_RING_BY_LIKE_EMAIL:
         case SECRET_KEY_RING:
         case SECRET_KEY_RING_BY_EMAILS:
+        case SECRET_KEY_RING_BY_LIKE_EMAIL:
             return KeyRings.CONTENT_TYPE;
 
         case PUBLIC_KEY_RING_BY_ROW_ID:
@@ -264,6 +274,7 @@ public class ApgProvider extends ContentProvider {
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case PUBLIC_KEY_RING_BY_KEY_ID:
         case PUBLIC_KEY_RING_BY_EMAILS:
+        case PUBLIC_KEY_RING_BY_LIKE_EMAIL:
         case PUBLIC_KEY_RING_KEY:
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
         case PUBLIC_KEY_RING_USER_ID:
@@ -276,6 +287,7 @@ public class ApgProvider extends ContentProvider {
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_KEY_ID:
         case SECRET_KEY_RING_BY_EMAILS:
+        case SECRET_KEY_RING_BY_LIKE_EMAIL:
         case SECRET_KEY_RING_KEY:
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID:
@@ -341,7 +353,7 @@ public class ApgProvider extends ContentProvider {
     }
 
     /**
-     * Builds default query for keyRings: KeyRings table is joined with Keys and UserIds
+     * Builds default query for keyRings: KeyRings table is joined with UserIds
      * 
      * @param qb
      * @param match
@@ -350,9 +362,11 @@ public class ApgProvider extends ContentProvider {
      * @return
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match, String sortOrder) {
+        // public or secret keyring
         qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
         qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
+        // join keyrings with userIds to every keyring
         qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.USER_IDS + " ON " + "("
                 + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
                 + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
@@ -374,9 +388,11 @@ public class ApgProvider extends ContentProvider {
      */
     private SQLiteQueryBuilder buildKeyRingQueryWithKeys(SQLiteQueryBuilder qb, int match,
             String sortOrder) {
+        // public or secret keyring
         qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
         qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
 
+        // join keyrings with keys and userIds to every keyring
         qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
                 + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
                 + KeysColumns.KEY_RING_ROW_ID + ") " + " INNER JOIN " + Tables.USER_IDS + " ON "
@@ -453,18 +469,7 @@ public class ApgProvider extends ContentProvider {
 
         case SECRET_KEY_RING_BY_EMAILS:
         case PUBLIC_KEY_RING_BY_EMAILS:
-            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
-
-            qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
-                    + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.IS_MASTER_KEY + " = '1'" + ") " + " INNER JOIN "
-                    + Tables.USER_IDS + " ON " + "(" + Tables.KEYS + "." + BaseColumns._ID + " = "
-                    + Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " AND "
-                    + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = '0')");
-
-            qb.setProjectionMap(getProjectionMapForKeyRings());
+            qb = buildKeyRingQuery(qb, match, sortOrder);
 
             String emails = uri.getLastPathSegment();
             String chunks[] = emails.split(" *, *");
@@ -486,9 +491,25 @@ public class ApgProvider extends ContentProvider {
             if (gotCondition) {
                 qb.appendWhere(" AND EXISTS (SELECT tmp." + BaseColumns._ID + " FROM "
                         + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_RING_ROW_ID
-                        + " = " + Tables.KEYS + "." + BaseColumns._ID + " AND (" + emailWhere
+                        + " = " + Tables.KEY_RINGS + "." + BaseColumns._ID + " AND (" + emailWhere
                         + "))");
             }
+
+            break;
+
+        case SECRET_KEY_RING_BY_LIKE_EMAIL:
+        case PUBLIC_KEY_RING_BY_LIKE_EMAIL:
+            qb = buildKeyRingQuery(qb, match, sortOrder);
+
+            String likeEmail = uri.getLastPathSegment();
+
+            String likeEmailWhere = "tmp." + UserIdsColumns.USER_ID + " LIKE "
+                    + DatabaseUtils.sqlEscapeString("%<%" + likeEmail + "%>");
+
+            qb.appendWhere(" AND EXISTS (SELECT tmp." + BaseColumns._ID + " FROM "
+                    + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_RING_ROW_ID
+                    + " = " + Tables.KEY_RINGS + "." + BaseColumns._ID + " AND (" + likeEmailWhere
+                    + "))");
 
             break;
 

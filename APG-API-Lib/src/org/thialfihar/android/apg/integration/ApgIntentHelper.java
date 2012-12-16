@@ -356,7 +356,7 @@ public class ApgIntentHelper {
         if (apgData == null || !apgData.hasPublicKeys()) {
             ApgContentProviderHelper cPHelper = new ApgContentProviderHelper(activity);
 
-            initialKeyIds = cPHelper.getPublicKeyIdsFromEmail(emails);
+            initialKeyIds = cPHelper.getPublicKeyringIdsByEmail(emails);
         } else {
             initialKeyIds = apgData.getPublicKeys();
         }

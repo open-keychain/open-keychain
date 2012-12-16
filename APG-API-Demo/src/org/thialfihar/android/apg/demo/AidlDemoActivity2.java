@@ -72,8 +72,7 @@ public class AidlDemoActivity2 extends Activity {
         mApgIntentHelper = new ApgIntentHelper(mActivity);
         mApgData = new ApgData();
 
-        bindService(new Intent("org.thialfihar.android.apg.service.IApgKeyService"), svcConn,
-                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(IApgKeyService.class.getName()), svcConn, Context.BIND_AUTO_CREATE);
     }
 
     public void getKeyringsStringsOnClick(View view) {

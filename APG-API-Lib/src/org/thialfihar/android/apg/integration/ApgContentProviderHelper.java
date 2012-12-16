@@ -17,7 +17,6 @@
 
 package org.thialfihar.android.apg.integration;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,16 +30,20 @@ public class ApgContentProviderHelper {
             + AUTHORITY + "/key_rings/public/key_id/");
     public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS = Uri.parse("content://"
             + AUTHORITY + "/key_rings/public/emails/");
+    public static final Uri CONTENT_URI_PUBLIC_KEY_RING_BY_LIKE_EMAIL = Uri.parse("content://"
+            + AUTHORITY + "/key_rings/public/like_email/");
 
     public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID = Uri.parse("content://"
             + AUTHORITY + "/key_rings/secret/key_id/");
     public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_EMAILS = Uri.parse("content://"
             + AUTHORITY + "/key_rings/secret/emails/");
+    public static final Uri CONTENT_URI_SECRET_KEY_RING_BY_LIKE_EMAIL = Uri.parse("content://"
+            + AUTHORITY + "/key_rings/secret/like_email/");
 
-    private Context activity;
+    private Context mContext;
 
-    public ApgContentProviderHelper(Activity activity) {
-        this.activity = activity;
+    public ApgContentProviderHelper(Context context) {
+        this.mContext = context;
     }
 
     /**
@@ -51,11 +54,45 @@ public class ApgContentProviderHelper {
      *            The email in question.
      * @return key ids
      */
-    public long[] getSecretKeyIdsFromEmail(String email) {
+    public long[] getSecretKeyringIdsByEmail(String email) {
         long ids[] = null;
         try {
             Uri contentUri = Uri.withAppendedPath(CONTENT_URI_SECRET_KEY_RING_BY_EMAILS, email);
-            Cursor c = activity.getContentResolver().query(contentUri,
+            Cursor c = mContext.getContentResolver().query(contentUri,
+                    new String[] { "master_key_id" }, null, null, null);
+            if (c != null && c.getCount() > 0) {
+                ids = new long[c.getCount()];
+                while (c.moveToNext()) {
+                    ids[c.getPosition()] = c.getLong(0);
+                }
+            }
+
+            if (c != null) {
+                c.close();
+            }
+        } catch (SecurityException e) {
+            insufficientPermissions();
+        }
+
+        return ids;
+    }
+
+    /**
+     * Get secret key ids based on a given String that is part of the email.
+     * 
+     * Example: String: example, then emails: test@example.com, example@google.com are returned
+     * 
+     * @param context
+     * @param email
+     *            The email in question.
+     * @return key ids
+     */
+    public long[] getSecretKeyringIdsByLikeEmail(String likeEmail) {
+        long ids[] = null;
+        try {
+            Uri contentUri = Uri.withAppendedPath(CONTENT_URI_SECRET_KEY_RING_BY_LIKE_EMAIL,
+                    likeEmail);
+            Cursor c = mContext.getContentResolver().query(contentUri,
                     new String[] { "master_key_id" }, null, null, null);
             if (c != null && c.getCount() > 0) {
                 ids = new long[c.getCount()];
@@ -82,11 +119,45 @@ public class ApgContentProviderHelper {
      *            The email in question.
      * @return key ids
      */
-    public long[] getPublicKeyIdsFromEmail(String email) {
+    public long[] getPublicKeyringIdsByEmail(String email) {
         long ids[] = null;
         try {
             Uri contentUri = Uri.withAppendedPath(CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS, email);
-            Cursor c = activity.getContentResolver().query(contentUri,
+            Cursor c = mContext.getContentResolver().query(contentUri,
+                    new String[] { "master_key_id" }, null, null, null);
+            if (c != null && c.getCount() > 0) {
+                ids = new long[c.getCount()];
+                while (c.moveToNext()) {
+                    ids[c.getPosition()] = c.getLong(0);
+                }
+            }
+
+            if (c != null) {
+                c.close();
+            }
+        } catch (SecurityException e) {
+            insufficientPermissions();
+        }
+
+        return ids;
+    }
+
+    /**
+     * Get public key ids based on a given String that is part of the email.
+     * 
+     * Example: String: example, then emails: test@example.com, example@google.com are returned
+     * 
+     * @param context
+     * @param email
+     *            The email in question.
+     * @return key ids
+     */
+    public long[] getPublicKeyringIdsByLikeEmail(String likeEmail) {
+        long ids[] = null;
+        try {
+            Uri contentUri = Uri.withAppendedPath(CONTENT_URI_PUBLIC_KEY_RING_BY_LIKE_EMAIL,
+                    likeEmail);
+            Cursor c = mContext.getContentResolver().query(contentUri,
                     new String[] { "master_key_id" }, null, null, null);
             if (c != null && c.getCount() > 0) {
                 ids = new long[c.getCount()];
@@ -113,10 +184,10 @@ public class ApgContentProviderHelper {
      *            The email in question.
      * @return true if there is a secret key for this email.
      */
-    public boolean hasSecretKeyForEmail(String email) {
+    public boolean hasSecretKeyringByEmail(String email) {
         try {
             Uri contentUri = Uri.withAppendedPath(CONTENT_URI_SECRET_KEY_RING_BY_EMAILS, email);
-            Cursor c = activity.getContentResolver().query(contentUri,
+            Cursor c = mContext.getContentResolver().query(contentUri,
                     new String[] { "master_key_id" }, null, null, null);
             if (c != null && c.getCount() > 0) {
                 c.close();
@@ -139,10 +210,10 @@ public class ApgContentProviderHelper {
      *            The email in question.
      * @return true if there is a public key for this email.
      */
-    public boolean hasPublicKeyForEmail(String email) {
+    public boolean hasPublicKeyringByEmail(String email) {
         try {
             Uri contentUri = Uri.withAppendedPath(CONTENT_URI_PUBLIC_KEY_RING_BY_EMAILS, email);
-            Cursor c = activity.getContentResolver().query(contentUri,
+            Cursor c = mContext.getContentResolver().query(contentUri,
                     new String[] { "master_key_id" }, null, null, null);
             if (c != null && c.getCount() > 0) {
                 c.close();
@@ -169,7 +240,7 @@ public class ApgContentProviderHelper {
         try {
             Uri contentUri = ContentUris.withAppendedId(CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID,
                     keyId);
-            Cursor c = activity.getContentResolver().query(contentUri, new String[] { "user_id" },
+            Cursor c = mContext.getContentResolver().query(contentUri, new String[] { "user_id" },
                     null, null, null);
             if (c != null && c.moveToFirst()) {
                 userId = c.getString(0);
@@ -189,7 +260,7 @@ public class ApgContentProviderHelper {
     }
 
     private void insufficientPermissions() {
-        Toast.makeText(activity, "Permission to access APG Provider is missing!", Toast.LENGTH_LONG)
+        Toast.makeText(mContext, "Permission to access APG Provider is missing!", Toast.LENGTH_LONG)
                 .show();
     }
 }

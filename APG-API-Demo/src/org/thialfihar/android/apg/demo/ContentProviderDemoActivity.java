@@ -52,12 +52,12 @@ public class ContentProviderDemoActivity extends Activity {
     }
 
     public void test1OnClick(View view) {
-        long[] test = mApgContentProviderHelper.getPublicKeyIdsFromEmail("user@example.com");
+        long[] test = mApgContentProviderHelper.getPublicKeyringIdsByEmail("user@example.com");
         mOutputTextView.setText(Arrays.toString(test));
     }
 
     public void test2OnClick(View view) {
-        boolean test = mApgContentProviderHelper.hasPublicKeyForEmail("user@example.com");
+        boolean test = mApgContentProviderHelper.hasPublicKeyringByEmail("user@example.com");
         if (test) {
             mOutputTextView.setText("true");
         } else {

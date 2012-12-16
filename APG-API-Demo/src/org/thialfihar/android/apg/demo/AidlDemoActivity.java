@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.demo;
 import org.thialfihar.android.apg.integration.ApgData;
 import org.thialfihar.android.apg.integration.ApgIntentHelper;
 import org.thialfihar.android.apg.service.IApgApiService;
+import org.thialfihar.android.apg.service.IApgKeyService;
 import org.thialfihar.android.apg.service.handler.IApgDecryptHandler;
 import org.thialfihar.android.apg.service.handler.IApgEncryptHandler;
 import org.thialfihar.android.apg.service.handler.IApgGetDecryptionKeyIdHandler;
@@ -70,8 +71,7 @@ public class AidlDemoActivity extends Activity {
         mApgIntentHelper = new ApgIntentHelper(mActivity);
         mApgData = new ApgData();
 
-        bindService(new Intent("org.thialfihar.android.apg.service.IApgApiService"), svcConn,
-                Context.BIND_AUTO_CREATE);
+        bindService(new Intent(IApgApiService.class.getName()), svcConn, Context.BIND_AUTO_CREATE);
     }
 
     public void encryptOnClick(View view) {

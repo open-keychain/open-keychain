@@ -72,6 +72,7 @@ public class ApgContract {
     public static final String PATH_BY_MASTER_KEY_ID = "master_key_id";
     public static final String PATH_BY_KEY_ID = "key_id";
     public static final String PATH_BY_EMAILS = "emails";
+    public static final String PATH_BY_LIKE_EMAIL = "like_email";
 
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
@@ -109,6 +110,11 @@ public class ApgContract {
                     .appendPath(emails).build();
         }
 
+        public static Uri buildPublicKeyRingsByLikeEmailUri(String emails) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).appendPath(PATH_BY_LIKE_EMAIL)
+                    .appendPath(emails).build();
+        }
+
         public static Uri buildSecretKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
         }
@@ -129,6 +135,11 @@ public class ApgContract {
 
         public static Uri buildSecretKeyRingsByEmailsUri(String emails) {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_EMAILS)
+                    .appendPath(emails).build();
+        }
+
+        public static Uri buildSecretKeyRingsByLikeEmails(String emails) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_LIKE_EMAIL)
                     .appendPath(emails).build();
         }
     }
