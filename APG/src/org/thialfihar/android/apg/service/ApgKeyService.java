@@ -57,8 +57,8 @@ public class ApgKeyService extends Service {
     }
 
     /**
-     * This is the implementation of the interface IApgService. All methods are oneway, meaning
-     * asynchronous and return to the client using IApgHandler.
+     * This is the implementation of the interface IApgKeyService. All methods are oneway, meaning
+     * asynchronous and return to the client using handlers.
      * 
      * The real PGP code is located in PGPMain.
      */

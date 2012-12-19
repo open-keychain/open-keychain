@@ -106,3 +106,43 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 
 ## ApgKeyService (Remote Service)
 * ACCESS_KEYS
+
+# Licenses
+APG is licensed under Apache License v2.
+
+## Libraries
+* ActionBarSherlock  
+  http://actionbarsherlock.com/  
+  Apache License v2
+
+* SpongyCastle  
+  https://github.com/rtyley/spongycastle  
+  MIT X11 License
+
+* ZXing QRCode Integration  
+  http://code.google.com/p/zxing/  
+  Apache License v2
+
+* HTMLCleaner  
+  http://htmlcleaner.sourceforge.net/  
+  BSD License
+
+* HtmlSpanner  
+  Apache License v2
+
+
+## Images
+* icon.svg  
+  modified version of kgpg_key2_kopete.svgz
+
+* dashboard_manage_keys.svg, dashboard_my_keys.svg, key.svg  
+  http://rrze-icon-set.berlios.de/  
+  Creative Commons Attribution Share-Alike licence 3.0
+
+* dashboard_decrypt.svg, dashboard_encrypt.svg, dashboard_help.svg  
+  http://tango.freedesktop.org/  
+  Public Domain
+
+* dashboard_scan_qrcode.svg  
+  New creation for APG  
+  Apache License v2
