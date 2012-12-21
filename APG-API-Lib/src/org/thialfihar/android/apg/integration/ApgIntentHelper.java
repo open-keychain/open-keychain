@@ -125,7 +125,7 @@ public class ApgIntentHelper {
      * @see android.app.Fragment#startActivityForResult(Intent, int)
      */
     protected void startActivityForResult(Intent intent, int code) {
-        startActivityForResult(intent, code);
+        activity.startActivityForResult(intent, code);
     }
 
     /**
