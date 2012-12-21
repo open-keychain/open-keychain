@@ -116,6 +116,9 @@ public class ApgProvider extends ContentProvider {
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
                 + ApgContract.PATH_BY_EMAILS + "/*", PUBLIC_KEY_RING_BY_EMAILS);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
+                + ApgContract.PATH_BY_EMAILS, PUBLIC_KEY_RING_BY_EMAILS); // without emails
+                                                                          // specified
+        matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_PUBLIC + "/"
                 + ApgContract.PATH_BY_LIKE_EMAIL + "/*", PUBLIC_KEY_RING_BY_LIKE_EMAIL);
 
         /**
@@ -167,6 +170,9 @@ public class ApgProvider extends ContentProvider {
                 + ApgContract.PATH_BY_KEY_ID + "/*", SECRET_KEY_RING_BY_KEY_ID);
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
                 + ApgContract.PATH_BY_EMAILS + "/*", SECRET_KEY_RING_BY_EMAILS);
+        matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
+                + ApgContract.PATH_BY_EMAILS, SECRET_KEY_RING_BY_EMAILS); // without emails
+                                                                          // specified
         matcher.addURI(authority, ApgContract.BASE_KEY_RINGS + "/" + ApgContract.PATH_SECRET + "/"
                 + ApgContract.PATH_BY_LIKE_EMAIL + "/*", SECRET_KEY_RING_BY_LIKE_EMAIL);
 

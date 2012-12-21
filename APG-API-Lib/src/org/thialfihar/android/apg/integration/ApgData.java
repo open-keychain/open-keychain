@@ -22,7 +22,8 @@ import java.util.Arrays;
 
 public class ApgData implements Serializable {
     private static final long serialVersionUID = 6314045536270848410L;
-    protected long mPublicKeyIds[] = null;
+    protected long[] mPublicKeyIds = null;
+    protected String[] mPublicUserIds = null;
     protected long mSecretKeyId = 0;
     protected String mSecretKeyUserId = null;
     protected boolean mSignatureSuccess = false;
@@ -38,12 +39,20 @@ public class ApgData implements Serializable {
         return mSecretKeyId;
     }
 
-    public void setPublicKeys(long keyIds[]) {
+    public void setPublicKeyIds(long[] keyIds) {
         mPublicKeyIds = keyIds;
     }
 
     public long[] getPublicKeys() {
         return mPublicKeyIds;
+    }
+
+    public void setPublicUserIds(String[] userIds) {
+        mPublicUserIds = userIds;
+    }
+
+    public String[] getPublicUserIds() {
+        return mPublicUserIds;
     }
 
     public boolean hasSecretKey() {

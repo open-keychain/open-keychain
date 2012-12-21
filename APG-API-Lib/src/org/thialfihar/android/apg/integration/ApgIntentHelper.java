@@ -113,6 +113,22 @@ public class ApgIntentHelper {
     }
 
     /**
+     * Start an activity.<br>
+     * This method is defined to allow different methods of activity starting for newer versions of
+     * Android and for compatibility library.
+     * 
+     * @param intent
+     *            Intent to start.
+     * @param code
+     *            Request code for the activity
+     * @see android.app.Activity#startActivityForResult(Intent, int)
+     * @see android.app.Fragment#startActivityForResult(Intent, int)
+     */
+    protected void startActivityForResult(Intent intent, int code) {
+        startActivityForResult(intent, code);
+    }
+
+    /**
      * Open activity to scan qr code and import key in it
      * 
      * @return true when activity was found and executed successfully
@@ -121,7 +137,7 @@ public class ApgIntentHelper {
         Intent intent = new Intent(ACTION_SCAN_QR_CODE);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, -1);
+            startActivityForResult(intent, -1);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -146,7 +162,7 @@ public class ApgIntentHelper {
 
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, CREATE_KEY);
+            startActivityForResult(intent, CREATE_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -174,7 +190,7 @@ public class ApgIntentHelper {
         intent.putExtra(EXTRA_KEY_ID, keyId);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, EDIT_KEY);
+            startActivityForResult(intent, EDIT_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -191,7 +207,7 @@ public class ApgIntentHelper {
         Intent intent = new Intent(ACTION_SELECT_SECRET_KEY);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            activity.startActivityForResult(intent, SELECT_SECRET_KEY);
+            startActivityForResult(intent, SELECT_SECRET_KEY);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -225,7 +241,7 @@ public class ApgIntentHelper {
         intent.putExtra(EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
         intent.putExtra(EXTRA_SIGNATURE_KEY_ID, signatureKeyId);
         try {
-            activity.startActivityForResult(intent, ENCRYPT_MESSAGE);
+            startActivityForResult(intent, ENCRYPT_MESSAGE);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -255,7 +271,7 @@ public class ApgIntentHelper {
         }
         try {
             intent.putExtra(EXTRA_TEXT, data);
-            activity.startActivityForResult(intent, DECRYPT_MESSAGE);
+            startActivityForResult(intent, DECRYPT_MESSAGE);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -294,15 +310,16 @@ public class ApgIntentHelper {
             break;
         case SELECT_PUBLIC_KEYS:
             if (resultCode != Activity.RESULT_OK || data == null) {
-                apgData.setPublicKeys(null);
+                apgData.setPublicKeyIds(null);
                 break;
             }
-            apgData.setPublicKeys(data.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS));
+            apgData.setPublicKeyIds(data.getLongArrayExtra(RESULT_EXTRA_MASTER_KEY_IDS));
+            apgData.setPublicUserIds(data.getStringArrayExtra(RESULT_EXTRA_USER_IDS));
 
             break;
         case ENCRYPT_MESSAGE:
             if (resultCode != Activity.RESULT_OK || data == null) {
-                apgData.setPublicKeys(null);
+                apgData.setPublicKeyIds(null);
                 break;
             }
             apgData.setEncryptedData(data.getStringExtra(EXTRA_ENCRYPTED_MESSAGE));
@@ -363,7 +380,7 @@ public class ApgIntentHelper {
         intent.putExtra(EXTRA_SELECTION, initialKeyIds);
 
         try {
-            activity.startActivityForResult(intent, SELECT_PUBLIC_KEYS);
+            startActivityForResult(intent, SELECT_PUBLIC_KEYS);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
