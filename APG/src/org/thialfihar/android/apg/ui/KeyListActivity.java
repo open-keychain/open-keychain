@@ -20,6 +20,7 @@ package org.thialfihar.android.apg.ui;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.compatibility.DialogFragmentWorkaround;
 import org.thialfihar.android.apg.service.ApgIntentService;
 import org.thialfihar.android.apg.service.ApgIntentServiceHandler;
 import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
@@ -159,9 +160,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
         // TODO: reimplement!
         // menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
         // .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(0, Id.menu.option.import_keys, 2, R.string.menu_importKeys).setShowAsAction(
+        menu.add(0, Id.menu.option.import_keys, 5, R.string.menu_importKeys).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.export_keys, 3, R.string.menu_exportKeys).setShowAsAction(
+        menu.add(0, Id.menu.option.export_keys, 6, R.string.menu_exportKeys).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
@@ -207,6 +208,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
+                    Log.d(Constants.TAG, "FileDialogFragment.MESSAGE_OKAY");
                     Bundle data = message.getData();
                     mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
@@ -217,13 +219,18 @@ public class KeyListActivity extends SherlockFragmentActivity {
         };
 
         // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
+        final Messenger messenger = new Messenger(returnHandler);
 
-        mFileDialog = FileDialogFragment.newInstance(messenger,
-                getString(R.string.title_importKeys), getString(R.string.specifyFileToImportFrom),
-                mImportFilename, null, Id.request.filename);
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                mFileDialog = FileDialogFragment.newInstance(messenger,
+                        getString(R.string.title_importKeys),
+                        getString(R.string.specifyFileToImportFrom), mImportFilename, null,
+                        Id.request.filename);
 
-        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+                mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+            }
+        });
     }
 
     /**
@@ -233,21 +240,6 @@ public class KeyListActivity extends SherlockFragmentActivity {
      *            if -1 export all keys
      */
     public void showExportKeysDialog(final long keyRingRowId) {
-        String title = null;
-        if (keyRingRowId != -1) {
-            // single key export
-            title = getString(R.string.title_exportKey);
-        } else {
-            title = getString(R.string.title_exportKeys);
-        }
-
-        String message = null;
-        if (mKeyType == Id.type.public_key) {
-            message = getString(R.string.specifyFileToExportTo);
-        } else {
-            message = getString(R.string.specifyFileToExportSecretKeysTo);
-        }
-
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
@@ -262,12 +254,31 @@ public class KeyListActivity extends SherlockFragmentActivity {
         };
 
         // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
+        final Messenger messenger = new Messenger(returnHandler);
 
-        mFileDialog = FileDialogFragment.newInstance(messenger, title, message, mExportFilename,
-                null, Id.request.filename);
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
+            public void run() {
+                String title = null;
+                if (keyRingRowId != -1) {
+                    // single key export
+                    title = getString(R.string.title_exportKey);
+                } else {
+                    title = getString(R.string.title_exportKeys);
+                }
 
-        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+                String message = null;
+                if (mKeyType == Id.type.public_key) {
+                    message = getString(R.string.specifyFileToExportTo);
+                } else {
+                    message = getString(R.string.specifyFileToExportSecretKeysTo);
+                }
+
+                mFileDialog = FileDialogFragment.newInstance(messenger, title, message,
+                        mExportFilename, null, Id.request.filename);
+
+                mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+            }
+        });
     }
 
     /**

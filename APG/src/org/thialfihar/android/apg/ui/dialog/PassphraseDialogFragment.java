@@ -56,14 +56,12 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class PassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
-
-    private Messenger mMessenger;
-
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_SECRET_KEY_ID = "secret_key_id";
 
     public static final int MESSAGE_OKAY = 1;
 
+    private Messenger mMessenger;
     private EditText mPassphraseEditText;
 
     /**
@@ -182,6 +180,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
@@ -217,6 +217,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         });
 
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
             }

@@ -26,7 +26,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 
 public class ProgressDialogFragment extends DialogFragment {
-
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
 

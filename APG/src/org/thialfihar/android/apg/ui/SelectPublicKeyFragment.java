@@ -22,14 +22,13 @@ import java.util.Vector;
 
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.compatibility.ListFragmentWorkaround;
 import org.thialfihar.android.apg.provider.ApgDatabase;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.Keys;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.provider.ApgDatabase.Tables;
 import org.thialfihar.android.apg.ui.widget.SelectKeyCursorAdapter;
-
-import com.actionbarsherlock.app.SherlockListFragment;
 
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -38,10 +37,9 @@ import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
-import android.view.View;
 import android.widget.ListView;
 
-public class SelectPublicKeyFragment extends SherlockListFragment implements
+public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private SelectPublicKeyActivity mActivity;
@@ -79,15 +77,6 @@ public class SelectPublicKeyFragment extends SherlockListFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    /**
-     * Workaround for Android 4.1. Items are not checked in layout. See
-     * http://code.google.com/p/android/issues/detail?id=35885
-     */
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        l.setItemChecked(position, l.isItemChecked(position));
     }
 
     /**

@@ -36,14 +36,13 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
 public class DeleteKeyDialogFragment extends DialogFragment {
-
-    private Messenger mMessenger;
-
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_DELETE_KEY_RING_ROW_ID = "delete_file";
     private static final String ARG_KEY_TYPE = "key_type";
 
     public static final int MESSAGE_OKAY = 1;
+
+    private Messenger mMessenger;
 
     /**
      * Creates new instance of this delete file dialog fragment
@@ -68,6 +67,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final FragmentActivity activity = getActivity();
+        mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         final long deleteKeyRingRowId = getArguments().getLong(ARG_DELETE_KEY_RING_ROW_ID);
         final int keyType = getArguments().getInt(ARG_KEY_TYPE);
@@ -92,6 +92,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         : R.string.secretKeyDeletionConfirmation, userId));
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
+
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 if (keyType == Id.type.public_key) {
                     ProviderHelper.deletePublicKeyRing(activity, deleteKeyRingRowId);
@@ -105,6 +107,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             }
         });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
             }

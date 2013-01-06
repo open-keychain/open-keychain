@@ -42,12 +42,14 @@ public class KeyListPublicActivity extends KeyListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.key_server, 2, R.string.menu_keyServer)
-                .setIcon(R.drawable.ic_menu_search_list)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        super.onCreateOptionsMenu(menu);
+
         menu.add(1, Id.menu.option.scanQRCode, 1, R.string.menu_scanQRCode)
                 .setIcon(R.drawable.ic_menu_scan_qrcode)
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.key_server, 2, R.string.menu_keyServer)
+                .setIcon(R.drawable.ic_menu_search_list)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 

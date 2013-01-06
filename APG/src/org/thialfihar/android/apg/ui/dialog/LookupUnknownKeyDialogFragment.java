@@ -37,14 +37,13 @@ import org.thialfihar.android.apg.ui.KeyServerQueryActivity;
 import org.thialfihar.android.apg.util.Log;
 
 public class LookupUnknownKeyDialogFragment extends DialogFragment {
-
-    private Messenger mMessenger;
-
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_UNKNOWN_KEY_ID = "unknown_key_id";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_CANCEL = 2;
+
+    private Messenger mMessenger;
 
     /**
      * Creates new instance of this dialog fragment
@@ -82,6 +81,8 @@ public class LookupUnknownKeyDialogFragment extends DialogFragment {
                 PGPHelper.getSmallFingerPrint(unknownKeyId)));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
@@ -94,6 +95,8 @@ public class LookupUnknownKeyDialogFragment extends DialogFragment {
             }
         });
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 

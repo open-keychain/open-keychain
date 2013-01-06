@@ -33,7 +33,6 @@ import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
 public class DeleteFileDialogFragment extends DialogFragment {
-
     private static final String ARG_DELETE_FILE = "delete_file";
 
     /**
@@ -66,6 +65,8 @@ public class DeleteFileDialogFragment extends DialogFragment {
         alert.setMessage(this.getString(R.string.fileDeleteConfirmation, deleteFile));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            
+            @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 

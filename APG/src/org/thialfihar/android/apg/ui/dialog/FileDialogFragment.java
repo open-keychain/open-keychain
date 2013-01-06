@@ -38,9 +38,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 public class FileDialogFragment extends DialogFragment {
-
-    private Messenger mMessenger;
-
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
     private static final String ARG_MESSAGE = "message";
@@ -52,6 +49,8 @@ public class FileDialogFragment extends DialogFragment {
 
     public static final String MESSAGE_DATA_FILENAME = "filename";
     public static final String MESSAGE_DATA_CHECKED = "checked";
+
+    private Messenger mMessenger;
 
     /**
      * Creates new instance of this file dialog fragment
@@ -107,7 +106,8 @@ public class FileDialogFragment extends DialogFragment {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
-                FileHelper.openFile(activity, mFilename.getText().toString(), "text/plain", requestCode);
+                FileHelper.openFile(activity, mFilename.getText().toString(), "text/plain",
+                        requestCode);
             }
         });
 
@@ -127,6 +127,10 @@ public class FileDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
+                Log.d(Constants.TAG, "onclock");
+
+                dismiss();
+
                 boolean checked = false;
                 if (mCheckBox.isEnabled()) {
                     checked = mCheckBox.isChecked();
@@ -138,12 +142,11 @@ public class FileDialogFragment extends DialogFragment {
                 data.putBoolean(MESSAGE_DATA_CHECKED, checked);
 
                 sendMessageToHandler(MESSAGE_OKAY, data);
-
-                dismiss();
             }
         });
 
         alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();

@@ -20,6 +20,7 @@ package org.thialfihar.android.apg.ui;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
+import org.thialfihar.android.apg.compatibility.Clipboard;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -32,7 +33,6 @@ import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.PassphraseDialogFragment;
-import org.thialfihar.android.apg.util.Compatibility;
 import org.thialfihar.android.apg.R;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -264,7 +264,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && mMessage.getText().length() == 0) {
 
-            CharSequence clipboardText = Compatibility.getClipboardText(this);
+            CharSequence clipboardText = Clipboard.getClipboardText(this);
 
             String data = "";
             if (clipboardText != null) {
