@@ -20,7 +20,7 @@ package org.thialfihar.android.apg.ui;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.compatibility.Clipboard;
+import org.thialfihar.android.apg.compatibility.ClipboardReflection;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -264,7 +264,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         if (mSource.getCurrentView().getId() == R.id.sourceMessage
                 && mMessage.getText().length() == 0) {
 
-            CharSequence clipboardText = Clipboard.getClipboardText(this);
+            CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
 
             String data = "";
             if (clipboardText != null) {

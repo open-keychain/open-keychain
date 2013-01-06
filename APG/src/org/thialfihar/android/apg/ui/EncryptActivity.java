@@ -23,7 +23,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.Id;
-import org.thialfihar.android.apg.compatibility.Clipboard;
+import org.thialfihar.android.apg.compatibility.ClipboardReflection;
 import org.thialfihar.android.apg.helper.FileHelper;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.helper.PGPHelper;
@@ -758,7 +758,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     case Id.target.clipboard:
                         output = data.getString(ApgIntentService.RESULT_ENCRYPTED_STRING);
                         Log.d(Constants.TAG, "output: " + output);
-                        Clipboard.copyToClipboard(EncryptActivity.this, output);
+                        ClipboardReflection.copyToClipboard(EncryptActivity.this, output);
                         Toast.makeText(EncryptActivity.this,
                                 R.string.encryptionToClipboardSuccessful, Toast.LENGTH_SHORT)
                                 .show();
