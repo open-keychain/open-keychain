@@ -110,57 +110,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <!-- APG's own Actions -->
-            <intent-filter android:label="@string/intent_import_key" >
-                <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="*/*" />
-            </intent-filter>
-            <!-- Linking "Import key" to file types -->
-            <intent-filter android:label="@string/intent_import_key" >
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
-            </intent-filter>
-            <intent-filter android:label="@string/intent_import_key" >
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:host="*" />
-                <data android:scheme="file" />
-                <data android:scheme="content" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.asc" />
-                <data android:pathPattern=".*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
-            </intent-filter>
 
             <meta-data
                 android:name="android.app.searchable"
@@ -349,13 +298,63 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_signKey" />
         <activity
-            android:name=".ui.ImportFromQRCodeActivity"
+            android:name="org.thialfihar.android.apg.ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_importFromQRCode" >
-            <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.SCAN_QR_CODE" />
+            android:label="@string/title_importFromQRCode"
+            android:uiOptions="splitActionBarWhenNarrow" >
+
+            <!-- APG's own Actions -->
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_QR_CODE" />
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_NFC" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <!-- Linking "Import key" to file types -->
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.gpg" />
+            </intent-filter>
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.asc" />
+                <data android:pathPattern=".*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+                <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
             </intent-filter>
         </activity>
         <activity

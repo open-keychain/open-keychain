@@ -80,6 +80,9 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * android.intent.action.VIEW connected to .gpg and .asc files: Import Key and Decrypt
 * android.intent.action.SEND connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 * IMPORT
+* IMPORT_FROM_FILE
+* IMPORT_FROM_QR_CODE
+* IMPORT_FROM_NFC
 * EDIT_KEY
 * SELECT_PUBLIC_KEYS
 * SELECT_SECRET_KEY

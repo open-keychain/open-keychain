@@ -40,6 +40,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -187,8 +188,8 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
         // Message is received after querying is done in ApgService
-        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this, R.string.progress_querying,
-                ProgressDialog.STYLE_SPINNER) {
+        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
+                R.string.progress_querying, ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -227,8 +228,8 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                             if (mKeyData != null) {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
                                         KeyListPublicActivity.class);
-                                intent.setAction(KeyListActivity.ACTION_IMPORT);
-                                intent.putExtra(KeyListActivity.EXTRA_TEXT, mKeyData);
+                                intent.setAction(ImportKeysActivity.ACTION);
+                                intent.putExtra(ImportKeysActivity.EXTRA_TEXT, mKeyData);
                                 startActivity(intent);
                             }
                         }

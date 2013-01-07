@@ -38,6 +38,7 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 public class KeyListSecretFragment extends KeyListFragment implements
@@ -74,9 +75,7 @@ public class KeyListSecretFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-
         menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
-        menu.add(0, Id.menu.share_qr_code, 2, R.string.menu_share);
     }
 
     @Override
@@ -97,17 +96,13 @@ public class KeyListSecretFragment extends KeyListFragment implements
             mKeyListSecretActivity.checkPassPhraseAndEdit(masterKeyId);
 
             return true;
-        case Id.menu.share_qr_code:
-            ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(
-                    mKeyListSecretActivity, new long[] { masterKeyId });
-            new IntentIntegrator(mKeyListSecretActivity).shareText(keyringArmored.get(0));
 
-            return true;
         default:
             return super.onContextItemSelected(item);
 
         }
     }
+
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,

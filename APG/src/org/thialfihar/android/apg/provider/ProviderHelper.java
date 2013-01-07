@@ -589,7 +589,11 @@ public class ProviderHelper {
             Log.e(Constants.TAG, "No master keys given!");
         }
 
-        return output;
+        if (output.size() > 0) {
+            return output;
+        } else {
+            return null;
+        }
     }
 
     public static byte[] getPublicKeyRingsAsByteArray(Context context, long[] masterKeyIds) {

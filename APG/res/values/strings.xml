@@ -89,7 +89,9 @@
     <string name="menu_managePublicKeys">Manage Public Keyrings</string>
     <string name="menu_manageSecretKeys">Manage Secret Keyrings</string>
     <string name="menu_preferences">Settings</string>
-    <string name="menu_importKeys">Import Keyrings</string>
+    <string name="menu_importFromFile">Import from file</string>
+    <string name="menu_importFromQrCode">Import from QR Code</string>
+    <string name="menu_importFromNfc">Import from NFC</string>
     <string name="menu_exportKeys">Export All Keyrings</string>
     <string name="menu_exportKey">Export Keyring</string>
     <string name="menu_deleteKey">Delete Keyring</string>

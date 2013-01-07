@@ -51,8 +51,8 @@ public class KeyListFragment extends ExpandableListFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, Id.menu.export, 0, R.string.menu_exportKey);
-        menu.add(0, Id.menu.delete, 1, R.string.menu_deleteKey);
+        menu.add(0, Id.menu.export, 5, R.string.menu_exportKey);
+        menu.add(0, Id.menu.delete, 111, R.string.menu_deleteKey);
     }
 
     @Override

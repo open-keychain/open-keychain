@@ -44,7 +44,6 @@ public final class Id {
             public static final int about = 0x21070003;
             public static final int manage_public_keys = 0x21070004;
             public static final int manage_secret_keys = 0x21070005;
-            public static final int import_keys = 0x21070006;
             public static final int export_keys = 0x21070007;
             public static final int preferences = 0x21070008;
             public static final int search = 0x21070009;
@@ -58,7 +57,9 @@ public final class Id {
             public static final int cancel = 0x21070017;
             public static final int save = 0x21070018;
             public static final int okay = 0x21070019;
-
+            public static final int import_from_file = 0x21070020;
+            public static final int import_from_qr_code = 0x21070021;
+            public static final int import_from_nfc = 0x21070022;
         }
     }
 
@@ -147,10 +148,10 @@ public final class Id {
         public static final int export_keys = 0x21070002;
     }
 
-//    public static final class database {
-//        public static final int type_public = 0;
-//        public static final int type_secret = 1;
-//    }
+    // public static final class database {
+    // public static final int type_public = 0;
+    // public static final int type_secret = 1;
+    // }
 
     public static final class type {
         public static final int public_key = 0x21070001;
