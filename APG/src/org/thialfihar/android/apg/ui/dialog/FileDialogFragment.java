@@ -127,8 +127,6 @@ public class FileDialogFragment extends DialogFragment {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                Log.d(Constants.TAG, "onclock");
-
                 dismiss();
 
                 boolean checked = false;

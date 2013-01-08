@@ -137,16 +137,4 @@ public class PGPConversionHelper {
         }
     }
 
-    public static PGPKeyRing decodeKeyRing(InputStream is) throws IOException {
-        InputStream in = PGPUtil.getDecoderStream(is);
-        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
-        Object obj = objectFactory.nextObject();
-
-        if (obj instanceof PGPKeyRing) {
-            return (PGPKeyRing) obj;
-        }
-
-        return null;
-    }
-
 }

@@ -212,13 +212,12 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    Log.d(Constants.TAG, "FileDialogFragment.MESSAGE_OKAY");
                     Bundle data = message.getData();
                     mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-
-                    Log.d(Constants.TAG, "mImportFilename: " + mImportFilename);
-
                     mDeleteAfterImport = data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED);
+                    
+                    Log.d(Constants.TAG, "mImportFilename: " + mImportFilename);
+                    Log.d(Constants.TAG, "mDeleteAfterImport: " + mDeleteAfterImport);
 
                     loadKeyListFragment();
                 }

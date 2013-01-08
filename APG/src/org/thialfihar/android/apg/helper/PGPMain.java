@@ -45,6 +45,7 @@ import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKeyRingCollection;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
@@ -475,6 +476,13 @@ public class PGPMain {
         updateProgress(progress, R.string.progress_done, 100, 100);
     }
 
+    /**
+     * TODO: implement Id.return_value.updated as status when key already existed
+     * 
+     * @param context
+     * @param keyring
+     * @return
+     */
     public static int storeKeyRingInCache(Context context, PGPKeyRing keyring) {
         int status = Integer.MIN_VALUE; // out of bounds value (Id.return_value.*)
         try {
@@ -543,21 +551,14 @@ public class PGPMain {
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        // if (type == Id.type.secret_key) {
-        // if (progress != null)
-
         updateProgress(progress, R.string.progress_importingSecretKeys, 0, 100);
-        // progress.setProgress(R.string.progress_importingSecretKeys, 0, 100);
-        // } else {
-        // if (progress != null)
-        // progress.setProgress(R.string.progress_importingPublicKeys, 0, 100);
-        // }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new ApgGeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
+
         // need to have access to the bufferedInput, so we can reuse it for the possible
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
         // armour blocks
@@ -566,35 +567,47 @@ public class PGPMain {
         int oldKeys = 0;
         int badKeys = 0;
         try {
-            PGPKeyRing keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
-            while (keyring != null) {
-                int status = Integer.MIN_VALUE; // out of bounds value
 
-                // if this key is what we expect it to be, save it
-                // if ((type == Id.type.secret_key && keyring instanceof PGPSecretKeyRing)
-                // || (type == Id.type.public_key && keyring instanceof PGPPublicKeyRing)) {
-                status = storeKeyRingInCache(context, keyring);
-                // }
+            // read all available blocks... (asc files can contain many blocks with BEGIN END)
+            while (bufferedInput.available() > 0) {
+                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
 
-                if (status == Id.return_value.error) {
-                    throw new ApgGeneralException(context.getString(R.string.error_savingKeys));
+                // go through all objects in this block
+                Object obj;
+                while ((obj = objectFactory.nextObject()) != null) {
+                    Log.d(Constants.TAG, "Found class: " + obj.getClass());
+
+                    if (obj instanceof PGPKeyRing) {
+                        PGPKeyRing keyring = (PGPKeyRing) obj;
+
+                        int status = Integer.MIN_VALUE; // out of bounds value
+
+                        status = storeKeyRingInCache(context, keyring);
+
+                        if (status == Id.return_value.error) {
+                            throw new ApgGeneralException(
+                                    context.getString(R.string.error_savingKeys));
+                        }
+
+                        // update the counts to display to the user at the end
+                        if (status == Id.return_value.updated) {
+                            ++oldKeys;
+                        } else if (status == Id.return_value.ok) {
+                            ++newKeys;
+                        } else if (status == Id.return_value.bad) {
+                            ++badKeys;
+                        }
+
+                        updateProgress(progress,
+                                (int) (100 * progressIn.position() / data.getSize()), 100);
+                    } else {
+                        Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
+                    }
                 }
-
-                // update the counts to display to the user at the end
-                if (status == Id.return_value.updated) {
-                    ++oldKeys;
-                } else if (status == Id.return_value.ok) {
-                    ++newKeys;
-                } else if (status == Id.return_value.bad) {
-                    ++badKeys;
-                }
-
-                updateProgress(progress, (int) (100 * progressIn.position() / data.getSize()), 100);
-
-                keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
             }
-        } catch (EOFException e) {
-            // nothing to do, we are done
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Exception on parsing key file!", e);
         }
 
         returnData.putInt(ApgIntentService.RESULT_IMPORT_ADDED, newKeys);
@@ -658,7 +671,6 @@ public class PGPMain {
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(outSec);
                 }
-                ++numKeys;
             }
             outSec.close();
         }

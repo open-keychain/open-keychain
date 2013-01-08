@@ -20,12 +20,20 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPPublicKeyRingCollection;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSecretKeyRingCollection;
+import org.spongycastle.openpgp.PGPUtil;
 import org.thialfihar.android.apg.Constants;
 import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.PGPConversionHelper;
@@ -45,6 +53,8 @@ import android.support.v4.content.AsyncTaskLoader;
 public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, String>>> {
     public static final String MAP_ATTR_USER_ID = "user_id";
     public static final String MAP_ATTR_FINGERPINT = "fingerprint";
+
+    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
 
     Context mContext;
     List<String> mItems;
@@ -73,7 +83,9 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
             }
         }
 
-        return generateListOfKeyrings(inputData);
+        generateListOfKeyrings(inputData);
+
+        return data;
     }
 
     @Override
@@ -105,36 +117,54 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
      * @param keyringBytes
      * @return
      */
-    private ArrayList<Map<String, String>> generateListOfKeyrings(InputData inputData) {
-        ArrayList<Map<String, String>> output = new ArrayList<Map<String, String>>();
-
+    private void generateListOfKeyrings(InputData inputData) {
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
+
         // need to have access to the bufferedInput, so we can reuse it for the possible
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
         // armour blocks
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         try {
-            PGPKeyRing keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
-            while (keyring != null) {
-                String userId = PGPHelper.getMainUserId(keyring.getPublicKey());
 
-                String fingerprint = PGPHelper.convertFingerprintToHex(keyring.getPublicKey()
-                        .getFingerprint());
+            // read all available blocks... (asc files can contain many blocks with BEGIN END)
+            while (bufferedInput.available() > 0) {
+                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
 
-                Map<String, String> attrs = new HashMap<String, String>();
-                attrs.put(MAP_ATTR_USER_ID, userId);
-                attrs.put(MAP_ATTR_FINGERPINT, mContext.getString(R.string.fingerprint) + "\n"
-                        + fingerprint);
-                output.add(attrs);
+                // go through all objects in this block
+                Object obj;
+                while ((obj = objectFactory.nextObject()) != null) {
+                    Log.d(Constants.TAG, "Found class: " + obj.getClass());
 
-                keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
+                    if (obj instanceof PGPKeyRing) {
+                        PGPKeyRing newKeyring = (PGPKeyRing) obj;
+                        addToData(newKeyring);
+                    } else {
+                        Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
+                    }
+                }
             }
         } catch (Exception e) {
-            Log.e(Constants.TAG, "Exception", e);
+            Log.e(Constants.TAG, "Exception on parsing key file!", e);
+        }
+    }
+
+    private void addToData(PGPKeyRing keyring) {
+        String userId = PGPHelper.getMainUserId(keyring.getPublicKey());
+
+        if (keyring instanceof PGPSecretKeyRing) {
+            userId = mContext.getString(R.string.secretKeyring) + " " + userId;
         }
 
-        return output;
+        String fingerprint = PGPHelper.convertFingerprintToHex(keyring.getPublicKey()
+                .getFingerprint());
+
+        Map<String, String> attrs = new HashMap<String, String>();
+        attrs.put(MAP_ATTR_USER_ID, userId);
+        attrs.put(MAP_ATTR_FINGERPINT, mContext.getString(R.string.fingerprint) + "\n"
+                + fingerprint);
+        data.add(attrs);
     }
 
 }

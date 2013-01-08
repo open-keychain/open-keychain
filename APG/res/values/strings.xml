@@ -155,7 +155,8 @@
     <string name="notValid">not valid</string>
     <string name="nKeyServers">%s key server(s)</string>
     <string name="fingerprint">Fingerprint:</string>
-
+    <string name="secretKeyring">Secret Keyring:</string>
+    
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>
     <string name="choice_signOnly">Sign only</string>
