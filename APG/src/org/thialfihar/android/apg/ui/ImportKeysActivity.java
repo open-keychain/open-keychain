@@ -59,7 +59,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
 
     // only used by IMPORT
     public static final String EXTRA_TEXT = "text";
-    public static final String EXTRA_KEYRING_BYTES = "keyring_bytes";
+    public static final String EXTRA_KEYRING_BYTES = "keyringBytes";
 
     // public static final String EXTRA_KEY_ID = "keyId";
 

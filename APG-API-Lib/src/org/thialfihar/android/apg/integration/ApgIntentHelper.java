@@ -66,9 +66,26 @@ public class ApgIntentHelper {
     public static final String ACTION_EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
 
     /**
-     * Scan QR code, without permission
+     * Import actions
      */
-    public static final String ACTION_SCAN_QR_CODE = APG_INTENT_PREFIX + "SCAN_QR_CODE";
+    public static final String ACTION_IMPORT = APG_INTENT_PREFIX + "IMPORT";
+
+    // only used by IMPORT
+    public static final String EXTRA_IMPORT_TEXT = "text";
+    public static final String EXTRA_IMPORT_KEYRING_BYTES = "keyringBytes";
+
+    public static final String ACTION_IMPORT_FROM_FILE = APG_INTENT_PREFIX + "IMPORT_FROM_FILE";
+    public static final String ACTION_IMPORT_FROM_QR_CODE = APG_INTENT_PREFIX
+            + "IMPORT_FROM_QR_CODE";
+
+    /**
+     * Share actions
+     */
+    public static final String ACTION_SHARE_WITH_QR_CODE = APG_INTENT_PREFIX + "SHARE_WITH_QR_CODE";
+    public static final String ACTION_SHARE_WITH_NFC = APG_INTENT_PREFIX + "SHARE_WITH_NFC";
+
+    // used by SHARE_WITH_QR_CODE and SHARE_WITH_NFC
+    public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
 
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
@@ -133,9 +150,45 @@ public class ApgIntentHelper {
      * 
      * @return true when activity was found and executed successfully
      */
-    public boolean scanQrCode() {
-        Intent intent = new Intent(ACTION_SCAN_QR_CODE);
+    public boolean importFromQrCode() {
+        Intent intent = new Intent(ACTION_IMPORT_FROM_QR_CODE);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        try {
+            startActivityForResult(intent, -1);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
+    }
+
+    /**
+     * Opens activity with qr code for masterKeyId
+     * 
+     * @return true when activity was found and executed successfully
+     */
+    public boolean shareWithQrCode(long masterKeyId) {
+        Intent intent = new Intent(ACTION_SHARE_WITH_QR_CODE);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        intent.putExtra(EXTRA_MASTER_KEY_ID, masterKeyId);
+        try {
+            startActivityForResult(intent, -1);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
+    }
+
+    /**
+     * Opens activity to share keyring withnc based on given masterKeyId
+     * 
+     * @return true when activity was found and executed successfully
+     */
+    public boolean shareWithNfc(long masterKeyId) {
+        Intent intent = new Intent(ACTION_SHARE_WITH_NFC);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        intent.putExtra(EXTRA_MASTER_KEY_ID, masterKeyId);
         try {
             startActivityForResult(intent, -1);
             return true;
