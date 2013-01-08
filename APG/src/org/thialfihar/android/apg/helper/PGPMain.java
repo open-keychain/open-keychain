@@ -74,6 +74,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactory
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgIntentService;
+import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
@@ -476,7 +477,7 @@ public class PGPMain {
     }
 
     public static int storeKeyRingInCache(Context context, PGPKeyRing keyring) {
-        int status = Integer.MIN_VALUE; // out of bounds value (Id.retrun_value.*)
+        int status = Integer.MIN_VALUE; // out of bounds value (Id.return_value.*)
         try {
             if (keyring instanceof PGPSecretKeyRing) {
                 PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
@@ -538,18 +539,20 @@ public class PGPMain {
         }
     }
 
-    public static Bundle importKeyRings(Context context, int type, InputData data,
+    public static Bundle importKeyRings(Context context, InputData data,
             ProgressDialogUpdater progress) throws ApgGeneralException, FileNotFoundException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        if (type == Id.type.secret_key) {
-            if (progress != null)
-                progress.setProgress(R.string.progress_importingSecretKeys, 0, 100);
-        } else {
-            if (progress != null)
-                progress.setProgress(R.string.progress_importingPublicKeys, 0, 100);
-        }
+        // if (type == Id.type.secret_key) {
+        // if (progress != null)
+
+        updateProgress(progress, R.string.progress_importingSecretKeys, 0, 100);
+        // progress.setProgress(R.string.progress_importingSecretKeys, 0, 100);
+        // } else {
+        // if (progress != null)
+        // progress.setProgress(R.string.progress_importingPublicKeys, 0, 100);
+        // }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new ApgGeneralException(context.getString(R.string.error_externalStorageNotReady));
@@ -569,10 +572,10 @@ public class PGPMain {
                 int status = Integer.MIN_VALUE; // out of bounds value
 
                 // if this key is what we expect it to be, save it
-                if ((type == Id.type.secret_key && keyring instanceof PGPSecretKeyRing)
-                        || (type == Id.type.public_key && keyring instanceof PGPPublicKeyRing)) {
-                    status = storeKeyRingInCache(context, keyring);
-                }
+                // if ((type == Id.type.secret_key && keyring instanceof PGPSecretKeyRing)
+                // || (type == Id.type.public_key && keyring instanceof PGPPublicKeyRing)) {
+                status = storeKeyRingInCache(context, keyring);
+                // }
 
                 if (status == Id.return_value.error) {
                     throw new ApgGeneralException(context.getString(R.string.error_savingKeys));
@@ -588,9 +591,6 @@ public class PGPMain {
                 }
 
                 updateProgress(progress, (int) (100 * progressIn.position() / data.getSize()), 100);
-
-                // TODO: needed?
-                // obj = objectFactory.nextObject();
 
                 keyring = PGPConversionHelper.decodeKeyRing(bufferedInput);
             }
@@ -652,9 +652,9 @@ public class PGPMain {
         return returnData;
     }
 
-    public static Bundle getKeyRings(Context context, long[] masterKeyIds,
-            OutputStream outStream, ProgressDialogUpdater progress) throws ApgGeneralException,
-            FileNotFoundException, PGPException, IOException {
+    public static Bundle getKeyRings(Context context, long[] masterKeyIds, OutputStream outStream,
+            ProgressDialogUpdater progress) throws ApgGeneralException, FileNotFoundException,
+            PGPException, IOException {
         Bundle returnData = new Bundle();
 
         ArmoredOutputStream out = new ArmoredOutputStream(outStream);

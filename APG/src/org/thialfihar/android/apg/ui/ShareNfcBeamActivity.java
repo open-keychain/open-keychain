@@ -82,8 +82,6 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
                         Toast.LENGTH_LONG).show();
                 finish();
             } else {
-                buildView();
-
                 // handle actions after verifying that nfc works...
                 handleActions(getIntent());
             }
@@ -99,7 +97,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         }
 
         if (ACTION_SHARE_WITH_NFC.equals(action)) {
-            long masterKeyId = getIntent().getExtras().getLong(EXTRA_MASTER_KEY_ID);
+            long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
             // get public keyring as byte array
             mSharedKeyringBytes = ProviderHelper.getPublicKeyRingsAsByteArray(this,
@@ -121,10 +119,14 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         NdefMessage msg = (NdefMessage) rawMsgs[0];
         // record 0 contains the MIME type, record 1 is the AAR, if present
         byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
-        
-        
-        
-//        Log.d(Constants.TAG, new String());
+
+        Intent importIntent = new Intent(this, ImportKeysActivity.class);
+        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_KEYRING_BYTES, receivedKeyringBytes);
+
+        finish();
+
+        startActivity(importIntent);
     }
 
     private void buildView() {
@@ -186,7 +188,8 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case MESSAGE_SENT:
-                Toast.makeText(getApplicationContext(), "Message sent!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.nfcSuccessfull, Toast.LENGTH_LONG)
+                        .show();
                 break;
             }
         }
@@ -198,6 +201,10 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         // Check to see that the Activity started due to an Android Beam
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
             handleActionNdefDiscovered(getIntent());
+        } else {
+            // build view only when sending nfc, not when receiving, as it gets directly into Import
+            // activity on receiving
+            buildView();
         }
     }
 

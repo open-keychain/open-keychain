@@ -260,7 +260,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
         // Send all information needed to service to export key in other thread
         Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_EXPORT_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_EXPORT_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();

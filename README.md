@@ -83,6 +83,8 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * IMPORT_FROM_FILE
 * IMPORT_FROM_QR_CODE
 * IMPORT_FROM_NFC
+* SHARE_WITH_QR_CODE
+* SHARE_WITH_NFC
 * EDIT_KEY
 * SELECT_PUBLIC_KEYS
 * SELECT_SECRET_KEY

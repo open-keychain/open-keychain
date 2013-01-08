@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
             if (userId == null) {
                 Log.d(Constants.TAG, "userId is null!");
             }
-            userId.setText(context.getString(R.string.fingerprint) + ":\n" + fingerprint);
+            userId.setText(context.getString(R.string.fingerprint) + "\n" + fingerprint);
         } else {
             // differentiate between keys and userIds in MergeCursor
             if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {

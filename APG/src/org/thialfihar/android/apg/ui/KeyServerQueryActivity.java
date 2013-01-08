@@ -169,7 +169,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         // Send all information needed to service to query keys in other thread
         Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_QUERY_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_QUERY_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();

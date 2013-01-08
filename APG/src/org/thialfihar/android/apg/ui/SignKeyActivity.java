@@ -198,7 +198,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_SIGN_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_SIGN_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -249,7 +249,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(this, ApgIntentService.class);
 
-        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_UPLOAD_KEY);
+        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_UPLOAD_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();

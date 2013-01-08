@@ -49,7 +49,7 @@ public class ShareQrCodeActivity extends SherlockFragmentActivity {
         }
 
         if (ACTION_SHARE_WITH_QR_CODE.equals(action)) {
-            long masterKeyId = getIntent().getExtras().getLong(EXTRA_MASTER_KEY_ID);
+            long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
             // get public keyring as ascii armored string
             ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(

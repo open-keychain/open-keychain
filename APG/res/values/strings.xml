@@ -93,7 +93,7 @@
     <string name="menu_importFromQrCode">Import from QR Code</string>
     <string name="menu_importFromNfc">Import from NFC</string>
     <string name="menu_exportKeys">Export All Keyrings</string>
-    <string name="menu_exportKey">Export Keyring</string>
+    <string name="menu_exportKey">Export To File</string>
     <string name="menu_deleteKey">Delete Keyring</string>
     <string name="menu_createKey">Create Keyring</string>
     <string name="menu_editKey">Edit Keyring</string>
@@ -154,7 +154,7 @@
     <string name="expired">expired</string>
     <string name="notValid">not valid</string>
     <string name="nKeyServers">%s key server(s)</string>
-    <string name="fingerprint">fingerprint</string>
+    <string name="fingerprint">Fingerprint:</string>
 
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>
@@ -232,6 +232,7 @@
     <string name="qrScanImportSuccess">Successfully validated and imported keyring</string>
     <string name="listInformation">Long press one entry in this list to show more options!</string>
     <string name="listEmpty">This list is empty!</string>
+    <string name="nfcSuccessfull">Successfully sent keyring with NFC Beam!</string>
 
     <!--
          error_lowerCase: phrases, no punctuation, all lowercase,
@@ -266,6 +267,7 @@
     <string name="error_onlyFilesAreSupported">Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
     <string name="error_jellyBeanNeeded">You need Android 4.1 alias Jelly Bean to use Androids NFC Beam feature!</string>
     <string name="error_nfcNeeded">NFC is not available on your device!</string>
+    <string name="error_nothingImport">Nothing to import!</string>
 
     <!-- progress_lowerCase: lowercase, phrases, usually ending in '…' -->
     <string name="progress_done">done.</string>

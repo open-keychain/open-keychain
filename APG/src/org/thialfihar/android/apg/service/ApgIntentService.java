@@ -80,13 +80,13 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
     public static final int ACTION_DELETE_FILE_SECURELY = 40;
 
-    public static final int ACTION_IMPORT_KEY = 50;
-    public static final int ACTION_EXPORT_KEY = 51;
+    public static final int ACTION_IMPORT_KEYRING = 50;
+    public static final int ACTION_EXPORT_KEYRING = 51;
 
-    public static final int ACTION_UPLOAD_KEY = 60;
-    public static final int ACTION_QUERY_KEY = 61;
+    public static final int ACTION_UPLOAD_KEYRING = 60;
+    public static final int ACTION_QUERY_KEYRING = 61;
 
-    public static final int ACTION_SIGN_KEY = 70;
+    public static final int ACTION_SIGN_KEYRING = 70;
 
     /* keys for data bundle */
 
@@ -137,7 +137,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
     public static final String IMPORT_INPUT_STREAM = "importInputStream";
     public static final String IMPORT_FILENAME = "importFilename";
     public static final String IMPORT_BYTES = "importBytes";
-    public static final String IMPORT_KEY_TYPE = "importKeyType";
+    // public static final String IMPORT_KEY_TYPE = "importKeyType";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "exportOutputStream";
@@ -629,16 +629,16 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             break;
 
-        case ACTION_IMPORT_KEY:
+        case ACTION_IMPORT_KEYRING:
             try {
 
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                int keyType = Id.type.public_key;
-                if (data.containsKey(IMPORT_KEY_TYPE)) {
-                    keyType = data.getInt(IMPORT_KEY_TYPE);
-                }
+                // int keyType = Id.type.public_key;
+                // if (data.containsKey(IMPORT_KEY_TYPE)) {
+                // keyType = data.getInt(IMPORT_KEY_TYPE);
+                // }
 
                 /* Operation */
                 InputStream inStream = null;
@@ -670,7 +670,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
                 }
 
                 Bundle resultData = new Bundle();
-                resultData = PGPMain.importKeyRings(this, keyType, inputData, this);
+                resultData = PGPMain.importKeyRings(this, inputData, this);
 
                 sendMessageToHandler(ApgIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -679,7 +679,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             break;
 
-        case ACTION_EXPORT_KEY:
+        case ACTION_EXPORT_KEYRING:
             try {
 
                 /* Input */
@@ -729,7 +729,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             break;
 
-        case ACTION_UPLOAD_KEY:
+        case ACTION_UPLOAD_KEYRING:
             try {
 
                 /* Input */
@@ -756,7 +756,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             break;
 
-        case ACTION_QUERY_KEY:
+        case ACTION_QUERY_KEYRING:
             try {
 
                 /* Input */
@@ -787,7 +787,7 @@ public class ApgIntentService extends IntentService implements ProgressDialogUpd
 
             break;
 
-        case ACTION_SIGN_KEY:
+        case ACTION_SIGN_KEYRING:
             try {
 
                 /* Input */

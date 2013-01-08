@@ -38,8 +38,9 @@ import org.thialfihar.android.apg.ui.dialog.DeleteFileDialogFragment;
 import org.thialfihar.android.apg.ui.dialog.FileDialogFragment;
 import org.thialfihar.android.apg.util.Log;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -58,26 +59,22 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
 
     // only used by IMPORT
     public static final String EXTRA_TEXT = "text";
-
-    protected String mImportFilename = Constants.path.APP_DIR + "/";
+    public static final String EXTRA_KEYRING_BYTES = "keyring_bytes";
 
     // public static final String EXTRA_KEY_ID = "keyId";
 
-    protected String mImportData;
+    protected String mImportFilename;
+    protected byte[] mImportData;
+
     protected boolean mDeleteAfterImport = false;
 
     FileDialogFragment mFileDialog;
-
-    private TextView mContentView;
-
-    private String mScannedContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.import_keys);
-        mContentView = (TextView) findViewById(R.id.import_from_qr_code_content);
 
         // set actionbar without home button if called from another app
         OtherHelper.setActionBarBackButton(this);
@@ -116,7 +113,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             return true;
 
         case Id.menu.option.import_from_file:
-            showImportKeysDialog();
+            showImportFromFileDialog();
             return true;
 
         case Id.menu.option.import_from_qr_code:
@@ -156,19 +153,42 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         if (ACTION_IMPORT.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
-            } else {
-                mImportData = intent.getStringExtra(EXTRA_TEXT);
+                mImportData = null;
+            } else if (extras.containsKey(EXTRA_TEXT)) {
+                mImportData = intent.getStringExtra(EXTRA_TEXT).getBytes();
+                mImportFilename = null;
+            } else if (extras.containsKey(EXTRA_KEYRING_BYTES)) {
+                mImportData = intent.getByteArrayExtra(EXTRA_KEYRING_BYTES);
+                mImportFilename = null;
             }
-            importKeys();
+            loadKeyListFragment();
         } else if (ACTION_IMPORT_FROM_FILE.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
+                mImportData = null;
             }
-            showImportKeysDialog();
+            showImportFromFileDialog();
         } else if (ACTION_IMPORT_FROM_QR_CODE.equals(action)) {
             importFromQrCode();
         } else if (ACTION_IMPORT_FROM_NFC.equals(action)) {
             importFromNfc();
+        }
+    }
+
+    public void loadKeyListFragment() {
+        if (mImportData != null || mImportFilename != null) {
+            // generate list of keyrings
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            ImportKeysListFragment listFragment = new ImportKeysListFragment();
+            Bundle args = new Bundle();
+            args.putByteArray(ImportKeysListFragment.ARG_KEYRING_BYTES, mImportData);
+            args.putString(ImportKeysListFragment.ARG_IMPORT_FILENAME, mImportFilename);
+            listFragment.setArguments(args);
+            // replace container in view with fragment
+            fragmentTransaction.replace(R.id.import_keys_list_container, listFragment);
+            fragmentTransaction.commit();
         }
     }
 
@@ -186,7 +206,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     /**
      * Show to dialog from where to import keys
      */
-    public void showImportKeysDialog() {
+    public void showImportFromFileDialog() {
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
@@ -196,8 +216,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                     Bundle data = message.getData();
                     mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
+                    Log.d(Constants.TAG, "mImportFilename: " + mImportFilename);
+
                     mDeleteAfterImport = data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED);
-                    importKeys();
+
+                    loadKeyListFragment();
                 }
             }
         };
@@ -209,102 +232,12 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             public void run() {
                 mFileDialog = FileDialogFragment.newInstance(messenger,
                         getString(R.string.title_importKeys),
-                        getString(R.string.specifyFileToImportFrom), mImportFilename, null,
-                        Id.request.filename);
+                        getString(R.string.specifyFileToImportFrom), Constants.path.APP_DIR + "/",
+                        null, Id.request.filename);
 
                 mFileDialog.show(getSupportFragmentManager(), "fileDialog");
             }
         });
-    }
-
-    /**
-     * Import keys with mImportData
-     */
-    public void importKeys() {
-        Log.d(Constants.TAG, "importKeys started");
-
-        // Send all information needed to service to import key in other thread
-        Intent intent = new Intent(this, ApgIntentService.class);
-
-        intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_IMPORT_KEY);
-
-        // fill values for this action
-        Bundle data = new Bundle();
-
-        // TODO
-        data.putInt(ApgIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
-
-        if (mImportData != null) {
-            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
-            data.putByteArray(ApgIntentService.IMPORT_BYTES, mImportData.getBytes());
-        } else {
-            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
-            data.putString(ApgIntentService.IMPORT_FILENAME, mImportFilename);
-        }
-
-        intent.putExtra(ApgIntentService.EXTRA_DATA, data);
-
-        // Message is received after importing is done in ApgService
-        ApgIntentServiceHandler saveHandler = new ApgIntentServiceHandler(this,
-                R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
-            public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == ApgIntentServiceHandler.MESSAGE_OKAY) {
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-
-                    int added = returnData.getInt(ApgIntentService.RESULT_IMPORT_ADDED);
-                    int updated = returnData.getInt(ApgIntentService.RESULT_IMPORT_UPDATED);
-                    int bad = returnData.getInt(ApgIntentService.RESULT_IMPORT_BAD);
-                    String toastMessage;
-                    if (added > 0 && updated > 0) {
-                        toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
-                    } else if (added > 0) {
-                        toastMessage = getString(R.string.keysAdded, added);
-                    } else if (updated > 0) {
-                        toastMessage = getString(R.string.keysUpdated, updated);
-                    } else {
-                        toastMessage = getString(R.string.noKeysAddedOrUpdated);
-                    }
-                    Toast.makeText(ImportKeysActivity.this, toastMessage, Toast.LENGTH_SHORT)
-                            .show();
-                    if (bad > 0) {
-                        AlertDialog.Builder alert = new AlertDialog.Builder(ImportKeysActivity.this);
-
-                        alert.setIcon(android.R.drawable.ic_dialog_alert);
-                        alert.setTitle(R.string.warning);
-                        alert.setMessage(ImportKeysActivity.this.getString(
-                                R.string.badKeysEncountered, bad));
-
-                        alert.setPositiveButton(android.R.string.ok,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        alert.setCancelable(true);
-                        alert.create().show();
-                    } else if (mDeleteAfterImport) {
-                        // everything went well, so now delete, if that was turned on
-                        DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                .newInstance(mImportFilename);
-                        deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                    }
-                }
-            };
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(ApgIntentService.EXTRA_MESSENGER, messenger);
-
-        // show progress dialog
-        saveHandler.showProgressDialog(this);
-
-        // start service with intent
-        startService(intent);
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
@@ -326,7 +259,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     // PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
     //
     // // make sure the fingerprints match before we cache this thing
-    // String actualFingerprint = PGPHelper.convertToHex(publicKeyRing
+    // String actualFingerprint = PGPHelper.convertFingerprintToHex(publicKeyRing
     // .getPublicKey().getFingerprint());
     // if (expectedFingerprint.equals(actualFingerprint)) {
     // // store the signed key in our local cache
@@ -374,21 +307,36 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     }
 
     public void importOnClick(View view) {
-        Log.d(Constants.TAG, "import key started");
+        Log.d(Constants.TAG, "Import key button clicked!");
 
-        if (mScannedContent != null) {
+        importKeys();
+    }
+
+    /**
+     * Import keys with mImportData
+     */
+    public void importKeys() {
+        if (mImportData != null || mImportFilename != null) {
+            Log.d(Constants.TAG, "importKeys started");
+
             // Send all information needed to service to import key in other thread
             Intent intent = new Intent(this, ApgIntentService.class);
 
-            intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_IMPORT_KEY);
+            intent.putExtra(ApgIntentService.EXTRA_ACTION, ApgIntentService.ACTION_IMPORT_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
 
-            data.putInt(ApgIntentService.IMPORT_KEY_TYPE, Id.type.public_key);
+            // TODO: check for key type?
+            // data.putInt(ApgIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
 
-            data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
-            data.putByteArray(ApgIntentService.IMPORT_BYTES, mScannedContent.getBytes());
+            if (mImportData != null) {
+                data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_BYTES);
+                data.putByteArray(ApgIntentService.IMPORT_BYTES, mImportData);
+            } else {
+                data.putInt(ApgIntentService.TARGET, ApgIntentService.TARGET_FILE);
+                data.putString(ApgIntentService.IMPORT_FILENAME, mImportFilename);
+            }
 
             intent.putExtra(ApgIntentService.EXTRA_DATA, data);
 
@@ -435,6 +383,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                                     });
                             alert.setCancelable(true);
                             alert.create().show();
+                        } else if (mDeleteAfterImport) {
+                            // everything went well, so now delete, if that was turned on
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                    .newInstance(mImportFilename);
+                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                         }
                     }
                 };
@@ -449,6 +402,8 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
 
             // start service with intent
             startService(intent);
+        } else {
+            Toast.makeText(this, R.string.error_nothingImport, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -483,9 +438,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                     data);
             if (scanResult != null && scanResult.getFormatName() != null) {
 
-                mScannedContent = scanResult.getContents();
+                // mScannedContent = scanResult.getContents();
 
-                mContentView.setText(mScannedContent);
+                mImportData = scanResult.getContents().getBytes();
+
+                // mContentView.setText(mScannedContent);
                 // String[] bits = scanResult.getContents().split(",");
                 // if (bits.length != 2) {
                 // return; // dont know how to handle this. Not a valid code
@@ -505,4 +462,12 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         }
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        loadKeyListFragment();
+    }
+
 }

@@ -351,7 +351,7 @@ public class PGPHelper {
         return algorithmStr + ", " + keySize + "bit";
     }
 
-    public static String convertToHex(byte[] fp) {
+    public static String convertFingerprintToHex(byte[] fp) {
         String fingerPrint = "";
         for (int i = 0; i < fp.length; ++i) {
             if (i != 0 && i % 10 == 0) {
@@ -382,7 +382,7 @@ public class PGPHelper {
             key = secretKey.getPublicKey();
         }
 
-        return convertToHex(key.getFingerprint());
+        return convertFingerprintToHex(key.getFingerprint());
     }
 
     public static String getSmallFingerPrint(long keyId) {
