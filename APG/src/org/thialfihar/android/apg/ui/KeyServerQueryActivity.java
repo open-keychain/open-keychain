@@ -40,7 +40,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
-import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -227,7 +226,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         } else {
                             if (mKeyData != null) {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
-                                        KeyListPublicActivity.class);
+                                        ImportKeysActivity.class);
                                 intent.setAction(ImportKeysActivity.ACTION_IMPORT);
                                 intent.putExtra(ImportKeysActivity.EXTRA_TEXT, mKeyData);
                                 startActivity(intent);
