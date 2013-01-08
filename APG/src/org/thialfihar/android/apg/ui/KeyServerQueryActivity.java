@@ -228,7 +228,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                             if (mKeyData != null) {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
                                         KeyListPublicActivity.class);
-                                intent.setAction(ImportKeysActivity.ACTION);
+                                intent.setAction(ImportKeysActivity.ACTION_IMPORT);
                                 intent.putExtra(ImportKeysActivity.EXTRA_TEXT, mKeyData);
                                 startActivity(intent);
                             }

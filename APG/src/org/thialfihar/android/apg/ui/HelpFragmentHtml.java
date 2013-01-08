@@ -23,6 +23,7 @@ import net.nightwhistler.htmlspanner.HtmlSpanner;
 import net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.helper.OtherHelper;
 import org.thialfihar.android.apg.util.Log;
 
@@ -74,8 +75,7 @@ public class HelpFragmentHtml extends SherlockFragment {
         htmlFile = getArguments().getInt(ARG_HTML_FILE);
 
         // load html from html file from /res/raw
-        InputStream inputStreamText = OtherHelper.getInputStreamFromResource(this.getActivity(),
-                htmlFile);
+        InputStream inputStreamText = getResources().openRawResource(htmlFile);
 
         mActivity = getActivity();
 

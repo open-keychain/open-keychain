@@ -49,15 +49,14 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 public class ImportKeysActivity extends SherlockFragmentActivity {
-
-    public static final String ACTION = Constants.INTENT_PREFIX + "IMPORT";
+    public static final String ACTION_IMPORT = Constants.INTENT_PREFIX + "IMPORT";
     public static final String ACTION_IMPORT_FROM_FILE = Constants.INTENT_PREFIX
             + "IMPORT_FROM_FILE";
     public static final String ACTION_IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_FROM_QR_CODE";
     public static final String ACTION_IMPORT_FROM_NFC = Constants.INTENT_PREFIX + "IMPORT_FROM_NFC";
 
-    // only used by IMPORT_AND_RETURN
+    // only used by IMPORT
     public static final String EXTRA_TEXT = "text";
 
     protected String mImportFilename = Constants.path.APP_DIR + "/";
@@ -93,11 +92,14 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(1, Id.menu.option.import_from_file, 0, R.string.menu_importFromFile)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(1, Id.menu.option.import_from_qr_code, 1, R.string.menu_importFromQrCode)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(1, Id.menu.option.import_from_nfc, 2, R.string.menu_importFromNfc)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+                .setShowAsAction(
+                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
     }
@@ -115,16 +117,14 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
 
         case Id.menu.option.import_from_file:
             showImportKeysDialog();
-
             return true;
 
         case Id.menu.option.import_from_qr_code:
             importFromQrCode();
-
             return true;
 
         case Id.menu.option.import_from_nfc:
-
+            importFromNfc();
             return true;
 
         default:
@@ -147,13 +147,13 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to APG (see AndroidManifest.xml)
             // override action to delegate it to APGs ACTION_IMPORT
-            action = ACTION;
+            action = ACTION_IMPORT;
         }
 
         /**
          * APG's own Actions
          */
-        if (ACTION.equals(action)) {
+        if (ACTION_IMPORT.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
             } else {
@@ -168,12 +168,19 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         } else if (ACTION_IMPORT_FROM_QR_CODE.equals(action)) {
             importFromQrCode();
         } else if (ACTION_IMPORT_FROM_NFC.equals(action)) {
-
+            importFromNfc();
         }
     }
 
     private void importFromQrCode() {
         new IntentIntegrator(this).initiateScan();
+    }
+
+    private void importFromNfc() {
+        // show nfc help
+        Intent intent = new Intent(this, HelpActivity.class);
+        intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, 1);
+        startActivityForResult(intent, 0);
     }
 
     /**

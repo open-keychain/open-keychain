@@ -17,8 +17,6 @@
 
 package org.thialfihar.android.apg.ui;
 
-import java.util.ArrayList;
-
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
@@ -27,8 +25,6 @@ import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.provider.ApgContract.KeyRings;
 import org.thialfihar.android.apg.provider.ApgContract.UserIds;
 import org.thialfihar.android.apg.ui.widget.KeyListAdapter;
-
-import com.google.zxing.integration.android.IntentIntegrator;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -41,7 +37,6 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 public class KeyListPublicFragment extends KeyListFragment implements
@@ -81,7 +76,8 @@ public class KeyListPublicFragment extends KeyListFragment implements
         menu.add(0, Id.menu.update, 1, R.string.menu_updateKey);
         menu.add(0, Id.menu.signKey, 2, R.string.menu_signKey);
         menu.add(0, Id.menu.exportToServer, 3, R.string.menu_exportKeyToServer);
-        menu.add(0, Id.menu.share_qr_code, 6, R.string.menu_share);
+        menu.add(0, Id.menu.share_qr_code, 6, R.string.menu_shareQrCode);
+        menu.add(0, Id.menu.share_nfc, 7, R.string.menu_shareNfc);
 
     }
 
@@ -145,7 +141,22 @@ public class KeyListPublicFragment extends KeyListFragment implements
         case Id.menu.share_qr_code:
             // get master key id using row id
             long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
-            shareByQrCode(masterKeyId);
+
+            Intent qrCodeIntent = new Intent(mKeyListActivity, ShareQrCodeActivity.class);
+            qrCodeIntent.setAction(ShareQrCodeActivity.ACTION_SHARE_WITH_QR_CODE);
+            qrCodeIntent.putExtra(ShareQrCodeActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+            startActivityForResult(qrCodeIntent, 0);
+
+            return true;
+
+        case Id.menu.share_nfc:
+            // get master key id using row id
+            long masterKeyId2 = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
+
+            Intent nfcIntent = new Intent(mKeyListActivity, ShareNfcBeamActivity.class);
+            nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_WITH_NFC);
+            nfcIntent.putExtra(ShareNfcBeamActivity.EXTRA_MASTER_KEY_ID, masterKeyId2);
+            startActivityForResult(nfcIntent, 0);
 
             return true;
 
@@ -153,12 +164,6 @@ public class KeyListPublicFragment extends KeyListFragment implements
             return super.onContextItemSelected(item);
 
         }
-    }
-
-    private void shareByQrCode(long masterKeyId) {
-        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(
-                mKeyListActivity, new long[] { masterKeyId });
-        new IntentIntegrator(mKeyListActivity).shareText(keyringArmored.get(0));
     }
 
     // These are the rows that we will retrieve.

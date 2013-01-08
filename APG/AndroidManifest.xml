@@ -64,6 +64,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
 
     <permission-group
@@ -300,7 +301,7 @@
         <activity
             android:name="org.thialfihar.android.apg.ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_importFromQRCode"
+            android:label="@string/title_importKeys"
             android:uiOptions="splitActionBarWhenNarrow" >
 
             <!-- APG's own Actions -->
@@ -355,6 +356,33 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.thialfihar.android.apg.ui.ShareNfcBeamActivity"
+            android:label="@string/title_shareByNfc"
+            android:launchMode="singleTop"
+            android:uiOptions="splitActionBarWhenNarrow" >
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SHARE_WITH_NFC" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- Handle NFC tags detected from outside our application -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="application/org.thialfihar.android.apg" />
+            </intent-filter>
+        </activity>
+        <activity android:name="org.thialfihar.android.apg.ui.ShareQrCodeActivity" >
+            <intent-filter>
+                <action android:name="org.thialfihar.android.apg.intent.SHARE_WITH_QR_CODE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity

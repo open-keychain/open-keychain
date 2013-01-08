@@ -25,6 +25,9 @@ public final class Constants {
     public static final String TAG = "APG";
 
     public static final String PACKAGE_NAME = "org.thialfihar.android.apg";
+    
+    public static final String NFC_MIME = "application/org.thialfihar.android.apg";
+
 
     public static final String PERMISSION_ACCESS_KEY_DATABASE = PACKAGE_NAME
             + ".permission.ACCESS_KEY_DATABASE";

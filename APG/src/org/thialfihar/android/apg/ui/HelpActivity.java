@@ -37,6 +37,8 @@ import android.support.v4.view.ViewPager;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class HelpActivity extends SherlockFragmentActivity {
+    public static final String EXTRA_SELECTED_TAB = "selectedTab";
+
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
     TextView tabCenter;
@@ -74,18 +76,29 @@ public class HelpActivity extends SherlockFragmentActivity {
 
         mTabsAdapter = new TabsAdapter(this, mViewPager);
 
+        int selectedTab = 0;
+        Intent intent = getIntent();
+        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
+            selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+        }
+
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_start);
         mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_start)),
-                HelpFragmentHtml.class, startBundle);
+                HelpFragmentHtml.class, startBundle, (selectedTab == 0 ? true : false));
+
+        Bundle nfcBundle = new Bundle();
+        nfcBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_nfc_beam);
+        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
+                HelpFragmentHtml.class, nfcBundle, (selectedTab == 1 ? true : false));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_changelog);
         mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_changelog)),
-                HelpFragmentHtml.class, changelogBundle);
+                HelpFragmentHtml.class, changelogBundle, (selectedTab == 2 ? true : false));
 
         mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_about)),
-                HelpFragmentAbout.class, null);
+                HelpFragmentAbout.class, null, (selectedTab == 3 ? true : false));
     }
 
     public static class TabsAdapter extends FragmentPagerAdapter implements ActionBar.TabListener,
@@ -114,12 +127,12 @@ public class HelpActivity extends SherlockFragmentActivity {
             mViewPager.setOnPageChangeListener(this);
         }
 
-        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
+        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args, boolean selected) {
             TabInfo info = new TabInfo(clss, args);
             tab.setTag(info);
             tab.setTabListener(this);
             mTabs.add(info);
-            mActionBar.addTab(tab);
+            mActionBar.addTab(tab, selected);
             notifyDataSetChanged();
         }
 

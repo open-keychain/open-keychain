@@ -16,7 +16,6 @@
 
 package org.thialfihar.android.apg.helper;
 
-import java.io.InputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -30,26 +29,11 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
 public class OtherHelper {
-
-    /**
-     * Gets input stream of raw resource
-     * 
-     * @param context
-     *            current context
-     * @param resourceID
-     *            of html file to read
-     * @return input stream of resource
-     */
-    public static InputStream getInputStreamFromResource(Context context, int resourceID) {
-        InputStream raw = context.getResources().openRawResource(resourceID);
-        return raw;
-    }
 
     /**
      * Return the number if days between two dates
