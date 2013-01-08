@@ -364,7 +364,7 @@
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.SHARE_WITH_NFC" />
+                <action android:name="org.thialfihar.android.apg.intent.SHARE_KEYRING_WITH_NFC" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -378,9 +378,10 @@
                 <data android:mimeType="application/org.thialfihar.android.apg" />
             </intent-filter>
         </activity>
-        <activity android:name="org.thialfihar.android.apg.ui.ShareQrCodeActivity" >
+        <activity android:name="org.thialfihar.android.apg.ui.ShareActivity" >
             <intent-filter>
-                <action android:name="org.thialfihar.android.apg.intent.SHARE_WITH_QR_CODE" />
+                <action android:name="org.thialfihar.android.apg.intent.SHARE_KEYRING" />
+                <action android:name="org.thialfihar.android.apg.intent.SHARE_KEYRING_WITH_QR_CODE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

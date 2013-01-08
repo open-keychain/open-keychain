@@ -76,8 +76,9 @@ public class KeyListPublicFragment extends KeyListFragment implements
         menu.add(0, Id.menu.update, 1, R.string.menu_updateKey);
         menu.add(0, Id.menu.signKey, 2, R.string.menu_signKey);
         menu.add(0, Id.menu.exportToServer, 3, R.string.menu_exportKeyToServer);
-        menu.add(0, Id.menu.share_qr_code, 6, R.string.menu_shareQrCode);
-        menu.add(0, Id.menu.share_nfc, 7, R.string.menu_shareNfc);
+        menu.add(0, Id.menu.share, 6, R.string.menu_share);
+        menu.add(0, Id.menu.share_qr_code, 7, R.string.menu_shareQrCode);
+        menu.add(0, Id.menu.share_nfc, 8, R.string.menu_shareNfc);
 
     }
 
@@ -142,9 +143,9 @@ public class KeyListPublicFragment extends KeyListFragment implements
             // get master key id using row id
             long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
 
-            Intent qrCodeIntent = new Intent(mKeyListActivity, ShareQrCodeActivity.class);
-            qrCodeIntent.setAction(ShareQrCodeActivity.ACTION_SHARE_WITH_QR_CODE);
-            qrCodeIntent.putExtra(ShareQrCodeActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+            Intent qrCodeIntent = new Intent(mKeyListActivity, ShareActivity.class);
+            qrCodeIntent.setAction(ShareActivity.ACTION_SHARE_KEYRING_WITH_QR_CODE);
+            qrCodeIntent.putExtra(ShareActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
             startActivityForResult(qrCodeIntent, 0);
 
             return true;
@@ -154,9 +155,20 @@ public class KeyListPublicFragment extends KeyListFragment implements
             long masterKeyId2 = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
 
             Intent nfcIntent = new Intent(mKeyListActivity, ShareNfcBeamActivity.class);
-            nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_WITH_NFC);
+            nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_KEYRING_WITH_NFC);
             nfcIntent.putExtra(ShareNfcBeamActivity.EXTRA_MASTER_KEY_ID, masterKeyId2);
             startActivityForResult(nfcIntent, 0);
+
+            return true;
+
+        case Id.menu.share:
+            // get master key id using row id
+            long masterKeyId3 = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
+
+            Intent shareIntent = new Intent(mKeyListActivity, ShareActivity.class);
+            shareIntent.setAction(ShareActivity.ACTION_SHARE_KEYRING);
+            shareIntent.putExtra(ShareActivity.EXTRA_MASTER_KEY_ID, masterKeyId3);
+            startActivityForResult(shareIntent, 0);
 
             return true;
 

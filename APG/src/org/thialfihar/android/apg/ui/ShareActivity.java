@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.ui;
 import java.util.ArrayList;
 
 import org.thialfihar.android.apg.Constants;
+import org.thialfihar.android.apg.R;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -27,9 +28,10 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class ShareQrCodeActivity extends SherlockFragmentActivity {
-    public static final String ACTION_SHARE_WITH_QR_CODE = Constants.INTENT_PREFIX
-            + "SHARE_WITH_QR_CODE";
+public class ShareActivity extends SherlockFragmentActivity {
+    public static final String ACTION_SHARE_KEYRING = Constants.INTENT_PREFIX + "SHARE_KEYRING";
+    public static final String ACTION_SHARE_KEYRING_WITH_QR_CODE = Constants.INTENT_PREFIX
+            + "SHARE_KEYRING_WITH_QR_CODE";
 
     public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
 
@@ -48,18 +50,25 @@ public class ShareQrCodeActivity extends SherlockFragmentActivity {
             extras = new Bundle();
         }
 
-        if (ACTION_SHARE_WITH_QR_CODE.equals(action)) {
-            long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
+        long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
-            // get public keyring as ascii armored string
-            ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(
-                    this, new long[] { masterKeyId });
-            // close this activity
-            finish();
+        // get public keyring as ascii armored string
+        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+                new long[] { masterKeyId });
 
+        // close this activity
+        finish();
+
+        if (ACTION_SHARE_KEYRING.equals(action)) {
+            // let user choose application
+            Intent sendIntent = new Intent(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, keyringArmored.get(0));
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent,
+                    getResources().getText(R.string.shareKeyringWith)));
+        } else if (ACTION_SHARE_KEYRING_WITH_QR_CODE.equals(action)) {
             // use barcode scanner integration library
             new IntentIntegrator(this).shareText(keyringArmored.get(0));
         }
     }
-
 }

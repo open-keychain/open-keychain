@@ -81,8 +81,11 @@ public class ApgIntentHelper {
     /**
      * Share actions
      */
-    public static final String ACTION_SHARE_WITH_QR_CODE = APG_INTENT_PREFIX + "SHARE_WITH_QR_CODE";
-    public static final String ACTION_SHARE_WITH_NFC = APG_INTENT_PREFIX + "SHARE_WITH_NFC";
+    public static final String ACTION_SHARE_KEYRING = APG_INTENT_PREFIX + "SHARE_KEYRING";
+    public static final String ACTION_SHARE_KEYRING_WITH_QR_CODE = APG_INTENT_PREFIX
+            + "SHARE_KEYRING_WITH_QR_CODE";
+    public static final String ACTION_SHARE_KEYRING_WITH_NFC = APG_INTENT_PREFIX
+            + "SHARE_KEYRING_WITH_NFC";
 
     // used by SHARE_WITH_QR_CODE and SHARE_WITH_NFC
     public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
@@ -168,7 +171,7 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean shareWithQrCode(long masterKeyId) {
-        Intent intent = new Intent(ACTION_SHARE_WITH_QR_CODE);
+        Intent intent = new Intent(ACTION_SHARE_KEYRING_WITH_QR_CODE);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         intent.putExtra(EXTRA_MASTER_KEY_ID, masterKeyId);
         try {
@@ -186,7 +189,7 @@ public class ApgIntentHelper {
      * @return true when activity was found and executed successfully
      */
     public boolean shareWithNfc(long masterKeyId) {
-        Intent intent = new Intent(ACTION_SHARE_WITH_NFC);
+        Intent intent = new Intent(ACTION_SHARE_KEYRING_WITH_NFC);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         intent.putExtra(EXTRA_MASTER_KEY_ID, masterKeyId);
         try {

@@ -102,6 +102,7 @@
     <string name="menu_keyServer">Query Key Server</string>
     <string name="menu_updateKey">Update from Server</string>
     <string name="menu_exportKeyToServer">Export To Server</string>
+    <string name="menu_share">Share with…</string>
     <string name="menu_shareQrCode">Share with QR Code</string>
     <string name="menu_shareNfc">Share with NFC</string>
     <string name="menu_scanQRCode">Scan QR Code</string>
@@ -156,7 +157,7 @@
     <string name="nKeyServers">%s key server(s)</string>
     <string name="fingerprint">Fingerprint:</string>
     <string name="secretKeyring">Secret Keyring:</string>
-    
+
     <!-- choice_lowerCase: capitalized first word, no punctuation -->
     <string name="choice_none">None</string>
     <string name="choice_signOnly">Sign only</string>
@@ -321,6 +322,7 @@
     <string name="hint_publicKeys">Search Public Keyrings</string>
     <string name="hint_secretKeys">Search Secret Keyrings</string>
     <string name="filterInfo">Filter: \"%s\"</string>
+    <string name="shareKeyringWith">Share keyring with…</string>
 
     <!-- misc -->
     <string name="fast">fast</string>

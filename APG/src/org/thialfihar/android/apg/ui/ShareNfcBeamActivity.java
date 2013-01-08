@@ -54,7 +54,8 @@ import android.text.method.LinkMovementMethod;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         CreateNdefMessageCallback, OnNdefPushCompleteCallback {
-    public static final String ACTION_SHARE_WITH_NFC = Constants.INTENT_PREFIX + "SHARE_WITH_NFC";
+    public static final String ACTION_SHARE_KEYRING_WITH_NFC = Constants.INTENT_PREFIX
+            + "SHARE_KEYRING_WITH_NFC";
 
     public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
 
@@ -96,7 +97,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
             extras = new Bundle();
         }
 
-        if (ACTION_SHARE_WITH_NFC.equals(action)) {
+        if (ACTION_SHARE_KEYRING_WITH_NFC.equals(action)) {
             long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
             // get public keyring as byte array
