@@ -420,16 +420,16 @@ public class ProviderHelper {
      * @param queryUri
      * @return
      */
-    private static ArrayList<Long> getKeyRingsRowIds(Context context, Uri queryUri) {
-        Cursor cursor = context.getContentResolver().query(queryUri, new String[] { KeyRings._ID },
-                null, null, null);
+    private static ArrayList<Long> getKeyRingsMasterKeyIds(Context context, Uri queryUri) {
+        Cursor cursor = context.getContentResolver().query(queryUri,
+                new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
 
-        ArrayList<Long> keyIds = new ArrayList<Long>();
+        ArrayList<Long> masterKeyIds = new ArrayList<Long>();
         if (cursor != null) {
-            int idCol = cursor.getColumnIndex(KeyRings._ID);
+            int masterKeyIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
             if (cursor.moveToFirst()) {
                 do {
-                    keyIds.add(cursor.getLong(idCol));
+                    masterKeyIds.add(cursor.getLong(masterKeyIdCol));
                 } while (cursor.moveToNext());
             }
         }
@@ -438,7 +438,7 @@ public class ProviderHelper {
             cursor.close();
         }
 
-        return keyIds;
+        return masterKeyIds;
     }
 
     /**
@@ -447,9 +447,9 @@ public class ProviderHelper {
      * @param context
      * @return
      */
-    public static ArrayList<Long> getSecretKeyRingsRowIds(Context context) {
+    public static ArrayList<Long> getSecretKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri();
-        return getKeyRingsRowIds(context, queryUri);
+        return getKeyRingsMasterKeyIds(context, queryUri);
     }
 
     /**
@@ -458,9 +458,9 @@ public class ProviderHelper {
      * @param context
      * @return
      */
-    public static ArrayList<Long> getPublicKeyRingsRowIds(Context context) {
+    public static ArrayList<Long> getPublicKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
-        return getKeyRingsRowIds(context, queryUri);
+        return getKeyRingsMasterKeyIds(context, queryUri);
     }
 
     public static void deletePublicKeyRing(Context context, long rowId) {

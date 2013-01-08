@@ -345,8 +345,8 @@
     <string name="help_about_version">Version:</string>
 
     <!-- Import from QR Code -->
-    <string name="import_from_qr_code_import">Import keyring (only locally)</string>
-    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload keyring</string>
+    <string name="import_from_qr_code_import">Import keyring(s) (only locally)</string>
+    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload keyring(s)</string>
     <string name="import_from_qr_code_finish">Finish</string>
 
     <!-- Intent labels -->

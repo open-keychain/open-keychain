@@ -87,7 +87,6 @@ public class KeyListActivity extends SherlockFragmentActivity {
             }
         }
 
-
         // if (searchString == null) {
         // mFilterLayout.setVisibility(View.GONE);
         // } else {
@@ -134,8 +133,8 @@ public class KeyListActivity extends SherlockFragmentActivity {
         // TODO: reimplement!
         // menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
         // .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(0, Id.menu.option.import_from_file, 5, R.string.menu_importFromFile).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(0, Id.menu.option.import_from_file, 5, R.string.menu_importFromFile)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         menu.add(0, Id.menu.option.export_keys, 6, R.string.menu_exportKeys).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -178,10 +177,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
     /**
      * Show dialog where to export keys
      * 
-     * @param keyRingRowId
+     * @param keyRingMasterKeyId
      *            if -1 export all keys
      */
-    public void showExportKeysDialog(final long keyRingRowId) {
+    public void showExportKeysDialog(final long keyRingMasterKeyId) {
         // Message is received after file is selected
         Handler returnHandler = new Handler() {
             @Override
@@ -190,7 +189,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    exportKeys(keyRingRowId);
+                    exportKeys(keyRingMasterKeyId);
                 }
             }
         };
@@ -201,7 +200,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 String title = null;
-                if (keyRingRowId != -1) {
+                if (keyRingMasterKeyId != -1) {
                     // single key export
                     title = getString(R.string.title_exportKey);
                 } else {
@@ -251,10 +250,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
     /**
      * Export keys
      * 
-     * @param keyRingRowId
+     * @param keyRingMasterKeyId
      *            if -1 export all keys
      */
-    public void exportKeys(long keyRingRowId) {
+    public void exportKeys(long keyRingMasterKeyId) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -268,10 +267,10 @@ public class KeyListActivity extends SherlockFragmentActivity {
         data.putString(ApgIntentService.EXPORT_FILENAME, mExportFilename);
         data.putInt(ApgIntentService.EXPORT_KEY_TYPE, mKeyType);
 
-        if (keyRingRowId == -1) {
+        if (keyRingMasterKeyId == -1) {
             data.putBoolean(ApgIntentService.EXPORT_ALL, true);
         } else {
-            data.putLong(ApgIntentService.EXPORT_KEY_RING_ROW_ID, keyRingRowId);
+            data.putLong(ApgIntentService.EXPORT_KEY_RING_MASTER_KEY_ID, keyRingMasterKeyId);
         }
 
         intent.putExtra(ApgIntentService.EXTRA_DATA, data);

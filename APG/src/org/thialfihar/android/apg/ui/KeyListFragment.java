@@ -19,6 +19,7 @@ package org.thialfihar.android.apg.ui;
 
 import org.thialfihar.android.apg.Id;
 import org.thialfihar.android.apg.R;
+import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.ui.widget.ExpandableListFragment;
 
 import android.os.Bundle;
@@ -66,7 +67,12 @@ public class KeyListFragment extends ExpandableListFragment {
 
         switch (item.getItemId()) {
         case Id.menu.export:
-            mKeyListActivity.showExportKeysDialog(keyRingRowId);
+            long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
+            if (masterKeyId == -1) {
+                masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
+            }
+
+            mKeyListActivity.showExportKeysDialog(masterKeyId);
             return true;
 
         case Id.menu.delete:

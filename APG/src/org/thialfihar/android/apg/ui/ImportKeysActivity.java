@@ -441,6 +441,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                 // mScannedContent = scanResult.getContents();
 
                 mImportData = scanResult.getContents().getBytes();
+                mImportFilename = null;
 
                 // mContentView.setText(mScannedContent);
                 // String[] bits = scanResult.getContents().split(",");

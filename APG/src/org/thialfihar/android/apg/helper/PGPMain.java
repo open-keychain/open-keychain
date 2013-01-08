@@ -74,7 +74,6 @@ import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactory
 import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
 import org.thialfihar.android.apg.provider.ProviderHelper;
 import org.thialfihar.android.apg.service.ApgIntentService;
-import org.thialfihar.android.apg.ui.dialog.SetPassphraseDialogFragment;
 import org.thialfihar.android.apg.util.HkpKeyServer;
 import org.thialfihar.android.apg.util.InputData;
 import org.thialfihar.android.apg.util.PositionAwareInputStream;
@@ -607,12 +606,12 @@ public class PGPMain {
         return returnData;
     }
 
-    public static Bundle exportKeyRings(Context context, ArrayList<Long> keyRingRowIds,
-            OutputStream outStream, ProgressDialogUpdater progress) throws ApgGeneralException,
-            FileNotFoundException, PGPException, IOException {
+    public static Bundle exportKeyRings(Context context, ArrayList<Long> keyRingMasterKeyIds,
+            int keyType, OutputStream outStream, ProgressDialogUpdater progress)
+            throws ApgGeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        if (keyRingRowIds.size() == 1) {
+        if (keyRingMasterKeyIds.size() == 1) {
             updateProgress(progress, R.string.progress_exportingKey, 0, 100);
         } else {
             updateProgress(progress, R.string.progress_exportingKeys, 0, 100);
@@ -621,66 +620,49 @@ public class PGPMain {
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new ApgGeneralException(context.getString(R.string.error_externalStorageNotReady));
         }
-        ArmoredOutputStream out = new ArmoredOutputStream(outStream);
-        out.setHeader("Version", getFullVersion(context));
+
+        // export public keyrings...
+        ArmoredOutputStream outPub = new ArmoredOutputStream(outStream);
+        outPub.setHeader("Version", getFullVersion(context));
 
         int numKeys = 0;
-        for (int i = 0; i < keyRingRowIds.size(); ++i) {
-            updateProgress(progress, i * 100 / keyRingRowIds.size(), 100);
-
-            // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
-            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(context,
-                    keyRingRowIds.get(i));
-            if (publicKeyRing != null) {
-                publicKeyRing.encode(out);
+        for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
+            // double the needed time if exporting both public and secret parts
+            if (keyType == Id.type.secret_key) {
+                updateProgress(progress, i * 100 / keyRingMasterKeyIds.size() / 2, 100);
             } else {
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByRowId(context,
-                        keyRingRowIds.get(i));
-                if (secretKeyRing != null) {
-                    secretKeyRing.encode(out);
-                } else {
-                    continue;
-                }
+                updateProgress(progress, i * 100 / keyRingMasterKeyIds.size(), 100);
+            }
+
+            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
+                    context, keyRingMasterKeyIds.get(i));
+
+            if (publicKeyRing != null) {
+                publicKeyRing.encode(outPub);
             }
             ++numKeys;
         }
-        out.close();
-        returnData.putInt(ApgIntentService.RESULT_EXPORT, numKeys);
+        outPub.close();
 
-        updateProgress(progress, R.string.progress_done, 100, 100);
+        // if we export secret keyrings, append all secret parts after the public parts
+        if (keyType == Id.type.secret_key) {
+            ArmoredOutputStream outSec = new ArmoredOutputStream(outStream);
+            outSec.setHeader("Version", getFullVersion(context));
 
-        return returnData;
-    }
+            for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
+                updateProgress(progress, i * 100 / keyRingMasterKeyIds.size() / 2, 100);
 
-    public static Bundle getKeyRings(Context context, long[] masterKeyIds, OutputStream outStream,
-            ProgressDialogUpdater progress) throws ApgGeneralException, FileNotFoundException,
-            PGPException, IOException {
-        Bundle returnData = new Bundle();
+                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
+                        context, keyRingMasterKeyIds.get(i));
 
-        ArmoredOutputStream out = new ArmoredOutputStream(outStream);
-        out.setHeader("Version", getFullVersion(context));
-
-        int numKeys = 0;
-        for (int i = 0; i < masterKeyIds.length; ++i) {
-            updateProgress(progress, i * 100 / masterKeyIds.length, 100);
-
-            // try to get it as a PGPPublicKeyRing, if that fails try to get it as a SecretKeyRing
-            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(context,
-                    masterKeyIds[i]);
-            if (publicKeyRing != null) {
-                publicKeyRing.encode(out);
-            } else {
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByRowId(context,
-                        masterKeyIds[i]);
                 if (secretKeyRing != null) {
-                    secretKeyRing.encode(out);
-                } else {
-                    continue;
+                    secretKeyRing.encode(outSec);
                 }
+                ++numKeys;
             }
-            ++numKeys;
+            outSec.close();
         }
-        out.close();
+
         returnData.putInt(ApgIntentService.RESULT_EXPORT, numKeys);
 
         updateProgress(progress, R.string.progress_done, 100, 100);
