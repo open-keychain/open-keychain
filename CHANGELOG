@@ -1,9 +1,10 @@
 2.0
 * Complete redesign
-* Integration of different branches:
-* Share public keys via qr codes
+* Share public keys via qr codes, nfc beam
 * Sign keys
 * Upload keys to server
+* Fixes import issues
+* New AIDL API
 
 1.0.8
 * basic key server support (HKP, please report bugs :))
