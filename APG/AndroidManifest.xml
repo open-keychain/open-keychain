@@ -307,12 +307,18 @@
             <!-- APG's own Actions -->
             <intent-filter android:label="@string/intent_import_key" >
                 <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
-                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_QR_CODE" />
-                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_NFC" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
                 <data android:mimeType="*/*" />
+            </intent-filter>
+            <!-- IMPORT again without mimeType to also allow data only without filename -->
+            <intent-filter android:label="@string/intent_import_key" >
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT" />
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_QR_CODE" />
+                <action android:name="org.thialfihar.android.apg.intent.IMPORT_FROM_NFC" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <!-- Linking "Import key" to file types -->
             <intent-filter android:label="@string/intent_import_key" >
