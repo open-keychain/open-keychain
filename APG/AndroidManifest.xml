@@ -434,6 +434,7 @@
         <provider
             android:name=".provider.ApgProviderExternal"
             android:authorities="org.thialfihar.android.apg"
+            android:exported="true"
             android:readPermission="org.thialfihar.android.apg.permission.ACCESS_API" />
 
         <!-- TODO: authority! -->
