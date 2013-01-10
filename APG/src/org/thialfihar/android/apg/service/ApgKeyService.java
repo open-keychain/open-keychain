@@ -32,7 +32,7 @@ import android.os.RemoteException;
 /**
  * TODO:
  * 
- * - is this service thread safe? Probably not!
+ * - is this service thread safe?
  * 
  */
 public class ApgKeyService extends Service {
@@ -57,6 +57,43 @@ public class ApgKeyService extends Service {
     }
 
     /**
+     * Synchronized implementation of getPublicKeyRings
+     */
+    private synchronized void getPublicKeyRingsSafe(long[] masterKeyIds,
+            boolean asAsciiArmoredStringArray, IApgGetKeyringsHandler handler)
+            throws RemoteException {
+        if (asAsciiArmoredStringArray) {
+            ArrayList<String> output = ProviderHelper.getPublicKeyRingsAsArmoredString(mContext,
+                    masterKeyIds);
+
+            handler.onSuccess(null, output);
+        } else {
+            byte[] outputBytes = ProviderHelper
+                    .getPublicKeyRingsAsByteArray(mContext, masterKeyIds);
+            handler.onSuccess(outputBytes, null);
+        }
+    }
+
+    /**
+     * Synchronized implementation of getSecretKeyRings
+     */
+    private synchronized void getSecretKeyRingsSafe(long[] masterKeyIds,
+            boolean asAsciiArmoredStringArray, IApgGetKeyringsHandler handler)
+            throws RemoteException {
+        if (asAsciiArmoredStringArray) {
+            ArrayList<String> output = ProviderHelper.getSecretKeyRingsAsArmoredString(mContext,
+                    masterKeyIds);
+
+            handler.onSuccess(null, output);
+        } else {
+            byte[] outputBytes = ProviderHelper
+                    .getSecretKeyRingsAsByteArray(mContext, masterKeyIds);
+            handler.onSuccess(outputBytes, null);
+        }
+
+    }
+
+    /**
      * This is the implementation of the interface IApgKeyService. All methods are oneway, meaning
      * asynchronous and return to the client using handlers.
      * 
@@ -67,32 +104,13 @@ public class ApgKeyService extends Service {
         @Override
         public void getPublicKeyRings(long[] masterKeyIds, boolean asAsciiArmoredStringArray,
                 IApgGetKeyringsHandler handler) throws RemoteException {
-            if (asAsciiArmoredStringArray) {
-                ArrayList<String> output = ProviderHelper.getPublicKeyRingsAsArmoredString(
-                        mContext, masterKeyIds);
-
-                handler.onSuccess(null, output);
-            } else {
-                byte[] outputBytes = ProviderHelper.getPublicKeyRingsAsByteArray(mContext,
-                        masterKeyIds);
-                handler.onSuccess(outputBytes, null);
-            }
+            getPublicKeyRingsSafe(masterKeyIds, asAsciiArmoredStringArray, handler);
         }
 
         @Override
         public void getSecretKeyRings(long[] masterKeyIds, boolean asAsciiArmoredStringArray,
                 IApgGetKeyringsHandler handler) throws RemoteException {
-            if (asAsciiArmoredStringArray) {
-                ArrayList<String> output = ProviderHelper.getSecretKeyRingsAsArmoredString(
-                        mContext, masterKeyIds);
-
-                handler.onSuccess(null, output);
-            } else {
-                byte[] outputBytes = ProviderHelper.getSecretKeyRingsAsByteArray(mContext,
-                        masterKeyIds);
-                handler.onSuccess(outputBytes, null);
-            }
-
+            getSecretKeyRingsSafe(masterKeyIds, asAsciiArmoredStringArray, handler);
         }
 
     };
