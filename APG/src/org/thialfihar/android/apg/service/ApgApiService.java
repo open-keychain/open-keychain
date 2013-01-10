@@ -44,12 +44,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-/**
- * TODO:
- * 
- * - is this service thread safe? Probably not!
- * 
- */
 public class ApgApiService extends Service {
     Context mContext;
 
@@ -79,7 +73,7 @@ public class ApgApiService extends Service {
     // }
     // }
 
-    private void encryptAndSignImplementation(byte[] inputBytes, String inputUri,
+    private synchronized void encryptAndSignSafe(byte[] inputBytes, String inputUri,
             boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
             String encryptionPassphrase, int symmetricEncryptionAlgorithm, long signatureKeyId,
             int signatureHashAlgorithm, boolean signatureForceV3, String signaturePassphrase,
@@ -143,7 +137,7 @@ public class ApgApiService extends Service {
         }
     }
 
-    private void decryptAndVerifyImplementation(byte[] inputBytes, String inputUri,
+    private synchronized void decryptAndVerifySafe(byte[] inputBytes, String inputUri,
             String passphrase, boolean assumeSymmetric, IApgDecryptHandler handler)
             throws RemoteException {
 
@@ -186,7 +180,7 @@ public class ApgApiService extends Service {
         }
     }
 
-    private void getDecryptionKeyImplementation(byte[] inputBytes, String inputUri,
+    private synchronized void getDecryptionKeySafe(byte[] inputBytes, String inputUri,
             IApgGetDecryptionKeyIdHandler handler) {
 
         // TODO: implement inputUri
@@ -237,9 +231,8 @@ public class ApgApiService extends Service {
                 int compression, long[] encryptionKeyIds, int symmetricEncryptionAlgorithm,
                 IApgEncryptHandler handler) throws RemoteException {
 
-            encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
-                    encryptionKeyIds, null, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
-                    null, handler);
+            encryptAndSignSafe(inputBytes, inputUri, useAsciiArmor, compression, encryptionKeyIds,
+                    null, symmetricEncryptionAlgorithm, Id.key.none, 0, false, null, handler);
         }
 
         @Override
@@ -247,7 +240,7 @@ public class ApgApiService extends Service {
                 int compression, String encryptionPassphrase, int symmetricEncryptionAlgorithm,
                 IApgEncryptHandler handler) throws RemoteException {
 
-            encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
+            encryptAndSignSafe(inputBytes, inputUri, useAsciiArmor, compression, null,
                     encryptionPassphrase, symmetricEncryptionAlgorithm, Id.key.none, 0, false,
                     null, handler);
         }
@@ -259,9 +252,9 @@ public class ApgApiService extends Service {
                 boolean signatureForceV3, String signaturePassphrase, IApgEncryptHandler handler)
                 throws RemoteException {
 
-            encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression,
-                    encryptionKeyIds, null, symmetricEncryptionAlgorithm, signatureKeyId,
-                    signatureHashAlgorithm, signatureForceV3, signaturePassphrase, handler);
+            encryptAndSignSafe(inputBytes, inputUri, useAsciiArmor, compression, encryptionKeyIds,
+                    null, symmetricEncryptionAlgorithm, signatureKeyId, signatureHashAlgorithm,
+                    signatureForceV3, signaturePassphrase, handler);
         }
 
         @Override
@@ -271,7 +264,7 @@ public class ApgApiService extends Service {
                 boolean signatureForceV3, String signaturePassphrase, IApgEncryptHandler handler)
                 throws RemoteException {
 
-            encryptAndSignImplementation(inputBytes, inputUri, useAsciiArmor, compression, null,
+            encryptAndSignSafe(inputBytes, inputUri, useAsciiArmor, compression, null,
                     encryptionPassphrase, symmetricEncryptionAlgorithm, signatureKeyId,
                     signatureHashAlgorithm, signatureForceV3, signaturePassphrase, handler);
         }
@@ -280,22 +273,21 @@ public class ApgApiService extends Service {
         public void decryptAndVerifyAsymmetric(byte[] inputBytes, String inputUri,
                 String keyPassphrase, IApgDecryptHandler handler) throws RemoteException {
 
-            decryptAndVerifyImplementation(inputBytes, inputUri, keyPassphrase, false, handler);
+            decryptAndVerifySafe(inputBytes, inputUri, keyPassphrase, false, handler);
         }
 
         @Override
         public void decryptAndVerifySymmetric(byte[] inputBytes, String inputUri,
                 String encryptionPassphrase, IApgDecryptHandler handler) throws RemoteException {
 
-            decryptAndVerifyImplementation(inputBytes, inputUri, encryptionPassphrase, true,
-                    handler);
+            decryptAndVerifySafe(inputBytes, inputUri, encryptionPassphrase, true, handler);
         }
 
         @Override
         public void getDecryptionKeyId(byte[] inputBytes, String inputUri,
                 IApgGetDecryptionKeyIdHandler handler) throws RemoteException {
 
-            getDecryptionKeyImplementation(inputBytes, inputUri, handler);
+            getDecryptionKeySafe(inputBytes, inputUri, handler);
         }
 
     };

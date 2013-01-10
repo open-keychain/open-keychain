@@ -29,12 +29,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-/**
- * TODO:
- * 
- * - is this service thread safe?
- * 
- */
 public class ApgKeyService extends Service {
     Context mContext;
 
