@@ -405,7 +405,7 @@
             android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API"
             android:process=":remoteapi" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.IApgApiService" />
+                <action android:name="org.sufficientlysecure.keychain.service.IKeychainApiService" />
             </intent-filter>
 
             <meta-data
@@ -419,7 +419,7 @@
             android:permission="org.sufficientlysecure.keychain.permission.ACCESS_KEYS"
             android:process=":remotekeys" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.IApgKeyService" />
+                <action android:name="org.sufficientlysecure.keychain.service.IKeychainKeyService" />
             </intent-filter>
 
             <meta-data
