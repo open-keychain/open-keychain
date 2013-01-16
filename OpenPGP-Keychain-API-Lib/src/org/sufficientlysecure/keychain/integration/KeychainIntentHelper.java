@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 public class KeychainIntentHelper {
 
-    public static final String APG_INTENT_PREFIX = "org.thialfihar.android.apg.intent.";
+    public static final String APG_INTENT_PREFIX = Constants.KEYCHAIN_PACKAGE_NAME + ".action.";
 
     // Intents
     /**
@@ -343,7 +343,8 @@ public class KeychainIntentHelper {
      * @param data
      * @return handled or not
      */
-    public boolean onActivityResult(int requestCode, int resultCode, Intent data, KeychainData apgData) {
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data,
+            KeychainData apgData) {
 
         switch (requestCode) {
         case CREATE_KEY:

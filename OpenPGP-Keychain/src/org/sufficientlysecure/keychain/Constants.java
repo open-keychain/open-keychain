@@ -22,7 +22,7 @@ public final class Constants {
 
     public static final boolean DEBUG = true;
 
-    public static final String TAG = "APG";
+    public static final String TAG = "Keychain";
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
@@ -35,7 +35,7 @@ public final class Constants {
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
 
     public static final class path {
-        public static final String APP_DIR = Environment.getExternalStorageDirectory() + "/APG";
+        public static final String APP_DIR = Environment.getExternalStorageDirectory() + "/OpenPGP-Keychain";
     }
 
     public static final class pref {

@@ -1,27 +1,25 @@
-# APG
+# OpenPGP Keychain (for Android)
 
-This is a fork of Android Privacy Guard (APG)
-
-I will try to reintegrate the various forks and develope a new user interface and API via AIDL and build a new stable version.
+OpenPGP Keychain is a EXPERIMENTAL fork of Android Privacy Guard (APG)
 
 # Contribute
 
-Fork APG and do a merge request. I will merge your changes back into the main project.
+Fork OpenPGP Keychain and do a merge request. I will merge your changes back into the main project.
 
 # Build
 
 ## Build with Ant
 
 1. Have Android SDK "tools" directory in your PATH (http://developer.android.com/sdk/index.html)
-2. Change to "APG" directory with ``cd APG``
+2. Change to "OpenPGP-Kechain" directory with ``cd OpenPGP-Kechain``
 3. Execute ``android update project -p .`` and  ``android update project -p android-libs/ActionBarSherlock``
 4. Execute ``ant debug``
 
 ## Build with Eclipse
 
-1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "APG/android-libs/ActionBarSherlock"
-2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "APG"
-3. APG can now be build
+1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Kechain/android-libs/ActionBarSherlock"
+2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Kechain"
+3. OpenPGP-Kechain can now be build
 
 # Libraries
 
@@ -52,7 +50,7 @@ see http://rtyley.github.com/spongycastle/
 
 ## Eclipse: "GC overhead limit exceeded"
 
-If you have problems starting APG from Eclipse, consider increasing the memory limits in eclipse.ini.
+If you have problems starting OpenPGP Kechain from Eclipse, consider increasing the memory limits in eclipse.ini.
 See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exceeded for more information.
 
 ## Generate pressed dashboard icons
@@ -116,7 +114,7 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * ACCESS_KEYS
 
 # Licenses
-APG is licensed under Apache License v2.
+OpenPGP Kechain is licensed under Apache License v2.
 
 ## Libraries
 * ActionBarSherlock  
@@ -152,5 +150,5 @@ APG is licensed under Apache License v2.
   Public Domain
 
 * dashboard_scan_qrcode.svg  
-  New creation for APG  
+  New creation for OpenPGP Kechain  
   Apache License v2
