@@ -78,10 +78,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
     // with permission
     public static final String ACTION_ENCRYPT_AND_RETURN = Constants.INTENT_PREFIX
             + "ENCRYPT_AND_RETURN";
-    public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = Constants.INTENT_PREFIX
-            + "GENERATE_SIGNATURE_AND_RETURN";
     public static final String ACTION_ENCRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
             + "ENCRYPT_STREAM_AND_RETURN";
+    public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = Constants.INTENT_PREFIX
+            + "GENERATE_SIGNATURE_AND_RETURN";
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";

@@ -21,5 +21,4 @@ public class Constants {
 
     public static final String KEYCHAIN_PACKAGE_NAME = "org.sufficientlysecure.keychain";
     public static final int MIN_REQUIRED_VERSION = 50;
-
 }

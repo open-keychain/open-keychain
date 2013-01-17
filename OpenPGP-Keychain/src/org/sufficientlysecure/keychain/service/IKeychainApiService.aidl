@@ -45,8 +45,7 @@ interface IKeychainApiService {
      *            7: AES-128, 8: AES-192, 9: AES-256, 4: Blowfish, 10: Twofish, 3: CAST5,
      *            6: DES, 2: Triple DES, 1: IDEA
      * @param handler
-     *            Results are returned to this IKeychainEncryptDecryptHandler Handler
-     *            to onSuccessEncrypt(in byte[] output), after successful encryption
+     *            Results are returned to this Handler after successful encryption
      */
     oneway void encryptAsymmetric(in byte[] inputBytes, in String inputUri, in boolean useAsciiArmor,
             in int compression, in long[] encryptionKeyIds, in int symmetricEncryptionAlgorithm,
@@ -90,8 +89,7 @@ interface IKeychainApiService {
      * @param signaturePassphrase
      *            Passphrase to unlock signature key
      * @param handler
-     *            Results are returned to this IKeychainEncryptDecryptHandler Handler
-     *            to onSuccessEncrypt(in byte[] output), after successful encryption and signing
+     *            Results are returned to this Handler after successful encryption and signing
      */
     oneway void encryptAndSignAsymmetric(in byte[] inputBytes, in String inputUri,
             in boolean useAsciiArmor, in int compression, in long[] encryptionKeyIds,

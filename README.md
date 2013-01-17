@@ -96,8 +96,10 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 
 * CREATE_KEY
 * ENCRYPT_AND_RETURN
-* GENERATE_SIGNATURE
+* ENCRYPT_STREAM_AND_RETURN
+* GENERATE_SIGNATURE_AND_RETURN
 * DECRYPT_AND_RETURN
+* DECRYPT_STREAM_AND_RETURN
 
 ## Content Provider
 

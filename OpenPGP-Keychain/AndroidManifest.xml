@@ -88,6 +88,7 @@
 
     <application
         android:name=".KeychainApplication"
+        android:allowBackup="false"
         android:hardwareAccelerated="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -137,8 +138,10 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.CREATE_KEY" />
                 <action android:name="org.sufficientlysecure.keychain.action.EDIT_KEY" />
+
+                <!-- With permission ACCESS_API: -->
+                <action android:name="org.sufficientlysecure.keychain.action.CREATE_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -191,8 +194,11 @@
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_FILE" />
+
+                <!-- With permission ACCESS_API: -->
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_AND_RETURN" />
-                <action android:name="org.sufficientlysecure.keychain.action.GENERATE_SIGNATURE" />
+                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_STREAM_AND_RETURN" />
+                <action android:name="org.sufficientlysecure.keychain.action.GENERATE_SIGNATURE_AND_RETURN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -218,7 +224,10 @@
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_FILE" />
+
+                <!-- With permission ACCESS_API: -->
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_AND_RETURN" />
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_STREAM_AND_RETURN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
