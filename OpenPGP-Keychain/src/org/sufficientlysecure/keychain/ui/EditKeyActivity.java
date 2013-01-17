@@ -247,8 +247,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     serviceIntent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                     // Message is received after generating is done in ApgService
-                    KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                            R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
+                    KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER) {
                         public void handleMessage(Message message) {
                             // handle messages by standard ApgHandler first
                             super.handleMessage(message);
@@ -318,11 +318,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         if (extras != null) {
             if (extras.containsKey(EXTRA_MASTER_KEY_ID)) {
-                long keyId = extras.getLong(EXTRA_MASTER_KEY_ID);
+                long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
-                if (keyId != 0) {
+                if (masterKeyId != 0) {
                     PGPSecretKey masterKey = null;
-                    mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, keyId);
+                    mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
                     if (mKeyRing != null) {
                         masterKey = PgpHelper.getMasterKey(mKeyRing);
                         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(
@@ -330,6 +330,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                             mKeys.add(key);
                             mKeysUsages.add(-1); // get usage when view is created
                         }
+                    } else {
+                        Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
+                        Toast.makeText(this, R.string.error_noSecretKeyFound, Toast.LENGTH_LONG)
+                                .show();
                     }
                     if (masterKey != null) {
                         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
@@ -427,11 +431,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             // Send all information needed to service to edit key in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
-            intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_SAVE_KEYRING);
+            intent.putExtra(KeychainIntentService.EXTRA_ACTION,
+                    KeychainIntentService.ACTION_SAVE_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
-            data.putString(KeychainIntentService.SAVE_KEYRING_CURRENT_PASSPHRASE, mCurrentPassPhrase);
+            data.putString(KeychainIntentService.SAVE_KEYRING_CURRENT_PASSPHRASE,
+                    mCurrentPassPhrase);
             data.putString(KeychainIntentService.SAVE_KEYRING_NEW_PASSPHRASE, mNewPassPhrase);
             data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_USER_IDS,
                     getUserIds(mUserIdsView));
