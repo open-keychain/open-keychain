@@ -70,26 +70,26 @@ public class KeyListSecretActivity extends KeyListActivity {
         }
     }
 
-    public void checkPassPhraseAndEdit(long keyId) {
-        String passPhrase = PassphraseCacheService.getCachedPassphrase(this, keyId);
+    public void checkPassPhraseAndEdit(long masterKeyId) {
+        String passPhrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
         if (passPhrase == null) {
-            showPassphraseDialog(keyId);
+            showPassphraseDialog(masterKeyId);
         } else {
             PgpMain.setEditPassPhrase(passPhrase);
-            editKey(keyId);
+            editKey(masterKeyId);
         }
     }
 
-    private void showPassphraseDialog(final long secretKeyId) {
+    private void showPassphraseDialog(final long masterKeyId) {
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     String passPhrase = PassphraseCacheService.getCachedPassphrase(
-                            KeyListSecretActivity.this, secretKeyId);
+                            KeyListSecretActivity.this, masterKeyId);
                     PgpMain.setEditPassPhrase(passPhrase);
-                    editKey(secretKeyId);
+                    editKey(masterKeyId);
                 }
             }
         };
@@ -99,7 +99,7 @@ public class KeyListSecretActivity extends KeyListActivity {
 
         try {
             PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    KeyListSecretActivity.this, messenger, secretKeyId);
+                    KeyListSecretActivity.this, messenger, masterKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PgpMain.PgpGeneralException e) {
@@ -115,9 +115,9 @@ public class KeyListSecretActivity extends KeyListActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void editKey(long keyId) {
+    private void editKey(long masterKeyId) {
         Intent intent = new Intent(EditKeyActivity.ACTION_EDIT_KEY);
-        intent.putExtra(EditKeyActivity.EXTRA_KEY_ID, keyId);
+        intent.putExtra(EditKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
         startActivityForResult(intent, 0);
     }
 

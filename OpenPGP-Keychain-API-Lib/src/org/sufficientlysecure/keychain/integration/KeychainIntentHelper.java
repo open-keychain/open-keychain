@@ -104,7 +104,6 @@ public class KeychainIntentHelper {
     public static final String EXTRA_SIGNATURE_UNKNOWN = "signatureUnknown";
     public static final String EXTRA_USER_ID = "userId";
     public static final String EXTRA_USER_IDS = "userIds";
-    public static final String EXTRA_KEY_ID = "masterKeyId";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
     public static final String EXTRA_SELECTION = "selection";
     public static final String EXTRA_MESSAGE = "message";
@@ -123,10 +122,10 @@ public class KeychainIntentHelper {
 
     public static final int DECRYPT_MESSAGE = 0x00007121;
     public static final int ENCRYPT_MESSAGE = 0x00007122;
-    public static final int SELECT_PUBLIC_KEYS = 0x00007123;
-    public static final int SELECT_SECRET_KEY = 0x00007124;
-    public static final int CREATE_KEY = 0x00007125;
-    public static final int EDIT_KEY = 0x00007126;
+    public static final int SELECT_PUBLIC_KEYRINGS = 0x00007123;
+    public static final int SELECT_SECRET_KEYRING = 0x00007124;
+    public static final int CREATE_KEYRING = 0x00007125;
+    public static final int EDIT_KEYRING = 0x00007126;
 
     private Activity activity;
 
@@ -158,6 +157,24 @@ public class KeychainIntentHelper {
     public boolean importFromQrCode() {
         Intent intent = new Intent(ACTION_IMPORT_FROM_QR_CODE);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        try {
+            startActivityForResult(intent, -1);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            activityNotFound();
+            return false;
+        }
+    }
+
+    /**
+     * Opens activity to share keyring with…
+     * 
+     * @return true when activity was found and executed successfully
+     */
+    public boolean share(long masterKeyId) {
+        Intent intent = new Intent(ACTION_SHARE_KEYRING);
+        intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
+        intent.putExtra(EXTRA_MASTER_KEY_ID, masterKeyId);
         try {
             startActivityForResult(intent, -1);
             return true;
@@ -220,7 +237,7 @@ public class KeychainIntentHelper {
 
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            startActivityForResult(intent, CREATE_KEY);
+            startActivityForResult(intent, CREATE_KEYRING);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -245,10 +262,10 @@ public class KeychainIntentHelper {
      */
     public boolean editKey(long keyId) {
         Intent intent = new Intent(ACTION_EDIT_KEY);
-        intent.putExtra(EXTRA_KEY_ID, keyId);
+        intent.putExtra(EXTRA_MASTER_KEY_ID, keyId);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            startActivityForResult(intent, EDIT_KEY);
+            startActivityForResult(intent, EDIT_KEYRING);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -265,7 +282,7 @@ public class KeychainIntentHelper {
         Intent intent = new Intent(ACTION_SELECT_SECRET_KEY);
         intent.putExtra(EXTRA_INTENT_VERSION, INTENT_VERSION);
         try {
-            startActivityForResult(intent, SELECT_SECRET_KEY);
+            startActivityForResult(intent, SELECT_SECRET_KEYRING);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();
@@ -349,7 +366,7 @@ public class KeychainIntentHelper {
             KeychainData apgData) {
 
         switch (requestCode) {
-        case CREATE_KEY:
+        case CREATE_KEYRING:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 // user canceled!
                 break;
@@ -358,16 +375,16 @@ public class KeychainIntentHelper {
             apgData.setSecretKeyUserId(data.getStringExtra(RESULT_EXTRA_USER_ID));
 
             break;
-        case SELECT_SECRET_KEY:
+        case SELECT_SECRET_KEYRING:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 // user canceled!
                 break;
             }
-            apgData.setSecretKeyId(data.getLongExtra(EXTRA_KEY_ID, 0));
+            apgData.setSecretKeyId(data.getLongExtra(EXTRA_MASTER_KEY_ID, 0));
             apgData.setSecretKeyUserId(data.getStringExtra(EXTRA_USER_ID));
 
             break;
-        case SELECT_PUBLIC_KEYS:
+        case SELECT_PUBLIC_KEYRINGS:
             if (resultCode != Activity.RESULT_OK || data == null) {
                 apgData.setPublicKeyIds(null);
                 break;
@@ -439,7 +456,7 @@ public class KeychainIntentHelper {
         intent.putExtra(EXTRA_SELECTION, initialKeyIds);
 
         try {
-            startActivityForResult(intent, SELECT_PUBLIC_KEYS);
+            startActivityForResult(intent, SELECT_PUBLIC_KEYRINGS);
             return true;
         } catch (ActivityNotFoundException e) {
             activityNotFound();

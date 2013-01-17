@@ -74,7 +74,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String EXTRA_USER_IDS = "userIds";
     public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
 
     // results when saving key
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
@@ -317,8 +317,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (extras != null) {
-            if (extras.containsKey(EXTRA_KEY_ID)) {
-                long keyId = extras.getLong(EXTRA_KEY_ID);
+            if (extras.containsKey(EXTRA_MASTER_KEY_ID)) {
+                long keyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
                 if (keyId != 0) {
                     PGPSecretKey masterKey = null;
