@@ -55,7 +55,7 @@
         <Button
             android:id="@+id/dashboard_scan_qrcode"
             style="@style/DashboardButton"
-            android:drawableTop="@drawable/dashboard_scan_qrcode"
+            android:drawableTop="@drawable/dashboard_import"
             android:onClick="scanQrcodeOnClick"
             android:text="@string/dashboard_import_keys" />
 
