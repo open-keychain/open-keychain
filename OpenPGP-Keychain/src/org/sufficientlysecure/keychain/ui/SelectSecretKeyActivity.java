@@ -32,7 +32,7 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
-            + "SELECT_SECRET_KEY";
+            + "SELECT_SECRET_KEYRING";
 
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
     public static final String RESULT_EXTRA_USER_ID = "userId";

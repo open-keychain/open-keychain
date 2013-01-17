@@ -138,10 +138,10 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.EDIT_KEY" />
+                <action android:name="org.sufficientlysecure.keychain.action.EDIT_KEYRING" />
 
                 <!-- With permission ACCESS_API: -->
-                <action android:name="org.sufficientlysecure.keychain.action.CREATE_KEY" />
+                <action android:name="org.sufficientlysecure.keychain.action.CREATE_KEYRING" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -153,7 +153,7 @@
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.SELECT_PUBLIC_KEYS" />
+                <action android:name="org.sufficientlysecure.keychain.action.SELECT_PUBLIC_KEYRINGS" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -171,7 +171,7 @@
             android:label="@string/title_selectSignature"
             android:launchMode="singleTop" >
             <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.action.SELECT_SECRET_KEY" />
+                <action android:name="org.sufficientlysecure.keychain.action.SELECT_SECRET_KEYRING" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

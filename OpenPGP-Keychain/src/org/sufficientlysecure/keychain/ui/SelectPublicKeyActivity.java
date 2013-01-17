@@ -33,7 +33,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
     // Not used in sourcode, but listed in AndroidManifest!
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX
-            + "SELECT_PUBLIC_KEYS";
+            + "SELECT_PUBLIC_KEYRINGS";
 
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "masterKeyIds";
 

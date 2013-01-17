@@ -56,14 +56,16 @@ public class KeychainIntentHelper {
     /**
      * Select keys, without permission
      */
-    public static final String ACTION_SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX + "SELECT_PUBLIC_KEYS";
-    public static final String ACTION_SELECT_SECRET_KEY = APG_INTENT_PREFIX + "SELECT_SECRET_KEY";
+    public static final String ACTION_SELECT_PUBLIC_KEYS = APG_INTENT_PREFIX
+            + "SELECT_PUBLIC_KEYRINGS";
+    public static final String ACTION_SELECT_SECRET_KEY = APG_INTENT_PREFIX
+            + "SELECT_SECRET_KEYRING";
 
     /**
      * Create key/edit key, without permission
      */
-    public static final String ACTION_CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEY";
-    public static final String ACTION_EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEY";
+    public static final String ACTION_CREATE_KEY = APG_INTENT_PREFIX + "CREATE_KEYRING";
+    public static final String ACTION_EDIT_KEY = APG_INTENT_PREFIX + "EDIT_KEYRING";
 
     /**
      * Import actions

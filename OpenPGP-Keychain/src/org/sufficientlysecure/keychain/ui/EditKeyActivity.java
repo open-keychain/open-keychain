@@ -67,8 +67,8 @@ import java.util.Vector;
 public class EditKeyActivity extends SherlockFragmentActivity {
 
     // possible intent actions for this activity
-    public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
-    public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
+    public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEYRING";
+    public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEYRING";
 
     // possible extra keys
     public static final String EXTRA_USER_IDS = "userIds";

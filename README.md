@@ -84,9 +84,9 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * SHARE_KEYRING
 * SHARE_KEYRING_WITH_QR_CODE
 * SHARE_KEYRING_WITH_NFC
-* EDIT_KEY
-* SELECT_PUBLIC_KEYS
-* SELECT_SECRET_KEY
+* EDIT_KEYRING
+* SELECT_PUBLIC_KEYRINGS
+* SELECT_SECRET_KEYRING
 * ENCRYPT
 * ENCRYPT_FILE
 * DECRYPT
@@ -94,7 +94,7 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 
 ### With permission ACCESS_API
 
-* CREATE_KEY
+* CREATE_KEYRING
 * ENCRYPT_AND_RETURN
 * ENCRYPT_STREAM_AND_RETURN
 * GENERATE_SIGNATURE_AND_RETURN
