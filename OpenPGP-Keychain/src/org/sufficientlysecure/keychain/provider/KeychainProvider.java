@@ -51,6 +51,9 @@ public class KeychainProvider extends ContentProvider {
     public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
             + ".action.DATABASE_CHANGE";
 
+    public static final String EXTRA_BROADCAST_KEY_TYPE = "keyType";
+    public static final String EXTRA_BROADCAST_CONTENT_ITEM_TYPE = "contentItemType";
+
     private static final int PUBLIC_KEY_RING = 101;
     private static final int PUBLIC_KEY_RING_BY_ROW_ID = 102;
     private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID = 103;
@@ -322,8 +325,9 @@ public class KeychainProvider extends ContentProvider {
             break;
 
         default:
-            throw new IllegalArgumentException("Unknown match " + match);
-
+            Log.e(Constants.TAG, "Unknown match " + match);
+            type = -1;
+            break;
         }
 
         return type;
@@ -670,13 +674,14 @@ public class KeychainProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
+
+            // notify of changes in db
+            getContext().getContentResolver().notifyChange(uri, null);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on insert! Entry already existing?");
         }
-
-        // notify of changes in db
-        getContext().getContentResolver().notifyChange(uri, null);
-        sendBroadcastDatabaseChange();
 
         return rowUri;
     }
@@ -725,7 +730,7 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
-        sendBroadcastDatabaseChange();
+        sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         return count;
     }
@@ -777,13 +782,14 @@ public class KeychainProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
+
+            // notify of changes in db
+            getContext().getContentResolver().notifyChange(uri, null);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?");
         }
-
-        // notify of changes in db
-        getContext().getContentResolver().notifyChange(uri, null);
-        sendBroadcastDatabaseChange();
 
         return count;
     }
@@ -877,9 +883,11 @@ public class KeychainProvider extends ContentProvider {
      * This broadcast is send system wide to inform other application that a keyring was inserted,
      * updated, or deleted
      */
-    private void sendBroadcastDatabaseChange() {
+    private void sendBroadcastDatabaseChange(int keyType, String contentItemType) {
         Intent intent = new Intent();
         intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
+        intent.putExtra(EXTRA_BROADCAST_KEY_TYPE, keyType);
+        intent.putExtra(EXTRA_BROADCAST_CONTENT_ITEM_TYPE, contentItemType);
         getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
     }
 }
