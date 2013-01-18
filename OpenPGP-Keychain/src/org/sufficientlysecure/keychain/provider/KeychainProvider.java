@@ -35,6 +35,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -47,6 +48,9 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 public class KeychainProvider extends ContentProvider {
+    public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
+            + ".action.DATABASE_CHANGE";
+
     private static final int PUBLIC_KEY_RING = 101;
     private static final int PUBLIC_KEY_RING_BY_ROW_ID = 102;
     private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID = 103;
@@ -104,22 +108,26 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/public/like_email/_
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC,
-                PUBLIC_KEY_RING);
-        matcher.addURI(authority,
-                KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/#",
-                PUBLIC_KEY_RING_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/"
-                + KeychainContract.PATH_BY_MASTER_KEY_ID + "/*", PUBLIC_KEY_RING_BY_MASTER_KEY_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/"
-                + KeychainContract.PATH_BY_KEY_ID + "/*", PUBLIC_KEY_RING_BY_KEY_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/"
-                + KeychainContract.PATH_BY_EMAILS + "/*", PUBLIC_KEY_RING_BY_EMAILS);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/"
-                + KeychainContract.PATH_BY_EMAILS, PUBLIC_KEY_RING_BY_EMAILS); // without emails
-                                                                          // specified
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC + "/"
-                + KeychainContract.PATH_BY_LIKE_EMAIL + "/*", PUBLIC_KEY_RING_BY_LIKE_EMAIL);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC, PUBLIC_KEY_RING);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/#", PUBLIC_KEY_RING_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_MASTER_KEY_ID
+                + "/*", PUBLIC_KEY_RING_BY_MASTER_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_KEY_ID + "/*",
+                PUBLIC_KEY_RING_BY_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_EMAILS + "/*",
+                PUBLIC_KEY_RING_BY_EMAILS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_EMAILS,
+                PUBLIC_KEY_RING_BY_EMAILS); // without emails
+        // specified
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_LIKE_EMAIL + "/*",
+                PUBLIC_KEY_RING_BY_LIKE_EMAIL);
 
         /**
          * public keys
@@ -129,10 +137,12 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/public/#/keys/#
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC
-                + "/#/" + KeychainContract.PATH_KEYS, PUBLIC_KEY_RING_KEY);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC
-                + "/#/" + KeychainContract.PATH_KEYS + "/#", PUBLIC_KEY_RING_KEY_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_KEYS,
+                PUBLIC_KEY_RING_KEY);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_KEYS + "/#",
+                PUBLIC_KEY_RING_KEY_BY_ROW_ID);
 
         /**
          * public user ids
@@ -142,10 +152,12 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/public/#/user_ids/#
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC
-                + "/#/" + KeychainContract.PATH_USER_IDS, PUBLIC_KEY_RING_USER_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_PUBLIC
-                + "/#/" + KeychainContract.PATH_USER_IDS + "/#", PUBLIC_KEY_RING_USER_ID_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_USER_IDS,
+                PUBLIC_KEY_RING_USER_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_USER_IDS + "/#",
+                PUBLIC_KEY_RING_USER_ID_BY_ROW_ID);
 
         /**
          * secret key rings
@@ -159,22 +171,26 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/secret/like_email/_
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET,
-                SECRET_KEY_RING);
-        matcher.addURI(authority,
-                KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/#",
-                SECRET_KEY_RING_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/"
-                + KeychainContract.PATH_BY_MASTER_KEY_ID + "/*", SECRET_KEY_RING_BY_MASTER_KEY_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/"
-                + KeychainContract.PATH_BY_KEY_ID + "/*", SECRET_KEY_RING_BY_KEY_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/"
-                + KeychainContract.PATH_BY_EMAILS + "/*", SECRET_KEY_RING_BY_EMAILS);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/"
-                + KeychainContract.PATH_BY_EMAILS, SECRET_KEY_RING_BY_EMAILS); // without emails
-                                                                          // specified
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET + "/"
-                + KeychainContract.PATH_BY_LIKE_EMAIL + "/*", SECRET_KEY_RING_BY_LIKE_EMAIL);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET, SECRET_KEY_RING);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/#", SECRET_KEY_RING_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_MASTER_KEY_ID
+                + "/*", SECRET_KEY_RING_BY_MASTER_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_KEY_ID + "/*",
+                SECRET_KEY_RING_BY_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_EMAILS + "/*",
+                SECRET_KEY_RING_BY_EMAILS);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_EMAILS,
+                SECRET_KEY_RING_BY_EMAILS); // without emails
+        // specified
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_LIKE_EMAIL + "/*",
+                SECRET_KEY_RING_BY_LIKE_EMAIL);
 
         /**
          * secret keys
@@ -184,10 +200,12 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/secret/#/keys/#
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET
-                + "/#/" + KeychainContract.PATH_KEYS, SECRET_KEY_RING_KEY);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET
-                + "/#/" + KeychainContract.PATH_KEYS + "/#", SECRET_KEY_RING_KEY_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/#/" + KeychainContract.PATH_KEYS,
+                SECRET_KEY_RING_KEY);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/#/" + KeychainContract.PATH_KEYS + "/#",
+                SECRET_KEY_RING_KEY_BY_ROW_ID);
 
         /**
          * secret user ids
@@ -197,10 +215,12 @@ public class KeychainProvider extends ContentProvider {
          * key_rings/secret/#/user_ids/#
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET
-                + "/#/" + KeychainContract.PATH_USER_IDS, SECRET_KEY_RING_USER_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/" + KeychainContract.PATH_SECRET
-                + "/#/" + KeychainContract.PATH_USER_IDS + "/#", SECRET_KEY_RING_USER_ID_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/#/" + KeychainContract.PATH_USER_IDS,
+                SECRET_KEY_RING_USER_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_SECRET + "/#/" + KeychainContract.PATH_USER_IDS + "/#",
+                SECRET_KEY_RING_USER_ID_BY_ROW_ID);
 
         /**
          * data stream
@@ -656,6 +676,7 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
+        sendBroadcastDatabaseChange();
 
         return rowUri;
     }
@@ -704,6 +725,7 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
+        sendBroadcastDatabaseChange();
 
         return count;
     }
@@ -761,6 +783,7 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
+        sendBroadcastDatabaseChange();
 
         return count;
     }
@@ -848,5 +871,15 @@ public class KeychainProvider extends ContentProvider {
         String fileName = uri.getLastPathSegment();
         File file = new File(getContext().getFilesDir().getAbsolutePath(), fileName);
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+    }
+
+    /**
+     * This broadcast is send system wide to inform other application that a keyring was inserted,
+     * updated, or deleted
+     */
+    private void sendBroadcastDatabaseChange() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
+        getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
     }
 }

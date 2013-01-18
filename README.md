@@ -66,14 +66,15 @@ See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exc
 
 Android primitives to exchange data: Intent, Intent with return values, Send (also an Intent), Content Provider, AIDL
 
-## Permission
+## Possible Permissions
 
 * ACCESS_API: Encrypt/Sign/Decrypt/Create keys without user interaction (intents, remote service), Read key information (not the actual keys)(content provider)
 * ACCESS_KEYS: get and import actual public and secret keys (remote service)
 
-## Intents
+## Without Permissions
 
-### Without permission
+### Intents
+All Intents start with org.sufficientlysecure.keychain.action.
 
 * android.intent.action.VIEW connected to .gpg and .asc files: Import Key and Decrypt
 * android.intent.action.SEND connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
@@ -92,7 +93,9 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * DECRYPT
 * DECRYPT_FILE
 
-### With permission ACCESS_API
+## With permission ACCESS_API
+
+### Intents
 
 * CREATE_KEYRING
 * ENCRYPT_AND_RETURN
@@ -101,7 +104,11 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * DECRYPT_AND_RETURN
 * DECRYPT_STREAM_AND_RETURN
 
-## Content Provider
+### Broadcast Receiver
+On change of database the following broadcast is send.
+* DATABASE_CHANGE
+
+### Content Provider
 
 * The whole content provider requires a permission (only read)
 * Don't give out blobs (keys can be accessed by ACCESS_KEYS via remote service)
@@ -109,11 +116,13 @@ Android primitives to exchange data: Intent, Intent with return values, Send (al
 * Look at android:grantUriPermissions especially for ApgServiceBlobProvider
 * Only give out android:readPermission
 
-## ApgApiService (Remote Service)
-* ACCESS_API
+### ApgApiService (Remote Service)
+AIDL service
 
-## ApgKeyService (Remote Service)
-* ACCESS_KEYS
+## With permission ACCESS_KEYS
+
+### ApgKeyService (Remote Service)
+AIDL service to access actual private keyring objects
 
 # Licenses
 OpenPGP Kechain is licensed under Apache License v2.

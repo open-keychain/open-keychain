@@ -235,11 +235,18 @@ public class KeychainContentProviderHelper {
      * @param keyId
      * @return user id
      */
-    public String getUserId(long keyId) {
+    public String getUserId(long keyId, boolean secretKeyrings) {
         String userId = null;
         try {
-            Uri contentUri = ContentUris.withAppendedId(CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID,
-                    keyId);
+            Uri contentUri = null;
+            if (secretKeyrings) {
+                contentUri = ContentUris.withAppendedId(CONTENT_URI_SECRET_KEY_RING_BY_KEY_ID,
+                        keyId);
+            } else {
+                contentUri = ContentUris.withAppendedId(CONTENT_URI_PUBLIC_KEY_RING_BY_KEY_ID,
+                        keyId);
+            }
+
             Cursor c = mContext.getContentResolver().query(contentUri, new String[] { "user_id" },
                     null, null, null);
             if (c != null && c.moveToFirst()) {
