@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.Date;
 
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -89,7 +90,7 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
@@ -110,6 +111,8 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
                         + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
                         + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
                         + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+        
+        System.out.println(projection);
 
         // if (searchString != null && searchString.trim().length() > 0) {
         // String[] chunks = searchString.trim().split(" +");
