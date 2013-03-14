@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
@@ -63,6 +64,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
+    private boolean canKB;
 
     /**
      * Creates new instance of this dialog fragment
@@ -137,8 +139,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
-
-        long secretKeyId = getArguments().getLong(ARG_SECRET_KEY_ID);
+        final long secretKeyId = getArguments().getLong(ARG_SECRET_KEY_ID);
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
@@ -152,8 +153,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             alert.setMessage(R.string.passPhraseForSymmetricEncryption);
         } else {
             // TODO: by master key id???
-            secretKey = PgpHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
-                    activity, secretKeyId));
+            secretKey = PgpHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity, secretKeyId));
             // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 
             if (secretKey == null) {
@@ -165,6 +165,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     }
                 });
                 alert.setCancelable(false);
+                canKB = false;
                 return alert.create();
             }
             String userId = PgpHelper.getMainUserIdSafe(activity, secretKey);
@@ -184,24 +185,43 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
-
+                long curKeyIndex = 0;
+                boolean keyOK = true;
                 String passPhrase = mPassphraseEditText.getText().toString();
                 long keyId;
-                if (secretKey != null) {
-                    try {
-                        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                        passPhrase.toCharArray());
-                        PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
-                        if (testKey == null) {
+		PGPSecretKey clickSecretKey = secretKey;
+
+                if (clickSecretKey != null) {
+                    while (keyOK == true) {
+                        if (clickSecretKey != null) { //check again for loop
+                            try {
+                                PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                                        .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                                passPhrase.toCharArray());
+                                PGPPrivateKey testKey = clickSecretKey.extractPrivateKey(keyDecryptor);
+                                if (testKey == null) {
+                                    if (!clickSecretKey.isMasterKey()) {
+                                        Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
+                                                Toast.LENGTH_SHORT).show();
+                                        return;
+                                    } else {
+                                        clickSecretKey = PgpHelper.getKeyNum(ProviderHelper.getPGPSecretKeyRingByKeyId(activity, secretKeyId), curKeyIndex);
+                                        curKeyIndex++; //does post-increment work like C?
+                                        continue;
+                                    }
+                                } else {
+                                    keyOK = false;
+                                }
+                            } catch (PGPException e) {
+                                Toast.makeText(activity, R.string.wrongPassPhrase, Toast.LENGTH_SHORT)
+                                        .show();
+                                return;
+                            }
+                        } else {
                             Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
                                     Toast.LENGTH_SHORT).show();
-                            return;
+                            return; //ran out of keys to try
                         }
-                    } catch (PGPException e) {
-                        Toast.makeText(activity, R.string.wrongPassPhrase, Toast.LENGTH_SHORT)
-                                .show();
-                        return;
                     }
                     keyId = secretKey.getKeyID();
                 } else {
@@ -211,6 +231,9 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
                 PassphraseCacheService.addCachedPassphrase(activity, keyId, passPhrase);
+                if (keyOK == false) {
+                    PassphraseCacheService.addCachedPassphrase(activity, clickSecretKey.getKeyID(), passPhrase);
+                }
 
                 sendMessageToHandler(MESSAGE_OKAY);
             }
@@ -224,18 +247,20 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             }
         });
 
+        canKB = true;
         return alert.create();
     }
 
     @Override
     public void onActivityCreated(Bundle arg0) {
         super.onActivityCreated(arg0);
-
+        if (canKB) {
         // request focus and open soft keyboard
-        mPassphraseEditText.requestFocus();
-        getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            mPassphraseEditText.requestFocus();
+            getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-        mPassphraseEditText.setOnEditorActionListener(this);
+            mPassphraseEditText.setOnEditorActionListener(this);
+        }
     }
 
     /**
@@ -273,3 +298,4 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     }
 
 }
+

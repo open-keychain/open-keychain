@@ -24,12 +24,16 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -71,6 +75,22 @@ public class PgpHelper {
             if (key.isMasterKey()) {
                 return key;
             }
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
+        long cnt = 0;
+        if (keyRing == null) {
+            return null;
+        }
+        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+            if (cnt == num) {
+                return key;
+            }
+            cnt++;
         }
 
         return null;
@@ -144,7 +164,17 @@ public class PgpHelper {
         for (int i = 0; i < signingKeys.size(); ++i) {
             PGPSecretKey key = signingKeys.get(i);
             if (key.isMasterKey()) {
-                masterKey = key;
+                try {
+                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                            .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
+                    PGPPrivateKey testKey = key.extractPrivateKey(
+                            keyDecryptor);
+                    if (testKey != null) {
+                        masterKey = key;
+                    }
+                } catch (PGPException e) {
+                    // all good if this fails, we likely didn't use the right password
+                }
             } else {
                 usableKeys.add(key);
             }
