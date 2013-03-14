@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 
-<org.thialfihar.android.apg.ui.widget.KeyServerEditor
+<org.sufficientlysecure.keychain.ui.widget.KeyServerEditor
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -49,4 +49,4 @@
         android:layout_height="1dip"
         android:background="?android:attr/listDivider"/>
 
-</org.thialfihar.android.apg.ui.widget.KeyServerEditor>
+</org.sufficientlysecure.keychain.ui.widget.KeyServerEditor>
