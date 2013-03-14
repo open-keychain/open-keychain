@@ -164,16 +164,8 @@ public class PgpHelper {
         for (int i = 0; i < signingKeys.size(); ++i) {
             PGPSecretKey key = signingKeys.get(i);
             if (key.isMasterKey()) {
-                try {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                            .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
-                    PGPPrivateKey testKey = key.extractPrivateKey(
-                            keyDecryptor);
-                    if (testKey != null) {
-                        masterKey = key;
-                    }
-                } catch (PGPException e) {
-                    // all good if this fails, we likely didn't use the right password
+                if (!isSecretKeyPrivateEmpty(key)) {
+                    masterKey = key;
                 }
             } else {
                 usableKeys.add(key);
@@ -424,8 +416,8 @@ public class PgpHelper {
             if (testKey != null) {
                 return false;
             }
-        } catch (PGPException e) {
-            // all good if this fails, we likely didn't use the right password
+        } catch (PGPException e) { //exception if wrong key => not empty
+            return false; //all good if this fails, we likely didn't use the right password
         }
         return true;
     }

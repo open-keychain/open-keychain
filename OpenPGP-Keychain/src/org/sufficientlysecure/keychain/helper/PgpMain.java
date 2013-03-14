@@ -493,18 +493,12 @@ public class PgpMain {
                 boolean save = true;
 
                 for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(secretKeyRing.getSecretKeys())) {
-                    try {
-                        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
-                        PGPPrivateKey testKey = testSecretKey.extractPrivateKey(
-                                keyDecryptor);
-                        if (testKey == null && !testSecretKey.isMasterKey()) {
+                    if (!testSecretKey.isMasterKey()) {
+                        if (PgpHelper.isSecretKeyPrivateEmpty(testSecretKey)) {
                             // this is bad, something is very wrong...
                             save = false;
                             status = Id.return_value.bad;
                         }
-                    } catch (PGPException e) {
-                        // all good if this fails, we likely didn't use the right password
                     }
                 }
 
