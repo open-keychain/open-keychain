@@ -231,7 +231,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
                 PassphraseCacheService.addCachedPassphrase(activity, keyId, passPhrase);
-                if (keyOK == false) {
+                if (keyOK == false && clickSecretKey.getKeyID() != keyId) {
                     PassphraseCacheService.addCachedPassphrase(activity, clickSecretKey.getKeyID(), passPhrase);
                 }
 
