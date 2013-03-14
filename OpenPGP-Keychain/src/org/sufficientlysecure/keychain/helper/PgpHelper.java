@@ -415,6 +415,30 @@ public class PgpHelper {
         return convertFingerprintToHex(key.getFingerprint());
     }
 
+    public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(
+                    keyDecryptor);
+            if (testKey != null) {
+                return false;
+            }
+        } catch (PGPException e) {
+            // all good if this fails, we likely didn't use the right password
+        }
+        return true;
+    }
+
+    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
+        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
+        if (secretKey == null) {
+            Log.e(Constants.TAG, "Key could not be found!");
+            return false; //could be a public key, assume it is not empty
+        }
+        return isSecretKeyPrivateEmpty(secretKey);
+    }
+
     public static String getSmallFingerPrint(long keyId) {
         String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
         while (fingerPrint.length() < 8) {
