@@ -185,7 +185,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
-                long curKeyIndex = 0;
+                long curKeyIndex = 1;
                 boolean keyOK = true;
                 String passPhrase = mPassphraseEditText.getText().toString();
                 long keyId;
