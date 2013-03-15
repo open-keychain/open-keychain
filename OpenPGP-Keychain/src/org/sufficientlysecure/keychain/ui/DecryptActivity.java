@@ -62,6 +62,7 @@ import android.widget.ViewFlipper;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
@@ -642,7 +643,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             }
 
             try {
-                inStream = new FileInputStream(mInputFilename);
+                inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "File not found!", e);
                 Toast.makeText(this, getString(R.string.error_fileNotFound, e.getMessage()),
@@ -659,6 +660,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // get decryption key for this inStream
         try {
             try {
+                if (inStream.markSupported()) {
+                    inStream.mark(200); //should probably set this to the max size of two pgpF objects, if it even needs to be anything other than 0.
+                }
                 mSecretKeyId = PgpMain.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
                     throw new PgpMain.PgpGeneralException(
@@ -666,6 +670,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (PgpMain.NoAsymmetricEncryptionException e) {
+                if (inStream.markSupported()) {
+                    inStream.reset();
+                }
                 mSecretKeyId = Id.key.symmetric;
                 if (!PgpMain.hasSymmetricEncryption(this, inStream)) {
                     throw new PgpMain.PgpGeneralException(
@@ -914,7 +921,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         case Id.request.output_filename: {
             if (resultCode == RESULT_OK && data != null) {
                 try {
-                    String path = data.getData().getPath();
+                    String path = FileHelper.getPath(this, data.getData());
                     Log.d(Constants.TAG, "path=" + path);
 
                     mFileDialog.setFilename(path);
@@ -944,3 +951,4 @@ public class DecryptActivity extends SherlockFragmentActivity {
     }
 
 }
+
