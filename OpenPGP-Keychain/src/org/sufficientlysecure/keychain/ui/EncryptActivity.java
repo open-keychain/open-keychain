@@ -678,6 +678,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         long encryptionKeyIds[] = null;
         int compressionId = 0;
         boolean signOnly = false;
+        long mSecretKeyIdToPass = 0;
 
         if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -685,9 +686,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
             if (passPhrase.length() == 0) {
                 passPhrase = null;
             }
-
             data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
         } else {
+            mSecretKeyIdToPass = mSecretKeyId;
             encryptionKeyIds = mEncryptionKeyIds;
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
         }
@@ -733,7 +734,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             useAsciiArmor = mAsciiArmorDemand;
         }
 
-        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
+        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyIdToPass);
         data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_AMOR, useAsciiArmor);
         data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
         data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
