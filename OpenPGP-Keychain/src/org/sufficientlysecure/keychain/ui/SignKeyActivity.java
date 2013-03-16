@@ -295,7 +295,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         switch (requestCode) {
         case Id.request.secret_keys: {
             if (resultCode == RESULT_OK) {
-                mMasterKeyId = data.getLongExtra(EXTRA_KEY_ID, 0);
+                Bundle bundle = data.getExtras();
+                mMasterKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
 
                 // re-enable the sign button so the user can initiate the sign process
                 Button sign = (Button) findViewById(R.id.sign);
