@@ -382,6 +382,7 @@ public class ProviderHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
+        values.put(Keys.CAN_CERTIFY, (PgpHelper.isCertificationKey(key) && has_private));
         values.put(Keys.CAN_SIGN, (PgpHelper.isSigningKey(key) && has_private));
         values.put(Keys.CAN_ENCRYPT, PgpHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());

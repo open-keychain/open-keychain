@@ -333,6 +333,36 @@ public class PgpHelper {
         return isSigningKey(key.getPublicKey());
     }
 
+    @SuppressWarnings("unchecked")
+    public static boolean isCertificationKey(PGPPublicKey key) {
+        if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isCertificationKey(PGPSecretKey key) {
+        return isCertificationKey(key.getPublicKey());
+    }
+
     public static String getAlgorithmInfo(PGPPublicKey key) {
         return getAlgorithmInfo(key.getAlgorithm(), key.getBitStrength());
     }

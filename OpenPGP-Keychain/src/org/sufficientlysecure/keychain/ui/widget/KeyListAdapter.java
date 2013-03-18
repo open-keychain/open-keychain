@@ -151,6 +151,13 @@ public class KeyListAdapter extends CursorTreeAdapter {
                     masterKeyIcon.setVisibility(View.VISIBLE);
                 }
 
+                ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
+                if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_CERTIFY)) != 1) {
+                    certifyIcon.setVisibility(View.GONE);
+                } else {
+                    certifyIcon.setVisibility(View.VISIBLE);
+                }
+
                 ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
                 if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_ENCRYPT)) != 1) {
                     encryptIcon.setVisibility(View.GONE);
@@ -159,7 +166,6 @@ public class KeyListAdapter extends CursorTreeAdapter {
                 }
 
                 ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
-
                 if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
                         signIcon.setVisibility(View.GONE);
                 } else {
@@ -213,7 +219,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
         switch (type) {
         case CHILD_FINGERPRINT:
             projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
-                    Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
+                    Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
             sortOrder = Keys.RANK + " ASC";
 
             // use only master key for fingerprint
@@ -228,7 +234,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
 
         case CHILD_KEY:
             projection = new String[] { Keys._ID, Keys.KEY_ID, Keys.IS_MASTER_KEY, Keys.ALGORITHM,
-                    Keys.KEY_SIZE, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
+                    Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN, Keys.CAN_ENCRYPT, };
             sortOrder = Keys.RANK + " ASC";
 
             if (mKeyType == Id.type.public_key) {

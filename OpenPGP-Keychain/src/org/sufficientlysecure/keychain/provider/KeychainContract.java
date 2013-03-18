@@ -36,6 +36,7 @@ public class KeychainContract {
         String IS_MASTER_KEY = "is_master_key";
         String ALGORITHM = "algorithm";
         String KEY_SIZE = "key_size";
+        String CAN_CERTIFY = "can_certify";
         String CAN_SIGN = "can_sign";
         String CAN_ENCRYPT = "can_encrypt";
         String IS_REVOKED = "is_revoked";

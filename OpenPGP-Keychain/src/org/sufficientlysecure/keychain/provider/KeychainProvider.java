@@ -367,6 +367,7 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeysColumns.IS_MASTER_KEY, KeysColumns.IS_MASTER_KEY);
         projectionMap.put(KeysColumns.ALGORITHM, KeysColumns.ALGORITHM);
         projectionMap.put(KeysColumns.KEY_SIZE, KeysColumns.KEY_SIZE);
+        projectionMap.put(KeysColumns.CAN_CERTIFY, KeysColumns.CAN_CERTIFY);
         projectionMap.put(KeysColumns.CAN_SIGN, KeysColumns.CAN_SIGN);
         projectionMap.put(KeysColumns.CAN_ENCRYPT, KeysColumns.CAN_ENCRYPT);
         projectionMap.put(KeysColumns.IS_REVOKED, KeysColumns.IS_REVOKED);

@@ -89,7 +89,7 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
