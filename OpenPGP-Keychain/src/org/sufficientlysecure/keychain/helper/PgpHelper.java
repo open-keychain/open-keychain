@@ -164,9 +164,7 @@ public class PgpHelper {
         for (int i = 0; i < signingKeys.size(); ++i) {
             PGPSecretKey key = signingKeys.get(i);
             if (key.isMasterKey()) {
-                if (!isSecretKeyPrivateEmpty(key)) {
-                    masterKey = key;
-                }
+                masterKey = key;
             } else {
                 usableKeys.add(key);
             }

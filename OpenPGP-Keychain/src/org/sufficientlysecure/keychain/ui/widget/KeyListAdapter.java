@@ -159,13 +159,8 @@ public class KeyListAdapter extends CursorTreeAdapter {
                 }
 
                 ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
-                boolean privateEmpty = false; //Don't show signing icon for master keys without private keys
-                //TODO: does this need to be done for encrypting icon? Does anyone use master key for encrypt?
-                if (cursor.getInt(cursor.getColumnIndex(Keys.IS_MASTER_KEY)) == 1) {
-                    privateEmpty = PgpHelper.isSecretKeyPrivateEmpty(context,
-                            cursor.getLong(cursor.getColumnIndex(Keys.KEY_ID)));
-                }
-                if (privateEmpty || cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
+
+                if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
                         signIcon.setVisibility(View.GONE);
                 } else {
                     signIcon.setVisibility(View.VISIBLE);

@@ -370,11 +370,19 @@ public class ProviderHelper {
     private static ContentProviderOperation buildSecretKeyOperations(Context context,
             long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
+
+        boolean has_private = true;
+        if (key.isMasterKey()) {
+            if (PgpHelper.isSecretKeyPrivateEmpty(key)) {
+                has_private = false;
+            }
+        }
+
         values.put(Keys.KEY_ID, key.getKeyID());
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
-        values.put(Keys.CAN_SIGN, PgpHelper.isSigningKey(key));
+        values.put(Keys.CAN_SIGN, (PgpHelper.isSigningKey(key) && has_private));
         values.put(Keys.CAN_ENCRYPT, PgpHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
         values.put(Keys.CREATION, PgpHelper.getCreationDate(key).getTime() / 1000);
