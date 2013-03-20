@@ -30,7 +30,7 @@
     
         Association of file types to APG 
         =================================
-    	General remarks about file ending conventions:
+        General remarks about file ending conventions:
         - *.gpg for binary files
         - *.asc for ascii armored files
         
@@ -86,6 +86,9 @@
         android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain"
         android:protectionLevel="dangerous" />
 
+    <!-- 
+        android:allowBackup="false": Don't allow backup over adb backup or other apps!
+    -->
     <application
         android:name=".KeychainApplication"
         android:allowBackup="false"
