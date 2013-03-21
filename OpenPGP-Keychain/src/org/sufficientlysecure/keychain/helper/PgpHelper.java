@@ -122,6 +122,19 @@ public class PgpHelper {
         return signingKeys;
     }
 
+    @SuppressWarnings("unchecked")
+    public static Vector<PGPSecretKey> getCertificationKeys(PGPSecretKeyRing keyRing) {
+        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
+
+        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+            if (isCertificationKey(key)) {
+                signingKeys.add(key);
+            }
+        }
+
+        return signingKeys;
+    }
+
     public static Vector<PGPPublicKey> getUsableEncryptKeys(PGPPublicKeyRing keyRing) {
         Vector<PGPPublicKey> usableKeys = new Vector<PGPPublicKey>();
         Vector<PGPPublicKey> encryptKeys = getEncryptKeys(keyRing);
@@ -155,6 +168,24 @@ public class PgpHelper {
 
     public static boolean isExpired(PGPSecretKey key) {
         return isExpired(key.getPublicKey());
+    }
+
+    public static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
+        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
+        Vector<PGPSecretKey> signingKeys = getCertificationKeys(keyRing);
+        PGPSecretKey masterKey = null;
+        for (int i = 0; i < signingKeys.size(); ++i) {
+            PGPSecretKey key = signingKeys.get(i);
+            if (key.isMasterKey()) {
+                masterKey = key;
+            } else {
+                usableKeys.add(key);
+            }
+        }
+        if (masterKey != null) {
+            usableKeys.add(masterKey);
+        }
+        return usableKeys;
     }
 
     public static Vector<PGPSecretKey> getUsableSigningKeys(PGPSecretKeyRing keyRing) {
@@ -206,6 +237,19 @@ public class PgpHelper {
             return null;
         }
         return encryptKeys.get(0);
+    }
+
+    public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
+                masterKeyId);
+        if (keyRing == null) {
+            return null;
+        }
+        Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
+        if (signingKeys.size() == 0) {
+            return null;
+        }
+        return signingKeys.get(0);
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {

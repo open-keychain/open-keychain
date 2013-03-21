@@ -1132,7 +1132,7 @@ public class PgpMain {
         } else {
             PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByKeyId(context, pubKeyId);
 
-            PGPSecretKey signingKey = PgpHelper.getSigningKey(context, masterKeyId);
+            PGPSecretKey signingKey = PgpHelper.getCertificationKey(context, masterKeyId);
             if (signingKey == null) {
                 throw new PgpGeneralException(context.getString(R.string.error_signatureFailed));
             }
