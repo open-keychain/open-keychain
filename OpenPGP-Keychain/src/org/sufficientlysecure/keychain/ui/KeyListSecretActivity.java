@@ -70,18 +70,19 @@ public class KeyListSecretActivity extends KeyListActivity {
         }
     }
 
-    public void checkPassPhraseAndEdit(long masterKeyId) {
+    public void checkPassPhraseAndEdit(long masterKeyId, boolean masterCanSign) {
         String passPhrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
         if (passPhrase == null) {
-            showPassphraseDialog(masterKeyId);
+            showPassphraseDialog(masterKeyId, masterCanSign);
         } else {
             PgpMain.setEditPassPhrase(passPhrase);
-            editKey(masterKeyId);
+            editKey(masterKeyId, masterCanSign);
         }
     }
 
-    private void showPassphraseDialog(final long masterKeyId) {
+    private void showPassphraseDialog(final long masterKeyId, boolean masterCanSign) {
         // Message is received after passphrase is cached
+        final boolean mCanSign = masterCanSign;
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -89,7 +90,7 @@ public class KeyListSecretActivity extends KeyListActivity {
                     String passPhrase = PassphraseCacheService.getCachedPassphrase(
                             KeyListSecretActivity.this, masterKeyId);
                     PgpMain.setEditPassPhrase(passPhrase);
-                    editKey(masterKeyId);
+                    editKey(masterKeyId, mCanSign);
                 }
             }
         };
@@ -115,9 +116,10 @@ public class KeyListSecretActivity extends KeyListActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void editKey(long masterKeyId) {
+    private void editKey(long masterKeyId, boolean masterCanSign) {
         Intent intent = new Intent(EditKeyActivity.ACTION_EDIT_KEY);
         intent.putExtra(EditKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+        intent.putExtra(EditKeyActivity.EXTRA_MASTER_CAN_SIGN, masterCanSign);
         startActivityForResult(intent, 0);
     }
 

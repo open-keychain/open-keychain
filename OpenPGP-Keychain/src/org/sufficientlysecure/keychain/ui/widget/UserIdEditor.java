@@ -56,6 +56,16 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         }
     }
 
+    public void setCanEdit(boolean bCanEdit) {
+        if (!bCanEdit) {
+            mDeleteButton.setVisibility(View.INVISIBLE);
+            mName.setEnabled(false);
+            mIsMainUserId.setEnabled(false);
+            mEmail.setEnabled(false);
+            mComment.setEnabled(false);
+        }
+    }
+
     public static class NoEmailException extends Exception {
         static final long serialVersionUID = 0xf812773344L;
 

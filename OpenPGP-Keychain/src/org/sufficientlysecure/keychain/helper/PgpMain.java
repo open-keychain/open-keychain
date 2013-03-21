@@ -309,6 +309,31 @@ public class PgpMain {
         return secKeyRing;
     }
 
+    public static void changeSecretKeyPassphrase(Context context,
+            PGPSecretKeyRing keyRing, String oldPassPhrase, String newPassPhrase, 
+            ProgressDialogUpdater progress) throws IOException, PGPException, PGPException,
+            NoSuchProviderException {
+
+        updateProgress(progress, R.string.progress_buildingKey, 0, 100);
+        if (oldPassPhrase == null) {
+            oldPassPhrase = "";
+        }
+        if (newPassPhrase == null) {
+            newPassPhrase = "";
+        }
+
+        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(keyRing,
+            oldPassPhrase.toCharArray(), newPassPhrase.toCharArray(), keyRing.getSecretKey().getKeyEncryptionAlgorithm(),
+            new SecureRandom(), BOUNCY_CASTLE_PROVIDER_NAME);
+
+        updateProgress(progress, R.string.progress_savingKeyRing, 50, 100);
+
+        ProviderHelper.saveKeyRing(context, newKeyRing);
+
+        updateProgress(progress, R.string.progress_done, 100, 100);
+
+   }
+
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
             ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
             String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)

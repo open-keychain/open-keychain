@@ -91,9 +91,11 @@ public class KeyListSecretFragment extends KeyListFragment implements
         long masterKeyId = ProviderHelper
                 .getSecretMasterKeyId(mKeyListSecretActivity, keyRingRowId);
 
+        boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(mKeyListSecretActivity, keyRingRowId);
+
         switch (item.getItemId()) {
         case Id.menu.edit:
-            mKeyListSecretActivity.checkPassPhraseAndEdit(masterKeyId);
+            mKeyListSecretActivity.checkPassPhraseAndEdit(masterKeyId, masterCanSign);
 
             return true;
 

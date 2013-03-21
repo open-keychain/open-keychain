@@ -125,6 +125,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         super.onFinishInflate();
     }
 
+    public void setCanEdit(boolean bCanEdit) {
+        if (!bCanEdit) {
+            mDeleteButton.setVisibility(View.INVISIBLE);
+            mUsage.setEnabled(false);
+            mExpiryDateButton.setEnabled(false);
+        }
+    }
+
     public void setValue(PGPSecretKey key, boolean isMasterKey, int usage) {
         mKey = key;
 

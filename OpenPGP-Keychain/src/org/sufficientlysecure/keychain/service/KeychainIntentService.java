@@ -123,6 +123,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String SAVE_KEYRING_KEYS = "keys";
     public static final String SAVE_KEYRING_KEYS_USAGES = "keysUsages";
     public static final String SAVE_KEYRING_MASTER_KEY_ID = "masterKeyId";
+    public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
@@ -523,6 +524,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Input */
                 String oldPassPhrase = data.getString(SAVE_KEYRING_CURRENT_PASSPHRASE);
                 String newPassPhrase = data.getString(SAVE_KEYRING_NEW_PASSPHRASE);
+                boolean canSign = true;
+
+                if (data.containsKey(SAVE_KEYRING_CAN_SIGN)) {
+                    canSign = data.getBoolean(SAVE_KEYRING_CAN_SIGN);
+                }
+
                 if (newPassPhrase == null) {
                     newPassPhrase = oldPassPhrase;
                 }
@@ -533,8 +540,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
                 /* Operation */
-                PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
+                if (!canSign) { //library fails, fix later
+                    //PgpMain.changeSecretKeyPassphrase(this, ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId), 
+                    //oldPassPhrase, newPassPhrase, this);
+                } else {
+                    PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
                         newPassPhrase, this);
+                }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
                 /* Output */

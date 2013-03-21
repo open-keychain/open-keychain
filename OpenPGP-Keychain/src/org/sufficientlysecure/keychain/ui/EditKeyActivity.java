@@ -75,6 +75,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
     public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String EXTRA_MASTER_CAN_SIGN = "masterCanSign";
 
     // results when saving key
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
@@ -97,6 +98,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     Vector<String> mUserIds;
     Vector<PGPSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
+    boolean masterCanSign = true;
 
     // will be set to false to build layout later in handler
     private boolean mBuildLayout = true;
@@ -191,6 +193,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                 }
             }
         });
+
+        //disable key passhphrase changing with empty private keys for no
+        //library fails, fix later
+        if (!masterCanSign) {
+            mChangePassPhrase.setEnabled(false);
+            mNoPassphrase.setEnabled(false);
+        }
 
         if (mBuildLayout) {
             buildLayout();
@@ -317,6 +326,9 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (extras != null) {
+            if (extras.containsKey(EXTRA_MASTER_CAN_SIGN)) {
+                masterCanSign = extras.getBoolean(EXTRA_MASTER_CAN_SIGN);
+            }
             if (extras.containsKey(EXTRA_MASTER_KEY_ID)) {
                 long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
 
@@ -394,10 +406,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mUserIdsView.setType(Id.type.user_id);
+        mUserIdsView.setCanEdit(masterCanSign);
         mUserIdsView.setUserIds(mUserIds);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
+        mKeysView.setCanEdit(masterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages);
         container.addView(mKeysView);
 
@@ -447,6 +461,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             data.putIntegerArrayList(KeychainIntentService.SAVE_KEYRING_KEYS_USAGES,
                     getKeysUsages(mKeysView));
             data.putLong(KeychainIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
+            data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
