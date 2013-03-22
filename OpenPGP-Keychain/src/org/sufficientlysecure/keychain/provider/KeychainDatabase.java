@@ -31,7 +31,7 @@ import android.provider.BaseColumns;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
@@ -48,6 +48,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KeysColumns.KEY_ID
             + " INT64, " + KeysColumns.TYPE + " INTEGER, " + KeysColumns.IS_MASTER_KEY
             + " INTEGER, " + KeysColumns.ALGORITHM + " INTEGER, " + KeysColumns.KEY_SIZE
+            + " INTEGER, " + KeysColumns.CAN_CERTIFY
             + " INTEGER, " + KeysColumns.CAN_SIGN + " INTEGER, " + KeysColumns.CAN_ENCRYPT
             + " INTEGER, " + KeysColumns.IS_REVOKED + " INTEGER, " + KeysColumns.CREATION
             + " INTEGER, " + KeysColumns.EXPIRY + " INTEGER, " + KeysColumns.KEY_DATA + " BLOB,"
@@ -93,6 +94,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             Log.w(Constants.TAG, "Upgrading database to version " + version);
 
             switch (version) {
+            case 3:
+                db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.CAN_CERTIFY + " INTEGER DEFAULT 0;");
+                db.execSQL("UPDATE " + Tables.KEYS + " SET " + KeysColumns.CAN_CERTIFY + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
+                break;
 
             default:
                 break;

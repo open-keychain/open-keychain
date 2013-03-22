@@ -34,8 +34,11 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
             + "SELECT_SECRET_KEYRING";
 
+    public static final String EXTRA_FILTER_CERTIFY = "filter_certify";
+
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
     public static final String RESULT_EXTRA_USER_ID = "userId";
+    public static boolean filterCertify = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,8 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
         // handleIntent(new Intent());
         // }
         // });
+
+        filterCertify = getIntent().getBooleanExtra(EXTRA_FILTER_CERTIFY, false);
 
         handleIntent(getIntent());
     }

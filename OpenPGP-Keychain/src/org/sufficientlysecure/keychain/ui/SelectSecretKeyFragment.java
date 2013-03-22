@@ -91,12 +91,21 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
+        String CapFilter = null;
+        if (((SelectSecretKeyActivity)getActivity()).filterCertify == true) {
+            CapFilter = "(cert>0)";
+        }
+
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
         String[] projection = new String[] {
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,
+                "(SELECT COUNT(cert_keys." + Keys._ID + ") FROM " + Tables.KEYS
+                        + " AS cert_keys WHERE cert_keys." + Keys.KEY_RING_ROW_ID + " = "
+                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND cert_keys."
+                        + Keys.CAN_CERTIFY + " = '1') AS cert",
                 "(SELECT COUNT(available_keys." + Keys._ID + ") FROM " + Tables.KEYS
                         + " AS available_keys WHERE available_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
@@ -127,7 +136,7 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, null, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, CapFilter, null, orderBy);
     }
 
     @Override

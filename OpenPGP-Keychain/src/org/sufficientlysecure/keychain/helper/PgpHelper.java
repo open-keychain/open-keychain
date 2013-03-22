@@ -24,12 +24,16 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -77,6 +81,22 @@ public class PgpHelper {
     }
 
     @SuppressWarnings("unchecked")
+    public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
+        long cnt = 0;
+        if (keyRing == null) {
+            return null;
+        }
+        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+            if (cnt == num) {
+                return key;
+            }
+            cnt++;
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
     public static Vector<PGPPublicKey> getEncryptKeys(PGPPublicKeyRing keyRing) {
         Vector<PGPPublicKey> encryptKeys = new Vector<PGPPublicKey>();
 
@@ -95,6 +115,19 @@ public class PgpHelper {
 
         for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
             if (isSigningKey(key)) {
+                signingKeys.add(key);
+            }
+        }
+
+        return signingKeys;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Vector<PGPSecretKey> getCertificationKeys(PGPSecretKeyRing keyRing) {
+        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
+
+        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
+            if (isCertificationKey(key)) {
                 signingKeys.add(key);
             }
         }
@@ -135,6 +168,24 @@ public class PgpHelper {
 
     public static boolean isExpired(PGPSecretKey key) {
         return isExpired(key.getPublicKey());
+    }
+
+    public static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
+        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
+        Vector<PGPSecretKey> signingKeys = getCertificationKeys(keyRing);
+        PGPSecretKey masterKey = null;
+        for (int i = 0; i < signingKeys.size(); ++i) {
+            PGPSecretKey key = signingKeys.get(i);
+            if (key.isMasterKey()) {
+                masterKey = key;
+            } else {
+                usableKeys.add(key);
+            }
+        }
+        if (masterKey != null) {
+            usableKeys.add(masterKey);
+        }
+        return usableKeys;
     }
 
     public static Vector<PGPSecretKey> getUsableSigningKeys(PGPSecretKeyRing keyRing) {
@@ -186,6 +237,19 @@ public class PgpHelper {
             return null;
         }
         return encryptKeys.get(0);
+    }
+
+    public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
+                masterKeyId);
+        if (keyRing == null) {
+            return null;
+        }
+        Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
+        if (signingKeys.size() == 0) {
+            return null;
+        }
+        return signingKeys.get(0);
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
@@ -313,6 +377,36 @@ public class PgpHelper {
         return isSigningKey(key.getPublicKey());
     }
 
+    @SuppressWarnings("unchecked")
+    public static boolean isCertificationKey(PGPPublicKey key) {
+        if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isCertificationKey(PGPSecretKey key) {
+        return isCertificationKey(key.getPublicKey());
+    }
+
     public static String getAlgorithmInfo(PGPPublicKey key) {
         return getAlgorithmInfo(key.getAlgorithm(), key.getBitStrength());
     }
@@ -383,6 +477,30 @@ public class PgpHelper {
         }
 
         return convertFingerprintToHex(key.getFingerprint());
+    }
+
+    public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
+        try {
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
+                    .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(
+                    keyDecryptor);
+            if (testKey != null) {
+                return false;
+            }
+        } catch (PGPException e) { //exception if wrong key => not empty
+            return false; //all good if this fails, we likely didn't use the right password
+        }
+        return true;
+    }
+
+    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
+        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
+        if (secretKey == null) {
+            Log.e(Constants.TAG, "Key could not be found!");
+            return false; //could be a public key, assume it is not empty
+        }
+        return isSecretKeyPrivateEmpty(secretKey);
     }
 
     public static String getSmallFingerPrint(long keyId) {

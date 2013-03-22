@@ -84,6 +84,7 @@ import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
@@ -308,6 +309,31 @@ public class PgpMain {
         return secKeyRing;
     }
 
+    public static void changeSecretKeyPassphrase(Context context,
+            PGPSecretKeyRing keyRing, String oldPassPhrase, String newPassPhrase, 
+            ProgressDialogUpdater progress) throws IOException, PGPException, PGPException,
+            NoSuchProviderException {
+
+        updateProgress(progress, R.string.progress_buildingKey, 0, 100);
+        if (oldPassPhrase == null) {
+            oldPassPhrase = "";
+        }
+        if (newPassPhrase == null) {
+            newPassPhrase = "";
+        }
+
+        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(keyRing,
+            oldPassPhrase.toCharArray(), newPassPhrase.toCharArray(), keyRing.getSecretKey().getKeyEncryptionAlgorithm(),
+            new SecureRandom(), BOUNCY_CASTLE_PROVIDER_NAME);
+
+        updateProgress(progress, R.string.progress_savingKeyRing, 50, 100);
+
+        ProviderHelper.saveKeyRing(context, newKeyRing);
+
+        updateProgress(progress, R.string.progress_done, 100, 100);
+
+   }
+
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
             ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
             String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)
@@ -483,25 +509,22 @@ public class PgpMain {
      * @param keyring
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static int storeKeyRingInCache(Context context, PGPKeyRing keyring) {
         int status = Integer.MIN_VALUE; // out of bounds value (Id.return_value.*)
         try {
             if (keyring instanceof PGPSecretKeyRing) {
                 PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
                 boolean save = true;
-                try {
-                    PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                            .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
-                    PGPPrivateKey testKey = secretKeyRing.getSecretKey().extractPrivateKey(
-                            keyDecryptor);
-                    if (testKey == null) {
-                        // this is bad, something is very wrong... likely a --export-secret-subkeys
-                        // export
-                        save = false;
-                        status = Id.return_value.bad;
+
+                for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(secretKeyRing.getSecretKeys())) {
+                    if (!testSecretKey.isMasterKey()) {
+                        if (PgpHelper.isSecretKeyPrivateEmpty(testSecretKey)) {
+                            // this is bad, something is very wrong...
+                            save = false;
+                            status = Id.return_value.bad;
+                        }
                     }
-                } catch (PGPException e) {
-                    // all good if this fails, we likely didn't use the right password
                 }
 
                 if (save) {
@@ -1109,7 +1132,7 @@ public class PgpMain {
         } else {
             PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByKeyId(context, pubKeyId);
 
-            PGPSecretKey signingKey = PgpHelper.getSigningKey(context, masterKeyId);
+            PGPSecretKey signingKey = PgpHelper.getCertificationKey(context, masterKeyId);
             if (signingKey == null) {
                 throw new PgpGeneralException(context.getString(R.string.error_signatureFailed));
             }

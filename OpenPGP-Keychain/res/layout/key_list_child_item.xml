@@ -64,6 +64,12 @@
             android:paddingTop="2dip" >
 
             <ImageView
+                android:id="@+id/ic_certifyKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/certify_small" />
+
+            <ImageView
                 android:id="@+id/ic_encryptKey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

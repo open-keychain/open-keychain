@@ -45,6 +45,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,12 +56,14 @@ import java.util.Vector;
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
     private LayoutInflater mInflater;
     private View mAdd;
+    private ImageView mPlusButton;
     private ViewGroup mEditors;
     private TextView mTitle;
     private int mType = 0;
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
+    private boolean canEdit = true;
 
     private SherlockFragmentActivity mActivity;
 
@@ -99,6 +102,14 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         }
     }
 
+    public void setCanEdit(boolean bCanEdit) {
+         canEdit = bCanEdit;
+         mPlusButton = (ImageView)findViewById(R.id.plusbutton);
+         if (!canEdit) {
+             mPlusButton.setVisibility(View.INVISIBLE);
+         }
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void onFinishInflate() {
@@ -129,6 +140,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     /** {@inheritDoc} */
     public void onClick(View v) {
+        if (canEdit) {
         switch (mType) {
         case Id.type.user_id: {
             UserIdEditor view = (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
@@ -205,6 +217,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         }
         }
         this.updateEditorsVisible();
+        }
     }
 
     public void setUserIds(Vector<String> list) {
@@ -221,6 +234,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             if (mEditors.getChildCount() == 0) {
                 view.setIsMainUserId(true);
             }
+            view.setCanEdit(canEdit);
             mEditors.addView(view);
         }
 
@@ -241,6 +255,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
             view.setValue(list.get(i), isMasterKey, usages.get(i));
+            view.setCanEdit(canEdit);
             mEditors.addView(view);
         }
 
