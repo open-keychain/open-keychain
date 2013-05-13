@@ -480,18 +480,7 @@ public class PgpHelper {
     }
 
     public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
-        try {
-            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(new char[] {});
-            PGPPrivateKey testKey = secretKey.extractPrivateKey(
-                    keyDecryptor);
-            if (testKey != null) {
-                return false;
-            }
-        } catch (PGPException e) { //exception if wrong key => not empty
-            return false; //all good if this fails, we likely didn't use the right password
-        }
-        return true;
+        return secretKey.isPrivateKeyEmpty();
     }
 
     public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {

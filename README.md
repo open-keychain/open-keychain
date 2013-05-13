@@ -17,8 +17,8 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 
 ## Build with Eclipse
 
-1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Kechain/android-libs/ActionBarSherlock"
-2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Kechain"
+1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain/android-libs/ActionBarSherlock"
+2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
 3. OpenPGP-Kechain can now be build
 
 # Libraries
@@ -26,7 +26,7 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "android-libs".
 
 * ActionBarSherlock to provide an ActionBar for Android < 3.0
-* Spongy Castle Crypto Lib (Android version of Bouncy Castle)
+* forked Spongy Castle Crypto Lib (Android version of Bouncy Castle)
 * android-support-v4.jar: Compatibility Lib
 * barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
 
@@ -42,9 +42,12 @@ On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
 ## Build Spongy Castle
 
-Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android.
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP-Keychain uses a forked version with some small changes to improve key import speed. These changes will be sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
-see http://rtyley.github.com/spongycastle/
+see
+* http://rtyley.github.com/spongycastle/
+* https://github.com/ashh87/spongycastle
+
 
 # Notes
 
@@ -163,3 +166,4 @@ OpenPGP Kechain is licensed under Apache License v2.
 * dashboard_scan_qrcode.svg  
   New creation for OpenPGP Kechain  
   Apache License v2
+
