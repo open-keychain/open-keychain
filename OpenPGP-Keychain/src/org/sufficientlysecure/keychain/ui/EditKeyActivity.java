@@ -194,13 +194,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             }
         });
 
-        //disable key passhphrase changing with empty private keys for no
-        //library fails, fix later
-        if (!masterCanSign) {
-            mChangePassPhrase.setEnabled(false);
-            mNoPassphrase.setEnabled(false);
-        }
-
         if (mBuildLayout) {
             buildLayout();
         }

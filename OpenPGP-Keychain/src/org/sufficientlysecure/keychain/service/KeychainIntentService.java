@@ -540,9 +540,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
                 /* Operation */
-                if (!canSign) { //library fails, fix later
-                    //PgpMain.changeSecretKeyPassphrase(this, ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId), 
-                    //oldPassPhrase, newPassPhrase, this);
+                if (!canSign) {
+                    PgpMain.changeSecretKeyPassphrase(this, ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId), 
+                    oldPassPhrase, newPassPhrase, this);
                 } else {
                     PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
                         newPassPhrase, this);
