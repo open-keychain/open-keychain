@@ -1,10 +1,15 @@
+
+if (gradle.gradleVersion < "1.6") {
+    throw new GradleException('You need gradle version >= 1.6')
+}
+
 buildscript {
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4'
+        classpath 'com.android.tools.build:gradle:0.4.1'
     }
 }
 
