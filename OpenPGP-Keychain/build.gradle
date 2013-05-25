@@ -1,6 +1,6 @@
 
-if (gradle.gradleVersion < "1.6") {
-    throw new GradleException('You need gradle version >= 1.6')
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
 }
 
 buildscript {
