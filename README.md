@@ -12,8 +12,9 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 2. Export ANDROID_HOME pointing to your Android SDK
-3. Execute ``gradle wrapper`` (http://www.gradle.org/docs/current/userguide/gradle_wrapper.html)
-4. Execute ``./gradlew assemble``
+3. Install gradle
+4. Execute ``gradle wrapper`` (http://www.gradle.org/docs/current/userguide/gradle_wrapper.html)
+5. Execute ``./gradlew assemble``
 
 ## Build with Ant
 
