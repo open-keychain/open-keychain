@@ -8,22 +8,28 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 
 # Build
 
+## Build with Gradle
+
+1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
+2. Export ANDROID_HOME pointing to your Android SDK
+3. Install Gradle (Minimum version: 1.6)
+4. Execute ``gradle assemble``
+
 ## Build with Ant
 
 1. Have Android SDK "tools" directory in your PATH (http://developer.android.com/sdk/index.html)
-2. Change to "OpenPGP-Kechain" directory with ``cd OpenPGP-Kechain``
-3. Execute ``android update project -p .`` and  ``android update project -p android-libs/ActionBarSherlock``
-4. Execute ``ant debug``
+2. Execute ``android update project -p OpenPGP-Keychain`` and  ``android update project -p libraries/ActionBarSherlock``
+3. Execute ``cd OpenPGP-Kechain``, ``ant debug``
 
 ## Build with Eclipse
 
-1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain/android-libs/ActionBarSherlock"
+1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
 3. OpenPGP-Kechain can now be build
 
 # Libraries
 
-All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "android-libs".
+All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "libraries".
 
 * ActionBarSherlock to provide an ActionBar for Android < 3.0
 * forked Spongy Castle Crypto Lib (Android version of Bouncy Castle)
