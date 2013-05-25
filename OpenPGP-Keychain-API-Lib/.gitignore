@@ -1,23 +1,30 @@
-#Android generated
+#Android specific
 bin
 gen
 obj
 libs/armeabi
 lint.xml
 local.properties
+release.properties
+ant.properties
+*.class
+*.apk
+
+#Gradle
+.gradle
+build
+gradle.properties
+
+#Maven
+target
+pom.xml.*
 
 #Eclipse
 .project
 .classpath
 .settings
+.metadata
 
 #IntelliJ IDEA
 .idea
 *.iml
-
-#Maven
-target
-release.properties
-
-#Mac
-.DS_Store
