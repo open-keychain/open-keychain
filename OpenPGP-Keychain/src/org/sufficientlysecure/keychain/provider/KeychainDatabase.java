@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.provider;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumersColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
@@ -28,15 +29,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
         String KEYS = "keys";
         String USER_IDS = "user_ids";
+        String CRYPTO_CONSUMERS = "crypto_consumers";
     }
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
@@ -48,13 +49,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KeysColumns.KEY_ID
             + " INT64, " + KeysColumns.TYPE + " INTEGER, " + KeysColumns.IS_MASTER_KEY
             + " INTEGER, " + KeysColumns.ALGORITHM + " INTEGER, " + KeysColumns.KEY_SIZE
-            + " INTEGER, " + KeysColumns.CAN_CERTIFY
-            + " INTEGER, " + KeysColumns.CAN_SIGN + " INTEGER, " + KeysColumns.CAN_ENCRYPT
-            + " INTEGER, " + KeysColumns.IS_REVOKED + " INTEGER, " + KeysColumns.CREATION
-            + " INTEGER, " + KeysColumns.EXPIRY + " INTEGER, " + KeysColumns.KEY_DATA + " BLOB,"
-            + KeysColumns.RANK + " INTEGER, " + KeysColumns.KEY_RING_ROW_ID
-            + " INTEGER NOT NULL, FOREIGN KEY(" + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES "
-            + Tables.KEY_RINGS + "(" + BaseColumns._ID + ") ON DELETE CASCADE)";
+            + " INTEGER, " + KeysColumns.CAN_CERTIFY + " INTEGER, " + KeysColumns.CAN_SIGN
+            + " INTEGER, " + KeysColumns.CAN_ENCRYPT + " INTEGER, " + KeysColumns.IS_REVOKED
+            + " INTEGER, " + KeysColumns.CREATION + " INTEGER, " + KeysColumns.EXPIRY
+            + " INTEGER, " + KeysColumns.KEY_DATA + " BLOB," + KeysColumns.RANK + " INTEGER, "
+            + KeysColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
+            + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
+            + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -62,6 +63,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
             + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
             + BaseColumns._ID + ") ON DELETE CASCADE)";
+
+    private static final String CREATE_CRYPTO_CONSUMERS = "CREATE TABLE IF NOT EXISTS "
+            + Tables.CRYPTO_CONSUMERS + " (" + BaseColumns._ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT, " + CryptoConsumersColumns.PACKAGE_NAME
+            + " TEXT UNIQUE)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -74,6 +80,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEY_RINGS);
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_IDS);
+        db.execSQL(CREATE_CRYPTO_CONSUMERS);
     }
 
     @Override
@@ -95,9 +102,13 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
             switch (version) {
             case 3:
-                db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.CAN_CERTIFY + " INTEGER DEFAULT 0;");
-                db.execSQL("UPDATE " + Tables.KEYS + " SET " + KeysColumns.CAN_CERTIFY + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
+                db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.CAN_CERTIFY
+                        + " INTEGER DEFAULT 0;");
+                db.execSQL("UPDATE " + Tables.KEYS + " SET " + KeysColumns.CAN_CERTIFY
+                        + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
                 break;
+            case 4:
+                db.execSQL(CREATE_CRYPTO_CONSUMERS);
 
             default:
                 break;

@@ -53,6 +53,10 @@ public class KeychainContract {
         String RANK = "rank";
     }
 
+    interface CryptoConsumersColumns {
+        String PACKAGE_NAME = "package_name";
+    }
+
     public static final class KeyTypes {
         public static final int PUBLIC = 0;
         public static final int SECRET = 1;
@@ -77,6 +81,8 @@ public class KeychainContract {
 
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
+
+    public static final String BASE_CRYPTO_CONSUMERS = "crypto_consumers";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
@@ -205,6 +211,17 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
                     .appendPath(PATH_USER_IDS).appendPath(userIdRowId).build();
         }
+    }
+
+    public static class CryptoConsumers implements CryptoConsumersColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_CRYPTO_CONSUMERS).build();
+
+        /** Use if multiple items get returned */
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.crypto_consumers";
+
+        /** Use if a single item is returned */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.crypto_consumers";
     }
 
     public static class DataStream {

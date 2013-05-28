@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
@@ -80,7 +81,9 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID = 221;
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
-    private static final int DATA_STREAM = 301;
+    private static final int CRYPTO_CONSUMERS = 301;
+
+    // private static final int DATA_STREAM = 401;
 
     protected boolean mInternalProvider;
     protected UriMatcher mUriMatcher;
@@ -126,8 +129,7 @@ public class KeychainProvider extends ContentProvider {
                 PUBLIC_KEY_RING_BY_EMAILS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_EMAILS,
-                PUBLIC_KEY_RING_BY_EMAILS); // without emails
-        // specified
+                PUBLIC_KEY_RING_BY_EMAILS); // without emails specified
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_PUBLIC + "/" + KeychainContract.PATH_BY_LIKE_EMAIL + "/*",
                 PUBLIC_KEY_RING_BY_LIKE_EMAIL);
@@ -189,8 +191,7 @@ public class KeychainProvider extends ContentProvider {
                 SECRET_KEY_RING_BY_EMAILS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_EMAILS,
-                SECRET_KEY_RING_BY_EMAILS); // without emails
-        // specified
+                SECRET_KEY_RING_BY_EMAILS); // without emails specified
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_SECRET + "/" + KeychainContract.PATH_BY_LIKE_EMAIL + "/*",
                 SECRET_KEY_RING_BY_LIKE_EMAIL);
@@ -226,13 +227,18 @@ public class KeychainProvider extends ContentProvider {
                 SECRET_KEY_RING_USER_ID_BY_ROW_ID);
 
         /**
+         * Crypto Consumers
+         */
+        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS, CRYPTO_CONSUMERS);
+
+        /**
          * data stream
          * 
          * <pre>
          * data / _
          * </pre>
          */
-        matcher.addURI(authority, KeychainContract.BASE_DATA + "/*", DATA_STREAM);
+        // matcher.addURI(authority, KeychainContract.BASE_DATA + "/*", DATA_STREAM);
 
         return matcher;
     }
@@ -283,6 +289,9 @@ public class KeychainProvider extends ContentProvider {
         case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             return UserIds.CONTENT_ITEM_TYPE;
+
+        case CRYPTO_CONSUMERS:
+            return CryptoConsumers.CONTENT_TYPE;
 
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -591,6 +600,11 @@ public class KeychainProvider extends ContentProvider {
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
+            
+        case CRYPTO_CONSUMERS:
+            qb.setTables(Tables.CRYPTO_CONSUMERS);
+            
+            break;
 
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
@@ -869,16 +883,16 @@ public class KeychainProvider extends ContentProvider {
         return BaseColumns._ID + "=" + rowId + andForeignKeyRing + andSelection;
     }
 
-    @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-        int match = mUriMatcher.match(uri);
-        if (match != DATA_STREAM) {
-            throw new FileNotFoundException();
-        }
-        String fileName = uri.getLastPathSegment();
-        File file = new File(getContext().getFilesDir().getAbsolutePath(), fileName);
-        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
-    }
+    // @Override
+    // public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+    // int match = mUriMatcher.match(uri);
+    // if (match != DATA_STREAM) {
+    // throw new FileNotFoundException();
+    // }
+    // String fileName = uri.getLastPathSegment();
+    // File file = new File(getContext().getFilesDir().getAbsolutePath(), fileName);
+    // return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY);
+    // }
 
     /**
      * This broadcast is send system wide to inform other application that a keyring was inserted,

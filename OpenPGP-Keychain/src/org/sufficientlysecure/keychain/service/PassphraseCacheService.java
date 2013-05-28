@@ -19,8 +19,12 @@ package org.sufficientlysecure.keychain.service;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
@@ -102,13 +106,51 @@ public class PassphraseCacheService extends Service {
         // get cached passphrase
         String cachedPassphrase = mPassphraseCache.get(masterKeyId);
         if (cachedPassphrase == null) {
-            return null;
+            // check if secret key has a passphrase
+            if (!hasPassphrase(context, masterKeyId)) {
+                // cache empty passphrase
+                addCachedPassphrase(context, masterKeyId, "");
+                return "";
+            } else {
+                return null;
+            }
         }
         // set it again to reset the cache life cycle
         Log.d(TAG, "Cache passphrase again when getting it!");
         addCachedPassphrase(context, masterKeyId, cachedPassphrase);
 
         return cachedPassphrase;
+    }
+
+    /**
+     * Checks if key has a passphrase.
+     * 
+     * @param secretKeyId
+     * @return true if it has a passphrase
+     */
+    public static boolean hasPassphrase(Context context, long secretKeyId) {
+        // check if the key has no passphrase
+        try {
+            PGPSecretKey secretKey = PgpHelper.getMasterKey(ProviderHelper
+                    .getPGPSecretKeyRingByKeyId(context, secretKeyId));
+
+            Log.d(Constants.TAG, "Check if key has no passphrase...");
+            PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                    "SC").build("".toCharArray());
+            PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
+            if (testKey != null) {
+                Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
+
+                // cache empty passphrase
+                PassphraseCacheService.addCachedPassphrase(context, secretKey.getKeyID(), "");
+
+                return false;
+            }
+        } catch (PGPException e) {
+            // silently catch
+        }
+
+        return true;
     }
 
     /**

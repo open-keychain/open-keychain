@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -516,10 +517,13 @@ public class ProviderHelper {
      * @return
      */
     private static boolean getMasterKeyCanSign(Context context, Uri queryUri, long keyRingRowId) {
-        String[] projection = new String[] { KeyRings.MASTER_KEY_ID, "(SELECT COUNT(sign_keys." + 
-            Keys._ID + ") FROM " + Tables.KEYS + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
-            + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND sign_keys."
-            + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY + " = 1) AS sign",  };
+        String[] projection = new String[] {
+                KeyRings.MASTER_KEY_ID,
+                "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
+                        + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
+                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
+                        + " AND sign_keys." + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY
+                        + " = 1) AS sign", };
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);
@@ -712,5 +716,32 @@ public class ProviderHelper {
         }
 
         return cursor;
+    }
+
+    public static ArrayList<String> getCryptoConsumers(Context context) {
+        Cursor cursor = context.getContentResolver().query(CryptoConsumers.CONTENT_URI, null, null,
+                null, null);
+
+        ArrayList<String> packageNames = new ArrayList<String>();
+        if (cursor != null) {
+            int packageNameCol = cursor.getColumnIndex(CryptoConsumers.PACKAGE_NAME);
+            if (cursor.moveToFirst()) {
+                do {
+                    packageNames.add(cursor.getString(packageNameCol));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return packageNames;
+    }
+
+    public static void addCryptoConsumer(Context context, String packageName) {
+        ContentValues values = new ContentValues();
+        values.put(CryptoConsumers.PACKAGE_NAME, packageName);
+        context.getContentResolver().insert(CryptoConsumers.CONTENT_URI, values);
     }
 }

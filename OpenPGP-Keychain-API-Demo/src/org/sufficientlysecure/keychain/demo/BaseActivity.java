@@ -30,6 +30,7 @@ public class BaseActivity extends PreferenceActivity {
 
     private Preference mIntentDemo;
     private Preference mContentProviderDemo;
+    private Preference mCryptoProvider;
     private Preference mAidlDemo;
     private Preference mAidlDemo2;
 
@@ -48,6 +49,7 @@ public class BaseActivity extends PreferenceActivity {
         // find preferences
         mIntentDemo = (Preference) findPreference("intent_demo");
         mContentProviderDemo = (Preference) findPreference("content_provider_demo");
+        mCryptoProvider = (Preference) findPreference("crypto_provider_demo");
         mAidlDemo = (Preference) findPreference("aidl_demo");
         mAidlDemo2 = (Preference) findPreference("aidl_demo2");
 
@@ -64,6 +66,15 @@ public class BaseActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 startActivity(new Intent(mActivity, ContentProviderDemoActivity.class));
+
+                return false;
+            }
+        });
+        
+        mCryptoProvider.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                startActivity(new Intent(mActivity, CryptoProviderDemoActivity.class));
 
                 return false;
             }

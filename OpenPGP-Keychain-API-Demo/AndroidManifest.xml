@@ -28,6 +28,10 @@
             android:label="Intent Demo 1"
             android:windowSoftInputMode="stateHidden" />
         <activity
+            android:name=".CryptoProviderDemoActivity"
+            android:label="Crypto Provider"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
             android:name=".AidlDemoActivity"
             android:label="Aidl Demo (ACCESS_API permission)"
             android:windowSoftInputMode="stateHidden" />

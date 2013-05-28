@@ -86,9 +86,7 @@
         android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain"
         android:protectionLevel="dangerous" />
 
-    <!-- 
-        android:allowBackup="false": Don't allow backup over adb backup or other apps!
-    -->
+    <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
         android:name=".KeychainApplication"
         android:allowBackup="false"
@@ -454,6 +452,42 @@
             android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider"
             android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider"
             android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" />
+
+        <!-- Crypto Provider other intents -->
+        <activity
+            android:name=".crypto_provider.CryptoActivity"
+            android:label="TODO crypto activity" >
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.CRYPTO_CACHE_PASSPHRASE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- Crypto Provider API -->
+        <activity
+            android:name=".crypto_provider.RegisterActivity"
+            android:label="TODO reg" >
+            <intent-filter>
+                <action android:name="com.android.crypto.REGISTER" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="org.sufficientlysecure.keychain.crypto_provider.CryptoService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":crypto" >
+            <intent-filter>
+                <action android:name="com.android.crypto.ICryptoService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="api_version"
+                android:value="1" />
+        </service>
     </application>
 
 </manifest>
