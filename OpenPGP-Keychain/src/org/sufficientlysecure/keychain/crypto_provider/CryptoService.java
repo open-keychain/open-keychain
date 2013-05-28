@@ -76,6 +76,8 @@ public class CryptoService extends Service {
             if (secretKeyId == Id.key.none) {
                 throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
             }
+            
+            Log.d(Constants.TAG, "Got input:\n"+new String(inputBytes));
 
             Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
