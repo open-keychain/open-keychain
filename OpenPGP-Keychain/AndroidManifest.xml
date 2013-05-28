@@ -406,7 +406,10 @@
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
-        <service android:name=".service.PassphraseCacheService" />
+        <service
+            android:name=".service.PassphraseCacheService"
+            android:exported="false"
+            android:process=":passphrase_cache" />
         <service android:name="org.sufficientlysecure.keychain.service.KeychainIntentService" />
         <service
             android:name="org.sufficientlysecure.keychain.service.KeychainApiService"
@@ -456,7 +459,8 @@
         <!-- Crypto Provider other intents -->
         <activity
             android:name=".crypto_provider.CryptoActivity"
-            android:label="TODO crypto activity" >
+            android:label="TODO crypto activity"
+            android:process=":crypto" >
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.CRYPTO_CACHE_PASSPHRASE" />
 
@@ -467,7 +471,8 @@
         <!-- Crypto Provider API -->
         <activity
             android:name=".crypto_provider.RegisterActivity"
-            android:label="TODO reg" >
+            android:label="TODO reg"
+            android:process=":crypto" >
             <intent-filter>
                 <action android:name="com.android.crypto.REGISTER" />
 

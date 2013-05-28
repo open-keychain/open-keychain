@@ -103,11 +103,11 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     public void setCanEdit(boolean bCanEdit) {
-         canEdit = bCanEdit;
-         mPlusButton = (ImageView)findViewById(R.id.plusbutton);
-         if (!canEdit) {
-             mPlusButton.setVisibility(View.INVISIBLE);
-         }
+        canEdit = bCanEdit;
+        mPlusButton = (ImageView) findViewById(R.id.plusbutton);
+        if (!canEdit) {
+            mPlusButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     /** {@inheritDoc} */
@@ -141,82 +141,85 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /** {@inheritDoc} */
     public void onClick(View v) {
         if (canEdit) {
-        switch (mType) {
-        case Id.type.user_id: {
-            UserIdEditor view = (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
-                    mEditors, false);
-            view.setEditorListener(this);
-            if (mEditors.getChildCount() == 0) {
-                view.setIsMainUserId(true);
-            }
-            mEditors.addView(view);
-            break;
-        }
-
-        case Id.type.key: {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-
-            View view = mInflater.inflate(R.layout.create_key, null);
-            dialog.setView(view);
-            dialog.setTitle(R.string.title_createKey);
-
-            boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
-
-            final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
-            Vector<Choice> choices = new Vector<Choice>();
-            choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(R.string.dsa)));
-            if (!wouldBeMasterKey) {
-                choices.add(new Choice(Id.choice.algorithm.elgamal, getResources().getString(
-                        R.string.elgamal)));
-            }
-
-            choices.add(new Choice(Id.choice.algorithm.rsa, getResources().getString(R.string.rsa)));
-
-            ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
-                    android.R.layout.simple_spinner_item, choices);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            algorithm.setAdapter(adapter);
-            // make RSA the default
-            for (int i = 0; i < choices.size(); ++i) {
-                if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
-                    algorithm.setSelection(i);
-                    break;
+            switch (mType) {
+            case Id.type.user_id: {
+                UserIdEditor view = (UserIdEditor) mInflater.inflate(
+                        R.layout.edit_key_user_id_item, mEditors, false);
+                view.setEditorListener(this);
+                if (mEditors.getChildCount() == 0) {
+                    view.setIsMainUserId(true);
                 }
+                mEditors.addView(view);
+                break;
             }
 
-            final EditText keySize = (EditText) view.findViewById(R.id.create_key_size);
+            case Id.type.key: {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
-            dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface di, int id) {
-                    di.dismiss();
-                    try {
-                        mNewKeySize = Integer.parseInt("" + keySize.getText());
-                    } catch (NumberFormatException e) {
-                        mNewKeySize = 0;
+                View view = mInflater.inflate(R.layout.create_key, null);
+                dialog.setView(view);
+                dialog.setTitle(R.string.title_createKey);
+
+                boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
+
+                final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
+                Vector<Choice> choices = new Vector<Choice>();
+                choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(
+                        R.string.dsa)));
+                if (!wouldBeMasterKey) {
+                    choices.add(new Choice(Id.choice.algorithm.elgamal, getResources().getString(
+                            R.string.elgamal)));
+                }
+
+                choices.add(new Choice(Id.choice.algorithm.rsa, getResources().getString(
+                        R.string.rsa)));
+
+                ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
+                        android.R.layout.simple_spinner_item, choices);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                algorithm.setAdapter(adapter);
+                // make RSA the default
+                for (int i = 0; i < choices.size(); ++i) {
+                    if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
+                        algorithm.setSelection(i);
+                        break;
                     }
-
-                    mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
-                    createKey();
                 }
-            });
 
-            dialog.setCancelable(true);
-            dialog.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface di, int id) {
-                            di.dismiss();
-                        }
-                    });
+                final EditText keySize = (EditText) view.findViewById(R.id.create_key_size);
 
-            dialog.create().show();
-            break;
-        }
+                dialog.setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface di, int id) {
+                                di.dismiss();
+                                try {
+                                    mNewKeySize = Integer.parseInt("" + keySize.getText());
+                                } catch (NumberFormatException e) {
+                                    mNewKeySize = 0;
+                                }
 
-        default: {
-            break;
-        }
-        }
-        this.updateEditorsVisible();
+                                mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
+                                createKey();
+                            }
+                        });
+
+                dialog.setCancelable(true);
+                dialog.setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface di, int id) {
+                                di.dismiss();
+                            }
+                        });
+
+                dialog.create().show();
+                break;
+            }
+
+            default: {
+                break;
+            }
+            }
+            this.updateEditorsVisible();
         }
     }
 
@@ -266,7 +269,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(mActivity, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_GENERATE_KEY);
+        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
+                KeychainIntentService.ACTION_GENERATE_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -293,7 +297,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 ProgressDialog.STYLE_SPINNER);
 
         // Message is received after generating is done in ApgService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity, mGeneratingDialog) {
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
+                mGeneratingDialog) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -302,7 +307,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
                     PGPSecretKeyRing newKeyRing = (PGPSecretKeyRing) PgpConversionHelper
-                            .BytesToPGPKeyRing(data.getByteArray(KeychainIntentService.RESULT_NEW_KEY));
+                            .BytesToPGPKeyRing(data
+                                    .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
 
                     boolean isMasterKey = (mEditors.getChildCount() == 0);
 

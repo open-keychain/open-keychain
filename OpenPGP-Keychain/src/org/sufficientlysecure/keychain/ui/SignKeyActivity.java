@@ -199,7 +199,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_SIGN_KEYRING);
+        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
+                KeychainIntentService.ACTION_SIGN_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -210,8 +211,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after signing is done in ApgService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this, R.string.progress_signing,
-                ProgressDialog.STYLE_SPINNER) {
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+                R.string.progress_signing, ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -250,7 +251,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_UPLOAD_KEYRING);
+        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
+                KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -264,8 +266,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after uploading is done in ApgService
-        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this, R.string.progress_exporting,
-                ProgressDialog.STYLE_HORIZONTAL) {
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);

@@ -56,7 +56,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
  * data from the activities or other apps, queues these intents, executes them, and stops itself
@@ -541,11 +540,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 /* Operation */
                 if (!canSign) {
-                    PgpMain.changeSecretKeyPassphrase(this, ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId), 
-                    oldPassPhrase, newPassPhrase, this);
+                    PgpMain.changeSecretKeyPassphrase(this,
+                            ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
+                            oldPassPhrase, newPassPhrase, this);
                 } else {
-                    PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId, oldPassPhrase,
-                        newPassPhrase, this);
+                    PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId,
+                            oldPassPhrase, newPassPhrase, this);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
