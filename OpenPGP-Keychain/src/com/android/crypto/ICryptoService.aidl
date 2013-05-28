@@ -29,38 +29,36 @@ interface ICryptoService {
      * 
      * @param inputBytes
      *            Byte array you want to encrypt
-     * @param encryptionKeyIds
-     *            Ids of public keys used for encryption
-     * @param handler
-     *            Results are returned to this Handler after successful encryption
+     * @param encryptionUserIds
+     *            User Ids (emails) of recipients
+     * @param callback
+     *            Callback where to return results
      */
     oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in ICryptoCallback callback);
     
     /**
      * Encrypt and sign
      *
-     * 
-     * 
      * @param inputBytes
      *            Byte array you want to encrypt
-     * @param signatureKeyId
-     *            Key id of key to sign with
-     * @param handler
-     *            Results are returned to this Handler after successful encryption and signing
+     * @param encryptionUserIds
+     *            User Ids (emails) of recipients
+     * @param signatureUserId
+     *            User Ids (email) of sender
+     * @param callback
+     *            Callback where to return results
      */
     oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, String signatureUserId, in ICryptoCallback callback);
     
     /**
      * Sign
      *
-     * 
-     * 
      * @param inputBytes
      *            Byte array you want to encrypt
-     * @param signatureId
-     *            
-     * @param handler
-     *            Results are returned to this Handler after successful encryption and signing
+     * @param signatureUserId
+     *            User Ids (email) of sender
+     * @param callback
+     *            Callback where to return results
      */
     oneway void sign(in byte[] inputBytes, String signatureUserId, in ICryptoCallback callback);
     
@@ -70,8 +68,8 @@ interface ICryptoService {
      * 
      * @param inputBytes
      *            Byte array you want to decrypt and verify
-     * @param handler
-     *            Handler where to return results to after successful encryption
+     * @param callback
+     *            Callback where to return results
      */
     oneway void decryptAndVerify(in byte[] inputBytes, in ICryptoCallback callback);    
     
