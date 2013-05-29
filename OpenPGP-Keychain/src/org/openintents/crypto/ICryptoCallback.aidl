@@ -13,8 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package com.android.crypto;
 
-// Declare CryptoError so AIDL can find it and knows that it implements the parcelable protocol.
-parcelable CryptoError;
+package org.openintents.crypto;
+
+import org.openintents.crypto.CryptoSignatureResult;
+import org.openintents.crypto.CryptoError;
+
+interface ICryptoCallback {
+
+    oneway void onEncryptSignSuccess(in byte[] outputBytes);
+    
+    oneway void onDecryptVerifySuccess(in byte[] outputBytes, in CryptoSignatureResult signatureResult);
+
+
+    oneway void onError(in CryptoError error);
+}

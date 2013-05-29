@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import org.openintents.crypto.CryptoError;
+import org.openintents.crypto.CryptoSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.PgpMain;
@@ -29,10 +32,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 
-import com.android.crypto.CryptoError;
-import com.android.crypto.ICryptoCallback;
-import com.android.crypto.ICryptoService;
-import com.android.crypto.CryptoSignatureResult;
+import org.openintents.crypto.ICryptoCallback;
+import org.openintents.crypto.ICryptoService;
 
 import android.app.Service;
 import android.content.Context;
@@ -89,7 +90,8 @@ public class CryptoService extends Service {
                 // passphrase!
                 Intent intent = new Intent(CryptoActivity.ACTION_CACHE_PASSPHRASE);
                 intent.putExtra(CryptoActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
-                callback.onActivityRequired(intent);
+                // TODO: start activity bind to service from activity send back intent on success
+//                callback.onActivityRequired(intent);
                 return;
             }
 

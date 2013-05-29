@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.android.crypto;
+package org.openintents.crypto;
+
+import org.openintents.crypto.ICryptoService;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -66,7 +68,7 @@ public class CryptoServiceConnection {
                 Log.d(TAG, "not bound yet");
 
                 Intent serviceIntent = new Intent();
-                serviceIntent.setAction("com.android.crypto.ICryptoService");
+                serviceIntent.setAction("org.openintents.crypto.ICryptoService");
                 serviceIntent.setPackage(cryptoProviderPackageName); // TODO: test
                 mApplicationContext.bindService(serviceIntent, mCryptoServiceConnection,
                         Context.BIND_AUTO_CREATE);

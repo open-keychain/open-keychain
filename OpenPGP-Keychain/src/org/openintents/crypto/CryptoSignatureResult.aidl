@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-package com.android.crypto;
+package org.openintents.crypto;
 
 // Declare CryptoSignatureResult so AIDL can find it and knows that it implements the parcelable protocol.
 parcelable CryptoSignatureResult;

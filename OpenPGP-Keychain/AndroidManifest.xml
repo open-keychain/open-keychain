@@ -474,7 +474,7 @@
             android:label="TODO reg"
             android:process=":crypto" >
             <intent-filter>
-                <action android:name="com.android.crypto.REGISTER" />
+                <action android:name="org.openintents.crypto.REGISTER" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -486,7 +486,7 @@
             android:exported="true"
             android:process=":crypto" >
             <intent-filter>
-                <action android:name="com.android.crypto.ICryptoService" />
+                <action android:name="org.openintents.crypto.ICryptoService" />
             </intent-filter>
 
             <meta-data

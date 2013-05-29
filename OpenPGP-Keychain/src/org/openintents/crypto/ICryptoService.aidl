@@ -14,9 +14,9 @@
  * limitations under the License.
  */
  
-package com.android.crypto;
+package org.openintents.crypto;
 
-import com.android.crypto.ICryptoCallback;
+import org.openintents.crypto.ICryptoCallback;
 
 /**
  * All methods are oneway, which means they are asynchronous and non-blocking.
