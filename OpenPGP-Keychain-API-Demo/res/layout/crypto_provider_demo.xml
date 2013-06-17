@@ -15,58 +15,47 @@
             android:onClick="registerCryptoProvider"
             android:text="Register crypto provider" />
 
-        <Button
-            android:id="@+id/aidl_demo_select_secret_key"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="selectSecretKeyOnClick"
-            android:text="Select secret key" />
-
-        <Button
-            android:id="@+id/aidl_demo_select_encryption_key"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="selectEncryptionKeysOnClick"
-            android:text="Select encryption key(s)" />
-
         <EditText
-            android:id="@+id/aidl_demo_message"
+            android:id="@+id/crypto_provider_demo_message"
             android:layout_width="match_parent"
             android:layout_height="150dip"
             android:text="message"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
         <EditText
-            android:id="@+id/aidl_demo_ciphertext"
+            android:id="@+id/crypto_provider_demo_ciphertext"
             android:layout_width="match_parent"
             android:layout_height="150dip"
-            android:text="ciphertext"
+            android:text="-----BEGIN PGP MESSAGE-----
+Charset: UTF-8
+Version: GnuPG v1.4.12 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+hQEMAwCgOoTtKmfpAQgAlzmyQYCfkalCsAIxwtroHV9Bwz5LWY4GJNVrFBVddSFJ
+VkVxx/UDqtIS+TvL8RBG3Er3xFilTV+iBSDjSGIXHkSv6Z7Od69nKcQpJLNaCpDj
+/Ag7PsINLUzAvUdPto3ZMCwShe/uoD4e4Gr5BG8na/9W77tegufS2gUUlc5BAOZP
+GUlSPySJP2bpI/3U/R86Z2ByzFKeJIEKWBtBvMPmIgA5VPo0+mamTedRhOIrJM/R
+vUMM2HfLjAxcX9lYEw4aQGROOu1xpN9FPojQOO10imibZb+TEcxtSHwpj2vll1BP
+pXvtuR0E9OGVmRI9aBXiRTB2P9SJ6UPpR13m8FaLVtJPAa2xH4wA5Yr6uZ5x7LjO
+BtO8VErKgoUpO57BgU1ZsVFEcrGiobkreXabKIB+qC0qMJ6maoLlnOPi1IAvhU42
+z/7HBqqhcNiHc5JMs9+wmw==
+=00nh
+-----END PGP MESSAGE-----"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
         <Button
-            android:id="@+id/aidl_demo_encrypt"
+            android:id="@+id/crypto_provider_demo_encrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="encryptOnClick"
             android:text="Encrypt" />
 
         <Button
-            android:id="@+id/aidl_demo_decrypt"
+            android:id="@+id/crypto_provider_demo_decrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="decryptOnClick"
             android:text="Decrypt" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="APG Data:" />
-
-        <TextView
-            android:id="@+id/aidl_demo_data"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:minLines="10" />
     </LinearLayout>
 
 </ScrollView>

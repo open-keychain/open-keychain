@@ -456,29 +456,18 @@
             android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider"
             android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" />
 
-        <!-- Crypto Provider other intents -->
+        <!-- Crypto Provider internal intents -->
+
         <activity
             android:name=".crypto_provider.CryptoActivity"
+            android:exported="false"
             android:label="TODO crypto activity"
             android:process=":crypto" >
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.CRYPTO_CACHE_PASSPHRASE" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+            <!-- Don't publish intents, they are only used internally! -->
         </activity>
 
         <!-- Crypto Provider API -->
-        <activity
-            android:name=".crypto_provider.RegisterActivity"
-            android:label="TODO reg"
-            android:process=":crypto" >
-            <intent-filter>
-                <action android:name="org.openintents.crypto.REGISTER" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name="org.sufficientlysecure.keychain.crypto_provider.CryptoService"
@@ -487,6 +476,9 @@
             android:process=":crypto" >
             <intent-filter>
                 <action android:name="org.openintents.crypto.ICryptoService" />
+
+                <!-- Can only be used from OpenPGP Keychain (internal): -->
+                <action android:name="org.sufficientlysecure.keychain.crypto_provider.ICryptoServiceActivity" />
             </intent-filter>
 
             <meta-data

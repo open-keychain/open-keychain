@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.openintents.crypto.CryptoError;
 import org.openintents.crypto.CryptoSignatureResult;
@@ -29,8 +32,10 @@ import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.util.PausableThreadPoolExecutor;
 
 import org.openintents.crypto.ICryptoCallback;
 import org.openintents.crypto.ICryptoService;
@@ -38,6 +43,7 @@ import org.openintents.crypto.ICryptoService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -45,11 +51,26 @@ import android.os.RemoteException;
 public class CryptoService extends Service {
     Context mContext;
 
+    // just one pool of 4 threads, pause on every user action needed
+    final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(20);
+    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
+            TimeUnit.SECONDS, mPoolQueue);
+
+    private ArrayList<String> mAllowedPackages;
+
+    // RemoteCallbackList<IInterface>
+
+    public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.ICryptoServiceActivity";
+
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
         Log.d(Constants.TAG, "CryptoService, onCreate()");
+
+        // load allowed packages from database
+        mAllowedPackages = ProviderHelper.getCryptoConsumers(mContext);
+        Log.d(Constants.TAG, "allowed: " + mAllowedPackages);
     }
 
     @Override
@@ -60,7 +81,20 @@ public class CryptoService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        // return different binder for connections from internal service activity
+        if (ACTION_SERVICE_ACTIVITY.equals(intent.getAction())) {
+            String callingPackageName = intent.getPackage();
+
+            // this binder can only be used from OpenPGP Keychain
+            if (callingPackageName.equals(Constants.PACKAGE_NAME)) {
+                return mBinderServiceActivity;
+            } else {
+                Log.e(Constants.TAG, "This binder can only be used from " + Constants.PACKAGE_NAME);
+                return null;
+            }
+        } else {
+            return mBinder;
+        }
     }
 
     private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback)
@@ -77,8 +111,8 @@ public class CryptoService extends Service {
             if (secretKeyId == Id.key.none) {
                 throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
             }
-            
-            Log.d(Constants.TAG, "Got input:\n"+new String(inputBytes));
+
+            Log.d(Constants.TAG, "Got input:\n" + new String(inputBytes));
 
             Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
@@ -86,13 +120,11 @@ public class CryptoService extends Service {
 
             if (passphrase == null) {
                 Log.d(Constants.TAG, "No passphrase! Activity required!");
-                // No passphrase cached for this ciphertext! Intent required to cache
-                // passphrase!
-                Intent intent = new Intent(CryptoActivity.ACTION_CACHE_PASSPHRASE);
-                intent.putExtra(CryptoActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
-                // TODO: start activity bind to service from activity send back intent on success
-//                callback.onActivityRequired(intent);
-                return;
+
+                // start passphrase dialog
+                Bundle extras = new Bundle();
+                extras.putLong(CryptoActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
+                pauseQueueAndStartCryptoActivity(CryptoActivity.ACTION_CACHE_PASSPHRASE, extras);
             }
 
             // if (signedOnly) {
@@ -162,37 +194,111 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void decryptAndVerify(byte[] inputBytes, ICryptoCallback callback)
+        public void decryptAndVerify(final byte[] inputBytes, final ICryptoCallback callback)
                 throws RemoteException {
-            decryptAndVerifySafe(inputBytes, callback);
+
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        decryptAndVerifySafe(inputBytes, callback);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "CryptoService", e);
+                    }
+                }
+            };
+
+            checkAndEnqueue(r);
         }
 
     };
 
-    // /**
-    // * As we can not throw an exception through Android RPC, we assign identifiers to the
-    // exception
-    // * types.
-    // *
-    // * @param e
-    // * @return
-    // */
-    // private int getExceptionId(Exception e) {
-    // if (e instanceof NoSuchProviderException) {
-    // return 0;
-    // } else if (e instanceof NoSuchAlgorithmException) {
-    // return 1;
-    // } else if (e instanceof SignatureException) {
-    // return 2;
-    // } else if (e instanceof IOException) {
-    // return 3;
-    // } else if (e instanceof PgpGeneralException) {
-    // return 4;
-    // } else if (e instanceof PGPException) {
-    // return 5;
-    // } else {
-    // return -1;
-    // }
-    // }
+    private final ICryptoServiceActivity.Stub mBinderServiceActivity = new ICryptoServiceActivity.Stub() {
+
+        @Override
+        public void register(boolean success, String packageName) throws RemoteException {
+            if (success) {
+                // reload allowed packages
+                mAllowedPackages = ProviderHelper.getCryptoConsumers(mContext);
+
+                // resume threads
+                if (isCallerAllowed()) {
+                    mThreadPool.resume();
+                } else {
+                    // TODO: should not happen?
+                }
+            } else {
+                // TODO
+                mPoolQueue.clear();
+            }
+
+        }
+
+        @Override
+        public void cachePassphrase(boolean success, String passphrase) throws RemoteException {
+
+        }
+
+    };
+
+    private void checkAndEnqueue(Runnable r) {
+        if (isCallerAllowed()) {
+            mThreadPool.execute(r);
+
+            Log.d(Constants.TAG, "Enqueued runnable…");
+        } else {
+            Log.e(Constants.TAG, "Not allowed to use service! Starting register with activity!");
+            pauseQueueAndStartCryptoActivity(CryptoActivity.ACTION_REGISTER, null);
+            mThreadPool.execute(r);
+
+            Log.d(Constants.TAG, "Enqueued runnable…");
+        }
+    }
+
+    /**
+     * Checks if process that binds to this service (i.e. the package name corresponding to the
+     * process) is in the list of allowed package names.
+     * 
+     * @return true if process is allowed to use this service
+     */
+    private boolean isCallerAllowed() {
+        String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
+
+        // is calling package allowed to use this service?
+        for (int i = 0; i < callingPackages.length; i++) {
+            String currentPkg = callingPackages[i];
+            Log.d(Constants.TAG, "Caller packageName: " + currentPkg);
+
+            // check if package is allowed to use our service
+            if (mAllowedPackages.contains(currentPkg)) {
+                Log.d(Constants.TAG, "Caller is allowed! packageName: " + currentPkg);
+
+                return true;
+            } else if (Constants.PACKAGE_NAME.equals(currentPkg)) {
+                Log.d(Constants.TAG, "Caller is OpenPGP Keychain! -> allowed!");
+
+                return true;
+            }
+        }
+        
+        Log.d(Constants.TAG, "Caller is NOT allowed!");
+        return false;
+    }
+
+    private void pauseQueueAndStartCryptoActivity(String action, Bundle extras) {
+        mThreadPool.pause();
+
+        Log.d(Constants.TAG, "starting activity...");
+        Intent intent = new Intent(getBaseContext(), CryptoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.setAction(action);
+        if (extras != null) {
+            intent.putExtras(extras);
+        }
+        getApplication().startActivity(intent);
+    }
 
 }
