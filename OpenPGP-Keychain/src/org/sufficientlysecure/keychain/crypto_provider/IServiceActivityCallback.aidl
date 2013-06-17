@@ -17,12 +17,12 @@
 package org.sufficientlysecure.keychain.crypto_provider;
 
 
-interface ICryptoServiceActivity {
-       
+interface IServiceActivityCallback {
+    
     
     oneway void register(in boolean success, in String packageName);
     
     oneway void cachePassphrase(in boolean success, in String passphrase);
-   
+    
     
 }

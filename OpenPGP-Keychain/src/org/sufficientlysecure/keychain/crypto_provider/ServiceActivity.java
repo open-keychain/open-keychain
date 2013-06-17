@@ -37,7 +37,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-public class CryptoActivity extends SherlockFragmentActivity {
+public class ServiceActivity extends SherlockFragmentActivity {
 
     public static final String ACTION_REGISTER = "org.sufficientlysecure.keychain.REGISTER";
     public static final String ACTION_CACHE_PASSPHRASE = "org.sufficientlysecure.keychain.CRYPTO_CACHE_PASSPHRASE";
@@ -45,12 +45,12 @@ public class CryptoActivity extends SherlockFragmentActivity {
     public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
 
-    private ICryptoServiceActivity mService;
+    private IServiceActivityCallback mService;
     private boolean mServiceBound;
 
     private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = ICryptoServiceActivity.Stub.asInterface(service);
+            mService = IServiceActivityCallback.Stub.asInterface(service);
             Log.d(Constants.TAG, "connected to ICryptoServiceActivity");
             mServiceBound = true;
         }

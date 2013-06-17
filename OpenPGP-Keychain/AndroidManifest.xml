@@ -478,7 +478,7 @@
                 <action android:name="org.openintents.crypto.ICryptoService" />
 
                 <!-- Can only be used from OpenPGP Keychain (internal): -->
-                <action android:name="org.sufficientlysecure.keychain.crypto_provider.ICryptoServiceActivity" />
+                <action android:name="org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback" />
             </intent-filter>
 
             <meta-data

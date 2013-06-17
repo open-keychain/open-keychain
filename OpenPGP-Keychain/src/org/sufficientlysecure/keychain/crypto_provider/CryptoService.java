@@ -60,7 +60,7 @@ public class CryptoService extends Service {
 
     // RemoteCallbackList<IInterface>
 
-    public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.ICryptoServiceActivity";
+    public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
 
     @Override
     public void onCreate() {
@@ -123,8 +123,8 @@ public class CryptoService extends Service {
 
                 // start passphrase dialog
                 Bundle extras = new Bundle();
-                extras.putLong(CryptoActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
-                pauseQueueAndStartCryptoActivity(CryptoActivity.ACTION_CACHE_PASSPHRASE, extras);
+                extras.putLong(ServiceActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
+                pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
             }
 
             // if (signedOnly) {
@@ -214,7 +214,7 @@ public class CryptoService extends Service {
 
     };
 
-    private final ICryptoServiceActivity.Stub mBinderServiceActivity = new ICryptoServiceActivity.Stub() {
+    private final IServiceActivityCallback.Stub mBinderServiceActivity = new IServiceActivityCallback.Stub() {
 
         @Override
         public void register(boolean success, String packageName) throws RemoteException {
@@ -249,7 +249,7 @@ public class CryptoService extends Service {
             Log.d(Constants.TAG, "Enqueued runnable…");
         } else {
             Log.e(Constants.TAG, "Not allowed to use service! Starting register with activity!");
-            pauseQueueAndStartCryptoActivity(CryptoActivity.ACTION_REGISTER, null);
+            pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_REGISTER, null);
             mThreadPool.execute(r);
 
             Log.d(Constants.TAG, "Enqueued runnable…");
@@ -286,11 +286,11 @@ public class CryptoService extends Service {
         return false;
     }
 
-    private void pauseQueueAndStartCryptoActivity(String action, Bundle extras) {
+    private void pauseQueueAndStartServiceActivity(String action, Bundle extras) {
         mThreadPool.pause();
 
         Log.d(Constants.TAG, "starting activity...");
-        Intent intent = new Intent(getBaseContext(), CryptoActivity.class);
+        Intent intent = new Intent(getBaseContext(), ServiceActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
