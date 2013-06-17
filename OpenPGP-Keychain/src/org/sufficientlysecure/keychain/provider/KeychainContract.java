@@ -43,7 +43,7 @@ public class KeychainContract {
         String CREATION = "creation";
         String EXPIRY = "expiry";
         String KEY_RING_ROW_ID = "key_ring_row_id"; // foreign key to key_rings._ID
-        String KEY_DATA = "key_data"; // PGPPublicKey / PGPSecretKey blob
+        String KEY_DATA = "key_data"; // PGPPublicKey/PGPSecretKey blob
         String RANK = "rank";
     }
 
@@ -55,6 +55,11 @@ public class KeychainContract {
 
     interface CryptoConsumersColumns {
         String PACKAGE_NAME = "package_name";
+        String PRIVATE_KEY_ID = "private_key_id"; // not a database id
+        String ASCII_ARMOR = "ascii_armor";
+        String ENCRYPTION_ALGORITHM = "encryption_algorithm";
+        String HASH_ALORITHM = "hash_algorithm";
+        String COMPRESSION = "compression";
     }
 
     public static final class KeyTypes {
@@ -83,6 +88,7 @@ public class KeychainContract {
     public static final String PATH_KEYS = "keys";
 
     public static final String BASE_CRYPTO_CONSUMERS = "crypto_consumers";
+    public static final String PATH_BY_PACKAGE_NAME = "package_name";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
@@ -225,6 +231,11 @@ public class KeychainContract {
 
         public static Uri buildIdUri(String rowId) {
             return CONTENT_URI.buildUpon().appendPath(rowId).build();
+        }
+
+        public static Uri buildByPackageNameUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName)
+                    .build();
         }
     }
 

@@ -80,6 +80,7 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int CRYPTO_CONSUMERS = 301;
     private static final int CRYPTO_CONSUMERS_BY_ROW_ID = 302;
+    private static final int CRYPTO_CONSUMERS_BY_PACKAGE_NAME = 303;
 
     // private static final int DATA_STREAM = 401;
 
@@ -230,6 +231,8 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS, CRYPTO_CONSUMERS);
         matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS + "/#",
                 CRYPTO_CONSUMERS_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS + "/"
+                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", CRYPTO_CONSUMERS_BY_PACKAGE_NAME);
 
         /**
          * data stream
@@ -294,6 +297,7 @@ public class KeychainProvider extends ContentProvider {
             return CryptoConsumers.CONTENT_TYPE;
 
         case CRYPTO_CONSUMERS_BY_ROW_ID:
+        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
             return CryptoConsumers.CONTENT_ITEM_TYPE;
 
         default:
@@ -608,6 +612,12 @@ public class KeychainProvider extends ContentProvider {
             qb.setTables(Tables.CRYPTO_CONSUMERS);
 
             break;
+        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
+            qb.setTables(Tables.CRYPTO_CONSUMERS);
+            qb.appendWhere(CryptoConsumers.PACKAGE_NAME + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+
+            break;
 
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
@@ -755,6 +765,7 @@ public class KeychainProvider extends ContentProvider {
                     selectionArgs);
             break;
         case CRYPTO_CONSUMERS_BY_ROW_ID:
+        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
             count = db.delete(Tables.CRYPTO_CONSUMERS,
                     buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
             break;
@@ -817,6 +828,11 @@ public class KeychainProvider extends ContentProvider {
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
                 count = db.update(Tables.USER_IDS, values,
                         buildDefaultUserIdsSelection(uri, selection), selectionArgs);
+                break;
+            case CRYPTO_CONSUMERS_BY_ROW_ID:
+            case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
+                count = db.update(Tables.CRYPTO_CONSUMERS, values,
+                        buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

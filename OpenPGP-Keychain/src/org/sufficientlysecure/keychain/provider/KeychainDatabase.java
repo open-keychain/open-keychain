@@ -67,7 +67,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String CREATE_CRYPTO_CONSUMERS = "CREATE TABLE IF NOT EXISTS "
             + Tables.CRYPTO_CONSUMERS + " (" + BaseColumns._ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT, " + CryptoConsumersColumns.PACKAGE_NAME
-            + " TEXT UNIQUE)";
+            + " TEXT UNIQUE, " + CryptoConsumersColumns.PRIVATE_KEY_ID + " INT64, "
+            + CryptoConsumersColumns.ASCII_ARMOR + " INTEGER, "
+            + CryptoConsumersColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
+            + CryptoConsumersColumns.HASH_ALORITHM + " INTEGER, "
+            + CryptoConsumersColumns.COMPRESSION + " INTEGER)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
