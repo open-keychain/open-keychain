@@ -39,15 +39,17 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 public class CryptoProviderDemoActivity extends Activity {
     Activity mActivity;
 
-    TextView mMessageTextView;
-    TextView mCiphertextTextView;
-    TextView mDataTextView;
+    EditText mMessage;
+    EditText mCiphertext;
+    EditText mEncryptUserId;
+    EditText mSignUserId;
 
     private CryptoServiceConnection mCryptoServiceConnection;
 
@@ -58,9 +60,10 @@ public class CryptoProviderDemoActivity extends Activity {
 
         mActivity = this;
 
-        mMessageTextView = (TextView) findViewById(R.id.crypto_provider_demo_message);
-        mCiphertextTextView = (TextView) findViewById(R.id.crypto_provider_demo_ciphertext);
-        mDataTextView = (TextView) findViewById(R.id.aidl_demo_data);
+        mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
+        mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
+        mEncryptUserId = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
+        mSignUserId = (EditText) findViewById(R.id.crypto_provider_demo_sign_user_id);
 
         selectCryptoProvider();
     }
@@ -72,7 +75,9 @@ public class CryptoProviderDemoActivity extends Activity {
 
         @Override
         public void onEncryptSignSuccess(byte[] outputBytes) throws RemoteException {
-            // not needed here
+            Log.d(Constants.TAG, "onEncryptSignSuccess");
+
+            // TODO
         }
 
         @Override
@@ -80,32 +85,53 @@ public class CryptoProviderDemoActivity extends Activity {
                 throws RemoteException {
             Log.d(Constants.TAG, "onDecryptVerifySuccess");
 
-            // PgpData data = new PgpData();
-            // data.setDecryptedData(new String(outputBytes));
-            // mFragment.setMessageWithPgpData(data);
+            mMessage.setText(new String(outputBytes));
         }
 
         @Override
         public void onError(CryptoError error) throws RemoteException {
             Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
-            Log.e(Constants.TAG, "onError getErrorId:" + error.getMessage());
+            Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
         }
 
     };
 
     public void encryptOnClick(View view) {
-        byte[] inputBytes = mMessageTextView.getText().toString().getBytes();
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
             mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    new String[] { "dominik@dominikschuermann.de" }, callback);
+                    new String[] { mEncryptUserId.getText().toString() }, callback);
+        } catch (RemoteException e) {
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
+        }
+    }
+
+    public void signOnClick(View view) {
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
+
+        try {
+            mCryptoServiceConnection.getService().sign(inputBytes,
+                    mSignUserId.getText().toString(), callback);
+        } catch (RemoteException e) {
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
+        }
+    }
+
+    public void encryptAndSignOnClick(View view) {
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
+
+        try {
+            mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
+                    new String[] { mEncryptUserId.getText().toString() },
+                    mSignUserId.getText().toString(), callback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
     public void decryptOnClick(View view) {
-        byte[] inputBytes = mCiphertextTextView.getText().toString().getBytes();
+        byte[] inputBytes = mCiphertext.getText().toString().getBytes();
 
         try {
             mCryptoServiceConnection.getService().decryptAndVerify(inputBytes, callback);

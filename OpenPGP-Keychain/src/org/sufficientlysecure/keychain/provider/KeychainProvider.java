@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -44,7 +42,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
@@ -82,6 +79,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
     private static final int CRYPTO_CONSUMERS = 301;
+    private static final int CRYPTO_CONSUMERS_BY_ROW_ID = 302;
 
     // private static final int DATA_STREAM = 401;
 
@@ -230,6 +228,8 @@ public class KeychainProvider extends ContentProvider {
          * Crypto Consumers
          */
         matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS, CRYPTO_CONSUMERS);
+        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS + "/#",
+                CRYPTO_CONSUMERS_BY_ROW_ID);
 
         /**
          * data stream
@@ -292,6 +292,9 @@ public class KeychainProvider extends ContentProvider {
 
         case CRYPTO_CONSUMERS:
             return CryptoConsumers.CONTENT_TYPE;
+
+        case CRYPTO_CONSUMERS_BY_ROW_ID:
+            return CryptoConsumers.CONTENT_ITEM_TYPE;
 
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -653,6 +656,7 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
                 rowUri = KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case PUBLIC_KEY_RING_KEY:
@@ -660,11 +664,13 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
                 rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case PUBLIC_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
                 rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING:
@@ -672,6 +678,7 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
                 rowUri = KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING_KEY:
@@ -679,6 +686,7 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
                 rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING_USER_ID:
@@ -697,7 +705,6 @@ public class KeychainProvider extends ContentProvider {
 
             // notify of changes in db
             getContext().getContentResolver().notifyChange(uri, null);
-            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on insert! Entry already existing?");
@@ -725,6 +732,7 @@ public class KeychainProvider extends ContentProvider {
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
                     selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
@@ -733,16 +741,22 @@ public class KeychainProvider extends ContentProvider {
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
                     selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
             count = db.delete(Tables.KEYS,
                     buildDefaultKeysSelection(uri, getKeyType(match), selection), selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
                     selectionArgs);
+            break;
+        case CRYPTO_CONSUMERS_BY_ROW_ID:
+            count = db.delete(Tables.CRYPTO_CONSUMERS,
+                    buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -750,7 +764,6 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
-        sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         return count;
     }
@@ -776,6 +789,8 @@ public class KeychainProvider extends ContentProvider {
                         values,
                         buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
                                 selection), selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
             case SECRET_KEY_RING_BY_MASTER_KEY_ID:
@@ -786,6 +801,8 @@ public class KeychainProvider extends ContentProvider {
                         values,
                         buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
                                 selection), selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
             case SECRET_KEY_RING_KEY_BY_ROW_ID:
@@ -793,6 +810,8 @@ public class KeychainProvider extends ContentProvider {
                         .update(Tables.KEYS, values,
                                 buildDefaultKeysSelection(uri, getKeyType(match), selection),
                                 selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
@@ -805,7 +824,6 @@ public class KeychainProvider extends ContentProvider {
 
             // notify of changes in db
             getContext().getContentResolver().notifyChange(uri, null);
-            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?");
@@ -886,6 +904,23 @@ public class KeychainProvider extends ContentProvider {
         }
 
         return BaseColumns._ID + "=" + rowId + andForeignKeyRing + andSelection;
+    }
+
+    /**
+     * Build default selection statement for Crypto Consumers. If no extra selection is specified
+     * only build where clause with rowId
+     * 
+     * @param uri
+     * @param selection
+     * @return
+     */
+    private String buildDefaultCryptoConsumersSelection(Uri uri, String selection) {
+        String andSelection = "";
+        if (!TextUtils.isEmpty(selection)) {
+            andSelection = " AND (" + selection + ")";
+        }
+
+        return selection + andSelection;
     }
 
     // @Override

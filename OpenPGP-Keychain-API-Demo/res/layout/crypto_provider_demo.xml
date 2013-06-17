@@ -8,12 +8,37 @@
         android:layout_height="match_parent"
         android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/crypto_provider_demo_register"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Encrypt User Id"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/crypto_provider_demo_encrypt_user_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="registerCryptoProvider"
-            android:text="Register crypto provider" />
+            android:text="dominik@dominikschuermann.de"
+            android:textAppearance="@android:style/TextAppearance.Small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign User Id"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/crypto_provider_demo_sign_user_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="dominik@dominikschuermann.de"
+            android:textAppearance="@android:style/TextAppearance.Small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText
             android:id="@+id/crypto_provider_demo_message"
@@ -22,25 +47,17 @@
             android:text="message"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ciphertext"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <EditText
             android:id="@+id/crypto_provider_demo_ciphertext"
             android:layout_width="match_parent"
             android:layout_height="150dip"
-            android:text="-----BEGIN PGP MESSAGE-----
-Charset: UTF-8
-Version: GnuPG v1.4.12 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-hQEMAwCgOoTtKmfpAQgAlzmyQYCfkalCsAIxwtroHV9Bwz5LWY4GJNVrFBVddSFJ
-VkVxx/UDqtIS+TvL8RBG3Er3xFilTV+iBSDjSGIXHkSv6Z7Od69nKcQpJLNaCpDj
-/Ag7PsINLUzAvUdPto3ZMCwShe/uoD4e4Gr5BG8na/9W77tegufS2gUUlc5BAOZP
-GUlSPySJP2bpI/3U/R86Z2ByzFKeJIEKWBtBvMPmIgA5VPo0+mamTedRhOIrJM/R
-vUMM2HfLjAxcX9lYEw4aQGROOu1xpN9FPojQOO10imibZb+TEcxtSHwpj2vll1BP
-pXvtuR0E9OGVmRI9aBXiRTB2P9SJ6UPpR13m8FaLVtJPAa2xH4wA5Yr6uZ5x7LjO
-BtO8VErKgoUpO57BgU1ZsVFEcrGiobkreXabKIB+qC0qMJ6maoLlnOPi1IAvhU42
-z/7HBqqhcNiHc5JMs9+wmw==
-=00nh
------END PGP MESSAGE-----"
+            android:text="ciphertext"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
         <Button
@@ -49,6 +66,20 @@ z/7HBqqhcNiHc5JMs9+wmw==
             android:layout_height="wrap_content"
             android:onClick="encryptOnClick"
             android:text="Encrypt" />
+
+        <Button
+            android:id="@+id/crypto_provider_demo_sign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="signOnClick"
+            android:text="Sign" />
+
+        <Button
+            android:id="@+id/crypto_provider_demo_encrypt_and_sign"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="encryptAndSignOnClick"
+            android:text="Encrypt and Sign" />
 
         <Button
             android:id="@+id/crypto_provider_demo_decrypt"

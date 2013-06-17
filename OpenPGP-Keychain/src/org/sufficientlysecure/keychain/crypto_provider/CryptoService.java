@@ -56,8 +56,6 @@ public class CryptoService extends Service {
     PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
             TimeUnit.SECONDS, mPoolQueue);
 
-    private ArrayList<String> mAllowedPackages;
-
     public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
 
     @Override
@@ -65,10 +63,6 @@ public class CryptoService extends Service {
         super.onCreate();
         mContext = this;
         Log.d(Constants.TAG, "CryptoService, onCreate()");
-
-        // load allowed packages from database
-        mAllowedPackages = ProviderHelper.getCryptoConsumers(mContext);
-        Log.d(Constants.TAG, "allowed: " + mAllowedPackages);
     }
 
     @Override
@@ -92,6 +86,40 @@ public class CryptoService extends Service {
             }
         } else {
             return mBinder;
+        }
+    }
+
+    private synchronized void encryptSafe(byte[] inputBytes, String[] encryptionUserIds,
+            ICryptoCallback callback) throws RemoteException {
+        try {
+            // build InputData and write into OutputStream
+            InputStream inputStream = new ByteArrayInputStream(inputBytes);
+            long inputLength = inputBytes.length;
+            InputData inputData = new InputData(inputStream, inputLength);
+
+            OutputStream outStream = new ByteArrayOutputStream();
+
+            // TODO: hardcoded...
+            boolean useAsciiArmor = true;
+            int compressionId = 2; // zlib
+
+            // PgpMain.encryptAndSign(this, this, inputData, outStream, useAsciiArmor,
+            // compressionId, encryptionKeyIds, encryptionPassphrase, Preferences
+            // .getPreferences(this).getDefaultEncryptionAlgorithm(),
+            // secretKeyId,
+            // Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
+            // .getPreferences(this).getForceV3Signatures(),
+            // PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+            outStream.close();
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "KeychainService, Exception!", e);
+
+            try {
+                callback.onError(new CryptoError(0, e.getMessage()));
+            } catch (Exception t) {
+                Log.e(Constants.TAG, "Error returning exception to client", t);
+            }
         }
     }
 
@@ -171,10 +199,22 @@ public class CryptoService extends Service {
     private final ICryptoService.Stub mBinder = new ICryptoService.Stub() {
 
         @Override
-        public void encrypt(byte[] inputBytes, String[] encryptionUserIds, ICryptoCallback callback)
-                throws RemoteException {
-            // TODO Auto-generated method stub
+        public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
+                final ICryptoCallback callback) throws RemoteException {
 
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        encryptSafe(inputBytes, encryptionUserIds, callback);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "CryptoService", e);
+                    }
+                }
+            };
+
+            checkAndEnqueue(r);
         }
 
         @Override
@@ -218,9 +258,6 @@ public class CryptoService extends Service {
         public void register(boolean success, String packageName) throws RemoteException {
 
             if (success) {
-                // reload allowed packages
-                mAllowedPackages = ProviderHelper.getCryptoConsumers(mContext);
-
                 // resume threads
                 if (isPackageAllowed(packageName)) {
                     mThreadPool.resume();
@@ -287,8 +324,11 @@ public class CryptoService extends Service {
     private boolean isPackageAllowed(String packageName) {
         Log.d(Constants.TAG, "packageName: " + packageName);
 
+        ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(mContext);
+        Log.d(Constants.TAG, "allowed: " + allowedPkgs);
+
         // check if package is allowed to use our service
-        if (mAllowedPackages.contains(packageName)) {
+        if (allowedPkgs.contains(packageName)) {
             Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
 
             return true;

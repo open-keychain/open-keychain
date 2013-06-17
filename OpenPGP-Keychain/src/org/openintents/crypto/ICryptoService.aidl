@@ -37,6 +37,18 @@ interface ICryptoService {
     oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in ICryptoCallback callback);
     
     /**
+     * Sign
+     *
+     * @param inputBytes
+     *            Byte array you want to encrypt
+     * @param signatureUserId
+     *            User Ids (email) of sender
+     * @param callback
+     *            Callback where to return results
+     */
+    oneway void sign(in byte[] inputBytes, String signatureUserId, in ICryptoCallback callback);
+    
+    /**
      * Encrypt and sign
      *
      * @param inputBytes
@@ -49,18 +61,6 @@ interface ICryptoService {
      *            Callback where to return results
      */
     oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, String signatureUserId, in ICryptoCallback callback);
-    
-    /**
-     * Sign
-     *
-     * @param inputBytes
-     *            Byte array you want to encrypt
-     * @param signatureUserId
-     *            User Ids (email) of sender
-     * @param callback
-     *            Callback where to return results
-     */
-    oneway void sign(in byte[] inputBytes, String signatureUserId, in ICryptoCallback callback);
     
     /**
      * Decrypts and verifies given input bytes. If no signature is present this method
