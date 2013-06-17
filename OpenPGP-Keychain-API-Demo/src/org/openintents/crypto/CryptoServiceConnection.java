@@ -69,7 +69,7 @@ public class CryptoServiceConnection {
 
                 Intent serviceIntent = new Intent();
                 serviceIntent.setAction("org.openintents.crypto.ICryptoService");
-                serviceIntent.setPackage(cryptoProviderPackageName); // TODO: test
+                serviceIntent.setPackage(cryptoProviderPackageName);
                 mApplicationContext.bindService(serviceIntent, mCryptoServiceConnection,
                         Context.BIND_AUTO_CREATE);
 

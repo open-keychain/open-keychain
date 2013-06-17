@@ -600,10 +600,10 @@ public class KeychainProvider extends ContentProvider {
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
-            
+
         case CRYPTO_CONSUMERS:
             qb.setTables(Tables.CRYPTO_CONSUMERS);
-            
+
             break;
 
         default:
@@ -684,6 +684,11 @@ public class KeychainProvider extends ContentProvider {
             case SECRET_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
                 rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
+
+                break;
+            case CRYPTO_CONSUMERS:
+                rowId = db.insertOrThrow(Tables.CRYPTO_CONSUMERS, null, values);
+                rowUri = CryptoConsumers.buildIdUri(Long.toString(rowId));
 
                 break;
             default:

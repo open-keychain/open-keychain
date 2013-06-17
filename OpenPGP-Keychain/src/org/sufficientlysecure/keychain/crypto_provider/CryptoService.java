@@ -58,8 +58,6 @@ public class CryptoService extends Service {
 
     private ArrayList<String> mAllowedPackages;
 
-    // RemoteCallbackList<IInterface>
-
     public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
 
     @Override
@@ -218,12 +216,13 @@ public class CryptoService extends Service {
 
         @Override
         public void register(boolean success, String packageName) throws RemoteException {
+
             if (success) {
                 // reload allowed packages
                 mAllowedPackages = ProviderHelper.getCryptoConsumers(mContext);
 
                 // resume threads
-                if (isCallerAllowed()) {
+                if (isPackageAllowed(packageName)) {
                     mThreadPool.resume();
                 } else {
                     // TODO: should not happen?
@@ -248,8 +247,15 @@ public class CryptoService extends Service {
 
             Log.d(Constants.TAG, "Enqueued runnable…");
         } else {
-            Log.e(Constants.TAG, "Not allowed to use service! Starting register with activity!");
-            pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_REGISTER, null);
+            String[] callingPackages = getPackageManager()
+                    .getPackagesForUid(Binder.getCallingUid());
+
+            Log.e(Constants.TAG, "Not allowed to use service! Starting activity for registration!");
+            Bundle extras = new Bundle();
+            // TODO: currently simply uses first entry
+            extras.putString(ServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
+            pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_REGISTER, extras);
+
             mThreadPool.execute(r);
 
             Log.d(Constants.TAG, "Enqueued runnable…");
@@ -268,21 +274,30 @@ public class CryptoService extends Service {
         // is calling package allowed to use this service?
         for (int i = 0; i < callingPackages.length; i++) {
             String currentPkg = callingPackages[i];
-            Log.d(Constants.TAG, "Caller packageName: " + currentPkg);
 
-            // check if package is allowed to use our service
-            if (mAllowedPackages.contains(currentPkg)) {
-                Log.d(Constants.TAG, "Caller is allowed! packageName: " + currentPkg);
-
-                return true;
-            } else if (Constants.PACKAGE_NAME.equals(currentPkg)) {
-                Log.d(Constants.TAG, "Caller is OpenPGP Keychain! -> allowed!");
-
+            if (isPackageAllowed(currentPkg)) {
                 return true;
             }
         }
-        
+
         Log.d(Constants.TAG, "Caller is NOT allowed!");
+        return false;
+    }
+
+    private boolean isPackageAllowed(String packageName) {
+        Log.d(Constants.TAG, "packageName: " + packageName);
+
+        // check if package is allowed to use our service
+        if (mAllowedPackages.contains(packageName)) {
+            Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
+
+            return true;
+        } else if (Constants.PACKAGE_NAME.equals(packageName)) {
+            Log.d(Constants.TAG, "Package is OpenPGP Keychain! -> allowed!");
+
+            return true;
+        }
+
         return false;
     }
 

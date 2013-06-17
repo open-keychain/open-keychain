@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.crypto_provider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.PgpMain;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -136,7 +137,7 @@ public class ServiceActivity extends SherlockFragmentActivity {
 
                 @Override
                 public void onClick(View v) {
-                    // ProviderHelper.addCryptoConsumer(RegisterActivity.this, callingPackageName);
+                    ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
                     // Intent data = new Intent();
 
                     setResult(RESULT_OK);

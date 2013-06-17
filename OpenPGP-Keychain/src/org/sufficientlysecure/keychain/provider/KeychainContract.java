@@ -222,6 +222,10 @@ public class KeychainContract {
 
         /** Use if a single item is returned */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.crypto_consumers";
+
+        public static Uri buildIdUri(String rowId) {
+            return CONTENT_URI.buildUpon().appendPath(rowId).build();
+        }
     }
 
     public static class DataStream {
