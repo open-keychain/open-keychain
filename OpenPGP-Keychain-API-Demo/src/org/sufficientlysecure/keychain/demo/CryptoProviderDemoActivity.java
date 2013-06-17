@@ -23,6 +23,7 @@ import org.openintents.crypto.CryptoError;
 import org.openintents.crypto.CryptoServiceConnection;
 import org.openintents.crypto.CryptoSignatureResult;
 import org.openintents.crypto.ICryptoCallback;
+import org.openintents.crypto.ICryptoService;
 import org.sufficientlysecure.keychain.demo.R;
 import org.sufficientlysecure.keychain.integration.Constants;
 
@@ -49,8 +50,6 @@ public class CryptoProviderDemoActivity extends Activity {
     TextView mDataTextView;
 
     private CryptoServiceConnection mCryptoServiceConnection;
-
-    private static final String CRYPTO_SERVICE_INTENT = "org.openintents.crypto.ICryptoService";
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -142,7 +141,7 @@ public class CryptoProviderDemoActivity extends Activity {
     }
 
     private void selectCryptoProvider() {
-        Intent intent = new Intent(CRYPTO_SERVICE_INTENT);
+        Intent intent = new Intent(ICryptoService.class.getName());
 
         final ArrayList<CryptoProviderElement> providerList = new ArrayList<CryptoProviderElement>();
 

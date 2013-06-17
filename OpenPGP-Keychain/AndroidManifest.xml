@@ -459,7 +459,7 @@
         <!-- Crypto Provider internal intents -->
 
         <activity
-            android:name=".crypto_provider.CryptoActivity"
+            android:name=".crypto_provider.ServiceActivity"
             android:exported="false"
             android:label="TODO crypto activity"
             android:process=":crypto" >
