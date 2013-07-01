@@ -80,6 +80,9 @@ public class MainActivity extends SherlockActivity {
         menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
                 .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu.add(0, Id.menu.option.crypto_consumers, 0, R.string.menu_crypto_consumers)
+                .setIcon(R.drawable.ic_menu_settings)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
     }
 
@@ -89,6 +92,10 @@ public class MainActivity extends SherlockActivity {
 
         case Id.menu.option.preferences:
             startActivity(new Intent(this, PreferencesActivity.class));
+            return true;
+
+        case Id.menu.option.crypto_consumers:
+            startActivity(new Intent(this, CryptoConsumersActivity.class));
             return true;
 
         default:

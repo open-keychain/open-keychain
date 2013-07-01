@@ -71,6 +71,12 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void decryptAndVerify(in byte[] inputBytes, in ICryptoCallback callback);    
+    oneway void decryptAndVerify(in byte[] inputBytes, in ICryptoCallback callback);
+    
+    /**
+     * Opens setup using default parameters
+     *
+     */
+    oneway void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId);
     
 }

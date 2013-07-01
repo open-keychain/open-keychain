@@ -31,6 +31,7 @@
     <string name="title_editKey">Edit Keyring</string>
     <string name="title_createKey">Create Keyring</string>
     <string name="title_preferences">Preferences</string>
+    <string name="title_crypto_consumers">Crypto Consumers</string>
     <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Passphrase</string>
     <string name="title_setPassPhrase">Set Passphrase</string>
@@ -89,6 +90,7 @@
     <string name="menu_managePublicKeys">Manage Public Keyrings</string>
     <string name="menu_manageSecretKeys">Manage Secret Keyrings</string>
     <string name="menu_preferences">Settings</string>
+    <string name="menu_crypto_consumers">Crypto Consumers</string>
     <string name="menu_importFromFile">Import from file</string>
     <string name="menu_importFromQrCode">Import from QR Code</string>
     <string name="menu_importFromNfc">Import from NFC</string>

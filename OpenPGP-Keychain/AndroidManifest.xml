@@ -299,6 +299,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_preferences" />
         <activity
+            android:name=".ui.CryptoConsumersActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_crypto_consumers" />
+        <activity
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_keyServerPreference"

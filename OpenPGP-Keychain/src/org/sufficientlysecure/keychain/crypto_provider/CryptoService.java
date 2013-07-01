@@ -184,7 +184,7 @@ public class CryptoService extends Service {
                     signatureSuccess, signatureUnknown);
 
             // return over handler on client side
-            callback.onDecryptVerifySuccess(outputBytes, sigResult);
+            callback.onSuccess(outputBytes, sigResult);
         } catch (Exception e) {
             Log.e(Constants.TAG, "KeychainService, Exception!", e);
 
@@ -248,6 +248,13 @@ public class CryptoService extends Service {
             };
 
             checkAndEnqueue(r);
+        }
+
+        @Override
+        public void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId)
+                throws RemoteException {
+            // TODO Auto-generated method stub
+            
         }
 
     };
