@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.crypto_provider;
+package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.remote_api.IServiceActivityCallback;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;

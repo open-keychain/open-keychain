@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.remote_api.CryptoConsumersActivity;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;

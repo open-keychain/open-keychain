@@ -1,6 +1,7 @@
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.MainActivity;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;

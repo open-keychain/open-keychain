@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.ui;
+package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
 import org.sufficientlysecure.keychain.util.Log;

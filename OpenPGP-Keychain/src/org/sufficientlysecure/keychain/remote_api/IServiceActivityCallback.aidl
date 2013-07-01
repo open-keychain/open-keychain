@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-package org.sufficientlysecure.keychain.crypto_provider;
+package org.sufficientlysecure.keychain.remote_api;
 
 
 interface IServiceActivityCallback {

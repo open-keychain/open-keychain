@@ -299,10 +299,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_preferences" />
         <activity
-            android:name=".ui.CryptoConsumersActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_crypto_consumers" />
-        <activity
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_keyServerPreference"
@@ -460,21 +456,25 @@
             android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider"
             android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" />
 
-        <!-- Crypto Provider internal intents -->
+        <!-- Remote API internal intents -->
 
         <activity
-            android:name=".crypto_provider.ServiceActivity"
+            android:name="org.sufficientlysecure.keychain.remote_api.ServiceActivity"
             android:exported="false"
             android:label="TODO crypto activity"
             android:process=":crypto" >
 
             <!-- Don't publish intents, they are only used internally! -->
         </activity>
+        <activity
+            android:name="org.sufficientlysecure.keychain.remote_api.CryptoConsumersActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_crypto_consumers" />
 
-        <!-- Crypto Provider API -->
+        <!-- Remote API -->
 
         <service
-            android:name="org.sufficientlysecure.keychain.crypto_provider.CryptoService"
+            android:name="org.sufficientlysecure.keychain.remote_api.CryptoService"
             android:enabled="true"
             android:exported="true"
             android:process=":crypto" >
