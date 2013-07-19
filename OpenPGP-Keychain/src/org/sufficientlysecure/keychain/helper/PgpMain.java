@@ -323,8 +323,9 @@ public class PgpMain {
         }
 
         PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(keyRing,
-            oldPassPhrase.toCharArray(), newPassPhrase.toCharArray(), keyRing.getSecretKey().getKeyEncryptionAlgorithm(),
-            new SecureRandom(), BOUNCY_CASTLE_PROVIDER_NAME);
+            new JcePBESecretKeyDecryptorBuilder(
+                new JcaPGPDigestCalculatorProviderBuilder().setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray()),
+            new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey().getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
 
         updateProgress(progress, R.string.progress_savingKeyRing, 50, 100);
 
