@@ -43,6 +43,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -186,14 +188,32 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     }
                 }
 
-                final EditText keySize = (EditText) view.findViewById(R.id.create_key_size);
-
+                final Spinner keySize = (Spinner) view.findViewById(R.id.create_key_size);
+        		ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.key_size_spinner_values, android.R.layout.simple_spinner_item);
+        		keySizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        		keySize.setAdapter(keySizeAdapter);
+        		keySize.setSelection(2);														// Default to 2048 for the key length
                 dialog.setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface di, int id) {
                                 di.dismiss();
                                 try {
-                                    mNewKeySize = Integer.parseInt("" + keySize.getText());
+                                	int nKeyIndex = keySize.getSelectedItemPosition();
+                                	switch(nKeyIndex)
+                                	{
+	                                	case 0:
+	                                		mNewKeySize = 512;
+	                                		break;
+	                                	case 1:
+	                                		mNewKeySize = 1024;
+	                                		break;
+	                                	case 2:
+	                                		mNewKeySize = 2048;
+	                                		break;
+	                                	case 3:
+	                                		mNewKeySize = 4096;
+	                                		break;
+                                	}
                                 } catch (NumberFormatException e) {
                                     mNewKeySize = 0;
                                 }
