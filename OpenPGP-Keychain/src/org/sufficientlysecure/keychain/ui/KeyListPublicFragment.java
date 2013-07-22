@@ -116,7 +116,7 @@ public class KeyListPublicFragment extends KeyListFragment implements
         case Id.menu.exportToServer:
             Intent uploadIntent = new Intent(mKeyListActivity, KeyServerUploadActivity.class);
             uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
-            uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, keyRingRowId);
+            uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int)keyRingRowId);
             startActivityForResult(uploadIntent, Id.request.export_to_server);
 
             return true;
