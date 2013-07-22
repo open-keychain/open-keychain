@@ -49,7 +49,7 @@ On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
 ## Build Spongy Castle
 
-Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP-Keychain uses a forked version with some small changes to improve key import speed. These changes will be sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP-Keychain uses a forked version with some small changes to improve key import speed. These changes have been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
 * http://rtyley.github.com/spongycastle/

@@ -132,7 +132,8 @@ public class PgpMain {
     }
 
     // Not BC due to the use of Spongy Castle for Android
-    public static final String BOUNCY_CASTLE_PROVIDER_NAME = "SC";
+    public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
+    public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[] {
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
@@ -323,8 +324,9 @@ public class PgpMain {
         }
 
         PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(keyRing,
-            oldPassPhrase.toCharArray(), newPassPhrase.toCharArray(), keyRing.getSecretKey().getKeyEncryptionAlgorithm(),
-            new SecureRandom(), BOUNCY_CASTLE_PROVIDER_NAME);
+            new JcePBESecretKeyDecryptorBuilder(
+                new JcaPGPDigestCalculatorProviderBuilder().setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray()),
+            new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey().getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
 
         updateProgress(progress, R.string.progress_savingKeyRing, 50, 100);
 
