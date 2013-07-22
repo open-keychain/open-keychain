@@ -328,7 +328,8 @@
     <string name="fast">fast</string>
     <string name="slow">slow</string>
     <string name="very_slow">very slow</string>
-
+	<string name="default_key_bit_size">2048</string>
+	
     <!-- APG 2.0 -->
 
 
