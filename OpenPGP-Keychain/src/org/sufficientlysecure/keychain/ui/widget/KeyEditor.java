@@ -59,10 +59,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     Button mExpiryDateButton;
     GregorianCalendar mExpiryDate;
 
+    private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
-            setExpiryDate(date);
+        	if(mDatePickerResultCount++ == 0)				// Note: Ignore results after the first one - android sends multiples.
+        	{
+	            GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+	            setExpiryDate(date);
+        	}
         }
     };
 
@@ -111,11 +115,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 DatePickerDialog dialog = new DatePickerDialog(getContext(),
                         mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
+                mDatePickerResultCount = 0;
                 dialog.setCancelable(true);
                 dialog.setButton(Dialog.BUTTON_NEGATIVE, getContext()
                         .getString(R.string.btn_noDate), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        setExpiryDate(null);
+                    	if(mDatePickerResultCount++ == 0)				// Note: Ignore results after the first one - android sends multiples.
+                    	{
+                    		setExpiryDate(null);
+                    	}
                     }
                 });
                 dialog.show();

@@ -65,7 +65,7 @@
                 android:gravity="right"
                 android:numeric="integer"
                 android:padding="4dp"
-                android:text="1024" />
+                android:text="@string/default_key_bit_size" />
         </TableRow>
     </TableLayout>
 
