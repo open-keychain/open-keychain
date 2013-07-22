@@ -28,7 +28,7 @@ public class KeychainApplication extends Application {
 
     static {
         // Define Java Security Provider to be Bouncy Castle
-        Security.addProvider(new BouncyCastleProvider());
+    	Security.insertProviderAt(new BouncyCastleProvider(),  1);
     }
 
     @Override
