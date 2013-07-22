@@ -132,7 +132,8 @@ public class PgpMain {
     }
 
     // Not BC due to the use of Spongy Castle for Android
-    public static final String BOUNCY_CASTLE_PROVIDER_NAME = "SC";
+    public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
+    public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[] {
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
