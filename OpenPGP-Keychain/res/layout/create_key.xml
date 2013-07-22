@@ -58,14 +58,12 @@
                 android:padding="4dp"
                 android:text="@string/label_keySize" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/create_key_size"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="right"
-                android:numeric="integer"
-                android:padding="4dp"
-                android:text="@string/default_key_bit_size" />
+                android:padding="4dp" />
         </TableRow>
     </TableLayout>
 
