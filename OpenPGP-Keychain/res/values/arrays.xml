@@ -43,5 +43,10 @@
         <item>14400</item>
         <item>28800</item>
     </string-array>
-
+    <string-array name="key_size_spinner_values">
+        <item>@string/key_size_512</item>
+        <item>@string/key_size_1024</item>
+        <item>@string/key_size_2048</item>
+        <item>@string/key_size_4096</item>
+    </string-array>
 </resources>
