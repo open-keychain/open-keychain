@@ -68,23 +68,23 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String EXTRA_DATA = "data";
 
     /* possible EXTRA_ACTIONs */
-    public static final String ACTION_ENCRYPT_SIGN = "org.sufficientlysecure.serviceaction.encryt_sign";
+    public static final String ACTION_ENCRYPT_SIGN = Constants.INTENT_PREFIX + "ENCRYPT_SIGN";
 
-    public static final String ACTION_DECRYPT_VERIFY = "org.sufficientlysecure.serviceaction.decrypt_verify";
+    public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
-    public static final String ACTION_SAVE_KEYRING = "org.sufficientlysecure.serviceaction.save_keyring";
-    public static final String ACTION_GENERATE_KEY = "org.sufficientlysecure.serviceaction.generate_key";
-    public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = "org.sufficientlysecure.serviceaction.generate_default_rsa_keys";
+    public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
+    public static final String ACTION_GENERATE_KEY = Constants.INTENT_PREFIX + "GENERATE_KEY";
+    public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = Constants.INTENT_PREFIX + "GENERATE_DEFAULT_RSA_KEYS";
 
-    public static final String ACTION_DELETE_FILE_SECURELY = "org.sufficientlysecure.serviceaction.delete_file_securely";
+    public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX + "DELETE_FILE_SECURELY";
 
-    public static final String ACTION_IMPORT_KEYRING = "org.sufficientlysecure.serviceaction.import_keyring";
-    public static final String ACTION_EXPORT_KEYRING = "org.sufficientlysecure.serviceaction.export_keyring";
+    public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
+    public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
 
-    public static final String ACTION_UPLOAD_KEYRING = "org.sufficientlysecure.serviceaction.upload_keyring";
-    public static final String ACTION_QUERY_KEYRING = "org.sufficientlysecure.serviceaction.query_keyring";
+    public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
+    public static final String ACTION_QUERY_KEYRING = Constants.INTENT_PREFIX + "QUERY_KEYRING";
 
-    public static final String ACTION_SIGN_KEYRING = "org.sufficientlysecure.serviceaction.sign_keyring";
+    public static final String ACTION_SIGN_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
     /* keys for data bundle */
 
