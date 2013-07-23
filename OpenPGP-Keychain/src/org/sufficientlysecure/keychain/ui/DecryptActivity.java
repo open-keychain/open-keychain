@@ -758,7 +758,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_DECRYPT_VERIFY);
+        intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
 
         // choose action based on input: decrypt stream, file or bytes
         if (mContentUri != null) {

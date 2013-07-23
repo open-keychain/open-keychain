@@ -76,7 +76,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 // fill values for this action
                 Bundle data = new Bundle();
 
-                intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_DELETE_FILE_SECURELY);
+                intent.setAction(KeychainIntentService.ACTION_DELETE_FILE_SECURELY);
                 data.putString(KeychainIntentService.DELETE_FILE, deleteFile);
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

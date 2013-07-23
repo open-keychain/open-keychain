@@ -199,8 +199,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
-                KeychainIntentService.ACTION_SIGN_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_SIGN_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
@@ -251,8 +250,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         // Send all information needed to service to upload key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
-                KeychainIntentService.ACTION_UPLOAD_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();

@@ -693,7 +693,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             signOnly = (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0);
         }
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION, KeychainIntentService.ACTION_ENCRYPT_SIGN);
+        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
 
         // choose default settings, target and data bundle by target
         if (mStreamAndReturnUri != null) {
