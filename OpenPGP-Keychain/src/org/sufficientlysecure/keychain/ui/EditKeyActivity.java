@@ -238,8 +238,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
                     // Send all information needed to service generate keys in other thread
                     Intent serviceIntent = new Intent(this, KeychainIntentService.class);
-                    serviceIntent.putExtra(KeychainIntentService.EXTRA_ACTION,
-                            KeychainIntentService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
+                    serviceIntent.setAction(KeychainIntentService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
 
                     // fill values for this action
                     Bundle data = new Bundle();
@@ -438,8 +437,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             // Send all information needed to service to edit key in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
-            intent.putExtra(KeychainIntentService.EXTRA_ACTION,
-                    KeychainIntentService.ACTION_SAVE_KEYRING);
+            intent.setAction(KeychainIntentService.ACTION_SAVE_KEYRING);
 
             // fill values for this action
             Bundle data = new Bundle();
