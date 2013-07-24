@@ -134,6 +134,24 @@ AIDL service
 ### ApgKeyService (Remote Service)
 AIDL service to access actual private keyring objects
 
+# Coding Style
+
+## Code
+* Indentation: 4 spaces, no tabs
+* Maximum line width for code and comments: 100
+* Opening braces don't go on their own line
+* Field names: Non-public, non-static fields start with m.
+* Acronyms are words: Treat acronyms as words in names, yielding !XmlHttpRequest, getUrl(), etc.
+
+See http://source.android.com/source/code-style.html
+
+## XML Eclipse Settings
+* XML Maximum line width 999
+* XML: Split multiple attributes each on a new line (Eclipse: Properties -> XML -> XML Files -> Editor)
+* XML: Indent using spaces with Indention size 4 (Eclipse: Properties -> XML -> XML Files -> Editor)
+
+See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
+
 # Licenses
 OpenPGP Kechain is licensed under Apache License v2.
 
