@@ -19,10 +19,8 @@ package org.sufficientlysecure.keychain.remote_api;
 
 interface IServiceActivityCallback {
     
+    oneway void onRegistered(in boolean success, in String packageName);
     
-    oneway void register(in boolean success, in String packageName);
-    
-    oneway void cachePassphrase(in boolean success, in String passphrase);
-    
-    
+    oneway void onCachedPassphrase(in boolean success);
+
 }

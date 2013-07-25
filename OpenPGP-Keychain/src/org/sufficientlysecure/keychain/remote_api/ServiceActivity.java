@@ -16,6 +16,8 @@
 
 package org.sufficientlysecure.keychain.remote_api;
 
+import java.util.ArrayList;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote_api.IServiceActivityCallback;
@@ -35,30 +37,32 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 public class ServiceActivity extends SherlockFragmentActivity {
 
-    public static final String ACTION_REGISTER = "org.sufficientlysecure.keychain.REGISTER";
-    public static final String ACTION_CACHE_PASSPHRASE = "org.sufficientlysecure.keychain.CRYPTO_CACHE_PASSPHRASE";
+    public static final String ACTION_REGISTER = "org.sufficientlysecure.keychain.remote_api.REGISTER";
+    public static final String ACTION_CACHE_PASSPHRASE = "org.sufficientlysecure.keychain.remote_api.CRYPTO_CACHE_PASSPHRASE";
 
     public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
 
-    private IServiceActivityCallback mService;
+    private IServiceActivityCallback mServiceCallback;
     private boolean mServiceBound;
 
     private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = IServiceActivityCallback.Stub.asInterface(service);
+            mServiceCallback = IServiceActivityCallback.Stub.asInterface(service);
             Log.d(Constants.TAG, "connected to ICryptoServiceActivity");
             mServiceBound = true;
         }
 
         public void onServiceDisconnected(ComponentName name) {
-            mService = null;
+            mServiceCallback = null;
             Log.d(Constants.TAG, "disconnected from ICryptoServiceActivity");
             mServiceBound = false;
         }
@@ -70,7 +74,7 @@ public class ServiceActivity extends SherlockFragmentActivity {
      * @return
      */
     public boolean bindToService() {
-        if (mService == null && !mServiceBound) { // if not already connected
+        if (mServiceCallback == null && !mServiceBound) { // if not already connected
             try {
                 Log.d(Constants.TAG, "not bound yet");
 
@@ -129,7 +133,20 @@ public class ServiceActivity extends SherlockFragmentActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
-            setContentView(R.layout.register_crypto_consumer_activity);
+            setContentView(R.layout.crypto_consumer_register_activity);
+            LinearLayout layoutRegister = (LinearLayout) findViewById(R.id.register_crypto_consumer_register_layout);
+            LinearLayout layoutEdit = (LinearLayout) findViewById(R.id.register_crypto_consumer_edit_layout);
+
+            // if already registered show edit buttons
+            ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(this);
+            if (allowedPkgs.contains(packageName)) {
+                Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
+                layoutRegister.setVisibility(View.GONE);
+                layoutEdit.setVisibility(View.VISIBLE);
+            } else {
+                layoutRegister.setVisibility(View.VISIBLE);
+                layoutEdit.setVisibility(View.GONE);
+            }
 
             Button allowButton = (Button) findViewById(R.id.register_crypto_consumer_allow);
             Button disallowButton = (Button) findViewById(R.id.register_crypto_consumer_disallow);
@@ -141,7 +158,11 @@ public class ServiceActivity extends SherlockFragmentActivity {
                     ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
                     // Intent data = new Intent();
 
-                    setResult(RESULT_OK);
+                    try {
+                        mServiceCallback.onRegistered(true, packageName);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "ServiceActivity");
+                    }
                     finish();
                 }
             });
@@ -150,7 +171,11 @@ public class ServiceActivity extends SherlockFragmentActivity {
 
                 @Override
                 public void onClick(View v) {
-                    setResult(RESULT_CANCELED);
+                    try {
+                        mServiceCallback.onRegistered(false, packageName);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "ServiceActivity");
+                    }
                     finish();
                 }
             });
@@ -160,7 +185,6 @@ public class ServiceActivity extends SherlockFragmentActivity {
             showPassphraseDialog(secretKeyId);
         } else {
             Log.e(Constants.TAG, "Wrong action!");
-            setResult(RESULT_CANCELED);
             finish();
         }
     }
@@ -176,7 +200,11 @@ public class ServiceActivity extends SherlockFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    setResult(RESULT_OK);
+                    try {
+                        mServiceCallback.onCachedPassphrase(true);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "ServiceActivity");
+                    }
                     finish();
                 }
             }

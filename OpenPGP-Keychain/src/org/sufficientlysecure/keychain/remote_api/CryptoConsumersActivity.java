@@ -19,7 +19,7 @@ public class CryptoConsumersActivity extends SherlockFragmentActivity {
 
         mActionBar = getSupportActionBar();
 
-        setContentView(R.layout.crypto_consumers_activity);
+        setContentView(R.layout.crypto_consumer_list_activity);
 
         mActionBar.setDisplayShowTitleEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);

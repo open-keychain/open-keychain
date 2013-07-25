@@ -263,7 +263,7 @@ public class CryptoService extends Service {
     private final IServiceActivityCallback.Stub mBinderServiceActivity = new IServiceActivityCallback.Stub() {
 
         @Override
-        public void register(boolean success, String packageName) throws RemoteException {
+        public void onRegistered(boolean success, String packageName) throws RemoteException {
 
             if (success) {
                 // resume threads
@@ -280,7 +280,7 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void cachePassphrase(boolean success, String passphrase) throws RemoteException {
+        public void onCachedPassphrase(boolean success) throws RemoteException {
 
         }
 
@@ -355,8 +355,6 @@ public class CryptoService extends Service {
         Log.d(Constants.TAG, "starting activity...");
         Intent intent = new Intent(getBaseContext(), ServiceActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.setAction(action);
         if (extras != null) {
             intent.putExtras(extras);
