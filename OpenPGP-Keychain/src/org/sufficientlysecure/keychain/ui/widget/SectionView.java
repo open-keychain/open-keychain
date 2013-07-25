@@ -289,8 +289,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(mActivity, KeychainIntentService.class);
 
-        intent.putExtra(KeychainIntentService.EXTRA_ACTION,
-                KeychainIntentService.ACTION_GENERATE_KEY);
+        intent.setAction(KeychainIntentService.ACTION_GENERATE_KEY);
 
         // fill values for this action
         Bundle data = new Bundle();
