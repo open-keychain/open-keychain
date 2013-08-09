@@ -778,7 +778,11 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         Log.d(Constants.TAG, "output: " + output);
 
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                        emailIntent.setType("text/plain; charset=utf-8");
+
+                        //Type is set to text/plain so that encrypted messages can
+                        //be sent with Whatsapp, Hangouts, SMS etc...
+                        emailIntent.setType("text/plain");
+						
                         emailIntent.putExtra(Intent.EXTRA_TEXT, output);
                         if (mSubject != null) {
                             emailIntent.putExtra(Intent.EXTRA_SUBJECT, mSubject);
