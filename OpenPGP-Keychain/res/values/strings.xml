@@ -29,7 +29,6 @@
     <string name="title_authentication">Passphrase</string>
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Keyring</string>
-    <string name="title_createKey">Create Keyring</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Passphrase</string>
@@ -41,7 +40,6 @@
     <string name="title_exportKey">Export Keyring</string>
     <string name="title_exportKeys">Export Keyrings</string>
     <string name="title_keyNotFound">Key Not Found</string>
-    <string name="title_help">Getting Started</string>
     <string name="title_keyServerQuery">Query Key Server</string>
     <string name="title_sendKey">Export to Key Server</string>
     <string name="title_unknownSignatureKey">Unknown Signature Key</string>

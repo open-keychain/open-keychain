@@ -4,24 +4,29 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.4.1'
+        classpath 'com.android.tools.build:gradle:0.5.+'
     }
 }
 
 apply plugin: 'android'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     compile fileTree(dir: 'libs', includes: ['*.jar'], excludes: ['android-support-v4.jar'])
-    compile project(':libraries:ActionBarSherlock')
+    compile 'com.android.support:support-v4:13.0.+'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.+@aar'
 }
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion "17"
+    compileSdkVersion 18
+    buildToolsVersion "18.0.1"
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 17
+        targetSdkVersion 18
     }
 
     sourceSets {
@@ -38,26 +43,28 @@ android {
         instrumentTest.setRoot('tests')
     }
 
-    /*
-     * To sign release build, create file gradle.properties in .gradle/ with this content:
-     *
-     * signingStoreLocation=/home/key.store
-     * signingStorePassword=xxx
-     * signingKeyAlias=alias
-     * signingKeyPassword=xxx
-     */
-    signingConfigs {
-        myConfig {
-            storeFile file(signingStoreLocation)
-            storePassword signingStorePassword
-            keyAlias signingKeyAlias
-            keyPassword signingKeyPassword
-        }
-    }
+    if (project.hasProperty('signingStoreLocation')) {
+      /*
+       * To sign release build, create file gradle.properties in .gradle/ with this content:
+       *
+       * signingStoreLocation=/home/key.store
+       * signingStorePassword=xxx
+       * signingKeyAlias=alias
+       * signingKeyPassword=xxx
+       */
+      signingConfigs {
+          myConfig {
+              storeFile file(signingStoreLocation)
+              storePassword signingStorePassword
+              keyAlias signingKeyAlias
+              keyPassword signingKeyPassword
+          }
+      }
 
-    buildTypes {
-        release {
-            signingConfig signingConfigs.myConfig
+        buildTypes {
+            release {
+                signingConfig signingConfigs.myConfig
+            }
         }
     }
 }

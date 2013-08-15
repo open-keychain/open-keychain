@@ -1,1 +1,1 @@
-include ':OpenPGP-Keychain', ':libraries:ActionBarSherlock'
+include ':OpenPGP-Keychain'
