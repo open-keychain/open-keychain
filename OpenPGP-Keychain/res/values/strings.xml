@@ -20,15 +20,15 @@
 
     <!-- title_lowerCase: capitalized words, no punctuation -->
     <string name="title_mailInbox">Mail Inbox</string>
-    <string name="title_managePublicKeys">Manage Public Keyrings</string>
-    <string name="title_manageSecretKeys">Manage Secret Keyrings</string>
-    <string name="title_selectRecipients">Select Public Keyring</string>
-    <string name="title_selectSignature">Select Secret Keyring</string>
+    <string name="title_managePublicKeys">Manage Public Keys</string>
+    <string name="title_manageSecretKeys">Manage Secret Keys</string>
+    <string name="title_selectRecipients">Select Public Key</string>
+    <string name="title_selectSignature">Select Secret Key</string>
     <string name="title_encrypt">Encrypt</string>
     <string name="title_decrypt">Decrypt</string>
     <string name="title_authentication">Passphrase</string>
     <string name="title_createKey">Create Key</string>
-    <string name="title_editKey">Edit Keyring</string>
+    <string name="title_editKey">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Passphrase</string>
@@ -36,17 +36,17 @@
     <string name="title_sendEmail">"Send Mail…"</string>
     <string name="title_encryptToFile">Encrypt To File</string>
     <string name="title_decryptToFile">Decrypt To File</string>
-    <string name="title_importKeys">Import Keyrings</string>
-    <string name="title_exportKey">Export Keyring</string>
-    <string name="title_exportKeys">Export Keyrings</string>
+    <string name="title_importKeys">Import Keys</string>
+    <string name="title_exportKey">Export Key</string>
+    <string name="title_exportKeys">Export Keys</string>
     <string name="title_keyNotFound">Key Not Found</string>
     <string name="title_keyServerQuery">Query Key Server</string>
     <string name="title_sendKey">Export to Key Server</string>
     <string name="title_unknownSignatureKey">Unknown Signature Key</string>
-    <string name="title_signKey">Sign Keyring</string>
+    <string name="title_signKey">Sign Key</string>
     <string name="title_about">About</string>
     <string name="title_help">Help</string>
-    <string name="title_shareByNfc">Share keyring with NFC</string>
+    <string name="title_shareByNfc">Share key with NFC</string>
 
     <!-- section_lowerCase: capitalized words, no punctuation -->
     <string name="section_userIds">User IDs</string>
@@ -84,17 +84,17 @@
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">About</string>
     <string name="menu_deleteAccount">Delete Account</string>
-    <string name="menu_managePublicKeys">Manage Public Keyrings</string>
-    <string name="menu_manageSecretKeys">Manage Secret Keyrings</string>
+    <string name="menu_managePublicKeys">Manage Public Keys</string>
+    <string name="menu_manageSecretKeys">Manage Secret Keys</string>
     <string name="menu_preferences">Settings</string>
     <string name="menu_importFromFile">Import from file</string>
     <string name="menu_importFromQrCode">Import from QR Code</string>
     <string name="menu_importFromNfc">Import from NFC</string>
-    <string name="menu_exportKeys">Export All Keyrings</string>
+    <string name="menu_exportKeys">Export All Keys</string>
     <string name="menu_exportKey">Export To File</string>
-    <string name="menu_deleteKey">Delete Keyring</string>
-    <string name="menu_createKey">Create Keyring</string>
-    <string name="menu_editKey">Edit Keyring</string>
+    <string name="menu_deleteKey">Delete Key</string>
+    <string name="menu_createKey">Create Key</string>
+    <string name="menu_editKey">Edit Key</string>
     <string name="menu_search">Search</string>
     <string name="menu_help">Help</string>
     <string name="menu_keyServer">Query Key Server</string>
@@ -138,7 +138,7 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
-    <string name="label_sendKey">Send Keyring to Server?</string>
+    <string name="label_sendKey">Send Key to Server?</string>
     <string name="noKeysSelected">Select</string>
     <string name="oneKeySelected">1 Selected</string>
     <string name="nKeysSelected">Selected</string>
@@ -205,34 +205,34 @@
     <string name="encryptionSuccessful">Successfully encrypted.</string>
     <string name="encryptionToClipboardSuccessful">Successfully encrypted to clipboard.</string>
     <string name="enterPassPhraseTwice">Enter the passphrase twice.</string>
-    <string name="selectEncryptionKey">Select at least one encryption keyring.</string>
-    <string name="selectEncryptionOrSignatureKey">Select at least one encryption keyring or a signature keyring.</string>
+    <string name="selectEncryptionKey">Select at least one encryption key.</string>
+    <string name="selectEncryptionOrSignatureKey">Select at least one encryption key or a signature key.</string>
     <string name="specifyFileToEncryptTo">Please specify which file to encrypt to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specifyFileToDecryptTo">Please specify which file to decrypt to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specifyFileToImportFrom">Please specify which file to import keyrings from. (.asc or .gpg)</string>
+    <string name="specifyFileToImportFrom">Please specify which file to import keys from. (.asc or .gpg)</string>
     <string name="specifyFileToExportTo">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keyrings.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="keyDeletionConfirmation">Do you really want to delete the keyring \'%s\'?\nYou can\'t undo this!</string>
-    <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET keyring \'%s\'?\nYou can\'t undo this!</string>
-    <string name="keysAddedAndUpdated">Successfully added %1$s keyring(s) and updated %2$s keyring(s).</string>
-    <string name="keysAdded">Successfully added %s keyring(s).</string>
-    <string name="keysUpdated">Successfully updated %s keyring(s).</string>
-    <string name="noKeysAddedOrUpdated">No keyrings added or updated.</string>
-    <string name="keyExported">Successfully exported 1 keyring.</string>
-    <string name="keysExported">Successfully exported %s keyrings.</string>
-    <string name="noKeysExported">No keyrings exported.</string>
+    <string name="specifyFileToExportSecretKeysTo">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
+    <string name="keyDeletionConfirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="secretKeyDeletionConfirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="keysAddedAndUpdated">Successfully added %1$s key(s) and updated %2$s key(s).</string>
+    <string name="keysAdded">Successfully added %s key(s).</string>
+    <string name="keysUpdated">Successfully updated %s key(s).</string>
+    <string name="noKeysAddedOrUpdated">No keys added or updated.</string>
+    <string name="keyExported">Successfully exported 1 key.</string>
+    <string name="keysExported">Successfully exported %s keys.</string>
+    <string name="noKeysExported">No keys exported.</string>
     <string name="keyCreationElGamalInfo">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
     <string name="keyNotFound">Couldn\'t find key %08X.</string>
     <string name="keysFound">Found %s key(s).</string>
     <string name="unknownSignatureKeyTouchToLookUp">Unknown signature, touch to look up key.</string>
     <string name="badKeysEncountered">%s bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
-    <string name="lookupUnknownKey">Unknown keyring %s, do you want to try finding it on a keyserver?</string>
-    <string name="keySendSuccess">Successfully sent keyring to server</string>
-    <string name="keySignSuccess">Successfully signed keyring</string>
-    <string name="qrScanImportSuccess">Successfully validated and imported keyring</string>
+    <string name="lookupUnknownKey">Unknown key %s, do you want to try finding it on a keyserver?</string>
+    <string name="keySendSuccess">Successfully sent key to server</string>
+    <string name="keySignSuccess">Successfully signed key</string>
+    <string name="qrScanImportSuccess">Successfully validated and imported key</string>
     <string name="listInformation">Long press one entry in this list to show more options!</string>
     <string name="listEmpty">This list is empty!</string>
-    <string name="nfcSuccessfull">Successfully sent keyring with NFC Beam!</string>
+    <string name="nfcSuccessfull">Successfully sent key with NFC Beam!</string>
 
     <!--
          error_lowerCase: phrases, no punctuation, all lowercase,
@@ -281,11 +281,11 @@
     <string name="progress_certifyingMasterKey">certifying master key…</string>
     <string name="progress_buildingMasterKeyRing">building master key ring…</string>
     <string name="progress_addingSubKeys">adding sub keys…</string>
-    <string name="progress_savingKeyRing">saving key keyring…</string>
-    <string name="progress_importingSecretKeys">importing secret keyrings…</string>
-    <string name="progress_importingPublicKeys">importing public keyrings…</string>
-    <string name="progress_exportingKey">exporting keyring…</string>
-    <string name="progress_exportingKeys">exporting keyrings…</string>
+    <string name="progress_savingKeyRing">saving key key…</string>
+    <string name="progress_importingSecretKeys">importing secret keys…</string>
+    <string name="progress_importingPublicKeys">importing public keys…</string>
+    <string name="progress_exportingKey">exporting key…</string>
+    <string name="progress_exportingKeys">exporting keys…</string>
     <string name="progress_extractingSignatureKey">extracting signature key…</string>
     <string name="progress_extractingKey">extracting key…</string>
     <string name="progress_preparingStreams">preparing streams…</string>
@@ -315,12 +315,12 @@
     <!-- action strings -->
     <string name="action_encrypt">Encrypt</string>
     <string name="action_decrypt">Decrypt</string>
-    <string name="action_importPublic">Import Public Keyrings</string>
-    <string name="action_importSecret">Import Secret Keyrings</string>
-    <string name="hint_publicKeys">Search Public Keyrings</string>
-    <string name="hint_secretKeys">Search Secret Keyrings</string>
+    <string name="action_importPublic">Import Public Keys</string>
+    <string name="action_importSecret">Import Secret Keys</string>
+    <string name="hint_publicKeys">Search Public Keys</string>
+    <string name="hint_secretKeys">Search Secret Keys</string>
     <string name="filterInfo">Filter: \"%s\"</string>
-    <string name="shareKeyringWith">Share keyring with…</string>
+    <string name="shareKeyringWith">Share Key with…</string>
 
     <!-- key bit length selections -->
     <string name="key_size_512">512</string>
@@ -337,8 +337,8 @@
 
 
     <!-- Dashboard -->
-    <string name="dashboard_manage_keys">Manage Public Keyrings</string>
-    <string name="dashboard_my_keys">My Secret Keyrings</string>
+    <string name="dashboard_manage_keys">Manage Public Keys</string>
+    <string name="dashboard_my_keys">My Secret Keys</string>
     <string name="dashboard_encrypt">Encrypt</string>
     <string name="dashboard_decrypt">Decrypt</string>
     <string name="dashboard_help">Help</string>
@@ -352,13 +352,13 @@
     <string name="help_about_version">Version:</string>
 
     <!-- Import from QR Code -->
-    <string name="import_from_qr_code_import">Import keyring(s) (only locally)</string>
-    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload keyring(s)</string>
+    <string name="import_from_qr_code_import">Import key(s) (only locally)</string>
+    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload key(s)</string>
     <string name="import_from_qr_code_finish">Finish</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>
-    <string name="intent_import_key">OpenPGP: Import Keyring</string>
+    <string name="intent_import_key">OpenPGP: Import Key</string>
     <string name="intent_send_encrypt">OpenPGP: Encrypt</string>
     <string name="intent_send_decrypt">OpenPGP: Decrypt</string>
 
