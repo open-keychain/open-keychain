@@ -19,7 +19,7 @@ public class RegisteredAppsListActivity extends SherlockFragmentActivity {
 
         mActionBar = getSupportActionBar();
 
-        setContentView(R.layout.api_app_settings_list_activity);
+        setContentView(R.layout.api_apps_list_activity);
 
         mActionBar.setDisplayShowTitleEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);

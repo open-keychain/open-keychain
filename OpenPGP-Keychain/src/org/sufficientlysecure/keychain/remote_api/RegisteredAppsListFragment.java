@@ -1,11 +1,13 @@
 package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
-import org.sufficientlysecure.keychain.util.Log;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
+import android.content.ContentUris;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,9 +15,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-public class RegisteredAppsFragment extends SherlockListFragment implements
+public class RegisteredAppsListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // This is the Adapter being used to display the list's data.
@@ -27,6 +31,17 @@ public class RegisteredAppsFragment extends SherlockListFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        getListView().setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // edit app settings
+                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
+                intent.setData(ContentUris.withAppendedId(
+                        KeychainContract.CryptoConsumers.CONTENT_URI, id));
+                startActivity(intent);
+            }
+        });
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
@@ -42,12 +57,6 @@ public class RegisteredAppsFragment extends SherlockListFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // Insert desired behavior here.
-        Log.i("FragmentComplexList", "Item clicked: " + id);
     }
 
     // These are the Contacts rows that we will retrieve.

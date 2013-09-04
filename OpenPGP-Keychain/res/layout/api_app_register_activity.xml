@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <fragment
+        android:id="@+id/api_app_settings_fragment"
+        android:name="org.sufficientlysecure.keychain.remote_api.AppSettingsFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/api_app_settings_fragment" />
+
+    <LinearLayout
+        android:id="@+id/register_crypto_consumer_register_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="3dip" >
+
+        <TextView
+            android:id="@+id/register_crypto_consumer_question"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Package TODO requests permanent access to OpenPGP Keychain\&apos;s API. Allow permanent access?"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <LinearLayout
+            android:id="@+id/register_crypto_consumer_register_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="3dip" >
+
+            <Button
+                android:id="@+id/register_crypto_consumer_disallow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Disallow access" />
+
+            <Button
+                android:id="@+id/register_crypto_consumer_allow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Allow access" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
