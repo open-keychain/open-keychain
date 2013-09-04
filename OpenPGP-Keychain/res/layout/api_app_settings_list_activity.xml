@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/crypto_consumers_list_fragment"
-        android:name="org.sufficientlysecure.keychain.remote_api.CryptoConsumersFragment"
+        android:name="org.sufficientlysecure.keychain.remote_api.RegisteredAppsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

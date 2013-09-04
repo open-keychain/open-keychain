@@ -1,25 +1,25 @@
 package org.sufficientlysecure.keychain.remote_api;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
 import org.sufficientlysecure.keychain.util.Log;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
-
 import android.view.View;
 import android.widget.ListView;
 
-public class CryptoConsumersFragment extends SherlockListFragment implements
+public class RegisteredAppsFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // This is the Adapter being used to display the list's data.
-    SimpleCursorAdapter mAdapter;
+    RegisteredAppsAdapter mAdapter;
 
     // If non-null, this is the current filter the user has provided.
     String mCurFilter;
@@ -30,15 +30,13 @@ public class CryptoConsumersFragment extends SherlockListFragment implements
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
-        setEmptyText("TODO no crypto consumers");
+        setEmptyText(getString(R.string.api_no_apps));
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_2,
-                null, new String[] { CryptoConsumers.PACKAGE_NAME, CryptoConsumers.PACKAGE_NAME },
-                new int[] { android.R.id.text1, android.R.id.text2 }, 0);
+        mAdapter = new RegisteredAppsAdapter(getActivity(), null);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,

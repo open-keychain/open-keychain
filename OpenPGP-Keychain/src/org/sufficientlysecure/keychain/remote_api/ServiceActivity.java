@@ -133,7 +133,7 @@ public class ServiceActivity extends SherlockFragmentActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
-            setContentView(R.layout.crypto_consumer_register_activity);
+            setContentView(R.layout.api_register_activity);
             LinearLayout layoutRegister = (LinearLayout) findViewById(R.id.register_crypto_consumer_register_layout);
             LinearLayout layoutEdit = (LinearLayout) findViewById(R.id.register_crypto_consumer_edit_layout);
 

@@ -10,7 +10,7 @@ import com.actionbarsherlock.view.MenuItem;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class CryptoConsumersActivity extends SherlockFragmentActivity {
+public class RegisteredAppsListActivity extends SherlockFragmentActivity {
     private ActionBar mActionBar;
 
     @Override
@@ -19,7 +19,7 @@ public class CryptoConsumersActivity extends SherlockFragmentActivity {
 
         mActionBar = getSupportActionBar();
 
-        setContentView(R.layout.crypto_consumer_list_activity);
+        setContentView(R.layout.api_app_settings_list_activity);
 
         mActionBar.setDisplayShowTitleEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);

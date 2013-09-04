@@ -253,6 +253,7 @@
                 <data android:scheme="file" />
                 <data android:scheme="content" />
                 <data android:mimeType="*/*" />
+                <!-- Workaround to match files in pathes with dots in them, like /cdcard/my.folder/test.gpg -->
                 <data android:pathPattern=".*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\..*\\.gpg" />
@@ -467,7 +468,7 @@
             <!-- Don't publish intents, they are only used internally! -->
         </activity>
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.CryptoConsumersActivity"
+            android:name="org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_crypto_consumers" />
 

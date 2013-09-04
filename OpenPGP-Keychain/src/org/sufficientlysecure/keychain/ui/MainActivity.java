@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote_api.CryptoConsumersActivity;
+import org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -81,7 +81,7 @@ public class MainActivity extends SherlockActivity {
         menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
                 .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        menu.add(0, Id.menu.option.crypto_consumers, 0, R.string.menu_crypto_consumers)
+        menu.add(0, Id.menu.option.crypto_consumers, 0, R.string.menu_apiAppSettings)
                 .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;
@@ -96,7 +96,7 @@ public class MainActivity extends SherlockActivity {
             return true;
 
         case Id.menu.option.crypto_consumers:
-            startActivity(new Intent(this, CryptoConsumersActivity.class));
+            startActivity(new Intent(this, RegisteredAppsListActivity.class));
             return true;
 
         default:
