@@ -78,9 +78,9 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID = 221;
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
-    private static final int CRYPTO_CONSUMERS = 301;
-    private static final int CRYPTO_CONSUMERS_BY_ROW_ID = 302;
-    private static final int CRYPTO_CONSUMERS_BY_PACKAGE_NAME = 303;
+    private static final int API_APPS = 301;
+    private static final int API_APPS_BY_ROW_ID = 302;
+    private static final int API_APPS_BY_PACKAGE_NAME = 303;
 
     // private static final int DATA_STREAM = 401;
 
@@ -226,13 +226,12 @@ public class KeychainProvider extends ContentProvider {
                 SECRET_KEY_RING_USER_ID_BY_ROW_ID);
 
         /**
-         * Crypto Consumers
+         * API apps
          */
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS, CRYPTO_CONSUMERS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#",
-                CRYPTO_CONSUMERS_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", CRYPTO_CONSUMERS_BY_PACKAGE_NAME);
+                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
 
         /**
          * data stream
@@ -293,11 +292,11 @@ public class KeychainProvider extends ContentProvider {
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             return UserIds.CONTENT_ITEM_TYPE;
 
-        case CRYPTO_CONSUMERS:
+        case API_APPS:
             return ApiApps.CONTENT_TYPE;
 
-        case CRYPTO_CONSUMERS_BY_ROW_ID:
-        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
+        case API_APPS_BY_ROW_ID:
+        case API_APPS_BY_PACKAGE_NAME:
             return ApiApps.CONTENT_ITEM_TYPE;
 
         default:
@@ -608,18 +607,18 @@ public class KeychainProvider extends ContentProvider {
 
             break;
 
-        case CRYPTO_CONSUMERS:
+        case API_APPS:
             qb.setTables(Tables.API_APPS);
 
             break;
-        case CRYPTO_CONSUMERS_BY_ROW_ID:
+        case API_APPS_BY_ROW_ID:
             qb.setTables(Tables.API_APPS);
 
             qb.appendWhere(BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
-        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
+        case API_APPS_BY_PACKAGE_NAME:
             qb.setTables(Tables.API_APPS);
             qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
             qb.appendWhereEscapeString(uri.getPathSegments().get(2));
@@ -711,7 +710,7 @@ public class KeychainProvider extends ContentProvider {
                 rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
 
                 break;
-            case CRYPTO_CONSUMERS:
+            case API_APPS:
                 rowId = db.insertOrThrow(Tables.API_APPS, null, values);
                 rowUri = ApiApps.buildIdUri(Long.toString(rowId));
 
@@ -771,10 +770,13 @@ public class KeychainProvider extends ContentProvider {
             count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
                     selectionArgs);
             break;
-        case CRYPTO_CONSUMERS_BY_ROW_ID:
-        case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
-            count = db.delete(Tables.API_APPS,
-                    buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
+        case API_APPS_BY_ROW_ID:
+            count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, false, selection),
+                    selectionArgs);
+            break;
+        case API_APPS_BY_PACKAGE_NAME:
+            count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, true, selection),
+                    selectionArgs);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -836,10 +838,13 @@ public class KeychainProvider extends ContentProvider {
                 count = db.update(Tables.USER_IDS, values,
                         buildDefaultUserIdsSelection(uri, selection), selectionArgs);
                 break;
-            case CRYPTO_CONSUMERS_BY_ROW_ID:
-            case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
+            case API_APPS_BY_ROW_ID:
                 count = db.update(Tables.API_APPS, values,
-                        buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
+                        buildDefaultApiAppsSelection(uri, false, selection), selectionArgs);
+                break;
+            case API_APPS_BY_PACKAGE_NAME:
+                count = db.update(Tables.API_APPS, values,
+                        buildDefaultApiAppsSelection(uri, true, selection), selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -930,20 +935,26 @@ public class KeychainProvider extends ContentProvider {
     }
 
     /**
-     * Build default selection statement for Crypto Consumers. If no extra selection is specified
-     * only build where clause with rowId
+     * Build default selection statement for API apps. If no extra selection is specified only build
+     * where clause with rowId
      * 
      * @param uri
      * @param selection
      * @return
      */
-    private String buildDefaultCryptoConsumersSelection(Uri uri, String selection) {
+    private String buildDefaultApiAppsSelection(Uri uri, boolean packageSelection, String selection) {
+        String lastPathSegment = uri.getLastPathSegment();
+
         String andSelection = "";
         if (!TextUtils.isEmpty(selection)) {
             andSelection = " AND (" + selection + ")";
         }
 
-        return selection + andSelection;
+        if (packageSelection) {
+            return ApiApps.PACKAGE_NAME + "=" + lastPathSegment + andSelection;
+        } else {
+            return BaseColumns._ID + "=" + lastPathSegment + andSelection;
+        }
     }
 
     // @Override

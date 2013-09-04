@@ -133,9 +133,9 @@ public class ServiceActivity extends SherlockFragmentActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
-            setContentView(R.layout.api_app_settings_activity);
-            
-            //TODO: handle if app is already registered
+            setContentView(R.layout.api_app_register_activity);
+
+            // TODO: handle if app is already registered
             // LinearLayout layoutRegister = (LinearLayout)
             // findViewById(R.id.register_crypto_consumer_register_layout);
             // LinearLayout layoutEdit = (LinearLayout)

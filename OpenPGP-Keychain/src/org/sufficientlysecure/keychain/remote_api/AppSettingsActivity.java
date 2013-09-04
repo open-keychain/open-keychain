@@ -27,10 +27,8 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
 
     // model
     Uri appUri;
-    long id;
     String packageName;
     long keyId;
-    boolean asciiArmor;
 
     // model, derived
     String appName;
@@ -85,46 +83,45 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
 
     private void loadData(Uri appUri) {
         Cursor cur = getContentResolver().query(appUri, null, null, null, null);
-        id = ContentUris.parseId(appUri);
         if (cur.moveToFirst()) {
-            do {
-                packageName = cur.getString(cur
-                        .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME));
-                // get application name
-                try {
-                    ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+            packageName = cur.getString(cur.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME));
+            // get application name
+            try {
+                ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
 
-                    appName = (String) pm.getApplicationLabel(ai);
-                } catch (final NameNotFoundException e) {
-                    appName = getString(R.string.api_unknown_app);
-                }
+                appName = (String) pm.getApplicationLabel(ai);
+            } catch (final NameNotFoundException e) {
+                appName = getString(R.string.api_unknown_app);
+            }
+            setTitle(appName);
 
-                try {
-                    asciiArmor = (cur.getInt(cur
-                            .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
+            try {
+                boolean asciiArmor = (cur.getInt(cur
+                        .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
+                asciiArmorCheckBox.setChecked(asciiArmor);
 
-                    // display values
-                    asciiArmorCheckBox.setChecked(asciiArmor);
-                } catch (IllegalArgumentException e) {
-                    Log.e(Constants.TAG, "AppSettingsActivity", e);
-                }
-
-            } while (cur.moveToNext());
+            } catch (IllegalArgumentException e) {
+                Log.e(Constants.TAG, "AppSettingsActivity", e);
+            }
         }
     }
 
     private void revokeAccess() {
-        Uri calUri = ContentUris.withAppendedId(appUri, id);
-        getContentResolver().delete(calUri, null, null);
+        if (getContentResolver().delete(appUri, null, null) <= 0) {
+            throw new RuntimeException();
+        }
         finish();
     }
 
     private void save() {
+        Log.d(Constants.TAG, "saving");
         final ContentValues cv = new ContentValues();
-        cv.put(KeychainContract.ApiApps.PACKAGE_NAME, packageName);
-        cv.put(KeychainContract.ApiApps.ASCII_ARMOR, asciiArmor);
-        // TODO: other parameter
-        getContentResolver().update(appUri, cv, null, null);
+        // cv.put(KeychainContract.ApiApps.PACKAGE_NAME, packageName);
+        cv.put(KeychainContract.ApiApps.ASCII_ARMOR, asciiArmorCheckBox.isChecked());
+        // TODO: other parameters
+        if (getContentResolver().update(appUri, cv, null, null) <= 0) {
+            throw new RuntimeException();
+        }
 
         finish();
     }
