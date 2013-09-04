@@ -11,36 +11,37 @@
         android:paddingBottom="3dip" >
 
         <TextView
-            android:id="@+id/register_crypto_consumer_select_key"
+            android:id="@+id/api_app_settings_selected_key"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:text="Select key"
+            android:text="@string/api_settings_no_key"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Button
-            android:id="@+id/register_crypto_consumer_select_key_button"
+            android:id="@+id/api_app_settings_select_key_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="TD Select priv key" />
+            android:text="@string/api_settings_select_key" />
     </LinearLayout>
 
     <Button
         android:id="@+id/api_app_settings_advanced_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="show advanced settings" />
+        android:text="@string/api_settings_show_advanced" />
 
     <LinearLayout
         android:id="@+id/api_app_settings_advanced"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:visibility="invisible" >
 
         <CheckBox
-            android:id="@+id/asciiArmour"
+            android:id="@+id/api_app_ascii_armor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

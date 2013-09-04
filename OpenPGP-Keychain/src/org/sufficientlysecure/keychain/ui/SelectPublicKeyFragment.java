@@ -67,7 +67,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         // application this would come from a resource.
         setEmptyText(getString(R.string.listEmpty));
 
-        mAdapter = new SelectKeyCursorAdapter(mActivity, mListView, null, Id.type.public_key);
+        mAdapter = new SelectKeyCursorAdapter(mActivity, null, 0, mListView, Id.type.public_key);
 
         setListAdapter(mAdapter);
 
@@ -160,11 +160,12 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
                         + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
                 "(SELECT COUNT(valid_keys." + Keys._ID + ") FROM " + Tables.KEYS
                         + " AS valid_keys WHERE valid_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND valid_keys."
-                        + Keys.IS_REVOKED + " = '0' AND valid_keys." + Keys.CAN_ENCRYPT
-                        + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
-                        + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
-                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
+                        + " AND valid_keys." + Keys.IS_REVOKED + " = '0' AND valid_keys."
+                        + Keys.CAN_ENCRYPT + " = '1' AND valid_keys." + Keys.CREATION + " <= '"
+                        + now + "' AND " + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys."
+                        + Keys.EXPIRY + " >= '" + now + "')) AS "
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {

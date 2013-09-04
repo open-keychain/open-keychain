@@ -51,7 +51,7 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
         setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new RegisteredAppsAdapter(getActivity(), null);
+        mAdapter = new RegisteredAppsAdapter(getActivity(), null, 0);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,

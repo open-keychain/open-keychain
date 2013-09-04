@@ -612,6 +612,13 @@ public class KeychainProvider extends ContentProvider {
             qb.setTables(Tables.CRYPTO_CONSUMERS);
 
             break;
+        case CRYPTO_CONSUMERS_BY_ROW_ID:
+            qb.setTables(Tables.CRYPTO_CONSUMERS);
+
+            qb.appendWhere(BaseColumns._ID + " = ");
+            qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+            break;
         case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
             qb.setTables(Tables.CRYPTO_CONSUMERS);
             qb.appendWhere(CryptoConsumers.PACKAGE_NAME + " = ");

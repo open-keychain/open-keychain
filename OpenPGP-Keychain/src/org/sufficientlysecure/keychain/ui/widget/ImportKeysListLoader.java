@@ -23,19 +23,14 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPPublicKeyRingCollection;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSecretKeyRingCollection;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -45,11 +40,6 @@ import org.sufficientlysecure.keychain.R;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-/**
- * A custom Loader to search for bad adware apps, based on
- * https://github.com/brosmike/AirPush-Detector. Daniel Bjorge licensed it under Apachev2 after
- * asking him by mail.
- */
 public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, String>>> {
     public static final String MAP_ATTR_USER_ID = "user_id";
     public static final String MAP_ATTR_FINGERPINT = "fingerprint";

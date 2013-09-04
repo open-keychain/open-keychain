@@ -35,9 +35,8 @@ public class RegisteredAppsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private PackageManager pm;
 
-    @SuppressWarnings("deprecation")
-    public RegisteredAppsAdapter(Context context, Cursor c) {
-        super(context, c);
+    public RegisteredAppsAdapter(Context context, Cursor c, int flags) {
+        super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
         pm = context.getApplicationContext().getPackageManager();
