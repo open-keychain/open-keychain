@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
@@ -228,10 +228,10 @@ public class KeychainProvider extends ContentProvider {
         /**
          * Crypto Consumers
          */
-        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS, CRYPTO_CONSUMERS);
-        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS + "/#",
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS, CRYPTO_CONSUMERS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#",
                 CRYPTO_CONSUMERS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", CRYPTO_CONSUMERS_BY_PACKAGE_NAME);
 
         /**
@@ -294,11 +294,11 @@ public class KeychainProvider extends ContentProvider {
             return UserIds.CONTENT_ITEM_TYPE;
 
         case CRYPTO_CONSUMERS:
-            return CryptoConsumers.CONTENT_TYPE;
+            return ApiApps.CONTENT_TYPE;
 
         case CRYPTO_CONSUMERS_BY_ROW_ID:
         case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
-            return CryptoConsumers.CONTENT_ITEM_TYPE;
+            return ApiApps.CONTENT_ITEM_TYPE;
 
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -609,19 +609,19 @@ public class KeychainProvider extends ContentProvider {
             break;
 
         case CRYPTO_CONSUMERS:
-            qb.setTables(Tables.CRYPTO_CONSUMERS);
+            qb.setTables(Tables.API_APPS);
 
             break;
         case CRYPTO_CONSUMERS_BY_ROW_ID:
-            qb.setTables(Tables.CRYPTO_CONSUMERS);
+            qb.setTables(Tables.API_APPS);
 
             qb.appendWhere(BaseColumns._ID + " = ");
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
         case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
-            qb.setTables(Tables.CRYPTO_CONSUMERS);
-            qb.appendWhere(CryptoConsumers.PACKAGE_NAME + " = ");
+            qb.setTables(Tables.API_APPS);
+            qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
             qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
             break;
@@ -712,8 +712,8 @@ public class KeychainProvider extends ContentProvider {
 
                 break;
             case CRYPTO_CONSUMERS:
-                rowId = db.insertOrThrow(Tables.CRYPTO_CONSUMERS, null, values);
-                rowUri = CryptoConsumers.buildIdUri(Long.toString(rowId));
+                rowId = db.insertOrThrow(Tables.API_APPS, null, values);
+                rowUri = ApiApps.buildIdUri(Long.toString(rowId));
 
                 break;
             default:
@@ -773,7 +773,7 @@ public class KeychainProvider extends ContentProvider {
             break;
         case CRYPTO_CONSUMERS_BY_ROW_ID:
         case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
-            count = db.delete(Tables.CRYPTO_CONSUMERS,
+            count = db.delete(Tables.API_APPS,
                     buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
             break;
         default:
@@ -838,7 +838,7 @@ public class KeychainProvider extends ContentProvider {
                 break;
             case CRYPTO_CONSUMERS_BY_ROW_ID:
             case CRYPTO_CONSUMERS_BY_PACKAGE_NAME:
-                count = db.update(Tables.CRYPTO_CONSUMERS, values,
+                count = db.update(Tables.API_APPS, values,
                         buildDefaultCryptoConsumersSelection(uri, selection), selectionArgs);
                 break;
             default:

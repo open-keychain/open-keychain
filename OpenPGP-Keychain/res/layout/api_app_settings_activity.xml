@@ -14,21 +14,20 @@
         tools:layout="@layout/api_app_settings_fragment" />
 
     <LinearLayout
-        android:id="@+id/register_crypto_consumer_edit_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingBottom="3dip" >
 
         <Button
-            android:id="@+id/register_crypto_consumer_disallow"
+            android:id="@+id/api_app_settings_revoke"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/api_settings_revoke" />
 
         <Button
-            android:id="@+id/register_crypto_consumer_allow"
+            android:id="@+id/api_app_settings_save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

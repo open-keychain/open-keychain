@@ -17,7 +17,7 @@
 package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -47,7 +47,7 @@ public class RegisteredAppsAdapter extends CursorAdapter {
         TextView text1 = (TextView) view.findViewById(android.R.id.text1);
         TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
-        String packageName = cursor.getString(cursor.getColumnIndex(CryptoConsumers.PACKAGE_NAME));
+        String packageName = cursor.getString(cursor.getColumnIndex(ApiApps.PACKAGE_NAME));
         if (packageName != null) {
             text2.setText(packageName);
 

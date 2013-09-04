@@ -134,22 +134,26 @@ public class ServiceActivity extends SherlockFragmentActivity {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
             setContentView(R.layout.api_app_settings_activity);
-            LinearLayout layoutRegister = (LinearLayout) findViewById(R.id.register_crypto_consumer_register_layout);
-            LinearLayout layoutEdit = (LinearLayout) findViewById(R.id.register_crypto_consumer_edit_layout);
+            
+            //TODO: handle if app is already registered
+            // LinearLayout layoutRegister = (LinearLayout)
+            // findViewById(R.id.register_crypto_consumer_register_layout);
+            // LinearLayout layoutEdit = (LinearLayout)
+            // findViewById(R.id.register_crypto_consumer_edit_layout);
+            //
+            // // if already registered show edit buttons
+            // ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(this);
+            // if (allowedPkgs.contains(packageName)) {
+            // Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
+            // layoutRegister.setVisibility(View.GONE);
+            // layoutEdit.setVisibility(View.VISIBLE);
+            // } else {
+            // layoutRegister.setVisibility(View.VISIBLE);
+            // layoutEdit.setVisibility(View.GONE);
+            // }
 
-            // if already registered show edit buttons
-            ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(this);
-            if (allowedPkgs.contains(packageName)) {
-                Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
-                layoutRegister.setVisibility(View.GONE);
-                layoutEdit.setVisibility(View.VISIBLE);
-            } else {
-                layoutRegister.setVisibility(View.VISIBLE);
-                layoutEdit.setVisibility(View.GONE);
-            }
-
-            Button allowButton = (Button) findViewById(R.id.register_crypto_consumer_allow);
-            Button disallowButton = (Button) findViewById(R.id.register_crypto_consumer_disallow);
+            Button allowButton = (Button) findViewById(R.id.api_register_allow);
+            Button disallowButton = (Button) findViewById(R.id.api_register_disallow);
 
             allowButton.setOnClickListener(new OnClickListener() {
 

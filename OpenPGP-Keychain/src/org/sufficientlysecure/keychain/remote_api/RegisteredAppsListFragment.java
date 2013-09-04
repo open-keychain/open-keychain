@@ -2,7 +2,7 @@ package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
@@ -38,7 +38,7 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
                 // edit app settings
                 Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
                 intent.setData(ContentUris.withAppendedId(
-                        KeychainContract.CryptoConsumers.CONTENT_URI, id));
+                        KeychainContract.ApiApps.CONTENT_URI, id));
                 startActivity(intent);
             }
         });
@@ -60,20 +60,20 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
     }
 
     // These are the Contacts rows that we will retrieve.
-    static final String[] CONSUMERS_SUMMARY_PROJECTION = new String[] { CryptoConsumers._ID,
-            CryptoConsumers.PACKAGE_NAME };
+    static final String[] CONSUMERS_SUMMARY_PROJECTION = new String[] { ApiApps._ID,
+            ApiApps.PACKAGE_NAME };
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         // First, pick the base URI to use depending on whether we are
         // currently filtering.
-        Uri baseUri = CryptoConsumers.CONTENT_URI;
+        Uri baseUri = ApiApps.CONTENT_URI;
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), baseUri, CONSUMERS_SUMMARY_PROJECTION, null, null,
-                CryptoConsumers.PACKAGE_NAME + " COLLATE LOCALIZED ASC");
+                ApiApps.PACKAGE_NAME + " COLLATE LOCALIZED ASC");
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

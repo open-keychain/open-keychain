@@ -53,7 +53,7 @@ public class KeychainContract {
         String RANK = "rank";
     }
 
-    interface CryptoConsumersColumns {
+    interface ApiAppsColumns {
         String PACKAGE_NAME = "package_name";
         String PRIVATE_KEY_ID = "private_key_id"; // not a database id
         String ASCII_ARMOR = "ascii_armor";
@@ -87,7 +87,7 @@ public class KeychainContract {
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
 
-    public static final String BASE_CRYPTO_CONSUMERS = "crypto_consumers";
+    public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_BY_PACKAGE_NAME = "package_name";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
@@ -219,15 +219,15 @@ public class KeychainContract {
         }
     }
 
-    public static class CryptoConsumers implements CryptoConsumersColumns, BaseColumns {
+    public static class ApiApps implements ApiAppsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_CRYPTO_CONSUMERS).build();
+                .appendPath(BASE_API_APPS).build();
 
         /** Use if multiple items get returned */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.crypto_consumers";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_apps";
 
         /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.crypto_consumers";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_apps";
 
         public static Uri buildIdUri(String rowId) {
             return CONTENT_URI.buildUpon().appendPath(rowId).build();

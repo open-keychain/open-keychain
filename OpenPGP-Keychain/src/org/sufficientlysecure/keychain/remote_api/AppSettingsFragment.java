@@ -60,9 +60,11 @@ public class AppSettingsFragment extends Fragment {
                 if (advancedSettingsContainer.getVisibility() == View.VISIBLE) {
                     advancedSettingsContainer.startAnimation(invisibleAnimation);
                     advancedSettingsContainer.setVisibility(View.INVISIBLE);
+                    advancedSettingsButton.setText(R.string.api_settings_show_advanced);
                 } else {
                     advancedSettingsContainer.startAnimation(visibleAnimation);
                     advancedSettingsContainer.setVisibility(View.VISIBLE);
+                    advancedSettingsButton.setText(R.string.api_settings_hide_advanced);
                 }
             }
         });
@@ -72,7 +74,6 @@ public class AppSettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 selectSecretKey();
-
             }
         });
     }

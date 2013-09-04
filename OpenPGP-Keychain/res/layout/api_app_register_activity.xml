@@ -14,14 +14,13 @@
         tools:layout="@layout/api_app_settings_fragment" />
 
     <LinearLayout
-        android:id="@+id/register_crypto_consumer_register_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="3dip" >
 
         <TextView
-            android:id="@+id/register_crypto_consumer_question"
+            android:id="@+id/api_register_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TODO: use string"
@@ -34,14 +33,14 @@
             android:paddingBottom="3dip" >
 
             <Button
-                android:id="@+id/register_crypto_consumer_disallow"
+                android:id="@+id/api_register_disallow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/api_register_disallow" />
 
             <Button
-                android:id="@+id/register_crypto_consumer_allow"
+                android:id="@+id/api_register_allow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

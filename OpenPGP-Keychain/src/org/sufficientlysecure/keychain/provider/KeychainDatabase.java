@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.provider;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumersColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
@@ -37,7 +37,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS = "key_rings";
         String KEYS = "keys";
         String USER_IDS = "user_ids";
-        String CRYPTO_CONSUMERS = "crypto_consumers";
+        String API_APPS = "api_apps";
     }
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
@@ -64,14 +64,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
             + BaseColumns._ID + ") ON DELETE CASCADE)";
 
-    private static final String CREATE_CRYPTO_CONSUMERS = "CREATE TABLE IF NOT EXISTS "
-            + Tables.CRYPTO_CONSUMERS + " (" + BaseColumns._ID
-            + " INTEGER PRIMARY KEY AUTOINCREMENT, " + CryptoConsumersColumns.PACKAGE_NAME
-            + " TEXT UNIQUE, " + CryptoConsumersColumns.PRIVATE_KEY_ID + " INT64, "
-            + CryptoConsumersColumns.ASCII_ARMOR + " INTEGER, "
-            + CryptoConsumersColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
-            + CryptoConsumersColumns.HASH_ALORITHM + " INTEGER, "
-            + CryptoConsumersColumns.COMPRESSION + " INTEGER)";
+    private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS "
+            + Tables.API_APPS + " (" + BaseColumns._ID
+            + " INTEGER PRIMARY KEY AUTOINCREMENT, " + ApiAppsColumns.PACKAGE_NAME
+            + " TEXT UNIQUE, " + ApiAppsColumns.PRIVATE_KEY_ID + " INT64, "
+            + ApiAppsColumns.ASCII_ARMOR + " INTEGER, "
+            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
+            + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
+            + ApiAppsColumns.COMPRESSION + " INTEGER)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -84,7 +84,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEY_RINGS);
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_IDS);
-        db.execSQL(CREATE_CRYPTO_CONSUMERS);
+        db.execSQL(CREATE_API_APPS);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
                 break;
             case 4:
-                db.execSQL(CREATE_CRYPTO_CONSUMERS);
+                db.execSQL(CREATE_API_APPS);
 
             default:
                 break;

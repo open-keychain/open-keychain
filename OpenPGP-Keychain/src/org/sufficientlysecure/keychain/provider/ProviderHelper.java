@@ -31,7 +31,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -719,12 +719,12 @@ public class ProviderHelper {
     }
 
     public static ArrayList<String> getCryptoConsumers(Context context) {
-        Cursor cursor = context.getContentResolver().query(CryptoConsumers.CONTENT_URI, null, null,
+        Cursor cursor = context.getContentResolver().query(ApiApps.CONTENT_URI, null, null,
                 null, null);
 
         ArrayList<String> packageNames = new ArrayList<String>();
         if (cursor != null) {
-            int packageNameCol = cursor.getColumnIndex(CryptoConsumers.PACKAGE_NAME);
+            int packageNameCol = cursor.getColumnIndex(ApiApps.PACKAGE_NAME);
             if (cursor.moveToFirst()) {
                 do {
                     packageNames.add(cursor.getString(packageNameCol));
@@ -741,7 +741,7 @@ public class ProviderHelper {
 
     public static void addCryptoConsumer(Context context, String packageName) {
         ContentValues values = new ContentValues();
-        values.put(CryptoConsumers.PACKAGE_NAME, packageName);
-        context.getContentResolver().insert(CryptoConsumers.CONTENT_URI, values);
+        values.put(ApiApps.PACKAGE_NAME, packageName);
+        context.getContentResolver().insert(ApiApps.CONTENT_URI, values);
     }
 }
