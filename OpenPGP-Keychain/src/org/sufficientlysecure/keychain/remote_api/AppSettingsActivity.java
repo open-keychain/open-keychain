@@ -5,7 +5,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -14,13 +13,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 public class AppSettingsActivity extends SherlockFragmentActivity {
     private PackageManager pm;
@@ -46,28 +48,36 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
 
         pm = getApplicationContext().getPackageManager();
 
+        // BEGIN_INCLUDE (inflate_set_custom_view)
+        // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater
+                .inflate(R.layout.actionbar_custom_view_done, null);
+
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
+                .setText(R.string.api_settings_save);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // "Done"
+                        save();
+                    }
+                });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
+                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView);
+        // END_INCLUDE (inflate_set_custom_view)
+
         setContentView(R.layout.api_app_settings_activity);
 
         selectedKey = (TextView) findViewById(R.id.api_app_settings_selected_key);
         selectKeyButton = (Button) findViewById(R.id.api_app_settings_select_key_button);
         asciiArmorCheckBox = (CheckBox) findViewById(R.id.api_app_ascii_armor);
-        revokeButton = (Button) findViewById(R.id.api_app_settings_revoke);
-        saveButton = (Button) findViewById(R.id.api_app_settings_save);
-
-        revokeButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                revokeAccess();
-            }
-        });
-        saveButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                save();
-            }
-        });
 
         Intent intent = getIntent();
         appUri = intent.getData();
@@ -79,6 +89,26 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
             Log.d(Constants.TAG, "uri: " + appUri);
             loadData(appUri);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getSupportMenuInflater().inflate(R.menu.api_app_settings, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_api_settings_revoke:
+            revokeAccess();
+            return true;
+        case R.id.menu_api_settings_cancel:
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadData(Uri appUri) {
@@ -114,7 +144,6 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     }
 
     private void save() {
-        Log.d(Constants.TAG, "saving");
         final ContentValues cv = new ContentValues();
         // cv.put(KeychainContract.ApiApps.PACKAGE_NAME, packageName);
         cv.put(KeychainContract.ApiApps.ASCII_ARMOR, asciiArmorCheckBox.isChecked());
