@@ -73,7 +73,7 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
         // application this would come from a resource.
         setEmptyText(getString(R.string.listEmpty));
 
-        mAdapter = new SelectKeyCursorAdapter(mActivity, mListView, null, Id.type.secret_key);
+        mAdapter = new SelectKeyCursorAdapter(mActivity, null, 0, mListView, Id.type.secret_key);
 
         setListAdapter(mAdapter);
 

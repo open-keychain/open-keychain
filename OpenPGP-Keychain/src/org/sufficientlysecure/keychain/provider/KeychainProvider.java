@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,11 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
@@ -44,7 +42,6 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
 
@@ -81,7 +78,9 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID = 221;
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
-    private static final int CRYPTO_CONSUMERS = 301;
+    private static final int API_APPS = 301;
+    private static final int API_APPS_BY_ROW_ID = 302;
+    private static final int API_APPS_BY_PACKAGE_NAME = 303;
 
     // private static final int DATA_STREAM = 401;
 
@@ -227,9 +226,12 @@ public class KeychainProvider extends ContentProvider {
                 SECRET_KEY_RING_USER_ID_BY_ROW_ID);
 
         /**
-         * Crypto Consumers
+         * API apps
          */
-        matcher.addURI(authority, KeychainContract.BASE_CRYPTO_CONSUMERS, CRYPTO_CONSUMERS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
+                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
 
         /**
          * data stream
@@ -290,8 +292,12 @@ public class KeychainProvider extends ContentProvider {
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             return UserIds.CONTENT_ITEM_TYPE;
 
-        case CRYPTO_CONSUMERS:
-            return CryptoConsumers.CONTENT_TYPE;
+        case API_APPS:
+            return ApiApps.CONTENT_TYPE;
+
+        case API_APPS_BY_ROW_ID:
+        case API_APPS_BY_PACKAGE_NAME:
+            return ApiApps.CONTENT_ITEM_TYPE;
 
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -600,10 +606,23 @@ public class KeychainProvider extends ContentProvider {
             qb.appendWhereEscapeString(uri.getLastPathSegment());
 
             break;
-            
-        case CRYPTO_CONSUMERS:
-            qb.setTables(Tables.CRYPTO_CONSUMERS);
-            
+
+        case API_APPS:
+            qb.setTables(Tables.API_APPS);
+
+            break;
+        case API_APPS_BY_ROW_ID:
+            qb.setTables(Tables.API_APPS);
+
+            qb.appendWhere(BaseColumns._ID + " = ");
+            qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+            break;
+        case API_APPS_BY_PACKAGE_NAME:
+            qb.setTables(Tables.API_APPS);
+            qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
+            qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+
             break;
 
         default:
@@ -653,6 +672,7 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
                 rowUri = KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case PUBLIC_KEY_RING_KEY:
@@ -660,11 +680,13 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
                 rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case PUBLIC_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
                 rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING:
@@ -672,6 +694,7 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEY_RINGS, null, values);
                 rowUri = KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING_KEY:
@@ -679,11 +702,17 @@ public class KeychainProvider extends ContentProvider {
 
                 rowId = db.insertOrThrow(Tables.KEYS, null, values);
                 rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                 break;
             case SECRET_KEY_RING_USER_ID:
                 rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
                 rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
+
+                break;
+            case API_APPS:
+                rowId = db.insertOrThrow(Tables.API_APPS, null, values);
+                rowUri = ApiApps.buildIdUri(Long.toString(rowId));
 
                 break;
             default:
@@ -692,7 +721,6 @@ public class KeychainProvider extends ContentProvider {
 
             // notify of changes in db
             getContext().getContentResolver().notifyChange(uri, null);
-            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on insert! Entry already existing?");
@@ -720,6 +748,7 @@ public class KeychainProvider extends ContentProvider {
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
                     selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
         case SECRET_KEY_RING_BY_MASTER_KEY_ID:
@@ -728,15 +757,25 @@ public class KeychainProvider extends ContentProvider {
             count = db.delete(Tables.KEY_RINGS,
                     buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match), selection),
                     selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
         case SECRET_KEY_RING_KEY_BY_ROW_ID:
             count = db.delete(Tables.KEYS,
                     buildDefaultKeysSelection(uri, getKeyType(match), selection), selectionArgs);
+            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
             break;
         case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
         case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
             count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
+                    selectionArgs);
+            break;
+        case API_APPS_BY_ROW_ID:
+            count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, false, selection),
+                    selectionArgs);
+            break;
+        case API_APPS_BY_PACKAGE_NAME:
+            count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, true, selection),
                     selectionArgs);
             break;
         default:
@@ -745,7 +784,6 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
-        sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         return count;
     }
@@ -771,6 +809,8 @@ public class KeychainProvider extends ContentProvider {
                         values,
                         buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
                                 selection), selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
             case SECRET_KEY_RING_BY_MASTER_KEY_ID:
@@ -781,6 +821,8 @@ public class KeychainProvider extends ContentProvider {
                         values,
                         buildDefaultKeyRingsSelection(defaultSelection, getKeyType(match),
                                 selection), selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
             case SECRET_KEY_RING_KEY_BY_ROW_ID:
@@ -788,11 +830,21 @@ public class KeychainProvider extends ContentProvider {
                         .update(Tables.KEYS, values,
                                 buildDefaultKeysSelection(uri, getKeyType(match), selection),
                                 selectionArgs);
+                sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
+
                 break;
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
                 count = db.update(Tables.USER_IDS, values,
                         buildDefaultUserIdsSelection(uri, selection), selectionArgs);
+                break;
+            case API_APPS_BY_ROW_ID:
+                count = db.update(Tables.API_APPS, values,
+                        buildDefaultApiAppsSelection(uri, false, selection), selectionArgs);
+                break;
+            case API_APPS_BY_PACKAGE_NAME:
+                count = db.update(Tables.API_APPS, values,
+                        buildDefaultApiAppsSelection(uri, true, selection), selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -800,7 +852,6 @@ public class KeychainProvider extends ContentProvider {
 
             // notify of changes in db
             getContext().getContentResolver().notifyChange(uri, null);
-            sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
         } catch (SQLiteConstraintException e) {
             Log.e(Constants.TAG, "Constraint exception on update! Entry already existing?");
@@ -883,6 +934,29 @@ public class KeychainProvider extends ContentProvider {
         return BaseColumns._ID + "=" + rowId + andForeignKeyRing + andSelection;
     }
 
+    /**
+     * Build default selection statement for API apps. If no extra selection is specified only build
+     * where clause with rowId
+     * 
+     * @param uri
+     * @param selection
+     * @return
+     */
+    private String buildDefaultApiAppsSelection(Uri uri, boolean packageSelection, String selection) {
+        String lastPathSegment = uri.getLastPathSegment();
+
+        String andSelection = "";
+        if (!TextUtils.isEmpty(selection)) {
+            andSelection = " AND (" + selection + ")";
+        }
+
+        if (packageSelection) {
+            return ApiApps.PACKAGE_NAME + "=" + lastPathSegment + andSelection;
+        } else {
+            return BaseColumns._ID + "=" + lastPathSegment + andSelection;
+        }
+    }
+
     // @Override
     // public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
     // int match = mUriMatcher.match(uri);
@@ -899,10 +973,12 @@ public class KeychainProvider extends ContentProvider {
      * updated, or deleted
      */
     private void sendBroadcastDatabaseChange(int keyType, String contentItemType) {
-        Intent intent = new Intent();
-        intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
-        intent.putExtra(EXTRA_BROADCAST_KEY_TYPE, keyType);
-        intent.putExtra(EXTRA_BROADCAST_CONTENT_ITEM_TYPE, contentItemType);
-        getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
+        // TODO: Disabled, old API
+        // Intent intent = new Intent();
+        // intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
+        // intent.putExtra(EXTRA_BROADCAST_KEY_TYPE, keyType);
+        // intent.putExtra(EXTRA_BROADCAST_CONTENT_ITEM_TYPE, contentItemType);
+        //
+        // getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
     }
 }

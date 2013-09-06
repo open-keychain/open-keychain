@@ -30,6 +30,7 @@
     <string name="title_createKey">Create Key</string>
     <string name="title_editKey">Edit Key</string>
     <string name="title_preferences">Preferences</string>
+    <string name="title_crypto_consumers">Registered Applications</string>
     <string name="title_keyServerPreference">Key Server Preference</string>
     <string name="title_changePassPhrase">Change Passphrase</string>
     <string name="title_setPassPhrase">Set Passphrase</string>
@@ -87,6 +88,7 @@
     <string name="menu_managePublicKeys">Manage Public Keys</string>
     <string name="menu_manageSecretKeys">Manage Secret Keys</string>
     <string name="menu_preferences">Settings</string>
+    <string name="menu_apiAppSettings">Registered Apps</string>
     <string name="menu_importFromFile">Import from file</string>
     <string name="menu_importFromQrCode">Import from QR Code</string>
     <string name="menu_importFromNfc">Import from NFC</string>
@@ -362,4 +364,18 @@
     <string name="intent_send_encrypt">OpenPGP: Encrypt</string>
     <string name="intent_send_decrypt">OpenPGP: Decrypt</string>
 
+    <!-- Remote API -->
+    <string name="api_no_apps">No registered applications!</string>
+    <string name="api_settings_show_advanced">Show advanced settings…</string>
+    <string name="api_settings_hide_advanced">Hide advanced settings…</string>
+    <string name="api_settings_no_key">No key selected</string>
+    <string name="api_settings_select_key">Select key</string>
+    <string name="api_settings_save">Save</string>
+    <string name="api_settings_cancel">Cancel</string>
+    <string name="api_settings_revoke">Revoke access</string>
+    <string name="api_register_text">The following application requests access to OpenPGP Keychain\'s API.\n\nAllow permanent access?</string>
+    <string name="api_register_allow">Allow access</string>
+    <string name="api_register_disallow">Disallow access</string>
+    <string name="api_register_error_select_key">Please select a key!</string>
+    
 </resources>

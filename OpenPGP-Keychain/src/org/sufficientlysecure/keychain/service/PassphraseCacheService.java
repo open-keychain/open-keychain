@@ -48,6 +48,12 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+/**
+ * This service runs in its own process, but is available to all other processes as the main
+ * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
+ * convenience.
+ * 
+ */
 public class PassphraseCacheService extends Service {
     public static final String TAG = Constants.TAG + ": PassphraseCacheService";
 
@@ -74,9 +80,9 @@ public class PassphraseCacheService extends Service {
     Context mContext;
 
     /**
-     * This caches a new passphrase by sending a new command to the service. An android service is
-     * only run once. Thus, when the service is already started, new commands just add new events to
-     * the alarm manager for new passphrases to let them timeout in the future.
+     * This caches a new passphrase in memory by sending a new command to the service. An android
+     * service is only run once. Thus, when the service is already started, new commands just add
+     * new events to the alarm manager for new passphrases to let them timeout in the future.
      * 
      * @param context
      * @param keyId
@@ -95,21 +101,23 @@ public class PassphraseCacheService extends Service {
     }
 
     /**
-     * Gets a cached passphrase from memory, blocking method
+     * Gets a cached passphrase from memory by sending an intent to the service. This method is
+     * designed to wait until the service returns the passphrase.
      * 
      * @param context
      * @param keyId
-     * @return
+     * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static String getCachedPassphrase(Context context, long keyId) {
         Log.d(TAG, "getCachedPassphrase() get masterKeyId for " + keyId);
+
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_GET);
 
         final Object mutex = new Object();
         final Bundle returnBundle = new Bundle();
 
-        HandlerThread handlerThread = new HandlerThread("getPassphrase");
+        HandlerThread handlerThread = new HandlerThread("getPassphraseThread");
         handlerThread.start();
         Handler returnHandler = new Handler(handlerThread.getLooper()) {
             @Override
@@ -121,6 +129,7 @@ public class PassphraseCacheService extends Service {
                 synchronized (mutex) {
                     mutex.notify();
                 }
+                // quit handlerThread
                 getLooper().quit();
             }
         };
@@ -147,6 +156,12 @@ public class PassphraseCacheService extends Service {
         }
     }
 
+    /**
+     * Internal implementation to get cached passphrase.
+     * 
+     * @param keyId
+     * @return
+     */
     private String getCachedPassphraseImpl(long keyId) {
         Log.d(TAG, "getCachedPassphraseImpl() get masterKeyId for " + keyId);
 
@@ -163,20 +178,20 @@ public class PassphraseCacheService extends Service {
             }
             masterKeyId = masterKey.getKeyID();
         }
-        Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId" + masterKeyId);
+        Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
 
         // get cached passphrase
         String cachedPassphrase = mPassphraseCache.get(masterKeyId);
         if (cachedPassphrase == null) {
-            // TODO: fix!
-            // check if secret key has a passphrase
-            // if (!hasPassphrase(context, masterKeyId)) {
-            // // cache empty passphrase
-            // addCachedPassphrase(context, masterKeyId, "");
-            // return "";
-            // } else {
-            return null;
-            // }
+            // if key has no passphrase -> cache and return empty passphrase
+            if (!hasPassphrase(this, masterKeyId)) {
+                Log.d(Constants.TAG, "Key has no passphrase! Caches and returns empty passphrase!");
+
+                addCachedPassphrase(this, masterKeyId, "");
+                return "";
+            } else {
+                return null;
+            }
         }
         // set it again to reset the cache life cycle
         Log.d(TAG, "Cache passphrase again when getting it!");
@@ -196,17 +211,10 @@ public class PassphraseCacheService extends Service {
         try {
             PGPSecretKey secretKey = PgpHelper.getMasterKey(ProviderHelper
                     .getPGPSecretKeyRingByKeyId(context, secretKeyId));
-
-            Log.d(Constants.TAG, "Check if key has no passphrase...");
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     "SC").build("".toCharArray());
             PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
             if (testKey != null) {
-                Log.d(Constants.TAG, "Key has no passphrase! Caches empty passphrase!");
-
-                // cache empty passphrase
-                PassphraseCacheService.addCachedPassphrase(context, secretKey.getKeyID(), "");
-
                 return false;
             }
         } catch (PGPException e) {

@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+package org.openintents.crypto;
 
-package com.android.crypto;
-
-import com.android.crypto.CryptoSignatureResult;
-import com.android.crypto.CryptoError;
-
-interface ICryptoCallback {
-
-    oneway void onEncryptSignSuccess(in byte[] outputBytes);
-    
-    oneway void onDecryptVerifySuccess(in byte[] outputBytes, in CryptoSignatureResult signatureResult);
-
-
-    oneway void onError(in CryptoError error);
-    
-    oneway void onActivityRequired(in Intent intent);
-}
+// Declare CryptoSignatureResult so AIDL can find it and knows that it implements the parcelable protocol.
+parcelable CryptoSignatureResult;

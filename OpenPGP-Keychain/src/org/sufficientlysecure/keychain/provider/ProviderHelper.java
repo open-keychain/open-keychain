@@ -31,11 +31,12 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CryptoConsumers;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.remote_api.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -718,13 +719,13 @@ public class ProviderHelper {
         return cursor;
     }
 
-    public static ArrayList<String> getCryptoConsumers(Context context) {
-        Cursor cursor = context.getContentResolver().query(CryptoConsumers.CONTENT_URI, null, null,
-                null, null);
+    public static ArrayList<String> getRegisteredApiApps(Context context) {
+        Cursor cursor = context.getContentResolver().query(ApiApps.CONTENT_URI, null, null, null,
+                null);
 
         ArrayList<String> packageNames = new ArrayList<String>();
         if (cursor != null) {
-            int packageNameCol = cursor.getColumnIndex(CryptoConsumers.PACKAGE_NAME);
+            int packageNameCol = cursor.getColumnIndex(ApiApps.PACKAGE_NAME);
             if (cursor.moveToFirst()) {
                 do {
                     packageNames.add(cursor.getString(packageNameCol));
@@ -739,9 +740,53 @@ public class ProviderHelper {
         return packageNames;
     }
 
-    public static void addCryptoConsumer(Context context, String packageName) {
+    private static void contentValueForApiApps() {
+
+    }
+
+    public static void insertApiApp(Context context, AppSettings appSettings) {
         ContentValues values = new ContentValues();
-        values.put(CryptoConsumers.PACKAGE_NAME, packageName);
-        context.getContentResolver().insert(CryptoConsumers.CONTENT_URI, values);
+        values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
+        values.put(ApiApps.KEY_ID, appSettings.getKeyId());
+        values.put(ApiApps.ASCII_ARMOR, appSettings.isAsciiArmor());
+        // TODO: other parameters
+        context.getContentResolver().insert(ApiApps.CONTENT_URI, values);
+    }
+
+    public static void updateApiApp(Context context, AppSettings appSettings, Uri uri) {
+        final ContentValues cv = new ContentValues();
+        cv.put(KeychainContract.ApiApps.KEY_ID, appSettings.getKeyId());
+
+        cv.put(KeychainContract.ApiApps.ASCII_ARMOR, appSettings.isAsciiArmor());
+        // TODO: other parameters
+
+        if (context.getContentResolver().update(uri, cv, null, null) <= 0) {
+            throw new RuntimeException();
+        }
+    }
+
+    public static AppSettings getApiAppSettings(Context context, Uri uri) {
+        AppSettings settings = new AppSettings();
+        Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
+        if (cur == null) {
+            return null;
+        }
+        if (cur.moveToFirst()) {
+            settings.setPackageName(cur.getString(cur
+                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+
+            settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));
+
+            settings.setAsciiArmor(cur.getInt(cur
+                    .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
+
+            settings.setPackageName(cur.getString(cur
+                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+
+            settings.setPackageName(cur.getString(cur
+                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+        }
+
+        return settings;
     }
 }

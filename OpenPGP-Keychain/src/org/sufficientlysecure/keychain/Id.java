@@ -62,6 +62,7 @@ public final class Id {
             public static final int import_from_file = 0x21070020;
             public static final int import_from_qr_code = 0x21070021;
             public static final int import_from_nfc = 0x21070022;
+            public static final int crypto_consumers = 0x21070023;
         }
     }
 

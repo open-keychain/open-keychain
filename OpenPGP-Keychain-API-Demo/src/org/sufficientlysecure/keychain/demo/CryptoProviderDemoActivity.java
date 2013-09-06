@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,51 +16,42 @@
 
 package org.sufficientlysecure.keychain.demo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.openintents.crypto.CryptoError;
+import org.openintents.crypto.CryptoServiceConnection;
+import org.openintents.crypto.CryptoSignatureResult;
+import org.openintents.crypto.ICryptoCallback;
+import org.openintents.crypto.ICryptoService;
 import org.sufficientlysecure.keychain.demo.R;
 import org.sufficientlysecure.keychain.integration.Constants;
-import org.sufficientlysecure.keychain.integration.KeychainData;
-import org.sufficientlysecure.keychain.integration.KeychainIntentHelper;
-import org.sufficientlysecure.keychain.service.IKeychainApiService;
-import org.sufficientlysecure.keychain.service.IKeychainKeyService;
-import org.sufficientlysecure.keychain.service.handler.IKeychainDecryptHandler;
-import org.sufficientlysecure.keychain.service.handler.IKeychainEncryptHandler;
-import org.sufficientlysecure.keychain.service.handler.IKeychainGetDecryptionKeyIdHandler;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CryptoProviderDemoActivity extends Activity {
     Activity mActivity;
 
-    TextView mMessageTextView;
-    TextView mCiphertextTextView;
-    TextView mDataTextView;
+    EditText mMessage;
+    EditText mCiphertext;
+    EditText mEncryptUserId;
+    EditText mSignUserId;
 
-    KeychainIntentHelper mKeychainIntentHelper;
-    KeychainData mKeychainData;
-
-    private IKeychainApiService service = null;
-    private ServiceConnection svcConn = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className, IBinder binder) {
-            service = IKeychainApiService.Stub.asInterface(binder);
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            service = null;
-        }
-    };
+    private CryptoServiceConnection mCryptoServiceConnection;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -69,170 +60,208 @@ public class CryptoProviderDemoActivity extends Activity {
 
         mActivity = this;
 
-        mMessageTextView = (TextView) findViewById(R.id.aidl_demo_message);
-        mCiphertextTextView = (TextView) findViewById(R.id.aidl_demo_ciphertext);
-        mDataTextView = (TextView) findViewById(R.id.aidl_demo_data);
+        mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
+        mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
+        mEncryptUserId = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
 
-        mKeychainIntentHelper = new KeychainIntentHelper(mActivity);
-        mKeychainData = new KeychainData();
-
-        bindService(new Intent(IKeychainApiService.class.getName()), svcConn,
-                Context.BIND_AUTO_CREATE);
+        selectCryptoProvider();
     }
 
-    public void registerCryptoProvider(View view) {
-        try {
-            startActivityForResult(Intent.createChooser(new Intent("com.android.crypto.REGISTER"),
-                    "select crypto provider"), 123);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(mActivity, "No app that handles com.android.crypto.REGISTER!",
-                    Toast.LENGTH_LONG).show();
-            Log.e(Constants.TAG, "No app that handles com.android.crypto.REGISTER!");
-        }
-    }
+    /**
+     * Callback from remote crypto service
+     */
+    final ICryptoCallback.Stub encryptCallback = new ICryptoCallback.Stub() {
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 123) {
-            if (resultCode == RESULT_OK) {
-                String packageName = data.getStringExtra("packageName");
-                Log.d(Constants.TAG, "packageName: " + packageName);
-            }
+        @Override
+        public void onSuccess(final byte[] outputBytes, CryptoSignatureResult signatureResult)
+                throws RemoteException {
+            Log.d(Constants.TAG, "onEncryptSignSuccess");
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mCiphertext.setText(new String(outputBytes));
+
+                }
+            });
         }
 
-        // boolean result = mKeychainIntentHelper.onActivityResult(requestCode, resultCode, data,
-        // mKeychainData);
-        // if (result) {
-        // updateView();
-        // }
+        @Override
+        public void onError(CryptoError error) throws RemoteException {
+            Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
+            Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+        }
 
-        // continue with other activity results
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+    };
+
+    final ICryptoCallback.Stub decryptCallback = new ICryptoCallback.Stub() {
+
+        @Override
+        public void onSuccess(final byte[] outputBytes, final CryptoSignatureResult signatureResult)
+                throws RemoteException {
+            Log.d(Constants.TAG, "onDecryptVerifySuccess");
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mMessage.setText(new String(outputBytes) + "\n\n" + signatureResult.toString());
+
+                }
+            });
+
+        }
+
+        @Override
+        public void onError(CryptoError error) throws RemoteException {
+            Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
+            Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+        }
+
+    };
 
     public void encryptOnClick(View view) {
-        byte[] inputBytes = mMessageTextView.getText().toString().getBytes();
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            service.encryptAsymmetric(inputBytes, null, true, 0, mKeychainData.getPublicKeys(), 7,
-                    encryptHandler);
+            mCryptoServiceConnection.getService().encrypt(inputBytes,
+                    new String[] { mEncryptUserId.getText().toString() }, encryptCallback);
         } catch (RemoteException e) {
-            exceptionImplementation(-1, e.toString());
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
+        }
+    }
+
+    public void signOnClick(View view) {
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
+
+        try {
+            mCryptoServiceConnection.getService().sign(inputBytes,
+                    mSignUserId.getText().toString(), encryptCallback);
+        } catch (RemoteException e) {
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
+        }
+    }
+
+    public void encryptAndSignOnClick(View view) {
+        byte[] inputBytes = mMessage.getText().toString().getBytes();
+
+        try {
+            mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
+                    new String[] { mEncryptUserId.getText().toString() },
+                    mSignUserId.getText().toString(), encryptCallback);
+        } catch (RemoteException e) {
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
     public void decryptOnClick(View view) {
-        byte[] inputBytes = mCiphertextTextView.getText().toString().getBytes();
+        byte[] inputBytes = mCiphertext.getText().toString().getBytes();
 
         try {
-            service.decryptAndVerifyAsymmetric(inputBytes, null, null, decryptHandler);
+            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes, decryptCallback);
         } catch (RemoteException e) {
-            exceptionImplementation(-1, e.toString());
+            Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
-    }
-
-    private void updateView() {
-        if (mKeychainData.getDecryptedData() != null) {
-            mMessageTextView.setText(mKeychainData.getDecryptedData());
-        }
-        if (mKeychainData.getEncryptedData() != null) {
-            mCiphertextTextView.setText(mKeychainData.getEncryptedData());
-        }
-        mDataTextView.setText(mKeychainData.toString());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        unbindService(svcConn);
+        if (mCryptoServiceConnection != null) {
+            mCryptoServiceConnection.unbindFromService();
+        }
     }
 
-    private void exceptionImplementation(int exceptionId, String error) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Exception!").setMessage(error).setPositiveButton("OK", null).show();
+    private static class CryptoProviderElement {
+        private String packageName;
+        private String simpleName;
+        private Drawable icon;
+
+        public CryptoProviderElement(String packageName, String simpleName, Drawable icon) {
+            this.packageName = packageName;
+            this.simpleName = simpleName;
+            this.icon = icon;
+        }
+
+        @Override
+        public String toString() {
+            return simpleName;
+        }
     }
 
-    private final IKeychainEncryptHandler.Stub encryptHandler = new IKeychainEncryptHandler.Stub() {
+    private void selectCryptoProvider() {
+        Intent intent = new Intent(ICryptoService.class.getName());
 
-        @Override
-        public void onException(final int exceptionId, final String message) throws RemoteException {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    exceptionImplementation(exceptionId, message);
+        final ArrayList<CryptoProviderElement> providerList = new ArrayList<CryptoProviderElement>();
+
+        List<ResolveInfo> resInfo = getPackageManager().queryIntentServices(intent, 0);
+        if (!resInfo.isEmpty()) {
+            for (ResolveInfo resolveInfo : resInfo) {
+                if (resolveInfo.serviceInfo == null)
+                    continue;
+
+                String packageName = resolveInfo.serviceInfo.packageName;
+                String simpleName = String.valueOf(resolveInfo.serviceInfo
+                        .loadLabel(getPackageManager()));
+                Drawable icon = resolveInfo.serviceInfo.loadIcon(getPackageManager());
+                providerList.add(new CryptoProviderElement(packageName, simpleName, icon));
+            }
+
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Select Crypto Provider!");
+            alert.setCancelable(false);
+
+            if (!providerList.isEmpty()) {
+
+                // Init ArrayAdapter with Crypto Providers
+                ListAdapter adapter = new ArrayAdapter<CryptoProviderElement>(this,
+                        android.R.layout.select_dialog_item, android.R.id.text1, providerList) {
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        // User super class to create the View
+                        View v = super.getView(position, convertView, parent);
+                        TextView tv = (TextView) v.findViewById(android.R.id.text1);
+
+                        // Put the image on the TextView
+                        tv.setCompoundDrawablesWithIntrinsicBounds(providerList.get(position).icon,
+                                null, null, null);
+
+                        // Add margin between image and text (support various screen densities)
+                        int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+                        tv.setCompoundDrawablePadding(dp5);
+
+                        return v;
+                    }
+                };
+
+                alert.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int position) {
+                        String packageName = providerList.get(position).packageName;
+
+                        // bind to service
+                        mCryptoServiceConnection = new CryptoServiceConnection(
+                                CryptoProviderDemoActivity.this, packageName);
+                        mCryptoServiceConnection.bindToService();
+
+                        dialog.dismiss();
+                    }
+                });
+            } else {
+                alert.setMessage("No Crypto Provider installed!");
+            }
+
+            alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    finish();
                 }
             });
+
+            AlertDialog ad = alert.create();
+            ad.show();
         }
-
-        @Override
-        public void onSuccess(final byte[] outputBytes, String outputUri) throws RemoteException {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mKeychainData.setEncryptedData(new String(outputBytes));
-                    updateView();
-                }
-            });
-        }
-
-    };
-
-    private final IKeychainDecryptHandler.Stub decryptHandler = new IKeychainDecryptHandler.Stub() {
-
-        @Override
-        public void onException(final int exceptionId, final String message) throws RemoteException {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    exceptionImplementation(exceptionId, message);
-                }
-            });
-        }
-
-        @Override
-        public void onSuccess(final byte[] outputBytes, String outputUri, boolean signature,
-                long signatureKeyId, String signatureUserId, boolean signatureSuccess,
-                boolean signatureUnknown) throws RemoteException {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    mKeychainData.setDecryptedData(new String(outputBytes));
-                    updateView();
-                }
-            });
-
-        }
-
-    };
-
-    private final IKeychainGetDecryptionKeyIdHandler.Stub helperHandler = new IKeychainGetDecryptionKeyIdHandler.Stub() {
-
-        @Override
-        public void onException(final int exceptionId, final String message) throws RemoteException {
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    exceptionImplementation(exceptionId, message);
-                }
-            });
-        }
-
-        @Override
-        public void onSuccess(long arg0, boolean arg1) throws RemoteException {
-            // TODO Auto-generated method stub
-
-        }
-
-    };
-
-    /**
-     * Selection is done with Intents, not AIDL!
-     * 
-     * @param view
-     */
-    public void selectSecretKeyOnClick(View view) {
-        mKeychainIntentHelper.selectSecretKey();
     }
-
-    public void selectEncryptionKeysOnClick(View view) {
-        mKeychainIntentHelper.selectPublicKeys("user@example.com");
-
-    }
-
 }

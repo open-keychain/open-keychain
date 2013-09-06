@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.crypto;
+package org.openintents.crypto;
 
 import android.os.Parcel;
 import android.os.Parcelable;
