@@ -2,6 +2,8 @@
 
 OpenPGP Keychain is a EXPERIMENTAL fork of Android Privacy Guard (APG)
 
+see http://sufficientlysecure.org/keychain
+
 # Contribute
 
 Fork OpenPGP Keychain and do a merge request. I will merge your changes back into the main project.
