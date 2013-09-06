@@ -76,10 +76,9 @@ public class CryptoService extends Service {
     public IBinder onBind(Intent intent) {
         // return different binder for connections from internal service activity
         if (ACTION_SERVICE_ACTIVITY.equals(intent.getAction())) {
-            String callingPackageName = intent.getPackage();
 
             // this binder can only be used from OpenPGP Keychain
-            if (callingPackageName.equals(Constants.PACKAGE_NAME)) {
+            if (isCallerAllowed(true)) {
                 return mBinderServiceActivity;
             } else {
                 Log.e(Constants.TAG, "This binder can only be used from " + Constants.PACKAGE_NAME);
@@ -150,8 +149,8 @@ public class CryptoService extends Service {
 
                 // start passphrase dialog
                 Bundle extras = new Bundle();
-                extras.putLong(ServiceActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
-                pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
+                extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
+                pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
             }
 
             // if (signedOnly) {
@@ -255,7 +254,7 @@ public class CryptoService extends Service {
         public void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId)
                 throws RemoteException {
             // TODO Auto-generated method stub
-            
+
         }
 
     };
@@ -267,7 +266,7 @@ public class CryptoService extends Service {
 
             if (success) {
                 // resume threads
-                if (isPackageAllowed(packageName)) {
+                if (isPackageAllowed(packageName, false)) {
                     mThreadPool.resume();
                 } else {
                     // TODO: should not happen?
@@ -287,7 +286,7 @@ public class CryptoService extends Service {
     };
 
     private void checkAndEnqueue(Runnable r) {
-        if (isCallerAllowed()) {
+        if (isCallerAllowed(false)) {
             mThreadPool.execute(r);
 
             Log.d(Constants.TAG, "Enqueued runnable…");
@@ -298,8 +297,8 @@ public class CryptoService extends Service {
             Log.e(Constants.TAG, "Not allowed to use service! Starting activity for registration!");
             Bundle extras = new Bundle();
             // TODO: currently simply uses first entry
-            extras.putString(ServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
-            pauseQueueAndStartServiceActivity(ServiceActivity.ACTION_REGISTER, extras);
+            extras.putString(CryptoServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_REGISTER, extras);
 
             mThreadPool.execute(r);
 
@@ -311,16 +310,18 @@ public class CryptoService extends Service {
      * Checks if process that binds to this service (i.e. the package name corresponding to the
      * process) is in the list of allowed package names.
      * 
+     * @param allowOnlySelf
+     *            allow only Keychain app itself
      * @return true if process is allowed to use this service
      */
-    private boolean isCallerAllowed() {
+    private boolean isCallerAllowed(boolean allowOnlySelf) {
         String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
 
         // is calling package allowed to use this service?
         for (int i = 0; i < callingPackages.length; i++) {
             String currentPkg = callingPackages[i];
 
-            if (isPackageAllowed(currentPkg)) {
+            if (isPackageAllowed(currentPkg, allowOnlySelf)) {
                 return true;
             }
         }
@@ -329,14 +330,22 @@ public class CryptoService extends Service {
         return false;
     }
 
-    private boolean isPackageAllowed(String packageName) {
+    /**
+     * Checks if packageName is a registered app for the API.
+     * 
+     * @param packageName
+     * @param allowOnlySelf
+     *            allow only Keychain app itself
+     * @return
+     */
+    private boolean isPackageAllowed(String packageName, boolean allowOnlySelf) {
         Log.d(Constants.TAG, "packageName: " + packageName);
 
-        ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(mContext);
+        ArrayList<String> allowedPkgs = ProviderHelper.getRegisteredApiApps(mContext);
         Log.d(Constants.TAG, "allowed: " + allowedPkgs);
 
         // check if package is allowed to use our service
-        if (allowedPkgs.contains(packageName)) {
+        if (allowedPkgs.contains(packageName) && (!allowOnlySelf)) {
             Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
 
             return true;
@@ -353,7 +362,7 @@ public class CryptoService extends Service {
         mThreadPool.pause();
 
         Log.d(Constants.TAG, "starting activity...");
-        Intent intent = new Intent(getBaseContext(), ServiceActivity.class);
+        Intent intent = new Intent(getBaseContext(), CryptoServiceActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(action);
         if (extras != null) {

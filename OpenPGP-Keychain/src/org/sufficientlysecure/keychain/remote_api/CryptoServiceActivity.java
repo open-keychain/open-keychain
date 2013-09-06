@@ -43,7 +43,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class ServiceActivity extends SherlockFragmentActivity {
+public class CryptoServiceActivity extends SherlockFragmentActivity {
 
     public static final String ACTION_REGISTER = "org.sufficientlysecure.keychain.remote_api.REGISTER";
     public static final String ACTION_CACHE_PASSPHRASE = "org.sufficientlysecure.keychain.remote_api.CRYPTO_CACHE_PASSPHRASE";
@@ -82,7 +82,8 @@ public class ServiceActivity extends SherlockFragmentActivity {
                 Log.d(Constants.TAG, "not bound yet");
 
                 Intent serviceIntent = new Intent();
-                serviceIntent.setAction("org.openintents.crypto.ICryptoService");
+                serviceIntent
+                        .setAction("org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback");
                 bindService(serviceIntent, mServiceActivityConnection, Context.BIND_AUTO_CREATE);
 
                 return true;
@@ -151,11 +152,13 @@ public class ServiceActivity extends SherlockFragmentActivity {
                             // Allow
 
                             if (settingsFragment.getSecretKeyId() == Id.key.none) {
-                                Toast.makeText(ServiceActivity.this,
+                                Toast.makeText(CryptoServiceActivity.this,
                                         R.string.api_register_error_select_key, Toast.LENGTH_LONG)
                                         .show();
                             } else {
-                                ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
+                                ProviderHelper.addCryptoConsumer(CryptoServiceActivity.this,
+                                        packageName, settingsFragment.getSecretKeyId(),
+                                        settingsFragment.isAsciiArmor());
                                 // Intent data = new Intent();
 
                                 try {

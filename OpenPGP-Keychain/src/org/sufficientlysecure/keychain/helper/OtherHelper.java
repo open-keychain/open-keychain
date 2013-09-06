@@ -120,7 +120,7 @@ public class OtherHelper {
     public static void checkPackagePermissionForActions(Activity activity, String pkgName,
             String permName, String action, String[] restrictedActions) {
         if (action != null) {
-            PackageManager pkgManager = activity.getPackageManager();
+//            PackageManager pkgManager = activity.getPackageManager();
 
 //            for (int i = 0; i < restrictedActions.length; i++) {
 //                if (restrictedActions[i].equals(action)) {

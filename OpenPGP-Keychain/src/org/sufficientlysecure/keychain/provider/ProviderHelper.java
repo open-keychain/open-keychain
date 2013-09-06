@@ -718,9 +718,9 @@ public class ProviderHelper {
         return cursor;
     }
 
-    public static ArrayList<String> getCryptoConsumers(Context context) {
-        Cursor cursor = context.getContentResolver().query(ApiApps.CONTENT_URI, null, null,
-                null, null);
+    public static ArrayList<String> getRegisteredApiApps(Context context) {
+        Cursor cursor = context.getContentResolver().query(ApiApps.CONTENT_URI, null, null, null,
+                null);
 
         ArrayList<String> packageNames = new ArrayList<String>();
         if (cursor != null) {
@@ -739,9 +739,12 @@ public class ProviderHelper {
         return packageNames;
     }
 
-    public static void addCryptoConsumer(Context context, String packageName) {
+    public static void addCryptoConsumer(Context context, String packageName, long keyId,
+            boolean asciiArmor) {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, packageName);
+        values.put(ApiApps.KEY_ID, keyId);
+        values.put(ApiApps.ASCII_ARMOR, asciiArmor);
         context.getContentResolver().insert(ApiApps.CONTENT_URI, values);
     }
 }

@@ -63,7 +63,6 @@ public class CryptoProviderDemoActivity extends Activity {
         mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
         mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
         mEncryptUserId = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
-        mSignUserId = (EditText) findViewById(R.id.crypto_provider_demo_sign_user_id);
 
         selectCryptoProvider();
     }
@@ -88,7 +87,7 @@ public class CryptoProviderDemoActivity extends Activity {
         }
 
     };
-    
+
     final ICryptoCallback.Stub decryptCallback = new ICryptoCallback.Stub() {
 
         @Override

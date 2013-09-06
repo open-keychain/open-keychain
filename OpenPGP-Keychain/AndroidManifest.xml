@@ -470,7 +470,7 @@
         <!-- Remote API internal intents -->
 
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.ServiceActivity"
+            android:name="org.sufficientlysecure.keychain.remote_api.CryptoServiceActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:process=":crypto" >
