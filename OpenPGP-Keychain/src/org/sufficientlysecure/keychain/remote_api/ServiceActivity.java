@@ -16,8 +16,6 @@
 
 package org.sufficientlysecure.keychain.remote_api;
 
-import java.util.ArrayList;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote_api.IServiceActivityCallback;
@@ -26,6 +24,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.content.ComponentName;
@@ -38,10 +37,10 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class ServiceActivity extends SherlockFragmentActivity {
 
@@ -133,7 +132,62 @@ public class ServiceActivity extends SherlockFragmentActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
+            // BEGIN_INCLUDE (inflate_set_custom_view)
+            // Inflate a "Done"/"Cancel" custom action bar view
+            final LayoutInflater inflater = (LayoutInflater) getSupportActionBar()
+                    .getThemedContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+            final View customActionBarView = inflater.inflate(
+                    R.layout.actionbar_custom_view_done_cancel, null);
+
+            ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
+                    .setText(R.string.api_register_allow);
+            customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Allow
+                            ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
+                            // Intent data = new Intent();
+
+                            try {
+                                mServiceCallback.onRegistered(true, packageName);
+                            } catch (RemoteException e) {
+                                Log.e(Constants.TAG, "ServiceActivity");
+                            }
+                            finish();
+                        }
+                    });
+            ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
+                    .setText(R.string.api_register_disallow);
+            customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Disallow
+                            try {
+                                mServiceCallback.onRegistered(false, packageName);
+                            } catch (RemoteException e) {
+                                Log.e(Constants.TAG, "ServiceActivity");
+                            }
+                            finish();
+                        }
+                    });
+
+            // Show the custom action bar view and hide the normal Home icon and title.
+            final ActionBar actionBar = getSupportActionBar();
+            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
+                    ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
+                            | ActionBar.DISPLAY_SHOW_TITLE);
+            actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            // END_INCLUDE (inflate_set_custom_view)
+
             setContentView(R.layout.api_app_register_activity);
+
+            AppSettingsFragment settingsFragment = (AppSettingsFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.api_app_settings_fragment);
+            
+            settingsFragment.setPackage(packageName);
 
             // TODO: handle if app is already registered
             // LinearLayout layoutRegister = (LinearLayout)
@@ -152,37 +206,6 @@ public class ServiceActivity extends SherlockFragmentActivity {
             // layoutEdit.setVisibility(View.GONE);
             // }
 
-            Button allowButton = (Button) findViewById(R.id.api_register_allow);
-            Button disallowButton = (Button) findViewById(R.id.api_register_disallow);
-
-            allowButton.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
-                    // Intent data = new Intent();
-
-                    try {
-                        mServiceCallback.onRegistered(true, packageName);
-                    } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity");
-                    }
-                    finish();
-                }
-            });
-
-            disallowButton.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    try {
-                        mServiceCallback.onRegistered(false, packageName);
-                    } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity");
-                    }
-                    finish();
-                }
-            });
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
 

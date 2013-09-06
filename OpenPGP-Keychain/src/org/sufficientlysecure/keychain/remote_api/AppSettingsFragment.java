@@ -1,10 +1,21 @@
 package org.sufficientlysecure.keychain.remote_api;
 
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.PgpHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyActivity;
+import org.sufficientlysecure.keychain.util.Log;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,29 +25,72 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class AppSettingsFragment extends Fragment {
 
-    private LinearLayout advancedSettingsContainer;
-    private Button advancedSettingsButton;
+    // model
+    private long mSecretKeyId = Id.key.none;
+
+    // view
+    private LinearLayout mAdvancedSettingsContainer;
+    private Button mAdvancedSettingsButton;
+    private TextView mAppNameView;
+    private ImageView mAppIconView;
+    private TextView mKeyUserId;
+    private TextView mKeyUserIdRest;
+    private Button mSelectKeyButton;
+    private CheckBox mAsciiArmorCheckBox;
+
+    public void setSecretKey(long keyId) {
+        mSecretKeyId = keyId;
+        updateSelectedKeyView(keyId);
+    }
+
+    public long getSecretKeyId() {
+        return mSecretKeyId;
+    }
+
+    public void setAsciiArmor(boolean value) {
+        mAsciiArmorCheckBox.setChecked(value);
+    }
+
+    public boolean isAsciiArmor() {
+        return mAsciiArmorCheckBox.isChecked();
+    }
 
     /**
      * Inflate the layout for this fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.api_app_settings_fragment, container, false);
+        View view = inflater.inflate(R.layout.api_app_settings_fragment, container, false);
+        initView(view);
+        return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    private void initView(View view) {
+        mAdvancedSettingsButton = (Button) view.findViewById(R.id.api_app_settings_advanced_button);
+        mAdvancedSettingsContainer = (LinearLayout) view
+                .findViewById(R.id.api_app_settings_advanced);
 
-        advancedSettingsButton = (Button) getActivity().findViewById(
-                R.id.api_app_settings_advanced_button);
-        advancedSettingsContainer = (LinearLayout) getActivity().findViewById(
-                R.id.api_app_settings_advanced);
+        mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
+        mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
+        mKeyUserId = (TextView) view.findViewById(R.id.api_app_settings_user_id);
+        mKeyUserIdRest = (TextView) view.findViewById(R.id.api_app_settings_user_id_rest);
+        mSelectKeyButton = (Button) view.findViewById(R.id.api_app_settings_select_key_button);
+        mAsciiArmorCheckBox = (CheckBox) view.findViewById(R.id.api_app_ascii_armor);
+
+        mSelectKeyButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                selectSecretKey();
+            }
+        });
 
         final Animation visibleAnimation = new AlphaAnimation(0.0f, 1.0f);
         visibleAnimation.setDuration(250);
@@ -49,21 +103,102 @@ public class AppSettingsFragment extends Fragment {
         // Animation.RELATIVE_TO_SELF, 0.0f);
         // animation2.setDuration(150);
 
-        advancedSettingsButton.setOnClickListener(new OnClickListener() {
+        mAdvancedSettingsButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                if (advancedSettingsContainer.getVisibility() == View.VISIBLE) {
-                    advancedSettingsContainer.startAnimation(invisibleAnimation);
-                    advancedSettingsContainer.setVisibility(View.INVISIBLE);
-                    advancedSettingsButton.setText(R.string.api_settings_show_advanced);
+                if (mAdvancedSettingsContainer.getVisibility() == View.VISIBLE) {
+                    mAdvancedSettingsContainer.startAnimation(invisibleAnimation);
+                    mAdvancedSettingsContainer.setVisibility(View.INVISIBLE);
+                    mAdvancedSettingsButton.setText(R.string.api_settings_show_advanced);
                 } else {
-                    advancedSettingsContainer.startAnimation(visibleAnimation);
-                    advancedSettingsContainer.setVisibility(View.VISIBLE);
-                    advancedSettingsButton.setText(R.string.api_settings_hide_advanced);
+                    mAdvancedSettingsContainer.startAnimation(visibleAnimation);
+                    mAdvancedSettingsContainer.setVisibility(View.VISIBLE);
+                    mAdvancedSettingsButton.setText(R.string.api_settings_hide_advanced);
                 }
             }
         });
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+    }
+
+    private void selectSecretKey() {
+        Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
+        startActivityForResult(intent, Id.request.secret_keys);
+    }
+
+    public void setPackage(String packageName) {
+        PackageManager pm = getActivity().getApplicationContext().getPackageManager();
+
+        // get application name and icon from package manager
+        String appName = null;
+        Drawable appIcon = null;
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+
+            appName = (String) pm.getApplicationLabel(ai);
+            appIcon = pm.getApplicationIcon(ai);
+        } catch (final NameNotFoundException e) {
+            // fallback
+            appName = packageName;
+        }
+        mAppNameView.setText(appName);
+        mAppIconView.setImageDrawable(appIcon);
+    }
+
+    private void updateSelectedKeyView(long secretKeyId) {
+        if (secretKeyId == Id.key.none) {
+            mKeyUserId.setText(R.string.api_settings_no_key);
+            mKeyUserIdRest.setText("");
+        } else {
+            String uid = getResources().getString(R.string.unknownUserId);
+            String uidExtra = "";
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
+                    getActivity(), secretKeyId);
+            if (keyRing != null) {
+                PGPSecretKey key = PgpHelper.getMasterKey(keyRing);
+                if (key != null) {
+                    String userId = PgpHelper.getMainUserIdSafe(getActivity(), key);
+                    String chunks[] = userId.split(" <", 2);
+                    uid = chunks[0];
+                    if (chunks.length > 1) {
+                        uidExtra = "<" + chunks[1];
+                    }
+                }
+            }
+            mKeyUserId.setText(uid);
+            mKeyUserIdRest.setText(uidExtra);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(Constants.TAG, "onactivityresult     " + requestCode + "   " + resultCode);
+        switch (requestCode) {
+
+        case Id.request.secret_keys: {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
+                Log.d(Constants.TAG, "jo " + mSecretKeyId);
+
+            } else {
+                mSecretKeyId = Id.key.none;
+            }
+            updateSelectedKeyView(mSecretKeyId);
+            break;
+        }
+
+        default: {
+            break;
+        }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

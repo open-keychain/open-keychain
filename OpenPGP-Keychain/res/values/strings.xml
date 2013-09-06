@@ -369,7 +369,7 @@
     <string name="api_settings_save">Save</string>
     <string name="api_settings_cancel">Cancel</string>
     <string name="api_settings_revoke">Revoke access</string>
-    <string name="api_register_text">%1$s (%2$s) requests access to OpenPGP Keychain\'s API.\n\nAllow permanent access?</string>
+    <string name="api_register_text">The following application requests access to OpenPGP Keychain\'s API.\n\nAllow permanent access?</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
 

@@ -462,7 +462,7 @@
         <activity
             android:name="org.sufficientlysecure.keychain.remote_api.ServiceActivity"
             android:exported="false"
-            android:label="TODO crypto activity"
+            android:label="@string/app_name"
             android:process=":crypto" >
 
             <!-- Don't publish intents, they are only used internally! -->
