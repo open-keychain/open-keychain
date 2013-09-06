@@ -788,7 +788,6 @@ public class PgpMain {
         }
         updateProgress(progress, R.string.progress_preparingStreams, 5, 100);
 
-        Log.d(Constants.TAG, "as"+symmetricEncryptionAlgorithm);
         // encrypt and compress input file content
         JcePGPDataEncryptorBuilder encryptorBuilder = new JcePGPDataEncryptorBuilder(
                 symmetricEncryptionAlgorithm).setProvider(BOUNCY_CASTLE_PROVIDER_NAME)

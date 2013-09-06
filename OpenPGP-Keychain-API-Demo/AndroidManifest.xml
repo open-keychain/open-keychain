@@ -12,7 +12,7 @@
         android:targetSdkVersion="14" />
 
     <application
-        android:icon="@drawable/icon"
+        android:icon="@drawable/ic_launcher"
         android:label="OpenPGP Keychain API Demo" >
         <activity
             android:name=".BaseActivity"
