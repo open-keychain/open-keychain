@@ -28,6 +28,10 @@ import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
@@ -48,12 +52,41 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.select_public_key_activity);
+        // Inflate a "Done"/"Cancel" custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_custom_view_done_cancel, null);
 
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
+                .setText(R.string.btn_okay);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // ok
+                        okClicked();
+                    }
+                });
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
+                .setText(R.string.btn_doNotSave);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // cancel
+                        cancelClicked();
+                    }
+                });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
+                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        setContentView(R.layout.select_public_key_activity);
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
@@ -124,41 +157,4 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         finish();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO: reimplement!
-        // menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
-        // android.R.drawable.ic_menu_search);
-        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.okay, 1, R.string.btn_okay).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        return true;
-    }
-
-    /**
-     * Menu Options
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
-        case Id.menu.option.okay:
-            okClicked();
-            return true;
-
-        case Id.menu.option.cancel:
-            cancelClicked();
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
 }

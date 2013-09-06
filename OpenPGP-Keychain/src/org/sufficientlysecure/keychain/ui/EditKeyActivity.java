@@ -17,10 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
@@ -35,12 +40,6 @@ import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -51,18 +50,18 @@ import android.os.Message;
 import android.os.Messenger;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class EditKeyActivity extends SherlockFragmentActivity {
 
@@ -104,41 +103,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private boolean mBuildLayout = true;
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.cancel, 0, R.string.btn_doNotSave).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.save, 1, R.string.btn_save).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, KeyListSecretActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
-        case Id.menu.option.save:
-            saveClicked();
-            return true;
-
-        case Id.menu.option.cancel:
-            cancelClicked();
-            return true;
-
-        default:
-            break;
-
-        }
-        return false;
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -147,6 +111,40 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         // String[] restrictedActions = new String[] { ACTION_CREATE_KEY };
         // OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
         // Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
+
+        // Inflate a "Done"/"Cancel" custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_custom_view_done_cancel, null);
+
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
+                .setText(R.string.btn_save);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // save
+                        saveClicked();
+                    }
+                });
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
+                .setText(R.string.btn_doNotSave);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // cancel
+                        cancelClicked();
+                    }
+                });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
+                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         setContentView(R.layout.edit_key);
 

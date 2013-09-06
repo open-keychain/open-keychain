@@ -18,16 +18,10 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.Vector;
 
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.ui.widget.Editor;
-import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
-import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import org.sufficientlysecure.keychain.ui.widget.Editor;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
+import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +31,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 
 public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
         EditorListener {
@@ -50,59 +47,44 @@ public class PreferencesKeyServerActivity extends SherlockActivity implements On
     private TextView mSummary;
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, PreferencesActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-
-            return true;
-
-        case Id.menu.option.okay:
-            okClicked();
-
-            return true;
-
-        case Id.menu.option.cancel:
-            cancelClicked();
-
-            return true;
-
-        default:
-            break;
-
-        }
-        return false;
-    }
-
-    /**
-     * ActionBar menu is created based on class variables to change it at runtime
-     * 
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        menu.add(1, Id.menu.option.cancel, 0, android.R.string.cancel).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
-        menu.add(1, Id.menu.option.okay, 1, android.R.string.ok).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
-        return true;
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.key_server_preference);
 
+        // Inflate a "Done"/"Cancel" custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_custom_view_done_cancel, null);
+
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
+                .setText(R.string.btn_okay);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // ok
+                        okClicked();
+                    }
+                });
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
+                .setText(R.string.btn_doNotSave);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // cancel
+                        cancelClicked();
+                    }
+                });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
+                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        setContentView(R.layout.key_server_preference);
 
         mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
