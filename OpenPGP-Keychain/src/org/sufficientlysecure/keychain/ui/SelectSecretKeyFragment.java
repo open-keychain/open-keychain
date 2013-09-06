@@ -20,26 +20,26 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.Date;
 
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.widget.SelectKeyCursorAdapter;
-import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockListFragment;
 
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.app.LoaderManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockListFragment;
 
 public class SelectSecretKeyFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
