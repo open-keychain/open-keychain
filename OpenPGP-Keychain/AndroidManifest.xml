@@ -67,24 +67,27 @@
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="com.fsck.k9.permission.READ_ATTACHMENT" />
 
-    <permission-group
-        android:name="org.sufficientlysecure.keychain.permission-group.keychain"
-        android:description="@string/permission_group_description"
-        android:icon="@drawable/icon"
-        android:label="@string/permission_group_label" />
+    <!-- TODO: disabled, old API -->
+    <!-- <permission-group -->
+    <!-- android:name="org.sufficientlysecure.keychain.permission-group.keychain" -->
+    <!-- android:description="@string/permission_group_description" -->
+    <!-- android:icon="@drawable/icon" -->
+    <!-- android:label="@string/permission_group_label" /> -->
 
-    <permission
-        android:name="org.sufficientlysecure.keychain.permission.ACCESS_KEYS"
-        android:description="@string/permission_access_keys_description"
-        android:label="@string/permission_access_keys_label"
-        android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain"
-        android:protectionLevel="dangerous" />
-    <permission
-        android:name="org.sufficientlysecure.keychain.permission.ACCESS_API"
-        android:description="@string/permission_access_api_description"
-        android:label="@string/permission_access_api_label"
-        android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain"
-        android:protectionLevel="dangerous" />
+
+    <!-- <permission -->
+    <!-- android:name="org.sufficientlysecure.keychain.permission.ACCESS_KEYS" -->
+    <!-- android:description="@string/permission_access_keys_description" -->
+    <!-- android:label="@string/permission_access_keys_label" -->
+    <!-- android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain" -->
+    <!-- android:protectionLevel="dangerous" /> -->
+    <!-- <permission -->
+    <!-- android:name="org.sufficientlysecure.keychain.permission.ACCESS_API" -->
+    <!-- android:description="@string/permission_access_api_description" -->
+    <!-- android:label="@string/permission_access_api_label" -->
+    <!-- android:permissionGroup="org.sufficientlysecure.keychain.permission-group.keychain" -->
+    <!-- android:protectionLevel="dangerous" /> -->
+
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
@@ -412,50 +415,57 @@
             android:exported="false"
             android:process=":passphrase_cache" />
         <service android:name="org.sufficientlysecure.keychain.service.KeychainIntentService" />
-        <service
-            android:name="org.sufficientlysecure.keychain.service.KeychainApiService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API"
-            android:process=":remoteapi" >
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.IKeychainApiService" />
-            </intent-filter>
 
-            <meta-data
-                android:name="api_version"
-                android:value="3" />
-        </service>
-        <service
-            android:name="org.sufficientlysecure.keychain.service.KeychainKeyService"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="org.sufficientlysecure.keychain.permission.ACCESS_KEYS"
-            android:process=":remotekeys" >
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.IKeychainKeyService" />
-            </intent-filter>
+        <!-- TODO: disabled, old API! -->
+        <!-- <service -->
+        <!-- android:name="org.sufficientlysecure.keychain.service.KeychainApiService" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true" -->
+        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" -->
+        <!-- android:process=":remoteapi" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="org.sufficientlysecure.keychain.service.IKeychainApiService" /> -->
+        <!-- </intent-filter> -->
 
-            <meta-data
-                android:name="api_version"
-                android:value="3" />
-        </service>
+
+        <!-- <meta-data -->
+        <!-- android:name="api_version" -->
+        <!-- android:value="3" /> -->
+        <!-- </service> -->
+        <!-- <service -->
+        <!-- android:name="org.sufficientlysecure.keychain.service.KeychainKeyService" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true" -->
+        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_KEYS" -->
+        <!-- android:process=":remotekeys" > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="org.sufficientlysecure.keychain.service.IKeychainKeyService" /> -->
+        <!-- </intent-filter> -->
+
+
+        <!-- <meta-data -->
+        <!-- android:name="api_version" -->
+        <!-- android:value="3" /> -->
+        <!-- </service> -->
 
         <provider
             android:name="org.sufficientlysecure.keychain.provider.KeychainProviderInternal"
             android:authorities="org.sufficientlysecure.keychain.internal"
             android:exported="false" />
-        <provider
-            android:name="org.sufficientlysecure.keychain.provider.KeychainProviderExternal"
-            android:authorities="org.sufficientlysecure.keychain"
-            android:exported="true"
-            android:readPermission="org.sufficientlysecure.keychain.permission.ACCESS_API" />
+        <!-- TODO: disabled, old API -->
+        <!-- <provider -->
+        <!-- android:name="org.sufficientlysecure.keychain.provider.KeychainProviderExternal" -->
+        <!-- android:authorities="org.sufficientlysecure.keychain" -->
+        <!-- android:exported="true" -->
+        <!-- android:readPermission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
+
 
         <!-- TODO: authority! -->
-        <provider
-            android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider"
-            android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider"
-            android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" />
+        <!-- <provider -->
+        <!-- android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider" -->
+        <!-- android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider" -->
+        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
+
 
         <!-- Remote API internal intents -->
 
@@ -486,6 +496,8 @@
             android:process=":crypto" >
             <intent-filter>
                 <action android:name="org.openintents.crypto.ICryptoService" />
+            </intent-filter>
+            <intent-filter>
 
                 <!-- Can only be used from OpenPGP Keychain (internal): -->
                 <action android:name="org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback" />

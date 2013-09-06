@@ -4,8 +4,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,7 +15,8 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockListFragment;
 
 public class RegisteredAppsListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -37,8 +36,7 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // edit app settings
                 Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                intent.setData(ContentUris.withAppendedId(
-                        KeychainContract.ApiApps.CONTENT_URI, id));
+                intent.setData(ContentUris.withAppendedId(KeychainContract.ApiApps.CONTENT_URI, id));
                 startActivity(intent);
             }
         });

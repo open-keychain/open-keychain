@@ -973,10 +973,12 @@ public class KeychainProvider extends ContentProvider {
      * updated, or deleted
      */
     private void sendBroadcastDatabaseChange(int keyType, String contentItemType) {
-        Intent intent = new Intent();
-        intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
-        intent.putExtra(EXTRA_BROADCAST_KEY_TYPE, keyType);
-        intent.putExtra(EXTRA_BROADCAST_CONTENT_ITEM_TYPE, contentItemType);
-        getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
+        // TODO: Disabled, old API
+        // Intent intent = new Intent();
+        // intent.setAction(ACTION_BROADCAST_DATABASE_CHANGE);
+        // intent.putExtra(EXTRA_BROADCAST_KEY_TYPE, keyType);
+        // intent.putExtra(EXTRA_BROADCAST_CONTENT_ITEM_TYPE, contentItemType);
+        //
+        // getContext().sendBroadcast(intent, Constants.PERMISSION_ACCESS_API);
     }
 }
