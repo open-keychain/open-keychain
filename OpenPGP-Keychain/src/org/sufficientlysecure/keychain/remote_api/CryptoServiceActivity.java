@@ -151,15 +151,14 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         public void onClick(View v) {
                             // Allow
 
-                            if (settingsFragment.getSecretKeyId() == Id.key.none) {
+                            // user needs to select a key!
+                            if (settingsFragment.getAppSettings().getKeyId() == Id.key.none) {
                                 Toast.makeText(CryptoServiceActivity.this,
                                         R.string.api_register_error_select_key, Toast.LENGTH_LONG)
                                         .show();
                             } else {
-                                ProviderHelper.addCryptoConsumer(CryptoServiceActivity.this,
-                                        packageName, settingsFragment.getSecretKeyId(),
-                                        settingsFragment.isAsciiArmor());
-                                // Intent data = new Intent();
+                                ProviderHelper.insertApiApp(CryptoServiceActivity.this,
+                                        settingsFragment.getAppSettings());
 
                                 try {
                                     mServiceCallback.onRegistered(true, packageName);
@@ -199,7 +198,9 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             settingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_app_settings_fragment);
 
-            settingsFragment.setPackage(packageName);
+            AppSettings settings = new AppSettings(packageName);
+            settingsFragment.setAppSettings(settings);
+            
 
             // TODO: handle if app is already registered
             // LinearLayout layoutRegister = (LinearLayout)

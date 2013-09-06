@@ -26,6 +26,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,7 +35,7 @@ import android.widget.TextView;
 public class AppSettingsFragment extends Fragment {
 
     // model
-    private long mSecretKeyId = Id.key.none;
+    private AppSettings appSettings;
 
     // view
     private LinearLayout mAdvancedSettingsContainer;
@@ -45,21 +47,15 @@ public class AppSettingsFragment extends Fragment {
     private Button mSelectKeyButton;
     private CheckBox mAsciiArmorCheckBox;
 
-    public void setSecretKey(long keyId) {
-        mSecretKeyId = keyId;
-        updateSelectedKeyView(keyId);
+    public AppSettings getAppSettings() {
+        return appSettings;
     }
 
-    public long getSecretKeyId() {
-        return mSecretKeyId;
-    }
-
-    public void setAsciiArmor(boolean value) {
-        mAsciiArmorCheckBox.setChecked(value);
-    }
-
-    public boolean isAsciiArmor() {
-        return mAsciiArmorCheckBox.isChecked();
+    public void setAppSettings(AppSettings appSettings) {
+        this.appSettings = appSettings;
+        setPackage(appSettings.getPackageName());
+        updateSelectedKeyView(appSettings.getKeyId());
+        mAsciiArmorCheckBox.setChecked(appSettings.isAsciiArmor());
     }
 
     /**
@@ -89,6 +85,14 @@ public class AppSettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 selectSecretKey();
+            }
+        });
+
+        mAsciiArmorCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                appSettings.setAsciiArmor(isChecked);
             }
         });
 
@@ -123,7 +127,6 @@ public class AppSettingsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 
     private void selectSecretKey() {
@@ -131,7 +134,7 @@ public class AppSettingsFragment extends Fragment {
         startActivityForResult(intent, Id.request.secret_keys);
     }
 
-    public void setPackage(String packageName) {
+    private void setPackage(String packageName) {
         PackageManager pm = getActivity().getApplicationContext().getPackageManager();
 
         // get application name and icon from package manager
@@ -181,15 +184,16 @@ public class AppSettingsFragment extends Fragment {
         switch (requestCode) {
 
         case Id.request.secret_keys: {
+            long secretKeyId;
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
-                mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
-                Log.d(Constants.TAG, "jo " + mSecretKeyId);
+                secretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
 
             } else {
-                mSecretKeyId = Id.key.none;
+                secretKeyId = Id.key.none;
             }
-            updateSelectedKeyView(mSecretKeyId);
+            appSettings.setKeyId(secretKeyId);
+            updateSelectedKeyView(secretKeyId);
             break;
         }
 

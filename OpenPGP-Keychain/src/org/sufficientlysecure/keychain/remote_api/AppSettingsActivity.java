@@ -2,12 +2,10 @@ package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,9 +18,7 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class AppSettingsActivity extends SherlockFragmentActivity {
-    // model
     private Uri mAppUri;
-    private String mPackageName;
 
     private AppSettingsFragment settingsFragment;
 
@@ -91,26 +87,8 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     }
 
     private void loadData(Uri appUri) {
-        Cursor cur = getContentResolver().query(appUri, null, null, null, null);
-        if (cur.moveToFirst()) {
-            mPackageName = cur.getString(cur.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME));
-
-            settingsFragment.setPackage(mPackageName);
-
-            try {
-                long secretKeyId = (cur.getLong(cur
-                        .getColumnIndexOrThrow(KeychainContract.ApiApps.KEY_ID)));
-                Log.d(Constants.TAG, "mSecretKeyId: " + secretKeyId);
-                settingsFragment.setSecretKey(secretKeyId);
-
-                boolean asciiArmor = (cur.getInt(cur
-                        .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
-                settingsFragment.setAsciiArmor(asciiArmor);
-
-            } catch (IllegalArgumentException e) {
-                Log.e(Constants.TAG, "AppSettingsActivity", e);
-            }
-        }
+        AppSettings settings = ProviderHelper.getApiAppSettings(this, appUri);
+        settingsFragment.setAppSettings(settings);
     }
 
     private void revokeAccess() {
@@ -121,15 +99,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     }
 
     private void save() {
-        final ContentValues cv = new ContentValues();
-        cv.put(KeychainContract.ApiApps.KEY_ID, settingsFragment.getSecretKeyId());
-
-        cv.put(KeychainContract.ApiApps.ASCII_ARMOR, settingsFragment.isAsciiArmor());
-        // TODO: other parameters
-
-        if (getContentResolver().update(mAppUri, cv, null, null) <= 0) {
-            throw new RuntimeException();
-        }
+        ProviderHelper.updateApiApp(this, settingsFragment.getAppSettings(), mAppUri);
 
         finish();
     }
