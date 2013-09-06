@@ -1798,7 +1798,7 @@ public class PgpMain {
     }
 
     public static String getFullVersion(Context context) {
-        return "APG v" + getVersion(context);
+        return "OpenPGP Keychain v" + getVersion(context);
     }
 
     /**

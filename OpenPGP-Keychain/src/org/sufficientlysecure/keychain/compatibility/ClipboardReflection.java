@@ -24,7 +24,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class ClipboardReflection {
 
-    private static final String clipboardLabel = "APG";
+    private static final String clipboardLabel = "Keychain";
 
     /**
      * Wrapper around ClipboardManager based on Android version using Reflection API
