@@ -28,6 +28,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class RegisteredAppsAdapter extends CursorAdapter {
@@ -44,28 +45,31 @@ public class RegisteredAppsAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView text1 = (TextView) view.findViewById(android.R.id.text1);
-        TextView text2 = (TextView) view.findViewById(android.R.id.text2);
+        TextView text = (TextView) view.findViewById(R.id.api_apps_adapter_item_name);
+        ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
 
         String packageName = cursor.getString(cursor.getColumnIndex(ApiApps.PACKAGE_NAME));
         if (packageName != null) {
-            text2.setText(packageName);
-
             // get application name
             try {
                 ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
 
-                text1.setText(pm.getApplicationLabel(ai));
+                text.setText(pm.getApplicationLabel(ai));
+                icon.setImageDrawable(pm.getApplicationIcon(ai));
             } catch (final NameNotFoundException e) {
-                text1.setText(R.string.api_unknown_app);
+                // fallback
+                text.setText(packageName);
             }
+        } else {
+            // fallback
+            text.setText(packageName);
         }
 
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(android.R.layout.simple_list_item_2, null);
+        return mInflater.inflate(R.layout.api_apps_adapter_list_item, null);
     }
 
 }

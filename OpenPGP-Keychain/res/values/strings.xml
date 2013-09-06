@@ -362,7 +362,6 @@
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!</string>
-    <string name="api_unknown_app">Unknown app</string>
     <string name="api_settings_show_advanced">Show advanced settings…</string>
     <string name="api_settings_hide_advanced">Hide advanced settings…</string>
     <string name="api_settings_no_key">No key selected</string>

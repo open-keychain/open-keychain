@@ -145,7 +145,8 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
                 appName = (String) pm.getApplicationLabel(ai);
                 appIcon = pm.getApplicationIcon(ai);
             } catch (final NameNotFoundException e) {
-                appName = getString(R.string.api_unknown_app);
+                // fallback
+                appName = mPackageName;
             }
             appNameView.setText(appName);
             appIconView.setImageDrawable(appIcon);
