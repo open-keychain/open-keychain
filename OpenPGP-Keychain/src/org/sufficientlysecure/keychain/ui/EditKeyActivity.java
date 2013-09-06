@@ -142,10 +142,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: disabled, old API!
         // check permissions for intent actions without user interaction
-        String[] restrictedActions = new String[] { ACTION_CREATE_KEY };
-        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
-                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
+        // String[] restrictedActions = new String[] { ACTION_CREATE_KEY };
+        // OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
+        // Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
 
         setContentView(R.layout.edit_key);
 

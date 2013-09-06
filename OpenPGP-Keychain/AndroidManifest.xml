@@ -135,16 +135,19 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable_secret_keys" />
         </activity>
+
+        <!-- todo: export disabled, old API -->
         <activity
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:exported="false"
             android:label="@string/title_editKey"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
+
+            <!-- TODO: disabled: old api! -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.EDIT_KEYRING" />
-
-                <!-- With permission ACCESS_API: -->
                 <action android:name="org.sufficientlysecure.keychain.action.CREATE_KEYRING" />
 
                 <category android:name="android.intent.category.DEFAULT" />
