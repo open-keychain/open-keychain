@@ -49,7 +49,6 @@ public class CryptoProviderDemoActivity extends Activity {
     EditText mMessage;
     EditText mCiphertext;
     EditText mEncryptUserId;
-    EditText mSignUserId;
 
     private CryptoServiceConnection mCryptoServiceConnection;
 
@@ -136,8 +135,7 @@ public class CryptoProviderDemoActivity extends Activity {
         byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().sign(inputBytes,
-                    mSignUserId.getText().toString(), encryptCallback);
+            mCryptoServiceConnection.getService().sign(inputBytes, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -148,8 +146,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
-                    new String[] { mEncryptUserId.getText().toString() },
-                    mSignUserId.getText().toString(), encryptCallback);
+                    new String[] { mEncryptUserId.getText().toString() }, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }

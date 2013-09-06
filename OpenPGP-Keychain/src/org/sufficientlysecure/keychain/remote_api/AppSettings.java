@@ -23,9 +23,9 @@ public class AppSettings {
     private String packageName;
     private long keyId = Id.key.none;
     private boolean asciiArmor;
-    private int encryptionAlgorithm = 7; // AES-128
-    private int hashAlgorithm = 10; // SHA-512
-    private int compression = 2; // zlib
+    private int encryptionAlgorithm;
+    private int hashAlgorithm;
+    private int compression;
 
     public AppSettings() {
 
@@ -34,6 +34,11 @@ public class AppSettings {
     public AppSettings(String packageName) {
         super();
         this.packageName = packageName;
+        // defaults:
+        this.asciiArmor = true;
+        this.encryptionAlgorithm = 7; // AES-128
+        this.hashAlgorithm = 10; // SHA-512
+        this.compression = 2; // zlib
     }
 
     public String getPackageName() {
