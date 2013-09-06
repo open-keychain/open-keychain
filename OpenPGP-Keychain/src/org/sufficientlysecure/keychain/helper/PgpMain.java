@@ -735,13 +735,14 @@ public class PgpMain {
      */
     public static void encryptAndSign(Context context, ProgressDialogUpdater progress,
             InputData data, OutputStream outStream, boolean useAsciiArmor, int compression,
-            long encryptionKeyIds[], String encryptionPassphrase, int symmetricEncryptionAlgorithm,
-            long signatureKeyId, int signatureHashAlgorithm, boolean signatureForceV3,
-            String signaturePassphrase) throws IOException, PgpGeneralException, PGPException,
-            NoSuchProviderException, NoSuchAlgorithmException, SignatureException {
+            ArrayList<Long> encryptionKeyIds, String encryptionPassphrase,
+            int symmetricEncryptionAlgorithm, long signatureKeyId, int signatureHashAlgorithm,
+            boolean signatureForceV3, String signaturePassphrase) throws IOException,
+            PgpGeneralException, PGPException, NoSuchProviderException, NoSuchAlgorithmException,
+            SignatureException {
 
         if (encryptionKeyIds == null) {
-            encryptionKeyIds = new long[0];
+            encryptionKeyIds = new ArrayList<Long>();
         }
 
         ArmoredOutputStream armorOut = null;
@@ -758,7 +759,7 @@ public class PgpMain {
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
 
-        if (encryptionKeyIds.length == 0 && encryptionPassphrase == null) {
+        if (encryptionKeyIds.size() == 0 && encryptionPassphrase == null) {
             throw new PgpGeneralException(
                     context.getString(R.string.error_noEncryptionKeysOrPassPhrase));
         }
@@ -794,7 +795,7 @@ public class PgpMain {
 
         PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
-        if (encryptionKeyIds.length == 0) {
+        if (encryptionKeyIds.size() == 0) {
             // Symmetric encryption
             Log.d(Constants.TAG, "encryptionKeyIds length is 0 -> symmetric encryption");
 
@@ -803,8 +804,8 @@ public class PgpMain {
             cPk.addMethod(symmetricEncryptionGenerator);
         } else {
             // Asymmetric encryption
-            for (int i = 0; i < encryptionKeyIds.length; ++i) {
-                PGPPublicKey key = PgpHelper.getEncryptPublicKey(context, encryptionKeyIds[i]);
+            for (long id : encryptionKeyIds) {
+                PGPPublicKey key = PgpHelper.getEncryptPublicKey(context, id);
                 if (key != null) {
 
                     JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator = new JcePublicKeyKeyEncryptionMethodGenerator(

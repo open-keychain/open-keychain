@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
@@ -46,6 +47,7 @@ import org.openintents.crypto.ICryptoService;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
@@ -108,7 +110,7 @@ public class CryptoService extends Service {
     }
 
     private synchronized void encryptSafe(byte[] inputBytes, String[] encryptionUserIds,
-            AppSettings appSettings, ICryptoCallback callback) throws RemoteException {
+            ICryptoCallback callback, AppSettings appSettings) throws RemoteException {
         try {
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -117,18 +119,34 @@ public class CryptoService extends Service {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
-            String passphrase = getCachedPassphrase(appSettings.getKeyId());
+            // find key ids to given emails in database
+            boolean manySameUserIds = false;
+            boolean missingUserIds = false;
+            ArrayList<Long> keyIds = new ArrayList<Long>();
+            for (String email : encryptionUserIds) {
+                Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByEmailsUri(email);
+                Cursor cur = getContentResolver().query(uri, null, null, null, null);
+                if (cur.moveToFirst()) {
+                    long id = cur.getLong(cur
+                            .getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID));
+                    keyIds.add(id);
+                } else {
+                    missingUserIds = true;
+                    Log.d(Constants.TAG, "user id missing");
+                }
+                if (cur.moveToNext()) {
+                    manySameUserIds = true;
+                    Log.d(Constants.TAG, "more than one user id with the same email");
+                }
+            }
+            
+            // also encrypt to our self (so that we can decrypt it later!)
+            keyIds.add(appSettings.getKeyId());
 
             PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
-                    appSettings.isAsciiArmor(), appSettings.getCompression(), new long[] {},
-                    "test", appSettings.getEncryptionAlgorithm(), Id.key.none,
-                    appSettings.getHashAlgorithm(), true, passphrase);
-
-            // PgpMain.encryptAndSign(this, this, inputData, outputStream,
-            // appSettings.isAsciiArmor(),
-            // appSettings.getCompression(), encryptionKeyIds, encryptionPassphrase,
-            // appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
-            // appSettings.getHashAlgorithm(), true, passphrase);
+                    appSettings.isAsciiArmor(), appSettings.getCompression(), keyIds, null,
+                    appSettings.getEncryptionAlgorithm(), Id.key.none,
+                    appSettings.getHashAlgorithm(), true, null);
 
             outputStream.close();
 
@@ -147,8 +165,22 @@ public class CryptoService extends Service {
         }
     }
 
-    private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback)
+    private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
+            String signatureUserId, ICryptoCallback callback, AppSettings appSettings)
             throws RemoteException {
+
+        String passphrase = getCachedPassphrase(appSettings.getKeyId());
+
+        // PgpMain.encryptAndSign(this, this, inputData, outputStream,
+        // appSettings.isAsciiArmor(),
+        // appSettings.getCompression(), encryptionKeyIds, encryptionPassphrase,
+        // appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
+        // appSettings.getHashAlgorithm(), true, passphrase);
+
+    }
+
+    private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback,
+            AppSettings appSettings) throws RemoteException {
         try {
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -226,7 +258,7 @@ public class CryptoService extends Service {
                 @Override
                 public void run() {
                     try {
-                        encryptSafe(inputBytes, encryptionUserIds, settings, callback);
+                        encryptSafe(inputBytes, encryptionUserIds, callback, settings);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoService", e);
                     }
@@ -237,9 +269,26 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void encryptAndSign(byte[] inputBytes, String[] encryptionUserIds,
-                String signatureUserId, ICryptoCallback callback) throws RemoteException {
-            // TODO Auto-generated method stub
+        public void encryptAndSign(final byte[] inputBytes, final String[] encryptionUserIds,
+                final String signatureUserId, final ICryptoCallback callback)
+                throws RemoteException {
+
+            final AppSettings settings = getAppSettings();
+
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        encryptAndSignSafe(inputBytes, encryptionUserIds, signatureUserId,
+                                callback, settings);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "CryptoService", e);
+                    }
+                }
+            };
+
+            checkAndEnqueue(r);
 
         }
 
@@ -254,12 +303,14 @@ public class CryptoService extends Service {
         public void decryptAndVerify(final byte[] inputBytes, final ICryptoCallback callback)
                 throws RemoteException {
 
+            final AppSettings settings = getAppSettings();
+
             Runnable r = new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        decryptAndVerifySafe(inputBytes, callback);
+                        decryptAndVerifySafe(inputBytes, callback, settings);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoService", e);
                     }

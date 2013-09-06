@@ -103,12 +103,12 @@ public class KeychainApiService extends Service {
             InputData input = new InputData(inputStream, inputLength);
 
             OutputStream output = new ByteArrayOutputStream();
-
-            PgpMain.encryptAndSign(mContext, null, input, output, useAsciiArmor, compression,
-                    encryptionKeyIds, encryptionPassphrase, symmetricEncryptionAlgorithm,
-                    signatureKeyId, signatureHashAlgorithm, signatureForceV3, signaturePassphrase);
-
-            output.close();
+//
+//            PgpMain.encryptAndSign(mContext, null, input, output, useAsciiArmor, compression,
+//                    encryptionKeyIds, encryptionPassphrase, symmetricEncryptionAlgorithm,
+//                    signatureKeyId, signatureHashAlgorithm, signatureForceV3, signaturePassphrase);
+//
+//            output.close();
 
             // if (isBlob) {
             // ContentResolver cr = getContentResolver();

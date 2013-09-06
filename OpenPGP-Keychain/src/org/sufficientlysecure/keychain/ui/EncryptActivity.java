@@ -39,11 +39,10 @@ import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -64,7 +63,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-
 import java.io.File;
 import java.util.Vector;
 
@@ -437,6 +435,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
      * @param encryptToClipboardEnabled
      * @param encryptToClipboardStringRes
      */
+    @SuppressLint("NewApi")
     private void setActionbarButtons(boolean encryptEnabled, int encryptStringRes,
             boolean encryptToClipboardEnabled, int encryptToClipboardStringRes) {
         mEncryptEnabled = encryptEnabled;
@@ -779,10 +778,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
                         Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-                        //Type is set to text/plain so that encrypted messages can
-                        //be sent with Whatsapp, Hangouts, SMS etc...
+                        // Type is set to text/plain so that encrypted messages can
+                        // be sent with Whatsapp, Hangouts, SMS etc...
                         emailIntent.setType("text/plain");
-						
+
                         emailIntent.putExtra(Intent.EXTRA_TEXT, output);
                         if (mSubject != null) {
                             emailIntent.putExtra(Intent.EXTRA_SUBJECT, mSubject);

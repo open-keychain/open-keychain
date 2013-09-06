@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -75,9 +77,11 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
     public static final String ACTION_GENERATE_KEY = Constants.INTENT_PREFIX + "GENERATE_KEY";
-    public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = Constants.INTENT_PREFIX + "GENERATE_DEFAULT_RSA_KEYS";
+    public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = Constants.INTENT_PREFIX
+            + "GENERATE_DEFAULT_RSA_KEYS";
 
-    public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX + "DELETE_FILE_SECURELY";
+    public static final String ACTION_DELETE_FILE_SECURELY = Constants.INTENT_PREFIX
+            + "DELETE_FILE_SECURELY";
 
     public static final String ACTION_IMPORT_KEYRING = Constants.INTENT_PREFIX + "IMPORT_KEYRING";
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
@@ -216,8 +220,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             return;
         }
 
-        if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) ||
-        		(intent.getAction() == null))) {
+        if (!(extras.containsKey(EXTRA_MESSENGER) || extras.containsKey(EXTRA_DATA) || (intent
+                .getAction() == null))) {
             Log.e(Constants.TAG,
                     "Extra bundle must contain a messenger, a data bundle, and an action!");
             return;
@@ -229,9 +233,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
         OtherHelper.logDebugBundle(data, "EXTRA_DATA");
 
         String action = intent.getAction();
-        
+
         // execute action from extra bundle
-        if( ACTION_ENCRYPT_SIGN.equals(action)) {
+        if (ACTION_ENCRYPT_SIGN.equals(action)) {
             try {
                 /* Input */
                 int target = data.getInt(TARGET);
@@ -312,6 +316,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
+                // convert to arraylist
+                ArrayList<Long> keyIdsList = new ArrayList<Long>(encryptionKeyIds.length);
+                for (long n : encryptionKeyIds)
+                    keyIdsList.add(n);
 
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
@@ -329,7 +337,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     PgpMain.encryptAndSign(this, this, inputData, outStream, useAsciiArmor,
-                            compressionId, encryptionKeyIds, encryptionPassphrase, Preferences
+                            compressionId, keyIdsList, encryptionPassphrase, Preferences
                                     .getPreferences(this).getDefaultEncryptionAlgorithm(),
                             secretKeyId,
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
@@ -380,8 +388,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_DECRYPT_VERIFY.equals(action)) {
+        } else if (ACTION_DECRYPT_VERIFY.equals(action)) {
             try {
                 /* Input */
                 int target = data.getInt(TARGET);
@@ -510,8 +517,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_SAVE_KEYRING.equals(action)) {
+        } else if (ACTION_SAVE_KEYRING.equals(action)) {
             try {
                 /* Input */
                 String oldPassPhrase = data.getString(SAVE_KEYRING_CURRENT_PASSPHRASE);
@@ -547,8 +553,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_GENERATE_KEY.equals(action)) {
+        } else if (ACTION_GENERATE_KEY.equals(action)) {
             try {
                 /* Input */
                 int algorithm = data.getInt(GENERATE_KEY_ALGORITHM);
@@ -575,8 +580,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_GENERATE_DEFAULT_RSA_KEYS.equals(action)) {
+        } else if (ACTION_GENERATE_DEFAULT_RSA_KEYS.equals(action)) {
             // generate one RSA 2048 key for signing and one subkey for encrypting!
             try {
                 /* Input */
@@ -602,8 +606,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_DELETE_FILE_SECURELY.equals(action)) {
+        } else if (ACTION_DELETE_FILE_SECURELY.equals(action)) {
             try {
                 /* Input */
                 String deleteFile = data.getString(DELETE_FILE);
@@ -624,8 +627,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_IMPORT_KEYRING.equals(action)) {
+        } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
 
                 /* Input */
@@ -672,8 +674,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_EXPORT_KEYRING.equals(action)) {
+        } else if (ACTION_EXPORT_KEYRING.equals(action)) {
             try {
 
                 /* Input */
@@ -721,8 +722,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_UPLOAD_KEYRING.equals(action)) {
+        } else if (ACTION_UPLOAD_KEYRING.equals(action)) {
             try {
 
                 /* Input */
@@ -746,8 +746,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_QUERY_KEYRING.equals(action)) {
+        } else if (ACTION_QUERY_KEYRING.equals(action)) {
             try {
 
                 /* Input */
@@ -775,8 +774,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        }
-        else if(ACTION_SIGN_KEYRING.equals(action)) {
+        } else if (ACTION_SIGN_KEYRING.equals(action)) {
             try {
 
                 /* Input */
