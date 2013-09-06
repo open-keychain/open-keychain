@@ -127,8 +127,8 @@ import java.util.regex.Pattern;
 public class PgpMain {
 
     static {
-        // register spongy castle provider
-        Security.addProvider(new BouncyCastleProvider());
+        // Define Java Security Provider to be Bouncy Castle
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
     }
 
     // Not BC due to the use of Spongy Castle for Android
@@ -310,10 +310,9 @@ public class PgpMain {
         return secKeyRing;
     }
 
-    public static void changeSecretKeyPassphrase(Context context,
-            PGPSecretKeyRing keyRing, String oldPassPhrase, String newPassPhrase, 
-            ProgressDialogUpdater progress) throws IOException, PGPException, PGPException,
-            NoSuchProviderException {
+    public static void changeSecretKeyPassphrase(Context context, PGPSecretKeyRing keyRing,
+            String oldPassPhrase, String newPassPhrase, ProgressDialogUpdater progress)
+            throws IOException, PGPException, PGPException, NoSuchProviderException {
 
         updateProgress(progress, R.string.progress_buildingKey, 0, 100);
         if (oldPassPhrase == null) {
@@ -323,10 +322,13 @@ public class PgpMain {
             newPassPhrase = "";
         }
 
-        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(keyRing,
-            new JcePBESecretKeyDecryptorBuilder(
-                new JcaPGPDigestCalculatorProviderBuilder().setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray()),
-            new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey().getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
+        PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(
+                keyRing,
+                new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder()
+                        .setProvider(BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(
+                        BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray()),
+                new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey()
+                        .getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
 
         updateProgress(progress, R.string.progress_savingKeyRing, 50, 100);
 
@@ -334,7 +336,7 @@ public class PgpMain {
 
         updateProgress(progress, R.string.progress_done, 100, 100);
 
-   }
+    }
 
     public static void buildSecretKey(Context context, ArrayList<String> userIds,
             ArrayList<PGPSecretKey> keys, ArrayList<Integer> keysUsages, long masterKeyId,
@@ -519,7 +521,8 @@ public class PgpMain {
                 PGPSecretKeyRing secretKeyRing = (PGPSecretKeyRing) keyring;
                 boolean save = true;
 
-                for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(secretKeyRing.getSecretKeys())) {
+                for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(
+                        secretKeyRing.getSecretKeys())) {
                     if (!testSecretKey.isMasterKey()) {
                         if (PgpHelper.isSecretKeyPrivateEmpty(testSecretKey)) {
                             // this is bad, something is very wrong...
