@@ -741,27 +741,26 @@ public class ProviderHelper {
         return packageNames;
     }
 
-    private static void contentValueForApiApps() {
-
-    }
-
-    public static void insertApiApp(Context context, AppSettings appSettings) {
+    private static ContentValues contentValueForApiApps(AppSettings appSettings) {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
         values.put(ApiApps.KEY_ID, appSettings.getKeyId());
         values.put(ApiApps.ASCII_ARMOR, appSettings.isAsciiArmor());
-        // TODO: other parameters
-        context.getContentResolver().insert(ApiApps.CONTENT_URI, values);
+        values.put(ApiApps.COMPRESSION, appSettings.getCompression());
+        values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
+        values.put(ApiApps.HASH_ALORITHM, appSettings.getHashAlgorithm());
+
+        return values;
+    }
+
+    public static void insertApiApp(Context context, AppSettings appSettings) {
+        context.getContentResolver().insert(ApiApps.CONTENT_URI,
+                contentValueForApiApps(appSettings));
     }
 
     public static void updateApiApp(Context context, AppSettings appSettings, Uri uri) {
-        final ContentValues cv = new ContentValues();
-        cv.put(KeychainContract.ApiApps.KEY_ID, appSettings.getKeyId());
-
-        cv.put(KeychainContract.ApiApps.ASCII_ARMOR, appSettings.isAsciiArmor());
-        // TODO: other parameters
-
-        if (context.getContentResolver().update(uri, cv, null, null) <= 0) {
+        if (context.getContentResolver().update(uri, contentValueForApiApps(appSettings), null,
+                null) <= 0) {
             throw new RuntimeException();
         }
     }
@@ -775,17 +774,15 @@ public class ProviderHelper {
         if (cur.moveToFirst()) {
             settings.setPackageName(cur.getString(cur
                     .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
-
             settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));
-
             settings.setAsciiArmor(cur.getInt(cur
                     .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
-
-            settings.setPackageName(cur.getString(cur
-                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
-
-            settings.setPackageName(cur.getString(cur
-                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+            settings.setCompression(cur.getInt(cur
+                    .getColumnIndexOrThrow(KeychainContract.ApiApps.COMPRESSION)));
+            settings.setHashAlgorithm(cur.getInt(cur
+                    .getColumnIndexOrThrow(KeychainContract.ApiApps.HASH_ALORITHM)));
+            settings.setEncryptionAlgorithm(cur.getInt(cur
+                    .getColumnIndexOrThrow(KeychainContract.ApiApps.ENCRYPTION_ALGORITHM)));
         }
 
         return settings;

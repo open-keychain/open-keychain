@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.remote_api;
 
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Id;
 
 public class AppSettings {
@@ -36,9 +38,9 @@ public class AppSettings {
         this.packageName = packageName;
         // defaults:
         this.asciiArmor = true;
-        this.encryptionAlgorithm = 7; // AES-128
-        this.hashAlgorithm = 10; // SHA-512
-        this.compression = 2; // zlib
+        this.encryptionAlgorithm = PGPEncryptedData.AES_128; // AES-128
+        this.hashAlgorithm = HashAlgorithmTags.SHA512; // SHA-512
+        this.compression = Id.choice.compression.zlib; // zlib
     }
 
     public String getPackageName() {
