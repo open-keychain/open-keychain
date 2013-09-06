@@ -55,7 +55,7 @@ public class KeychainContract {
 
     interface ApiAppsColumns {
         String PACKAGE_NAME = "package_name";
-        String PRIVATE_KEY_ID = "private_key_id"; // not a database id
+        String KEY_ID = "key_id"; // not a database id
         String ASCII_ARMOR = "ascii_armor";
         String ENCRYPTION_ALGORITHM = "encryption_algorithm";
         String HASH_ALORITHM = "hash_algorithm";

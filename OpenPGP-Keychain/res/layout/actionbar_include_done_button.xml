@@ -31,6 +31,6 @@
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:paddingRight="20dp"
-        android:text="Save (set in-code!)" />
+        android:text="Done (set in-code!)" />
 
 </FrameLayout>

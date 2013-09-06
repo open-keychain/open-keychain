@@ -21,8 +21,6 @@ public class AppSettingsFragment extends Fragment {
     private LinearLayout advancedSettingsContainer;
     private Button advancedSettingsButton;
 
-    private Button selectKeyButton;
-
     /**
      * Inflate the layout for this fragment
      */
@@ -39,8 +37,6 @@ public class AppSettingsFragment extends Fragment {
                 R.id.api_app_settings_advanced_button);
         advancedSettingsContainer = (LinearLayout) getActivity().findViewById(
                 R.id.api_app_settings_advanced);
-        selectKeyButton = (Button) getActivity().findViewById(
-                R.id.api_app_settings_select_key_button);
 
         final Animation visibleAnimation = new AlphaAnimation(0.0f, 1.0f);
         visibleAnimation.setDuration(250);
@@ -68,18 +64,6 @@ public class AppSettingsFragment extends Fragment {
                 }
             }
         });
-
-        selectKeyButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                selectSecretKey();
-            }
-        });
     }
 
-    private void selectSecretKey() {
-        Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
-        startActivityForResult(intent, Id.request.secret_keys);
-    }
 }

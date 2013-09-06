@@ -67,7 +67,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS "
             + Tables.API_APPS + " (" + BaseColumns._ID
             + " INTEGER PRIMARY KEY AUTOINCREMENT, " + ApiAppsColumns.PACKAGE_NAME
-            + " TEXT UNIQUE, " + ApiAppsColumns.PRIVATE_KEY_ID + " INT64, "
+            + " TEXT UNIQUE, " + ApiAppsColumns.KEY_ID + " INT64, "
             + ApiAppsColumns.ASCII_ARMOR + " INTEGER, "
             + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
             + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
