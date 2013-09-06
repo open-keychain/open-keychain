@@ -26,7 +26,8 @@ public final class Constants {
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
-    public static final String NFC_MIME = "application/org.sufficientlysecure.keychain";
+    // as defined in http://tools.ietf.org/html/rfc3156, section 7
+    public static final String NFC_MIME = "application/pgp-keys";
 
     public static final String PERMISSION_ACCESS_KEY_DATABASE = PACKAGE_NAME
             + ".permission.ACCESS_KEY_DATABASE";

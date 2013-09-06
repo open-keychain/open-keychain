@@ -394,8 +394,8 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="application/org.sufficientlysecure.keychain" />
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <data android:mimeType="application/pgp-keys" />
             </intent-filter>
         </activity>
         <activity android:name=".ui.ShareActivity" >
