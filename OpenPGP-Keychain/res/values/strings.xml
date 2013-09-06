@@ -372,5 +372,6 @@
     <string name="api_register_text">The following application requests access to OpenPGP Keychain\'s API.\n\nAllow permanent access?</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
-
+    <string name="api_register_error_select_key">Please select a key!</string>
+    
 </resources>

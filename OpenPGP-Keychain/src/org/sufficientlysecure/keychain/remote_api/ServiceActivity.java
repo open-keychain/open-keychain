@@ -17,15 +17,12 @@
 package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote_api.IServiceActivityCallback;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -41,6 +38,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ServiceActivity extends SherlockFragmentActivity {
 
@@ -52,6 +53,9 @@ public class ServiceActivity extends SherlockFragmentActivity {
 
     private IServiceActivityCallback mServiceCallback;
     private boolean mServiceBound;
+
+    // view
+    AppSettingsFragment settingsFragment;
 
     private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -132,7 +136,6 @@ public class ServiceActivity extends SherlockFragmentActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
-            // BEGIN_INCLUDE (inflate_set_custom_view)
             // Inflate a "Done"/"Cancel" custom action bar view
             final LayoutInflater inflater = (LayoutInflater) getSupportActionBar()
                     .getThemedContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -146,15 +149,22 @@ public class ServiceActivity extends SherlockFragmentActivity {
                         @Override
                         public void onClick(View v) {
                             // Allow
-                            ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
-                            // Intent data = new Intent();
 
-                            try {
-                                mServiceCallback.onRegistered(true, packageName);
-                            } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity");
+                            if (settingsFragment.getSecretKeyId() == Id.key.none) {
+                                Toast.makeText(ServiceActivity.this,
+                                        R.string.api_register_error_select_key, Toast.LENGTH_LONG)
+                                        .show();
+                            } else {
+                                ProviderHelper.addCryptoConsumer(ServiceActivity.this, packageName);
+                                // Intent data = new Intent();
+
+                                try {
+                                    mServiceCallback.onRegistered(true, packageName);
+                                } catch (RemoteException e) {
+                                    Log.e(Constants.TAG, "ServiceActivity");
+                                }
+                                finish();
                             }
-                            finish();
                         }
                     });
             ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
@@ -180,13 +190,12 @@ public class ServiceActivity extends SherlockFragmentActivity {
                             | ActionBar.DISPLAY_SHOW_TITLE);
             actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            // END_INCLUDE (inflate_set_custom_view)
 
             setContentView(R.layout.api_app_register_activity);
 
-            AppSettingsFragment settingsFragment = (AppSettingsFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.api_app_settings_fragment);
-            
+            settingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+                    R.id.api_app_settings_fragment);
+
             settingsFragment.setPackage(packageName);
 
             // TODO: handle if app is already registered

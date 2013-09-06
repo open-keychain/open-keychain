@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -22,22 +21,15 @@ import com.actionbarsherlock.view.MenuItem;
 
 public class AppSettingsActivity extends SherlockFragmentActivity {
     // model
-    Uri mAppUri;
-    String mPackageName;
+    private Uri mAppUri;
+    private String mPackageName;
 
-    // view
-    Button saveButton;
-    Button revokeButton;
-
-    AppSettingsFragment settingsFragment;
+    private AppSettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // pm = getApplicationContext().getPackageManager();
-
-        // BEGIN_INCLUDE (inflate_set_custom_view)
         // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
         final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
                 .getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -60,7 +52,6 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
                 | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
         actionBar.setCustomView(customActionBarView);
-        // END_INCLUDE (inflate_set_custom_view)
 
         setContentView(R.layout.api_app_settings_activity);
 
