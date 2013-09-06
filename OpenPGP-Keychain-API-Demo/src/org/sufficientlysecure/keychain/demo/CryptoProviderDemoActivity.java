@@ -73,11 +73,18 @@ public class CryptoProviderDemoActivity extends Activity {
     final ICryptoCallback.Stub encryptCallback = new ICryptoCallback.Stub() {
 
         @Override
-        public void onSuccess(byte[] outputBytes, CryptoSignatureResult signatureResult)
+        public void onSuccess(final byte[] outputBytes, CryptoSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "onEncryptSignSuccess");
 
-            // TODO
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mCiphertext.setText(new String(outputBytes));
+
+                }
+            });
         }
 
         @Override
@@ -91,11 +98,19 @@ public class CryptoProviderDemoActivity extends Activity {
     final ICryptoCallback.Stub decryptCallback = new ICryptoCallback.Stub() {
 
         @Override
-        public void onSuccess(byte[] outputBytes, CryptoSignatureResult signatureResult)
+        public void onSuccess(final byte[] outputBytes, final CryptoSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "onDecryptVerifySuccess");
 
-            mMessage.setText(new String(outputBytes));
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    mMessage.setText(new String(outputBytes) + "\n\n" + signatureResult.toString());
+
+                }
+            });
+
         }
 
         @Override

@@ -768,6 +768,9 @@ public class ProviderHelper {
     public static AppSettings getApiAppSettings(Context context, Uri uri) {
         AppSettings settings = new AppSettings();
         Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
+        if (cur == null) {
+            return null;
+        }
         if (cur.moveToFirst()) {
             settings.setPackageName(cur.getString(cur
                     .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));

@@ -178,7 +178,7 @@ public class PassphraseCacheService extends Service {
             }
             masterKeyId = masterKey.getKeyID();
         }
-        Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId" + masterKeyId);
+        Log.d(TAG, "getCachedPassphraseImpl() for masterKeyId " + masterKeyId);
 
         // get cached passphrase
         String cachedPassphrase = mPassphraseCache.get(masterKeyId);

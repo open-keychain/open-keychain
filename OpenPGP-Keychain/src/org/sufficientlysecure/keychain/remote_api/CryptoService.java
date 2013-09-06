@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import org.openintents.crypto.CryptoError;
 import org.openintents.crypto.CryptoSignatureResult;
@@ -32,18 +33,19 @@ import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote_api.IServiceActivityCallback;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.PausableThreadPoolExecutor;
-
 import org.openintents.crypto.ICryptoCallback;
 import org.openintents.crypto.ICryptoService;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -89,29 +91,50 @@ public class CryptoService extends Service {
         }
     }
 
+    private String getCachedPassphrase(long keyId) {
+        String passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
+
+        if (passphrase == null) {
+            Log.d(Constants.TAG, "No passphrase! Activity required!");
+
+            // start passphrase dialog
+            Bundle extras = new Bundle();
+            extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
+        }
+
+        return passphrase;
+    }
+
     private synchronized void encryptSafe(byte[] inputBytes, String[] encryptionUserIds,
-            ICryptoCallback callback) throws RemoteException {
+            AppSettings appSettings, ICryptoCallback callback) throws RemoteException {
         try {
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
             long inputLength = inputBytes.length;
             InputData inputData = new InputData(inputStream, inputLength);
 
-            OutputStream outStream = new ByteArrayOutputStream();
+            OutputStream outputStream = new ByteArrayOutputStream();
 
-            // TODO: hardcoded...
-            boolean useAsciiArmor = true;
-            int compressionId = 2; // zlib
+            String passphrase = getCachedPassphrase(appSettings.getKeyId());
 
-            // PgpMain.encryptAndSign(this, this, inputData, outStream, useAsciiArmor,
-            // compressionId, encryptionKeyIds, encryptionPassphrase, Preferences
-            // .getPreferences(this).getDefaultEncryptionAlgorithm(),
-            // secretKeyId,
-            // Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
-            // .getPreferences(this).getForceV3Signatures(),
-            // PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+            PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
+                    appSettings.isAsciiArmor(), appSettings.getCompression(), new long[] {},
+                    "test", appSettings.getEncryptionAlgorithm(), Id.key.none,
+                    appSettings.getHashAlgorithm(), true, passphrase);
 
-            outStream.close();
+            // PgpMain.encryptAndSign(this, this, inputData, outputStream,
+            // appSettings.isAsciiArmor(),
+            // appSettings.getCompression(), encryptionKeyIds, encryptionPassphrase,
+            // appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
+            // appSettings.getHashAlgorithm(), true, passphrase);
+
+            outputStream.close();
+
+            byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
+
+            // return over handler on client side
+            callback.onSuccess(outputBytes, null);
         } catch (Exception e) {
             Log.e(Constants.TAG, "KeychainService, Exception!", e);
 
@@ -133,6 +156,8 @@ public class CryptoService extends Service {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
+            // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
+            // app, Fix this?
             long secretKeyId = PgpMain.getDecryptionKeyId(mContext, inputStream);
             if (secretKeyId == Id.key.none) {
                 throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
@@ -142,16 +167,7 @@ public class CryptoService extends Service {
 
             Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
-            String passphrase = PassphraseCacheService.getCachedPassphrase(mContext, secretKeyId);
-
-            if (passphrase == null) {
-                Log.d(Constants.TAG, "No passphrase! Activity required!");
-
-                // start passphrase dialog
-                Bundle extras = new Bundle();
-                extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, secretKeyId);
-                pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
-            }
+            String passphrase = getCachedPassphrase(secretKeyId);
 
             // if (signedOnly) {
             // resultData = PgpMain.verifyText(this, this, inputData, outStream,
@@ -202,12 +218,14 @@ public class CryptoService extends Service {
         public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
                 final ICryptoCallback callback) throws RemoteException {
 
+            final AppSettings settings = getAppSettings();
+
             Runnable r = new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        encryptSafe(inputBytes, encryptionUserIds, callback);
+                        encryptSafe(inputBytes, encryptionUserIds, settings, callback);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoService", e);
                     }
@@ -328,6 +346,23 @@ public class CryptoService extends Service {
 
         Log.d(Constants.TAG, "Caller is NOT allowed!");
         return false;
+    }
+
+    private AppSettings getAppSettings() {
+        String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
+
+        // is calling package allowed to use this service?
+        for (int i = 0; i < callingPackages.length; i++) {
+            String currentPkg = callingPackages[i];
+
+            Uri uri = KeychainContract.ApiApps.buildByPackageNameUri(currentPkg);
+
+            AppSettings settings = ProviderHelper.getApiAppSettings(this, uri);
+
+            return settings;
+        }
+
+        return null;
     }
 
     /**
