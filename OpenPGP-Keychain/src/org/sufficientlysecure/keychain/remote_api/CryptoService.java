@@ -57,9 +57,11 @@ public class CryptoService extends Service {
 
     // just one pool of 4 threads, pause on every user action needed
     final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(20);
-    // TODO: ? only one pool, -> one thread at a time
-    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(1, 1, 10,
+    // TODO: Are these parameters okay?
+    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
             TimeUnit.SECONDS, mPoolQueue);
+
+    final Object userInputLock = new Object();
 
     public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
 
@@ -425,11 +427,15 @@ public class CryptoService extends Service {
         public void onCachedPassphrase(boolean success) throws RemoteException {
             Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
             mThreadPool.resume();
+
+            synchronized (userInputLock) {
+                userInputLock.notifyAll();
+            }
         }
 
         @Override
         public void onSelectedPublicKeys(long[] keyIds) throws RemoteException {
-            // TODO Auto-generated method stub
+            mThreadPool.resume();
 
         }
 
@@ -536,6 +542,14 @@ public class CryptoService extends Service {
             intent.putExtras(extras);
         }
         getApplication().startActivity(intent);
-    }
 
+        // lock current thread for user input
+        synchronized (userInputLock) {
+            try {
+                userInputLock.wait();
+            } catch (InterruptedException e) {
+                Log.e(Constants.TAG, "CryptoService", e);
+            }
+        }
+    }
 }
