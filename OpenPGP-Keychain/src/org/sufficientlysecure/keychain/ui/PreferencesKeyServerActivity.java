@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.Vector;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
@@ -32,7 +33,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 
 public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
@@ -51,38 +51,20 @@ public class PreferencesKeyServerActivity extends SherlockActivity implements On
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done"/"Cancel" custom action bar view
-        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View customActionBarView = inflater.inflate(
-                R.layout.actionbar_custom_view_done_cancel, null);
-
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
-                .setText(R.string.btn_okay);
-        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // ok
                         okClicked();
                     }
-                });
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
-                .setText(R.string.btn_doNotSave);
-        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
-                new View.OnClickListener() {
+                }, R.string.btn_doNotSave, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // cancel
                         cancelClicked();
                     }
                 });
-
-        // Show the custom action bar view and hide the normal Home icon and title.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
-                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         setContentView(R.layout.key_server_preference);
 

@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.remote_api;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -46,8 +48,11 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class CryptoServiceActivity extends SherlockFragmentActivity {
 
-    public static final String ACTION_REGISTER = "org.sufficientlysecure.keychain.remote_api.REGISTER";
-    public static final String ACTION_CACHE_PASSPHRASE = "org.sufficientlysecure.keychain.remote_api.CRYPTO_CACHE_PASSPHRASE";
+    public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
+    public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
+            + "API_ACTIVITY_CACHE_PASSPHRASE";
+    public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
+            + "API_ACTIVITY_SELECT_PUB_KEYS";
 
     public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
@@ -55,7 +60,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
     private IServiceActivityCallback mServiceCallback;
     private boolean mServiceBound;
 
-    // view
+    // register view
     AppSettingsFragment settingsFragment;
 
     private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
@@ -139,14 +144,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
 
             // Inflate a "Done"/"Cancel" custom action bar view
-            final LayoutInflater inflater = (LayoutInflater) getSupportActionBar()
-                    .getThemedContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-            final View customActionBarView = inflater.inflate(
-                    R.layout.actionbar_custom_view_done_cancel, null);
-
-            ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
-                    .setText(R.string.api_register_allow);
-            customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+            ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.api_register_allow,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -169,11 +167,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 finish();
                             }
                         }
-                    });
-            ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
-                    .setText(R.string.api_register_disallow);
-            customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
-                    new View.OnClickListener() {
+                    }, R.string.api_register_disallow, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // Disallow
@@ -186,14 +180,6 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         }
                     });
 
-            // Show the custom action bar view and hide the normal Home icon and title.
-            final ActionBar actionBar = getSupportActionBar();
-            actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
-                    ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
-                            | ActionBar.DISPLAY_SHOW_TITLE);
-            actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
             setContentView(R.layout.api_app_register_activity);
 
             settingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
@@ -201,7 +187,6 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             AppSettings settings = new AppSettings(packageName);
             settingsFragment.setAppSettings(settings);
-            
 
             // TODO: handle if app is already registered
             // LinearLayout layoutRegister = (LinearLayout)
@@ -221,6 +206,10 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             // }
 
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
+            long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
+
+            showPassphraseDialog(secretKeyId);
+        } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
 
             showPassphraseDialog(secretKeyId);

@@ -24,15 +24,10 @@ import java.util.Set;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
 public class OtherHelper {
 
@@ -83,26 +78,6 @@ public class OtherHelper {
             } else {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
-        }
-    }
-
-    /**
-     * Set actionbar without home button if called from another app
-     * 
-     * @param activity
-     */
-    public static void setActionBarBackButton(SherlockFragmentActivity activity) {
-        // set actionbar without home button if called from another app
-        final ActionBar actionBar = activity.getSupportActionBar();
-        Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
-                + activity.getCallingPackage());
-        if (activity.getCallingPackage() != null
-                && activity.getCallingPackage().equals(Constants.PACKAGE_NAME)) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        } else {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-            actionBar.setHomeButtonEnabled(false);
         }
     }
 

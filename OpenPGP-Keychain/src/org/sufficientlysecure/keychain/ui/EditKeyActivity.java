@@ -26,7 +26,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
@@ -152,7 +152,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         mActionBar.setDisplayShowTitleEnabled(true);
 
         // set actionbar without home button if called from another app
-        OtherHelper.setActionBarBackButton(this);
+        ActionBarHelper.setBackButton(this);
 
         // find views
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);

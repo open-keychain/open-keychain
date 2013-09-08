@@ -19,17 +19,15 @@ package org.sufficientlysecure.keychain.remote_api;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -44,14 +42,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
-        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View customActionBarView = inflater
-                .inflate(R.layout.actionbar_custom_view_done, null);
-
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
-                .setText(R.string.api_settings_save);
-        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.api_settings_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -59,12 +50,6 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
                         save();
                     }
                 });
-
-        // Show the custom action bar view and hide the normal Home icon and title.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
-                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-        actionBar.setCustomView(customActionBarView);
 
         setContentView(R.layout.api_app_settings_activity);
 

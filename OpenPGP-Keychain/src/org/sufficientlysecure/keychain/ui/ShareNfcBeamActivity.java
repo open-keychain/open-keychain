@@ -24,14 +24,9 @@ import net.nightwhistler.htmlspanner.HtmlSpanner;
 import net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -39,17 +34,22 @@ import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.nfc.NfcEvent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.util.Log;
-import android.widget.Toast;
-import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
@@ -154,7 +154,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         text.setTextColor(getResources().getColor(android.R.color.black));
 
         // set actionbar without home button if called from another app
-        OtherHelper.setActionBarBackButton(this);
+        ActionBarHelper.setBackButton(this);
     }
 
     /**

@@ -21,6 +21,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
@@ -255,7 +256,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         setContentView(R.layout.decrypt);
 
         // set actionbar without home button if called from another app
-        OtherHelper.setActionBarBackButton(this);
+        ActionBarHelper.setBackButton(this);
 
         initView();
 

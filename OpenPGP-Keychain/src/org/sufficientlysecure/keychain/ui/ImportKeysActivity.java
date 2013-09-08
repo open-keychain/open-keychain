@@ -19,14 +19,14 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -36,8 +36,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-
-
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -77,7 +75,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         setContentView(R.layout.import_keys);
 
         // set actionbar without home button if called from another app
-        OtherHelper.setActionBarBackButton(this);
+        ActionBarHelper.setBackButton(this);
 
         handleActions(getIntent());
     }

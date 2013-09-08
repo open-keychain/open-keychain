@@ -205,6 +205,8 @@ public class CryptoService extends Service {
             long inputLength = inputBytes.length;
             InputData inputData = new InputData(inputStream, inputLength);
 
+            Log.d(Constants.TAG, "in: " + new String(inputBytes));
+
             OutputStream outputStream = new ByteArrayOutputStream();
 
             // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
@@ -380,6 +382,12 @@ public class CryptoService extends Service {
         @Override
         public void onCachedPassphrase(boolean success) throws RemoteException {
 
+        }
+
+        @Override
+        public void onSelectedPublicKeys(long[] keyIds) throws RemoteException {
+            // TODO Auto-generated method stub
+            
         }
 
     };

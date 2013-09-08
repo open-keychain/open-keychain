@@ -23,5 +23,7 @@ interface IServiceActivityCallback {
     oneway void onRegistered(in boolean success, in String packageName);
     
     oneway void onCachedPassphrase(in boolean success);
+    
+    oneway void onSelectedPublicKeys(in long[] keyIds);
 
 }
