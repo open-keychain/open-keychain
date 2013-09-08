@@ -35,12 +35,14 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
+import android.widget.Scroller;
 import android.widget.TextView;
 
 public class CryptoProviderDemoActivity extends Activity {
@@ -48,7 +50,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
     EditText mMessage;
     EditText mCiphertext;
-    EditText mEncryptUserId;
+    EditText mEncryptUserIds;
 
     private CryptoServiceConnection mCryptoServiceConnection;
 
@@ -61,7 +63,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
         mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
         mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
-        mEncryptUserId = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
+        mEncryptUserIds = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
 
         selectCryptoProvider();
     }
@@ -125,7 +127,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    new String[] { mEncryptUserId.getText().toString() }, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -146,7 +148,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
-                    new String[] { mEncryptUserId.getText().toString() }, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }

@@ -112,7 +112,7 @@ public class CryptoService extends Service {
      * @param encryptionUserIds
      * @return
      */
-    private ArrayList<Long> getKeyIdsFromEmails(String[] encryptionUserIds) {
+    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, long ownKeyId) {
         // find key ids to given emails in database
         boolean manySameUserIds = false;
         boolean missingUserIds = false;
@@ -133,9 +133,22 @@ public class CryptoService extends Service {
             }
         }
 
-        // TODO: show selection activity on missingUserIds or manySameUserIds
+        // also encrypt to our self (so that we can decrypt it later!)
+        keyIds.add(ownKeyId);
 
-        return keyIds;
+        // convert o long[]
+        long[] keyIdsArray = new long[keyIds.size()];
+        for (int i = 0; i < keyIdsArray.length; i++) {
+            keyIdsArray[i] = keyIds.get(i);
+        }
+
+        if (missingUserIds || manySameUserIds) {
+            Bundle extras = new Bundle();
+            extras.putLongArray(CryptoServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS, extras);
+        }
+
+        return keyIdsArray;
     }
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
@@ -154,10 +167,7 @@ public class CryptoService extends Service {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
-            ArrayList<Long> keyIds = getKeyIdsFromEmails(encryptionUserIds);
-
-            // also encrypt to our self (so that we can decrypt it later!)
-            keyIds.add(appSettings.getKeyId());
+            long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId());
 
             if (sign) {
                 PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
@@ -384,7 +394,7 @@ public class CryptoService extends Service {
         @Override
         public void onSelectedPublicKeys(long[] keyIds) throws RemoteException {
             // TODO Auto-generated method stub
-            
+
         }
 
     };

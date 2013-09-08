@@ -1,56 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Encrypt UserIds (split with &apos;,&apos;)"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/crypto_provider_demo_encrypt_user_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="dominik@dominikschuermann.de"
+        android:textAppearance="@android:style/TextAppearance.Small" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Message"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/crypto_provider_demo_message"
+        android:layout_width="match_parent"
+        android:layout_height="150dip"
+        android:scrollHorizontally="true"
+        android:scrollbars="vertical"
+        android:text="message"
+        android:textAppearance="@android:style/TextAppearance.Small" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ciphertext"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/crypto_provider_demo_ciphertext"
+        android:layout_width="match_parent"
+        android:layout_height="150dip"
+        android:text="ciphertext"
+        android:textAppearance="@android:style/TextAppearance.Small" />
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Encrypt User Id"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/crypto_provider_demo_encrypt_user_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="dominik@dominikschuermann.de"
-            android:textAppearance="@android:style/TextAppearance.Small" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Message"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/crypto_provider_demo_message"
-            android:layout_width="match_parent"
-            android:layout_height="150dip"
-            android:text="message"
-            android:textAppearance="@android:style/TextAppearance.Small" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Ciphertext"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <EditText
-            android:id="@+id/crypto_provider_demo_ciphertext"
-            android:layout_width="match_parent"
-            android:layout_height="150dip"
-            android:text="ciphertext"
-            android:textAppearance="@android:style/TextAppearance.Small" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
 
         <Button
             android:id="@+id/crypto_provider_demo_encrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="encryptOnClick"
             android:text="Encrypt" />
 
@@ -58,6 +61,7 @@
             android:id="@+id/crypto_provider_demo_sign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="signOnClick"
             android:text="Sign" />
 
@@ -65,6 +69,7 @@
             android:id="@+id/crypto_provider_demo_encrypt_and_sign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="encryptAndSignOnClick"
             android:text="Encrypt and Sign" />
 
@@ -72,8 +77,9 @@
             android:id="@+id/crypto_provider_demo_decrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="decryptOnClick"
             android:text="Decrypt" />
     </LinearLayout>
 
-</ScrollView>
+</LinearLayout>

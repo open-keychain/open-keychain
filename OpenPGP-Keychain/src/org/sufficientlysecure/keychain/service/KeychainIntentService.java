@@ -27,28 +27,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
-import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.helper.PgpMain.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
-import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -316,11 +314,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
-                // convert to arraylist
-                ArrayList<Long> keyIdsList = new ArrayList<Long>(encryptionKeyIds.length);
-                for (long n : encryptionKeyIds)
-                    keyIdsList.add(n);
-
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
                     PgpMain.generateSignature(this, this, inputData, outStream, useAsciiArmor,
@@ -337,7 +330,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     PgpMain.encryptAndSign(this, this, inputData, outStream, useAsciiArmor,
-                            compressionId, keyIdsList, encryptionPassphrase, Preferences
+                            compressionId, encryptionKeyIds, encryptionPassphrase, Preferences
                                     .getPreferences(this).getDefaultEncryptionAlgorithm(),
                             secretKeyId,
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences

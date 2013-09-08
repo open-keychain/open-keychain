@@ -21,9 +21,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -37,13 +37,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class CryptoServiceActivity extends SherlockFragmentActivity {
@@ -56,12 +52,15 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
+    public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "masterKeyIds";
 
     private IServiceActivityCallback mServiceCallback;
     private boolean mServiceBound;
 
     // register view
-    AppSettingsFragment settingsFragment;
+    AppSettingsFragment mSettingsFragment;
+    // select pub key view
+    SelectPublicKeyFragment mSelectFragment;
 
     private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -116,7 +115,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
         // bind to our own crypto service
         bindToService();
 
-        handleActions(getIntent());
+        handleActions(getIntent(), savedInstanceState);
     }
 
     @Override
@@ -129,7 +128,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
         }
     }
 
-    protected void handleActions(Intent intent) {
+    protected void handleActions(Intent intent, Bundle savedInstanceState) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
 
@@ -151,13 +150,13 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                             // Allow
 
                             // user needs to select a key!
-                            if (settingsFragment.getAppSettings().getKeyId() == Id.key.none) {
+                            if (mSettingsFragment.getAppSettings().getKeyId() == Id.key.none) {
                                 Toast.makeText(CryptoServiceActivity.this,
                                         R.string.api_register_error_select_key, Toast.LENGTH_LONG)
                                         .show();
                             } else {
                                 ProviderHelper.insertApiApp(CryptoServiceActivity.this,
-                                        settingsFragment.getAppSettings());
+                                        mSettingsFragment.getAppSettings());
 
                                 try {
                                     mServiceCallback.onRegistered(true, packageName);
@@ -183,11 +182,11 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             setContentView(R.layout.api_app_register_activity);
 
-            settingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+            mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_app_settings_fragment);
 
             AppSettings settings = new AppSettings(packageName);
-            settingsFragment.setAppSettings(settings);
+            mSettingsFragment.setAppSettings(settings);
 
             // TODO: handle if app is already registered
             // LinearLayout layoutRegister = (LinearLayout)
@@ -211,6 +210,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             showPassphraseDialog(secretKeyId);
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
+            long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
 
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
@@ -219,14 +219,50 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         public void onClick(View v) {
                             // ok
 
+                            try {
+                                mServiceCallback.onSelectedPublicKeys(mSelectFragment
+                                        .getSelectedMasterKeyIds());
+                            } catch (RemoteException e) {
+                                Log.e(Constants.TAG, "ServiceActivity");
+                            }
+                            finish();
                         }
                     }, R.string.btn_doNotSave, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // cancel
 
+                            // TODO: currently does the same as OK...
+                            try {
+                                mServiceCallback.onSelectedPublicKeys(mSelectFragment
+                                        .getSelectedMasterKeyIds());
+                            } catch (RemoteException e) {
+                                Log.e(Constants.TAG, "ServiceActivity");
+                            }
+                            finish();
                         }
                     });
+
+            setContentView(R.layout.api_app_select_pub_keys_activity);
+
+            // Check that the activity is using the layout version with
+            // the fragment_container FrameLayout
+            if (findViewById(R.id.api_select_pub_keys_fragment_container) != null) {
+
+                // However, if we're being restored from a previous state,
+                // then we don't need to do anything and should return or else
+                // we could end up with overlapping fragments.
+                if (savedInstanceState != null) {
+                    return;
+                }
+
+                // Create an instance of the fragment
+                mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+
+                // Add the fragment to the 'fragment_container' FrameLayout
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
+            }
 
         } else {
             Log.e(Constants.TAG, "Wrong action!");
