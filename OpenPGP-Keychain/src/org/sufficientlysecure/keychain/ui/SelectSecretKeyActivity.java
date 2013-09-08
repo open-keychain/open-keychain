@@ -38,7 +38,9 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
     public static final String RESULT_EXTRA_USER_ID = "userId";
-    public static boolean filterCertify = false;
+
+    private boolean mFilterCertify = false;
+    private SelectSecretKeyFragment mSelectFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +66,28 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
         // }
         // });
 
-        filterCertify = getIntent().getBooleanExtra(EXTRA_FILTER_CERTIFY, false);
+        mFilterCertify = getIntent().getBooleanExtra(EXTRA_FILTER_CERTIFY, false);
 
         handleIntent(getIntent());
+
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.select_secret_key_fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create an instance of the fragment
+            mSelectFragment = SelectSecretKeyFragment.newInstance(mFilterCertify);
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.select_secret_key_fragment_container, mSelectFragment).commit();
+        }
     }
 
     /**

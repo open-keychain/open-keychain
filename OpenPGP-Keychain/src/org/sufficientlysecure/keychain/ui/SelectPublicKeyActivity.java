@@ -66,8 +66,26 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
-        mSelectFragment = (SelectPublicKeyFragment) getSupportFragmentManager().findFragmentById(
-                R.id.select_public_key_fragment);
+        handleIntent(getIntent());
+
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.select_public_key_fragment_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create an instance of the fragment
+            mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.select_public_key_fragment_container, mSelectFragment).commit();
+        }
 
         // TODO: reimplement!
         // mFilterLayout = findViewById(R.id.layout_filter);
@@ -80,7 +98,6 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
         // }
         // });
 
-        handleIntent(getIntent());
     }
 
     @Override
@@ -90,7 +107,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
     }
 
     private void handleIntent(Intent intent) {
-        // TODO: reimplement!
+        // TODO: reimplement search!
 
         // String searchString = null;
         // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
@@ -109,15 +126,6 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
 
         // preselected master keys
         selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
-    }
-
-    /**
-     * returns preselected key ids, this is used in the fragment
-     * 
-     * @return
-     */
-    public long[] getSelectedMasterKeyIds() {
-        return selectedMasterKeyIds;
     }
 
     private void cancelClicked() {

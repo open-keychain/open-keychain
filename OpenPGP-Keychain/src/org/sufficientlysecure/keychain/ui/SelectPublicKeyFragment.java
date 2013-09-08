@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,32 +21,56 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.widget.SelectKeyCursorAdapter;
-import org.sufficientlysecure.keychain.R;
 
+import android.app.Activity;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.app.LoaderManager;
 import android.widget.ListView;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private SelectPublicKeyActivity mActivity;
+    private Activity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
 
     private long mSelectedMasterKeyIds[];
+
+    private static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static SelectPublicKeyFragment newInstance(long[] preselectedKeyIds) {
+        SelectPublicKeyFragment frag = new SelectPublicKeyFragment();
+        Bundle args = new Bundle();
+
+        args.putLongArray(ARG_PRESELECTED_KEY_IDS, preselectedKeyIds);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mSelectedMasterKeyIds = getArguments().getLongArray(ARG_PRESELECTED_KEY_IDS);
+    }
 
     /**
      * Define Adapter and Loader on create of Activity
@@ -55,11 +79,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = (SelectPublicKeyActivity) getSherlockActivity();
+        mActivity = getSherlockActivity();
         mListView = getListView();
-
-        // get selected master key ids, which are given to activity by intent
-        mSelectedMasterKeyIds = mActivity.getSelectedMasterKeyIds();
 
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 

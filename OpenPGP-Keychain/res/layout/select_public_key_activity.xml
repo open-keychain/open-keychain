@@ -4,9 +4,8 @@
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true" >
 
-    <fragment
-        android:id="@+id/select_public_key_fragment"
-        android:name="org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment"
+    <FrameLayout
+        android:id="@+id/select_public_key_fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

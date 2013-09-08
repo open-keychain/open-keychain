@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +47,31 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
     private SelectSecretKeyActivity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
+    
+    private boolean mFilterCertify;
+    
+    private static final String ARG_FILTER_CERTIFY = "filter_certify";
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static SelectSecretKeyFragment newInstance(boolean filterCertify) {
+        SelectSecretKeyFragment frag = new SelectSecretKeyFragment();
+        Bundle args = new Bundle();
+
+        args.putBoolean(ARG_FILTER_CERTIFY, filterCertify);
+
+        frag.setArguments(args);
+
+        return frag;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mFilterCertify = getArguments().getBoolean(ARG_FILTER_CERTIFY);
+    }
 
     /**
      * Define Adapter and Loader on create of Activity
@@ -92,8 +117,8 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
         Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
         String CapFilter = null;
-        if (((SelectSecretKeyActivity)getActivity()).filterCertify == true) {
-            CapFilter = "(cert>0)";
+        if (mFilterCertify) {
+            CapFilter = "(cert > 0)";
         }
 
         // These are the rows that we will retrieve.

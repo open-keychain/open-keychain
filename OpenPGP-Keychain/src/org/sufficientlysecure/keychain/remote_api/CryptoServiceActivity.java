@@ -171,6 +171,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         @Override
                         public void onClick(View v) {
                             // Disallow
+
                             try {
                                 mServiceCallback.onRegistered(false, packageName);
                             } catch (RemoteException e) {
@@ -210,9 +211,23 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             showPassphraseDialog(secretKeyId);
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
-            long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
 
-            showPassphraseDialog(secretKeyId);
+            // Inflate a "Done"/"Cancel" custom action bar view
+            ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // ok
+
+                        }
+                    }, R.string.btn_doNotSave, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // cancel
+
+                        }
+                    });
+
         } else {
             Log.e(Constants.TAG, "Wrong action!");
             finish();
