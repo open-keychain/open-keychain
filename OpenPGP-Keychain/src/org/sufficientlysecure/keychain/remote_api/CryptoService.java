@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.PgpMain;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -56,7 +57,8 @@ public class CryptoService extends Service {
 
     // just one pool of 4 threads, pause on every user action needed
     final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(20);
-    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
+    // TODO: ? only one pool, -> one thread at a time
+    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(1, 1, 10,
             TimeUnit.SECONDS, mPoolQueue);
 
     public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
@@ -101,6 +103,9 @@ public class CryptoService extends Service {
             Bundle extras = new Bundle();
             extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
             pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
+
+            // get again after it was entered
+            passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
         }
 
         return passphrase;
@@ -153,13 +158,7 @@ public class CryptoService extends Service {
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
             ICryptoCallback callback, AppSettings appSettings, boolean sign) throws RemoteException {
-
         try {
-            String passphrase = null;
-            if (sign) {
-                passphrase = getCachedPassphrase(appSettings.getKeyId());
-            }
-
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
             long inputLength = inputBytes.length;
@@ -170,6 +169,8 @@ public class CryptoService extends Service {
             long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId());
 
             if (sign) {
+                String passphrase = getCachedPassphrase(appSettings.getKeyId());
+
                 PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
                         appSettings.isAsciiArmor(), appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
@@ -196,12 +197,41 @@ public class CryptoService extends Service {
                 Log.e(Constants.TAG, "Error returning exception to client", t);
             }
         }
-
     }
 
     private void signSafe(byte[] inputBytes, ICryptoCallback callback, AppSettings appSettings)
             throws RemoteException {
-        // TODO!
+        try {
+            Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
+
+            // build InputData and write into OutputStream
+            InputStream inputStream = new ByteArrayInputStream(inputBytes);
+            long inputLength = inputBytes.length;
+            InputData inputData = new InputData(inputStream, inputLength);
+
+            OutputStream outputStream = new ByteArrayOutputStream();
+
+            String passphrase = getCachedPassphrase(appSettings.getKeyId());
+
+            PgpMain.signText(this, null, inputData, outputStream, appSettings.getKeyId(),
+                    passphrase, appSettings.getHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures());
+
+            outputStream.close();
+
+            byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
+
+            // return over handler on client side
+            callback.onSuccess(outputBytes, null);
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "KeychainService, Exception!", e);
+
+            try {
+                callback.onError(new CryptoError(0, e.getMessage()));
+            } catch (Exception t) {
+                Log.e(Constants.TAG, "Error returning exception to client", t);
+            }
+        }
     }
 
     private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback,
@@ -358,12 +388,12 @@ public class CryptoService extends Service {
             checkAndEnqueue(r);
         }
 
-        @Override
-        public void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId)
-                throws RemoteException {
-            // TODO Auto-generated method stub
-
-        }
+        // @Override
+        // public void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId)
+        // throws RemoteException {
+        //
+        //
+        // }
 
     };
 
@@ -371,6 +401,7 @@ public class CryptoService extends Service {
 
         @Override
         public void onRegistered(boolean success, String packageName) throws RemoteException {
+            Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
 
             if (success) {
                 // resume threads
@@ -378,17 +409,22 @@ public class CryptoService extends Service {
                     mThreadPool.resume();
                 } else {
                     // TODO: should not happen?
+                    mThreadPool.shutdownNow();
                 }
             } else {
+                mThreadPool.resume();
                 // TODO
-                mPoolQueue.clear();
+                // mPoolQueue.clear();
+                // mPoolQueue.re
+                // mThreadPool.
             }
 
         }
 
         @Override
         public void onCachedPassphrase(boolean success) throws RemoteException {
-
+            Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
+            mThreadPool.resume();
         }
 
         @Override

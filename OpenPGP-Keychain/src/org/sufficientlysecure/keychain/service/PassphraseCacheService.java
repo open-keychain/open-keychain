@@ -67,7 +67,7 @@ public class PassphraseCacheService extends Service {
             + "PASSPHRASE_CACHE_BROADCAST";
 
     public static final String EXTRA_TTL = "ttl";
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_PASSPHRASE = "passphrase";
     public static final String EXTRA_MESSENGER = "messenger";
 

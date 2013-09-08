@@ -187,24 +187,6 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             AppSettings settings = new AppSettings(packageName);
             mSettingsFragment.setAppSettings(settings);
-
-            // TODO: handle if app is already registered
-            // LinearLayout layoutRegister = (LinearLayout)
-            // findViewById(R.id.register_crypto_consumer_register_layout);
-            // LinearLayout layoutEdit = (LinearLayout)
-            // findViewById(R.id.register_crypto_consumer_edit_layout);
-            //
-            // // if already registered show edit buttons
-            // ArrayList<String> allowedPkgs = ProviderHelper.getCryptoConsumers(this);
-            // if (allowedPkgs.contains(packageName)) {
-            // Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
-            // layoutRegister.setVisibility(View.GONE);
-            // layoutEdit.setVisibility(View.VISIBLE);
-            // } else {
-            // layoutRegister.setVisibility(View.VISIBLE);
-            // layoutEdit.setVisibility(View.GONE);
-            // }
-
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
 
@@ -283,6 +265,13 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     try {
                         mServiceCallback.onCachedPassphrase(true);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "ServiceActivity");
+                    }
+                    finish();
+                } else {
+                    try {
+                        mServiceCallback.onCachedPassphrase(false);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "ServiceActivity");
                     }
