@@ -173,6 +173,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         Toast.makeText(activity,
                                                 R.string.error_couldNotExtractPrivateKey,
                                                 Toast.LENGTH_SHORT).show();
+                                        
+                                        sendMessageToHandler(MESSAGE_CANCEL);
                                         return;
                                     } else {
                                         clickSecretKey = PgpHelper.getKeyNum(ProviderHelper
@@ -187,11 +189,15 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             } catch (PGPException e) {
                                 Toast.makeText(activity, R.string.wrongPassPhrase,
                                         Toast.LENGTH_SHORT).show();
+                                
+                                sendMessageToHandler(MESSAGE_CANCEL);
                                 return;
                             }
                         } else {
                             Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
                                     Toast.LENGTH_SHORT).show();
+                            
+                            sendMessageToHandler(MESSAGE_CANCEL);
                             return; // ran out of keys to try
                         }
                     }

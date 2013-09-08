@@ -117,11 +117,18 @@ public class CryptoProviderDemoActivity extends Activity {
 
     };
 
-    private void handleError(CryptoError error) {
-        Toast.makeText(mActivity, "onError id:" + error.getErrorId() + "\n\n" + error.getMessage(),
-                Toast.LENGTH_LONG).show();
-        Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
-        Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+    private void handleError(final CryptoError error) {
+        mActivity.runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Toast.makeText(mActivity,
+                        "onError id:" + error.getErrorId() + "\n\n" + error.getMessage(),
+                        Toast.LENGTH_LONG).show();
+                Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
+                Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+            }
+        });
     }
 
     public void encryptOnClick(View view) {

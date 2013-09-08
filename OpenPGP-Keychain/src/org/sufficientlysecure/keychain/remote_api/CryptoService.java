@@ -107,7 +107,7 @@ public class CryptoService extends Service {
             } else {
                 Log.d(Constants.TAG, "Passphrase dialog canceled!");
 
-                // TODO: stop thread?!
+                return null;
             }
 
         }
@@ -119,7 +119,7 @@ public class CryptoService extends Service {
         public static final int SUCCESS = 1;
         public static final int NO_SUCCESS = 0;
 
-        private boolean success;
+        private boolean success = false;
 
         public boolean isSuccess() {
             return success;
@@ -203,7 +203,7 @@ public class CryptoService extends Service {
         public static final int CANCEL = 0;
         public static final String PUB_KEY_IDS = "pub_key_ids";
 
-        private boolean newSelection;
+        private boolean newSelection = false;
         private long[] pubKeyIds;
 
         public boolean isNewSelection() {
@@ -246,6 +246,11 @@ public class CryptoService extends Service {
 
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId());
+                if (passphrase == null) {
+                    callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                            "No or wrong passphrase!"));
+                    return;
+                }
 
                 PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
                         appSettings.isAsciiArmor(), appSettings.getCompression(), keyIds, null,
@@ -288,6 +293,11 @@ public class CryptoService extends Service {
             OutputStream outputStream = new ByteArrayOutputStream();
 
             String passphrase = getCachedPassphrase(appSettings.getKeyId());
+            if (passphrase == null) {
+                callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                        "No or wrong passphrase!"));
+                return;
+            }
 
             PgpMain.signText(this, null, inputData, outputStream, appSettings.getKeyId(),
                     passphrase, appSettings.getHashAlgorithm(), Preferences.getPreferences(this)
@@ -334,6 +344,11 @@ public class CryptoService extends Service {
             Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
             String passphrase = getCachedPassphrase(secretKeyId);
+            if (passphrase == null) {
+                callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                        "No or wrong passphrase!"));
+                return;
+            }
 
             // if (signedOnly) {
             // resultData = PgpMain.verifyText(this, this, inputData, outStream,
@@ -501,7 +516,7 @@ public class CryptoService extends Service {
         public static final int DISALLOW = 0;
         public static final String PACKAGE_NAME = "package_name";
 
-        private boolean allowed;
+        private boolean allowed = false;
         private String packageName;
 
         public boolean isAllowed() {
