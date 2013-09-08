@@ -24,7 +24,6 @@ import org.openintents.crypto.CryptoServiceConnection;
 import org.openintents.crypto.CryptoSignatureResult;
 import org.openintents.crypto.ICryptoCallback;
 import org.openintents.crypto.ICryptoService;
-import org.sufficientlysecure.keychain.demo.R;
 import org.sufficientlysecure.keychain.integration.Constants;
 
 import android.app.Activity;
@@ -35,15 +34,14 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
-import android.widget.Scroller;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CryptoProviderDemoActivity extends Activity {
     Activity mActivity;
@@ -83,15 +81,13 @@ public class CryptoProviderDemoActivity extends Activity {
                 @Override
                 public void run() {
                     mCiphertext.setText(new String(outputBytes));
-
                 }
             });
         }
 
         @Override
         public void onError(CryptoError error) throws RemoteException {
-            Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
-            Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+            handleError(error);
         }
 
     };
@@ -116,11 +112,17 @@ public class CryptoProviderDemoActivity extends Activity {
 
         @Override
         public void onError(CryptoError error) throws RemoteException {
-            Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
-            Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+            handleError(error);
         }
 
     };
+
+    private void handleError(CryptoError error) {
+        Toast.makeText(mActivity, "onError id:" + error.getErrorId() + "\n\n" + error.getMessage(),
+                Toast.LENGTH_LONG).show();
+        Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
+        Log.e(Constants.TAG, "onError getMessage:" + error.getMessage());
+    }
 
     public void encryptOnClick(View view) {
         byte[] inputBytes = mMessage.getText().toString().getBytes();

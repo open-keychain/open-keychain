@@ -161,7 +161,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 try {
                                     mServiceCallback.onRegistered(true, packageName);
                                 } catch (RemoteException e) {
-                                    Log.e(Constants.TAG, "ServiceActivity");
+                                    Log.e(Constants.TAG, "ServiceActivity", e);
                                 }
                                 finish();
                             }
@@ -174,7 +174,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                             try {
                                 mServiceCallback.onRegistered(false, packageName);
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity");
+                                Log.e(Constants.TAG, "ServiceActivity", e);
                             }
                             finish();
                         }
@@ -205,7 +205,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 mServiceCallback.onSelectedPublicKeys(mSelectFragment
                                         .getSelectedMasterKeyIds());
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity");
+                                Log.e(Constants.TAG, "ServiceActivity", e);
                             }
                             finish();
                         }
@@ -219,7 +219,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 mServiceCallback.onSelectedPublicKeys(mSelectFragment
                                         .getSelectedMasterKeyIds());
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity");
+                                Log.e(Constants.TAG, "ServiceActivity", e);
                             }
                             finish();
                         }
@@ -266,14 +266,14 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                     try {
                         mServiceCallback.onCachedPassphrase(true);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity");
+                        Log.e(Constants.TAG, "ServiceActivity", e);
                     }
                     finish();
                 } else {
                     try {
                         mServiceCallback.onCachedPassphrase(false);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity");
+                        Log.e(Constants.TAG, "ServiceActivity", e);
                     }
                     finish();
                 }

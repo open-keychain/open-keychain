@@ -60,6 +60,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     private static final String ARG_SECRET_KEY_ID = "secret_key_id";
 
     public static final int MESSAGE_OKAY = 1;
+    public static final int MESSAGE_CANCEL = 2;
 
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
@@ -215,7 +216,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                dismiss();
+                dialog.cancel();
             }
         });
 
@@ -233,6 +234,14 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
             mPassphraseEditText.setOnEditorActionListener(this);
         }
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+
+        dismiss();
+        sendMessageToHandler(MESSAGE_CANCEL);
     }
 
     /**
