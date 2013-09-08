@@ -27,13 +27,9 @@ import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -50,82 +46,24 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
     public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
             + "API_ACTIVITY_SELECT_PUB_KEYS";
 
+    public static final String EXTRA_MESSENGER = "messenger";
+
     public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
     public static final String EXTRA_PACKAGE_NAME = "packageName";
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "masterKeyIds";
 
-    private IServiceActivityCallback mServiceCallback;
-    private boolean mServiceBound;
+    private Messenger mMessenger;
 
     // register view
-    AppSettingsFragment mSettingsFragment;
+    private AppSettingsFragment mSettingsFragment;
     // select pub key view
-    SelectPublicKeyFragment mSelectFragment;
-
-    private ServiceConnection mServiceActivityConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mServiceCallback = IServiceActivityCallback.Stub.asInterface(service);
-            Log.d(Constants.TAG, "connected to ICryptoServiceActivity");
-            mServiceBound = true;
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            mServiceCallback = null;
-            Log.d(Constants.TAG, "disconnected from ICryptoServiceActivity");
-            mServiceBound = false;
-        }
-    };
-
-    /**
-     * If not already bound, bind!
-     * 
-     * @return
-     */
-    public boolean bindToService() {
-        if (mServiceCallback == null && !mServiceBound) { // if not already connected
-            try {
-                Log.d(Constants.TAG, "not bound yet");
-
-                Intent serviceIntent = new Intent();
-                serviceIntent
-                        .setAction("org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback");
-                bindService(serviceIntent, mServiceActivityConnection, Context.BIND_AUTO_CREATE);
-
-                return true;
-            } catch (Exception e) {
-                Log.d(Constants.TAG, "Exception", e);
-                return false;
-            }
-        } else { // already connected
-            Log.d(Constants.TAG, "already bound... ");
-            return true;
-        }
-    }
-
-    public void unbindFromService() {
-        unbindService(mServiceActivityConnection);
-    }
+    private SelectPublicKeyFragment mSelectFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(Constants.TAG, "onCreate…");
-
-        // bind to our own crypto service
-        bindToService();
-
         handleActions(getIntent(), savedInstanceState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        // unbind from our crypto service
-        if (mServiceActivityConnection != null) {
-            unbindFromService();
-        }
     }
 
     protected void handleActions(Intent intent, Bundle savedInstanceState) {
@@ -135,6 +73,8 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
         if (extras == null) {
             extras = new Bundle();
         }
+
+        mMessenger = extras.getParcelable(EXTRA_MESSENGER);
 
         /**
          * com.android.crypto actions
@@ -158,10 +98,16 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 ProviderHelper.insertApiApp(CryptoServiceActivity.this,
                                         mSettingsFragment.getAppSettings());
 
+                                Message msg = Message.obtain();
+                                msg.arg1 = CryptoService.RegisterActivityCallback.ALLOW;
+                                Bundle data = new Bundle();
+                                data.putString(CryptoService.RegisterActivityCallback.PACKAGE_NAME,
+                                        packageName);
+                                msg.setData(data);
                                 try {
-                                    mServiceCallback.onRegistered(true, packageName);
+                                    mMessenger.send(msg);
                                 } catch (RemoteException e) {
-                                    Log.e(Constants.TAG, "ServiceActivity", e);
+                                    Log.e(Constants.TAG, "CryptoServiceActivity", e);
                                 }
                                 finish();
                             }
@@ -171,10 +117,12 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         public void onClick(View v) {
                             // Disallow
 
+                            Message msg = Message.obtain();
+                            msg.arg1 = CryptoService.RegisterActivityCallback.DISALLOW;
                             try {
-                                mServiceCallback.onRegistered(false, packageName);
+                                mMessenger.send(msg);
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity", e);
+                                Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
                             finish();
                         }
@@ -201,11 +149,17 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         public void onClick(View v) {
                             // ok
 
+                            Message msg = Message.obtain();
+                            msg.arg1 = CryptoService.SelectPubKeysActivityCallback.OKAY;
+                            Bundle data = new Bundle();
+                            data.putLongArray(
+                                    CryptoService.SelectPubKeysActivityCallback.PUB_KEY_IDS,
+                                    mSelectFragment.getSelectedMasterKeyIds());
+                            msg.setData(data);
                             try {
-                                mServiceCallback.onSelectedPublicKeys(mSelectFragment
-                                        .getSelectedMasterKeyIds());
+                                mMessenger.send(msg);
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity", e);
+                                Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
                             finish();
                         }
@@ -214,12 +168,13 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                         public void onClick(View v) {
                             // cancel
 
-                            // TODO: currently does the same as OK...
+                            Message msg = Message.obtain();
+                            msg.arg1 = CryptoService.SelectPubKeysActivityCallback.CANCEL;
+                            ;
                             try {
-                                mServiceCallback.onSelectedPublicKeys(mSelectFragment
-                                        .getSelectedMasterKeyIds());
+                                mMessenger.send(msg);
                             } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "ServiceActivity", e);
+                                Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
                             finish();
                         }
@@ -227,6 +182,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
             setContentView(R.layout.api_app_select_pub_keys_activity);
 
+            /* Load select pub keys fragment */
             // Check that the activity is using the layout version with
             // the fragment_container FrameLayout
             if (findViewById(R.id.api_select_pub_keys_fragment_container) != null) {
@@ -263,16 +219,20 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    Message msg = Message.obtain();
+                    msg.arg1 = CryptoService.PassphraseActivityCallback.SUCCESS;
                     try {
-                        mServiceCallback.onCachedPassphrase(true);
+                        mMessenger.send(msg);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity", e);
+                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
                     }
                 } else {
+                    Message msg = Message.obtain();
+                    msg.arg1 = CryptoService.PassphraseActivityCallback.NO_SUCCESS;
                     try {
-                        mServiceCallback.onCachedPassphrase(false);
+                        mMessenger.send(msg);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "ServiceActivity", e);
+                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
                     }
                 }
                 finish();

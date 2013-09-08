@@ -49,21 +49,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
 import android.os.RemoteException;
 
 public class CryptoService extends Service {
     Context mContext;
 
-    // just one pool of 4 threads, pause on every user action needed
-    final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(20);
+    final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(100);
     // TODO: Are these parameters okay?
     PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
             TimeUnit.SECONDS, mPoolQueue);
 
     final Object userInputLock = new Object();
-
-    public static final String ACTION_SERVICE_ACTIVITY = "org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback";
 
     @Override
     public void onCreate() {
@@ -80,19 +80,7 @@ public class CryptoService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // return different binder for connections from internal service activity
-        if (ACTION_SERVICE_ACTIVITY.equals(intent.getAction())) {
-
-            // this binder can only be used from OpenPGP Keychain
-            if (isCallerAllowed(true)) {
-                return mBinderServiceActivity;
-            } else {
-                Log.e(Constants.TAG, "This binder can only be used from " + Constants.PACKAGE_NAME);
-                return null;
-            }
-        } else {
-            return mBinder;
-        }
+        return mBinder;
     }
 
     private String getCachedPassphrase(long keyId) {
@@ -104,14 +92,55 @@ public class CryptoService extends Service {
             // start passphrase dialog
             Bundle extras = new Bundle();
             extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE, extras);
 
-            // get again after it was entered
-            passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
+            PassphraseActivityCallback callback = new PassphraseActivityCallback();
+            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
+
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE,
+                    messenger, extras);
+
+            if (callback.isSuccess()) {
+                Log.d(Constants.TAG, "New passphrase entered!");
+
+                // get again after it was entered
+                passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
+            } else {
+                Log.d(Constants.TAG, "Passphrase dialog canceled!");
+
+                // TODO: stop thread?!
+            }
+
         }
 
         return passphrase;
     }
+
+    public class PassphraseActivityCallback implements Handler.Callback {
+        public static final int SUCCESS = 1;
+        public static final int NO_SUCCESS = 0;
+
+        private boolean success;
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (msg.arg1 == SUCCESS) {
+                success = true;
+            } else {
+                success = false;
+            }
+
+            // resume
+            synchronized (userInputLock) {
+                userInputLock.notifyAll();
+            }
+            mThreadPool.resume();
+            return true;
+        }
+    };
 
     /**
      * Search database for key ids based on emails.
@@ -143,20 +172,65 @@ public class CryptoService extends Service {
         // also encrypt to our self (so that we can decrypt it later!)
         keyIds.add(ownKeyId);
 
-        // convert o long[]
+        // convert to long[]
         long[] keyIdsArray = new long[keyIds.size()];
         for (int i = 0; i < keyIdsArray.length; i++) {
             keyIdsArray[i] = keyIds.get(i);
         }
 
         if (missingUserIds || manySameUserIds) {
+            SelectPubKeysActivityCallback callback = new SelectPubKeysActivityCallback();
+            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
+
             Bundle extras = new Bundle();
             extras.putLongArray(CryptoServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS, extras);
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS,
+                    messenger, extras);
+
+            if (callback.isNewSelection()) {
+                Log.d(Constants.TAG, "New selection of pub keys!");
+                keyIdsArray = callback.getPubKeyIds();
+            } else {
+                Log.d(Constants.TAG, "Pub key selection canceled!");
+            }
         }
 
         return keyIdsArray;
     }
+
+    public class SelectPubKeysActivityCallback implements Handler.Callback {
+        public static final int OKAY = 1;
+        public static final int CANCEL = 0;
+        public static final String PUB_KEY_IDS = "pub_key_ids";
+
+        private boolean newSelection;
+        private long[] pubKeyIds;
+
+        public boolean isNewSelection() {
+            return newSelection;
+        }
+
+        public long[] getPubKeyIds() {
+            return pubKeyIds;
+        }
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            if (msg.arg1 == OKAY) {
+                newSelection = true;
+                pubKeyIds = msg.getData().getLongArray(PUB_KEY_IDS);
+            } else {
+                newSelection = false;
+            }
+
+            // resume
+            synchronized (userInputLock) {
+                userInputLock.notifyAll();
+            }
+            mThreadPool.resume();
+            return true;
+        }
+    };
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
             ICryptoCallback callback, AppSettings appSettings, boolean sign) throws RemoteException {
@@ -390,55 +464,6 @@ public class CryptoService extends Service {
             checkAndEnqueue(r);
         }
 
-        // @Override
-        // public void setup(boolean asciiArmor, boolean newKeyring, String newKeyringUserId)
-        // throws RemoteException {
-        //
-        //
-        // }
-
-    };
-
-    private final IServiceActivityCallback.Stub mBinderServiceActivity = new IServiceActivityCallback.Stub() {
-
-        @Override
-        public void onRegistered(boolean success, String packageName) throws RemoteException {
-            Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
-
-            if (success) {
-                // resume threads
-                if (isPackageAllowed(packageName, false)) {
-                    mThreadPool.resume();
-                } else {
-                    // TODO: should not happen?
-                    mThreadPool.shutdownNow();
-                }
-            } else {
-                mThreadPool.resume();
-                // TODO
-                // mPoolQueue.clear();
-                // mPoolQueue.re
-                // mThreadPool.
-            }
-
-        }
-
-        @Override
-        public void onCachedPassphrase(boolean success) throws RemoteException {
-            Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
-            mThreadPool.resume();
-
-            synchronized (userInputLock) {
-                userInputLock.notifyAll();
-            }
-        }
-
-        @Override
-        public void onSelectedPublicKeys(long[] keyIds) throws RemoteException {
-            mThreadPool.resume();
-
-        }
-
     };
 
     private void checkAndEnqueue(Runnable r) {
@@ -454,12 +479,69 @@ public class CryptoService extends Service {
             Bundle extras = new Bundle();
             // TODO: currently simply uses first entry
             extras.putString(CryptoServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_REGISTER, extras);
 
-            mThreadPool.execute(r);
+            RegisterActivityCallback callback = new RegisterActivityCallback();
+            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
+
+            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_REGISTER, messenger,
+                    extras);
+
+            if (callback.isAllowed()) {
+                mThreadPool.execute(r);
+            } else {
+                Log.d(Constants.TAG, "User disallowed app!");
+            }
 
             Log.d(Constants.TAG, "Enqueued runnable…");
         }
+    }
+
+    public class RegisterActivityCallback implements Handler.Callback {
+        public static final int ALLOW = 1;
+        public static final int DISALLOW = 0;
+        public static final String PACKAGE_NAME = "package_name";
+
+        private boolean allowed;
+        private String packageName;
+
+        public boolean isAllowed() {
+            return allowed;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            Log.d(Constants.TAG, "msg what: " + msg.what);
+
+            if (msg.arg1 == ALLOW) {
+                allowed = true;
+                packageName = msg.getData().getString(PACKAGE_NAME);
+
+                // resume threads
+                if (isPackageAllowed(packageName, false)) {
+                    synchronized (userInputLock) {
+                        userInputLock.notifyAll();
+                    }
+                    mThreadPool.resume();
+                } else {
+                    // Should not happen!
+                    Log.e(Constants.TAG, "Should not happen! Emergency shutdown!");
+                    mThreadPool.shutdownNow();
+                }
+            } else {
+                allowed = false;
+
+                synchronized (userInputLock) {
+                    userInputLock.notifyAll();
+                }
+                mThreadPool.resume();
+            }
+            return false;
+        }
+
     }
 
     /**
@@ -531,25 +613,27 @@ public class CryptoService extends Service {
         return false;
     }
 
-    private void pauseQueueAndStartServiceActivity(String action, Bundle extras) {
-        mThreadPool.pause();
-
-        Log.d(Constants.TAG, "starting activity...");
-        Intent intent = new Intent(getBaseContext(), CryptoServiceActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction(action);
-        if (extras != null) {
-            intent.putExtras(extras);
-        }
-        getApplication().startActivity(intent);
-
-        // lock current thread for user input
+    private void pauseQueueAndStartServiceActivity(String action, Messenger messenger, Bundle extras) {
         synchronized (userInputLock) {
+            mThreadPool.pause();
+
+            Log.d(Constants.TAG, "starting activity...");
+            Intent intent = new Intent(getBaseContext(), CryptoServiceActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setAction(action);
+
+            extras.putParcelable(CryptoServiceActivity.EXTRA_MESSENGER, messenger);
+            intent.putExtras(extras);
+
+            getApplication().startActivity(intent);
+
+            // lock current thread for user input
             try {
                 userInputLock.wait();
             } catch (InterruptedException e) {
                 Log.e(Constants.TAG, "CryptoService", e);
             }
         }
+
     }
 }

@@ -500,11 +500,6 @@
             <intent-filter>
                 <action android:name="org.openintents.crypto.ICryptoService" />
             </intent-filter>
-            <intent-filter>
-
-                <!-- Can only be used from OpenPGP Keychain (internal): -->
-                <action android:name="org.sufficientlysecure.keychain.crypto_provider.IServiceActivityCallback" />
-            </intent-filter>
 
             <meta-data
                 android:name="api_version"
