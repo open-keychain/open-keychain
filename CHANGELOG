@@ -1,3 +1,8 @@
+2.1
+* Lots of bug fixes
+* New API for developers
+* PRNG bug fix by Google
+
 2.0
 * Complete redesign
 * Share public keys via qr codes, nfc beam
