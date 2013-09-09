@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
 import org.openintents.crypto.CryptoError;
 import org.openintents.crypto.CryptoSignatureResult;
@@ -233,7 +234,8 @@ public class CryptoService extends Service {
     };
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
-            ICryptoCallback callback, AppSettings appSettings, boolean sign) throws RemoteException {
+            boolean asciiArmor, ICryptoCallback callback, AppSettings appSettings, boolean sign)
+            throws RemoteException {
         try {
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -252,13 +254,13 @@ public class CryptoService extends Service {
                     return;
                 }
 
-                PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
-                        appSettings.isAsciiArmor(), appSettings.getCompression(), keyIds, null,
+                PgpMain.encryptAndSign(mContext, null, inputData, outputStream, asciiArmor,
+                        appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
                         appSettings.getHashAlgorithm(), true, passphrase);
             } else {
-                PgpMain.encryptAndSign(mContext, null, inputData, outputStream,
-                        appSettings.isAsciiArmor(), appSettings.getCompression(), keyIds, null,
+                PgpMain.encryptAndSign(mContext, null, inputData, outputStream, asciiArmor,
+                        appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), Id.key.none,
                         appSettings.getHashAlgorithm(), true, null);
             }
@@ -280,6 +282,7 @@ public class CryptoService extends Service {
         }
     }
 
+    // TODO: asciiArmor?!
     private void signSafe(byte[] inputBytes, ICryptoCallback callback, AppSettings appSettings)
             throws RemoteException {
         try {
@@ -327,19 +330,50 @@ public class CryptoService extends Service {
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
             long inputLength = inputBytes.length;
             InputData inputData = new InputData(inputStream, inputLength);
-
-            Log.d(Constants.TAG, "in: " + new String(inputBytes));
-
             OutputStream outputStream = new ByteArrayOutputStream();
+
+            String message = new String(inputBytes);
+            Log.d(Constants.TAG, "in: " + message);
+
+            // checked if signed only
+            boolean signedOnly = false;
+            Matcher matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(message);
+            if (matcher.matches()) {
+                signedOnly = true;
+            }
 
             // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
             // app, Fix this?
-            long secretKeyId = PgpMain.getDecryptionKeyId(mContext, inputStream);
-            if (secretKeyId == Id.key.none) {
-                throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
-            }
+            // long secretKeyId = PgpMain.getDecryptionKeyId(mContext, inputStream);
+            // if (secretKeyId == Id.key.none) {
+            // throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
+            // }
 
-            Log.d(Constants.TAG, "Got input:\n" + new String(inputBytes));
+            // TODO: duplicates functions from DecryptActivity!
+            boolean assumeSymmetricEncryption = false;
+            long secretKeyId;
+            try {
+                if (inputStream.markSupported()) {
+                    inputStream.mark(200); // should probably set this to the max size of two pgpF
+                                           // objects, if it even needs to be anything other than 0.
+                }
+                secretKeyId = PgpMain.getDecryptionKeyId(this, inputStream);
+                if (secretKeyId == Id.key.none) {
+                    throw new PgpMain.PgpGeneralException(
+                            getString(R.string.error_noSecretKeyFound));
+                }
+                assumeSymmetricEncryption = false;
+            } catch (PgpMain.NoAsymmetricEncryptionException e) {
+                if (inputStream.markSupported()) {
+                    inputStream.reset();
+                }
+                secretKeyId = Id.key.symmetric;
+                if (!PgpMain.hasSymmetricEncryption(this, inputStream)) {
+                    throw new PgpMain.PgpGeneralException(
+                            getString(R.string.error_noKnownEncryptionFound));
+                }
+                assumeSymmetricEncryption = true;
+            }
 
             Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
@@ -350,17 +384,15 @@ public class CryptoService extends Service {
                 return;
             }
 
-            // if (signedOnly) {
-            // resultData = PgpMain.verifyText(this, this, inputData, outStream,
-            // lookupUnknownKey);
-            // } else {
-            // resultData = PgpMain.decryptAndVerify(this, this, inputData, outStream,
-            // PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
-            // assumeSymmetricEncryption);
-            // }
-
-            Bundle outputBundle = PgpMain.decryptAndVerify(mContext, null, inputData, outputStream,
-                    passphrase, false);
+            Bundle outputBundle;
+            if (signedOnly) {
+                // TODO: download missing keys from keyserver?
+                outputBundle = PgpMain.verifyText(this, null, inputData, outputStream, false);
+            } else {
+                // TODO: assume symmetric: callback to enter symmetric pass
+                outputBundle = PgpMain.decryptAndVerify(this, null, inputData, outputStream,
+                        passphrase, false);
+            }
 
             outputStream.close();
 
@@ -377,8 +409,11 @@ public class CryptoService extends Service {
             boolean signatureUnknown = outputBundle
                     .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
 
-            CryptoSignatureResult sigResult = new CryptoSignatureResult(signatureUserId, signature,
-                    signatureSuccess, signatureUnknown);
+            CryptoSignatureResult sigResult = null;
+            if (signature) {
+                sigResult = new CryptoSignatureResult(signatureUserId, signature, signatureSuccess,
+                        signatureUnknown);
+            }
 
             // return over handler on client side
             callback.onSuccess(outputBytes, sigResult);
@@ -397,7 +432,7 @@ public class CryptoService extends Service {
 
         @Override
         public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final ICryptoCallback callback) throws RemoteException {
+                final boolean asciiArmor, final ICryptoCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -406,7 +441,8 @@ public class CryptoService extends Service {
                 @Override
                 public void run() {
                     try {
-                        encryptAndSignSafe(inputBytes, encryptionUserIds, callback, settings, false);
+                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
+                                settings, false);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoService", e);
                     }
@@ -418,7 +454,7 @@ public class CryptoService extends Service {
 
         @Override
         public void encryptAndSign(final byte[] inputBytes, final String[] encryptionUserIds,
-                final ICryptoCallback callback) throws RemoteException {
+                final boolean asciiArmor, final ICryptoCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -427,7 +463,8 @@ public class CryptoService extends Service {
                 @Override
                 public void run() {
                     try {
-                        encryptAndSignSafe(inputBytes, encryptionUserIds, callback, settings, true);
+                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
+                                settings, true);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoService", e);
                     }
@@ -438,7 +475,7 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void sign(final byte[] inputBytes, final ICryptoCallback callback)
+        public void sign(final byte[] inputBytes, boolean asciiArmor, final ICryptoCallback callback)
                 throws RemoteException {
             final AppSettings settings = getAppSettings();
 

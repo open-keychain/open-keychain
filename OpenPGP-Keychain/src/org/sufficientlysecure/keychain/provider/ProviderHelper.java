@@ -745,7 +745,6 @@ public class ProviderHelper {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
         values.put(ApiApps.KEY_ID, appSettings.getKeyId());
-        values.put(ApiApps.ASCII_ARMOR, appSettings.isAsciiArmor());
         values.put(ApiApps.COMPRESSION, appSettings.getCompression());
         values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
         values.put(ApiApps.HASH_ALORITHM, appSettings.getHashAlgorithm());
@@ -775,8 +774,6 @@ public class ProviderHelper {
             settings.setPackageName(cur.getString(cur
                     .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
             settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));
-            settings.setAsciiArmor(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.ApiApps.ASCII_ARMOR)) == 1);
             settings.setCompression(cur.getInt(cur
                     .getColumnIndexOrThrow(KeychainContract.ApiApps.COMPRESSION)));
             settings.setHashAlgorithm(cur.getInt(cur

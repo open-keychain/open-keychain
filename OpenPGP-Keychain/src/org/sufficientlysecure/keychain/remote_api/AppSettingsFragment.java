@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.remote_api;
 
+import java.util.HashMap;
+
+import org.spongycastle.bcpg.HashAlgorithmTags;
+import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -25,6 +29,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyActivity;
+import org.sufficientlysecure.keychain.util.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
@@ -41,12 +46,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class AppSettingsFragment extends Fragment {
@@ -62,7 +67,13 @@ public class AppSettingsFragment extends Fragment {
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
     private Button mSelectKeyButton;
-    private CheckBox mAsciiArmorCheckBox;
+    private Spinner mEncryptionAlgorithm;
+    private Spinner mHashAlgorithm;
+    private Spinner mCompression;
+
+    KeyValueSpinnerAdapter encryptionAdapter;
+    KeyValueSpinnerAdapter hashAdapter;
+    KeyValueSpinnerAdapter compressionAdapter;
 
     public AppSettings getAppSettings() {
         return appSettings;
@@ -72,7 +83,10 @@ public class AppSettingsFragment extends Fragment {
         this.appSettings = appSettings;
         setPackage(appSettings.getPackageName());
         updateSelectedKeyView(appSettings.getKeyId());
-        mAsciiArmorCheckBox.setChecked(appSettings.isAsciiArmor());
+        mEncryptionAlgorithm.setSelection(encryptionAdapter.getPosition(appSettings
+                .getEncryptionAlgorithm()));
+        mHashAlgorithm.setSelection(hashAdapter.getPosition(appSettings.getHashAlgorithm()));
+        mCompression.setSelection(compressionAdapter.getPosition(appSettings.getCompression()));
     }
 
     /**
@@ -95,21 +109,86 @@ public class AppSettingsFragment extends Fragment {
         mKeyUserId = (TextView) view.findViewById(R.id.api_app_settings_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.api_app_settings_user_id_rest);
         mSelectKeyButton = (Button) view.findViewById(R.id.api_app_settings_select_key_button);
-        mAsciiArmorCheckBox = (CheckBox) view.findViewById(R.id.api_app_ascii_armor);
+        mEncryptionAlgorithm = (Spinner) view
+                .findViewById(R.id.api_app_settings_encryption_algorithm);
+        mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
+        mCompression = (Spinner) view.findViewById(R.id.api_app_settings_compression);
+
+        HashMap<Integer, String> encryptionMap = new HashMap<Integer, String>();
+        encryptionMap.put(PGPEncryptedData.AES_128, "AES-128");
+        encryptionMap.put(PGPEncryptedData.AES_192, "AES-192");
+        encryptionMap.put(PGPEncryptedData.AES_256, "AES-256");
+        encryptionMap.put(PGPEncryptedData.BLOWFISH, "Blowfish");
+        encryptionMap.put(PGPEncryptedData.TWOFISH, "Twofish");
+        encryptionMap.put(PGPEncryptedData.CAST5, "CAST5");
+        encryptionMap.put(PGPEncryptedData.DES, "DES");
+        encryptionMap.put(PGPEncryptedData.TRIPLE_DES, "Triple DES");
+        encryptionMap.put(PGPEncryptedData.IDEA, "IDEA");
+
+        encryptionAdapter = new KeyValueSpinnerAdapter(getActivity(), encryptionMap);
+        mEncryptionAlgorithm.setAdapter(encryptionAdapter);
+        mEncryptionAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                appSettings.setEncryptionAlgorithm((int) id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        HashMap<Integer, String> hashMap = new HashMap<Integer, String>();
+        hashMap.put(HashAlgorithmTags.MD5, "MD5");
+        hashMap.put(HashAlgorithmTags.RIPEMD160, "RIPEMD-160");
+        hashMap.put(HashAlgorithmTags.SHA1, "SHA-1");
+        hashMap.put(HashAlgorithmTags.SHA224, "SHA-224");
+        hashMap.put(HashAlgorithmTags.SHA256, "SHA-256");
+        hashMap.put(HashAlgorithmTags.SHA384, "SHA-384");
+        hashMap.put(HashAlgorithmTags.SHA512, "SHA-512");
+
+        hashAdapter = new KeyValueSpinnerAdapter(getActivity(), hashMap);
+        mHashAlgorithm.setAdapter(hashAdapter);
+        mHashAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                appSettings.setHashAlgorithm((int) id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        HashMap<Integer, String> compressionMap = new HashMap<Integer, String>();
+        compressionMap.put(Id.choice.compression.none, getString(R.string.choice_none) + " ("
+                + getString(R.string.fast) + ")");
+        compressionMap.put(Id.choice.compression.zip, "ZIP (" + getString(R.string.fast) + ")");
+        compressionMap.put(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.fast) + ")");
+        compressionMap.put(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.very_slow)
+                + ")");
+
+        compressionAdapter = new KeyValueSpinnerAdapter(getActivity(), compressionMap);
+        mCompression.setAdapter(compressionAdapter);
+        mCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                appSettings.setCompression((int) id);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
 
         mSelectKeyButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 selectSecretKey();
-            }
-        });
-
-        mAsciiArmorCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                appSettings.setAsciiArmor(isChecked);
             }
         });
 

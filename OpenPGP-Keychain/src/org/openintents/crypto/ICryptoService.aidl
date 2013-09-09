@@ -34,7 +34,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in ICryptoCallback callback);
+    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in ICryptoCallback callback);
     
     /**
      * Sign
@@ -44,7 +44,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void sign(in byte[] inputBytes, in ICryptoCallback callback);
+    oneway void sign(in byte[] inputBytes, in boolean asciiArmor, in ICryptoCallback callback);
     
     /**
      * Encrypt and sign
@@ -58,7 +58,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, in ICryptoCallback callback);
+    oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in ICryptoCallback callback);
     
     /**
      * Decrypts and verifies given input bytes. If no signature is present this method

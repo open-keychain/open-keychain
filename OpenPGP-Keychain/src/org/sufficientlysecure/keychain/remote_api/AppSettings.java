@@ -24,7 +24,6 @@ import org.sufficientlysecure.keychain.Id;
 public class AppSettings {
     private String packageName;
     private long keyId = Id.key.none;
-    private boolean asciiArmor;
     private int encryptionAlgorithm;
     private int hashAlgorithm;
     private int compression;
@@ -37,10 +36,9 @@ public class AppSettings {
         super();
         this.packageName = packageName;
         // defaults:
-        this.asciiArmor = true;
-        this.encryptionAlgorithm = PGPEncryptedData.AES_128; // AES-128
-        this.hashAlgorithm = HashAlgorithmTags.SHA512; // SHA-512
-        this.compression = Id.choice.compression.zlib; // zlib
+        this.encryptionAlgorithm = PGPEncryptedData.AES_128;
+        this.hashAlgorithm = HashAlgorithmTags.SHA256;
+        this.compression = Id.choice.compression.zlib;
     }
 
     public String getPackageName() {
@@ -57,14 +55,6 @@ public class AppSettings {
 
     public void setKeyId(long scretKeyId) {
         this.keyId = scretKeyId;
-    }
-
-    public boolean isAsciiArmor() {
-        return asciiArmor;
-    }
-
-    public void setAsciiArmor(boolean asciiArmor) {
-        this.asciiArmor = asciiArmor;
     }
 
     public int getEncryptionAlgorithm() {

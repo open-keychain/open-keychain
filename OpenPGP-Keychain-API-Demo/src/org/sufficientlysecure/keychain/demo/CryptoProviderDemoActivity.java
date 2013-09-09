@@ -74,7 +74,7 @@ public class CryptoProviderDemoActivity extends Activity {
         @Override
         public void onSuccess(final byte[] outputBytes, CryptoSignatureResult signatureResult)
                 throws RemoteException {
-            Log.d(Constants.TAG, "onEncryptSignSuccess");
+            Log.d(Constants.TAG, "encryptCallback");
 
             runOnUiThread(new Runnable() {
 
@@ -92,12 +92,12 @@ public class CryptoProviderDemoActivity extends Activity {
 
     };
 
-    final ICryptoCallback.Stub decryptCallback = new ICryptoCallback.Stub() {
+    final ICryptoCallback.Stub decryptAndVerifyCallback = new ICryptoCallback.Stub() {
 
         @Override
         public void onSuccess(final byte[] outputBytes, final CryptoSignatureResult signatureResult)
                 throws RemoteException {
-            Log.d(Constants.TAG, "onDecryptVerifySuccess");
+            Log.d(Constants.TAG, "decryptAndVerifyCallback");
 
             runOnUiThread(new Runnable() {
 
@@ -136,7 +136,7 @@ public class CryptoProviderDemoActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -146,7 +146,7 @@ public class CryptoProviderDemoActivity extends Activity {
         byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().sign(inputBytes, encryptCallback);
+            mCryptoServiceConnection.getService().sign(inputBytes, true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -157,17 +157,18 @@ public class CryptoProviderDemoActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
-    public void decryptOnClick(View view) {
+    public void decryptAndVerifyOnClick(View view) {
         byte[] inputBytes = mCiphertext.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes, decryptCallback);
+            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes,
+                    decryptAndVerifyCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }

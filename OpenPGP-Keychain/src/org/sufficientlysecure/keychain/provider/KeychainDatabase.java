@@ -64,14 +64,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
             + BaseColumns._ID + ") ON DELETE CASCADE)";
 
-    private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS "
-            + Tables.API_APPS + " (" + BaseColumns._ID
-            + " INTEGER PRIMARY KEY AUTOINCREMENT, " + ApiAppsColumns.PACKAGE_NAME
-            + " TEXT UNIQUE, " + ApiAppsColumns.KEY_ID + " INT64, "
-            + ApiAppsColumns.ASCII_ARMOR + " INTEGER, "
-            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
-            + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
-            + ApiAppsColumns.COMPRESSION + " INTEGER)";
+    private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
+            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, " + ApiAppsColumns.KEY_ID + " INT64, "
+            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, " + ApiAppsColumns.HASH_ALORITHM
+            + " INTEGER, " + ApiAppsColumns.COMPRESSION + " INTEGER)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

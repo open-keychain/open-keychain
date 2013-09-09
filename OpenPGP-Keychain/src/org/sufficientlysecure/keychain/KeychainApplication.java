@@ -21,6 +21,7 @@ import java.io.File;
 import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
 import android.app.Application;
@@ -30,15 +31,16 @@ public class KeychainApplication extends Application {
 
     static {
         // Define Java Security Provider to be Bouncy Castle
-    	Security.insertProviderAt(new BouncyCastleProvider(),  1);
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        
+
         // apply RNG fixes
         PRNGFixes.apply();
+        Log.d(Constants.TAG, "PRNG Fixes applied!");
 
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
