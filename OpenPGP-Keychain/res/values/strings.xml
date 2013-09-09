@@ -306,14 +306,6 @@
     <string name="progress_querying">querying…</string>
     <string name="progress_queryingServer">querying %s…</string>
 
-    <!-- permission strings -->
-    <string name="permission_group_label">OpenPGP Keychain</string>
-    <string name="permission_group_description">Permissions to use OpenPGP</string>
-    <string name="permission_access_api_label">Encrypt/Sign/Decrypt/Create keys without user interaction, Read key details of public and secret keys (The keys themselves can NOT be read.)</string>
-    <string name="permission_access_api_description">Encrypt/Sign/Decrypt/Create keys (by using Intents or Remote Service) without user interaction. Read key details of public and secret keys stored in OpenPGP, such as key ID and user IDs. The keys themselves can NOT be read.</string>
-    <string name="permission_access_keys_label">Import/Export actual public and secret keys</string>
-    <string name="permission_access_keys_description">Import and export actual private and public keys directly without user interaction.</string>
-
     <!-- action strings -->
     <string name="action_encrypt">Encrypt</string>
     <string name="action_decrypt">Decrypt</string>
@@ -335,7 +327,7 @@
     <string name="slow">slow</string>
     <string name="very_slow">very slow</string>
 
-    <!-- APG 2.0 -->
+    <!-- OpenPGP Keychain (2.0) -->
 
 
     <!-- Dashboard -->

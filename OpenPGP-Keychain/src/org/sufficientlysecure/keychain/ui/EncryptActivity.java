@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.helper.Preferences;
@@ -77,29 +76,20 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
     public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
 
-    // with permission
-    public static final String ACTION_ENCRYPT_AND_RETURN = Constants.INTENT_PREFIX
-            + "ENCRYPT_AND_RETURN";
-    public static final String ACTION_ENCRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
-            + "ENCRYPT_STREAM_AND_RETURN";
-    public static final String ACTION_GENERATE_SIGNATURE_AND_RETURN = Constants.INTENT_PREFIX
-            + "GENERATE_SIGNATURE_AND_RETURN";
-
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_ASCII_ARMOUR = "asciiArmour";
-    public static final String EXTRA_SEND_TO = "sendTo";
+    public static final String EXTRA_ASCII_ARMOUR = "ascii_armor";
+    public static final String EXTRA_SEND_TO = "send_to";
     public static final String EXTRA_SUBJECT = "subject";
-    public static final String EXTRA_SIGNATURE_KEY_ID = "signatureKeyId";
-    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryptionKeyIds";
+    public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
+    public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
     private String mSubject = null;
     private String mSendTo = null;
 
     private long mEncryptionKeyIds[] = null;
 
-    private boolean mEncryptImmediately = false;
     private EditText mMessage = null;
     private Button mSelectKeysButton = null;
 
@@ -197,12 +187,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // check permissions for intent actions without user interaction
-        String[] restrictedActions = new String[] { ACTION_ENCRYPT_AND_RETURN,
-                ACTION_GENERATE_SIGNATURE_AND_RETURN, ACTION_ENCRYPT_STREAM_AND_RETURN };
-        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
-                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
-
         setContentView(R.layout.encrypt);
 
         // set actionbar without home button if called from another app
@@ -217,26 +201,26 @@ public class EncryptActivity extends SherlockFragmentActivity {
         updateSource();
         updateMode();
 
-        if (mEncryptImmediately) {
-            mSourcePrevious.setClickable(false);
-            mSourcePrevious.setEnabled(false);
-            mSourcePrevious.setVisibility(View.INVISIBLE);
-
-            mSourceNext.setClickable(false);
-            mSourceNext.setEnabled(false);
-            mSourceNext.setVisibility(View.INVISIBLE);
-
-            mSourceLabel.setClickable(false);
-            mSourceLabel.setEnabled(false);
-        }
+        // if (mEncryptImmediately) {
+        // mSourcePrevious.setClickable(false);
+        // mSourcePrevious.setEnabled(false);
+        // mSourcePrevious.setVisibility(View.INVISIBLE);
+        //
+        // mSourceNext.setClickable(false);
+        // mSourceNext.setEnabled(false);
+        // mSourceNext.setVisibility(View.INVISIBLE);
+        //
+        // mSourceLabel.setClickable(false);
+        // mSourceLabel.setEnabled(false);
+        // }
 
         updateActionBarButtons();
 
-        if (mEncryptImmediately
-                && (mMessage.getText().length() > 0 || mData != null)
-                && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || mSecretKeyId != 0)) {
-            encryptClicked();
-        }
+        // if (mEncryptImmediately
+        // && (mMessage.getText().length() > 0 || mData != null)
+        // && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || mSecretKeyId != 0)) {
+        // encryptClicked();
+        // }
     }
 
     /**
@@ -276,16 +260,16 @@ public class EncryptActivity extends SherlockFragmentActivity {
             }
         }
 
-        if (ACTION_ENCRYPT_AND_RETURN.equals(action)
-                || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-            mEncryptImmediately = true;
-        }
-
-        if (ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-            mGenerateSignature = true;
-            mOverrideAsciiArmour = true;
-            mAsciiArmorDemand = false;
-        }
+        // if (ACTION_ENCRYPT_AND_RETURN.equals(action)
+        // || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
+        // mEncryptImmediately = true;
+        // }
+        //
+        // if (ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
+        // mGenerateSignature = true;
+        // mOverrideAsciiArmour = true;
+        // mAsciiArmorDemand = false;
+        // }
 
         if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
             mAsciiArmorDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
@@ -309,8 +293,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
         /**
          * Main Actions
          */
-        if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_AND_RETURN.equals(action)
-                || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
+        // if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_AND_RETURN.equals(action)
+        // || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
+        if (ACTION_ENCRYPT.equals(action)) {
             if (textData != null) {
                 mMessage.setText(textData);
             }
@@ -340,10 +325,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 // end activity
                 finish();
             }
-        } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
-            // TODO: Set mStreamAndReturnUri that is used later to encrypt a stream!
-
-            mStreamAndReturnUri = uri;
+            // } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
+            // // TODO: Set mStreamAndReturnUri that is used later to encrypt a stream!
+            //
+            // mStreamAndReturnUri = uri;
         }
     }
 
@@ -470,31 +455,31 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSourceLabel.setText(R.string.label_message);
 
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                if (mEncryptImmediately) {
-                    setActionbarButtons(true, R.string.btn_encrypt, false, 0);
-                } else {
-                    setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
-                            R.string.btn_encryptToClipboard);
-                }
+                // if (mEncryptImmediately) {
+                // setActionbarButtons(true, R.string.btn_encrypt, false, 0);
+                // } else {
+                setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                        R.string.btn_encryptToClipboard);
+                // }
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (mSecretKeyId == 0) {
                         setActionbarButtons(false, 0, false, 0);
                     } else {
-                        if (mEncryptImmediately) {
-                            setActionbarButtons(true, R.string.btn_sign, false, 0);
-                        } else {
-                            setActionbarButtons(true, R.string.btn_signAndEmail, true,
-                                    R.string.btn_signToClipboard);
-                        }
+                        // if (mEncryptImmediately) {
+                        // setActionbarButtons(true, R.string.btn_sign, false, 0);
+                        // } else {
+                        setActionbarButtons(true, R.string.btn_signAndEmail, true,
+                                R.string.btn_signToClipboard);
+                        // }
                     }
                 } else {
-                    if (mEncryptImmediately) {
-                        setActionbarButtons(true, R.string.btn_encrypt, false, 0);
-                    } else {
-                        setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
-                                R.string.btn_encryptToClipboard);
-                    }
+                    // if (mEncryptImmediately) {
+                    // setActionbarButtons(true, R.string.btn_encrypt, false, 0);
+                    // } else {
+                    setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                            R.string.btn_encryptToClipboard);
+                    // }
                 }
             }
             break;
@@ -726,7 +711,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, mData);
             } else {
                 String message = mMessage.getText().toString();
-                if (signOnly && !mEncryptImmediately) {
+                // if (signOnly && !mEncryptImmediately) {
+                if (signOnly) {
                     fixBadCharactersForGmail(message);
                 }
                 data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
@@ -769,13 +755,13 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         break;
 
                     case Id.target.email:
-                        if (mEncryptImmediately) {
-                            Intent intent = new Intent();
-                            intent.putExtras(data);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                            return;
-                        }
+                        // if (mEncryptImmediately) {
+                        // Intent intent = new Intent();
+                        // intent.putExtras(data);
+                        // setResult(RESULT_OK, intent);
+                        // finish();
+                        // return;
+                        // }
 
                         output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
                         Log.d(Constants.TAG, "output: " + output);

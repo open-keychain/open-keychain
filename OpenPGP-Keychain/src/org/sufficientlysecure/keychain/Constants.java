@@ -20,7 +20,7 @@ import android.os.Environment;
 
 public final class Constants {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = BuildConfig.DEBUG;
 
     public static final String TAG = "Keychain";
 
@@ -29,14 +29,11 @@ public final class Constants {
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 
-    public static final String PERMISSION_ACCESS_KEY_DATABASE = PACKAGE_NAME
-            + ".permission.ACCESS_KEY_DATABASE";
-    public static final String PERMISSION_ACCESS_API = PACKAGE_NAME + ".permission.ACCESS_API";
-
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
 
     public static final class path {
-        public static final String APP_DIR = Environment.getExternalStorageDirectory() + "/OpenPGP-Keychain";
+        public static final String APP_DIR = Environment.getExternalStorageDirectory()
+                + "/OpenPGP-Keychain";
     }
 
     public static final class pref {

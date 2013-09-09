@@ -17,13 +17,21 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.regex.Matcher;
+
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.PgpHelper;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -35,12 +43,8 @@ import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -60,14 +64,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.regex.Matcher;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
+@SuppressLint("NewApi")
 public class DecryptActivity extends SherlockFragmentActivity {
 
     /* Intents */
@@ -75,16 +76,10 @@ public class DecryptActivity extends SherlockFragmentActivity {
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
     public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
 
-    // with permission
-    public static final String ACTION_DECRYPT_AND_RETURN = Constants.INTENT_PREFIX
-            + "DECRYPT_AND_RETURN";
-    public static final String ACTION_DECRYPT_STREAM_AND_RETURN = Constants.INTENT_PREFIX
-            + "DECRYPT_STREAM_AND_RETURN";
-
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_REPLY_TO = "replyTo";
+    public static final String EXTRA_REPLY_TO = "reply_to";
     public static final String EXTRA_SUBJECT = "subject";
     public static final String EXTRA_BINARY = "binary";
 
@@ -247,11 +242,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // check permissions for intent actions without user interaction
-        String[] restrictedActions = new String[] { ACTION_DECRYPT_AND_RETURN };
-        OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
-                Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
 
         setContentView(R.layout.decrypt);
 
@@ -456,38 +446,39 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 // end activity
                 finish();
             }
-        } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
-            mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
-
-            if (mContentUri == null) {
-                mDataBytes = extras.getByteArray(EXTRA_DATA);
-                String data = extras.getString(EXTRA_TEXT);
-                if (data != null) {
-                    Matcher matcher = PgpMain.PGP_MESSAGE.matcher(data);
-                    if (matcher.matches()) {
-                        data = matcher.group(1);
-                        // replace non breakable spaces
-                        data = data.replaceAll("\\xa0", " ");
-                        mMessage.setText(data);
-                    } else {
-                        matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(data);
-                        if (matcher.matches()) {
-                            data = matcher.group(1);
-                            // replace non breakable spaces
-                            data = data.replaceAll("\\xa0", " ");
-                            mMessage.setText(data);
-                            mDecryptString = getString(R.string.btn_verify);
-
-                            // build new action bar
-                            invalidateOptionsMenu();
-                        }
-                    }
-                }
-            }
-            mReturnResult = true;
-        } else if (ACTION_DECRYPT_STREAM_AND_RETURN.equals(action)) {
-            // TODO: Implement decrypt stream
         }
+        // } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
+        // mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
+        //
+        // if (mContentUri == null) {
+        // mDataBytes = extras.getByteArray(EXTRA_DATA);
+        // String data = extras.getString(EXTRA_TEXT);
+        // if (data != null) {
+        // Matcher matcher = PgpMain.PGP_MESSAGE.matcher(data);
+        // if (matcher.matches()) {
+        // data = matcher.group(1);
+        // // replace non breakable spaces
+        // data = data.replaceAll("\\xa0", " ");
+        // mMessage.setText(data);
+        // } else {
+        // matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(data);
+        // if (matcher.matches()) {
+        // data = matcher.group(1);
+        // // replace non breakable spaces
+        // data = data.replaceAll("\\xa0", " ");
+        // mMessage.setText(data);
+        // mDecryptString = getString(R.string.btn_verify);
+        //
+        // // build new action bar
+        // invalidateOptionsMenu();
+        // }
+        // }
+        // }
+        // }
+        // mReturnResult = true;
+        // } else if (ACTION_DECRYPT_STREAM_AND_RETURN.equals(action)) {
+        // // TODO: Implement decrypt stream
+        // }
     }
 
     private void guessOutputFilename() {
@@ -662,7 +653,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
         try {
             try {
                 if (inStream.markSupported()) {
-                    inStream.mark(200); //should probably set this to the max size of two pgpF objects, if it even needs to be anything other than 0.
+                    inStream.mark(200); // should probably set this to the max size of two pgpF
+                                        // objects, if it even needs to be anything other than 0.
                 }
                 mSecretKeyId = PgpMain.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
@@ -781,7 +773,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mDataBytes);
             } else {
                 String message = mMessage.getText().toString();
-                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
+                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES,
+                        message.getBytes());
             }
         }
 
@@ -877,7 +870,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
                         if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                        } else if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
+                        } else if (returnData
+                                .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
                                     R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
@@ -952,4 +946,3 @@ public class DecryptActivity extends SherlockFragmentActivity {
     }
 
 }
-

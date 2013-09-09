@@ -34,7 +34,6 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -46,11 +45,11 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 public class KeychainProvider extends ContentProvider {
-    public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
-            + ".action.DATABASE_CHANGE";
-
-    public static final String EXTRA_BROADCAST_KEY_TYPE = "keyType";
-    public static final String EXTRA_BROADCAST_CONTENT_ITEM_TYPE = "contentItemType";
+    // public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
+    // + ".action.DATABASE_CHANGE";
+    //
+    // public static final String EXTRA_BROADCAST_KEY_TYPE = "key_type";
+    // public static final String EXTRA_BROADCAST_CONTENT_ITEM_TYPE = "contentItemType";
 
     private static final int PUBLIC_KEY_RING = 101;
     private static final int PUBLIC_KEY_RING_BY_ROW_ID = 102;
@@ -84,22 +83,16 @@ public class KeychainProvider extends ContentProvider {
 
     // private static final int DATA_STREAM = 401;
 
-    protected boolean mInternalProvider;
     protected UriMatcher mUriMatcher;
 
     /**
      * Build and return a {@link UriMatcher} that catches all {@link Uri} variations supported by
      * this {@link ContentProvider}.
      */
-    protected UriMatcher buildUriMatcher(boolean internalProvider) {
+    protected UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        String authority;
-        if (internalProvider) {
-            authority = KeychainContract.CONTENT_AUTHORITY_INTERNAL;
-        } else {
-            authority = KeychainContract.CONTENT_AUTHORITY_EXTERNAL;
-        }
+        String authority = KeychainContract.CONTENT_AUTHORITY;
 
         /**
          * public key rings
@@ -250,7 +243,7 @@ public class KeychainProvider extends ContentProvider {
     /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
-        mUriMatcher = buildUriMatcher(mInternalProvider);
+        mUriMatcher = buildUriMatcher();
         mApgDatabase = new KeychainDatabase(getContext());
         return true;
     }
@@ -359,11 +352,8 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.MASTER_KEY_ID);
-        // only give out keyRing blob when we are using the internal content provider
-        if (mInternalProvider) {
-            projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
-                    + KeyRingsColumns.KEY_RING_DATA);
-        }
+        projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.KEY_RING_DATA);
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
 
         return projectionMap;
@@ -389,10 +379,7 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeysColumns.CREATION, KeysColumns.CREATION);
         projectionMap.put(KeysColumns.EXPIRY, KeysColumns.EXPIRY);
         projectionMap.put(KeysColumns.KEY_RING_ROW_ID, KeysColumns.KEY_RING_ROW_ID);
-        // only give out keyRing blob when we are using the internal content provider
-        if (mInternalProvider) {
-            projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
-        }
+        projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
         projectionMap.put(KeysColumns.RANK, KeysColumns.RANK);
 
         return projectionMap;

@@ -66,11 +66,10 @@ public class KeychainContract {
         public static final int SECRET = 1;
     }
 
-    public static final String CONTENT_AUTHORITY_EXTERNAL = Constants.PACKAGE_NAME;
-    public static final String CONTENT_AUTHORITY_INTERNAL = Constants.PACKAGE_NAME + ".internal";
+    public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".provider";
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri.parse("content://"
-            + CONTENT_AUTHORITY_INTERNAL);
+            + CONTENT_AUTHORITY);
 
     public static final String BASE_KEY_RINGS = "key_rings";
     public static final String BASE_DATA = "data";

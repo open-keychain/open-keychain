@@ -48,17 +48,20 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 public class ImportKeysActivity extends SherlockFragmentActivity {
-    public static final String ACTION_IMPORT = Constants.INTENT_PREFIX + "IMPORT";
-    public static final String ACTION_IMPORT_FROM_FILE = Constants.INTENT_PREFIX
-            + "IMPORT_FROM_FILE";
-    public static final String ACTION_IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
-            + "IMPORT_FROM_QR_CODE";
-    public static final String ACTION_IMPORT_FROM_NFC = Constants.INTENT_PREFIX + "IMPORT_FROM_NFC";
+    public static final String ACTION_KEY_IMPORT = Constants.INTENT_PREFIX + "KEY_IMPORT";
+    public static final String ACTION_KEY_IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
+            + "KEY_IMPORT_FROM_QR_CODE";
+
+    // Actions for internal use only:
+    public static final String ACTION_KEY_IMPORT_FROM_FILE = Constants.INTENT_PREFIX
+            + "KEY_IMPORT_FROM_FILE";
+    public static final String ACTION_KEY_IMPORT_FROM_NFC = Constants.INTENT_PREFIX
+            + "KEY_IMPORT_FROM_NFC";
 
     // only used by IMPORT
-    public static final String EXTRA_TEXT = "text";
-    public static final String EXTRA_KEYRING_BYTES = "keyringBytes";
+    public static final String EXTRA_KEYRING_BYTES = "keyring_bytes";
 
+    // TODO: import keys from server
     // public static final String EXTRA_KEY_ID = "keyId";
 
     protected String mImportFilename;
@@ -140,35 +143,32 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
          * Android Standard Actions
          */
         if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
-            // override action to delegate it to APGs ACTION_IMPORT
-            action = ACTION_IMPORT;
+            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
+            // override action to delegate it to Keychains ACTION_IMPORT
+            action = ACTION_KEY_IMPORT;
         }
 
         /**
          * APG's own Actions
          */
-        if (ACTION_IMPORT.equals(action)) {
+        if (ACTION_KEY_IMPORT.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
                 mImportData = null;
-            } else if (extras.containsKey(EXTRA_TEXT)) {
-                mImportData = intent.getStringExtra(EXTRA_TEXT).getBytes();
-                mImportFilename = null;
             } else if (extras.containsKey(EXTRA_KEYRING_BYTES)) {
                 mImportData = intent.getByteArrayExtra(EXTRA_KEYRING_BYTES);
                 mImportFilename = null;
             }
             loadKeyListFragment();
-        } else if (ACTION_IMPORT_FROM_FILE.equals(action)) {
+        } else if (ACTION_KEY_IMPORT_FROM_FILE.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
                 mImportData = null;
             }
             showImportFromFileDialog();
-        } else if (ACTION_IMPORT_FROM_QR_CODE.equals(action)) {
+        } else if (ACTION_KEY_IMPORT_FROM_QR_CODE.equals(action)) {
             importFromQrCode();
-        } else if (ACTION_IMPORT_FROM_NFC.equals(action)) {
+        } else if (ACTION_KEY_IMPORT_FROM_NFC.equals(action)) {
             importFromNfc();
         }
     }
@@ -213,7 +213,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                     Bundle data = message.getData();
                     mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
                     mDeleteAfterImport = data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED);
-                    
+
                     Log.d(Constants.TAG, "mImportFilename: " + mImportFilename);
                     Log.d(Constants.TAG, "mDeleteAfterImport: " + mDeleteAfterImport);
 
@@ -325,7 +325,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             Bundle data = new Bundle();
 
             // TODO: check for key type?
-            // data.putInt(ApgIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
+            // data.putInt(KeychainIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
 
             if (mImportData != null) {
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
@@ -349,7 +349,8 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                         Bundle returnData = message.getData();
 
                         int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
-                        int updated = returnData.getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
+                        int updated = returnData
+                                .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
                         int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {

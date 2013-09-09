@@ -30,11 +30,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 public class ShareActivity extends SherlockFragmentActivity {
+    // Actions for internal use only:
     public static final String ACTION_SHARE_KEYRING = Constants.INTENT_PREFIX + "SHARE_KEYRING";
     public static final String ACTION_SHARE_KEYRING_WITH_QR_CODE = Constants.INTENT_PREFIX
             + "SHARE_KEYRING_WITH_QR_CODE";
 
-    public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

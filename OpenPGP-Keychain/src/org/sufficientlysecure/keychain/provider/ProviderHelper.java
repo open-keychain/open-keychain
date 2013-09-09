@@ -239,7 +239,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY_INTERNAL,
+            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY,
                     operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
@@ -296,7 +296,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY_INTERNAL,
+            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY,
                     operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);

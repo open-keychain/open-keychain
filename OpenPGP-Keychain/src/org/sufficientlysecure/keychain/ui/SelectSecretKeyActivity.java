@@ -30,14 +30,14 @@ import android.os.Bundle;
 
 public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
-    // Not used in sourcode, but listed in AndroidManifest!
+    // Actions for internal use only:
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
             + "SELECT_SECRET_KEYRING";
 
     public static final String EXTRA_FILTER_CERTIFY = "filter_certify";
 
-    public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
-    public static final String RESULT_EXTRA_USER_ID = "userId";
+    public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
+    public static final String RESULT_EXTRA_USER_ID = "user_id";
 
     private boolean mFilterCertify = false;
     private SelectSecretKeyFragment mSelectFragment;

@@ -65,20 +65,20 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class EditKeyActivity extends SherlockFragmentActivity {
 
-    // possible intent actions for this activity
-    public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEYRING";
-    public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEYRING";
+    // Actions for internal use only:
+    public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
+    public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
 
     // possible extra keys
-    public static final String EXTRA_USER_IDS = "userIds";
-    public static final String EXTRA_NO_PASSPHRASE = "noPassphrase";
-    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generateDefaultKeys";
-    public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
-    public static final String EXTRA_MASTER_CAN_SIGN = "masterCanSign";
+    public static final String EXTRA_USER_IDS = "user_ids";
+    public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
+    public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generate_default_keys";
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
+    public static final String EXTRA_MASTER_CAN_SIGN = "master_can_sign";
 
     // results when saving key
-    public static final String RESULT_EXTRA_MASTER_KEY_ID = "masterKeyId";
-    public static final String RESULT_EXTRA_USER_ID = "userId";
+    public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
+    public static final String RESULT_EXTRA_USER_ID = "user_id";
 
     private ActionBar mActionBar;
 
@@ -105,12 +105,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // TODO: disabled, old API!
-        // check permissions for intent actions without user interaction
-        // String[] restrictedActions = new String[] { ACTION_CREATE_KEY };
-        // OtherHelper.checkPackagePermissionForActions(this, this.getCallingPackage(),
-        // Constants.PERMISSION_ACCESS_API, getIntent().getAction(), restrictedActions);
 
         // Inflate a "Done"/"Cancel" custom action bar view
         final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()

@@ -154,7 +154,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
 
         case Id.menu.option.import_from_file: {
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_FROM_FILE);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_KEY_IMPORT_FROM_FILE);
             startActivityForResult(intentImportFromFile, 0);
             return true;
         }
