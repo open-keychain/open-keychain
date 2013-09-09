@@ -574,17 +574,17 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 sendErrorToHandler(e);
             }
         } else if (ACTION_GENERATE_DEFAULT_RSA_KEYS.equals(action)) {
-            // generate one RSA 2048 key for signing and one subkey for encrypting!
+            // generate one RSA 4096 key for signing and one subkey for encrypting!
             try {
                 /* Input */
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
                 /* Operation */
                 PGPSecretKeyRing masterKeyRing = PgpMain.createKey(this, Id.choice.algorithm.rsa,
-                        2048, passphrase, null);
+                        4096, passphrase, null);
 
                 PGPSecretKeyRing subKeyRing = PgpMain.createKey(this, Id.choice.algorithm.rsa,
-                        2048, passphrase, masterKeyRing.getSecretKey());
+                        4096, passphrase, masterKeyRing.getSecretKey());
 
                 /* Output */
                 Bundle resultData = new Bundle();
