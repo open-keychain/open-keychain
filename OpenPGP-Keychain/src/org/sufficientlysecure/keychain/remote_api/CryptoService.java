@@ -677,7 +677,7 @@ public class CryptoService extends Service {
             extras.putParcelable(CryptoServiceActivity.EXTRA_MESSENGER, messenger);
             intent.putExtras(extras);
 
-            getApplication().startActivity(intent);
+            startActivity(intent);
 
             // lock current thread for user input
             try {

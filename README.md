@@ -57,7 +57,7 @@ All Intents start with ``org.sufficientlysecure.keychain.action.``
   * TODO: explain extras (see source)
 * ``DECRYPT_FILE``
 * ``IMPORT_KEY``
-  * Extras: ``keyring_bytes`` (``byte[]``)
+  * Extras: ``keyring_bytes`` (type: ``byte[]``)
   * or Uri in data with file schema
 * ``IMPORT_KEY_FROM_QR_CODE``
   * without extras

@@ -1,49 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
-     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
+<!-- Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de> Copyright (C) 2010 Thialfihar <thi@thialfihar.org> Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
     android:versionCode="20000"
     android:versionName="2.0" >
 
-    <!--
-        General remarks
-        ===============
-        - Last APG 1 version was 10900 (1.0.9 beta 00)
-        - APG 2 starting with versionCode 20000! 
-        
-    
-        Association of file types to APG 
-        =================================
-        General remarks about file ending conventions:
-        - *.gpg for binary files
-        - *.asc for ascii armored files
-        
-        The actual content can be anything.
-        The file ending only shows if it is binary or ascii encoded.
-        
-        Remarks about the ugly android:pathPattern:
-        We are matching all files with a specific file ending.
-        This is done in an ugly way because of Android limitations.
-        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
-        and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
-        for more information.
-    -->
+    <!-- General remarks =============== - Last APG 1 version was 10900 (1.0.9 beta 00) - Keychain starting with versionCode 20000! Association of file types to APG ================================= General remarks about file ending conventions: - *.gpg for binary files - *.asc for ascii armored files The actual content can be anything. The file ending only shows if it is binary or ascii encoded. Remarks about the ugly android:pathPattern: We are matching all files with a specific file ending. This is done in an ugly way because of Android limitations. Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 for more information. -->
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -122,8 +85,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_editKey"
             android:uiOptions="splitActionBarWhenNarrow"
-            android:windowSoftInputMode="stateHidden" >
-        </activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -279,7 +241,7 @@
 
             <!-- Keychain's own Actions -->
             <intent-filter android:label="@string/intent_import_key" >
-                <action android:name="org.sufficientlysecure.keychain.action.KEY_IMPORT" />
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -287,8 +249,8 @@
             </intent-filter>
             <!-- IMPORT again without mimeType to also allow data only without filename -->
             <intent-filter android:label="@string/intent_import_key" >
-                <action android:name="org.sufficientlysecure.keychain.action.KEY_IMPORT" />
-                <action android:name="org.sufficientlysecure.keychain.action.KEY_IMPORT_FROM_QR_CODE" />
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -351,8 +313,7 @@
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ShareActivity" >
-        </activity>
+        <activity android:name=".ui.ShareActivity" />
         <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
@@ -361,7 +322,9 @@
             android:name=".service.PassphraseCacheService"
             android:exported="false"
             android:process=":passphrase_cache" />
-        <service android:name="org.sufficientlysecure.keychain.service.KeychainIntentService" />
+        <service
+            android:name="org.sufficientlysecure.keychain.service.KeychainIntentService"
+            android:exported="false" />
 
         <!-- TODO: Make this extended API -->
 
@@ -405,10 +368,8 @@
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:process=":crypto" >
-
-            <!-- Don't publish intents, they are only used internally! -->
-        </activity>
+            android:process=":crypto"
+            android:taskAffinity=":crypto" />
         <activity
             android:name="org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
