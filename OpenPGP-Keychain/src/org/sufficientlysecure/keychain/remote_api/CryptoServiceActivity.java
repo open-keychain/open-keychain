@@ -51,10 +51,11 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_MESSENGER = "messenger";
 
+    // passphrase action
     public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
+    // register action
     public static final String EXTRA_PACKAGE_NAME = "package_name";
-
-    // select activity
+    // select pub keys action
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
     public static final String EXTRA_DUBLICATE_USER_IDS = "dublicate_user_ids";
@@ -63,10 +64,11 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
     // register view
     private AppSettingsFragment mSettingsFragment;
-    // select pub key view
+    // select pub keys view
     private SelectPublicKeyFragment mSelectFragment;
 
-    // has the user clicked one of the buttons?
+    // has the user clicked one of the buttons
+    // or do we need to handle the callback in onStop()
     private boolean finishHandled;
 
     @Override
@@ -267,7 +269,6 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
             }
-
         } else {
             Log.e(Constants.TAG, "Wrong action!");
             finish();

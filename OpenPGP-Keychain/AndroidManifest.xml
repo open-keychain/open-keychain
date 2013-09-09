@@ -6,7 +6,26 @@
     android:versionCode="20000"
     android:versionName="2.0" >
 
-    <!-- General remarks =============== - Last APG 1 version was 10900 (1.0.9 beta 00) - Keychain starting with versionCode 20000! Association of file types to APG ================================= General remarks about file ending conventions: - *.gpg for binary files - *.asc for ascii armored files The actual content can be anything. The file ending only shows if it is binary or ascii encoded. Remarks about the ugly android:pathPattern: We are matching all files with a specific file ending. This is done in an ugly way because of Android limitations. Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 for more information. -->
+    <!--
+        General remarks
+        ===============
+        - Last APG 1 version was 10900 (1.0.9 beta 00)
+        - Keychain starting with versionCode 20000!
+        
+        Association of file types to Keychain
+        =====================================
+        General remarks about file ending conventions:
+        - *.gpg for binary files 
+        - *.asc for ascii armored files The actual content can be anything.
+        
+        The file ending only shows if it is binary or ascii encoded.
+        
+        Remarks about the ugly android:pathPattern:
+        We are matching all files with a specific file ending.
+        This is done in an ugly way because of Android limitations.
+        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 
+        for more information.
+    -->
 
     <uses-sdk
         android:minSdkVersion="8"

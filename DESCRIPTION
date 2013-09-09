@@ -1,15 +1,21 @@
-THIS IS EXPERIMENTAL BETA SOFTWARE.
-OpenPGP Keychain contains many remaining bugs, so help us developing on github:
-
-https://github.com/dschuermann/openpgp-keychain
+THIS IS EXPERIMENTAL SOFTWARE.
+Use OpenPGP Keychain at your own risk!
 
 Description:
 OpenPGP Keychain is an open source OpenPGP implementation for Android.
-
 OpenPGP Keychain is a fork based on the original Android Privacy Guard (APG) to introduce more features and a new user interface.
 
+Features:
+• OpenPGP Keychain is Open Source and Free Software (GPLv3+) (-> verifiable cryptography)
+• All basic OpenPGP operations: encrypt/decrypt/sign/verify
+• NFC/QR code key exchange
+• Key management (import/export/sign/upload)
+• Import/export of GPG key rings and exported keys from/to the SD card
+• Basic keyserver support
+• Easy API
+
 License:
-Apache License 2.0
+GPLv3+
 
 Permissions:
 • Internet access: Internet access is ONLY used for key server queries.

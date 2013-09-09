@@ -1,9 +1,9 @@
 # OpenPGP Keychain (for Android)
 
-OpenPGP Keychain is a EXPERIMENTAL fork of Android Privacy Guard (APG)
+OpenPGP Keychain is an OpenPGP implementation for Android.
+The development began as a fork of Android Privacy Guard (APG).
 
 see http://sufficientlysecure.org/keychain
-
 
 # Build
 
@@ -13,12 +13,14 @@ see http://sufficientlysecure.org/keychain
 2. Export ANDROID_HOME pointing to your Android SDK
 3. Install gradle
 4. Execute ``gradle wrapper`` (http://www.gradle.org/docs/current/userguide/gradle_wrapper.html)
-5. Execute ``./gradlew assemble``
+5. Execute ``./gradlew build``
 
 ## Build with Ant
 
 1. Have Android SDK "tools" directory in your PATH (http://developer.android.com/sdk/index.html)
-2. Execute ``android update project -p OpenPGP-Keychain`` and  ``android update project -p libraries/ActionBarSherlock``
+2. Execute ``android update project -p OpenPGP-Keychain``
+3. Execute``android update project -p libraries/ActionBarSherlock``
+3. Execute``android update project -p libraries/HtmlTextView``
 3. Execute ``cd OpenPGP-Kechain``, ``ant debug``
 
 # Contribute
