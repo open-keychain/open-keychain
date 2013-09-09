@@ -17,28 +17,23 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.widget.KeyListAdapter;
-import org.sufficientlysecure.keychain.R;
-
-import com.google.zxing.integration.android.IntentIntegrator;
 
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.app.LoaderManager;
 import android.view.ContextMenu;
-import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
 import android.widget.ExpandableListView.ExpandableListContextMenuInfo;
 
 public class KeyListSecretFragment extends KeyListFragment implements
@@ -91,7 +86,8 @@ public class KeyListSecretFragment extends KeyListFragment implements
         long masterKeyId = ProviderHelper
                 .getSecretMasterKeyId(mKeyListSecretActivity, keyRingRowId);
 
-        boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(mKeyListSecretActivity, keyRingRowId);
+        boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(mKeyListSecretActivity,
+                keyRingRowId);
 
         switch (item.getItemId()) {
         case Id.menu.edit:
@@ -104,7 +100,6 @@ public class KeyListSecretFragment extends KeyListFragment implements
 
         }
     }
-
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,

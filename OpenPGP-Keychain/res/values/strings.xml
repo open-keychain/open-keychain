@@ -92,22 +92,23 @@
     <string name="menu_importFromFile">Import from file</string>
     <string name="menu_importFromQrCode">Import from QR Code</string>
     <string name="menu_importFromNfc">Import from NFC</string>
-    <string name="menu_exportKeys">Export All Keys</string>
-    <string name="menu_exportKey">Export To File</string>
-    <string name="menu_deleteKey">Delete Key</string>
-    <string name="menu_createKey">Create Key</string>
-    <string name="menu_editKey">Edit Key</string>
+    <string name="menu_exportKeys">Export all keys</string>
+    <string name="menu_exportKey">Export to file</string>
+    <string name="menu_deleteKey">Delete key</string>
+    <string name="menu_createKey">Create key</string>
+    <string name="menu_createKeyExpert">Create key (expert)</string>
+    <string name="menu_editKey">Edit key</string>
     <string name="menu_search">Search</string>
     <string name="menu_help">Help</string>
-    <string name="menu_keyServer">Query Key Server</string>
-    <string name="menu_updateKey">Update from Server</string>
-    <string name="menu_exportKeyToServer">Export To Server</string>
+    <string name="menu_keyServer">Import from key server</string>
+    <string name="menu_updateKey">Update from server</string>
+    <string name="menu_exportKeyToServer">Export to server</string>
     <string name="menu_share">Share with…</string>
     <string name="menu_shareQrCode">Share with QR Code</string>
     <string name="menu_shareNfc">Share with NFC</string>
     <string name="menu_scanQRCode">Scan QR Code</string>
-    <string name="menu_signKey">Sign Key</string>
-    <string name="menu_BeamPreferences">Beam Settings</string>
+    <string name="menu_signKey">Sign key</string>
+    <string name="menu_BeamPreferences">Beam settings</string>
 
     <!-- label_lowerCase: capitalized words, no punctuation -->
     <string name="label_sign">Sign</string>

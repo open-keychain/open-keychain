@@ -89,13 +89,15 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.import_from_file, 0, R.string.menu_importFromFile)
+        menu.add(1, Id.menu.option.key_server, 0, R.string.menu_keyServer).setShowAsAction(
+                MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+        menu.add(1, Id.menu.option.import_from_file, 1, R.string.menu_importFromFile)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_qr_code, 1, R.string.menu_importFromQrCode)
+        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_importFromQrCode)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_nfc, 2, R.string.menu_importFromNfc)
+        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_importFromNfc)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
@@ -111,6 +113,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            return true;
+
+        case Id.menu.option.key_server:
+            startActivityForResult(new Intent(this, KeyServerQueryActivity.class), 0);
+
             return true;
 
         case Id.menu.option.import_from_file:
