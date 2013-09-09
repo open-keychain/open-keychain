@@ -45,30 +45,39 @@ Android Studio is currently not supported or recommended!
 ## API without registering the app
 
 ### Intent Actions
-These Intents require user interaction!
+All Intents require user interaction, e.g. encryption is not done automatically. The user needs to press the Encrypt button.
+To do automatic encryption/decryption/sign/verify use the Remote Serive API.
+
+Android Intent actions provided by OpenPGP Keychain:
 
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 
-All Intents start with ``org.sufficientlysecure.keychain.action.``
+OpenPGP Keychain specific Intent actions:
 
-* ``ENCRYPT``
-  * TODO: explain extras (see source)
-* ``ENCRYPT_FILE``
-* ``DECRYPT``
-  * TODO: explain extras (see source)
-* ``DECRYPT_FILE``
-* ``IMPORT_KEY``
+* ``org.sufficientlysecure.keychain.action.ENCRYPT``
+  * To encrypt text use extra ``text`` (type: ``String``)
+  * To encrypt bytes use extra ``data`` (type: ``byte[]``)
+  * Enable ASCII Armor (encoding to Radix-64, 33% overhead) by adding the extra ``ascii_armor`` with value ``true``
+* ``org.sufficientlysecure.keychain.action.ENCRYPT_FILE``
+  * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
+* ``org.sufficientlysecure.keychain.action.DECRYPT``
+  * To decrypt text use extra ``text`` (type: ``String``)
+  * To decrypt bytes use extra ``data`` (type: ``byte[]``)* ``org.sufficientlysecure.keychain.action.DECRYPT_FILE``
+  * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
+* ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``keyring_bytes`` (type: ``byte[]``)
   * or Uri in data with file schema
-* ``IMPORT_KEY_FROM_QR_CODE``
-  * without extras
+* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
+  * without extras starts Barcode Scanner to get QR Code
 
-TODO:
-- new intent REGISTER_APP?
+## Remote Serive API
+To do asyncronous fast encryption/decryption/sign/verify operations bind to the remote service.
+The API Demo contains all required AIDL files and a demo activity.
 
-## App API
-TODO. See Demo App!
+### Tutorial
+1. Include all files from https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/crypto
+2. An example how to query for all available crypto providers: https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/CryptoProviderDemoActivity.java
 
 # Libraries
 

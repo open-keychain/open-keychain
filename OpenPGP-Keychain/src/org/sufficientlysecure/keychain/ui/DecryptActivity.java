@@ -81,7 +81,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     public static final String EXTRA_DATA = "data";
     public static final String EXTRA_REPLY_TO = "reply_to";
     public static final String EXTRA_SUBJECT = "subject";
-    public static final String EXTRA_BINARY = "binary";
 
     private long mSignatureKeyId = 0;
 
