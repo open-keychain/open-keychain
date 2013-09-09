@@ -59,7 +59,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             + "IMPORT_KEY_FROM_NFC";
 
     // only used by IMPORT
-    public static final String EXTRA_KEYRING_BYTES = "keyring_bytes";
+    public static final String EXTRA_KEY_BYTES = "key_bytes";
 
     // TODO: import keys from server
     // public static final String EXTRA_KEY_ID = "keyId";
@@ -162,8 +162,8 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
                 mImportData = null;
-            } else if (extras.containsKey(EXTRA_KEYRING_BYTES)) {
-                mImportData = intent.getByteArrayExtra(EXTRA_KEYRING_BYTES);
+            } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
+                mImportData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
                 mImportFilename = null;
             }
             loadKeyListFragment();

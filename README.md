@@ -67,12 +67,12 @@ OpenPGP Keychain specific Intent actions:
 * ``org.sufficientlysecure.keychain.action.DECRYPT_FILE``
   * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
-  * Extras: ``keyring_bytes`` (type: ``byte[]``)
+  * Extras: ``key_bytes`` (type: ``byte[]``)
   * or Uri in data with file schema
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras starts Barcode Scanner to get QR Code
 
-## Remote Serive API
+## Remote Service API
 To do asyncronous fast encryption/decryption/sign/verify operations bind to the remote service.
 The API Demo contains all required AIDL files and a demo activity.
 
