@@ -4,9 +4,6 @@ OpenPGP Keychain is a EXPERIMENTAL fork of Android Privacy Guard (APG)
 
 see http://sufficientlysecure.org/keychain
 
-# Contribute
-
-Fork OpenPGP Keychain and do a merge request. I will merge your changes back into the main project.
 
 # Build
 
@@ -24,9 +21,16 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 2. Execute ``android update project -p OpenPGP-Keychain`` and  ``android update project -p libraries/ActionBarSherlock``
 3. Execute ``cd OpenPGP-Kechain``, ``ant debug``
 
-## Build with Eclipse
+# Contribute
+
+Fork OpenPGP Keychain and do a merge request. I will merge your changes back into the main project.
+
+## Development with Eclipse
+
+Android Studio is currently not supported or recommended!
 
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
+1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
 3. OpenPGP-Kechain can now be build
 
@@ -35,8 +39,8 @@ Fork OpenPGP Keychain and do a merge request. I will merge your changes back int
 All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "libraries".
 
 * ActionBarSherlock to provide an ActionBar for Android < 3.0
+* HtmlTextView for non-crashing TextViews with HTML content
 * forked Spongy Castle Crypto Lib (Android version of Bouncy Castle)
-* android-support-v4.jar: Compatibility Lib
 * barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
 
 ## Build Barcode Scanner Integration
