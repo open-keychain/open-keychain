@@ -17,12 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import net.nightwhistler.htmlspanner.HtmlSpanner;
-import net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView;
-
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
@@ -42,8 +37,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -131,27 +124,15 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
     }
 
     private void buildView() {
-        // load html from html file from /res/raw
-        InputStream inputStreamText = getResources().openRawResource(R.raw.nfc_beam_share);
-
         setContentView(R.layout.share_nfc_beam);
 
-        JellyBeanSpanFixTextView text = (JellyBeanSpanFixTextView) findViewById(R.id.nfc_beam_text);
+        HtmlTextView aboutTextView = (HtmlTextView) findViewById(R.id.nfc_beam_text);
 
-        // load html into textview
-        HtmlSpanner htmlSpanner = new HtmlSpanner();
-        htmlSpanner.setStripExtraWhiteSpace(true);
-        try {
-            text.setText(htmlSpanner.fromHtml(inputStreamText));
-        } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while reading raw resources as stream", e);
-        }
-
-        // make links work
-        text.setMovementMethod(LinkMovementMethod.getInstance());
+        // load html from raw resource (Parsing handled by HtmlTextView library)
+        aboutTextView.setHtmlFromRawResource(this, R.raw.nfc_beam_share);
 
         // no flickering when clicking textview for Android < 4
-        text.setTextColor(getResources().getColor(android.R.color.black));
+        aboutTextView.setTextColor(getResources().getColor(android.R.color.black));
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);

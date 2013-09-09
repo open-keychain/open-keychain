@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <net.nightwhistler.htmlspanner.JellyBeanSpanFixTextView
+    <org.sufficientlysecure.htmltextview.HtmlTextView
         android:id="@+id/nfc_beam_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
