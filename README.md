@@ -42,18 +42,24 @@ Android Studio is currently not supported or recommended!
 
 ## API without registering the app
 
-### Intents
+### Intent Actions
 These Intents require user interaction!
-
-All Intents start with ``org.sufficientlysecure.keychain.action.``
 
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
-* ``KEY_IMPORT`` with extra "keyring_bytes" or Uri in data with file schema
-* ``KEY_IMPORT_FROM_QR_CODE`` without extras
-* ``ENCRYPT`` TODO: explain extras (see source)
+
+All Intents start with ``org.sufficientlysecure.keychain.action.``
+
+* ``KEY_IMPORT``
+  * Extras: ``keyring_bytes``
+  * or Uri in data with file schema
+* ``KEY_IMPORT_FROM_QR_CODE``
+  * without extras
+* ``ENCRYPT``
+  * TODO: explain extras (see source)
 * ``ENCRYPT_FILE``
-* ``DECRYPT`` TODO: explain extras (see source)
+* ``DECRYPT``
+  * TODO: explain extras (see source)
 * ``DECRYPT_FILE``
 
 TODO:
