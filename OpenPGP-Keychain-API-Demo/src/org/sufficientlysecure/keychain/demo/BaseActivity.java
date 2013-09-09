@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.widget.Toast;
 
 public class BaseActivity extends PreferenceActivity {
     private Activity mActivity;
@@ -56,21 +57,13 @@ public class BaseActivity extends PreferenceActivity {
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, IntentDemoActivity.class));
+                // startActivity(new Intent(mActivity, IntentDemoActivity.class));
+                Toast.makeText(BaseActivity.this, "Not implemented!", Toast.LENGTH_LONG).show();
 
                 return false;
             }
         });
 
-        mContentProviderDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, ContentProviderDemoActivity.class));
-
-                return false;
-            }
-        });
-        
         mCryptoProvider.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -80,23 +73,14 @@ public class BaseActivity extends PreferenceActivity {
             }
         });
 
-        mAidlDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, AidlDemoActivity.class));
-
-                return false;
-            }
-        });
-
-        mAidlDemo2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, AidlDemoActivity2.class));
-
-                return false;
-            }
-        });
+        // mAidlDemo2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        // @Override
+        // public boolean onPreferenceClick(Preference preference) {
+        // startActivity(new Intent(mActivity, AidlDemoActivity2.class));
+        //
+        // return false;
+        // }
+        // });
 
     }
 

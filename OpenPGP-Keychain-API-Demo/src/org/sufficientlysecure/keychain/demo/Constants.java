@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package org.sufficientlysecure.keychain.service.handler;
 
-interface IKeychainGetDecryptionKeyIdHandler {
+package org.sufficientlysecure.keychain.demo;
 
-    oneway void onSuccess(in long secretKeyId, in boolean symmetric);
+public final class Constants {
 
+    public static final boolean DEBUG = BuildConfig.DEBUG;
 
-    oneway void onException(in int exceptionNumber, in String message);
+    public static final String TAG = "Keychain API";
+
 }

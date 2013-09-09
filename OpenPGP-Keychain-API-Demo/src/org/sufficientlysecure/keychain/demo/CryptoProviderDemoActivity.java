@@ -24,7 +24,6 @@ import org.openintents.crypto.CryptoServiceConnection;
 import org.openintents.crypto.CryptoSignatureResult;
 import org.openintents.crypto.ICryptoCallback;
 import org.openintents.crypto.ICryptoService;
-import org.sufficientlysecure.keychain.integration.Constants;
 
 import android.app.Activity;
 import android.app.AlertDialog;

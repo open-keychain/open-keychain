@@ -413,7 +413,7 @@
             android:name="org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
-            android:label="@string/title_crypto_consumers" />
+            android:label="@string/title_api_registered_apps" />
         <activity
             android:name="org.sufficientlysecure.keychain.remote_api.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

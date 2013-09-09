@@ -6,19 +6,11 @@
             android:key="intent_demo"
             android:title="Intent Demo" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Content Provider" >
-        <Preference
-            android:key="content_provider_demo"
-            android:title="Content Provider Demo" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="AIDL" >
-        <Preference
-            android:key="aidl_demo"
-            android:title="AIDL Demo (ACCESS_API permission)" />
-        <Preference
-            android:key="aidl_demo2"
-            android:title="AIDL Demo (ACCESS_KEYS permission)" />
-    </PreferenceCategory>
+    <!-- <PreferenceCategory android:title="AIDL" > -->
+    <!-- <Preference -->
+    <!-- android:key="aidl_demo2" -->
+    <!-- android:title="AIDL Demo (ACCESS_KEYS permission)" /> -->
+    <!-- </PreferenceCategory> -->
     <PreferenceCategory android:title="Crypto Provider" >
         <Preference
             android:key="crypto_provider_demo"
