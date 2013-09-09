@@ -207,25 +207,29 @@ public class CryptoService extends Service {
             pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS,
                     messenger, extras);
 
-            if (callback.isNewSelection()) {
+            if (callback.isSuccess()) {
                 Log.d(Constants.TAG, "New selection of pub keys!");
                 keyIdsArray = callback.getPubKeyIds();
             } else {
                 Log.d(Constants.TAG, "Pub key selection canceled!");
+                return null;
             }
         }
 
+        if (keyIdsArray.length == 0) {
+            return null;
+        }
         return keyIdsArray;
     }
 
     public class SelectPubKeysActivityCallback extends MyBaseCallback {
         public static final String PUB_KEY_IDS = "pub_key_ids";
 
-        private boolean newSelection = false;
+        private boolean success = false;
         private long[] pubKeyIds;
 
-        public boolean isNewSelection() {
-            return newSelection;
+        public boolean isSuccess() {
+            return success;
         }
 
         public long[] getPubKeyIds() {
@@ -235,10 +239,10 @@ public class CryptoService extends Service {
         @Override
         public boolean handleMessage(Message msg) {
             if (msg.arg1 == OKAY) {
-                newSelection = true;
+                success = true;
                 pubKeyIds = msg.getData().getLongArray(PUB_KEY_IDS);
             } else {
-                newSelection = false;
+                success = false;
             }
 
             // resume
@@ -262,6 +266,10 @@ public class CryptoService extends Service {
             OutputStream outputStream = new ByteArrayOutputStream();
 
             long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId());
+            if (keyIds == null) {
+                callback.onError(new CryptoError(CryptoError.ID_NO_USER_IDS, "No user ids!"));
+                return;
+            }
 
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId());
