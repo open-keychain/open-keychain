@@ -16,7 +16,6 @@ package org.sufficientlysecure.keychain.util;
 
 import java.io.InputStream;
 
-
 public class InputData {
     private PositionAwareInputStream mInputStream;
     private long mSize;

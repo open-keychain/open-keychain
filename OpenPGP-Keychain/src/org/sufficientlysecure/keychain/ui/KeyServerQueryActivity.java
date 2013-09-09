@@ -64,7 +64,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
     public static final String ACTION_LOOK_UP_KEY_ID_AND_RETURN = Constants.INTENT_PREFIX
             + "LOOK_UP_KEY_ID_AND_RETURN";
 
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_KEY_ID = "key_id";
 
     public static final String RESULT_EXTRA_TEXT = "text";
 
@@ -201,7 +201,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         mSearchResult = returnData
                                 .getParcelableArrayList(KeychainIntentService.RESULT_QUERY_KEY_SEARCH_RESULT);
                     } else if (mQueryType == Id.keyserver.get) {
-                        mKeyData = returnData.getString(KeychainIntentService.RESULT_QUERY_KEY_KEY_DATA);
+                        mKeyData = returnData.getString(KeychainIntentService.RESULT_QUERY_KEY_DATA);
                     }
 
                     // TODO: IMPROVE CODE!!! some global variables can be avoided!!!

@@ -24,21 +24,17 @@ import java.util.Locale;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.spongycastle.openpgp.PGPException;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
 
@@ -487,7 +483,7 @@ public class PgpHelper {
         PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
         if (secretKey == null) {
             Log.e(Constants.TAG, "Key could not be found!");
-            return false; //could be a public key, assume it is not empty
+            return false; // could be a public key, assume it is not empty
         }
         return isSecretKeyPrivateEmpty(secretKey);
     }

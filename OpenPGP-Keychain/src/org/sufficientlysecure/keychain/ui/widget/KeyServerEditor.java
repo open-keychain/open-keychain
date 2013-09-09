@@ -63,7 +63,7 @@ public class KeyServerEditor extends LinearLayout implements Editor, OnClickList
     }
 
     public void onClick(View v) {
-        final ViewGroup parent = (ViewGroup)getParent();
+        final ViewGroup parent = (ViewGroup) getParent();
         if (v == mDeleteButton) {
             parent.removeView(this);
             if (mEditorListener != null) {

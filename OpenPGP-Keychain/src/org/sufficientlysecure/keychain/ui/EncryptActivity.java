@@ -724,7 +724,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         }
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyIdToPass);
-        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_AMOR, useAsciiArmor);
+        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, useAsciiArmor);
         data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
         data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
         data.putBoolean(KeychainIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);

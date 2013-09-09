@@ -16,9 +16,13 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.PgpConversionHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -26,9 +30,6 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.util.Choice;
-import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -43,17 +44,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Iterator;
-import java.util.Vector;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
     private LayoutInflater mInflater;
@@ -189,31 +186,33 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 }
 
                 final Spinner keySize = (Spinner) view.findViewById(R.id.create_key_size);
-        		ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.key_size_spinner_values, android.R.layout.simple_spinner_item);
-        		keySizeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        		keySize.setAdapter(keySizeAdapter);
-        		keySize.setSelection(2);														// Default to 2048 for the key length
+                ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(
+                        getContext(), R.array.key_size_spinner_values,
+                        android.R.layout.simple_spinner_item);
+                keySizeAdapter
+                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                keySize.setAdapter(keySizeAdapter);
+                keySize.setSelection(2); // Default to 2048 for the key length
                 dialog.setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface di, int id) {
                                 di.dismiss();
                                 try {
-                                	int nKeyIndex = keySize.getSelectedItemPosition();
-                                	switch(nKeyIndex)
-                                	{
-	                                	case 0:
-	                                		mNewKeySize = 512;
-	                                		break;
-	                                	case 1:
-	                                		mNewKeySize = 1024;
-	                                		break;
-	                                	case 2:
-	                                		mNewKeySize = 2048;
-	                                		break;
-	                                	case 3:
-	                                		mNewKeySize = 4096;
-	                                		break;
-                                	}
+                                    int nKeyIndex = keySize.getSelectedItemPosition();
+                                    switch (nKeyIndex) {
+                                    case 0:
+                                        mNewKeySize = 512;
+                                        break;
+                                    case 1:
+                                        mNewKeySize = 1024;
+                                        break;
+                                    case 2:
+                                        mNewKeySize = 2048;
+                                        break;
+                                    case 3:
+                                        mNewKeySize = 4096;
+                                        break;
+                                    }
                                 } catch (NumberFormatException e) {
                                     mNewKeySize = 0;
                                 }

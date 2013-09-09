@@ -99,93 +99,93 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final int TARGET_STREAM = 3;
 
     // encrypt
-    public static final String ENCRYPT_SECRET_KEY_ID = "secretKeyId";
-    public static final String ENCRYPT_USE_ASCII_AMOR = "useAsciiAmor";
-    public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryptionKeysIds";
-    public static final String ENCRYPT_COMPRESSION_ID = "compressionId";
-    public static final String ENCRYPT_GENERATE_SIGNATURE = "generateSignature";
-    public static final String ENCRYPT_SIGN_ONLY = "signOnly";
-    public static final String ENCRYPT_MESSAGE_BYTES = "messageBytes";
-    public static final String ENCRYPT_INPUT_FILE = "inputFile";
-    public static final String ENCRYPT_OUTPUT_FILE = "outputFile";
-    public static final String ENCRYPT_PROVIDER_URI = "providerUri";
+    public static final String ENCRYPT_SECRET_KEY_ID = "secret_key_id";
+    public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
+    public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
+    public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
+    public static final String ENCRYPT_GENERATE_SIGNATURE = "generate_signature";
+    public static final String ENCRYPT_SIGN_ONLY = "sign_only";
+    public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
+    public static final String ENCRYPT_INPUT_FILE = "input_file";
+    public static final String ENCRYPT_OUTPUT_FILE = "output_file";
+    public static final String ENCRYPT_PROVIDER_URI = "provider_uri";
 
     // decrypt/verify
-    public static final String DECRYPT_SIGNED_ONLY = "signedOnly";
-    public static final String DECRYPT_RETURN_BYTES = "returnBinary";
-    public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertextBytes";
-    public static final String DECRYPT_ASSUME_SYMMETRIC = "assumeSymmetric";
-    public static final String DECRYPT_LOOKUP_UNKNOWN_KEY = "lookupUnknownKey";
+    public static final String DECRYPT_SIGNED_ONLY = "signed_only";
+    public static final String DECRYPT_RETURN_BYTES = "return_binary";
+    public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
+    public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
+    public static final String DECRYPT_LOOKUP_UNKNOWN_KEY = "lookup_unknownKey";
 
     // save keyring
-    public static final String SAVE_KEYRING_NEW_PASSPHRASE = "newPassphrase";
-    public static final String SAVE_KEYRING_CURRENT_PASSPHRASE = "currentPassphrase";
-    public static final String SAVE_KEYRING_USER_IDS = "userIds";
+    public static final String SAVE_KEYRING_NEW_PASSPHRASE = "new_passphrase";
+    public static final String SAVE_KEYRING_CURRENT_PASSPHRASE = "current_passphrase";
+    public static final String SAVE_KEYRING_USER_IDS = "user_ids";
     public static final String SAVE_KEYRING_KEYS = "keys";
-    public static final String SAVE_KEYRING_KEYS_USAGES = "keysUsages";
-    public static final String SAVE_KEYRING_MASTER_KEY_ID = "masterKeyId";
+    public static final String SAVE_KEYRING_KEYS_USAGES = "keys_usages";
+    public static final String SAVE_KEYRING_MASTER_KEY_ID = "master_key_id";
     public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
-    public static final String GENERATE_KEY_KEY_SIZE = "keySize";
+    public static final String GENERATE_KEY_KEY_SIZE = "key_size";
     public static final String GENERATE_KEY_SYMMETRIC_PASSPHRASE = "passphrase";
-    public static final String GENERATE_KEY_MASTER_KEY = "masterKey";
+    public static final String GENERATE_KEY_MASTER_KEY = "master_key";
 
     // delete file securely
     public static final String DELETE_FILE = "deleteFile";
 
     // import key
-    public static final String IMPORT_INPUT_STREAM = "importInputStream";
-    public static final String IMPORT_FILENAME = "importFilename";
-    public static final String IMPORT_BYTES = "importBytes";
+    public static final String IMPORT_INPUT_STREAM = "import_input_stream";
+    public static final String IMPORT_FILENAME = "import_filename";
+    public static final String IMPORT_BYTES = "import_bytes";
     // public static final String IMPORT_KEY_TYPE = "importKeyType";
 
     // export key
-    public static final String EXPORT_OUTPUT_STREAM = "exportOutputStream";
-    public static final String EXPORT_FILENAME = "exportFilename";
-    public static final String EXPORT_KEY_TYPE = "exportKeyType";
-    public static final String EXPORT_ALL = "exportAll";
-    public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "exportKeyRingId";
+    public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
+    public static final String EXPORT_FILENAME = "export_filename";
+    public static final String EXPORT_KEY_TYPE = "export_key_type";
+    public static final String EXPORT_ALL = "export_all";
+    public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
 
     // upload key
-    public static final String UPLOAD_KEY_SERVER = "uploadKeyServer";
-    public static final String UPLOAD_KEY_KEYRING_ROW_ID = "uploadKeyRingId";
+    public static final String UPLOAD_KEY_SERVER = "upload_key_server";
+    public static final String UPLOAD_KEY_KEYRING_ROW_ID = "upload_key_ring_id";
 
     // query key
-    public static final String QUERY_KEY_SERVER = "queryKeyServer";
-    public static final String QUERY_KEY_TYPE = "queryKeyType";
-    public static final String QUERY_KEY_STRING = "queryKeyString";
-    public static final String QUERY_KEY_ID = "queryKeyId";
+    public static final String QUERY_KEY_SERVER = "query_key_server";
+    public static final String QUERY_KEY_TYPE = "query_key_type";
+    public static final String QUERY_KEY_STRING = "query_key_string";
+    public static final String QUERY_KEY_ID = "query_key_id";
 
     // sign key
-    public static final String SIGN_KEY_MASTER_KEY_ID = "signKeyMasterKeyId";
-    public static final String SIGN_KEY_PUB_KEY_ID = "signKeyPubKeyId";
+    public static final String SIGN_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
+    public static final String SIGN_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
 
     /*
      * possible data keys as result send over messenger
      */
     // keys
-    public static final String RESULT_NEW_KEY = "newKey";
-    public static final String RESULT_NEW_KEY2 = "newKey2";
+    public static final String RESULT_NEW_KEY = "new_key";
+    public static final String RESULT_NEW_KEY2 = "new_key2";
 
     // encrypt
-    public static final String RESULT_SIGNATURE_BYTES = "signatureData";
-    public static final String RESULT_SIGNATURE_STRING = "signatureText";
-    public static final String RESULT_ENCRYPTED_STRING = "encryptedMessage";
-    public static final String RESULT_ENCRYPTED_BYTES = "encryptedData";
-    public static final String RESULT_URI = "resultUri";
+    public static final String RESULT_SIGNATURE_BYTES = "signature_data";
+    public static final String RESULT_SIGNATURE_STRING = "signature_text";
+    public static final String RESULT_ENCRYPTED_STRING = "encrypted_message";
+    public static final String RESULT_ENCRYPTED_BYTES = "encrypted_data";
+    public static final String RESULT_URI = "result_uri";
 
     // decrypt/verify
-    public static final String RESULT_DECRYPTED_STRING = "decryptedMessage";
-    public static final String RESULT_DECRYPTED_BYTES = "decryptedData";
+    public static final String RESULT_DECRYPTED_STRING = "decrypted_message";
+    public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
     public static final String RESULT_SIGNATURE = "signature";
-    public static final String RESULT_SIGNATURE_KEY_ID = "signatureKeyId";
-    public static final String RESULT_SIGNATURE_USER_ID = "signatureUserId";
+    public static final String RESULT_SIGNATURE_KEY_ID = "signature_key_id";
+    public static final String RESULT_SIGNATURE_USER_ID = "signature_user_id";
 
-    public static final String RESULT_SIGNATURE_SUCCESS = "signatureSuccess";
-    public static final String RESULT_SIGNATURE_UNKNOWN = "signatureUnknown";
-    public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookupKey";
+    public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
+    public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
+    public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookup_key";
 
     // import
     public static final String RESULT_IMPORT_ADDED = "added";
@@ -196,8 +196,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String RESULT_EXPORT = "exported";
 
     // query
-    public static final String RESULT_QUERY_KEY_KEY_DATA = "queryKeyKeyData";
-    public static final String RESULT_QUERY_KEY_SEARCH_RESULT = "queryKeySearchResult";
+    public static final String RESULT_QUERY_KEY_DATA = "query_key_data";
+    public static final String RESULT_QUERY_KEY_SEARCH_RESULT = "query_key_search_result";
 
     Messenger mMessenger;
 
@@ -241,7 +241,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
                 String encryptionPassphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
-                boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_AMOR);
+                boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
                 int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
                 boolean generateSignature = data.getBoolean(ENCRYPT_GENERATE_SIGNATURE);
@@ -760,7 +760,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 } else if (queryType == Id.keyserver.get) {
                     String keyData = server.get(keyId);
 
-                    resultData.putString(RESULT_QUERY_KEY_KEY_DATA, keyData);
+                    resultData.putString(RESULT_QUERY_KEY_DATA, keyData);
                 }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);

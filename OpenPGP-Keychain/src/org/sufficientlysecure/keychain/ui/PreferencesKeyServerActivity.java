@@ -38,7 +38,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
         EditorListener {
 
-    public static final String EXTRA_KEY_SERVERS = "keyServers";
+    public static final String EXTRA_KEY_SERVERS = "key_servers";
 
     private LayoutInflater mInflater;
     private ViewGroup mEditors;

@@ -50,7 +50,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
     public static final String ACTION_SHARE_KEYRING_WITH_NFC = Constants.INTENT_PREFIX
             + "SHARE_KEYRING_WITH_NFC";
 
-    public static final String EXTRA_MASTER_KEY_ID = "masterKeyId";
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     NfcAdapter mNfcAdapter;
 

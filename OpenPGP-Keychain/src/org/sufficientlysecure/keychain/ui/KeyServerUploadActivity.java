@@ -49,7 +49,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
     public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
             + "EXPORT_KEY_TO_SERVER";
 
-    public static final String EXTRA_KEYRING_ROW_ID = "keyId";
+    public static final String EXTRA_KEYRING_ROW_ID = "key_id";
 
     private Button export;
     private Spinner keyServer;
