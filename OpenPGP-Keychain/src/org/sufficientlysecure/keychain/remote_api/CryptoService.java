@@ -274,7 +274,7 @@ public class CryptoService extends Service {
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId());
                 if (passphrase == null) {
-                    callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                    callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
                             "No or wrong passphrase!"));
                     return;
                 }
@@ -322,7 +322,7 @@ public class CryptoService extends Service {
 
             String passphrase = getCachedPassphrase(appSettings.getKeyId());
             if (passphrase == null) {
-                callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
                         "No or wrong passphrase!"));
                 return;
             }
@@ -404,7 +404,7 @@ public class CryptoService extends Service {
 
             String passphrase = getCachedPassphrase(secretKeyId);
             if (passphrase == null) {
-                callback.onError(new CryptoError(CryptoError.ID_NO_WRONG_PASSPHRASE,
+                callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
                         "No or wrong passphrase!"));
                 return;
             }

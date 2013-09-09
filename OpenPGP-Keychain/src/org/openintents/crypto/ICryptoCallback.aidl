@@ -27,6 +27,5 @@ interface ICryptoCallback {
      */
     oneway void onSuccess(in byte[] outputBytes, in CryptoSignatureResult signatureResult);
 
-
     oneway void onError(in CryptoError error);
 }

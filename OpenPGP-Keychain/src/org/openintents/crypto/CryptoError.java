@@ -20,7 +20,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class CryptoError implements Parcelable {
-    public static final int ID_NO_WRONG_PASSPHRASE = 1;
+    public static final int ID_NO_OR_WRONG_PASSPHRASE = 1;
     public static final int ID_NO_USER_IDS = 2;
 
     int errorId;

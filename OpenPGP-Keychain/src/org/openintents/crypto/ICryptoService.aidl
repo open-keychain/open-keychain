@@ -31,6 +31,8 @@ interface ICryptoService {
      *            Byte array you want to encrypt
      * @param encryptionUserIds
      *            User Ids (emails) of recipients
+     * @param asciiArmor
+     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param callback
      *            Callback where to return results
      */
@@ -41,6 +43,8 @@ interface ICryptoService {
      *
      * @param inputBytes
      *            Byte array you want to encrypt
+     * @param asciiArmor
+     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param callback
      *            Callback where to return results
      */
@@ -55,6 +59,8 @@ interface ICryptoService {
      *            User Ids (emails) of recipients
      * @param signatureUserId
      *            User Ids (email) of sender
+     * @param asciiArmor
+     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param callback
      *            Callback where to return results
      */
