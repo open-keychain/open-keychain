@@ -102,8 +102,10 @@ public class CryptoProviderDemoActivity extends Activity {
 
                 @Override
                 public void run() {
-                    mMessage.setText(new String(outputBytes) + "\n\n" + signatureResult.toString());
-
+                    mMessage.setText(new String(outputBytes));
+                    Toast.makeText(CryptoProviderDemoActivity.this,
+                            "signature result:\n" + signatureResult.toString(), Toast.LENGTH_LONG)
+                            .show();
                 }
             });
 

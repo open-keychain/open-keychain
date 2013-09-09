@@ -73,4 +73,14 @@ public class CryptoSignatureResult implements Parcelable {
             return new CryptoSignatureResult[size];
         }
     };
+
+    @Override
+    public String toString() {
+        String out = new String();
+        out += "signature: " + signature;
+        out += "\nsignatureSuccess: " + signatureSuccess;
+        out += "\nsignatureUnknown: " + signatureUnknown;
+        return out;
+    }
+
 }

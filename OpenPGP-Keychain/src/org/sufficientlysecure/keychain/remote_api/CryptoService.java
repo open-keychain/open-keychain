@@ -351,21 +351,38 @@ public class CryptoService extends Service {
     private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback,
             AppSettings appSettings) throws RemoteException {
         try {
-            // build InputData and write into OutputStream
-            InputStream inputStream = new ByteArrayInputStream(inputBytes);
-            long inputLength = inputBytes.length;
-            InputData inputData = new InputData(inputStream, inputLength);
-            OutputStream outputStream = new ByteArrayOutputStream();
-
+            // TODO: this is not really needed
+            // checked if it is text with BEGIN and END tags
             String message = new String(inputBytes);
             Log.d(Constants.TAG, "in: " + message);
-
-            // checked if signed only
             boolean signedOnly = false;
-            Matcher matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(message);
+            Matcher matcher = PgpMain.PGP_MESSAGE.matcher(message);
             if (matcher.matches()) {
-                signedOnly = true;
+                Log.d(Constants.TAG, "PGP_MESSAGE matched");
+                message = matcher.group(1);
+                // replace non breakable spaces
+                message = message.replaceAll("\\xa0", " ");
+
+                // overwrite inputBytes
+                inputBytes = message.getBytes();
+            } else {
+                matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(message);
+                if (matcher.matches()) {
+                    signedOnly = true;
+                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
+                    message = matcher.group(1);
+                    // replace non breakable spaces
+                    message = message.replaceAll("\\xa0", " ");
+
+                    // overwrite inputBytes
+                    inputBytes = message.getBytes();
+                } else {
+                    Log.d(Constants.TAG, "Nothing matched! Binary?");
+                }
             }
+            // END TODO
+
+            Log.d(Constants.TAG, "in: " + new String(inputBytes));
 
             // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
             // app, Fix this?
@@ -374,40 +391,59 @@ public class CryptoService extends Service {
             // throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
             // }
 
-            // TODO: duplicates functions from DecryptActivity!
+            String passphrase = null;
             boolean assumeSymmetricEncryption = false;
-            long secretKeyId;
-            try {
-                if (inputStream.markSupported()) {
-                    inputStream.mark(200); // should probably set this to the max size of two pgpF
-                                           // objects, if it even needs to be anything other than 0.
+            if (!signedOnly) {
+                // BEGIN Get key
+                // TODO: this input stream is consumed after PgpMain.getDecryptionKeyId()... do it
+                // better!
+                InputStream inputStream2 = new ByteArrayInputStream(inputBytes);
+
+                // TODO: duplicates functions from DecryptActivity!
+                // TODO: we need activity to input symmetric passphrase
+                long secretKeyId;
+                try {
+                    if (inputStream2.markSupported()) {
+                        inputStream2.mark(200); // should probably set this to the max size of two
+                                                // pgpF
+                                                // objects, if it even needs to be anything other
+                                                // than
+                                                // 0.
+                    }
+                    secretKeyId = PgpMain.getDecryptionKeyId(this, inputStream2);
+                    if (secretKeyId == Id.key.none) {
+                        throw new PgpMain.PgpGeneralException(
+                                getString(R.string.error_noSecretKeyFound));
+                    }
+                    assumeSymmetricEncryption = false;
+                } catch (PgpMain.NoAsymmetricEncryptionException e) {
+                    if (inputStream2.markSupported()) {
+                        inputStream2.reset();
+                    }
+                    secretKeyId = Id.key.symmetric;
+                    if (!PgpMain.hasSymmetricEncryption(this, inputStream2)) {
+                        throw new PgpMain.PgpGeneralException(
+                                getString(R.string.error_noKnownEncryptionFound));
+                    }
+                    assumeSymmetricEncryption = true;
                 }
-                secretKeyId = PgpMain.getDecryptionKeyId(this, inputStream);
-                if (secretKeyId == Id.key.none) {
-                    throw new PgpMain.PgpGeneralException(
-                            getString(R.string.error_noSecretKeyFound));
+
+                Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
+
+                passphrase = getCachedPassphrase(secretKeyId);
+                if (passphrase == null) {
+                    callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
+                            "No or wrong passphrase!"));
+                    return;
                 }
-                assumeSymmetricEncryption = false;
-            } catch (PgpMain.NoAsymmetricEncryptionException e) {
-                if (inputStream.markSupported()) {
-                    inputStream.reset();
-                }
-                secretKeyId = Id.key.symmetric;
-                if (!PgpMain.hasSymmetricEncryption(this, inputStream)) {
-                    throw new PgpMain.PgpGeneralException(
-                            getString(R.string.error_noKnownEncryptionFound));
-                }
-                assumeSymmetricEncryption = true;
             }
 
-            Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
+            // build InputData and write into OutputStream
+            InputStream inputStream = new ByteArrayInputStream(inputBytes);
+            long inputLength = inputBytes.length;
+            InputData inputData = new InputData(inputStream, inputLength);
 
-            String passphrase = getCachedPassphrase(secretKeyId);
-            if (passphrase == null) {
-                callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
-                        "No or wrong passphrase!"));
-                return;
-            }
+            OutputStream outputStream = new ByteArrayOutputStream();
 
             Bundle outputBundle;
             if (signedOnly) {
@@ -416,7 +452,7 @@ public class CryptoService extends Service {
             } else {
                 // TODO: assume symmetric: callback to enter symmetric pass
                 outputBundle = PgpMain.decryptAndVerify(this, null, inputData, outputStream,
-                        passphrase, false);
+                        passphrase, assumeSymmetricEncryption);
             }
 
             outputStream.close();

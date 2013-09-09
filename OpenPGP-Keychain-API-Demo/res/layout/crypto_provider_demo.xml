@@ -74,12 +74,12 @@
             android:text="Encrypt and Sign" />
 
         <Button
-            android:id="@+id/crypto_provider_demo_decrypt"
+            android:id="@+id/crypto_provider_demo_decrypt_and_verify"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="decryptAndVerifyOnClick"
-            android:text="Decrypt" />
+            android:text="Decrypt and Verify" />
     </LinearLayout>
 
 </LinearLayout>
