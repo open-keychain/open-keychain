@@ -153,23 +153,21 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 
 
 ## Libraries
-* ActionBarSherlock  
-  http://actionbarsherlock.com/  
-  Apache License v2
 
 * SpongyCastle  
   https://github.com/rtyley/spongycastle  
   MIT X11 License
 
-* ZXing QRCode Integration  
-  http://code.google.com/p/zxing/  
+* ActionBarSherlock  
+  http://actionbarsherlock.com/  
   Apache License v2
 
-* HTMLCleaner  
-  http://htmlcleaner.sourceforge.net/  
-  BSD License
+* HtmlTextView  
+  https://github.com/dschuermann/html-textview  
+  Apache License v2
 
-* HtmlSpanner  
+* ZXing QRCode Integration  
+  http://code.google.com/p/zxing/  
   Apache License v2
 
 
