@@ -63,7 +63,8 @@ OpenPGP Keychain specific Intent actions:
   * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
 * ``org.sufficientlysecure.keychain.action.DECRYPT``
   * To decrypt text use extra ``text`` (type: ``String``)
-  * To decrypt bytes use extra ``data`` (type: ``byte[]``)* ``org.sufficientlysecure.keychain.action.DECRYPT_FILE``
+  * To decrypt bytes use extra ``data`` (type: ``byte[]``)
+* ``org.sufficientlysecure.keychain.action.DECRYPT_FILE``
   * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``keyring_bytes`` (type: ``byte[]``)
