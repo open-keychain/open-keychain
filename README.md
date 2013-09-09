@@ -19,8 +19,8 @@ see http://sufficientlysecure.org/keychain
 
 1. Have Android SDK "tools" directory in your PATH (http://developer.android.com/sdk/index.html)
 2. Execute ``android update project -p OpenPGP-Keychain``
-3. Execute``android update project -p libraries/ActionBarSherlock``
-3. Execute``android update project -p libraries/HtmlTextView``
+3. Execute ``android update project -p libraries/ActionBarSherlock``
+3. Execute ``android update project -p libraries/HtmlTextView``
 3. Execute ``cd OpenPGP-Kechain``, ``ant debug``
 
 # Contribute
@@ -38,14 +38,10 @@ Android Studio is currently not supported or recommended!
 
 # Keychain API
 
-## Basic goals
-
-* Intents invoked by apps that are not registered by Keychain's App API must require user interaction (e.g. click a button in a dialog to actually encrypt!)
-
 ## API without registering the app
 
 ### Intent Actions
-All Intents require user interaction, e.g. encryption is not done automatically. The user needs to press the Encrypt button.
+All Intents require user interaction, e.g. encryption is not done automatically (e.g. click a button in a dialog to actually encrypt!).
 To do automatic encryption/decryption/sign/verify use the Remote Serive API.
 
 Android Intent actions provided by OpenPGP Keychain:
