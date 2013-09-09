@@ -66,6 +66,17 @@ public class CryptoService extends Service {
 
     final Object userInputLock = new Object();
 
+    private class MyBaseCallback implements Handler.Callback {
+        public static final int OKAY = 1;
+        public static final int CANCEL = 0;
+
+        @Override
+        public boolean handleMessage(Message msg) {
+            return false;
+        }
+
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -116,9 +127,7 @@ public class CryptoService extends Service {
         return passphrase;
     }
 
-    public class PassphraseActivityCallback implements Handler.Callback {
-        public static final int SUCCESS = 1;
-        public static final int NO_SUCCESS = 0;
+    public class PassphraseActivityCallback extends MyBaseCallback {
 
         private boolean success = false;
 
@@ -128,7 +137,7 @@ public class CryptoService extends Service {
 
         @Override
         public boolean handleMessage(Message msg) {
-            if (msg.arg1 == SUCCESS) {
+            if (msg.arg1 == OKAY) {
                 success = true;
             } else {
                 success = false;
@@ -151,9 +160,13 @@ public class CryptoService extends Service {
      */
     private long[] getKeyIdsFromEmails(String[] encryptionUserIds, long ownKeyId) {
         // find key ids to given emails in database
-        boolean manySameUserIds = false;
-        boolean missingUserIds = false;
         ArrayList<Long> keyIds = new ArrayList<Long>();
+
+        boolean missingUserIdsCheck = false;
+        boolean dublicateUserIdsCheck = false;
+        ArrayList<String> missingUserIds = new ArrayList<String>();
+        ArrayList<String> dublicateUserIds = new ArrayList<String>();
+
         for (String email : encryptionUserIds) {
             Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByEmailsUri(email);
             Cursor cur = getContentResolver().query(uri, null, null, null, null);
@@ -161,11 +174,13 @@ public class CryptoService extends Service {
                 long id = cur.getLong(cur.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID));
                 keyIds.add(id);
             } else {
-                missingUserIds = true;
+                missingUserIdsCheck = true;
+                missingUserIds.add(email);
                 Log.d(Constants.TAG, "user id missing");
             }
             if (cur.moveToNext()) {
-                manySameUserIds = true;
+                dublicateUserIdsCheck = true;
+                dublicateUserIds.add(email);
                 Log.d(Constants.TAG, "more than one user id with the same email");
             }
         }
@@ -179,12 +194,16 @@ public class CryptoService extends Service {
             keyIdsArray[i] = keyIds.get(i);
         }
 
-        if (missingUserIds || manySameUserIds) {
+        if (missingUserIdsCheck || dublicateUserIdsCheck) {
             SelectPubKeysActivityCallback callback = new SelectPubKeysActivityCallback();
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
             Bundle extras = new Bundle();
             extras.putLongArray(CryptoServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            extras.putStringArrayList(CryptoServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
+            extras.putStringArrayList(CryptoServiceActivity.EXTRA_DUBLICATE_USER_IDS,
+                    dublicateUserIds);
+
             pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS,
                     messenger, extras);
 
@@ -199,9 +218,7 @@ public class CryptoService extends Service {
         return keyIdsArray;
     }
 
-    public class SelectPubKeysActivityCallback implements Handler.Callback {
-        public static final int OKAY = 1;
-        public static final int CANCEL = 0;
+    public class SelectPubKeysActivityCallback extends MyBaseCallback {
         public static final String PUB_KEY_IDS = "pub_key_ids";
 
         private boolean newSelection = false;
@@ -540,17 +557,14 @@ public class CryptoService extends Service {
 
             if (callback.isAllowed()) {
                 mThreadPool.execute(r);
+                Log.d(Constants.TAG, "Enqueued runnable…");
             } else {
                 Log.d(Constants.TAG, "User disallowed app!");
             }
-
-            Log.d(Constants.TAG, "Enqueued runnable…");
         }
     }
 
-    public class RegisterActivityCallback implements Handler.Callback {
-        public static final int ALLOW = 1;
-        public static final int DISALLOW = 0;
+    public class RegisterActivityCallback extends MyBaseCallback {
         public static final String PACKAGE_NAME = "package_name";
 
         private boolean allowed = false;
@@ -566,9 +580,7 @@ public class CryptoService extends Service {
 
         @Override
         public boolean handleMessage(Message msg) {
-            Log.d(Constants.TAG, "msg what: " + msg.what);
-
-            if (msg.arg1 == ALLOW) {
+            if (msg.arg1 == OKAY) {
                 allowed = true;
                 packageName = msg.getData().getString(PACKAGE_NAME);
 
@@ -591,7 +603,7 @@ public class CryptoService extends Service {
                 }
                 mThreadPool.resume();
             }
-            return false;
+            return true;
         }
 
     }

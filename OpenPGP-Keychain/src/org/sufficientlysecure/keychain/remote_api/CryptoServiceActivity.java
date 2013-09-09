@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.remote_api;
 
+import java.util.ArrayList;
+
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -48,9 +51,13 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
 
     public static final String EXTRA_MESSENGER = "messenger";
 
-    public static final String EXTRA_SECRET_KEY_ID = "secretKeyId";
-    public static final String EXTRA_PACKAGE_NAME = "packageName";
-    public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "masterKeyIds";
+    public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
+    public static final String EXTRA_PACKAGE_NAME = "package_name";
+
+    // select activity
+    public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
+    public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
+    public static final String EXTRA_DUBLICATE_USER_IDS = "dublicate_user_ids";
 
     private Messenger mMessenger;
 
@@ -59,6 +66,9 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
     // select pub key view
     private SelectPublicKeyFragment mSelectFragment;
 
+    // has the user clicked one of the buttons?
+    private boolean finishHandled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +76,24 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
         handleActions(getIntent(), savedInstanceState);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (!finishHandled) {
+            Message msg = Message.obtain();
+            msg.arg1 = CryptoService.RegisterActivityCallback.CANCEL;
+            try {
+                mMessenger.send(msg);
+            } catch (RemoteException e) {
+                Log.e(Constants.TAG, "CryptoServiceActivity", e);
+            }
+        }
+    }
+
     protected void handleActions(Intent intent, Bundle savedInstanceState) {
+        finishHandled = false;
+
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
 
@@ -99,7 +126,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                         mSettingsFragment.getAppSettings());
 
                                 Message msg = Message.obtain();
-                                msg.arg1 = CryptoService.RegisterActivityCallback.ALLOW;
+                                msg.arg1 = CryptoService.RegisterActivityCallback.OKAY;
                                 Bundle data = new Bundle();
                                 data.putString(CryptoService.RegisterActivityCallback.PACKAGE_NAME,
                                         packageName);
@@ -109,6 +136,8 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                                 } catch (RemoteException e) {
                                     Log.e(Constants.TAG, "CryptoServiceActivity", e);
                                 }
+
+                                finishHandled = true;
                                 finish();
                             }
                         }
@@ -118,12 +147,14 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                             // Disallow
 
                             Message msg = Message.obtain();
-                            msg.arg1 = CryptoService.RegisterActivityCallback.DISALLOW;
+                            msg.arg1 = CryptoService.RegisterActivityCallback.CANCEL;
                             try {
                                 mMessenger.send(msg);
                             } catch (RemoteException e) {
                                 Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
+
+                            finishHandled = true;
                             finish();
                         }
                     });
@@ -141,6 +172,33 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             showPassphraseDialog(secretKeyId);
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
+            ArrayList<String> missingUserIds = intent
+                    .getStringArrayListExtra(EXTRA_MISSING_USER_IDS);
+            ArrayList<String> dublicateUserIds = intent
+                    .getStringArrayListExtra(EXTRA_DUBLICATE_USER_IDS);
+
+            String text = new String();
+            text += "<b>" + getString(R.string.api_select_pub_keys_text) + "</b>";
+            text += "<br/><br/>";
+            if (missingUserIds != null && missingUserIds.size() > 0) {
+                text += getString(R.string.api_select_pub_keys_missing_text);
+                text += "<br/>";
+                text += "<ul>";
+                for (String userId : missingUserIds) {
+                    text += "<li>" + userId + "</li>";
+                }
+                text += "</ul>";
+                text += "<br/>";
+            }
+            if (dublicateUserIds != null && dublicateUserIds.size() > 0) {
+                text += getString(R.string.api_select_pub_keys_dublicates_text);
+                text += "<br/>";
+                text += "<ul>";
+                for (String userId : dublicateUserIds) {
+                    text += "<li>" + userId + "</li>";
+                }
+                text += "</ul>";
+            }
 
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
@@ -161,6 +219,8 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                             } catch (RemoteException e) {
                                 Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
+
+                            finishHandled = true;
                             finish();
                         }
                     }, R.string.btn_doNotSave, new View.OnClickListener() {
@@ -176,11 +236,17 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                             } catch (RemoteException e) {
                                 Log.e(Constants.TAG, "CryptoServiceActivity", e);
                             }
+
+                            finishHandled = true;
                             finish();
                         }
                     });
 
             setContentView(R.layout.api_app_select_pub_keys_activity);
+
+            // set text on view
+            HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_select_pub_keys_text);
+            textView.setHtmlFromString(text);
 
             /* Load select pub keys fragment */
             // Check that the activity is using the layout version with
@@ -220,7 +286,7 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     Message msg = Message.obtain();
-                    msg.arg1 = CryptoService.PassphraseActivityCallback.SUCCESS;
+                    msg.arg1 = CryptoService.PassphraseActivityCallback.OKAY;
                     try {
                         mMessenger.send(msg);
                     } catch (RemoteException e) {
@@ -228,13 +294,15 @@ public class CryptoServiceActivity extends SherlockFragmentActivity {
                     }
                 } else {
                     Message msg = Message.obtain();
-                    msg.arg1 = CryptoService.PassphraseActivityCallback.NO_SUCCESS;
+                    msg.arg1 = CryptoService.PassphraseActivityCallback.CANCEL;
                     try {
                         mMessenger.send(msg);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "CryptoServiceActivity", e);
                     }
                 }
+
+                finishHandled = true;
                 finish();
             }
         };

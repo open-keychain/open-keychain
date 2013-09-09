@@ -370,6 +370,8 @@
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
-    <string name="api_select_pub_keys_text">You have selected recipients (e.g. by selecting email addresses), which public keys could not be found. Please verify your selection!</string>
+    <string name="api_select_pub_keys_missing_text">No public keys were found for these user ids:</string>
+    <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these user ids:</string>
+    <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
 
 </resources>
