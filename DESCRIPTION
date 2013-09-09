@@ -2,8 +2,7 @@ THIS IS EXPERIMENTAL SOFTWARE.
 Use OpenPGP Keychain at your own risk!
 
 Description:
-OpenPGP Keychain is an open source OpenPGP implementation for Android.
-OpenPGP Keychain is a fork based on the original Android Privacy Guard (APG) to introduce more features and a new user interface.
+OpenPGP Keychain is an OpenPGP implementation for Android. The development began as a fork of Android Privacy Guard (APG).
 
 Features:
 • OpenPGP Keychain is Open Source and Free Software (GPLv3+) (-> verifiable cryptography)
