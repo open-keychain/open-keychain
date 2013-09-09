@@ -48,15 +48,15 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
 public class ImportKeysActivity extends SherlockFragmentActivity {
-    public static final String ACTION_KEY_IMPORT = Constants.INTENT_PREFIX + "KEY_IMPORT";
-    public static final String ACTION_KEY_IMPORT_FROM_QR_CODE = Constants.INTENT_PREFIX
-            + "KEY_IMPORT_FROM_QR_CODE";
+    public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
+    public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_QR_CODE";
 
     // Actions for internal use only:
-    public static final String ACTION_KEY_IMPORT_FROM_FILE = Constants.INTENT_PREFIX
-            + "KEY_IMPORT_FROM_FILE";
-    public static final String ACTION_KEY_IMPORT_FROM_NFC = Constants.INTENT_PREFIX
-            + "KEY_IMPORT_FROM_NFC";
+    public static final String ACTION_IMPOR_KEY_FROM_FILE = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_FILE";
+    public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_NFC";
 
     // only used by IMPORT
     public static final String EXTRA_KEYRING_BYTES = "keyring_bytes";
@@ -145,13 +145,13 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
             // override action to delegate it to Keychains ACTION_IMPORT
-            action = ACTION_KEY_IMPORT;
+            action = ACTION_IMPORT_KEY;
         }
 
         /**
          * APG's own Actions
          */
-        if (ACTION_KEY_IMPORT.equals(action)) {
+        if (ACTION_IMPORT_KEY.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
                 mImportData = null;
@@ -160,15 +160,15 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                 mImportFilename = null;
             }
             loadKeyListFragment();
-        } else if (ACTION_KEY_IMPORT_FROM_FILE.equals(action)) {
+        } else if (ACTION_IMPOR_KEY_FROM_FILE.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
                 mImportFilename = intent.getData().getPath();
                 mImportData = null;
             }
             showImportFromFileDialog();
-        } else if (ACTION_KEY_IMPORT_FROM_QR_CODE.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
             importFromQrCode();
-        } else if (ACTION_KEY_IMPORT_FROM_NFC.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
             importFromNfc();
         }
     }

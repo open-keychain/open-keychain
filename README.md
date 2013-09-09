@@ -50,17 +50,17 @@ These Intents require user interaction!
 
 All Intents start with ``org.sufficientlysecure.keychain.action.``
 
-* ``KEY_IMPORT``
-  * Extras: ``keyring_bytes``
-  * or Uri in data with file schema
-* ``KEY_IMPORT_FROM_QR_CODE``
-  * without extras
 * ``ENCRYPT``
   * TODO: explain extras (see source)
 * ``ENCRYPT_FILE``
 * ``DECRYPT``
   * TODO: explain extras (see source)
 * ``DECRYPT_FILE``
+* ``IMPORT_KEY``
+  * Extras: ``keyring_bytes`` (``byte[]``)
+  * or Uri in data with file schema
+* ``IMPORT_KEY_FROM_QR_CODE``
+  * without extras
 
 TODO:
 - new intent REGISTER_APP?

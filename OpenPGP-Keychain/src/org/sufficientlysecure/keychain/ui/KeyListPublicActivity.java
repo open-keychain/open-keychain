@@ -67,7 +67,7 @@ public class KeyListPublicActivity extends KeyListActivity {
         }
         case Id.menu.option.import_from_file: {
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_KEY_IMPORT_FROM_FILE);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPOR_KEY_FROM_FILE);
             startActivityForResult(intentImportFromFile, 0);
 
             return true;
@@ -75,7 +75,7 @@ public class KeyListPublicActivity extends KeyListActivity {
 
         case Id.menu.option.import_from_qr_code: {
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_KEY_IMPORT_FROM_QR_CODE);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_QR_CODE);
             startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
 
             return true;
@@ -83,7 +83,7 @@ public class KeyListPublicActivity extends KeyListActivity {
 
         case Id.menu.option.import_from_nfc: {
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_KEY_IMPORT_FROM_NFC);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_NFC);
             startActivityForResult(intentImportFromFile, 0);
 
             return true;

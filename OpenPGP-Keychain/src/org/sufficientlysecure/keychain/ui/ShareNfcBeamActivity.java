@@ -115,7 +115,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
 
         Intent importIntent = new Intent(this, ImportKeysActivity.class);
-        importIntent.setAction(ImportKeysActivity.ACTION_KEY_IMPORT);
+        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
         importIntent.putExtra(ImportKeysActivity.EXTRA_KEYRING_BYTES, receivedKeyringBytes);
 
         finish();
