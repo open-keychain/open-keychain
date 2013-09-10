@@ -42,7 +42,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class OpenPGPProviderActivity extends Activity {
+public class OpenPgpProviderActivity extends Activity {
     Activity mActivity;
 
     EditText mMessage;
@@ -104,7 +104,7 @@ public class OpenPGPProviderActivity extends Activity {
                 public void run() {
                     mMessage.setText(new String(outputBytes));
                     if (signatureResult != null) {
-                        Toast.makeText(OpenPGPProviderActivity.this,
+                        Toast.makeText(OpenPgpProviderActivity.this,
                                 "signature result:\n" + signatureResult.toString(),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -254,7 +254,7 @@ public class OpenPGPProviderActivity extends Activity {
 
                         // bind to service
                         mCryptoServiceConnection = new OpenPgpServiceConnection(
-                                OpenPGPProviderActivity.this, packageName);
+                                OpenPgpProviderActivity.this, packageName);
                         mCryptoServiceConnection.bindToService();
 
                         dialog.dismiss();

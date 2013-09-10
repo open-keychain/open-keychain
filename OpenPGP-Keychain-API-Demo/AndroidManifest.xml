@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".OpenPGPProviderActivity"
+            android:name=".OpenPgpProviderActivity"
             android:label="OpenPGP Provider"
             android:windowSoftInputMode="stateHidden" />
         <activity

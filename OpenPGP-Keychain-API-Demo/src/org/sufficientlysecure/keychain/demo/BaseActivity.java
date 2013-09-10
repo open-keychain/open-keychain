@@ -67,7 +67,7 @@ public class BaseActivity extends PreferenceActivity {
         mCryptoProvider.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, OpenPGPProviderActivity.class));
+                startActivity(new Intent(mActivity, OpenPgpProviderActivity.class));
 
                 return false;
             }
