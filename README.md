@@ -82,10 +82,9 @@ API Demo: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.ke
 
 Design
 ------
-As discussed previously I now present my new Crypto API that I propose
-for integration into k9mail. All apps wanting to use this generic API
+All apps wanting to use this generic API
 just need to include the AIDL files and connect to the service. Other
-crypto apps can implement a service based on this AIDL definition.
+OpenPGP apps can implement a service based on this AIDL definition.
 
 The API is designed to be as easy as possible to use by apps like
 k9mail. The service definition defines
@@ -103,13 +102,13 @@ Please try the Demo app out to see how it works [4].
 
 Integration
 -----------
-The API is defined as AIDL interfaces in org.openintents.crypto packge
+The API is defined as AIDL interfaces in org.openintents.openpgp packge
 [2]. All files from [2] needs to be included in the project.
 
-Using the CryptoServiceConnection.java [3] you can choose to which
-crypto provider you want to connect (other pgp apps can implement the
+Using the OpenPgpServiceConnection.java [3] you can choose to which
+OpenPGP provider you want to connect (other pgp apps can implement the
 interfaces). They can be queried as shown in the demo app (see [3] how
-to query). If other crypto apps implement the service, no additional
+to query). If other OpenPGP apps implement the service, no additional
 code is required in k9mail per provider. See [3] for a complete example
 for integration.
 
@@ -119,13 +118,13 @@ ToDos
 - signature results needs improvements (should also contain email address)
 - Integration in k9mail
 
-[1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/crypto/ICryptoService.aidl
+[1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl
 
-[2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/crypto
+[2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp
 
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/crypto/CryptoServiceConnection.java
+[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java
 
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/CryptoProviderDemoActivity.java
+[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java
 
 [4] https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
 
