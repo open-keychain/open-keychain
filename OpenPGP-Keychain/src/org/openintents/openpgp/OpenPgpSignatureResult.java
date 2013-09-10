@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class CryptoSignatureResult implements Parcelable {
+public class OpenPgpSignatureResult implements Parcelable {
     String signatureUserId;
 
     boolean signature;
     boolean signatureSuccess;
     boolean signatureUnknown;
 
-    public CryptoSignatureResult() {
+    public OpenPgpSignatureResult() {
 
     }
 
-    public CryptoSignatureResult(String signatureUserId, boolean signature,
+    public OpenPgpSignatureResult(String signatureUserId, boolean signature,
             boolean signatureSuccess, boolean signatureUnknown) {
         this.signatureUserId = signatureUserId;
 
@@ -39,7 +39,7 @@ public class CryptoSignatureResult implements Parcelable {
         this.signatureUnknown = signatureUnknown;
     }
 
-    public CryptoSignatureResult(CryptoSignatureResult b) {
+    public OpenPgpSignatureResult(OpenPgpSignatureResult b) {
         this.signatureUserId = b.signatureUserId;
 
         this.signature = b.signature;
@@ -59,9 +59,9 @@ public class CryptoSignatureResult implements Parcelable {
         dest.writeByte((byte) (signatureUnknown ? 1 : 0));
     }
 
-    public static final Creator<CryptoSignatureResult> CREATOR = new Creator<CryptoSignatureResult>() {
-        public CryptoSignatureResult createFromParcel(final Parcel source) {
-            CryptoSignatureResult vr = new CryptoSignatureResult();
+    public static final Creator<OpenPgpSignatureResult> CREATOR = new Creator<OpenPgpSignatureResult>() {
+        public OpenPgpSignatureResult createFromParcel(final Parcel source) {
+            OpenPgpSignatureResult vr = new OpenPgpSignatureResult();
             vr.signatureUserId = source.readString();
             vr.signature = source.readByte() == 1;
             vr.signatureSuccess = source.readByte() == 1;
@@ -69,8 +69,8 @@ public class CryptoSignatureResult implements Parcelable {
             return vr;
         }
 
-        public CryptoSignatureResult[] newArray(final int size) {
-            return new CryptoSignatureResult[size];
+        public OpenPgpSignatureResult[] newArray(final int size) {
+            return new OpenPgpSignatureResult[size];
         }
     };
 

@@ -19,11 +19,11 @@ package org.sufficientlysecure.keychain.demo;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openintents.crypto.CryptoError;
-import org.openintents.crypto.CryptoServiceConnection;
-import org.openintents.crypto.CryptoSignatureResult;
-import org.openintents.crypto.ICryptoCallback;
-import org.openintents.crypto.ICryptoService;
+import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.OpenPgpServiceConnection;
+import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.IOpenPgpCallback;
+import org.openintents.openpgp.IOpenPgpService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -42,14 +42,14 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class CryptoProviderDemoActivity extends Activity {
+public class OpenPGPProviderActivity extends Activity {
     Activity mActivity;
 
     EditText mMessage;
     EditText mCiphertext;
     EditText mEncryptUserIds;
 
-    private CryptoServiceConnection mCryptoServiceConnection;
+    private OpenPgpServiceConnection mCryptoServiceConnection;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -68,10 +68,10 @@ public class CryptoProviderDemoActivity extends Activity {
     /**
      * Callback from remote crypto service
      */
-    final ICryptoCallback.Stub encryptCallback = new ICryptoCallback.Stub() {
+    final IOpenPgpCallback.Stub encryptCallback = new IOpenPgpCallback.Stub() {
 
         @Override
-        public void onSuccess(final byte[] outputBytes, CryptoSignatureResult signatureResult)
+        public void onSuccess(final byte[] outputBytes, OpenPgpSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "encryptCallback");
 
@@ -85,16 +85,16 @@ public class CryptoProviderDemoActivity extends Activity {
         }
 
         @Override
-        public void onError(CryptoError error) throws RemoteException {
+        public void onError(OpenPgpError error) throws RemoteException {
             handleError(error);
         }
 
     };
 
-    final ICryptoCallback.Stub decryptAndVerifyCallback = new ICryptoCallback.Stub() {
+    final IOpenPgpCallback.Stub decryptAndVerifyCallback = new IOpenPgpCallback.Stub() {
 
         @Override
-        public void onSuccess(final byte[] outputBytes, final CryptoSignatureResult signatureResult)
+        public void onSuccess(final byte[] outputBytes, final OpenPgpSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "decryptAndVerifyCallback");
 
@@ -104,7 +104,7 @@ public class CryptoProviderDemoActivity extends Activity {
                 public void run() {
                     mMessage.setText(new String(outputBytes));
                     if (signatureResult != null) {
-                        Toast.makeText(CryptoProviderDemoActivity.this,
+                        Toast.makeText(OpenPGPProviderActivity.this,
                                 "signature result:\n" + signatureResult.toString(),
                                 Toast.LENGTH_LONG).show();
                     }
@@ -114,13 +114,13 @@ public class CryptoProviderDemoActivity extends Activity {
         }
 
         @Override
-        public void onError(CryptoError error) throws RemoteException {
+        public void onError(OpenPgpError error) throws RemoteException {
             handleError(error);
         }
 
     };
 
-    private void handleError(final CryptoError error) {
+    private void handleError(final OpenPgpError error) {
         mActivity.runOnUiThread(new Runnable() {
 
             @Override
@@ -186,12 +186,12 @@ public class CryptoProviderDemoActivity extends Activity {
         }
     }
 
-    private static class CryptoProviderElement {
+    private static class OpenPGPProviderElement {
         private String packageName;
         private String simpleName;
         private Drawable icon;
 
-        public CryptoProviderElement(String packageName, String simpleName, Drawable icon) {
+        public OpenPGPProviderElement(String packageName, String simpleName, Drawable icon) {
             this.packageName = packageName;
             this.simpleName = simpleName;
             this.icon = icon;
@@ -204,9 +204,9 @@ public class CryptoProviderDemoActivity extends Activity {
     }
 
     private void selectCryptoProvider() {
-        Intent intent = new Intent(ICryptoService.class.getName());
+        Intent intent = new Intent(IOpenPgpService.class.getName());
 
-        final ArrayList<CryptoProviderElement> providerList = new ArrayList<CryptoProviderElement>();
+        final ArrayList<OpenPGPProviderElement> providerList = new ArrayList<OpenPGPProviderElement>();
 
         List<ResolveInfo> resInfo = getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {
@@ -218,17 +218,17 @@ public class CryptoProviderDemoActivity extends Activity {
                 String simpleName = String.valueOf(resolveInfo.serviceInfo
                         .loadLabel(getPackageManager()));
                 Drawable icon = resolveInfo.serviceInfo.loadIcon(getPackageManager());
-                providerList.add(new CryptoProviderElement(packageName, simpleName, icon));
+                providerList.add(new OpenPGPProviderElement(packageName, simpleName, icon));
             }
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle("Select Crypto Provider!");
+            alert.setTitle("Select OpenPGP Provider!");
             alert.setCancelable(false);
 
             if (!providerList.isEmpty()) {
 
                 // Init ArrayAdapter with Crypto Providers
-                ListAdapter adapter = new ArrayAdapter<CryptoProviderElement>(this,
+                ListAdapter adapter = new ArrayAdapter<OpenPGPProviderElement>(this,
                         android.R.layout.select_dialog_item, android.R.id.text1, providerList) {
                     public View getView(int position, View convertView, ViewGroup parent) {
                         // User super class to create the View
@@ -253,15 +253,15 @@ public class CryptoProviderDemoActivity extends Activity {
                         String packageName = providerList.get(position).packageName;
 
                         // bind to service
-                        mCryptoServiceConnection = new CryptoServiceConnection(
-                                CryptoProviderDemoActivity.this, packageName);
+                        mCryptoServiceConnection = new OpenPgpServiceConnection(
+                                OpenPGPProviderActivity.this, packageName);
                         mCryptoServiceConnection.bindToService();
 
                         dialog.dismiss();
                     }
                 });
             } else {
-                alert.setMessage("No Crypto Provider installed!");
+                alert.setMessage("No OpenPGP Provider installed!");
             }
 
             alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
-// Declare CryptoSignatureResult so AIDL can find it and knows that it implements the parcelable protocol.
-parcelable CryptoSignatureResult;
+// Declare OpenPgpError so AIDL can find it and knows that it implements the parcelable protocol.
+parcelable OpenPgpError;

@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class CryptoError implements Parcelable {
+public class OpenPgpError implements Parcelable {
     public static final int ID_NO_OR_WRONG_PASSPHRASE = 1;
     public static final int ID_NO_USER_IDS = 2;
 
     int errorId;
     String message;
 
-    public CryptoError() {
+    public OpenPgpError() {
     }
 
-    public CryptoError(int errorId, String message) {
+    public OpenPgpError(int errorId, String message) {
         this.errorId = errorId;
         this.message = message;
     }
 
-    public CryptoError(CryptoError b) {
+    public OpenPgpError(OpenPgpError b) {
         this.errorId = b.errorId;
         this.message = b.message;
     }
@@ -64,16 +64,16 @@ public class CryptoError implements Parcelable {
         dest.writeString(message);
     }
 
-    public static final Creator<CryptoError> CREATOR = new Creator<CryptoError>() {
-        public CryptoError createFromParcel(final Parcel source) {
-            CryptoError error = new CryptoError();
+    public static final Creator<OpenPgpError> CREATOR = new Creator<OpenPgpError>() {
+        public OpenPgpError createFromParcel(final Parcel source) {
+            OpenPgpError error = new OpenPgpError();
             error.errorId = source.readInt();
             error.message = source.readString();
             return error;
         }
 
-        public CryptoError[] newArray(final int size) {
-            return new CryptoError[size];
+        public OpenPgpError[] newArray(final int size) {
+            return new OpenPgpError[size];
         }
     };
 }

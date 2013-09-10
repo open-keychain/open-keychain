@@ -4,9 +4,6 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-permission android:name="org.sufficientlysecure.keychain.permission.ACCESS_API" />
-    <uses-permission android:name="org.sufficientlysecure.keychain.permission.ACCESS_KEYS" />
-
     <uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="14" />
@@ -25,24 +22,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".IntentDemoActivity"
-            android:label="Intent Demo 1"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".CryptoProviderDemoActivity"
-            android:label="Crypto Provider"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".AidlDemoActivity"
-            android:label="Aidl Demo (ACCESS_API permission)"
+            android:name=".OpenPGPProviderActivity"
+            android:label="OpenPGP Provider"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".AidlDemoActivity2"
             android:label="Aidl Demo (ACCESS_KEYS permission)"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".ContentProviderDemoActivity"
-            android:label="Content Provider Demo"
             android:windowSoftInputMode="stateHidden" />
     </application>
 

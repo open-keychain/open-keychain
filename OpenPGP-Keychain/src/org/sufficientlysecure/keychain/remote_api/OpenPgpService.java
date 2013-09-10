@@ -26,10 +26,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
-import org.openintents.crypto.CryptoError;
-import org.openintents.crypto.CryptoSignatureResult;
-import org.openintents.crypto.ICryptoCallback;
-import org.openintents.crypto.ICryptoService;
+import org.openintents.openpgp.IOpenPgpCallback;
+import org.openintents.openpgp.IOpenPgpService;
+import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -56,7 +56,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-public class CryptoService extends Service {
+public class OpenPgpService extends Service {
     Context mContext;
 
     final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(100);
@@ -103,12 +103,12 @@ public class CryptoService extends Service {
 
             // start passphrase dialog
             Bundle extras = new Bundle();
-            extras.putLong(CryptoServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
+            extras.putLong(OpenPgpServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
 
             PassphraseActivityCallback callback = new PassphraseActivityCallback();
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_CACHE_PASSPHRASE,
+            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_CACHE_PASSPHRASE,
                     messenger, extras);
 
             if (callback.isSuccess()) {
@@ -199,12 +199,12 @@ public class CryptoService extends Service {
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
             Bundle extras = new Bundle();
-            extras.putLongArray(CryptoServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
-            extras.putStringArrayList(CryptoServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            extras.putStringArrayList(CryptoServiceActivity.EXTRA_DUBLICATE_USER_IDS,
+            extras.putLongArray(OpenPgpServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            extras.putStringArrayList(OpenPgpServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
+            extras.putStringArrayList(OpenPgpServiceActivity.EXTRA_DUBLICATE_USER_IDS,
                     dublicateUserIds);
 
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_SELECT_PUB_KEYS,
+            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_SELECT_PUB_KEYS,
                     messenger, extras);
 
             if (callback.isSuccess()) {
@@ -255,7 +255,7 @@ public class CryptoService extends Service {
     };
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
-            boolean asciiArmor, ICryptoCallback callback, AppSettings appSettings, boolean sign)
+            boolean asciiArmor, IOpenPgpCallback callback, AppSettings appSettings, boolean sign)
             throws RemoteException {
         try {
             // build InputData and write into OutputStream
@@ -267,14 +267,14 @@ public class CryptoService extends Service {
 
             long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId());
             if (keyIds == null) {
-                callback.onError(new CryptoError(CryptoError.ID_NO_USER_IDS, "No user ids!"));
+                callback.onError(new OpenPgpError(OpenPgpError.ID_NO_USER_IDS, "No user ids!"));
                 return;
             }
 
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId());
                 if (passphrase == null) {
-                    callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
+                    callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
                             "No or wrong passphrase!"));
                     return;
                 }
@@ -300,7 +300,7 @@ public class CryptoService extends Service {
             Log.e(Constants.TAG, "KeychainService, Exception!", e);
 
             try {
-                callback.onError(new CryptoError(0, e.getMessage()));
+                callback.onError(new OpenPgpError(0, e.getMessage()));
             } catch (Exception t) {
                 Log.e(Constants.TAG, "Error returning exception to client", t);
             }
@@ -308,7 +308,7 @@ public class CryptoService extends Service {
     }
 
     // TODO: asciiArmor?!
-    private void signSafe(byte[] inputBytes, ICryptoCallback callback, AppSettings appSettings)
+    private void signSafe(byte[] inputBytes, IOpenPgpCallback callback, AppSettings appSettings)
             throws RemoteException {
         try {
             Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
@@ -322,7 +322,7 @@ public class CryptoService extends Service {
 
             String passphrase = getCachedPassphrase(appSettings.getKeyId());
             if (passphrase == null) {
-                callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
+                callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
                         "No or wrong passphrase!"));
                 return;
             }
@@ -341,14 +341,14 @@ public class CryptoService extends Service {
             Log.e(Constants.TAG, "KeychainService, Exception!", e);
 
             try {
-                callback.onError(new CryptoError(0, e.getMessage()));
+                callback.onError(new OpenPgpError(0, e.getMessage()));
             } catch (Exception t) {
                 Log.e(Constants.TAG, "Error returning exception to client", t);
             }
         }
     }
 
-    private synchronized void decryptAndVerifySafe(byte[] inputBytes, ICryptoCallback callback,
+    private synchronized void decryptAndVerifySafe(byte[] inputBytes, IOpenPgpCallback callback,
             AppSettings appSettings) throws RemoteException {
         try {
             // TODO: this is not really needed
@@ -432,7 +432,7 @@ public class CryptoService extends Service {
 
                 passphrase = getCachedPassphrase(secretKeyId);
                 if (passphrase == null) {
-                    callback.onError(new CryptoError(CryptoError.ID_NO_OR_WRONG_PASSPHRASE,
+                    callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
                             "No or wrong passphrase!"));
                     return;
                 }
@@ -470,10 +470,10 @@ public class CryptoService extends Service {
             boolean signatureUnknown = outputBundle
                     .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
 
-            CryptoSignatureResult sigResult = null;
+            OpenPgpSignatureResult sigResult = null;
             if (signature) {
-                sigResult = new CryptoSignatureResult(signatureUserId, signature, signatureSuccess,
-                        signatureUnknown);
+                sigResult = new OpenPgpSignatureResult(signatureUserId, signature,
+                        signatureSuccess, signatureUnknown);
             }
 
             // return over handler on client side
@@ -482,18 +482,18 @@ public class CryptoService extends Service {
             Log.e(Constants.TAG, "KeychainService, Exception!", e);
 
             try {
-                callback.onError(new CryptoError(0, e.getMessage()));
+                callback.onError(new OpenPgpError(0, e.getMessage()));
             } catch (Exception t) {
                 Log.e(Constants.TAG, "Error returning exception to client", t);
             }
         }
     }
 
-    private final ICryptoService.Stub mBinder = new ICryptoService.Stub() {
+    private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
         @Override
         public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final ICryptoCallback callback) throws RemoteException {
+                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -515,7 +515,7 @@ public class CryptoService extends Service {
 
         @Override
         public void encryptAndSign(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final ICryptoCallback callback) throws RemoteException {
+                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -536,8 +536,8 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void sign(final byte[] inputBytes, boolean asciiArmor, final ICryptoCallback callback)
-                throws RemoteException {
+        public void sign(final byte[] inputBytes, boolean asciiArmor,
+                final IOpenPgpCallback callback) throws RemoteException {
             final AppSettings settings = getAppSettings();
 
             Runnable r = new Runnable() {
@@ -557,7 +557,7 @@ public class CryptoService extends Service {
         }
 
         @Override
-        public void decryptAndVerify(final byte[] inputBytes, final ICryptoCallback callback)
+        public void decryptAndVerify(final byte[] inputBytes, final IOpenPgpCallback callback)
                 throws RemoteException {
 
             final AppSettings settings = getAppSettings();
@@ -591,12 +591,12 @@ public class CryptoService extends Service {
             Log.e(Constants.TAG, "Not allowed to use service! Starting activity for registration!");
             Bundle extras = new Bundle();
             // TODO: currently simply uses first entry
-            extras.putString(CryptoServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
+            extras.putString(OpenPgpServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
 
             RegisterActivityCallback callback = new RegisterActivityCallback();
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
-            pauseQueueAndStartServiceActivity(CryptoServiceActivity.ACTION_REGISTER, messenger,
+            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_REGISTER, messenger,
                     extras);
 
             if (callback.isAllowed()) {
@@ -726,11 +726,11 @@ public class CryptoService extends Service {
             mThreadPool.pause();
 
             Log.d(Constants.TAG, "starting activity...");
-            Intent intent = new Intent(getBaseContext(), CryptoServiceActivity.class);
+            Intent intent = new Intent(getBaseContext(), OpenPgpServiceActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setAction(action);
 
-            extras.putParcelable(CryptoServiceActivity.EXTRA_MESSENGER, messenger);
+            extras.putParcelable(OpenPgpServiceActivity.EXTRA_MESSENGER, messenger);
             intent.putExtras(extras);
 
             startActivity(intent);

@@ -380,10 +380,10 @@
         <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
 
 
-        <!-- Remote API internal intents -->
+        <!-- OpenPGP Remote Service API internal -->
 
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.CryptoServiceActivity"
+            android:name="org.sufficientlysecure.keychain.remote_api.OpenPgpServiceActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop"
@@ -399,10 +399,10 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
-        <!-- Remote API -->
+        <!-- OpenPGP Remote Service API -->
 
         <service
-            android:name="org.sufficientlysecure.keychain.remote_api.CryptoService"
+            android:name="org.sufficientlysecure.keychain.remote_api.OpenPgpService"
             android:enabled="true"
             android:exported="true"
             android:process=":crypto" >

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
  
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
-import org.openintents.crypto.ICryptoCallback;
+import org.openintents.openpgp.IOpenPgpCallback;
 
 /**
  * All methods are oneway, which means they are asynchronous and non-blocking.
  * Results are returned to the callback, which has to be implemented on client side.
  */
-interface ICryptoService {
+interface IOpenPgpService {
        
     /**
      * Encrypt
@@ -36,7 +36,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in ICryptoCallback callback);
+    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in IOpenPgpCallback callback);
     
     /**
      * Sign
@@ -48,7 +48,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void sign(in byte[] inputBytes, in boolean asciiArmor, in ICryptoCallback callback);
+    oneway void sign(in byte[] inputBytes, in boolean asciiArmor, in IOpenPgpCallback callback);
     
     /**
      * Encrypt and sign
@@ -64,7 +64,7 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in ICryptoCallback callback);
+    oneway void encryptAndSign(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor, in IOpenPgpCallback callback);
     
     /**
      * Decrypts and verifies given input bytes. If no signature is present this method
@@ -75,6 +75,6 @@ interface ICryptoService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void decryptAndVerify(in byte[] inputBytes, in ICryptoCallback callback);
+    oneway void decryptAndVerify(in byte[] inputBytes, in IOpenPgpCallback callback);
     
 }

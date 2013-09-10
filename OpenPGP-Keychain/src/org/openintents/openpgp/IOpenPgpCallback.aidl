@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
-import org.openintents.crypto.CryptoSignatureResult;
-import org.openintents.crypto.CryptoError;
+import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.openintents.openpgp.OpenPgpError;
 
-interface ICryptoCallback {
+interface IOpenPgpCallback {
     
     /**
      * CryptoSignatureResult is only returned if the Callback was used from decryptAndVerify
      *
      */
-    oneway void onSuccess(in byte[] outputBytes, in CryptoSignatureResult signatureResult);
+    oneway void onSuccess(in byte[] outputBytes, in OpenPgpSignatureResult signatureResult);
 
-    oneway void onError(in CryptoError error);
+    oneway void onError(in OpenPgpError error);
 }

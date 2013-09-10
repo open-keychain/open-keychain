@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.openintents.crypto;
+package org.openintents.openpgp;
 
-import org.openintents.crypto.ICryptoService;
+import org.openintents.openpgp.IOpenPgpService;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,27 +25,27 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
 
-public class CryptoServiceConnection {
+public class OpenPgpServiceConnection {
     private Context mApplicationContext;
 
-    private ICryptoService mService;
+    private IOpenPgpService mService;
     private boolean bound;
     private String cryptoProviderPackageName;
 
-    private static final String TAG = "CryptoConnection";
+    private static final String TAG = "OpenPgpServiceConnection";
 
-    public CryptoServiceConnection(Context context, String cryptoProviderPackageName) {
+    public OpenPgpServiceConnection(Context context, String cryptoProviderPackageName) {
         mApplicationContext = context.getApplicationContext();
         this.cryptoProviderPackageName = cryptoProviderPackageName;
     }
 
-    public ICryptoService getService() {
+    public IOpenPgpService getService() {
         return mService;
     }
 
     private ServiceConnection mCryptoServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mService = ICryptoService.Stub.asInterface(service);
+            mService = IOpenPgpService.Stub.asInterface(service);
             Log.d(TAG, "connected to service");
             bound = true;
         }
@@ -68,7 +68,7 @@ public class CryptoServiceConnection {
                 Log.d(TAG, "not bound yet");
 
                 Intent serviceIntent = new Intent();
-                serviceIntent.setAction("org.openintents.crypto.ICryptoService");
+                serviceIntent.setAction(IOpenPgpService.class.getName());
                 serviceIntent.setPackage(cryptoProviderPackageName);
                 mApplicationContext.bindService(serviceIntent, mCryptoServiceConnection,
                         Context.BIND_AUTO_CREATE);
