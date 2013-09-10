@@ -112,12 +112,6 @@ to query). If other OpenPGP apps implement the service, no additional
 code is required in k9mail per provider. See [3] for a complete example
 for integration.
 
-ToDos
------
-- error handling needs improvements
-- signature results needs improvements (should also contain email address)
-- Integration in k9mail
-
 [1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl
 
 [2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp
