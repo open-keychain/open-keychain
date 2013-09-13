@@ -50,7 +50,7 @@ public class BaseActivity extends PreferenceActivity {
         // find preferences
         mIntentDemo = (Preference) findPreference("intent_demo");
         mContentProviderDemo = (Preference) findPreference("content_provider_demo");
-        mCryptoProvider = (Preference) findPreference("crypto_provider_demo");
+        mCryptoProvider = (Preference) findPreference("openpgp_provider_demo");
         mAidlDemo = (Preference) findPreference("aidl_demo");
         mAidlDemo2 = (Preference) findPreference("aidl_demo2");
 

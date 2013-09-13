@@ -11,10 +11,10 @@
     <!-- android:key="aidl_demo2" -->
     <!-- android:title="AIDL Demo (ACCESS_KEYS permission)" /> -->
     <!-- </PreferenceCategory> -->
-    <PreferenceCategory android:title="Crypto Provider" >
+    <PreferenceCategory android:title="OpenPGP Provider" >
         <Preference
-            android:key="crypto_provider_demo"
-            android:title="Crypto Provider" />
+            android:key="openpgp_provider_demo"
+            android:title="OpenPGP Provider" />
     </PreferenceCategory>
 
 </PreferenceScreen>
