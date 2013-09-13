@@ -472,8 +472,8 @@ public class OpenPgpService extends Service {
 
             OpenPgpSignatureResult sigResult = null;
             if (signature) {
-                sigResult = new OpenPgpSignatureResult(signatureUserId, signature,
-                        signatureSuccess, signatureUnknown);
+                sigResult = new OpenPgpSignatureResult(signatureUserId, signatureSuccess,
+                        signatureUnknown);
             }
 
             // return over handler on client side

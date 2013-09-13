@@ -20,9 +20,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class OpenPgpSignatureResult implements Parcelable {
-    String signatureUserId;
 
-    boolean signature;
+    String signatureUserId;
     boolean signatureSuccess;
     boolean signatureUnknown;
 
@@ -30,19 +29,15 @@ public class OpenPgpSignatureResult implements Parcelable {
 
     }
 
-    public OpenPgpSignatureResult(String signatureUserId, boolean signature,
-            boolean signatureSuccess, boolean signatureUnknown) {
+    public OpenPgpSignatureResult(String signatureUserId, boolean signatureSuccess,
+            boolean signatureUnknown) {
         this.signatureUserId = signatureUserId;
-
-        this.signature = signature;
         this.signatureSuccess = signatureSuccess;
         this.signatureUnknown = signatureUnknown;
     }
 
     public OpenPgpSignatureResult(OpenPgpSignatureResult b) {
         this.signatureUserId = b.signatureUserId;
-
-        this.signature = b.signature;
         this.signatureSuccess = b.signatureSuccess;
         this.signatureUnknown = b.signatureUnknown;
     }
@@ -54,7 +49,6 @@ public class OpenPgpSignatureResult implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(signatureUserId);
 
-        dest.writeByte((byte) (signature ? 1 : 0));
         dest.writeByte((byte) (signatureSuccess ? 1 : 0));
         dest.writeByte((byte) (signatureUnknown ? 1 : 0));
     }
@@ -63,7 +57,6 @@ public class OpenPgpSignatureResult implements Parcelable {
         public OpenPgpSignatureResult createFromParcel(final Parcel source) {
             OpenPgpSignatureResult vr = new OpenPgpSignatureResult();
             vr.signatureUserId = source.readString();
-            vr.signature = source.readByte() == 1;
             vr.signatureSuccess = source.readByte() == 1;
             vr.signatureUnknown = source.readByte() == 1;
             return vr;
@@ -77,7 +70,7 @@ public class OpenPgpSignatureResult implements Parcelable {
     @Override
     public String toString() {
         String out = new String();
-        out += "signature: " + signature;
+        out += "signatureUserId: " + signatureUserId;
         out += "\nsignatureSuccess: " + signatureSuccess;
         out += "\nsignatureUnknown: " + signatureUnknown;
         return out;
