@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.remote_api;
+package org.sufficientlysecure.keychain.openpgp_api;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;

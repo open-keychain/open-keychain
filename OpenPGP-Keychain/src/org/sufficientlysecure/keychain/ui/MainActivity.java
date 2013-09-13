@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity;
+import org.sufficientlysecure.keychain.openpgp_api.RegisteredAppsListActivity;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;

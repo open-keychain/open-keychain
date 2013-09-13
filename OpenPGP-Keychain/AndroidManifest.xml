@@ -383,29 +383,29 @@
         <!-- OpenPGP Remote Service API internal -->
 
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.OpenPgpServiceActivity"
+            android:name="org.sufficientlysecure.keychain.openpgp_api.OpenPgpServiceActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:process=":crypto"
-            android:taskAffinity=":crypto" />
+            android:process=":openpgp_api"
+            android:taskAffinity=":openpgp_api" />
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.RegisteredAppsListActivity"
+            android:name="org.sufficientlysecure.keychain.openpgp_api.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
             android:label="@string/title_api_registered_apps" />
         <activity
-            android:name="org.sufficientlysecure.keychain.remote_api.AppSettingsActivity"
+            android:name="org.sufficientlysecure.keychain.openpgp_api.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
         <!-- OpenPGP Remote Service API -->
 
         <service
-            android:name="org.sufficientlysecure.keychain.remote_api.OpenPgpService"
+            android:name="org.sufficientlysecure.keychain.openpgp_api.OpenPgpService"
             android:enabled="true"
             android:exported="true"
-            android:process=":crypto" >
+            android:process=":openpgp_api" >
             <intent-filter>
                 <action android:name="org.openintents.crypto.ICryptoService" />
             </intent-filter>
