@@ -461,19 +461,26 @@ public class OpenPgpService extends Service {
 
             // get signature informations from bundle
             boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE);
-            long signatureKeyId = outputBundle
-                    .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
-            String signatureUserId = outputBundle
-                    .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
-            boolean signatureSuccess = outputBundle
-                    .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
-            boolean signatureUnknown = outputBundle
-                    .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
 
             OpenPgpSignatureResult sigResult = null;
             if (signature) {
-                sigResult = new OpenPgpSignatureResult(signatureUserId, signatureSuccess,
-                        signatureUnknown);
+                long signatureKeyId = outputBundle
+                        .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                String signatureUserId = outputBundle
+                        .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
+                boolean signatureSuccess = outputBundle
+                        .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
+                boolean signatureUnknown = outputBundle
+                        .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
+                
+                int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
+                if (signatureSuccess) {
+                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS;
+                } else if (signatureUnknown) {
+                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN;
+                }
+
+                sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId, signedOnly);
             }
 
             // return over handler on client side
@@ -514,7 +521,7 @@ public class OpenPgpService extends Service {
         }
 
         @Override
-        public void encryptAndSign(final byte[] inputBytes, final String[] encryptionUserIds,
+        public void signAndEncrypt(final byte[] inputBytes, final String[] encryptionUserIds,
                 final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();

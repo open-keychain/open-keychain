@@ -159,7 +159,7 @@ public class OpenPgpProviderActivity extends Activity {
         byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().encryptAndSign(inputBytes,
+            mCryptoServiceConnection.getService().signAndEncrypt(inputBytes,
                     mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
