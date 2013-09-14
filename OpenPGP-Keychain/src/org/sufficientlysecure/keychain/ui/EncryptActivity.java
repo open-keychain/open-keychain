@@ -72,21 +72,17 @@ import com.actionbarsherlock.view.MenuItem;
 public class EncryptActivity extends SherlockFragmentActivity {
 
     /* Intents */
-    // without permission
     public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
-    public static final String ACTION_ENCRYPT_FILE = Constants.INTENT_PREFIX + "ENCRYPT_FILE";
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
-    public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_ASCII_ARMOUR = "ascii_armor";
-    public static final String EXTRA_SEND_TO = "send_to";
-    public static final String EXTRA_SUBJECT = "subject";
+
+    // enables ASCII Armor for file encryption when uri is given
+    public static final String EXTRA_ASCII_ARMOR = "ascii_armor";
+
+    // preselect ids, for internal use
     public static final String EXTRA_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String EXTRA_ENCRYPTION_KEY_IDS = "encryption_key_ids";
-
-    private String mSubject = null;
-    private String mSendTo = null;
 
     private long mEncryptionKeyIds[] = null;
 
@@ -116,7 +112,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private EditText mPassPhrase = null;
     private EditText mPassPhraseAgain = null;
-    private CheckBox mAsciiArmour = null;
+    private CheckBox mAsciiArmor = null;
     private Spinner mFileCompression = null;
 
     private EditText mFilename = null;
@@ -127,9 +123,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private String mOutputFilename = null;
 
     private boolean mAsciiArmorDemand = false;
-    private boolean mOverrideAsciiArmour = false;
-    private Uri mStreamAndReturnUri = null;
-    private byte[] mData = null;
+    private boolean mOverrideAsciiArmor = false;
 
     private boolean mGenerateSignature = false;
 
@@ -201,26 +195,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         updateSource();
         updateMode();
 
-        // if (mEncryptImmediately) {
-        // mSourcePrevious.setClickable(false);
-        // mSourcePrevious.setEnabled(false);
-        // mSourcePrevious.setVisibility(View.INVISIBLE);
-        //
-        // mSourceNext.setClickable(false);
-        // mSourceNext.setEnabled(false);
-        // mSourceNext.setVisibility(View.INVISIBLE);
-        //
-        // mSourceLabel.setClickable(false);
-        // mSourceLabel.setEnabled(false);
-        // }
-
         updateActionBarButtons();
-
-        // if (mEncryptImmediately
-        // && (mMessage.getText().length() > 0 || mData != null)
-        // && ((mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0) || mSecretKeyId != 0)) {
-        // encryptClicked();
-        // }
     }
 
     /**
@@ -250,40 +225,24 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     // handle like normal text encryption, override action and extras to later
                     // execute ACTION_ENCRYPT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
-                    extras.putBoolean(EXTRA_ASCII_ARMOUR, true);
+                    extras.putBoolean(EXTRA_ASCII_ARMOR, true);
                     action = ACTION_ENCRYPT;
                 }
             } else {
                 // Files via content provider, override uri and action
                 uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                action = ACTION_ENCRYPT_FILE;
+                action = ACTION_ENCRYPT;
             }
         }
 
-        // if (ACTION_ENCRYPT_AND_RETURN.equals(action)
-        // || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-        // mEncryptImmediately = true;
-        // }
-        //
-        // if (ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-        // mGenerateSignature = true;
-        // mOverrideAsciiArmour = true;
-        // mAsciiArmorDemand = false;
-        // }
-
-        if (extras.containsKey(EXTRA_ASCII_ARMOUR)) {
-            mAsciiArmorDemand = extras.getBoolean(EXTRA_ASCII_ARMOUR, true);
-            mOverrideAsciiArmour = true;
-            mAsciiArmour.setChecked(mAsciiArmorDemand);
+        if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
+            mAsciiArmorDemand = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
+            mOverrideAsciiArmor = true;
+            mAsciiArmor.setChecked(mAsciiArmorDemand);
         }
 
-        mData = extras.getByteArray(EXTRA_DATA);
-        String textData = null;
-        if (mData == null) {
-            textData = extras.getString(EXTRA_TEXT);
-        }
-        mSendTo = extras.getString(EXTRA_SEND_TO);
-        mSubject = extras.getString(EXTRA_SUBJECT);
+        String textData = extras.getString(EXTRA_TEXT);
+
         long signatureKeyId = extras.getLong(EXTRA_SIGNATURE_KEY_ID);
         long[] encryptionKeyIds = extras.getLongArray(EXTRA_ENCRYPTION_KEY_IDS);
 
@@ -293,18 +252,18 @@ public class EncryptActivity extends SherlockFragmentActivity {
         /**
          * Main Actions
          */
-        // if (ACTION_ENCRYPT.equals(action) || ACTION_ENCRYPT_AND_RETURN.equals(action)
-        // || ACTION_GENERATE_SIGNATURE_AND_RETURN.equals(action)) {
-        if (ACTION_ENCRYPT.equals(action)) {
-            if (textData != null) {
-                mMessage.setText(textData);
-            }
+        if (ACTION_ENCRYPT.equals(action) && textData != null) {
+            // encrypt text based on given extra
+
+            mMessage.setText(textData);
             mSource.setInAnimation(null);
             mSource.setOutAnimation(null);
             while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
                 mSource.showNext();
             }
-        } else if (ACTION_ENCRYPT_FILE.equals(action)) {
+        } else if (ACTION_ENCRYPT.equals(action) && uri != null) {
+            // encrypt file based on Uri
+
             // get file path from uri
             String path = FileHelper.getPath(this, uri);
 
@@ -319,16 +278,15 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 }
             } else {
                 Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_ENCRYPT_STREAM_AND_RETURN.");
+                        "Direct binary data without actual file in filesystem is not supported by Intents. Please use the Remote Service API!");
                 Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
                 finish();
             }
-            // } else if (ACTION_ENCRYPT_STREAM_AND_RETURN.equals(action)) {
-            // // TODO: Set mStreamAndReturnUri that is used later to encrypt a stream!
-            //
-            // mStreamAndReturnUri = uri;
+        } else {
+            Log.e(Constants.TAG,
+                    "Include the extra 'text' or an Uri with setData() in your Intent!");
         }
     }
 
@@ -391,7 +349,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private String guessOutputFilename(String path) {
         // output in the same directory but with additional ending
         File file = new File(path);
-        String ending = (mAsciiArmour.isChecked() ? ".asc" : ".gpg");
+        String ending = (mAsciiArmor.isChecked() ? ".asc" : ".gpg");
         String outputFilename = file.getParent() + File.separator + file.getName() + ending;
 
         return outputFilename;
@@ -455,31 +413,19 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSourceLabel.setText(R.string.label_message);
 
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                // if (mEncryptImmediately) {
-                // setActionbarButtons(true, R.string.btn_encrypt, false, 0);
-                // } else {
-                setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                setActionbarButtons(true, R.string.btn_encryptAndSend, true,
                         R.string.btn_encryptToClipboard);
-                // }
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (mSecretKeyId == 0) {
                         setActionbarButtons(false, 0, false, 0);
                     } else {
-                        // if (mEncryptImmediately) {
-                        // setActionbarButtons(true, R.string.btn_sign, false, 0);
-                        // } else {
-                        setActionbarButtons(true, R.string.btn_signAndEmail, true,
+                        setActionbarButtons(true, R.string.btn_signAndSend, true,
                                 R.string.btn_signToClipboard);
-                        // }
                     }
                 } else {
-                    // if (mEncryptImmediately) {
-                    // setActionbarButtons(true, R.string.btn_encrypt, false, 0);
-                    // } else {
-                    setActionbarButtons(true, R.string.btn_encryptAndEmail, true,
+                    setActionbarButtons(true, R.string.btn_encryptAndSend, true,
                             R.string.btn_encryptToClipboard);
-                    // }
                 }
             }
             break;
@@ -684,13 +630,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
 
         // choose default settings, target and data bundle by target
-        if (mStreamAndReturnUri != null) {
-            // mIntentDataUri is only defined when ACTION_ENCRYPT_STREAM_AND_RETURN is used
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_STREAM);
-            data.putParcelable(KeychainIntentService.ENCRYPT_PROVIDER_URI, mStreamAndReturnUri);
-
-        } else if (mEncryptTarget == Id.target.file) {
-            useAsciiArmor = mAsciiArmour.isChecked();
+        if (mEncryptTarget == Id.target.file) {
+            useAsciiArmor = mAsciiArmor.isChecked();
             compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
 
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
@@ -707,19 +648,14 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
 
-            if (mData != null) {
-                data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, mData);
-            } else {
-                String message = mMessage.getText().toString();
-                // if (signOnly && !mEncryptImmediately) {
-                if (signOnly) {
-                    fixBadCharactersForGmail(message);
-                }
-                data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
+            String message = mMessage.getText().toString();
+            if (signOnly) {
+                fixBadCharactersForGmail(message);
             }
+            data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
         }
 
-        if (mOverrideAsciiArmour) {
+        if (mOverrideAsciiArmor) {
             useAsciiArmor = mAsciiArmorDemand;
         }
 
@@ -755,31 +691,18 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         break;
 
                     case Id.target.email:
-                        // if (mEncryptImmediately) {
-                        // Intent intent = new Intent();
-                        // intent.putExtras(data);
-                        // setResult(RESULT_OK, intent);
-                        // finish();
-                        // return;
-                        // }
 
                         output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
                         Log.d(Constants.TAG, "output: " + output);
 
-                        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                        Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
                         // Type is set to text/plain so that encrypted messages can
                         // be sent with Whatsapp, Hangouts, SMS etc...
-                        emailIntent.setType("text/plain");
+                        sendIntent.setType("text/plain");
 
-                        emailIntent.putExtra(Intent.EXTRA_TEXT, output);
-                        if (mSubject != null) {
-                            emailIntent.putExtra(Intent.EXTRA_SUBJECT, mSubject);
-                        }
-                        if (mSendTo != null) {
-                            emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { mSendTo });
-                        }
-                        startActivity(Intent.createChooser(emailIntent,
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, output);
+                        startActivity(Intent.createChooser(sendIntent,
                                 getString(R.string.title_sendEmail)));
                         break;
 
@@ -949,8 +872,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
 
-        mAsciiArmour = (CheckBox) findViewById(R.id.asciiArmour);
-        mAsciiArmour.setChecked(Preferences.getPreferences(this).getDefaultAsciiArmour());
+        mAsciiArmor = (CheckBox) findViewById(R.id.asciiArmour);
+        mAsciiArmor.setChecked(Preferences.getPreferences(this).getDefaultAsciiArmour());
 
         mSelectKeysButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {

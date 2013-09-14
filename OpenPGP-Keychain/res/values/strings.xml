@@ -58,9 +58,9 @@
 
     <!-- btn_lowerCase: capitalized words, no punctuation -->
     <string name="btn_signToClipboard">Sign (Clipboard)</string>
-    <string name="btn_encryptToClipboard">Encrypt (Clipboard)</string>
-    <string name="btn_encryptAndEmail">Encrypt (Email)</string>
-    <string name="btn_signAndEmail">Sign (Email)</string>
+    <string name="btn_encryptToClipboard">Encrypt to Clipboard</string>
+    <string name="btn_encryptAndSend">Encrypt and send…</string>
+    <string name="btn_signAndSend">Sign and send…</string>
     <string name="btn_encrypt">Encrypt</string>
     <string name="btn_sign">Sign</string>
     <string name="btn_decrypt">Decrypt</string>

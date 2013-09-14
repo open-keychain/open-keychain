@@ -146,7 +146,6 @@
             <!-- Keychain's own Actions -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
-                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT_FILE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -171,7 +170,6 @@
             <!-- Keychain's own Actions -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
-                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT_FILE" />
 
                 <category android:name="android.intent.category.DEFAULT" />
 

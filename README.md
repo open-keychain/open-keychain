@@ -53,18 +53,14 @@ OpenPGP Keychain specific Intent actions:
 
 * ``org.sufficientlysecure.keychain.action.ENCRYPT``
   * To encrypt text use extra ``text`` (type: ``String``)
-  * To encrypt bytes use extra ``data`` (type: ``byte[]``)
-  * Enable ASCII Armor (encoding to Radix-64, 33% overhead) by adding the extra ``ascii_armor`` with value ``true``
-* ``org.sufficientlysecure.keychain.action.ENCRYPT_FILE``
-  * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
+  * or set data ``Uri`` (``intent.setData()``) pointing to a file
+  * Enable ASCII Armor for file encryption (encoding to Radix-64, 33% overhead) by adding the extra ``ascii_armor`` with value ``true``
 * ``org.sufficientlysecure.keychain.action.DECRYPT``
   * To decrypt text use extra ``text`` (type: ``String``)
-  * To decrypt bytes use extra ``data`` (type: ``byte[]``)
-* ``org.sufficientlysecure.keychain.action.DECRYPT_FILE``
-  * Include data ``Uri`` (``intent.setData()``) pointing to a file or content provider
+  * or set data ``Uri`` (``intent.setData()``) pointing to a file
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``key_bytes`` (type: ``byte[]``)
-  * or Uri in data with file schema
+  * or set data ``Uri`` (``intent.setData()``) pointing to a file
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras starts Barcode Scanner to get QR Code
 

@@ -74,19 +74,13 @@ public class DecryptActivity extends SherlockFragmentActivity {
     /* Intents */
     // without permission
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
-    public static final String ACTION_DECRYPT_FILE = Constants.INTENT_PREFIX + "DECRYPT_FILE";
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
-    public static final String EXTRA_DATA = "data";
-    public static final String EXTRA_REPLY_TO = "reply_to";
-    public static final String EXTRA_SUBJECT = "subject";
 
     private long mSignatureKeyId = 0;
 
     private boolean mReturnResult = false;
-    private String mReplyTo = null;
-    private String mSubject = null;
     private boolean mSignedOnly = false;
     private boolean mAssumeSymmetricEncryption = false;
 
@@ -116,7 +110,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     private String mOutputFilename = null;
 
     private Uri mContentUri = null;
-    private byte[] mDataBytes = null;
     private boolean mReturnBinary = false;
 
     private long mUnknownSignatureKeyId = 0;
@@ -310,7 +303,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         if (mDecryptImmediately
                 || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                        .length() > 0 || mDataBytes != null || mContentUri != null))) {
+                        .length() > 0 || mContentUri != null))) {
             decryptClicked();
         }
     }
@@ -334,7 +327,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
          * Android's Action
          */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to APG Encrypt via share menu
+            // When sending to Keychain Encrypt via share menu
             if ("text/plain".equals(type)) {
                 // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
@@ -348,83 +341,46 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 // Binary via content provider (could also be files)
                 // override uri to get stream from send
                 uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                action = ACTION_DECRYPT_FILE;
+                action = ACTION_DECRYPT;
             }
         } else if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to APG (see AndroidManifest.xml)
+            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
 
             // override action
-            action = ACTION_DECRYPT_FILE;
-
-            // EVERYTHING ELSE IS OLD CODE
-            // This gets the Uri, where an inputStream can be opened from
-            // mContentUri = intent.getData();
-
-            // TODO: old implementation of ACTION_VIEW. Is this used in K9?
-            // Uri uri = mIntent.getData();
-            // try {
-            // InputStream attachment = getContentResolver().openInputStream(uri);
-            // ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-            // byte bytes[] = new byte[1 << 16];
-            // int length;
-            // while ((length = attachment.read(bytes)) > 0) {
-            // byteOut.write(bytes, 0, length);
-            // }
-            // byteOut.close();
-            // String data = new String(byteOut.toByteArray());
-            // mMessage.setText(data);
-            // } catch (FileNotFoundException e) {
-            // // ignore, then
-            // } catch (IOException e) {
-            // // ignore, then
-            // }
-
-            // same as ACTION_DECRYPT_FILE but decrypt it immediately
-            // handleActionDecryptFile(intent);
-            // mDecryptImmediately = true;
+            action = ACTION_DECRYPT;
         }
+
+        String textData = extras.getString(EXTRA_TEXT);
 
         /**
          * Main Actions
          */
-        if (ACTION_DECRYPT.equals(action)) {
-            mDataBytes = extras.getByteArray(EXTRA_DATA);
-            String textData = null;
-            if (mDataBytes == null) {
-                Log.d(Constants.TAG, "EXTRA_DATA was null");
-                textData = extras.getString(EXTRA_TEXT);
+        if (ACTION_DECRYPT.equals(action) && textData != null) {
+            Log.d(Constants.TAG, "textData null, matching text ...");
+            Matcher matcher = PgpMain.PGP_MESSAGE.matcher(textData);
+            if (matcher.matches()) {
+                Log.d(Constants.TAG, "PGP_MESSAGE matched");
+                textData = matcher.group(1);
+                // replace non breakable spaces
+                textData = textData.replaceAll("\\xa0", " ");
+                mMessage.setText(textData);
             } else {
-                Log.d(Constants.TAG, "Got data from EXTRA_DATA");
-            }
-            if (textData != null) {
-                Log.d(Constants.TAG, "textData null, matching text ...");
-                Matcher matcher = PgpMain.PGP_MESSAGE.matcher(textData);
+                matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
-                    Log.d(Constants.TAG, "PGP_MESSAGE matched");
+                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
                     mMessage.setText(textData);
-                } else {
-                    matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(textData);
-                    if (matcher.matches()) {
-                        Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
-                        textData = matcher.group(1);
-                        // replace non breakable spaces
-                        textData = textData.replaceAll("\\xa0", " ");
-                        mMessage.setText(textData);
 
-                        mDecryptString = getString(R.string.btn_verify);
-                        // build new action bar
-                        invalidateOptionsMenu();
-                    } else {
-                        Log.d(Constants.TAG, "Nothing matched!");
-                    }
+                    mDecryptString = getString(R.string.btn_verify);
+                    // build new action bar
+                    invalidateOptionsMenu();
+                } else {
+                    Log.d(Constants.TAG, "Nothing matched!");
                 }
             }
-            mReplyTo = extras.getString(EXTRA_REPLY_TO);
-            mSubject = extras.getString(EXTRA_SUBJECT);
-        } else if (ACTION_DECRYPT_FILE.equals(action)) {
+        } else if (ACTION_DECRYPT.equals(action) && uri != null) {
             // get file path from uri
             String path = FileHelper.getPath(this, uri);
 
@@ -439,45 +395,16 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 }
             } else {
                 Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_DECRYPT_STREAM_AND_RETURN.");
+                        "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
                 Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
                 finish();
             }
+        } else {
+            Log.e(Constants.TAG,
+                    "Include the extra 'text' or an Uri with setData() in your Intent!");
         }
-        // } else if (ACTION_DECRYPT_AND_RETURN.equals(action)) {
-        // mReturnBinary = extras.getBoolean(EXTRA_BINARY, false);
-        //
-        // if (mContentUri == null) {
-        // mDataBytes = extras.getByteArray(EXTRA_DATA);
-        // String data = extras.getString(EXTRA_TEXT);
-        // if (data != null) {
-        // Matcher matcher = PgpMain.PGP_MESSAGE.matcher(data);
-        // if (matcher.matches()) {
-        // data = matcher.group(1);
-        // // replace non breakable spaces
-        // data = data.replaceAll("\\xa0", " ");
-        // mMessage.setText(data);
-        // } else {
-        // matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(data);
-        // if (matcher.matches()) {
-        // data = matcher.group(1);
-        // // replace non breakable spaces
-        // data = data.replaceAll("\\xa0", " ");
-        // mMessage.setText(data);
-        // mDecryptString = getString(R.string.btn_verify);
-        //
-        // // build new action bar
-        // invalidateOptionsMenu();
-        // }
-        // }
-        // }
-        // }
-        // mReturnResult = true;
-        // } else if (ACTION_DECRYPT_STREAM_AND_RETURN.equals(action)) {
-        // // TODO: Implement decrypt stream
-        // }
     }
 
     private void guessOutputFilename() {
@@ -641,11 +568,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (mDataBytes != null) {
-                inStream = new ByteArrayInputStream(mDataBytes);
-            } else {
-                inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
-            }
+            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
         }
 
         // get decryption key for this inStream
@@ -685,8 +608,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
         intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
-        intent.putExtra(EncryptActivity.EXTRA_SUBJECT, "Re: " + mSubject);
-        intent.putExtra(EncryptActivity.EXTRA_SEND_TO, mReplyTo);
         intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, mSecretKeyId);
         intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
         startActivity(intent);
@@ -768,13 +689,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
         } else {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
 
-            if (mDataBytes != null) {
-                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mDataBytes);
-            } else {
-                String message = mMessage.getText().toString();
-                data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES,
-                        message.getBytes());
-            }
+            String message = mMessage.getText().toString();
+            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
         }
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
