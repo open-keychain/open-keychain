@@ -396,26 +396,26 @@
         <!-- OpenPGP API internal classes (not exported) -->
 
         <activity
-            android:name="org.sufficientlysecure.keychain.openpgp_api.OpenPgpServiceActivity"
+            android:name="org.sufficientlysecure.keychain.service.remote.OpenPgpServiceActivity"
             android:exported="false"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:process=":openpgp_api"
             android:taskAffinity=":openpgp_api" />
         <activity
-            android:name="org.sufficientlysecure.keychain.openpgp_api.RegisteredAppsListActivity"
+            android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
             android:label="@string/title_api_registered_apps" />
         <activity
-            android:name="org.sufficientlysecure.keychain.openpgp_api.AppSettingsActivity"
+            android:name="org.sufficientlysecure.keychain.service.remote.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
         <!-- OpenPGP API -->
 
         <service
-            android:name="org.sufficientlysecure.keychain.openpgp_api.OpenPgpService"
+            android:name="org.sufficientlysecure.keychain.service.remote.OpenPgpService"
             android:enabled="true"
             android:exported="true"
             android:process=":openpgp_api" >

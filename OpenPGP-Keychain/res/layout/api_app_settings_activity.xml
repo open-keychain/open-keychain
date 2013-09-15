@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/api_app_settings_fragment"
-        android:name="org.sufficientlysecure.keychain.openpgp_api.AppSettingsFragment"
+        android:name="org.sufficientlysecure.keychain.service.remote.AppSettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:layout="@layout/api_app_settings_fragment" />
