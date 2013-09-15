@@ -239,8 +239,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY,
-                    operations);
+            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {
@@ -296,8 +295,7 @@ public class ProviderHelper {
         }
 
         try {
-            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY,
-                    operations);
+            context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "applyBatch failed!", e);
         } catch (OperationApplicationException e) {
@@ -765,12 +763,11 @@ public class ProviderHelper {
     }
 
     public static AppSettings getApiAppSettings(Context context, Uri uri) {
-        AppSettings settings = new AppSettings();
+        AppSettings settings = null;
+
         Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
-        if (cur == null) {
-            return null;
-        }
-        if (cur.moveToFirst()) {
+        if (cur != null && cur.moveToFirst()) {
+            settings = new AppSettings();
             settings.setPackageName(cur.getString(cur
                     .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
             settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));

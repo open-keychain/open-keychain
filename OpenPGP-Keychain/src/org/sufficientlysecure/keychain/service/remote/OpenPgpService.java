@@ -22,8 +22,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 import org.openintents.openpgp.IOpenPgpCallback;
@@ -36,19 +34,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.PgpMain;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.PausableThreadPoolExecutor;
 
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -56,31 +49,11 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-public class OpenPgpService extends Service {
-    Context mContext;
-
-    final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(100);
-    // TODO: Are these parameters okay?
-    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
-            TimeUnit.SECONDS, mPoolQueue);
-
-    final Object userInputLock = new Object();
-
-    private class MyBaseCallback implements Handler.Callback {
-        public static final int OKAY = 1;
-        public static final int CANCEL = 0;
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            return false;
-        }
-
-    }
+public class OpenPgpService extends RemoteApiService {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mContext = this;
         Log.d(Constants.TAG, "CryptoService, onCreate()");
     }
 
@@ -127,7 +100,7 @@ public class OpenPgpService extends Service {
         return passphrase;
     }
 
-    public class PassphraseActivityCallback extends MyBaseCallback {
+    public class PassphraseActivityCallback extends UserInputCallback {
 
         private boolean success = false;
 
@@ -136,19 +109,12 @@ public class OpenPgpService extends Service {
         }
 
         @Override
-        public boolean handleMessage(Message msg) {
+        public void handleUserInput(Message msg) {
             if (msg.arg1 == OKAY) {
                 success = true;
             } else {
                 success = false;
             }
-
-            // resume
-            synchronized (userInputLock) {
-                userInputLock.notifyAll();
-            }
-            mThreadPool.resume();
-            return true;
         }
     };
 
@@ -222,7 +188,7 @@ public class OpenPgpService extends Service {
         return keyIdsArray;
     }
 
-    public class SelectPubKeysActivityCallback extends MyBaseCallback {
+    public class SelectPubKeysActivityCallback extends UserInputCallback {
         public static final String PUB_KEY_IDS = "pub_key_ids";
 
         private boolean success = false;
@@ -237,20 +203,13 @@ public class OpenPgpService extends Service {
         }
 
         @Override
-        public boolean handleMessage(Message msg) {
+        public void handleUserInput(Message msg) {
             if (msg.arg1 == OKAY) {
                 success = true;
                 pubKeyIds = msg.getData().getLongArray(PUB_KEY_IDS);
             } else {
                 success = false;
             }
-
-            // resume
-            synchronized (userInputLock) {
-                userInputLock.notifyAll();
-            }
-            mThreadPool.resume();
-            return true;
         }
     };
 
@@ -472,7 +431,7 @@ public class OpenPgpService extends Service {
                         .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
                 boolean signatureUnknown = outputBundle
                         .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
-                
+
                 int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
                 if (signatureSuccess) {
                     signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS;
@@ -586,169 +545,4 @@ public class OpenPgpService extends Service {
 
     };
 
-    private void checkAndEnqueue(Runnable r) {
-        if (isCallerAllowed(false)) {
-            mThreadPool.execute(r);
-
-            Log.d(Constants.TAG, "Enqueued runnable…");
-        } else {
-            String[] callingPackages = getPackageManager()
-                    .getPackagesForUid(Binder.getCallingUid());
-
-            Log.e(Constants.TAG, "Not allowed to use service! Starting activity for registration!");
-            Bundle extras = new Bundle();
-            // TODO: currently simply uses first entry
-            extras.putString(OpenPgpServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
-
-            RegisterActivityCallback callback = new RegisterActivityCallback();
-            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
-
-            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_REGISTER, messenger,
-                    extras);
-
-            if (callback.isAllowed()) {
-                mThreadPool.execute(r);
-                Log.d(Constants.TAG, "Enqueued runnable…");
-            } else {
-                Log.d(Constants.TAG, "User disallowed app!");
-            }
-        }
-    }
-
-    public class RegisterActivityCallback extends MyBaseCallback {
-        public static final String PACKAGE_NAME = "package_name";
-
-        private boolean allowed = false;
-        private String packageName;
-
-        public boolean isAllowed() {
-            return allowed;
-        }
-
-        public String getPackageName() {
-            return packageName;
-        }
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            if (msg.arg1 == OKAY) {
-                allowed = true;
-                packageName = msg.getData().getString(PACKAGE_NAME);
-
-                // resume threads
-                if (isPackageAllowed(packageName, false)) {
-                    synchronized (userInputLock) {
-                        userInputLock.notifyAll();
-                    }
-                    mThreadPool.resume();
-                } else {
-                    // Should not happen!
-                    Log.e(Constants.TAG, "Should not happen! Emergency shutdown!");
-                    mThreadPool.shutdownNow();
-                }
-            } else {
-                allowed = false;
-
-                synchronized (userInputLock) {
-                    userInputLock.notifyAll();
-                }
-                mThreadPool.resume();
-            }
-            return true;
-        }
-
-    }
-
-    /**
-     * Checks if process that binds to this service (i.e. the package name corresponding to the
-     * process) is in the list of allowed package names.
-     * 
-     * @param allowOnlySelf
-     *            allow only Keychain app itself
-     * @return true if process is allowed to use this service
-     */
-    private boolean isCallerAllowed(boolean allowOnlySelf) {
-        String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
-
-        // is calling package allowed to use this service?
-        for (int i = 0; i < callingPackages.length; i++) {
-            String currentPkg = callingPackages[i];
-
-            if (isPackageAllowed(currentPkg, allowOnlySelf)) {
-                return true;
-            }
-        }
-
-        Log.d(Constants.TAG, "Caller is NOT allowed!");
-        return false;
-    }
-
-    private AppSettings getAppSettings() {
-        String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
-
-        // is calling package allowed to use this service?
-        for (int i = 0; i < callingPackages.length; i++) {
-            String currentPkg = callingPackages[i];
-
-            Uri uri = KeychainContract.ApiApps.buildByPackageNameUri(currentPkg);
-
-            AppSettings settings = ProviderHelper.getApiAppSettings(this, uri);
-
-            return settings;
-        }
-
-        return null;
-    }
-
-    /**
-     * Checks if packageName is a registered app for the API.
-     * 
-     * @param packageName
-     * @param allowOnlySelf
-     *            allow only Keychain app itself
-     * @return
-     */
-    private boolean isPackageAllowed(String packageName, boolean allowOnlySelf) {
-        Log.d(Constants.TAG, "packageName: " + packageName);
-
-        ArrayList<String> allowedPkgs = ProviderHelper.getRegisteredApiApps(mContext);
-        Log.d(Constants.TAG, "allowed: " + allowedPkgs);
-
-        // check if package is allowed to use our service
-        if (allowedPkgs.contains(packageName) && (!allowOnlySelf)) {
-            Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
-
-            return true;
-        } else if (Constants.PACKAGE_NAME.equals(packageName)) {
-            Log.d(Constants.TAG, "Package is OpenPGP Keychain! -> allowed!");
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private void pauseQueueAndStartServiceActivity(String action, Messenger messenger, Bundle extras) {
-        synchronized (userInputLock) {
-            mThreadPool.pause();
-
-            Log.d(Constants.TAG, "starting activity...");
-            Intent intent = new Intent(getBaseContext(), OpenPgpServiceActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(action);
-
-            extras.putParcelable(OpenPgpServiceActivity.EXTRA_MESSENGER, messenger);
-            intent.putExtras(extras);
-
-            startActivity(intent);
-
-            // lock current thread for user input
-            try {
-                userInputLock.wait();
-            } catch (InterruptedException e) {
-                Log.e(Constants.TAG, "CryptoService", e);
-            }
-        }
-
-    }
 }
