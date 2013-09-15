@@ -21,8 +21,9 @@ import android.os.Parcelable;
 
 public class OpenPgpSignatureResult implements Parcelable {
     public static final int SIGNATURE_ERROR = 0;
-    public static final int SIGNATURE_SUCCESS = 1;
+    public static final int SIGNATURE_SUCCESS_TRUSTED = 1;
     public static final int SIGNATURE_UNKNOWN = 2;
+    public static final int SIGNATURE_SUCCESS_UNTRUSTED = 3;
 
     int signatureStatus;
     String signatureUserId;

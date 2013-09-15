@@ -433,7 +433,7 @@ public class OpenPgpService extends RemoteService {
 
                 int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
                 if (signatureSuccess) {
-                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS;
+                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_TRUSTED;
                 } else if (signatureUnknown) {
                     signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN;
                 }
