@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain;
 
 import java.io.File;
+import java.security.Provider;
 import java.security.Security;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
@@ -29,18 +30,37 @@ import android.os.Environment;
 
 public class KeychainApplication extends Application {
 
-    static {
-        // Define Java Security Provider to be Bouncy Castle
-        Security.insertProviderAt(new BouncyCastleProvider(), 1);
-    }
-
+    /**
+     * Called when the application is starting, before any activity, service, or receiver objects
+     * (excluding content providers) have been created.
+     */
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // apply RNG fixes
+        /*
+         * Sets Bouncy (Spongy) Castle as preferred security provider
+         * 
+         * insertProviderAt() position starts from 1
+         */
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
+
+        /*
+         * apply RNG fixes
+         * 
+         * among other things, executes Security.insertProviderAt(new
+         * LinuxPRNGSecureRandomProvider(), 1) for Android <= SDK 17
+         */
         PRNGFixes.apply();
-        Log.d(Constants.TAG, "PRNG Fixes applied!");
+        Log.d(Constants.TAG, "Bouncy Castle set and PRNG Fixes applied!");
+
+        if (Constants.DEBUG) {
+            Provider[] providers = Security.getProviders();
+            Log.d(Constants.TAG, "Installed Security Providers:");
+            for (Provider p : providers) {
+                Log.d(Constants.TAG, "provider class: " + p.getClass().getName());
+            }
+        }
 
         // Create APG directory on sdcard if not existing
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -51,5 +71,4 @@ public class KeychainApplication extends Application {
             }
         }
     }
-
 }

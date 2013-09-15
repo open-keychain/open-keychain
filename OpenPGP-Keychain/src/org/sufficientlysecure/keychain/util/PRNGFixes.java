@@ -1,5 +1,3 @@
-package org.sufficientlysecure.keychain.util;
-
 /*
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will Google be held liable for any damages
@@ -9,6 +7,8 @@ package org.sufficientlysecure.keychain.util;
  * including commercial applications, and to alter it and redistribute it
  * freely, as long as the origin is not misrepresented.
  */
+
+package org.sufficientlysecure.keychain.util;
 
 import android.os.Build;
 import android.os.Process;
