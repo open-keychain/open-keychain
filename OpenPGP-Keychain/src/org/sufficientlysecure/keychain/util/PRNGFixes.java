@@ -35,6 +35,11 @@ import java.security.Security;
  * copied from http://android-developers.blogspot.de/2013/08/some-securerandom-thoughts.html
  * 
  * 
+ * More information on these Android bugs:
+ * http://blog.k3170makan.com/2013/08/more-details-on-android-jca-prng-flaw.html
+ * Paper: "Randomly failed! Weaknesses in Java Pseudo Random Number Generators (PRNGs)"
+ * 
+ * 
  * Sep 15, 2013:
  * On some devices /dev/urandom is non-writable!
  * No need to seed /dev/urandom. urandom should have enough seeds from the OS and kernel.
