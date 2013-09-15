@@ -38,18 +38,16 @@ Android Studio is currently not supported or recommended!
 
 # Keychain API
 
-## API without registering the app
-
-### Intent Actions
+## Intent API
 All Intents require user interaction, e.g. to finally encrypt the user needs to press the "Encrypt" button.
 To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 
-Android Intent actions provided by OpenPGP Keychain:
+#### Android Intent actions provided by OpenPGP Keychain:
 
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 
-OpenPGP Keychain specific Intent actions:
+#### OpenPGP Keychain specific Intent actions:
 
 * ``org.sufficientlysecure.keychain.action.ENCRYPT``
   * To encrypt text use extra ``text`` (type: ``String``)
@@ -68,13 +66,11 @@ OpenPGP Keychain specific Intent actions:
 To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.
 The API Demo contains all required AIDL files and a demo activity.
 
-Try out the API
---------
+#### Try out the API
 Keychain: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain  
 API Demo: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
 
-Design
-------
+#### Design
 All apps wanting to use this generic API
 just need to include the AIDL files and connect to the service. Other
 OpenPGP apps can implement a service based on this AIDL definition.
@@ -93,8 +89,7 @@ operation, OpenPGP Keychain shows an activity to allow or disallow
 access, while also allowing to choose the private key used for this app.
 Please try the Demo app out to see how it works [4].
 
-Integration
------------
+#### Integration
 The API is defined as AIDL interfaces in org.openintents.openpgp packge
 [2]. All files from [2] needs to be included in the project.
 
