@@ -331,7 +331,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             .getForceV3Signatures());
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    operation.encryptAndSign(useAsciiArmor, compressionId, encryptionKeyIds,
+                    operation.signAndEncrypt(useAsciiArmor, compressionId, encryptionKeyIds,
                             encryptionPassphrase, Preferences.getPreferences(this)
                                     .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
                                     .getPreferences(this).getDefaultHashAlgorithm(), Preferences

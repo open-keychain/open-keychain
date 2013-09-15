@@ -111,30 +111,7 @@ public class PgpOperation {
         }
     }
 
-    /**
-     * Encrypt and Sign data
-     * 
-     * @param mContext
-     * @param mProgress
-     * @param mData
-     * @param mOutStream
-     * @param useAsciiArmor
-     * @param compression
-     * @param encryptionKeyIds
-     * @param symmetricEncryptionAlgorithm
-     * @param encryptionPassphrase
-     * @param signatureKeyId
-     * @param signatureHashAlgorithm
-     * @param signatureForceV3
-     * @param signaturePassphrase
-     * @throws IOException
-     * @throws PgpGeneralException
-     * @throws PGPException
-     * @throws NoSuchProviderException
-     * @throws NoSuchAlgorithmException
-     * @throws SignatureException
-     */
-    public void encryptAndSign(boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
+    public void signAndEncrypt(boolean useAsciiArmor, int compression, long[] encryptionKeyIds,
             String encryptionPassphrase, int symmetricEncryptionAlgorithm, long signatureKeyId,
             int signatureHashAlgorithm, boolean signatureForceV3, String signaturePassphrase)
             throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,

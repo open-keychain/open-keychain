@@ -242,11 +242,11 @@ public class OpenPgpService extends RemoteService {
                     return;
                 }
 
-                operation.encryptAndSign(asciiArmor, appSettings.getCompression(), keyIds, null,
+                operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
                         appSettings.getHashAlgorithm(), true, passphrase);
             } else {
-                operation.encryptAndSign(asciiArmor, appSettings.getCompression(), keyIds, null,
+                operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), Id.key.none,
                         appSettings.getHashAlgorithm(), true, null);
             }
