@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.helper.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpMain;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;

@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.helper.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.R;
 

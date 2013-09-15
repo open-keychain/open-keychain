@@ -43,8 +43,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.sufficientlysecure.keychain.helper.PgpHelper;
-import org.sufficientlysecure.keychain.helper.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpMain;
 
 import android.text.Html;
 

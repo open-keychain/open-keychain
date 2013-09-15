@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.helper;
+package org.sufficientlysecure.keychain.pgp;
 
 import java.util.Calendar;
 import java.util.Date;

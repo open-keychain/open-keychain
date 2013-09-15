@@ -29,9 +29,9 @@ import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openssl.PEMWriter;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.helper.PgpHelper;
-import org.sufficientlysecure.keychain.helper.PgpMain;
-import org.sufficientlysecure.keychain.helper.PgpToX509;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpToX509;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
