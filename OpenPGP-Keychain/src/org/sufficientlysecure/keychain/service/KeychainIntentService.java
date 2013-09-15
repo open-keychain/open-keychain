@@ -38,8 +38,11 @@ import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
-import org.sufficientlysecure.keychain.pgp.PgpMain.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpImportExport;
+import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
@@ -288,16 +291,15 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);
-                    inLength = PgpMain.getLengthOfStream(in);
+                    inLength = PgpHelper.getLengthOfStream(in);
                     inputData = new InputData(in, inLength);
 
                     // OutputStream
                     try {
                         while (true) {
-                            streamFilename = PgpMain.generateRandomFilename(32);
+                            streamFilename = PgpHelper.generateRandomFilename(32);
                             if (streamFilename == null) {
-                                throw new PgpMain.PgpGeneralException(
-                                        "couldn't generate random file name");
+                                throw new PgpGeneralException("couldn't generate random file name");
                             }
                             openFileInput(streamFilename).close();
                         }
@@ -309,31 +311,30 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     break;
 
                 default:
-                    throw new PgpMain.PgpGeneralException("No target choosen!");
+                    throw new PgpGeneralException("No target choosen!");
 
                 }
 
                 /* Operation */
+                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
-                    PgpMain.generateSignature(this, this, inputData, outStream, useAsciiArmor,
-                            false, secretKeyId, PassphraseCacheService.getCachedPassphrase(this,
-                                    secretKeyId), Preferences.getPreferences(this)
-                                    .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                                    .getForceV3Signatures());
-                } else if (signOnly) {
-                    Log.d(Constants.TAG, "sign only...");
-                    PgpMain.signText(this, this, inputData, outStream, secretKeyId,
+                    operation.generateSignature(useAsciiArmor, false, secretKeyId,
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures());
+                } else if (signOnly) {
+                    Log.d(Constants.TAG, "sign only...");
+                    operation.signText(secretKeyId, PassphraseCacheService.getCachedPassphrase(
+                            this, secretKeyId), Preferences.getPreferences(this)
+                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
+                            .getForceV3Signatures());
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    PgpMain.encryptAndSign(this, this, inputData, outStream, useAsciiArmor,
-                            compressionId, encryptionKeyIds, encryptionPassphrase, Preferences
-                                    .getPreferences(this).getDefaultEncryptionAlgorithm(),
-                            secretKeyId,
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                    operation.encryptAndSign(useAsciiArmor, compressionId, encryptionKeyIds,
+                            encryptionPassphrase, Preferences.getPreferences(this)
+                                    .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
+                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
                                     .getPreferences(this).getForceV3Signatures(),
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
                 }
@@ -437,16 +438,15 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                     // InputStream
                     InputStream in = getContentResolver().openInputStream(providerUri);
-                    inLength = PgpMain.getLengthOfStream(in);
+                    inLength = PgpHelper.getLengthOfStream(in);
                     inputData = new InputData(in, inLength);
 
                     // OutputStream
                     try {
                         while (true) {
-                            streamFilename = PgpMain.generateRandomFilename(32);
+                            streamFilename = PgpHelper.generateRandomFilename(32);
                             if (streamFilename == null) {
-                                throw new PgpMain.PgpGeneralException(
-                                        "couldn't generate random file name");
+                                throw new PgpGeneralException("couldn't generate random file name");
                             }
                             openFileInput(streamFilename).close();
                         }
@@ -458,7 +458,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     break;
 
                 default:
-                    throw new PgpMain.PgpGeneralException("No target choosen!");
+                    throw new PgpGeneralException("No target choosen!");
 
                 }
 
@@ -468,11 +468,11 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
+                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
                 if (signedOnly) {
-                    resultData = PgpMain.verifyText(this, this, inputData, outStream,
-                            lookupUnknownKey);
+                    resultData = operation.verifyText(lookupUnknownKey);
                 } else {
-                    resultData = PgpMain.decryptAndVerify(this, this, inputData, outStream,
+                    resultData = operation.decryptAndVerify(
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
                             assumeSymmetricEncryption);
                 }
@@ -530,14 +530,15 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
+                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
                 /* Operation */
                 if (!canSign) {
-                    PgpMain.changeSecretKeyPassphrase(this,
+                    keyOperations.changeSecretKeyPassphrase(
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
-                            oldPassPhrase, newPassPhrase, this);
+                            oldPassPhrase, newPassPhrase);
                 } else {
-                    PgpMain.buildSecretKey(this, userIds, keys, keysUsages, masterKeyId,
-                            oldPassPhrase, newPassPhrase, this);
+                    keyOperations.buildSecretKey(userIds, keys, keysUsages, masterKeyId,
+                            oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
@@ -559,7 +560,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
-                PGPSecretKeyRing newKeyRing = PgpMain.createKey(this, algorithm, keysize,
+                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
+                PGPSecretKeyRing newKeyRing = keyOperations.createKey(algorithm, keysize,
                         passphrase, masterKey);
 
                 /* Output */
@@ -580,10 +582,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
                 /* Operation */
-                PGPSecretKeyRing masterKeyRing = PgpMain.createKey(this, Id.choice.algorithm.rsa,
+                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
+
+                PGPSecretKeyRing masterKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, null);
 
-                PGPSecretKeyRing subKeyRing = PgpMain.createKey(this, Id.choice.algorithm.rsa,
+                PGPSecretKeyRing subKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, masterKeyRing.getSecretKey());
 
                 /* Output */
@@ -606,13 +610,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 /* Operation */
                 try {
-                    PgpMain.deleteFileSecurely(this, this, new File(deleteFile));
+                    PgpHelper.deleteFileSecurely(this, this, new File(deleteFile));
                 } catch (FileNotFoundException e) {
-                    throw new PgpMain.PgpGeneralException(getString(R.string.error_fileNotFound,
-                            deleteFile));
+                    throw new PgpGeneralException(
+                            getString(R.string.error_fileNotFound, deleteFile));
                 } catch (IOException e) {
-                    throw new PgpMain.PgpGeneralException(getString(
-                            R.string.error_fileDeleteFailed, deleteFile));
+                    throw new PgpGeneralException(getString(R.string.error_fileDeleteFailed,
+                            deleteFile));
                 }
 
                 /* Output */
@@ -661,7 +665,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 Bundle resultData = new Bundle();
-                resultData = PgpMain.importKeyRings(this, inputData, this);
+
+                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                resultData = pgpImportExport.importKeyRings(inputData);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -708,8 +714,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 Bundle resultData = new Bundle();
-                resultData = PgpMain.exportKeyRings(this, keyRingMasterKeyIds, keyType, outStream,
-                        this);
+
+                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                resultData = pgpImportExport
+                        .exportKeyRings(keyRingMasterKeyIds, keyType, outStream);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -728,7 +736,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByRowId(this,
                         keyRingRowId);
                 if (keyring != null) {
-                    boolean uploaded = PgpMain.uploadKeyRingToServer(server,
+                    PgpImportExport pgpImportExport = new PgpImportExport(this, null);
+
+                    boolean uploaded = pgpImportExport.uploadKeyRingToServer(server,
                             (PGPPublicKeyRing) keyring);
                     if (!uploaded) {
                         throw new PgpGeneralException("Unable to export key to selected server");
@@ -778,11 +788,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
                         masterKeyId);
 
-                PGPPublicKeyRing signedPubKeyRing = PgpMain.signKey(this, masterKeyId, pubKeyId,
+                PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
+                PGPPublicKeyRing signedPubKeyRing = keyOperation.signKey(masterKeyId, pubKeyId,
                         signaturePassPhrase);
 
                 // store the signed key in our local cache
-                int retval = PgpMain.storeKeyRingInCache(this, signedPubKeyRing);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, null);
+                int retval = pgpImportExport.storeKeyRingInCache(signedPubKeyRing);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
                     throw new PgpGeneralException("Failed to store signed key in local cache");
                 }

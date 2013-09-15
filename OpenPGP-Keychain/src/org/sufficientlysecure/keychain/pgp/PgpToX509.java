@@ -251,7 +251,7 @@ public class PgpToX509 {
         }
 
         X509Certificate selfSignedCert = createSelfSignedCert(
-                pgpPubKey.getKey(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME), pgpPrivKey.getKey(),
+                pgpPubKey.getKey(Constants.BOUNCY_CASTLE_PROVIDER_NAME), pgpPrivKey.getKey(),
                 x509name, creationTime, validTo, subjAltNameURI);
 
         return selfSignedCert;

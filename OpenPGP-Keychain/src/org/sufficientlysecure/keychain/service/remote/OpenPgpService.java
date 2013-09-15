@@ -32,7 +32,10 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -230,6 +233,7 @@ public class OpenPgpService extends RemoteService {
                 return;
             }
 
+            PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId());
                 if (passphrase == null) {
@@ -238,13 +242,11 @@ public class OpenPgpService extends RemoteService {
                     return;
                 }
 
-                PgpMain.encryptAndSign(getContext(), null, inputData, outputStream, asciiArmor,
-                        appSettings.getCompression(), keyIds, null,
+                operation.encryptAndSign(asciiArmor, appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
                         appSettings.getHashAlgorithm(), true, passphrase);
             } else {
-                PgpMain.encryptAndSign(getContext(), null, inputData, outputStream, asciiArmor,
-                        appSettings.getCompression(), keyIds, null,
+                operation.encryptAndSign(asciiArmor, appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), Id.key.none,
                         appSettings.getHashAlgorithm(), true, null);
             }
@@ -286,9 +288,9 @@ public class OpenPgpService extends RemoteService {
                 return;
             }
 
-            PgpMain.signText(this, null, inputData, outputStream, appSettings.getKeyId(),
-                    passphrase, appSettings.getHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures());
+            PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
+            operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
+                    Preferences.getPreferences(this).getForceV3Signatures());
 
             outputStream.close();
 
@@ -315,7 +317,7 @@ public class OpenPgpService extends RemoteService {
             String message = new String(inputBytes);
             Log.d(Constants.TAG, "in: " + message);
             boolean signedOnly = false;
-            Matcher matcher = PgpMain.PGP_MESSAGE.matcher(message);
+            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(message);
             if (matcher.matches()) {
                 Log.d(Constants.TAG, "PGP_MESSAGE matched");
                 message = matcher.group(1);
@@ -325,7 +327,7 @@ public class OpenPgpService extends RemoteService {
                 // overwrite inputBytes
                 inputBytes = message.getBytes();
             } else {
-                matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(message);
+                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(message);
                 if (matcher.matches()) {
                     signedOnly = true;
                     Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
@@ -368,19 +370,18 @@ public class OpenPgpService extends RemoteService {
                         // than 0.
                         inputStream2.mark(200);
                     }
-                    secretKeyId = PgpMain.getDecryptionKeyId(this, inputStream2);
+                    secretKeyId = PgpHelper.getDecryptionKeyId(this, inputStream2);
                     if (secretKeyId == Id.key.none) {
-                        throw new PgpMain.PgpGeneralException(
-                                getString(R.string.error_noSecretKeyFound));
+                        throw new PgpGeneralException(getString(R.string.error_noSecretKeyFound));
                     }
                     assumeSymmetricEncryption = false;
-                } catch (PgpMain.NoAsymmetricEncryptionException e) {
+                } catch (NoAsymmetricEncryptionException e) {
                     if (inputStream2.markSupported()) {
                         inputStream2.reset();
                     }
                     secretKeyId = Id.key.symmetric;
-                    if (!PgpMain.hasSymmetricEncryption(this, inputStream2)) {
-                        throw new PgpMain.PgpGeneralException(
+                    if (!PgpOperation.hasSymmetricEncryption(this, inputStream2)) {
+                        throw new PgpGeneralException(
                                 getString(R.string.error_noKnownEncryptionFound));
                     }
                     assumeSymmetricEncryption = true;
@@ -404,13 +405,13 @@ public class OpenPgpService extends RemoteService {
             OutputStream outputStream = new ByteArrayOutputStream();
 
             Bundle outputBundle;
+            PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
             if (signedOnly) {
                 // TODO: download missing keys from keyserver?
-                outputBundle = PgpMain.verifyText(this, null, inputData, outputStream, false);
+                outputBundle = operation.verifyText(false);
             } else {
                 // TODO: assume symmetric: callback to enter symmetric pass
-                outputBundle = PgpMain.decryptAndVerify(this, null, inputData, outputStream,
-                        passphrase, assumeSymmetricEncryption);
+                outputBundle = operation.decryptAndVerify(passphrase, assumeSymmetricEncryption);
             }
 
             outputStream.close();

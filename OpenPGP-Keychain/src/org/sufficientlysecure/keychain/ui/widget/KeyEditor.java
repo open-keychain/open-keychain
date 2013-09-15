@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.R;
 
@@ -151,9 +151,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mDeleteButton.setVisibility(View.INVISIBLE);
         }
 
-        mAlgorithm.setText(PgpHelper.getAlgorithmInfo(key));
-        String keyId1Str = PgpHelper.getSmallFingerPrint(key.getKeyID());
-        String keyId2Str = PgpHelper.getSmallFingerPrint(key.getKeyID() >> 32);
+        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(key));
+        String keyId1Str = PgpKeyHelper.getSmallFingerPrint(key.getKeyID());
+        String keyId2Str = PgpKeyHelper.getSmallFingerPrint(key.getKeyID() >> 32);
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
         Vector<Choice> choices = new Vector<Choice>();
@@ -179,8 +179,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         // Set value in choice dropdown to key
         int selectId = 0;
-        if (PgpHelper.isEncryptionKey(key)) {
-            if (PgpHelper.isSigningKey(key)) {
+        if (PgpKeyHelper.isEncryptionKey(key)) {
+            if (PgpKeyHelper.isSigningKey(key)) {
                 selectId = Id.choice.usage.sign_and_encrypt;
             } else {
                 selectId = Id.choice.usage.encrypt_only;
@@ -203,14 +203,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(PgpHelper.getCreationDate(key));
+        cal.setTime(PgpKeyHelper.getCreationDate(key));
         mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
         cal = new GregorianCalendar();
-        Date date = PgpHelper.getExpiryDate(key);
+        Date date = PgpKeyHelper.getExpiryDate(key);
         if (date == null) {
             setExpiryDate(null);
         } else {
-            cal.setTime(PgpHelper.getExpiryDate(key));
+            cal.setTime(PgpKeyHelper.getExpiryDate(key));
             setExpiryDate(cal);
         }
 

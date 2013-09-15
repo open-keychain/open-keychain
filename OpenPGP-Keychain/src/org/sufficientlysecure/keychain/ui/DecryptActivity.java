@@ -33,7 +33,10 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -252,9 +255,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
             String data = "";
             if (clipboardText != null) {
-                Matcher matcher = PgpMain.PGP_MESSAGE.matcher(clipboardText);
+                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
                 if (!matcher.matches()) {
-                    matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(clipboardText);
+                    matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(clipboardText);
                 }
                 if (matcher.matches()) {
                     data = matcher.group(1);
@@ -357,7 +360,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
          */
         if (ACTION_DECRYPT.equals(action) && textData != null) {
             Log.d(Constants.TAG, "textData null, matching text ...");
-            Matcher matcher = PgpMain.PGP_MESSAGE.matcher(textData);
+            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(textData);
             if (matcher.matches()) {
                 Log.d(Constants.TAG, "PGP_MESSAGE matched");
                 textData = matcher.group(1);
@@ -365,7 +368,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 textData = textData.replaceAll("\\xa0", " ");
                 mMessage.setText(textData);
             } else {
-                matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(textData);
+                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
                     Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
                     textData = matcher.group(1);
@@ -478,7 +481,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
         if (mDecryptTarget == Id.target.message) {
             String messageData = mMessage.getText().toString();
-            Matcher matcher = PgpMain.PGP_SIGNED_MESSAGE.matcher(messageData);
+            Matcher matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(messageData);
             if (matcher.matches()) {
                 mSignedOnly = true;
                 decryptStart();
@@ -532,7 +535,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpMain.PgpGeneralException e) {
+        } catch (PgpGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
@@ -578,20 +581,18 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     inStream.mark(200); // should probably set this to the max size of two pgpF
                                         // objects, if it even needs to be anything other than 0.
                 }
-                mSecretKeyId = PgpMain.getDecryptionKeyId(this, inStream);
+                mSecretKeyId = PgpHelper.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
-                    throw new PgpMain.PgpGeneralException(
-                            getString(R.string.error_noSecretKeyFound));
+                    throw new PgpGeneralException(getString(R.string.error_noSecretKeyFound));
                 }
                 mAssumeSymmetricEncryption = false;
-            } catch (PgpMain.NoAsymmetricEncryptionException e) {
+            } catch (NoAsymmetricEncryptionException e) {
                 if (inStream.markSupported()) {
                     inStream.reset();
                 }
                 mSecretKeyId = Id.key.symmetric;
-                if (!PgpMain.hasSymmetricEncryption(this, inStream)) {
-                    throw new PgpMain.PgpGeneralException(
-                            getString(R.string.error_noKnownEncryptionFound));
+                if (!PgpOperation.hasSymmetricEncryption(this, inStream)) {
+                    throw new PgpGeneralException(getString(R.string.error_noKnownEncryptionFound));
                 }
                 mAssumeSymmetricEncryption = true;
             }
@@ -771,8 +772,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                                 .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
                         mSignatureKeyId = returnData
                                 .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
-                        mUserIdRest
-                                .setText("id: " + PgpHelper.getSmallFingerPrint(mSignatureKeyId));
+                        mUserIdRest.setText("id: "
+                                + PgpKeyHelper.getSmallFingerPrint(mSignatureKeyId));
                         if (userId == null) {
                             userId = getResources().getString(R.string.unknownUserId);
                         }

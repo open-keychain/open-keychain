@@ -29,7 +29,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 import android.app.AlarmManager;
@@ -173,7 +173,7 @@ public class PassphraseCacheService extends Service {
             if (keyRing == null) {
                 return null;
             }
-            PGPSecretKey masterKey = PgpHelper.getMasterKey(keyRing);
+            PGPSecretKey masterKey = PgpKeyHelper.getMasterKey(keyRing);
             if (masterKey == null) {
                 return null;
             }
@@ -210,7 +210,7 @@ public class PassphraseCacheService extends Service {
     public static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {
-            PGPSecretKey secretKey = PgpHelper.getMasterKey(ProviderHelper
+            PGPSecretKey secretKey = PgpKeyHelper.getMasterKey(ProviderHelper
                     .getPGPSecretKeyRingByKeyId(context, secretKeyId));
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     "SC").build("".toCharArray());

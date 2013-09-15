@@ -16,6 +16,8 @@
 
 package org.sufficientlysecure.keychain;
 
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import android.os.Environment;
 
 public final class Constants {
@@ -28,6 +30,10 @@ public final class Constants {
 
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
+
+    // Not BC due to the use of Spongy Castle for Android
+    public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
+    public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
 
     public static final String INTENT_PREFIX = PACKAGE_NAME + ".action.";
 

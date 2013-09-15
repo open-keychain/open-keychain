@@ -21,7 +21,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
@@ -79,11 +79,11 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         if (keyType == Id.type.public_key) {
             PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,
                     deleteKeyRingRowId);
-            userId = PgpHelper.getMainUserIdSafe(activity, PgpHelper.getMasterKey(keyRing));
+            userId = PgpKeyHelper.getMainUserIdSafe(activity, PgpKeyHelper.getMasterKey(keyRing));
         } else {
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByRowId(activity,
                     deleteKeyRingRowId);
-            userId = PgpHelper.getMainUserIdSafe(activity, PgpHelper.getMasterKey(keyRing));
+            userId = PgpKeyHelper.getMainUserIdSafe(activity, PgpKeyHelper.getMasterKey(keyRing));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);

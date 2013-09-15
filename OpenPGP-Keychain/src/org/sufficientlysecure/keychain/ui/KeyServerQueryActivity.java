@@ -23,7 +23,7 @@ import java.util.List;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.util.Log;
@@ -140,7 +140,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         if (ACTION_LOOK_UP_KEY_ID.equals(action) || ACTION_LOOK_UP_KEY_ID_AND_RETURN.equals(action)) {
             long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
             if (keyId != 0) {
-                String query = "0x" + PgpHelper.keyToHex(keyId);
+                String query = "0x" + PgpKeyHelper.keyToHex(keyId);
                 mQuery.setText(query);
                 search(query);
             }
@@ -308,7 +308,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                 mainUserId.setText(userId);
             }
 
-            keyId.setText(PgpHelper.getSmallFingerPrint(keyInfo.keyId));
+            keyId.setText(PgpKeyHelper.getSmallFingerPrint(keyInfo.keyId));
 
             if (mainUserIdRest.getText().length() == 0) {
                 mainUserIdRest.setVisibility(View.GONE);

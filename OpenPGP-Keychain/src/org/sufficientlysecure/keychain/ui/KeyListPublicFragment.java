@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -97,7 +97,7 @@ public class KeyListPublicFragment extends KeyListFragment implements
             PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(
                     mKeyListActivity, keyRingRowId);
             if (updateKeyRing != null) {
-                updateKeyId = PgpHelper.getMasterKey(updateKeyRing).getKeyID();
+                updateKeyId = PgpKeyHelper.getMasterKey(updateKeyRing).getKeyID();
             }
             if (updateKeyId == 0) {
                 // this shouldn't happen
@@ -126,7 +126,7 @@ public class KeyListPublicFragment extends KeyListFragment implements
             PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(
                     mKeyListActivity, keyRingRowId);
             if (signKeyRing != null) {
-                keyId = PgpHelper.getMasterKey(signKeyRing).getKeyID();
+                keyId = PgpKeyHelper.getMasterKey(signKeyRing).getKeyID();
             }
             if (keyId == 0) {
                 // this shouldn't happen

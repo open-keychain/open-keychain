@@ -24,13 +24,12 @@ import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
-import org.sufficientlysecure.keychain.pgp.PgpMain.PgpGeneralException;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -80,7 +79,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
             if (!PassphraseCacheService.hasPassphrase(context, secretKeyId)) {
-                throw new PgpMain.PgpGeneralException("No passphrase! No passphrase dialog needed!");
+                throw new PgpGeneralException("No passphrase! No passphrase dialog needed!");
             }
         }
 
@@ -119,7 +118,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             alert.setMessage(R.string.passPhraseForSymmetricEncryption);
         } else {
             // TODO: by master key id???
-            secretKey = PgpHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity,
+            secretKey = PgpKeyHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity,
                     secretKeyId));
             // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 
@@ -135,7 +134,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 canKB = false;
                 return alert.create();
             }
-            String userId = PgpHelper.getMainUserIdSafe(activity, secretKey);
+            String userId = PgpKeyHelper.getMainUserIdSafe(activity, secretKey);
 
             Log.d(Constants.TAG, "User id: '" + userId + "'");
             alert.setMessage(getString(R.string.passPhraseFor, userId));
@@ -163,7 +162,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                         if (clickSecretKey != null) { // check again for loop
                             try {
                                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
-                                        .setProvider(PgpMain.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
                                                 passPhrase.toCharArray());
                                 PGPPrivateKey testKey = clickSecretKey
                                         .extractPrivateKey(keyDecryptor);
@@ -176,7 +175,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         sendMessageToHandler(MESSAGE_CANCEL);
                                         return;
                                     } else {
-                                        clickSecretKey = PgpHelper.getKeyNum(ProviderHelper
+                                        clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
                                                 .getPGPSecretKeyRingByKeyId(activity, secretKeyId),
                                                 curKeyIndex);
                                         curKeyIndex++; // does post-increment work like C?

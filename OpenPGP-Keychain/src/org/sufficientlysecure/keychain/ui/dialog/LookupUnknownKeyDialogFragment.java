@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.KeyServerQueryActivity;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
@@ -79,7 +79,7 @@ public class LookupUnknownKeyDialogFragment extends DialogFragment {
         alert.setIcon(android.R.drawable.ic_dialog_alert);
         alert.setTitle(R.string.title_unknownSignatureKey);
         alert.setMessage(getString(R.string.lookupUnknownKey,
-                PgpHelper.getSmallFingerPrint(unknownKeyId)));
+                PgpKeyHelper.getSmallFingerPrint(unknownKeyId)));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 

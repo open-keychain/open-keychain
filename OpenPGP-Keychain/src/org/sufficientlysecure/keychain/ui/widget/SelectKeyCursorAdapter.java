@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.R;
@@ -87,7 +87,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         }
 
         long masterKeyId = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
-        keyId.setText(PgpHelper.getSmallFingerPrint(masterKeyId));
+        keyId.setText(PgpKeyHelper.getSmallFingerPrint(masterKeyId));
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);

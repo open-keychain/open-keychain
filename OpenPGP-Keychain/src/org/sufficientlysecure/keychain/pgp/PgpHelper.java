@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,494 +17,203 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.Vector;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.security.SecureRandom;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
-import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPEncryptedDataList;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 public class PgpHelper {
 
-    public static Date getCreationDate(PGPPublicKey key) {
-        return key.getCreationTime();
+    public static Pattern PGP_MESSAGE = Pattern.compile(
+            ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);
+
+    public static Pattern PGP_SIGNED_MESSAGE = Pattern
+            .compile(
+                    ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+                    Pattern.DOTALL);
+
+    public static Pattern PGP_PUBLIC_KEY = Pattern.compile(
+            ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
+            Pattern.DOTALL);
+
+    public static String getVersion(Context context) {
+        String version = null;
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(Constants.PACKAGE_NAME, 0);
+            version = pi.versionName;
+            return version;
+        } catch (NameNotFoundException e) {
+            Log.e(Constants.TAG, "Version could not be retrieved!", e);
+            return "0.0.0";
+        }
     }
 
-    public static Date getCreationDate(PGPSecretKey key) {
-        return key.getPublicKey().getCreationTime();
+    public static String getFullVersion(Context context) {
+        return "OpenPGP Keychain v" + getVersion(context);
     }
 
-    @SuppressWarnings("unchecked")
-    public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
-        }
+    public static long getDecryptionKeyId(Context context, InputStream inputStream)
+            throws PgpGeneralException, NoAsymmetricEncryptionException, IOException {
+        InputStream in = PGPUtil.getDecoderStream(inputStream);
+        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+        PGPEncryptedDataList enc;
+        Object o = pgpF.nextObject();
 
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPSecretKey getMasterKey(PGPSecretKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
+        // the first object might be a PGP marker packet.
+        if (o instanceof PGPEncryptedDataList) {
+            enc = (PGPEncryptedDataList) o;
+        } else {
+            enc = (PGPEncryptedDataList) pgpF.nextObject();
         }
 
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
-        long cnt = 0;
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (cnt == num) {
-                return key;
-            }
-            cnt++;
+        if (enc == null) {
+            throw new PgpGeneralException(context.getString(R.string.error_invalidData));
         }
 
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Vector<PGPPublicKey> getEncryptKeys(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> encryptKeys = new Vector<PGPPublicKey>();
-
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (isEncryptionKey(key)) {
-                encryptKeys.add(key);
-            }
-        }
-
-        return encryptKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Vector<PGPSecretKey> getSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isSigningKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Vector<PGPSecretKey> getCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> signingKeys = new Vector<PGPSecretKey>();
-
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (isCertificationKey(key)) {
-                signingKeys.add(key);
-            }
-        }
-
-        return signingKeys;
-    }
-
-    public static Vector<PGPPublicKey> getUsableEncryptKeys(PGPPublicKeyRing keyRing) {
-        Vector<PGPPublicKey> usableKeys = new Vector<PGPPublicKey>();
-        Vector<PGPPublicKey> encryptKeys = getEncryptKeys(keyRing);
-        PGPPublicKey masterKey = null;
-        for (int i = 0; i < encryptKeys.size(); ++i) {
-            PGPPublicKey key = encryptKeys.get(i);
-            if (!isExpired(key)) {
-                if (key.isMasterKey()) {
-                    masterKey = key;
-                } else {
-                    usableKeys.add(key);
+        // TODO: currently we always only look at the first known key
+        // find the secret key
+        PGPSecretKey secretKey = null;
+        Iterator<?> it = enc.getEncryptedDataObjects();
+        boolean gotAsymmetricEncryption = false;
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPublicKeyEncryptedData) {
+                gotAsymmetricEncryption = true;
+                PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
+                secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, pbe.getKeyID());
+                if (secretKey != null) {
+                    break;
                 }
             }
         }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
 
-    public static boolean isExpired(PGPPublicKey key) {
-        Date creationDate = getCreationDate(key);
-        Date expiryDate = getExpiryDate(key);
-        Date now = new Date();
-        if (now.compareTo(creationDate) >= 0
-                && (expiryDate == null || now.compareTo(expiryDate) <= 0)) {
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean isExpired(PGPSecretKey key) {
-        return isExpired(key.getPublicKey());
-    }
-
-    public static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getCertificationKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-    public static Vector<PGPSecretKey> getUsableSigningKeys(PGPSecretKeyRing keyRing) {
-        Vector<PGPSecretKey> usableKeys = new Vector<PGPSecretKey>();
-        Vector<PGPSecretKey> signingKeys = getSigningKeys(keyRing);
-        PGPSecretKey masterKey = null;
-        for (int i = 0; i < signingKeys.size(); ++i) {
-            PGPSecretKey key = signingKeys.get(i);
-            if (key.isMasterKey()) {
-                masterKey = key;
-            } else {
-                usableKeys.add(key);
-            }
-        }
-        if (masterKey != null) {
-            usableKeys.add(masterKey);
-        }
-        return usableKeys;
-    }
-
-    public static Date getExpiryDate(PGPPublicKey key) {
-        Date creationDate = getCreationDate(key);
-        if (key.getValidDays() == 0) {
-            // no expiry
-            return null;
-        }
-        Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(creationDate);
-        calendar.add(Calendar.DATE, key.getValidDays());
-        Date expiryDate = calendar.getTime();
-
-        return expiryDate;
-    }
-
-    public static Date getExpiryDate(PGPSecretKey key) {
-        return getExpiryDate(key.getPublicKey());
-    }
-
-    public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                masterKeyId);
-        if (keyRing == null) {
-            Log.e(Constants.TAG, "keyRing is null!");
-            return null;
-        }
-        Vector<PGPPublicKey> encryptKeys = getUsableEncryptKeys(keyRing);
-        if (encryptKeys.size() == 0) {
-            Log.e(Constants.TAG, "encryptKeys is null!");
-            return null;
-        }
-        return encryptKeys.get(0);
-    }
-
-    public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
-        if (keyRing == null) {
-            return null;
-        }
-        Vector<PGPSecretKey> signingKeys = getUsableCertificationKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
-    }
-
-    public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
-        if (keyRing == null) {
-            return null;
-        }
-        Vector<PGPSecretKey> signingKeys = getUsableSigningKeys(keyRing);
-        if (signingKeys.size() == 0) {
-            return null;
-        }
-        return signingKeys.get(0);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static String getMainUserId(PGPPublicKey key) {
-        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            return userId;
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static String getMainUserId(PGPSecretKey key) {
-        for (String userId : new IterableIterator<String>(key.getUserIDs())) {
-            return userId;
-        }
-        return null;
-    }
-
-    public static String getMainUserIdSafe(Context context, PGPPublicKey key) {
-        String userId = getMainUserId(key);
-        if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.unknownUserId);
-        }
-        return userId;
-    }
-
-    public static String getMainUserIdSafe(Context context, PGPSecretKey key) {
-        String userId = getMainUserId(key);
-        if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.unknownUserId);
-        }
-        return userId;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isEncryptionKey(PGPPublicKey key) {
-        if (!key.isEncryptionKey()) {
-            return false;
+        if (!gotAsymmetricEncryption) {
+            throw new NoAsymmetricEncryptionException();
         }
 
-        if (key.getVersion() <= 3) {
-            // this must be true now
-            return key.isEncryptionKey();
-        }
-
-        // special cases
-        if (key.getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT) {
-            return true;
-        }
-
-        if (key.getAlgorithm() == PGPPublicKey.RSA_ENCRYPT) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null
-                    && (hashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null
-                    && (unhashed.getKeyFlags() & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isEncryptionKey(PGPSecretKey key) {
-        return isEncryptionKey(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isSigningKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        // special case
-        if (key.getAlgorithm() == PGPPublicKey.RSA_SIGN) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.SIGN_DATA) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean isSigningKey(PGPSecretKey key) {
-        return isSigningKey(key.getPublicKey());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static boolean isCertificationKey(PGPPublicKey key) {
-        if (key.getVersion() <= 3) {
-            return true;
-        }
-
-        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
-                continue;
-            }
-            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-
-            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
-                return true;
-            }
-
-            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-
-            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.CERTIFY_OTHER) != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean isCertificationKey(PGPSecretKey key) {
-        return isCertificationKey(key.getPublicKey());
-    }
-
-    public static String getAlgorithmInfo(PGPPublicKey key) {
-        return getAlgorithmInfo(key.getAlgorithm(), key.getBitStrength());
-    }
-
-    public static String getAlgorithmInfo(PGPSecretKey key) {
-        return getAlgorithmInfo(key.getPublicKey());
-    }
-
-    public static String getAlgorithmInfo(int algorithm, int keySize) {
-        String algorithmStr = null;
-
-        switch (algorithm) {
-        case PGPPublicKey.RSA_ENCRYPT:
-        case PGPPublicKey.RSA_GENERAL:
-        case PGPPublicKey.RSA_SIGN: {
-            algorithmStr = "RSA";
-            break;
-        }
-
-        case PGPPublicKey.DSA: {
-            algorithmStr = "DSA";
-            break;
-        }
-
-        case PGPPublicKey.ELGAMAL_ENCRYPT:
-        case PGPPublicKey.ELGAMAL_GENERAL: {
-            algorithmStr = "ElGamal";
-            break;
-        }
-
-        default: {
-            algorithmStr = "???";
-            break;
-        }
-        }
-        return algorithmStr + ", " + keySize + "bit";
-    }
-
-    public static String convertFingerprintToHex(byte[] fp) {
-        String fingerPrint = "";
-        for (int i = 0; i < fp.length; ++i) {
-            if (i != 0 && i % 10 == 0) {
-                fingerPrint += "  ";
-            } else if (i != 0 && i % 2 == 0) {
-                fingerPrint += " ";
-            }
-            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase(Locale.US);
-            while (chunk.length() < 2) {
-                chunk = "0" + chunk;
-            }
-            fingerPrint += chunk;
-        }
-
-        return fingerPrint;
-
-    }
-
-    public static String getFingerPrint(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
-        // if it is no public key get it from your own keys...
-        if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-            if (secretKey == null) {
-                Log.e(Constants.TAG, "Key could not be found!");
-                return null;
-            }
-            key = secretKey.getPublicKey();
-        }
-
-        return convertFingerprintToHex(key.getFingerprint());
-    }
-
-    public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
-        return secretKey.isPrivateKeyEmpty();
-    }
-
-    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
-        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
         if (secretKey == null) {
-            Log.e(Constants.TAG, "Key could not be found!");
-            return false; // could be a public key, assume it is not empty
+            return Id.key.none;
         }
-        return isSecretKeyPrivateEmpty(secretKey);
+
+        return secretKey.getKeyID();
     }
 
-    public static String getSmallFingerPrint(long keyId) {
-        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
-        while (fingerPrint.length() < 8) {
-            fingerPrint = "0" + fingerPrint;
+    public static int getStreamContent(Context context, InputStream inStream) throws IOException {
+        InputStream in = PGPUtil.getDecoderStream(inStream);
+        PGPObjectFactory pgpF = new PGPObjectFactory(in);
+        Object object = pgpF.nextObject();
+        while (object != null) {
+            if (object instanceof PGPPublicKeyRing || object instanceof PGPSecretKeyRing) {
+                return Id.content.keys;
+            } else if (object instanceof PGPEncryptedDataList) {
+                return Id.content.encrypted_data;
+            }
+            object = pgpF.nextObject();
         }
-        return fingerPrint;
+
+        return Id.content.unknown;
     }
 
-    public static String keyToHex(long keyId) {
-        return getSmallFingerPrint(keyId >> 32) + getSmallFingerPrint(keyId);
+    /**
+     * Generate a random filename
+     * 
+     * @param length
+     * @return
+     */
+    public static String generateRandomFilename(int length) {
+        SecureRandom random = new SecureRandom();
+
+        byte bytes[] = new byte[length];
+        random.nextBytes(bytes);
+        String result = "";
+        for (int i = 0; i < length; ++i) {
+            int v = (bytes[i] + 256) % 64;
+            if (v < 10) {
+                result += (char) ('0' + v);
+            } else if (v < 36) {
+                result += (char) ('A' + v - 10);
+            } else if (v < 62) {
+                result += (char) ('a' + v - 36);
+            } else if (v == 62) {
+                result += '_';
+            } else if (v == 63) {
+                result += '.';
+            }
+        }
+        return result;
     }
 
-    public static long keyFromHex(String data) {
-        int len = data.length();
-        String s2 = data.substring(len - 8);
-        String s1 = data.substring(0, len - 8);
-        return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
+    /**
+     * Go once through stream to get length of stream. The length is later used to display progress
+     * when encrypting/decrypting
+     * 
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static long getLengthOfStream(InputStream in) throws IOException {
+        long size = 0;
+        long n = 0;
+        byte dummy[] = new byte[0x10000];
+        while ((n = in.read(dummy)) > 0) {
+            size += n;
+        }
+        return size;
     }
 
+    /**
+     * Deletes file securely by overwriting it with random data before deleting it.
+     * 
+     * TODO: Does this really help on flash storage?
+     * 
+     * @param context
+     * @param progress
+     * @param file
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void deleteFileSecurely(Context context, ProgressDialogUpdater progress, File file)
+            throws FileNotFoundException, IOException {
+        long length = file.length();
+        SecureRandom random = new SecureRandom();
+        RandomAccessFile raf = new RandomAccessFile(file, "rws");
+        raf.seek(0);
+        raf.getFilePointer();
+        byte[] data = new byte[1 << 16];
+        int pos = 0;
+        String msg = context.getString(R.string.progress_deletingSecurely, file.getName());
+        while (pos < length) {
+            if (progress != null)
+                progress.setProgress(msg, (int) (100 * pos / length), 100);
+            random.nextBytes(data);
+            raf.write(data);
+            pos += data.length;
+        }
+        raf.close();
+        file.delete();
+    }
 }

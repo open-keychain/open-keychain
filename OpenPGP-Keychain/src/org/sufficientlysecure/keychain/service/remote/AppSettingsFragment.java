@@ -26,7 +26,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyActivity;
 import org.sufficientlysecure.keychain.util.KeyValueSpinnerAdapter;
@@ -259,9 +259,9 @@ public class AppSettingsFragment extends Fragment {
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
                     getActivity(), secretKeyId);
             if (keyRing != null) {
-                PGPSecretKey key = PgpHelper.getMasterKey(keyRing);
+                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
                 if (key != null) {
-                    String userId = PgpHelper.getMainUserIdSafe(getActivity(), key);
+                    String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
                     String chunks[] = userId.split(" <", 2);
                     uid = chunks[0];
                     if (chunks.length > 1) {

@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
@@ -117,7 +117,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
             keyLayout.setVisibility(View.GONE);
             userIdLayout.setVisibility(View.VISIBLE);
 
-            String fingerprint = PgpHelper.getFingerPrint(context,
+            String fingerprint = PgpKeyHelper.getFingerPrint(context,
                     cursor.getLong(cursor.getColumnIndex(Keys.KEY_ID)));
             fingerprint = fingerprint.replace("  ", "\n");
 
@@ -132,9 +132,9 @@ public class KeyListAdapter extends CursorTreeAdapter {
                 keyLayout.setVisibility(View.VISIBLE);
                 userIdLayout.setVisibility(View.GONE);
 
-                String keyIdStr = PgpHelper.getSmallFingerPrint(cursor.getLong(cursor
+                String keyIdStr = PgpKeyHelper.getSmallFingerPrint(cursor.getLong(cursor
                         .getColumnIndex(Keys.KEY_ID)));
-                String algorithmStr = PgpHelper.getAlgorithmInfo(
+                String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
                         cursor.getInt(cursor.getColumnIndex(Keys.ALGORITHM)),
                         cursor.getInt(cursor.getColumnIndex(Keys.KEY_SIZE)));
 

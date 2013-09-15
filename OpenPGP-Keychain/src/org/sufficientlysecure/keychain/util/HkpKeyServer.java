@@ -44,7 +44,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import android.text.Html;
 
@@ -179,8 +179,8 @@ public class HkpKeyServer extends KeyServer {
             KeyInfo info = new KeyInfo();
             info.size = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
-            info.keyId = PgpHelper.keyFromHex(matcher.group(3));
-            info.fingerPrint = PgpHelper.getSmallFingerPrint(info.keyId);
+            info.keyId = PgpKeyHelper.keyFromHex(matcher.group(3));
+            info.fingerPrint = PgpKeyHelper.getSmallFingerPrint(info.keyId);
             String chunks[] = matcher.group(4).split("-");
             info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
                     Integer.parseInt(chunks[1]), Integer.parseInt(chunks[2])).getTime();
@@ -211,7 +211,7 @@ public class HkpKeyServer extends KeyServer {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet("http://" + mHost + ":" + mPort
-                    + "/pks/lookup?op=get&search=0x" + PgpHelper.keyToHex(keyId));
+                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.keyToHex(keyId));
 
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -221,7 +221,7 @@ public class HkpKeyServer extends KeyServer {
             HttpEntity entity = response.getEntity();
             InputStream is = entity.getContent();
             String data = readAll(is, EntityUtils.getContentCharSet(entity));
-            Matcher matcher = PgpMain.PGP_PUBLIC_KEY.matcher(data);
+            Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
             if (matcher.find()) {
                 return matcher.group(1);
             }

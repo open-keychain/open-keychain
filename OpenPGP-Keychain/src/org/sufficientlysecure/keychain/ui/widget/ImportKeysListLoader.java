@@ -32,7 +32,7 @@ import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
@@ -142,13 +142,13 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
     }
 
     private void addToData(PGPKeyRing keyring) {
-        String userId = PgpHelper.getMainUserId(keyring.getPublicKey());
+        String userId = PgpKeyHelper.getMainUserId(keyring.getPublicKey());
 
         if (keyring instanceof PGPSecretKeyRing) {
             userId = mContext.getString(R.string.secretKeyring) + " " + userId;
         }
 
-        String fingerprint = PgpHelper.convertFingerprintToHex(keyring.getPublicKey()
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(keyring.getPublicKey()
                 .getFingerprint());
 
         Map<String, String> attrs = new HashMap<String, String>();

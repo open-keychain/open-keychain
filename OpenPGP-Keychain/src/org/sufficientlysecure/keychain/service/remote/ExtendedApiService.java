@@ -29,8 +29,7 @@ import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openssl.PEMWriter;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpToX509;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -53,13 +52,13 @@ public class ExtendedApiService extends RemoteService {
 
         try {
             long keyId = appSettings.getKeyId();
-            PGPSecretKey pgpSecretKey = PgpHelper.getSigningKey(this, keyId);
+            PGPSecretKey pgpSecretKey = PgpKeyHelper.getSigningKey(this, keyId);
 
             PasswordCallback pgpSecKeyPasswordCallBack = new PasswordCallback("pgp passphrase?",
                     false);
             pgpPwdCallbackHandler.handle(new Callback[] { pgpSecKeyPasswordCallBack });
             PGPPrivateKey pgpPrivKey = pgpSecretKey.extractPrivateKey(
-                    pgpSecKeyPasswordCallBack.getPassword(), PgpMain.BOUNCY_CASTLE_PROVIDER_NAME);
+                    pgpSecKeyPasswordCallBack.getPassword(), Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             pgpSecKeyPasswordCallBack.clearPassword();
 
             X509Certificate selfSignedCert = PgpToX509.createSelfSignedCert(pgpSecretKey,

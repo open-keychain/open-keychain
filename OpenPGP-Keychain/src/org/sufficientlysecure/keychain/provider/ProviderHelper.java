@@ -31,7 +31,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -320,11 +320,11 @@ public class ProviderHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getBitStrength());
-        values.put(Keys.CAN_SIGN, PgpHelper.isSigningKey(key));
-        values.put(Keys.CAN_ENCRYPT, PgpHelper.isEncryptionKey(key));
+        values.put(Keys.CAN_SIGN, PgpKeyHelper.isSigningKey(key));
+        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.isRevoked());
-        values.put(Keys.CREATION, PgpHelper.getCreationDate(key).getTime() / 1000);
-        Date expiryDate = PgpHelper.getExpiryDate(key);
+        values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate != null) {
             values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
         }
@@ -375,7 +375,7 @@ public class ProviderHelper {
 
         boolean has_private = true;
         if (key.isMasterKey()) {
-            if (PgpHelper.isSecretKeyPrivateEmpty(key)) {
+            if (PgpKeyHelper.isSecretKeyPrivateEmpty(key)) {
                 has_private = false;
             }
         }
@@ -384,12 +384,12 @@ public class ProviderHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
-        values.put(Keys.CAN_CERTIFY, (PgpHelper.isCertificationKey(key) && has_private));
-        values.put(Keys.CAN_SIGN, (PgpHelper.isSigningKey(key) && has_private));
-        values.put(Keys.CAN_ENCRYPT, PgpHelper.isEncryptionKey(key));
+        values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && has_private));
+        values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && has_private));
+        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
-        values.put(Keys.CREATION, PgpHelper.getCreationDate(key).getTime() / 1000);
-        Date expiryDate = PgpHelper.getExpiryDate(key);
+        values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);
+        Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate != null) {
             values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
         }
@@ -617,7 +617,7 @@ public class ProviderHelper {
 
                             ByteArrayOutputStream bos = new ByteArrayOutputStream();
                             ArmoredOutputStream aos = new ArmoredOutputStream(bos);
-                            aos.setHeader("Version", PgpMain.getFullVersion(context));
+                            aos.setHeader("Version", PgpHelper.getFullVersion(context));
 
                             if (keyRing instanceof PGPSecretKeyRing) {
                                 aos.write(((PGPSecretKeyRing) keyRing).getEncoded());

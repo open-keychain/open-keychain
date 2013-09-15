@@ -91,7 +91,7 @@ public class KeyListSecretFragment extends KeyListFragment implements
 
         switch (item.getItemId()) {
         case Id.menu.edit:
-            mKeyListSecretActivity.checkPassPhraseAndEdit(masterKeyId, masterCanSign);
+            mKeyListSecretActivity.editKey(masterKeyId, masterCanSign);
 
             return true;
 

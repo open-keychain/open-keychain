@@ -31,8 +31,8 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpMain;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -302,9 +302,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     preselectedSignatureKeyId);
             PGPSecretKey masterKey = null;
             if (keyRing != null) {
-                masterKey = PgpHelper.getMasterKey(keyRing);
+                masterKey = PgpKeyHelper.getMasterKey(keyRing);
                 if (masterKey != null) {
-                    Vector<PGPSecretKey> signKeys = PgpHelper.getUsableSigningKeys(keyRing);
+                    Vector<PGPSecretKey> signKeys = PgpKeyHelper.getUsableSigningKeys(keyRing);
                     if (signKeys.size() > 0) {
                         mSecretKeyId = masterKey.getKeyID();
                     }
@@ -321,11 +321,11 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 if (keyRing == null) {
                     continue;
                 }
-                masterKey = PgpHelper.getMasterKey(keyRing);
+                masterKey = PgpKeyHelper.getMasterKey(keyRing);
                 if (masterKey == null) {
                     continue;
                 }
-                Vector<PGPPublicKey> encryptKeys = PgpHelper.getUsableEncryptKeys(keyRing);
+                Vector<PGPPublicKey> encryptKeys = PgpKeyHelper.getUsableEncryptKeys(keyRing);
                 if (encryptKeys.size() == 0) {
                     continue;
                 }
@@ -570,7 +570,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                     EncryptActivity.this, messenger, mSecretKeyId);
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpMain.PgpGeneralException e) {
+        } catch (PgpGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
@@ -914,9 +914,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this,
                     mSecretKeyId);
             if (keyRing != null) {
-                PGPSecretKey key = PgpHelper.getMasterKey(keyRing);
+                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
                 if (key != null) {
-                    String userId = PgpHelper.getMainUserIdSafe(this, key);
+                    String userId = PgpKeyHelper.getMainUserIdSafe(this, key);
                     String chunks[] = userId.split(" <", 2);
                     uid = chunks[0];
                     if (chunks.length > 1) {
