@@ -350,6 +350,7 @@
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 
+        <!-- Internal services/content provider (not exported) -->
         <service
             android:name=".service.PassphraseCacheService"
             android:exported="false"
@@ -363,15 +364,7 @@
             android:authorities="org.sufficientlysecure.keychain.provider"
             android:exported="false" />
 
-        <!-- TODO: authority! Make this API with content provider uris -->
-        <!-- <provider -->
-        <!-- android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider" -->
-        <!-- android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider" -->
-        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
-
-
-        <!-- OpenPGP Remote API internal classes (not exported) -->
-
+        <!-- Internal classes of OpenPGP (not exported) -->
         <activity
             android:name="org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"
             android:exported="false"
@@ -390,7 +383,6 @@
             android:exported="false" />
 
         <!-- OpenPGP Remote API -->
-
         <service
             android:name="org.sufficientlysecure.keychain.service.remote.OpenPgpService"
             android:enabled="true"
@@ -420,6 +412,12 @@
                 android:name="api_version"
                 android:value="1" />
         </service>
+
+        <!-- TODO: authority! Make this API with content provider uris -->
+        <!-- <provider -->
+        <!-- android:name="org.sufficientlysecure.keychain.provider.KeychainServiceBlobProvider" -->
+        <!-- android:authorities="org.sufficientlysecure.keychain.provider.apgserviceblobprovider" -->
+        <!-- android:permission="org.sufficientlysecure.keychain.permission.ACCESS_API" /> -->
     </application>
 
 </manifest>

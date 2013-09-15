@@ -422,8 +422,8 @@ public class OpenPgpService extends RemoteService {
 
             OpenPgpSignatureResult sigResult = null;
             if (signature) {
-                long signatureKeyId = outputBundle
-                        .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                // long signatureKeyId = outputBundle
+                // .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
                 String signatureUserId = outputBundle
                         .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
                 boolean signatureSuccess = outputBundle
