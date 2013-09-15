@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
-package org.sufficientlysecure.keychain.service.handler;
 
-interface IKeychainGetKeyringsHandler {
-    /**
-     * Either outputBytes or outputString is given. One of them is null
-     *
-     */
-    oneway void onSuccess(in byte[] outputBytes, in List<String> outputString);
+package org.sufficientlysecure.keychain.service.remote;
 
+interface IExtendedApiCallback {
+    
+    oneway void onSuccess(in byte[] outputBytes);
 
-    oneway void onException(in int exceptionNumber, in String message);
+    oneway void onError(in String error);
 }

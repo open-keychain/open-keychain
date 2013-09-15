@@ -49,18 +49,18 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-public class OpenPgpService extends RemoteApiService {
+public class OpenPgpService extends RemoteService {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(Constants.TAG, "CryptoService, onCreate()");
+        Log.d(Constants.TAG, "OpenPgpService, onCreate()");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(Constants.TAG, "CryptoService, onDestroy()");
+        Log.d(Constants.TAG, "OpenPgpService, onDestroy()");
     }
 
     @Override
@@ -69,26 +69,26 @@ public class OpenPgpService extends RemoteApiService {
     }
 
     private String getCachedPassphrase(long keyId) {
-        String passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
+        String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), keyId);
 
         if (passphrase == null) {
             Log.d(Constants.TAG, "No passphrase! Activity required!");
 
             // start passphrase dialog
             Bundle extras = new Bundle();
-            extras.putLong(OpenPgpServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
+            extras.putLong(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
 
             PassphraseActivityCallback callback = new PassphraseActivityCallback();
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
-            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_CACHE_PASSPHRASE,
+            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE,
                     messenger, extras);
 
             if (callback.isSuccess()) {
                 Log.d(Constants.TAG, "New passphrase entered!");
 
                 // get again after it was entered
-                passphrase = PassphraseCacheService.getCachedPassphrase(mContext, keyId);
+                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), keyId);
             } else {
                 Log.d(Constants.TAG, "Passphrase dialog canceled!");
 
@@ -165,12 +165,12 @@ public class OpenPgpService extends RemoteApiService {
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
             Bundle extras = new Bundle();
-            extras.putLongArray(OpenPgpServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
-            extras.putStringArrayList(OpenPgpServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            extras.putStringArrayList(OpenPgpServiceActivity.EXTRA_DUBLICATE_USER_IDS,
+            extras.putLongArray(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            extras.putStringArrayList(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
+            extras.putStringArrayList(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS,
                     dublicateUserIds);
 
-            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_SELECT_PUB_KEYS,
+            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS,
                     messenger, extras);
 
             if (callback.isSuccess()) {
@@ -238,12 +238,12 @@ public class OpenPgpService extends RemoteApiService {
                     return;
                 }
 
-                PgpMain.encryptAndSign(mContext, null, inputData, outputStream, asciiArmor,
+                PgpMain.encryptAndSign(getContext(), null, inputData, outputStream, asciiArmor,
                         appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
                         appSettings.getHashAlgorithm(), true, passphrase);
             } else {
-                PgpMain.encryptAndSign(mContext, null, inputData, outputStream, asciiArmor,
+                PgpMain.encryptAndSign(getContext(), null, inputData, outputStream, asciiArmor,
                         appSettings.getCompression(), keyIds, null,
                         appSettings.getEncryptionAlgorithm(), Id.key.none,
                         appSettings.getHashAlgorithm(), true, null);
@@ -345,7 +345,7 @@ public class OpenPgpService extends RemoteApiService {
 
             // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
             // app, Fix this?
-            // long secretKeyId = PgpMain.getDecryptionKeyId(mContext, inputStream);
+            // long secretKeyId = PgpMain.getDecryptionKeyId(getContext(), inputStream);
             // if (secretKeyId == Id.key.none) {
             // throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
             // }
@@ -363,11 +363,10 @@ public class OpenPgpService extends RemoteApiService {
                 long secretKeyId;
                 try {
                     if (inputStream2.markSupported()) {
-                        inputStream2.mark(200); // should probably set this to the max size of two
-                                                // pgpF
-                                                // objects, if it even needs to be anything other
-                                                // than
-                                                // 0.
+                        // should probably set this to the max size of two
+                        // pgpF objects, if it even needs to be anything other
+                        // than 0.
+                        inputStream2.mark(200);
                     }
                     secretKeyId = PgpMain.getDecryptionKeyId(this, inputStream2);
                     if (secretKeyId == Id.key.none) {
@@ -471,7 +470,7 @@ public class OpenPgpService extends RemoteApiService {
                         encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
                                 settings, false);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoService", e);
+                        Log.e(Constants.TAG, "OpenPgpService", e);
                     }
                 }
             };
@@ -493,7 +492,7 @@ public class OpenPgpService extends RemoteApiService {
                         encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
                                 settings, true);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoService", e);
+                        Log.e(Constants.TAG, "OpenPgpService", e);
                     }
                 }
             };
@@ -513,7 +512,7 @@ public class OpenPgpService extends RemoteApiService {
                     try {
                         signSafe(inputBytes, callback, settings);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoService", e);
+                        Log.e(Constants.TAG, "OpenPgpService", e);
                     }
                 }
             };
@@ -535,7 +534,7 @@ public class OpenPgpService extends RemoteApiService {
                     try {
                         decryptAndVerifySafe(inputBytes, callback, settings);
                     } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoService", e);
+                        Log.e(Constants.TAG, "OpenPgpService", e);
                     }
                 }
             };

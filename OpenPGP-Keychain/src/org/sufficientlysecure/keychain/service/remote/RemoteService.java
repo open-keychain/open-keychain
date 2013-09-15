@@ -40,12 +40,12 @@ import android.os.Messenger;
 /**
  * Abstract service for remote APIs that handle app registration and user input.
  */
-public abstract class RemoteApiService extends Service {
+public abstract class RemoteService extends Service {
     Context mContext;
 
-    final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(100);
+    private final ArrayBlockingQueue<Runnable> mPoolQueue = new ArrayBlockingQueue<Runnable>(100);
     // TODO: Are these parameters okay?
-    PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
+    private PausableThreadPoolExecutor mThreadPool = new PausableThreadPoolExecutor(2, 4, 10,
             TimeUnit.SECONDS, mPoolQueue);
 
     private final Object userInputLock = new Object();
@@ -87,6 +87,10 @@ public abstract class RemoteApiService extends Service {
 
     }
 
+    public Context getContext() {
+        return mContext;
+    }
+
     /**
      * Should be used from Stub implementations of AIDL interfaces to enqueue a runnable for
      * execution
@@ -105,12 +109,12 @@ public abstract class RemoteApiService extends Service {
             Log.e(Constants.TAG, "Not allowed to use service! Starting activity for registration!");
             Bundle extras = new Bundle();
             // TODO: currently simply uses first entry
-            extras.putString(OpenPgpServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
+            extras.putString(RemoteServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
 
             RegisterActivityCallback callback = new RegisterActivityCallback();
             Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
-            pauseQueueAndStartServiceActivity(OpenPgpServiceActivity.ACTION_REGISTER, messenger,
+            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_REGISTER, messenger,
                     extras);
 
             if (callback.isAllowed()) {
@@ -135,11 +139,11 @@ public abstract class RemoteApiService extends Service {
             mThreadPool.pause();
 
             Log.d(Constants.TAG, "starting activity...");
-            Intent intent = new Intent(getBaseContext(), OpenPgpServiceActivity.class);
+            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setAction(action);
 
-            extras.putParcelable(OpenPgpServiceActivity.EXTRA_MESSENGER, messenger);
+            extras.putParcelable(RemoteServiceActivity.EXTRA_MESSENGER, messenger);
             intent.putExtras(extras);
 
             startActivity(intent);

@@ -64,7 +64,7 @@ OpenPGP Keychain specific Intent actions:
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras starts Barcode Scanner to get QR Code
 
-## Remote Service API
+## OpenPGP Remote API
 To do asyncronous fast encryption/decryption/sign/verify operations bind to the remote service.
 The API Demo contains all required AIDL files and a demo activity.
 
@@ -117,6 +117,10 @@ for integration.
 [3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java
 
 [4] https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
+
+## Extended Remote API
+
+TODO
 
 # Libraries
 

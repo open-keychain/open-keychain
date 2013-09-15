@@ -41,7 +41,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class OpenPgpServiceActivity extends SherlockFragmentActivity {
+public class RemoteServiceActivity extends SherlockFragmentActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
     public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
@@ -84,7 +84,7 @@ public class OpenPgpServiceActivity extends SherlockFragmentActivity {
 
         if (!finishHandled) {
             Message msg = Message.obtain();
-            msg.arg1 = OpenPgpService.RegisterActivityCallback.CANCEL;
+            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
             try {
                 mMessenger.send(msg);
             } catch (RemoteException e) {
@@ -120,17 +120,17 @@ public class OpenPgpServiceActivity extends SherlockFragmentActivity {
 
                             // user needs to select a key!
                             if (mSettingsFragment.getAppSettings().getKeyId() == Id.key.none) {
-                                Toast.makeText(OpenPgpServiceActivity.this,
+                                Toast.makeText(RemoteServiceActivity.this,
                                         R.string.api_register_error_select_key, Toast.LENGTH_LONG)
                                         .show();
                             } else {
-                                ProviderHelper.insertApiApp(OpenPgpServiceActivity.this,
+                                ProviderHelper.insertApiApp(RemoteServiceActivity.this,
                                         mSettingsFragment.getAppSettings());
 
                                 Message msg = Message.obtain();
-                                msg.arg1 = OpenPgpService.RegisterActivityCallback.OKAY;
+                                msg.arg1 = RemoteService.RegisterActivityCallback.OKAY;
                                 Bundle data = new Bundle();
-                                data.putString(OpenPgpService.RegisterActivityCallback.PACKAGE_NAME,
+                                data.putString(RemoteService.RegisterActivityCallback.PACKAGE_NAME,
                                         packageName);
                                 msg.setData(data);
                                 try {
@@ -149,7 +149,7 @@ public class OpenPgpServiceActivity extends SherlockFragmentActivity {
                             // Disallow
 
                             Message msg = Message.obtain();
-                            msg.arg1 = OpenPgpService.RegisterActivityCallback.CANCEL;
+                            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
                             try {
                                 mMessenger.send(msg);
                             } catch (RemoteException e) {
