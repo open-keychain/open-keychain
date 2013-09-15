@@ -41,8 +41,8 @@ Android Studio is currently not supported or recommended!
 ## API without registering the app
 
 ### Intent Actions
-All Intents require user interaction, e.g. encryption is not done automatically (e.g. click a button in a dialog to actually encrypt!).
-To do automatic encryption/decryption/sign/verify use the Remote Serive API.
+All Intents require user interaction, e.g. to finally encrypt the user needs to press the "Encrypt" button.
+To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 
 Android Intent actions provided by OpenPGP Keychain:
 
@@ -65,15 +65,12 @@ OpenPGP Keychain specific Intent actions:
   * without extras starts Barcode Scanner to get QR Code
 
 ## OpenPGP Remote API
-To do asyncronous fast encryption/decryption/sign/verify operations bind to the remote service.
+To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.
 The API Demo contains all required AIDL files and a demo activity.
 
-Test API
+Try out the API
 --------
-Try out the new OpenPGP Keychain API:
-
-Keychain: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain
-
+Keychain: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain  
 API Demo: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
 
 Design
@@ -83,7 +80,7 @@ just need to include the AIDL files and connect to the service. Other
 OpenPGP apps can implement a service based on this AIDL definition.
 
 The API is designed to be as easy as possible to use by apps like
-k9mail. The service definition defines
+K-9 Mail. The service definition defines
 sign/encrypt/signAndEncrypt/decryptAndVerify [1].
 
 As can be seen the apps themselves never need handle key ids directly.
@@ -108,14 +105,10 @@ to query). If other OpenPGP apps implement the service, no additional
 code is required in k9mail per provider. See [3] for a complete example
 for integration.
 
-[1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl
-
-[2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp
-
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java
-
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java
-
+[1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl  
+[2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
+[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
+[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
 [4] https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
 
 ## Extended Remote API
