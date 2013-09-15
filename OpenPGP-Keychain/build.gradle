@@ -14,10 +14,13 @@ repositories {
     mavenCentral()
 }
 
+/*
+ * NOTE: Avoid dependencies from Maven. Include as much sources as possible for F-Droid!
+ */
 dependencies {
     compile fileTree(dir: 'libs', includes: ['*.jar'], excludes: ['android-support-v4.jar'])
-    //compile 'com.android.support:support-v4:18.0.+' // already in actionbarsherlock
-    compile 'com.actionbarsherlock:actionbarsherlock:4.4.+@aar'
+    compile 'com.android.support:support-v4:18.0.+' // already in actionbarsherlock
+    compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:HtmlTextView')
 }
 
@@ -27,7 +30,7 @@ android {
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 17
+        targetSdkVersion 18
     }
 
     sourceSets {

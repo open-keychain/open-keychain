@@ -84,7 +84,7 @@ public class OpenPgpSignatureResult implements Parcelable {
     public String toString() {
         String out = new String();
         out += "\nsignatureStatus: " + signatureStatus;
-        out += "signatureUserId: " + signatureUserId;
+        out += "\nsignatureUserId: " + signatureUserId;
         out += "\nsignatureOnly: " + signatureOnly;
         return out;
     }
