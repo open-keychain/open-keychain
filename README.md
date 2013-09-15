@@ -67,8 +67,8 @@ To do asyncronous fast encryption/decryption/sign/verify operations bind to the 
 The API Demo contains all required AIDL files and a demo activity.
 
 #### Try out the API
-Keychain: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain  
-API Demo: https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
+Keychain: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain  
+API Demo: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
 
 #### Design
 All apps wanting to use this generic API
@@ -104,7 +104,7 @@ for integration.
 [2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
 [3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
 [3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
-[4] https://play.google.com/stor/apps/details?id=org.sufficientlysecure.keychain.demo
+[4] https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
 
 ## Extended Remote API
 
