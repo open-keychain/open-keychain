@@ -18,9 +18,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
@@ -35,6 +33,19 @@ import java.security.Security;
  * Architecture primitives. A good place to invoke them is in the application's {@code onCreate}.
  * 
  * copied from http://android-developers.blogspot.de/2013/08/some-securerandom-thoughts.html
+ * 
+ * 
+ * Sep 15, 2013:
+ * On some devices /dev/urandom is non-writable!
+ * No need to seed /dev/urandom. urandom should have enough seeds from the OS and kernel.
+ * Only OpenSSL seeds are broken. See http://emboss.github.io/blog/2013/08/21/openssl-prng-is-not-really-fork-safe
+ * 
+ * see also:
+ * https://github.com/k9mail/k-9/commit/dda8f64276d4d29c43f86237cd77819c28f22f21
+ * In addition to a couple of custom ROMs linking /dev/urandom to a non-writable
+ * random version, now Samsung's SELinux policy also prevents apps from opening
+ * /dev/urandom for writing. Since we shouldn't need to write to /dev/urandom anyway
+ * we now simply don't.
  */
 public final class PRNGFixes {
 
@@ -138,6 +149,7 @@ public final class PRNGFixes {
      * {@code Provider} of {@code SecureRandom} engines which pass through all requests to the Linux
      * PRNG.
      */
+    @SuppressWarnings("serial")
     private static class LinuxPRNGSecureRandomProvider extends Provider {
 
         public LinuxPRNGSecureRandomProvider() {
@@ -155,6 +167,7 @@ public final class PRNGFixes {
     /**
      * {@link SecureRandomSpi} which passes all requests to the Linux PRNG ({@code /dev/urandom}).
      */
+    @SuppressWarnings("serial")
     public static class LinuxPRNGSecureRandom extends SecureRandomSpi {
 
         /*
@@ -178,40 +191,40 @@ public final class PRNGFixes {
          */
         private static DataInputStream sUrandomIn;
 
-        /**
-         * Output stream for writing to Linux PRNG or {@code null} if not yet opened.
-         * 
-         * @GuardedBy("sLock")
-         */
-        private static OutputStream sUrandomOut;
-
-        /**
-         * Whether this engine instance has been seeded. This is needed because each instance needs
-         * to seed itself if the client does not explicitly seed it.
-         */
-        private boolean mSeeded;
+//        /**
+//         * Output stream for writing to Linux PRNG or {@code null} if not yet opened.
+//         * 
+//         * @GuardedBy("sLock")
+//         */
+//        private static OutputStream sUrandomOut;
+//
+//        /**
+//         * Whether this engine instance has been seeded. This is needed because each instance needs
+//         * to seed itself if the client does not explicitly seed it.
+//         */
+//        private boolean mSeeded;
 
         @Override
         protected void engineSetSeed(byte[] bytes) {
-            try {
-                OutputStream out;
-                synchronized (sLock) {
-                    out = getUrandomOutputStream();
-                }
-                out.write(bytes);
-                out.flush();
-                mSeeded = true;
-            } catch (IOException e) {
-                throw new SecurityException("Failed to mix seed into " + URANDOM_FILE, e);
-            }
+//            try {
+//                OutputStream out;
+//                synchronized (sLock) {
+//                    out = getUrandomOutputStream();
+//                }
+//                out.write(bytes);
+//                out.flush();
+//                mSeeded = true;
+//            } catch (IOException e) {
+//                throw new SecurityException("Failed to mix seed into " + URANDOM_FILE, e);
+//            }
         }
 
         @Override
         protected void engineNextBytes(byte[] bytes) {
-            if (!mSeeded) {
-                // Mix in the device- and invocation-specific seed.
-                engineSetSeed(generateSeed());
-            }
+//            if (!mSeeded) {
+//                // Mix in the device- and invocation-specific seed.
+//                engineSetSeed(generateSeed());
+//            }
 
             try {
                 DataInputStream in;
@@ -251,19 +264,19 @@ public final class PRNGFixes {
             }
         }
 
-        private OutputStream getUrandomOutputStream() {
-            synchronized (sLock) {
-                if (sUrandomOut == null) {
-                    try {
-                        sUrandomOut = new FileOutputStream(URANDOM_FILE);
-                    } catch (IOException e) {
-                        throw new SecurityException("Failed to open " + URANDOM_FILE
-                                + " for writing", e);
-                    }
-                }
-                return sUrandomOut;
-            }
-        }
+//        private OutputStream getUrandomOutputStream() {
+//            synchronized (sLock) {
+//                if (sUrandomOut == null) {
+//                    try {
+//                        sUrandomOut = new FileOutputStream(URANDOM_FILE);
+//                    } catch (IOException e) {
+//                        throw new SecurityException("Failed to open " + URANDOM_FILE
+//                                + " for writing", e);
+//                    }
+//                }
+//                return sUrandomOut;
+//            }
+//        }
     }
 
     /**
