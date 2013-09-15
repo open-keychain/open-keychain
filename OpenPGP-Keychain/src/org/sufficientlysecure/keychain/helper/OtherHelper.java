@@ -25,8 +25,6 @@ import java.util.Set;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 public class OtherHelper {
@@ -78,54 +76,6 @@ public class OtherHelper {
             } else {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
-        }
-    }
-
-    /**
-     * Check if the calling package has the needed permission to invoke an intent with specific
-     * restricted actions.
-     * 
-     * If pkgName is null, this will also deny the use of the given action
-     * 
-     * @param activity
-     * @param pkgName
-     * @param permName
-     * @param action
-     * @param restrictedActions
-     */
-    public static void checkPackagePermissionForActions(Activity activity, String pkgName,
-            String permName, String action, String[] restrictedActions) {
-        if (action != null) {
-            PackageManager pkgManager = activity.getPackageManager();
-
-            for (int i = 0; i < restrictedActions.length; i++) {
-                if (restrictedActions[i].equals(action)) {
-
-                    // TODO: currently always cancels! THis is the old API
-                    // end activity
-                    activity.setResult(Activity.RESULT_CANCELED, null);
-                    activity.finish();
-
-                    // if (pkgName != null
-                    // && (pkgManager.checkPermission(permName, pkgName) ==
-                    // PackageManager.PERMISSION_GRANTED || pkgName
-                    // .equals(Constants.PACKAGE_NAME))) {
-                    // Log.d(Constants.TAG, pkgName + " has permission " + permName + ". Action "
-                    // + action + " was granted!");
-                    // } else {
-                    // String error = pkgName + " does NOT have permission " + permName
-                    // + ". Action " + action + " was NOT granted!";
-                    // Log.e(Constants.TAG, error);
-                    // Toast.makeText(activity, activity.getString(R.string.errorMessage, error),
-                    // Toast.LENGTH_LONG).show();
-                    //
-                    // // end activity
-                    // activity.setResult(Activity.RESULT_CANCELED, null);
-                    // activity.finish();
-                    // }
-                }
-            }
-
         }
     }
 

@@ -106,7 +106,6 @@ public class PgpKeyOperation {
      * PGPSecretKeyRing contains the masterkey and the new key as a subkey (certified by the
      * masterkey).
      * 
-     * @param context
      * @param algorithmChoice
      * @param keySize
      * @param passPhrase
