@@ -25,7 +25,7 @@ public class OpenPgpSignatureResult implements Parcelable {
     // successfully verified signature, with trusted public key
     public static final int SIGNATURE_SUCCESS_TRUSTED = 1;
     // no public key was found for this signature verification
-    public static final int SIGNATURE_UNKNOWN = 2;
+    public static final int SIGNATURE_UNKNOWN_PUB_KEY = 2;
     // successfully verified signature, but with untrusted public key
     public static final int SIGNATURE_SUCCESS_UNTRUSTED = 3;
 

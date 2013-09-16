@@ -419,7 +419,7 @@ public class OpenPgpService extends RemoteService {
                 if (signatureSuccess) {
                     signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_TRUSTED;
                 } else if (signatureUnknown) {
-                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN;
+                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                 }
 
                 sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId, signedOnly);
