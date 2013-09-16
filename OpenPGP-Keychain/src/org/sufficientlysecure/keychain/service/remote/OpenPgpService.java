@@ -217,8 +217,8 @@ public class OpenPgpService extends RemoteService {
     };
 
     private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
-            boolean asciiArmor, IOpenPgpCallback callback, AppSettings appSettings, boolean sign)
-            throws RemoteException {
+            boolean asciiArmor, boolean allowUserInteraction, IOpenPgpCallback callback,
+            AppSettings appSettings, boolean sign) throws RemoteException {
         try {
             // build InputData and write into OutputStream
             InputStream inputStream = new ByteArrayInputStream(inputBytes);
@@ -269,8 +269,8 @@ public class OpenPgpService extends RemoteService {
     }
 
     // TODO: asciiArmor?!
-    private void signSafe(byte[] inputBytes, IOpenPgpCallback callback, AppSettings appSettings)
-            throws RemoteException {
+    private void signSafe(byte[] inputBytes, boolean allowUserInteraction,
+            IOpenPgpCallback callback, AppSettings appSettings) throws RemoteException {
         try {
             Log.d(Constants.TAG, "current therad id: " + Thread.currentThread().getId());
 
@@ -309,8 +309,8 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private synchronized void decryptAndVerifySafe(byte[] inputBytes, IOpenPgpCallback callback,
-            AppSettings appSettings) throws RemoteException {
+    private synchronized void decryptAndVerifySafe(byte[] inputBytes, boolean allowUserInteraction,
+            IOpenPgpCallback callback, AppSettings appSettings) throws RemoteException {
         try {
             // TODO: this is not really needed
             // checked if it is text with BEGIN and END tags
@@ -459,7 +459,8 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
+                final boolean asciiArmor, final boolean allowUserInteraction,
+                final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -468,8 +469,8 @@ public class OpenPgpService extends RemoteService {
                 @Override
                 public void run() {
                     try {
-                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
-                                settings, false);
+                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor,
+                                allowUserInteraction, callback, settings, false);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "OpenPgpService", e);
                     }
@@ -481,7 +482,8 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public void signAndEncrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
+                final boolean asciiArmor, final boolean allowUserInteraction,
+                final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -490,8 +492,8 @@ public class OpenPgpService extends RemoteService {
                 @Override
                 public void run() {
                     try {
-                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, callback,
-                                settings, true);
+                        encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor,
+                                allowUserInteraction, callback, settings, true);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "OpenPgpService", e);
                     }
@@ -503,7 +505,8 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public void sign(final byte[] inputBytes, boolean asciiArmor,
-                final IOpenPgpCallback callback) throws RemoteException {
+                final boolean allowUserInteraction, final IOpenPgpCallback callback)
+                throws RemoteException {
             final AppSettings settings = getAppSettings();
 
             Runnable r = new Runnable() {
@@ -511,7 +514,7 @@ public class OpenPgpService extends RemoteService {
                 @Override
                 public void run() {
                     try {
-                        signSafe(inputBytes, callback, settings);
+                        signSafe(inputBytes, allowUserInteraction, callback, settings);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "OpenPgpService", e);
                     }
@@ -523,8 +526,8 @@ public class OpenPgpService extends RemoteService {
         }
 
         @Override
-        public void decryptAndVerify(final byte[] inputBytes, final IOpenPgpCallback callback)
-                throws RemoteException {
+        public void decryptAndVerify(final byte[] inputBytes, final boolean allowUserInteraction,
+                final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
@@ -533,7 +536,7 @@ public class OpenPgpService extends RemoteService {
                 @Override
                 public void run() {
                     try {
-                        decryptAndVerifySafe(inputBytes, callback, settings);
+                        decryptAndVerifySafe(inputBytes, allowUserInteraction, callback, settings);
                     } catch (RemoteException e) {
                         Log.e(Constants.TAG, "OpenPgpService", e);
                     }

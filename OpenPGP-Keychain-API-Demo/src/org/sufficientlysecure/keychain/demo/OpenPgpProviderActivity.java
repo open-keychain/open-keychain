@@ -139,7 +139,7 @@ public class OpenPgpProviderActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -149,7 +149,7 @@ public class OpenPgpProviderActivity extends Activity {
         byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().sign(inputBytes, true, encryptCallback);
+            mCryptoServiceConnection.getService().sign(inputBytes, true, true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -160,7 +160,7 @@ public class OpenPgpProviderActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().signAndEncrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -170,7 +170,7 @@ public class OpenPgpProviderActivity extends Activity {
         byte[] inputBytes = mCiphertext.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes,
+            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes, true,
                     decryptAndVerifyCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
@@ -228,8 +228,8 @@ public class OpenPgpProviderActivity extends Activity {
 
         if (!providerList.isEmpty()) {
             // add "disable OpenPGP provider"
-            providerList.add(0, new OpenPgpProviderElement(null, "Disable OpenPGP Provider", getResources()
-                    .getDrawable(android.R.drawable.ic_menu_close_clear_cancel)));
+            providerList.add(0, new OpenPgpProviderElement(null, "Disable OpenPGP Provider",
+                    getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel)));
 
             // Init ArrayAdapter with OpenPGP Providers
             ListAdapter adapter = new ArrayAdapter<OpenPgpProviderElement>(this,
@@ -260,7 +260,7 @@ public class OpenPgpProviderActivity extends Activity {
                         dialog.cancel();
                         finish();
                     }
-                    
+
                     // bind to service
                     mCryptoServiceConnection = new OpenPgpServiceConnection(
                             OpenPgpProviderActivity.this, packageName);
