@@ -62,7 +62,7 @@ public class OpenPgpService extends RemoteService {
         if (passphrase == null) {
             if (!allowUserInteraction) {
                 throw new UserInteractionRequiredException(
-                        "Passphrase not found in cache! User interaction required!");
+                        "Passphrase not found in cache, please enter your passphrase!");
             }
 
             Log.d(Constants.TAG, "No passphrase! Activity required!");

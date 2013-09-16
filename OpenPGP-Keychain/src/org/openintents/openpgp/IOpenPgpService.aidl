@@ -27,6 +27,8 @@ interface IOpenPgpService {
     /**
      * Encrypt
      * 
+     * After successful encryption, callback's onSuccess will contain the resulting output bytes.
+     * 
      * @param inputBytes
      *            Byte array you want to encrypt
      * @param encryptionUserIds
@@ -43,9 +45,11 @@ interface IOpenPgpService {
     
     /**
      * Sign
+     * 
+     * After successful signing, callback's onSuccess will contain the resulting output bytes.
      *
      * @param inputBytes
-     *            Byte array you want to encrypt
+     *            Byte array you want to sign
      * @param asciiArmor
      *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param allowUserInteraction
@@ -58,9 +62,11 @@ interface IOpenPgpService {
     
     /**
      * Sign then encrypt
+     * 
+     * After successful signing and encryption, callback's onSuccess will contain the resulting output bytes.
      *
      * @param inputBytes
-     *            Byte array you want to encrypt
+     *            Byte array you want to sign and encrypt
      * @param encryptionUserIds
      *            User Ids (emails) of recipients
      * @param signatureUserId
@@ -76,8 +82,11 @@ interface IOpenPgpService {
             in boolean asciiArmor, in boolean allowUserInteraction, in IOpenPgpCallback callback);
     
     /**
-     * Decrypts and verifies given input bytes. If no signature is present this method
-     * will only decrypt.
+     * Decrypts and verifies given input bytes. This methods handles the encrypted-only, signed-and-encrypted,
+     * and also signed-only inputBytes.
+     * 
+     * After successful decryption, callback's onSuccess will contain the resulting output bytes.
+     * callback's onSuccess will return the signatureResult for signed-and-encrypted and signed-only inputs.
      * 
      * @param inputBytes
      *            Byte array you want to decrypt and verify

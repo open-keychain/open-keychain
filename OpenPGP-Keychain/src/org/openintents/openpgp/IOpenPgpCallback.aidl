@@ -22,10 +22,22 @@ import org.openintents.openpgp.OpenPgpError;
 interface IOpenPgpCallback {
     
     /**
-     * CryptoSignatureResult is only returned if the Callback was used from decryptAndVerify
-     *
+     * onSuccess returns on successful OpenPGP operations.
+     * 
+     * @param outputBytes
+     *            contains resulting output bytes (decrypted content/content without signature)
+     * @param signatureResult
+     *            signatureResult is only non-null if decryptAndVerify() was called and the content
+     *            was encrypted or signed-and-encrypted.
      */
     oneway void onSuccess(in byte[] outputBytes, in OpenPgpSignatureResult signatureResult);
 
+    /**
+     * onError returns on errors or when allowUserInteraction was set to false, but user interaction
+     * was required execute an OpenPGP operation.
+     * 
+     * @param error
+     *            See OpenPgpError class for more information.
+     */
     oneway void onError(in OpenPgpError error);
 }
