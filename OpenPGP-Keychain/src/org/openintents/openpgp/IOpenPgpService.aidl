@@ -23,7 +23,7 @@ import org.openintents.openpgp.IOpenPgpCallback;
  * Results are returned to the callback, which has to be implemented on client side.
  */
 interface IOpenPgpService {
-       
+    
     /**
      * Encrypt
      * 
@@ -82,11 +82,11 @@ interface IOpenPgpService {
             in boolean asciiArmor, in boolean allowUserInteraction, in IOpenPgpCallback callback);
     
     /**
-     * Decrypts and verifies given input bytes. This methods handles the encrypted-only, signed-and-encrypted,
+     * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
      * and also signed-only inputBytes.
      * 
-     * After successful decryption, callback's onSuccess will contain the resulting output bytes.
-     * callback's onSuccess will return the signatureResult for signed-and-encrypted and signed-only inputs.
+     * After successful decryption/verification, callback's onSuccess will contain the resulting output bytes.
+     * The signatureResult in onSuccess is only non-null if signed-and-encrypted and signed-only inputBytes were given.
      * 
      * @param inputBytes
      *            Byte array you want to decrypt and verify
