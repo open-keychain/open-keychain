@@ -69,8 +69,6 @@ interface IOpenPgpService {
      *            Byte array you want to sign and encrypt
      * @param encryptionUserIds
      *            User Ids (emails) of recipients
-     * @param signatureUserId
-     *            User Ids (email) of sender
      * @param asciiArmor
      *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param allowUserInteraction
