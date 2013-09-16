@@ -39,6 +39,9 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.service.exception.NoUserIdsException;
+import org.sufficientlysecure.keychain.service.exception.UserInteractionRequiredException;
+import org.sufficientlysecure.keychain.service.exception.WrongPassphraseException;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -46,10 +49,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Messenger;
 import android.os.RemoteException;
 
 public class OpenPgpService extends RemoteService {
@@ -71,21 +72,24 @@ public class OpenPgpService extends RemoteService {
         return mBinder;
     }
 
-    private String getCachedPassphrase(long keyId) {
+    private String getCachedPassphrase(long keyId, boolean allowUserInteraction)
+            throws UserInteractionRequiredException {
         String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), keyId);
 
         if (passphrase == null) {
+            if (!allowUserInteraction) {
+                throw new UserInteractionRequiredException(
+                        "Passphrase not found in cache! User interaction required!");
+            }
+
             Log.d(Constants.TAG, "No passphrase! Activity required!");
 
             // start passphrase dialog
+            PassphraseActivityCallback callback = new PassphraseActivityCallback();
             Bundle extras = new Bundle();
             extras.putLong(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
-
-            PassphraseActivityCallback callback = new PassphraseActivityCallback();
-            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
-
-            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE,
-                    messenger, extras);
+            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE, callback,
+                    extras);
 
             if (callback.isSuccess()) {
                 Log.d(Constants.TAG, "New passphrase entered!");
@@ -127,7 +131,8 @@ public class OpenPgpService extends RemoteService {
      * @param encryptionUserIds
      * @return
      */
-    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, long ownKeyId) {
+    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, long ownKeyId,
+            boolean allowUserInteraction) throws UserInteractionRequiredException {
         // find key ids to given emails in database
         ArrayList<Long> keyIds = new ArrayList<Long>();
 
@@ -163,9 +168,9 @@ public class OpenPgpService extends RemoteService {
             keyIdsArray[i] = keyIds.get(i);
         }
 
-        if (missingUserIdsCheck || dublicateUserIdsCheck) {
+        // allow the user to verify pub key selection
+        if (allowUserInteraction && (missingUserIdsCheck || dublicateUserIdsCheck)) {
             SelectPubKeysActivityCallback callback = new SelectPubKeysActivityCallback();
-            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
             Bundle extras = new Bundle();
             extras.putLongArray(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
@@ -173,8 +178,8 @@ public class OpenPgpService extends RemoteService {
             extras.putStringArrayList(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS,
                     dublicateUserIds);
 
-            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS,
-                    messenger, extras);
+            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS, callback,
+                    extras);
 
             if (callback.isSuccess()) {
                 Log.d(Constants.TAG, "New selection of pub keys!");
@@ -183,6 +188,17 @@ public class OpenPgpService extends RemoteService {
                 Log.d(Constants.TAG, "Pub key selection canceled!");
                 return null;
             }
+        }
+
+        // if no user interaction is allow throw exceptions on duplicate or missing pub keys
+        if (!allowUserInteraction) {
+            if (missingUserIdsCheck)
+                throw new UserInteractionRequiredException(
+                        "Pub keys for these user ids are missing:" + missingUserIds.toString());
+            if (dublicateUserIdsCheck)
+                throw new UserInteractionRequiredException(
+                        "More than one pub key with these user ids exist:"
+                                + dublicateUserIds.toString());
         }
 
         if (keyIdsArray.length == 0) {
@@ -227,19 +243,18 @@ public class OpenPgpService extends RemoteService {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
-            long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId());
+            long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId(),
+                    allowUserInteraction);
             if (keyIds == null) {
-                callback.onError(new OpenPgpError(OpenPgpError.ID_NO_USER_IDS, "No user ids!"));
-                return;
+                throw new NoUserIdsException("No user ids!");
             }
 
             PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
             if (sign) {
-                String passphrase = getCachedPassphrase(appSettings.getKeyId());
+                String passphrase = getCachedPassphrase(appSettings.getKeyId(),
+                        allowUserInteraction);
                 if (passphrase == null) {
-                    callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
-                            "No or wrong passphrase!"));
-                    return;
+                    throw new WrongPassphraseException("No or wrong passphrase!");
                 }
 
                 operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
@@ -257,14 +272,14 @@ public class OpenPgpService extends RemoteService {
 
             // return over handler on client side
             callback.onSuccess(outputBytes, null);
+        } catch (UserInteractionRequiredException e) {
+            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
+        } catch (NoUserIdsException e) {
+            callbackOpenPgpError(callback, OpenPgpError.NO_USER_IDS, e.getMessage());
+        } catch (WrongPassphraseException e) {
+            callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
         } catch (Exception e) {
-            Log.e(Constants.TAG, "KeychainService, Exception!", e);
-
-            try {
-                callback.onError(new OpenPgpError(0, e.getMessage()));
-            } catch (Exception t) {
-                Log.e(Constants.TAG, "Error returning exception to client", t);
-            }
+            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
@@ -281,11 +296,9 @@ public class OpenPgpService extends RemoteService {
 
             OutputStream outputStream = new ByteArrayOutputStream();
 
-            String passphrase = getCachedPassphrase(appSettings.getKeyId());
+            String passphrase = getCachedPassphrase(appSettings.getKeyId(), allowUserInteraction);
             if (passphrase == null) {
-                callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
-                        "No or wrong passphrase!"));
-                return;
+                throw new WrongPassphraseException("No or wrong passphrase!");
             }
 
             PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
@@ -298,14 +311,12 @@ public class OpenPgpService extends RemoteService {
 
             // return over handler on client side
             callback.onSuccess(outputBytes, null);
+        } catch (UserInteractionRequiredException e) {
+            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
+        } catch (WrongPassphraseException e) {
+            callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
         } catch (Exception e) {
-            Log.e(Constants.TAG, "KeychainService, Exception!", e);
-
-            try {
-                callback.onError(new OpenPgpError(0, e.getMessage()));
-            } catch (Exception t) {
-                Log.e(Constants.TAG, "Error returning exception to client", t);
-            }
+            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
 
@@ -347,13 +358,8 @@ public class OpenPgpService extends RemoteService {
 
             // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
             // app, Fix this?
-            // long secretKeyId = PgpMain.getDecryptionKeyId(getContext(), inputStream);
-            // if (secretKeyId == Id.key.none) {
-            // throw new PgpMain.PgpGeneralException(getString(R.string.error_noSecretKeyFound));
-            // }
 
             String passphrase = null;
-            boolean assumeSymmetricEncryption = false;
             if (!signedOnly) {
                 // BEGIN Get key
                 // TODO: this input stream is consumed after PgpMain.getDecryptionKeyId()... do it
@@ -361,7 +367,6 @@ public class OpenPgpService extends RemoteService {
                 InputStream inputStream2 = new ByteArrayInputStream(inputBytes);
 
                 // TODO: duplicates functions from DecryptActivity!
-                // TODO: we need activity to input symmetric passphrase
                 long secretKeyId;
                 try {
                     if (inputStream2.markSupported()) {
@@ -374,7 +379,6 @@ public class OpenPgpService extends RemoteService {
                     if (secretKeyId == Id.key.none) {
                         throw new PgpGeneralException(getString(R.string.error_noSecretKeyFound));
                     }
-                    assumeSymmetricEncryption = false;
                 } catch (NoAsymmetricEncryptionException e) {
                     if (inputStream2.markSupported()) {
                         inputStream2.reset();
@@ -384,16 +388,15 @@ public class OpenPgpService extends RemoteService {
                         throw new PgpGeneralException(
                                 getString(R.string.error_noKnownEncryptionFound));
                     }
-                    assumeSymmetricEncryption = true;
+                    // we do not support symmetric decryption from the API!
+                    throw new Exception("Symmetric decryption is not supported!");
                 }
 
                 Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
-                passphrase = getCachedPassphrase(secretKeyId);
+                passphrase = getCachedPassphrase(secretKeyId, allowUserInteraction);
                 if (passphrase == null) {
-                    callback.onError(new OpenPgpError(OpenPgpError.ID_NO_OR_WRONG_PASSPHRASE,
-                            "No or wrong passphrase!"));
-                    return;
+                    throw new WrongPassphraseException("No or wrong passphrase!");
                 }
             }
 
@@ -410,8 +413,7 @@ public class OpenPgpService extends RemoteService {
                 // TODO: download missing keys from keyserver?
                 outputBundle = operation.verifyText(false);
             } else {
-                // TODO: assume symmetric: callback to enter symmetric pass
-                outputBundle = operation.decryptAndVerify(passphrase, assumeSymmetricEncryption);
+                outputBundle = operation.decryptAndVerify(passphrase, false);
             }
 
             outputStream.close();
@@ -444,14 +446,27 @@ public class OpenPgpService extends RemoteService {
 
             // return over handler on client side
             callback.onSuccess(outputBytes, sigResult);
+        } catch (UserInteractionRequiredException e) {
+            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
+        } catch (WrongPassphraseException e) {
+            callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
         } catch (Exception e) {
-            Log.e(Constants.TAG, "KeychainService, Exception!", e);
+            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
 
-            try {
-                callback.onError(new OpenPgpError(0, e.getMessage()));
-            } catch (Exception t) {
-                Log.e(Constants.TAG, "Error returning exception to client", t);
-            }
+    /**
+     * Returns error to IOpenPgpCallback
+     * 
+     * @param callback
+     * @param errorId
+     * @param message
+     */
+    private void callbackOpenPgpError(IOpenPgpCallback callback, int errorId, String message) {
+        try {
+            callback.onError(new OpenPgpError(0, message));
+        } catch (Exception t) {
+            Log.e(Constants.TAG, "Error returning exception to client", t);
         }
     }
 

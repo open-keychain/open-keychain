@@ -112,10 +112,8 @@ public abstract class RemoteService extends Service {
             extras.putString(RemoteServiceActivity.EXTRA_PACKAGE_NAME, callingPackages[0]);
 
             RegisterActivityCallback callback = new RegisterActivityCallback();
-            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
-            pauseQueueAndStartServiceActivity(RemoteServiceActivity.ACTION_REGISTER, messenger,
-                    extras);
+            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_REGISTER, callback, extras);
 
             if (callback.isAllowed()) {
                 mThreadPool.execute(r);
@@ -133,8 +131,7 @@ public abstract class RemoteService extends Service {
      * @param messenger
      * @param extras
      */
-    protected void pauseQueueAndStartServiceActivity(String action, Messenger messenger,
-            Bundle extras) {
+    protected void pauseAndStartUserInteraction(String action, BaseCallback callback, Bundle extras) {
         synchronized (userInputLock) {
             mThreadPool.pause();
 
@@ -142,6 +139,8 @@ public abstract class RemoteService extends Service {
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setAction(action);
+
+            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
 
             extras.putParcelable(RemoteServiceActivity.EXTRA_MESSENGER, messenger);
             intent.putExtras(extras);
