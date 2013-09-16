@@ -45,7 +45,7 @@ public class ExtendedApiService extends RemoteService {
     }
 
     private void selfSignedX509CertSafe(String subjAltNameURI, IExtendedApiCallback callback,
-            AppSettings appSettings) throws RemoteException {
+            AppSettings appSettings) {
 
         // TODO: for pgp keyrings with password
         CallbackHandler pgpPwdCallbackHandler = new PgpToX509.PredefinedPasswordCallbackHandler("");
@@ -77,7 +77,11 @@ public class ExtendedApiService extends RemoteService {
             callback.onSuccess(outputBytes);
         } catch (Exception e) {
             Log.e(Constants.TAG, "ExtendedApiService", e);
-            callback.onError(e.getMessage());
+            try {
+                callback.onError(e.getMessage());
+            } catch (RemoteException e1) {
+                Log.e(Constants.TAG, "ExtendedApiService", e);
+            }
         }
 
         // TODO: no private key at the moment! Don't give it to others
@@ -104,19 +108,13 @@ public class ExtendedApiService extends RemoteService {
             final AppSettings settings = getAppSettings();
 
             Runnable r = new Runnable() {
-
                 @Override
                 public void run() {
-                    try {
-                        selfSignedX509CertSafe(subjAltNameURI, callback, settings);
-                    } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "OpenPgpService", e);
-                    }
+                    selfSignedX509CertSafe(subjAltNameURI, callback, settings);
                 }
             };
 
             checkAndEnqueue(r);
-
         }
 
     };
