@@ -129,13 +129,26 @@ All JAR-Libraries are provided in this repository under "libs", all Android Libr
 
 On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
-## Build Spongy Castle
 
-Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP-Keychain uses a forked version with some small changes to improve key import speed. These changes have been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
+## Bouncy Castle
+
+#### Spongy Castle
+
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP Keychain uses a forked version with some small changes to improve key import speed. These changes have been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
-* http://rtyley.github.com/spongycastle/
-* https://github.com/ashh87/spongycastle
+* Spongy Castle: http://rtyley.github.com/spongycastle/
+* Fork: https://github.com/ashh87/spongycastle
+
+#### Bouncy Castle resources
+
+* Repository: https://github.com/bcgit/bc-java
+* Issue tracker: http://www.bouncycastle.org/jira/browse/BJA
+
+#### Documentation
+* Documentation project at http://www.cryptoworkshop.com/guide/
+* Tests in https://github.com/bcgit/bc-java/tree/master/pg/src/test/java/org/bouncycastle/openpgp/test
+* Mailinglist Archive at http://bouncy-castle.1462172.n4.nabble.com/Bouncy-Castle-Dev-f1462173.html
 
 
 # Notes
