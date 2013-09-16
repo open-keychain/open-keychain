@@ -84,7 +84,7 @@ interface IOpenPgpService {
      * and also signed-only inputBytes.
      * 
      * After successful decryption/verification, callback's onSuccess will contain the resulting output bytes.
-     * The signatureResult in onSuccess is only non-null if signed-and-encrypted and signed-only inputBytes were given.
+     * The signatureResult in onSuccess is only non-null if signed-and-encrypted or signed-only inputBytes were given.
      * 
      * @param inputBytes
      *            Byte array you want to decrypt and verify
