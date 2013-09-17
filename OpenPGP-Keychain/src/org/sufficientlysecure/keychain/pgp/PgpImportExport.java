@@ -272,7 +272,8 @@ public class PgpImportExport {
                         }
                         newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
                     }
-                    ProviderHelper.saveKeyRing(mContext, newPubRing);
+                    if (newPubRing != null)
+                        ProviderHelper.saveKeyRing(mContext, newPubRing);
                     // TODO: remove status returns, use exceptions!
                     status = Id.return_value.ok;
                 }
