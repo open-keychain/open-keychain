@@ -26,9 +26,12 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.openpgp.operator.KeyFingerPrintCalculator;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -261,6 +264,15 @@ public class PgpImportExport {
 
                 if (save) {
                     ProviderHelper.saveKeyRing(mContext, secretKeyRing);
+                    // TODO: preserve certifications (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
+                    PGPPublicKeyRing newPubRing = null;
+                    for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(secretKeyRing.getPublicKeys())) {
+                        if (newPubRing == null) {
+                            newPubRing = new PGPPublicKeyRing(key.getEncoded(), new JcaKeyFingerprintCalculator());
+                        }
+                        newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
+                    }
+                    ProviderHelper.saveKeyRing(mContext, newPubRing);
                     // TODO: remove status returns, use exceptions!
                     status = Id.return_value.ok;
                 }
