@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -30,30 +29,31 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
-public class ImportKeysActivity extends SherlockFragmentActivity {
+public class ImportKeysActivity extends SherlockFragmentActivity implements OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
 
     // Actions for internal use only:
-    public static final String ACTION_IMPOR_KEY_FROM_FILE = Constants.INTENT_PREFIX
+    public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_FILE";
     public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_NFC";
@@ -64,12 +64,12 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     // TODO: import keys from server
     // public static final String EXTRA_KEY_ID = "keyId";
 
-    protected String mImportFilename;
-    protected byte[] mImportData;
-
     protected boolean mDeleteAfterImport = false;
 
     FileDialogFragment mFileDialog;
+    ImportKeysListFragment mListFragment;
+    OnNavigationListener mOnNavigationListener;
+    String[] mNavigationStrings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +80,76 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);
 
+        // set drop down navigation
+        mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
+        Context context = getSupportActionBar().getThemedContext();
+        ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
+                R.array.import_action_list, R.layout.sherlock_spinner_item);
+        list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        getSupportActionBar().setListNavigationCallbacks(list, this);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.import_keys_list_container) != null) {
+
+            // However, if we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create an instance of the fragment
+            mListFragment = ImportKeysListFragment.newInstance();
+
+            // Add the fragment to the 'fragment_container' FrameLayout
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.import_keys_list_container, mListFragment).commit();
+            // do it immediately!
+            getSupportFragmentManager().executePendingTransactions();
+        }
+
         handleActions(getIntent());
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+        // Create new fragment from our own Fragment class
+        switch (itemPosition) {
+        case 0:
+            loadFragment(ImportFileFragment.class, null, mNavigationStrings[itemPosition]);
+            break;
+        case 1:
+            loadFragment(ImportKeyServerFragment.class, null, mNavigationStrings[itemPosition]);
+            break;
+        case 2:
+            loadFragment(ImportQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
+            break;
+        case 3:
+            loadFragment(ImportNFCFragment.class, null, mNavigationStrings[itemPosition]);
+            break;
+
+        default:
+            break;
+        }
+        return true;
+    }
+
+    private void loadFragment(Class<?> clss, Bundle args, String tag) {
+        Fragment fragment = Fragment.instantiate(this, clss.getName(), args);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        // Replace whatever is in the fragment container with this fragment
+        // and give the fragment a tag name equal to the string at the position selected
+        ft.replace(R.id.import_navigation_fragment, fragment, tag);
+        // Apply changes
+        ft.commit();
+    }
+
+    public void loadCallback(byte[] importData, String importFilename) {
+        mListFragment.load(importData, importFilename);
     }
 
     /**
@@ -120,17 +189,17 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
 
             return true;
 
-        case Id.menu.option.import_from_file:
-            showImportFromFileDialog();
-            return true;
+            // case Id.menu.option.import_from_file:
+            // showImportFromFileDialog();
+            // return true;
 
-        case Id.menu.option.import_from_qr_code:
-            importFromQrCode();
-            return true;
-
-        case Id.menu.option.import_from_nfc:
-            importFromNfc();
-            return true;
+            // case Id.menu.option.import_from_qr_code:
+            // importFromQrCode();
+            // return true;
+            //
+            // case Id.menu.option.import_from_nfc:
+            // importFromNfc();
+            // return true;
 
         default:
             return super.onOptionsItemSelected(item);
@@ -151,97 +220,40 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
          */
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-            // override action to delegate it to Keychains ACTION_IMPORT
+            // override action to delegate it to Keychain's ACTION_IMPORT_KEY
             action = ACTION_IMPORT_KEY;
         }
 
         /**
-         * APG's own Actions
+         * Keychain's own Actions
          */
         if (ACTION_IMPORT_KEY.equals(action)) {
             if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = intent.getData().getPath();
-                mImportData = null;
+                String importFilename = intent.getData().getPath();
+
+                // display selected filename
+                getSupportActionBar().setSelectedNavigationItem(0);
+                Bundle args = new Bundle();
+                args.putString(ImportFileFragment.ARG_PATH, importFilename);
+                loadFragment(ImportFileFragment.class, args, mNavigationStrings[0]);
+
+                // directly load data
+                loadCallback(null, importFilename);
             } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
-                mImportData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
-                mImportFilename = null;
+                byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
+                loadCallback(importData, null);
             }
-            loadKeyListFragment();
-        } else if (ACTION_IMPOR_KEY_FROM_FILE.equals(action)) {
-            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                mImportFilename = intent.getData().getPath();
-                mImportData = null;
-            }
-            showImportFromFileDialog();
+            // Internal actions:
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
+            getSupportActionBar().setSelectedNavigationItem(0);
+            loadFragment(ImportFileFragment.class, null, mNavigationStrings[0]);
         } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
-            importFromQrCode();
+            getSupportActionBar().setSelectedNavigationItem(2);
+            loadFragment(ImportQrCodeFragment.class, null, mNavigationStrings[2]);
         } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
-            importFromNfc();
+            getSupportActionBar().setSelectedNavigationItem(3);
+            loadFragment(ImportNFCFragment.class, null, mNavigationStrings[3]);
         }
-    }
-
-    public void loadKeyListFragment() {
-        if (mImportData != null || mImportFilename != null) {
-            // generate list of keyrings
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-            ImportKeysListFragment listFragment = new ImportKeysListFragment();
-            Bundle args = new Bundle();
-            args.putByteArray(ImportKeysListFragment.ARG_KEYRING_BYTES, mImportData);
-            args.putString(ImportKeysListFragment.ARG_IMPORT_FILENAME, mImportFilename);
-            listFragment.setArguments(args);
-            // replace container in view with fragment
-            fragmentTransaction.replace(R.id.import_keys_list_container, listFragment);
-            fragmentTransaction.commit();
-        }
-    }
-
-    private void importFromQrCode() {
-        new IntentIntegrator(this).initiateScan();
-    }
-
-    private void importFromNfc() {
-        // show nfc help
-        Intent intent = new Intent(this, HelpActivity.class);
-        intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, 1);
-        startActivityForResult(intent, 0);
-    }
-
-    /**
-     * Show to dialog from where to import keys
-     */
-    public void showImportFromFileDialog() {
-        // Message is received after file is selected
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    mImportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-                    mDeleteAfterImport = data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED);
-
-                    Log.d(Constants.TAG, "mImportFilename: " + mImportFilename);
-                    Log.d(Constants.TAG, "mDeleteAfterImport: " + mDeleteAfterImport);
-
-                    loadKeyListFragment();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        final Messenger messenger = new Messenger(returnHandler);
-
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                mFileDialog = FileDialogFragment.newInstance(messenger,
-                        getString(R.string.title_importKeys),
-                        getString(R.string.specifyFileToImportFrom), Constants.path.APP_DIR + "/",
-                        null, Id.request.filename);
-
-                mFileDialog.show(getSupportFragmentManager(), "fileDialog");
-            }
-        });
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
@@ -302,25 +314,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
     // }
     // }
 
-    public void scanAgainOnClick(View view) {
-        new IntentIntegrator(this).initiateScan();
-    }
-
-    public void finishOnClick(View view) {
-        finish();
-    }
-
-    public void importOnClick(View view) {
-        Log.d(Constants.TAG, "Import key button clicked!");
-
-        importKeys();
-    }
-
     /**
      * Import keys with mImportData
      */
     public void importKeys() {
-        if (mImportData != null || mImportFilename != null) {
+        if (mListFragment.getKeyBytes() != null || mListFragment.getImportFilename() != null) {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
@@ -334,12 +332,13 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
             // TODO: check for key type?
             // data.putInt(KeychainIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
 
-            if (mImportData != null) {
+            if (mListFragment.getKeyBytes() != null) {
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-                data.putByteArray(KeychainIntentService.IMPORT_BYTES, mImportData);
+                data.putByteArray(KeychainIntentService.IMPORT_BYTES, mListFragment.getKeyBytes());
             } else {
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
-                data.putString(KeychainIntentService.IMPORT_FILENAME, mImportFilename);
+                data.putString(KeychainIntentService.IMPORT_FILENAME,
+                        mListFragment.getImportFilename());
             }
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -391,7 +390,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
                         } else if (mDeleteAfterImport) {
                             // everything went well, so now delete, if that was turned on
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mImportFilename);
+                                    .newInstance(mListFragment.getImportFilename());
                             deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                         }
                     }
@@ -412,68 +411,17 @@ public class ImportKeysActivity extends SherlockFragmentActivity {
         }
     }
 
+    public void importOnClick(View view) {
+        importKeys();
+    }
+
     public void signAndUploadOnClick(View view) {
         // first, import!
-        importOnClick(view);
+        // importOnClick(view);
 
         // TODO: implement sign and upload!
         Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
                 .show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case Id.request.filename: {
-            if (resultCode == RESULT_OK && data != null) {
-                try {
-                    String path = data.getData().getPath();
-                    Log.d(Constants.TAG, "path=" + path);
-
-                    // set filename used in export/import dialogs
-                    mFileDialog.setFilename(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
-                }
-            }
-            return;
-        }
-        case IntentIntegrator.REQUEST_CODE: {
-            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
-                    data);
-            if (scanResult != null && scanResult.getFormatName() != null) {
-
-                // mScannedContent = scanResult.getContents();
-
-                mImportData = scanResult.getContents().getBytes();
-                mImportFilename = null;
-
-                // mContentView.setText(mScannedContent);
-                // String[] bits = scanResult.getContents().split(",");
-                // if (bits.length != 2) {
-                // return; // dont know how to handle this. Not a valid code
-                // }
-                //
-                // long keyId = Long.parseLong(bits[0]);
-                // String expectedFingerprint = bits[1];
-
-                // importAndSign(keyId, expectedFingerprint);
-            }
-
-            break;
-        }
-
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        loadKeyListFragment();
     }
 
 }

@@ -346,10 +346,10 @@
     <string name="help_tab_about">About</string>
     <string name="help_about_version">Version:</string>
 
-    <!-- Import from QR Code -->
-    <string name="import_from_qr_code_import">Import key(s) (only locally)</string>
-    <string name="import_from_qr_code_import_sign_and_upload">Import, Sign, and upload key(s)</string>
-    <string name="import_from_qr_code_finish">Finish</string>
+    <!-- Import -->
+    <string name="import_import">Import key(s) (only locally)</string>
+    <string name="import_sign_and_upload">Import, Sign, and upload key(s)</string>
+    <string name="import_finish">Finish</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>

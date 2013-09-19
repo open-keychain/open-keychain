@@ -42,14 +42,13 @@ import android.widget.ListView;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         LoaderManager.LoaderCallbacks<Cursor> {
+    public static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
     private Activity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
 
     private long mSelectedMasterKeyIds[];
-
-    private static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
     /**
      * Creates new instance of this fragment

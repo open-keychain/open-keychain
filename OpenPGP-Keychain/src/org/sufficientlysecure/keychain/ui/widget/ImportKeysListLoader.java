@@ -65,13 +65,15 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
         InputData inputData = null;
         if (mKeyringBytes != null) {
             inputData = new InputData(new ByteArrayInputStream(mKeyringBytes), mKeyringBytes.length);
-        } else {
+        } else if (mImportFilename != null) {
             try {
                 inputData = new InputData(new FileInputStream(mImportFilename),
                         mImportFilename.length());
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "Failed to init FileInputStream!", e);
             }
+        } else {
+            return data;
         }
 
         generateListOfKeyrings(inputData);

@@ -38,14 +38,36 @@ import android.widget.SimpleAdapter;
 
 public class ImportKeysListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<List<Map<String, String>>> {
-    public static String ARG_KEYRING_BYTES = "bytes";
-    public static String ARG_IMPORT_FILENAME = "filename";
-
-    byte[] mKeyringBytes;
-    String mImportFilename;
+    // public static final String ARG_IMPORT_DATA = "bytes";
+    // public static final String ARG_IMPORT_FILENAME = "filename";
 
     private Activity mActivity;
     private SimpleAdapter mAdapter;
+
+    private byte[] mKeyBytes;
+    private String mImportFilename;
+    
+    
+
+    public byte[] getKeyBytes() {
+        return mKeyBytes;
+    }
+
+    public String getImportFilename() {
+        return mImportFilename;
+    }
+
+    /**
+     * Creates new instance of this fragment
+     */
+    public static ImportKeysListFragment newInstance() {
+        ImportKeysListFragment frag = new ImportKeysListFragment();
+        Bundle args = new Bundle();
+
+        frag.setArguments(args);
+
+        return frag;
+    }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
@@ -76,8 +98,8 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
         mActivity = this.getActivity();
 
-        mKeyringBytes = getArguments().getByteArray(ARG_KEYRING_BYTES);
-        mImportFilename = getArguments().getString(ARG_IMPORT_FILENAME);
+        // mKeyBytes = getArguments().getByteArray(ARG_IMPORT_DATA);
+        // mImportFilename = getArguments().getString(ARG_IMPORT_FILENAME);
 
         // register long press context menu
         registerForContextMenu(getListView());
@@ -102,9 +124,16 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
+    public void load(byte[] importData, String importFilename) {
+        mKeyBytes = importData;
+        mImportFilename = importFilename;
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
     @Override
     public Loader<List<Map<String, String>>> onCreateLoader(int id, Bundle args) {
-        return new ImportKeysListLoader(mActivity, mKeyringBytes, mImportFilename);
+        return new ImportKeysListLoader(mActivity, mKeyBytes, mImportFilename);
     }
 
     @Override

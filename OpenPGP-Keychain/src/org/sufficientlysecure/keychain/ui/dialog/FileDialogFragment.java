@@ -38,6 +38,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+// TODO: return result from file manager activity to this dialog! not the activity!
+// do it like in ImportFileFragment!
 public class FileDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
@@ -107,7 +109,8 @@ public class FileDialogFragment extends DialogFragment {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
-                FileHelper.openFile(activity, mFilename.getText().toString(), "text/plain",
+                // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc or gpg types!
+                FileHelper.openFile(activity, mFilename.getText().toString(), "*/*",
                         requestCode);
             }
         });

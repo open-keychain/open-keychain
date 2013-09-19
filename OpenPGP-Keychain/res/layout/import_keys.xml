@@ -4,8 +4,17 @@
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true" >
 
+    <FrameLayout
+        android:id="@+id/import_navigation_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
+
     <LinearLayout
-        android:id="@+id/import_from_qr_code_footer"
+        android:id="@+id/import_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -14,50 +23,29 @@
         android:paddingRight="10dp" >
 
         <Button
-            android:id="@+id/import_from_qr_code_import"
+            android:id="@+id/import_import"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="importOnClick"
-            android:text="@string/import_from_qr_code_import" />
+            android:text="@string/import_import" />
 
         <Button
-            android:id="@+id/import_from_qr_code_import_sign_and_upload"
+            android:id="@+id/import_sign_and_upload"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="signAndUploadOnClick"
-            android:text="@string/import_from_qr_code_import_sign_and_upload" />
-
-        <Button
-            android:id="@+id/import_from_qr_code_finish"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="finishOnClick"
-            android:text="@string/import_from_qr_code_finish" />
+            android:text="@string/import_sign_and_upload" />
     </LinearLayout>
 
-    <ScrollView
+    <FrameLayout
+        android:id="@+id/import_keys_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/import_from_qr_code_footer"
-        android:fillViewport="true" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp" >
-
-            <LinearLayout
-                android:id="@+id/import_keys_list_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp" >
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        android:layout_above="@+id/import_footer"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/import_navigation_fragment"
+        android:orientation="vertical"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
 
 </RelativeLayout>

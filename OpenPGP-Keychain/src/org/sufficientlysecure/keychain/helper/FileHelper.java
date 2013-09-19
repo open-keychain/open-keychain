@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 public class FileHelper {
@@ -55,18 +56,14 @@ public class FileHelper {
      * @param activity
      * @param filename
      *            default selected file, not supported by all file managers
-     * @param type
+     * @param mimeType
      *            can be text/plain for example
      * @param requestCode
      *            requestCode used to identify the result coming back from file manager to
      *            onActivityResult() in your activity
      */
-    public static void openFile(Activity activity, String filename, String type, int requestCode) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        intent.setData(Uri.parse("file://" + filename));
-        intent.setType(type);
+    public static void openFile(Activity activity, String filename, String mimeType, int requestCode) {
+        Intent intent = buildFileIntent(filename, mimeType);
 
         try {
             activity.startActivityForResult(intent, requestCode);
@@ -74,6 +71,28 @@ public class FileHelper {
             // No compatible file manager was found.
             Toast.makeText(activity, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public static void openFile(Fragment fragment, String filename, String mimeType, int requestCode) {
+        Intent intent = buildFileIntent(filename, mimeType);
+
+        try {
+            fragment.startActivityForResult(intent, requestCode);
+        } catch (ActivityNotFoundException e) {
+            // No compatible file manager was found.
+            Toast.makeText(fragment.getActivity(), R.string.noFilemanagerInstalled,
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static Intent buildFileIntent(String filename, String mimeType) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        intent.setData(Uri.parse("file://" + filename));
+        intent.setType(mimeType);
+
+        return intent;
     }
 
     /**
