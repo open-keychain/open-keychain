@@ -28,15 +28,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class ImportNFCFragment extends Fragment {
+public class ImportKeysNFCFragment extends Fragment {
 
     private Button mButton;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ImportNFCFragment newInstance() {
-        ImportNFCFragment frag = new ImportNFCFragment();
+    public static ImportKeysNFCFragment newInstance() {
+        ImportKeysNFCFragment frag = new ImportKeysNFCFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);

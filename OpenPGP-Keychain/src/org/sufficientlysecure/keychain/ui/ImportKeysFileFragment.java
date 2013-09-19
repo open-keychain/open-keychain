@@ -33,7 +33,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-public class ImportFileFragment extends Fragment {
+public class ImportKeysFileFragment extends Fragment {
     public static final String ARG_PATH = "path";
 
     private ImportKeysActivity mImportActivity;
@@ -43,8 +43,8 @@ public class ImportFileFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static ImportFileFragment newInstance(String path) {
-        ImportFileFragment frag = new ImportFileFragment();
+    public static ImportKeysFileFragment newInstance(String path) {
+        ImportKeysFileFragment frag = new ImportKeysFileFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_PATH, path);
@@ -68,7 +68,7 @@ public class ImportFileFragment extends Fragment {
                 // open .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(ImportFileFragment.this, mFilename.getText().toString(), "*/*",
+                FileHelper.openFile(ImportKeysFileFragment.this, mFilename.getText().toString(), "*/*",
                         Id.request.filename);
             }
         });

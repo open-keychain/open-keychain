@@ -25,13 +25,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ImportKeyServerFragment extends Fragment {
+public class ImportKeysServerFragment extends Fragment {
 
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeyServerFragment newInstance() {
-        ImportKeyServerFragment frag = new ImportKeyServerFragment();
+    public static ImportKeysServerFragment newInstance() {
+        ImportKeysServerFragment frag = new ImportKeysServerFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);

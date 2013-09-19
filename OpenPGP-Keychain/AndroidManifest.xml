@@ -269,7 +269,8 @@
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_importKeys"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="stateHidden" >
 
             <!-- Keychain's own Actions -->
             <intent-filter android:label="@string/intent_import_key" >

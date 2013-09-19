@@ -32,7 +32,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentIntegratorSupportV4;
 import com.google.zxing.integration.android.IntentResult;
 
-public class ImportQrCodeFragment extends Fragment {
+public class ImportKeysQrCodeFragment extends Fragment {
 
     private ImportKeysActivity mImportActivity;
     private Button mButton;
@@ -40,8 +40,8 @@ public class ImportQrCodeFragment extends Fragment {
     /**
      * Creates new instance of this fragment
      */
-    public static ImportQrCodeFragment newInstance() {
-        ImportQrCodeFragment frag = new ImportQrCodeFragment();
+    public static ImportKeysQrCodeFragment newInstance() {
+        ImportKeysQrCodeFragment frag = new ImportKeysQrCodeFragment();
 
         Bundle args = new Bundle();
         frag.setArguments(args);
@@ -62,7 +62,7 @@ public class ImportQrCodeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // scan using xzing's Barcode Scanner
-                new IntentIntegratorSupportV4(ImportQrCodeFragment.this).initiateScan();
+                new IntentIntegratorSupportV4(ImportKeysQrCodeFragment.this).initiateScan();
             }
         });
 
