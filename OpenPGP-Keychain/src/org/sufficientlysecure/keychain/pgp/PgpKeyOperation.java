@@ -310,15 +310,16 @@ public class PgpKeyOperation {
         for (PGPSecretKey curKey : keys) {
             if (skipfirst) { //skip the master key
                 if (PgpKeyHelper.isSigningKey(curKey)) {
+                    //we would like to set the signing times the same, like gpg
                     PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                       (curKey.getPublicKey()).getAlgorithm(), HashAlgorithmTags.SHA1)
                       .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                     PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
 
-                    sGen.init(PGPSignature.POSITIVE_CERTIFICATION, curKey.extractPrivateKey(keyDecryptor));
-
-                    PGPSignature certification = sGen.generateCertification(masterPublicKey, curKey.getPublicKey());
-
+                    sGen.init(PGPSignature.PRIMARYKEY_BINDING, curKey.extractPrivateKey(keyDecryptor));
+                    //we need to set the flags on the subkey
+                    PGPSignature certification = sGen.generateCertification(masterPublicKey);
+                    //is this the right place?
                     masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, certification);
                 }
             } else {
