@@ -61,6 +61,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
@@ -300,9 +301,30 @@ public class PgpKeyOperation {
             PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
 
             masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, certification);
+            //TODO: add back old certifications
         }
 
-        // TODO: cross-certify the master key with every sub key (APG 1)
+	boolean skipfirst = false;
+        //cross-certification
+        //TODO: only cross certify if not already done
+        for (PGPSecretKey curKey : keys) {
+            if (skipfirst) { //skip the master key
+                if (PgpKeyHelper.isSigningKey(curKey)) {
+                    PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                      (curKey.getPublicKey()).getAlgorithm(), HashAlgorithmTags.SHA1)
+                      .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+
+                    sGen.init(PGPSignature.POSITIVE_CERTIFICATION, curKey.extractPrivateKey(keyDecryptor));
+
+                    PGPSignature certification = sGen.generateCertification(masterPublicKey, curKey.getPublicKey());
+
+                    masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, certification);
+                }
+            } else {
+                skipfirst = true;
+            }
+        }
 
         PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
 
