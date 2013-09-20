@@ -36,8 +36,8 @@ public class AppSettings {
         super();
         this.packageName = packageName;
         // defaults:
-        this.encryptionAlgorithm = PGPEncryptedData.AES_128;
-        this.hashAlgorithm = HashAlgorithmTags.SHA256;
+        this.encryptionAlgorithm = PGPEncryptedData.AES_256;
+        this.hashAlgorithm = HashAlgorithmTags.SHA512;
         this.compression = Id.choice.compression.zlib;
     }
 

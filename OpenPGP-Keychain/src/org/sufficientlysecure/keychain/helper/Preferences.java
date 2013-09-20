@@ -88,7 +88,7 @@ public class Preferences {
 
     public int getDefaultHashAlgorithm() {
         return mSharedPreferences.getInt(Constants.pref.DEFAULT_HASH_ALGORITHM,
-                HashAlgorithmTags.SHA256);
+                HashAlgorithmTags.SHA512);
     }
 
     public void setDefaultHashAlgorithm(int value) {
