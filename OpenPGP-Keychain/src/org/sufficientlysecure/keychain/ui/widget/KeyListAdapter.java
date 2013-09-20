@@ -92,6 +92,8 @@ public class KeyListAdapter extends CursorTreeAdapter {
 
         if (mainUserIdRest.getText().length() == 0) {
             mainUserIdRest.setVisibility(View.GONE);
+        } else {
+            mainUserIdRest.setVisibility(View.VISIBLE);
         }
     }
 
