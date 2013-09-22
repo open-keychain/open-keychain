@@ -101,7 +101,7 @@
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dip"
+        android:layout_marginLeft="36dip"
         android:orientation="vertical" >
     </LinearLayout>
 
