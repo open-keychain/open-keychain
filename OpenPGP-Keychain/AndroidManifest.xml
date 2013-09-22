@@ -36,10 +36,13 @@
         The file ending only shows if it is binary or ascii encoded.
         
         Remarks about the ugly android:pathPattern:
-        We are matching all files with a specific file ending.
+        - We are matching all files with a specific file ending.
         This is done in an ugly way because of Android limitations.
         Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 
         for more information.
+        - Do _not_ set mimeType for gpg!
+        Cyanogenmod's file manager will only show Keychain for gpg files if no mimeType is set!
+        For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
     <uses-sdk
@@ -208,7 +211,6 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:mimeType="*/*" />
                 <!-- Workaround to match files in pathes with dots in them, like /cdcard/my.folder/test.gpg -->
                 <data android:pathPattern=".*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\.gpg" />
@@ -295,7 +297,6 @@
                 <data android:host="*" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
-                <data android:mimeType="*/*" />
                 <data android:pathPattern=".*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\.gpg" />
                 <data android:pathPattern=".*\\..*\\..*\\.gpg" />
