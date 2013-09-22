@@ -166,6 +166,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             mListFragment = ImportKeysListFragment.newInstance(bytes, filename);
 
             // Add the fragment to the 'fragment_container' FrameLayout
+            // NOTE: We use commitAllowingStateLoss() to prevent wierd crashes!
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.import_keys_list_container, mListFragment)
                     .commitAllowingStateLoss();
@@ -209,11 +210,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
     }
 
     public void loadCallback(byte[] importData, String importFilename) {
-        if (mListFragment == null) {
-            startListFragment(null, importData, importFilename);
-        } else {
-            mListFragment.loadNew(importData, importFilename);
-        }
+        mListFragment.loadNew(importData, importFilename);
     }
 
     @Override
