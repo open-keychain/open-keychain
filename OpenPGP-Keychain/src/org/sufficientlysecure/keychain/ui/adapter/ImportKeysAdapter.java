@@ -51,6 +51,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     public void setData(List<ImportKeysListEntry> data) {
         clear();
         if (data != null) {
+            this.data = data;
+            
+            // add data to extended ArrayAdapter
             if (Build.VERSION.SDK_INT >= 11) {
                 addAll(data);
             } else {
@@ -58,7 +61,6 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                     add(entry);
                 }
             }
-            this.data = data;
         }
     }
 

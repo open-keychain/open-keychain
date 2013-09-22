@@ -92,6 +92,65 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         getSupportActionBar().setListNavigationCallbacks(list, this);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        handleActions(savedInstanceState, getIntent());
+    }
+
+    protected void handleActions(Bundle savedInstanceState, Intent intent) {
+        String action = intent.getAction();
+        Bundle extras = intent.getExtras();
+
+        if (extras == null) {
+            extras = new Bundle();
+        }
+
+        /**
+         * Android Standard Actions
+         */
+        if (Intent.ACTION_VIEW.equals(action)) {
+            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
+            // override action to delegate it to Keychain's ACTION_IMPORT_KEY
+            action = ACTION_IMPORT_KEY;
+        }
+
+        /**
+         * Keychain's own Actions
+         */
+        if (ACTION_IMPORT_KEY.equals(action)) {
+            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
+                String importFilename = intent.getData().getPath();
+
+                // display selected filename
+                getSupportActionBar().setSelectedNavigationItem(0);
+                Bundle args = new Bundle();
+                args.putString(ImportKeysFileFragment.ARG_PATH, importFilename);
+                loadFragment(ImportKeysFileFragment.class, args, mNavigationStrings[0]);
+
+                // directly load data
+                startListFragment(savedInstanceState, null, importFilename);
+            } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
+                byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
+
+                // directly load data
+                startListFragment(savedInstanceState, importData, null);
+            }
+        } else {
+            // Internal actions
+            startListFragment(savedInstanceState, null, null);
+
+            if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
+                getSupportActionBar().setSelectedNavigationItem(0);
+                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[0]);
+            } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
+                getSupportActionBar().setSelectedNavigationItem(2);
+                loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
+            } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
+                getSupportActionBar().setSelectedNavigationItem(3);
+                loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[3]);
+            }
+        }
+    }
+
+    private void startListFragment(Bundle savedInstanceState, byte[] bytes, String filename) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.import_keys_list_container) != null) {
@@ -104,16 +163,15 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             }
 
             // Create an instance of the fragment
-            mListFragment = ImportKeysListFragment.newInstance();
+            mListFragment = ImportKeysListFragment.newInstance(bytes, filename);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.import_keys_list_container, mListFragment).commit();
+                    .replace(R.id.import_keys_list_container, mListFragment)
+                    .commitAllowingStateLoss();
             // do it immediately!
             getSupportFragmentManager().executePendingTransactions();
         }
-
-        handleActions(getIntent());
     }
 
     @Override
@@ -151,7 +209,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
     }
 
     public void loadCallback(byte[] importData, String importFilename) {
-        mListFragment.load(importData, importFilename);
+        if (mListFragment == null) {
+            startListFragment(null, importData, importFilename);
+        } else {
+            mListFragment.loadNew(importData, importFilename);
+        }
     }
 
     @Override
@@ -168,55 +230,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         default:
             return super.onOptionsItemSelected(item);
 
-        }
-    }
-
-    protected void handleActions(Intent intent) {
-        String action = intent.getAction();
-        Bundle extras = intent.getExtras();
-
-        if (extras == null) {
-            extras = new Bundle();
-        }
-
-        /**
-         * Android Standard Actions
-         */
-        if (Intent.ACTION_VIEW.equals(action)) {
-            // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
-            // override action to delegate it to Keychain's ACTION_IMPORT_KEY
-            action = ACTION_IMPORT_KEY;
-        }
-
-        /**
-         * Keychain's own Actions
-         */
-        if (ACTION_IMPORT_KEY.equals(action)) {
-            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                String importFilename = intent.getData().getPath();
-
-                // display selected filename
-                getSupportActionBar().setSelectedNavigationItem(0);
-                Bundle args = new Bundle();
-                args.putString(ImportKeysFileFragment.ARG_PATH, importFilename);
-                loadFragment(ImportKeysFileFragment.class, args, mNavigationStrings[0]);
-
-                // directly load data
-                loadCallback(null, importFilename);
-            } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
-                byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
-                loadCallback(importData, null);
-            }
-            // Internal actions:
-        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
-            getSupportActionBar().setSelectedNavigationItem(0);
-            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[0]);
-        } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
-            getSupportActionBar().setSelectedNavigationItem(2);
-            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
-        } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
-            getSupportActionBar().setSelectedNavigationItem(3);
-            loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[3]);
         }
     }
 

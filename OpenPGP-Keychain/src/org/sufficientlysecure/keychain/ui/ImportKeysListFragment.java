@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -24,6 +27,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
@@ -37,6 +41,8 @@ import com.actionbarsherlock.app.SherlockListFragment;
 
 public class ImportKeysListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<List<ImportKeysListEntry>> {
+    private static final String ARG_FILENAME = "filename";
+    private static final String ARG_BYTES = "bytes";
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
@@ -59,8 +65,14 @@ public class ImportKeysListFragment extends SherlockListFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysListFragment newInstance() {
+    public static ImportKeysListFragment newInstance(byte[] bytes, String filename) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
+
+        Bundle args = new Bundle();
+        args.putByteArray(ARG_BYTES, bytes);
+        args.putString(ARG_FILENAME, filename);
+
+        frag.setArguments(args);
 
         return frag;
     }
@@ -74,15 +86,17 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
         mActivity = getActivity();
 
-        // register long press context menu
-        registerForContextMenu(getListView());
+        if (getArguments() != null) {
+            mImportFilename = getArguments().getString(ARG_FILENAME);
+            mKeyBytes = getArguments().getByteArray(ARG_BYTES);
+        }
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(mActivity.getString(R.string.error_nothingImport));
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new ImportKeysAdapter(getActivity());
+        mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
         // Start out with a progress indicator.
@@ -90,6 +104,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
+        // give arguments to onCreateLoader()
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -105,14 +120,33 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void load(byte[] importData, String importFilename) {
+    public void loadNew(byte[] importData, String importFilename) {
         this.mKeyBytes = importData;
         this.mImportFilename = importFilename;
+
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
     public Loader<List<ImportKeysListEntry>> onCreateLoader(int id, Bundle args) {
-        return new ImportKeysListLoader(mActivity, mKeyBytes, mImportFilename);
+        InputData inputData = getInputData(mKeyBytes, mImportFilename);
+        return new ImportKeysListLoader(mActivity, inputData);
+    }
+
+    private InputData getInputData(byte[] importBytes, String importFilename) {
+        InputData inputData = null;
+        if (importBytes != null) {
+            inputData = new InputData(new ByteArrayInputStream(importBytes), importBytes.length);
+        } else if (importFilename != null) {
+            try {
+                inputData = new InputData(new FileInputStream(importFilename),
+                        importFilename.length());
+            } catch (FileNotFoundException e) {
+                Log.e(Constants.TAG, "Failed to init FileInputStream!", e);
+            }
+        }
+
+        return inputData;
     }
 
     @Override

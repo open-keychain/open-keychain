@@ -18,9 +18,6 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,36 +36,24 @@ import android.support.v4.content.AsyncTaskLoader;
 public class ImportKeysListLoader extends AsyncTaskLoader<List<ImportKeysListEntry>> {
     Context mContext;
 
+    InputData mInputData;
+
     ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
 
-    byte[] mKeyringBytes;
-    String mImportFilename;
-
-    public ImportKeysListLoader(Context context, byte[] keyringBytes, String importFilename) {
+    public ImportKeysListLoader(Context context, InputData inputData) {
         super(context);
         this.mContext = context;
-        this.mKeyringBytes = keyringBytes;
-        this.mImportFilename = importFilename;
+        this.mInputData = inputData;
     }
 
     @Override
     public List<ImportKeysListEntry> loadInBackground() {
-        InputData inputData = null;
-        if (mKeyringBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(mKeyringBytes), mKeyringBytes.length);
-        } else if (mImportFilename != null) {
-            try {
-                inputData = new InputData(new FileInputStream(mImportFilename),
-                        mImportFilename.length());
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "Failed to init FileInputStream!", e);
-            }
-        } else {
+        if (mInputData == null) {
+            Log.e(Constants.TAG, "Input data is null!");
             return data;
         }
 
-        if (inputData != null)
-            generateListOfKeyrings(inputData);
+        generateListOfKeyrings(mInputData);
 
         return data;
     }

@@ -95,18 +95,19 @@ public class ImportKeysFileFragment extends Fragment {
         switch (requestCode) {
         case Id.request.filename: {
             if (resultCode == Activity.RESULT_OK && data != null) {
+                String path = null;
                 try {
-                    String path = data.getData().getPath();
+                    path = data.getData().getPath();
                     Log.d(Constants.TAG, "path=" + path);
 
                     // set filename to edittext
                     mFilename.setText(path);
-
-                    // load data
-                    mImportActivity.loadCallback(null, path);
                 } catch (NullPointerException e) {
                     Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
                 }
+
+                // load data
+                mImportActivity.loadCallback(null, path);
             }
 
             break;
