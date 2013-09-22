@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.util.HashMap;
-
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.openpgp.PGPEncryptedData;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -29,7 +25,8 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyActivity;
-import org.sufficientlysecure.keychain.util.KeyValueSpinnerAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
+import org.sufficientlysecure.keychain.util.AlgorithmNames;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
@@ -114,18 +111,10 @@ public class AppSettingsFragment extends Fragment {
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
         mCompression = (Spinner) view.findViewById(R.id.api_app_settings_compression);
 
-        HashMap<Integer, String> encryptionMap = new HashMap<Integer, String>();
-        encryptionMap.put(PGPEncryptedData.AES_128, "AES-128");
-        encryptionMap.put(PGPEncryptedData.AES_192, "AES-192");
-        encryptionMap.put(PGPEncryptedData.AES_256, "AES-256");
-        encryptionMap.put(PGPEncryptedData.BLOWFISH, "Blowfish");
-        encryptionMap.put(PGPEncryptedData.TWOFISH, "Twofish");
-        encryptionMap.put(PGPEncryptedData.CAST5, "CAST5");
-        encryptionMap.put(PGPEncryptedData.DES, "DES");
-        encryptionMap.put(PGPEncryptedData.TRIPLE_DES, "Triple DES");
-        encryptionMap.put(PGPEncryptedData.IDEA, "IDEA");
+        AlgorithmNames algorithmNames = new AlgorithmNames(getActivity());
 
-        encryptionAdapter = new KeyValueSpinnerAdapter(getActivity(), encryptionMap);
+        encryptionAdapter = new KeyValueSpinnerAdapter(getActivity(),
+                algorithmNames.getEncryptionNames());
         mEncryptionAlgorithm.setAdapter(encryptionAdapter);
         mEncryptionAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -139,16 +128,7 @@ public class AppSettingsFragment extends Fragment {
             }
         });
 
-        HashMap<Integer, String> hashMap = new HashMap<Integer, String>();
-        hashMap.put(HashAlgorithmTags.MD5, "MD5");
-        hashMap.put(HashAlgorithmTags.RIPEMD160, "RIPEMD-160");
-        hashMap.put(HashAlgorithmTags.SHA1, "SHA-1");
-        hashMap.put(HashAlgorithmTags.SHA224, "SHA-224");
-        hashMap.put(HashAlgorithmTags.SHA256, "SHA-256");
-        hashMap.put(HashAlgorithmTags.SHA384, "SHA-384");
-        hashMap.put(HashAlgorithmTags.SHA512, "SHA-512");
-
-        hashAdapter = new KeyValueSpinnerAdapter(getActivity(), hashMap);
+        hashAdapter = new KeyValueSpinnerAdapter(getActivity(), algorithmNames.getHashNames());
         mHashAlgorithm.setAdapter(hashAdapter);
         mHashAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
 
@@ -162,15 +142,8 @@ public class AppSettingsFragment extends Fragment {
             }
         });
 
-        HashMap<Integer, String> compressionMap = new HashMap<Integer, String>();
-        compressionMap.put(Id.choice.compression.none, getString(R.string.choice_none) + " ("
-                + getString(R.string.fast) + ")");
-        compressionMap.put(Id.choice.compression.zip, "ZIP (" + getString(R.string.fast) + ")");
-        compressionMap.put(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.fast) + ")");
-        compressionMap.put(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.very_slow)
-                + ")");
-
-        compressionAdapter = new KeyValueSpinnerAdapter(getActivity(), compressionMap);
+        compressionAdapter = new KeyValueSpinnerAdapter(getActivity(),
+                algorithmNames.getCompressionNames());
         mCompression.setAdapter(compressionAdapter);
         mCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
 

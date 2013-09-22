@@ -17,37 +17,32 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.widget.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockListFragment;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.content.Loader;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
+
+import com.actionbarsherlock.app.SherlockListFragment;
 
 public class ImportKeysListFragment extends SherlockListFragment implements
-        LoaderManager.LoaderCallbacks<List<Map<String, String>>> {
-    // public static final String ARG_IMPORT_DATA = "bytes";
-    // public static final String ARG_IMPORT_FILENAME = "filename";
+        LoaderManager.LoaderCallbacks<List<ImportKeysListEntry>> {
 
     private Activity mActivity;
-    private SimpleAdapter mAdapter;
+    private ImportKeysAdapter mAdapter;
 
     private byte[] mKeyBytes;
     private String mImportFilename;
-    
-    
 
     public byte[] getKeyBytes() {
         return mKeyBytes;
@@ -57,36 +52,17 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         return mImportFilename;
     }
 
+    public List<ImportKeysListEntry> getData() {
+        return mAdapter.getData();
+    }
+
     /**
      * Creates new instance of this fragment
      */
     public static ImportKeysListFragment newInstance() {
         ImportKeysListFragment frag = new ImportKeysListFragment();
-        Bundle args = new Bundle();
-
-        frag.setArguments(args);
 
         return frag;
-    }
-
-    @Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        // Map<String, String> item = (Map<String, String>) listView.getItemAtPosition(position);
-        // String userId = item.get(ImportKeysListLoader.MAP_ATTR_USER_ID);
-    }
-
-    /**
-     * Resume is called after rotating
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // Start out with a progress indicator.
-        setListShown(false);
-
-        // reload list
-        getLoaderManager().restartLoader(0, null, this);
     }
 
     /**
@@ -96,10 +72,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = this.getActivity();
-
-        // mKeyBytes = getArguments().getByteArray(ARG_IMPORT_DATA);
-        // mImportFilename = getArguments().getString(ARG_IMPORT_FILENAME);
+        mActivity = getActivity();
 
         // register long press context menu
         registerForContextMenu(getListView());
@@ -109,11 +82,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         setEmptyText(mActivity.getString(R.string.error_nothingImport));
 
         // Create an empty adapter we will use to display the loaded data.
-        String[] from = new String[] {};
-        int[] to = new int[] {};
-        List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-        mAdapter = new SimpleAdapter(getActivity(), data, android.R.layout.two_line_list_item,
-                from, to);
+        mAdapter = new ImportKeysAdapter(getActivity());
         setListAdapter(mAdapter);
 
         // Start out with a progress indicator.
@@ -124,39 +93,37 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
-    public void load(byte[] importData, String importFilename) {
-        mKeyBytes = importData;
-        mImportFilename = importFilename;
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
 
-        getLoaderManager().initLoader(0, null, this);
+        // Select checkbox!
+        // Update underlying data and notify adapter of change. The adapter will
+        // update the view automatically.
+        ImportKeysListEntry entry = mAdapter.getItem(position);
+        entry.setSelected(!entry.isSelected());
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void load(byte[] importData, String importFilename) {
+        this.mKeyBytes = importData;
+        this.mImportFilename = importFilename;
     }
 
     @Override
-    public Loader<List<Map<String, String>>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<ImportKeysListEntry>> onCreateLoader(int id, Bundle args) {
         return new ImportKeysListLoader(mActivity, mKeyBytes, mImportFilename);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Map<String, String>>> loader,
-            List<Map<String, String>> data) {
-        // Set the new data in the adapter.
-        // for (String item : data) {
-        // mAdapter.add(item);
-        // }
+    public void onLoadFinished(Loader<List<ImportKeysListEntry>> loader,
+            List<ImportKeysListEntry> data) {
         Log.d(Constants.TAG, "data: " + data);
-        // TODO: real swapping the data to the already defined adapter doesn't work
-        // Workaround: recreate adapter!
-        // http://stackoverflow.com/questions/2356091/android-add-function-of-arrayadapter-not-working
-        // mAdapter = new ArrayAdapter<String>(mActivity, android.R.layout.two_line_list_item,
-        // data);
 
-        String[] from = new String[] { ImportKeysListLoader.MAP_ATTR_USER_ID,
-                ImportKeysListLoader.MAP_ATTR_FINGERPINT };
-        int[] to = new int[] { android.R.id.text1, android.R.id.text2 };
-        mAdapter = new SimpleAdapter(getActivity(), data, android.R.layout.two_line_list_item,
-                from, to);
-
+        // swap in the real data!
+        mAdapter.setData(data);
         mAdapter.notifyDataSetChanged();
+
         setListAdapter(mAdapter);
 
         // The list should now be shown.
@@ -168,10 +135,9 @@ public class ImportKeysListFragment extends SherlockListFragment implements
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Map<String, String>>> loader) {
+    public void onLoaderReset(Loader<List<ImportKeysListEntry>> loader) {
         // Clear the data in the adapter.
-        // Not available in SimpleAdapter!
-        // mAdapter.clear();
+        mAdapter.clear();
     }
 
 }

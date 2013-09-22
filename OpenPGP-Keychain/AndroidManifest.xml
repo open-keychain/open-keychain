@@ -267,9 +267,7 @@
             android:label="@string/title_signKey" />
         <activity
             android:name=".ui.ImportKeysActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_importKeys"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" >
 
             <!-- Keychain's own Actions -->

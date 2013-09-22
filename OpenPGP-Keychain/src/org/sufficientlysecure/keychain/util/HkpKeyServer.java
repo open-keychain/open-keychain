@@ -179,8 +179,8 @@ public class HkpKeyServer extends KeyServer {
             KeyInfo info = new KeyInfo();
             info.size = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
-            info.keyId = PgpKeyHelper.keyFromHex(matcher.group(3));
-            info.fingerPrint = PgpKeyHelper.getSmallFingerPrint(info.keyId);
+            info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(3));
+            info.fingerPrint = PgpKeyHelper.convertKeyIdToHex(info.keyId);
             String chunks[] = matcher.group(4).split("-");
             info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
                     Integer.parseInt(chunks[1]), Integer.parseInt(chunks[2])).getTime();
@@ -211,7 +211,7 @@ public class HkpKeyServer extends KeyServer {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet("http://" + mHost + ":" + mPort
-                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.keyToHex(keyId));
+                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.convertKeyToHex(keyId));
 
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -235,13 +235,13 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public void add(String armouredText) throws AddKeyException {
+    public void add(String armoredText) throws AddKeyException {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpPost post = new HttpPost("http://" + mHost + ":" + mPort + "/pks/add");
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("keytext", armouredText));
+            nameValuePairs.add(new BasicNameValuePair("keytext", armoredText));
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             HttpResponse response = client.execute(post);

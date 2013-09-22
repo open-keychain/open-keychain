@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui.widget;
+package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -23,32 +23,23 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
-import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, String>>> {
-    public static final String MAP_ATTR_USER_ID = "user_id";
-    public static final String MAP_ATTR_FINGERPINT = "fingerprint";
-
-    ArrayList<Map<String, String>> data = new ArrayList<Map<String, String>>();
-
+public class ImportKeysListLoader extends AsyncTaskLoader<List<ImportKeysListEntry>> {
     Context mContext;
-    List<String> mItems;
+
+    ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
 
     byte[] mKeyringBytes;
     String mImportFilename;
@@ -61,7 +52,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
     }
 
     @Override
-    public List<Map<String, String>> loadInBackground() {
+    public List<ImportKeysListEntry> loadInBackground() {
         InputData inputData = null;
         if (mKeyringBytes != null) {
             inputData = new InputData(new ByteArrayInputStream(mKeyringBytes), mKeyringBytes.length);
@@ -76,7 +67,8 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
             return data;
         }
 
-        generateListOfKeyrings(inputData);
+        if (inputData != null)
+            generateListOfKeyrings(inputData);
 
         return data;
     }
@@ -100,12 +92,12 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
     }
 
     @Override
-    public void deliverResult(List<Map<String, String>> data) {
+    public void deliverResult(List<ImportKeysListEntry> data) {
         super.deliverResult(data);
     }
 
     /**
-     * Similar to PGPMain.importKeyRings
+     * Reads all PGPKeyRing objects from input
      * 
      * @param keyringBytes
      * @return
@@ -144,20 +136,8 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<Map<String, Strin
     }
 
     private void addToData(PGPKeyRing keyring) {
-        String userId = PgpKeyHelper.getMainUserId(keyring.getPublicKey());
-
-        if (keyring instanceof PGPSecretKeyRing) {
-            userId = mContext.getString(R.string.secretKeyring) + " " + userId;
-        }
-
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(keyring.getPublicKey()
-                .getFingerprint());
-
-        Map<String, String> attrs = new HashMap<String, String>();
-        attrs.put(MAP_ATTR_USER_ID, userId);
-        attrs.put(MAP_ATTR_FINGERPINT, mContext.getString(R.string.fingerprint) + "\n"
-                + fingerprint);
-        data.add(attrs);
+        ImportKeysListEntry item = new ImportKeysListEntry(keyring);
+        data.add(item);
     }
 
 }

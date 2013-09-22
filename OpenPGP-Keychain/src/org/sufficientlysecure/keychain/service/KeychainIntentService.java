@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -45,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.PgpOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
@@ -142,7 +145,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String IMPORT_INPUT_STREAM = "import_input_stream";
     public static final String IMPORT_FILENAME = "import_filename";
     public static final String IMPORT_BYTES = "import_bytes";
-    // public static final String IMPORT_KEY_TYPE = "importKeyType";
+    public static final String IMPORT_KEY_LIST = "import_key_list";
 
     // export key
     public static final String EXPORT_OUTPUT_STREAM = "export_output_stream";
@@ -630,11 +633,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                // int keyType = Id.type.public_key;
-                // if (data.containsKey(IMPORT_KEY_TYPE)) {
-                // keyType = data.getInt(IMPORT_KEY_TYPE);
-                // }
-
                 /* Operation */
                 InputStream inStream = null;
                 long inLength = -1;
@@ -666,8 +664,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 Bundle resultData = new Bundle();
 
+                ArrayList<Long> keyIds = (ArrayList<Long>) data.getSerializable(IMPORT_KEY_LIST);
+
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
-                resultData = pgpImportExport.importKeyRings(inputData);
+                resultData = pgpImportExport.importKeyRings(inputData, keyIds);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

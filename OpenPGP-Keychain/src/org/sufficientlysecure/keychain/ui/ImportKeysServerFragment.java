@@ -19,13 +19,17 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.R;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class ImportKeysServerFragment extends Fragment {
+    private Button mButton;
 
     /**
      * Creates new instance of this fragment
@@ -44,8 +48,19 @@ public class ImportKeysServerFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.import_keys_keyserver_fragment, container, false);
-    }
+        View view = inflater.inflate(R.layout.import_keys_keyserver_fragment, container, false);
 
+        mButton = (Button) view.findViewById(R.id.import_keyserver_button);
+        mButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO: use fragment instead of activity, handle onresult here!
+                startActivityForResult(new Intent(getActivity(), KeyServerQueryActivity.class), 0);
+            }
+        });
+
+        return view;
+    }
 
 }

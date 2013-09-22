@@ -23,7 +23,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.ui.widget.KeyListAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.KeyListAdapter;
 import org.sufficientlysecure.keychain.R;
 
 import android.content.Intent;

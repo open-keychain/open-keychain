@@ -773,7 +773,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         mSignatureKeyId = returnData
                                 .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
                         mUserIdRest.setText("id: "
-                                + PgpKeyHelper.getSmallFingerPrint(mSignatureKeyId));
+                                + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
                         if (userId == null) {
                             userId = getResources().getString(R.string.unknownUserId);
                         }

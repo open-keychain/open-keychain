@@ -17,12 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -44,7 +47,6 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 public class ImportKeysActivity extends SherlockFragmentActivity implements OnNavigationListener {
@@ -152,27 +154,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         mListFragment.load(importData, importFilename);
     }
 
-    /**
-     * ActionBar menu is created based on class variables to change it at runtime
-     * 
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(1, Id.menu.option.key_server, 0, R.string.menu_keyServer).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_file, 1, R.string.menu_importFromFile)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_importFromQrCode)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_importFromNfc)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
-        return true;
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -183,23 +164,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
             return true;
-
-        case Id.menu.option.key_server:
-            startActivityForResult(new Intent(this, KeyServerQueryActivity.class), 0);
-
-            return true;
-
-            // case Id.menu.option.import_from_file:
-            // showImportFromFileDialog();
-            // return true;
-
-            // case Id.menu.option.import_from_qr_code:
-            // importFromQrCode();
-            // return true;
-            //
-            // case Id.menu.option.import_from_nfc:
-            // importFromNfc();
-            // return true;
 
         default:
             return super.onOptionsItemSelected(item);
@@ -329,8 +293,16 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             // fill values for this action
             Bundle data = new Bundle();
 
-            // TODO: check for key type?
-            // data.putInt(KeychainIntentService.IMPORT_KEY_TYPE, Id.type.secret_key);
+            // get selected key ids
+            List<ImportKeysListEntry> listEntries = mListFragment.getData();
+            ArrayList<Long> selectedKeyIds = new ArrayList<Long>();
+            for (ImportKeysListEntry entry : listEntries) {
+                if (entry.isSelected()) {
+                    selectedKeyIds.add(entry.keyId);
+                }
+            }
+
+            data.putSerializable(KeychainIntentService.IMPORT_KEY_LIST, selectedKeyIds);
 
             if (mListFragment.getKeyBytes() != null) {
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);

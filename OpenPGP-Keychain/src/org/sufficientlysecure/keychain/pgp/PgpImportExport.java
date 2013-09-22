@@ -24,10 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.openpgp.operator.KeyFingerPrintCalculator;
-import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
@@ -36,6 +37,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPUtil;
+import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -100,16 +102,22 @@ public class PgpImportExport {
         }
     }
 
-    public Bundle importKeyRings(InputData data) throws PgpGeneralException, FileNotFoundException,
-            PGPException, IOException {
+    /**
+     * Imports keys from given data. If keyIds is given only those are imported
+     * 
+     * @param data
+     * @param keyIds
+     * @return
+     * @throws PgpGeneralException
+     * @throws FileNotFoundException
+     * @throws PGPException
+     * @throws IOException
+     */
+    public Bundle importKeyRings(InputData data, ArrayList<Long> keyIds)
+            throws PgpGeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
         updateProgress(R.string.progress_importingSecretKeys, 0, 100);
-
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            throw new PgpGeneralException(
-                    mContext.getString(R.string.error_externalStorageNotReady));
-        }
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
 
@@ -137,7 +145,16 @@ public class PgpImportExport {
 
                         int status = Integer.MIN_VALUE; // out of bounds value
 
-                        status = storeKeyRingInCache(keyring);
+                        if (keyIds != null) {
+                            if (keyIds.contains(keyring.getPublicKey().getKeyID())) {
+                                status = storeKeyRingInCache(keyring);
+                            } else {
+                                Log.d(Constants.TAG, "not selected! key id: "
+                                        + keyring.getPublicKey().getKeyID());
+                            }
+                        } else {
+                            status = storeKeyRingInCache(keyring);
+                        }
 
                         if (status == Id.return_value.error) {
                             throw new PgpGeneralException(
@@ -264,11 +281,14 @@ public class PgpImportExport {
 
                 if (save) {
                     ProviderHelper.saveKeyRing(mContext, secretKeyRing);
-                    // TODO: preserve certifications (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
+                    // TODO: preserve certifications
+                    // (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
                     PGPPublicKeyRing newPubRing = null;
-                    for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(secretKeyRing.getPublicKeys())) {
+                    for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(
+                            secretKeyRing.getPublicKeys())) {
                         if (newPubRing == null) {
-                            newPubRing = new PGPPublicKeyRing(key.getEncoded(), new JcaKeyFingerprintCalculator());
+                            newPubRing = new PGPPublicKeyRing(key.getEncoded(),
+                                    new JcaKeyFingerprintCalculator());
                         }
                         newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
                     }

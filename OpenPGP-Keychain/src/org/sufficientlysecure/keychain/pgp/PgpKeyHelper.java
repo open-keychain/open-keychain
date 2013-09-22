@@ -137,7 +137,7 @@ public class PgpKeyHelper {
         PGPPublicKey masterKey = null;
         for (int i = 0; i < encryptKeys.size(); ++i) {
             PGPPublicKey key = encryptKeys.get(i);
-            if (!isExpired(key)  && !key.isRevoked()) {
+            if (!isExpired(key) && !key.isRevoked()) {
                 if (key.isMasterKey()) {
                     masterKey = key;
                 } else {
@@ -488,7 +488,7 @@ public class PgpKeyHelper {
         return isSecretKeyPrivateEmpty(secretKey);
     }
 
-    public static String getSmallFingerPrint(long keyId) {
+    public static String convertKeyIdToHex(long keyId) {
         String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
         while (fingerPrint.length() < 8) {
             fingerPrint = "0" + fingerPrint;
@@ -496,11 +496,17 @@ public class PgpKeyHelper {
         return fingerPrint;
     }
 
-    public static String keyToHex(long keyId) {
-        return getSmallFingerPrint(keyId >> 32) + getSmallFingerPrint(keyId);
+    /**
+     * TODO: what is the difference to the other function?
+     * 
+     * @param keyId
+     * @return
+     */
+    public static String convertKeyToHex(long keyId) {
+        return convertKeyIdToHex(keyId >> 32) + convertKeyIdToHex(keyId);
     }
 
-    public static long keyFromHex(String data) {
+    public static long convertHexToKeyId(String data) {
         int len = data.length();
         String s2 = data.substring(len - 8);
         String s1 = data.substring(0, len - 8);

@@ -68,8 +68,8 @@ public class ImportKeysFileFragment extends Fragment {
                 // open .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(ImportKeysFileFragment.this, mFilename.getText().toString(), "*/*",
-                        Id.request.filename);
+                FileHelper.openFile(ImportKeysFileFragment.this, mFilename.getText().toString(),
+                        "*/*", Id.request.filename);
             }
         });
 
@@ -84,7 +84,7 @@ public class ImportKeysFileFragment extends Fragment {
 
         // set default path
         String path = Constants.path.APP_DIR + "/";
-        if (getArguments() != null) {
+        if (getArguments() != null && getArguments().containsKey(ARG_PATH)) {
             path = getArguments().getString(ARG_PATH);
         }
         mFilename.setText(path);

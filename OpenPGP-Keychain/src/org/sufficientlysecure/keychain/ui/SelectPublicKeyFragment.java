@@ -28,7 +28,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.ui.widget.SelectKeyCursorAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 
 import android.app.Activity;
 import android.database.Cursor;

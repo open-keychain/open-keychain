@@ -3,28 +3,37 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Spinner
-        android:id="@+id/import_keys_server_key_server"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <Button
+        android:id="@+id/import_keyserver_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:text="@string/menu_keyServer" />
 
-        <EditText
-            android:id="@+id/import_keys_server_query"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="textPersonName|textEmailAddress" />
+    <!-- <Spinner -->
+    <!-- android:id="@+id/import_keys_server_key_server" -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="wrap_content" /> -->
 
-        <Button
-            android:id="@+id/import_keys_server_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btn_search" />
-    </LinearLayout>
+
+    <!-- <LinearLayout -->
+    <!-- android:layout_width="fill_parent" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:orientation="horizontal" > -->
+
+
+    <!-- <EditText -->
+    <!-- android:id="@+id/import_keys_server_query" -->
+    <!-- android:layout_width="0dip" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:layout_weight="1" -->
+    <!-- android:inputType="textPersonName|textEmailAddress" /> -->
+
+
+    <!-- <Button -->
+    <!-- android:id="@+id/import_keys_server_search" -->
+    <!-- android:layout_width="wrap_content" -->
+    <!-- android:layout_height="wrap_content" -->
+    <!-- android:text="@string/btn_search" /> -->
+    <!-- </LinearLayout> -->
 
 </LinearLayout>

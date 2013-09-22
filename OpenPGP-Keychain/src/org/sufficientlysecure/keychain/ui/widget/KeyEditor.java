@@ -152,8 +152,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(key));
-        String keyId1Str = PgpKeyHelper.getSmallFingerPrint(key.getKeyID());
-        String keyId2Str = PgpKeyHelper.getSmallFingerPrint(key.getKeyID() >> 32);
+        String keyId1Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
+        String keyId2Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID() >> 32);
         mKeyId.setText(keyId1Str + " " + keyId2Str);
 
         Vector<Choice> choices = new Vector<Choice>();
