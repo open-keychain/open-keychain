@@ -304,29 +304,6 @@ public class PgpKeyOperation {
             //TODO: add back old certifications
         }
 
-	boolean skipfirst = false;
-        //cross-certification
-        //TODO: only cross certify if not already done
-        for (PGPSecretKey curKey : keys) {
-            if (skipfirst) { //skip the master key
-                if (PgpKeyHelper.isSigningKey(curKey)) {
-                    //we would like to set the signing times the same, like gpg
-                    PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                      (curKey.getPublicKey()).getAlgorithm(), HashAlgorithmTags.SHA1)
-                      .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
-
-                    sGen.init(PGPSignature.PRIMARYKEY_BINDING, curKey.extractPrivateKey(keyDecryptor));
-                    //we need to set the flags on the subkey
-                    PGPSignature certification = sGen.generateCertification(masterPublicKey);
-                    //is this the right place?
-                    masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, certification);
-                }
-            } else {
-                skipfirst = true;
-            }
-        }
-
         PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -397,13 +374,25 @@ public class PgpKeyOperation {
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
+            PGPSignature certification = null;
             if (canSign) {
                 keyFlags |= KeyFlags.SIGN_DATA;
+                //we would like to set the signing times the same, like gpg
+                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                    subPublicKey.getAlgorithm(), PGPUtil.SHA1)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+
+                sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+                certification = sGen.generateCertification(masterPublicKey);
             }
             if (canEncrypt) {
                 keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
             }
             hashedPacketsGen.setKeyFlags(true, keyFlags);
+            if (certification != null) {
+                hashedPacketsGen.setEmbeddedSignature(true, certification);
+            }
 
             // TODO: this doesn't work quite right yet (APG 1)
             // if (keyEditor.getExpiryDate() != null) {
