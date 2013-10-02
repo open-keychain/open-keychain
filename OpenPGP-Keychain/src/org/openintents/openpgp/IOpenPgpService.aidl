@@ -34,14 +34,14 @@ interface IOpenPgpService {
      * @param encryptionUserIds
      *            User Ids (emails) of recipients
      * @param asciiArmor
-     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
+     *            Encode result for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param allowUserInteraction
      *            Allows the OpenPGP Provider to handle missing keys by showing activities
      * @param callback
      *            Callback where to return results
      */
-    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds,
-            in boolean asciiArmor, in boolean allowUserInteraction, in IOpenPgpCallback callback);
+    oneway void encrypt(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor,
+            in IOpenPgpCallback callback);
     
     /**
      * Sign
@@ -51,14 +51,13 @@ interface IOpenPgpService {
      * @param inputBytes
      *            Byte array you want to sign
      * @param asciiArmor
-     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
+     *            Encode result for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param allowUserInteraction
      *            Allows the OpenPGP Provider to handle missing keys by showing activities
      * @param callback
      *            Callback where to return results
      */
-    oneway void sign(in byte[] inputBytes, in boolean asciiArmor, in boolean allowUserInteraction,
-            in IOpenPgpCallback callback);
+    oneway void sign(in byte[] inputBytes, in boolean asciiArmor, in IOpenPgpCallback callback);
     
     /**
      * Sign then encrypt
@@ -70,14 +69,14 @@ interface IOpenPgpService {
      * @param encryptionUserIds
      *            User Ids (emails) of recipients
      * @param asciiArmor
-     *            Encode for ASCII (Radix-64, 33 percent overhead compared to binary)
+     *            Encode result for ASCII (Radix-64, 33 percent overhead compared to binary)
      * @param allowUserInteraction
      *            Allows the OpenPGP Provider to handle missing keys by showing activities
      * @param callback
      *            Callback where to return results
      */
-    oneway void signAndEncrypt(in byte[] inputBytes, in String[] encryptionUserIds,
-            in boolean asciiArmor, in boolean allowUserInteraction, in IOpenPgpCallback callback);
+    oneway void signAndEncrypt(in byte[] inputBytes, in String[] encryptionUserIds, in boolean asciiArmor,
+            in IOpenPgpCallback callback);
     
     /**
      * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
@@ -93,7 +92,8 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void decryptAndVerify(in byte[] inputBytes, in boolean allowUserInteraction,
-            in IOpenPgpCallback callback);
+    oneway void decryptAndVerify(in byte[] inputBytes, in IOpenPgpCallback callback);
+    
+    boolean isKeyAvailable(in String[] userIds);
     
 }

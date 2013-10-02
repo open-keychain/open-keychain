@@ -25,7 +25,8 @@ interface IOpenPgpCallback {
      * onSuccess returns on successful OpenPGP operations.
      * 
      * @param outputBytes
-     *            contains resulting output bytes (decrypted content/content without signature)
+     *            contains resulting output bytes (decrypted content (when input was encrypted)
+     *            or content without signature (when input was signed-only))
      * @param signatureResult
      *            signatureResult is only non-null if decryptAndVerify() was called and the content
      *            was encrypted or signed-and-encrypted.

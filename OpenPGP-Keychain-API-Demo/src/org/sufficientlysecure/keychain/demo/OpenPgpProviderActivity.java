@@ -139,7 +139,7 @@ public class OpenPgpProviderActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, true, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -149,7 +149,7 @@ public class OpenPgpProviderActivity extends Activity {
         byte[] inputBytes = mMessage.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().sign(inputBytes, true, true, encryptCallback);
+            mCryptoServiceConnection.getService().sign(inputBytes, true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -160,7 +160,7 @@ public class OpenPgpProviderActivity extends Activity {
 
         try {
             mCryptoServiceConnection.getService().signAndEncrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, true, encryptCallback);
+                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
@@ -170,7 +170,7 @@ public class OpenPgpProviderActivity extends Activity {
         byte[] inputBytes = mCiphertext.getText().toString().getBytes();
 
         try {
-            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes, true,
+            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes,
                     decryptAndVerifyCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
