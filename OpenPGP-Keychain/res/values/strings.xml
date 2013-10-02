@@ -314,6 +314,7 @@
     <string name="action_importSecret">Import Secret Keys</string>
     <string name="hint_publicKeys">Search Public Keys</string>
     <string name="hint_secretKeys">Search Secret Keys</string>
+    <string name="hint_query">Name, E-Mail or Key ID</string>
     <string name="filterInfo">Filter: \"%s\"</string>
     <string name="shareKeyringWith">Share Key with…</string>
 

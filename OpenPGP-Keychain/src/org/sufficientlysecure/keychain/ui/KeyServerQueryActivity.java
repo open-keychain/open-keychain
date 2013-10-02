@@ -17,22 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
-import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -40,10 +24,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -55,12 +41,27 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.MenuItem;
+import java.util.ArrayList;
+import java.util.List;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
     // possible intent actions for this activity
     public static final String ACTION_LOOK_UP_KEY_ID = Constants.INTENT_PREFIX + "LOOK_UP_KEY_ID";
+
     public static final String ACTION_LOOK_UP_KEY_ID_AND_RETURN = Constants.INTENT_PREFIX
             + "LOOK_UP_KEY_ID_AND_RETURN";
 
@@ -69,30 +70,38 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
     public static final String RESULT_EXTRA_TEXT = "text";
 
     private ListView mList;
+
     private EditText mQuery;
+
     private Button mSearch;
+
     private KeyInfoListAdapter mAdapter;
+
     private Spinner mKeyServer;
 
     private int mQueryType;
+
     private String mQueryString;
+
     private long mQueryId;
+
     private volatile List<KeyInfo> mSearchResult;
+
     private volatile String mKeyData;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, KeyListPublicActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
+            case android.R.id.home:
+                // app icon in Action Bar clicked; go home
+                Intent intent = new Intent(this, KeyListPublicActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                return true;
 
-        default:
-            break;
+            default:
+                break;
 
         }
         return false;
@@ -104,13 +113,13 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         setContentView(R.layout.key_server_query_layout);
 
-        mQuery = (EditText) findViewById(R.id.query);
-        mSearch = (Button) findViewById(R.id.btn_search);
-        mList = (ListView) findViewById(R.id.list);
+        mQuery = (EditText)findViewById(R.id.query);
+        mSearch = (Button)findViewById(R.id.btn_search);
+        mList = (ListView)findViewById(R.id.list);
         mAdapter = new KeyInfoListAdapter(this);
         mList.setAdapter(mAdapter);
 
-        mKeyServer = (Spinner) findViewById(R.id.keyServer);
+        mKeyServer = (Spinner)findViewById(R.id.keyServer);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                         .getKeyServers());
@@ -123,15 +132,30 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         }
 
         mList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long keyId) {
                 get(keyId);
             }
         });
 
         mSearch.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View v) {
                 String query = mQuery.getText().toString();
                 search(query);
+            }
+        });
+        mQuery.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    String query = mQuery.getText().toString();
+                    search(query);
+                    return false; // FIXME This is a hack to hide a keyboard
+                                  // after search http://tinyurl.com/pwdc3q9
+
+                }
+                return false;
             }
         });
 
@@ -173,7 +197,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        String server = (String) mKeyServer.getSelectedItem();
+        String server = (String)mKeyServer.getSelectedItem();
         data.putString(KeychainIntentService.QUERY_KEY_SERVER, server);
 
         data.putInt(KeychainIntentService.QUERY_KEY_TYPE, mQueryType);
@@ -189,6 +213,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         // Message is received after querying is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 R.string.progress_querying, ProgressDialog.STYLE_SPINNER) {
+            @Override
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -201,10 +226,12 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         mSearchResult = returnData
                                 .getParcelableArrayList(KeychainIntentService.RESULT_QUERY_KEY_SEARCH_RESULT);
                     } else if (mQueryType == Id.keyserver.get) {
-                        mKeyData = returnData.getString(KeychainIntentService.RESULT_QUERY_KEY_DATA);
+                        mKeyData = returnData
+                                .getString(KeychainIntentService.RESULT_QUERY_KEY_DATA);
                     }
 
-                    // TODO: IMPROVE CODE!!! some global variables can be avoided!!!
+                    // TODO: IMPROVE CODE!!! some global variables can be
+                    // avoided!!!
                     if (mQueryType == Id.keyserver.search) {
                         if (mSearchResult != null) {
                             Toast.makeText(KeyServerQueryActivity.this,
@@ -228,7 +255,8 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                                 Intent intent = new Intent(KeyServerQueryActivity.this,
                                         ImportKeysActivity.class);
                                 intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
-                                intent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, mKeyData.getBytes());
+                                intent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES,
+                                        mKeyData.getBytes());
                                 startActivity(intent);
                             }
                         }
@@ -251,12 +279,14 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
     public class KeyInfoListAdapter extends BaseAdapter {
         protected LayoutInflater mInflater;
+
         protected Activity mActivity;
+
         protected List<KeyInfo> mKeys;
 
         public KeyInfoListAdapter(Activity activity) {
             mActivity = activity;
-            mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mKeys = new ArrayList<KeyInfo>();
         }
 
@@ -270,32 +300,36 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
             return true;
         }
 
+        @Override
         public int getCount() {
             return mKeys.size();
         }
 
+        @Override
         public Object getItem(int position) {
             return mKeys.get(position);
         }
 
+        @Override
         public long getItemId(int position) {
             return mKeys.get(position).keyId;
         }
 
+        @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             KeyInfo keyInfo = mKeys.get(position);
 
             View view = mInflater.inflate(R.layout.key_server_query_result_item, null);
 
-            TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+            TextView mainUserId = (TextView)view.findViewById(R.id.mainUserId);
             mainUserId.setText(R.string.unknownUserId);
-            TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+            TextView mainUserIdRest = (TextView)view.findViewById(R.id.mainUserIdRest);
             mainUserIdRest.setText("");
-            TextView keyId = (TextView) view.findViewById(R.id.keyId);
+            TextView keyId = (TextView)view.findViewById(R.id.keyId);
             keyId.setText(R.string.noKey);
-            TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
+            TextView algorithm = (TextView)view.findViewById(R.id.algorithm);
             algorithm.setText("");
-            TextView status = (TextView) view.findViewById(R.id.status);
+            TextView status = (TextView)view.findViewById(R.id.status);
             status.setText("");
 
             String userId = keyInfo.userIds.get(0);
@@ -322,7 +356,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                 status.setVisibility(View.GONE);
             }
 
-            LinearLayout ll = (LinearLayout) view.findViewById(R.id.list);
+            LinearLayout ll = (LinearLayout)view.findViewById(R.id.list);
             if (keyInfo.userIds.size() == 1) {
                 ll.setVisibility(View.GONE);
             } else {
@@ -339,7 +373,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
                         ll.addView(sep);
                     }
-                    TextView uidView = (TextView) mInflater.inflate(
+                    TextView uidView = (TextView)mInflater.inflate(
                             R.layout.key_server_query_result_user_id, null);
                     uidView.setText(uid);
                     ll.addView(uidView);
