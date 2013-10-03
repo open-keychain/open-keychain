@@ -381,7 +381,7 @@ public class PgpKeyOperation {
             if (canEncrypt) {
                 keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
             }
-            hashedPacketsGen.setKeyFlags(true, keyFlags);
+            hashedPacketsGen.setKeyFlags(false, keyFlags);
             if (canSign) {
                 //we would like to set the signing times the same, like gpg
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
@@ -391,7 +391,8 @@ public class PgpKeyOperation {
 
                 sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
                 certification = sGen.generateCertification(subPublicKey, masterPublicKey);
-                unhashedPacketsGen.setEmbeddedSignature(true, certification);
+		unhashedPacketsGen.setIssuerKeyID(false, masterPublicKey.getKeyID());
+                unhashedPacketsGen.setEmbeddedSignature(false, certification);
             }
 
             // TODO: this doesn't work quite right yet (APG 1)
