@@ -25,6 +25,7 @@ import org.sufficientlysecure.keychain.R;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentIntegratorSupportV4;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -70,7 +71,8 @@ public class ShareActivity extends SherlockFragmentActivity {
                     getResources().getText(R.string.shareKeyringWith)));
         } else if (ACTION_SHARE_KEYRING_WITH_QR_CODE.equals(action)) {
             // use barcode scanner integration library
-            new IntentIntegrator(this).shareText(keyringArmored.get(0));
+//            new IntentIntegrator(this).shareText(keyringArmored.get(0));
+//            new IntentIntegratorSupportV4(this).shareText(activity, text);
         }
     }
 }
