@@ -19,6 +19,8 @@ package org.sufficientlysecure.keychain.demo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
+import org.openintents.openpgp.OpenPgpData;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpServiceConnection;
 import org.openintents.openpgp.OpenPgpSignatureResult;
@@ -66,12 +68,75 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     /**
-     * Callback from remote crypto service
+     * Callback from remote openpgp service
      */
+    final IOpenPgpKeyIdsCallback.Stub getKeysEncryptCallback = new IOpenPgpKeyIdsCallback.Stub() {
+
+        @Override
+        public void onSuccess(final long[] keyIds) throws RemoteException {
+            Log.d(Constants.TAG, "getKeysEncryptCallback keyId " + keyIds[0]);
+            mActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    // encrypt after getting key ids
+                    String inputStr = mMessage.getText().toString();
+                    OpenPgpData input = new OpenPgpData(inputStr);
+
+                    Log.d(Constants.TAG, "getKeysEncryptCallback inputStr " + inputStr);
+
+                    try {
+                        mCryptoServiceConnection.getService().encrypt(input,
+                                new OpenPgpData(OpenPgpData.TYPE_STRING), keyIds, encryptCallback);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "CryptoProviderDemo", e);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(OpenPgpError error) throws RemoteException {
+            handleError(error);
+        }
+
+    };
+
+    final IOpenPgpKeyIdsCallback.Stub getKeysSignAndEncryptCallback = new IOpenPgpKeyIdsCallback.Stub() {
+
+        @Override
+        public void onSuccess(final long[] keyIds) throws RemoteException {
+            Log.d(Constants.TAG, "getKeysSignAndEncryptCallback keyId " + keyIds[0]);
+
+            mActivity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    // encrypt after getting key ids
+                    String inputStr = mMessage.getText().toString();
+                    OpenPgpData input = new OpenPgpData(inputStr);
+
+                    try {
+                        mCryptoServiceConnection.getService().signAndEncrypt(input,
+                                new OpenPgpData(OpenPgpData.TYPE_STRING), keyIds, encryptCallback);
+                    } catch (RemoteException e) {
+                        Log.e(Constants.TAG, "CryptoProviderDemo", e);
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onError(OpenPgpError error) throws RemoteException {
+            handleError(error);
+        }
+
+    };
+
     final IOpenPgpCallback.Stub encryptCallback = new IOpenPgpCallback.Stub() {
 
         @Override
-        public void onSuccess(final byte[] outputBytes, OpenPgpSignatureResult signatureResult)
+        public void onSuccess(final OpenPgpData output, OpenPgpSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "encryptCallback");
 
@@ -79,7 +144,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                 @Override
                 public void run() {
-                    mCiphertext.setText(new String(outputBytes));
+                    mCiphertext.setText(output.getString());
                 }
             });
         }
@@ -94,7 +159,7 @@ public class OpenPgpProviderActivity extends Activity {
     final IOpenPgpCallback.Stub decryptAndVerifyCallback = new IOpenPgpCallback.Stub() {
 
         @Override
-        public void onSuccess(final byte[] outputBytes, final OpenPgpSignatureResult signatureResult)
+        public void onSuccess(final OpenPgpData output, final OpenPgpSignatureResult signatureResult)
                 throws RemoteException {
             Log.d(Constants.TAG, "decryptAndVerifyCallback");
 
@@ -102,7 +167,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                 @Override
                 public void run() {
-                    mMessage.setText(new String(outputBytes));
+                    mMessage.setText(output.getString());
                     if (signatureResult != null) {
                         Toast.makeText(OpenPgpProviderActivity.this,
                                 "signature result:\n" + signatureResult.toString(),
@@ -135,43 +200,43 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     public void encryptOnClick(View view) {
-        byte[] inputBytes = mMessage.getText().toString().getBytes();
-
         try {
-            mCryptoServiceConnection.getService().encrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
+            mCryptoServiceConnection.getService().getKeyIds(
+                    mEncryptUserIds.getText().toString().split(","), true, getKeysEncryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
     public void signOnClick(View view) {
-        byte[] inputBytes = mMessage.getText().toString().getBytes();
+        String inputStr = mMessage.getText().toString();
+        OpenPgpData input = new OpenPgpData(inputStr);
 
         try {
-            mCryptoServiceConnection.getService().sign(inputBytes, true, encryptCallback);
+            mCryptoServiceConnection.getService().sign(input,
+                    new OpenPgpData(OpenPgpData.TYPE_STRING), encryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
-    public void encryptAndSignOnClick(View view) {
-        byte[] inputBytes = mMessage.getText().toString().getBytes();
-
+    public void signAndEncryptOnClick(View view) {
         try {
-            mCryptoServiceConnection.getService().signAndEncrypt(inputBytes,
-                    mEncryptUserIds.getText().toString().split(","), true, encryptCallback);
+            mCryptoServiceConnection.getService().getKeyIds(
+                    mEncryptUserIds.getText().toString().split(","), true,
+                    getKeysSignAndEncryptCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }
     }
 
     public void decryptAndVerifyOnClick(View view) {
-        byte[] inputBytes = mCiphertext.getText().toString().getBytes();
+        String inputStr = mCiphertext.getText().toString();
+        OpenPgpData input = new OpenPgpData(inputStr);
 
         try {
-            mCryptoServiceConnection.getService().decryptAndVerify(inputBytes,
-                    decryptAndVerifyCallback);
+            mCryptoServiceConnection.getService().decryptAndVerify(input,
+                    new OpenPgpData(OpenPgpData.TYPE_STRING), decryptAndVerifyCallback);
         } catch (RemoteException e) {
             Log.e(Constants.TAG, "CryptoProviderDemo", e);
         }

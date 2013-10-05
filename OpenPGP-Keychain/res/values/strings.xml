@@ -351,6 +351,7 @@
     <string name="import_import">Import selected keys</string>
     <string name="import_sign_and_upload">Import, Sign, and upload selected keys</string>
     <string name="import_finish">Finish</string>
+    <string name="import_from_clipboard">Import from Clipboard</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>

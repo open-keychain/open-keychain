@@ -166,7 +166,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             mListFragment = ImportKeysListFragment.newInstance(bytes, filename);
 
             // Add the fragment to the 'fragment_container' FrameLayout
-            // NOTE: We use commitAllowingStateLoss() to prevent wierd crashes!
+            // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.import_keys_list_container, mListFragment)
                     .commitAllowingStateLoss();
@@ -189,6 +189,9 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
             break;
         case 3:
+            loadFragment(ImportKeysClipboardFragment.class, null, mNavigationStrings[itemPosition]);
+            break;
+        case 4:
             loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[itemPosition]);
             break;
 

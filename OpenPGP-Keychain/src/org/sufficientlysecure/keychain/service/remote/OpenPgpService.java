@@ -25,9 +25,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 
 import org.openintents.openpgp.IOpenPgpCallback;
+import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
 import org.openintents.openpgp.IOpenPgpService;
+import org.openintents.openpgp.OpenPgpData;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -114,8 +117,8 @@ public class OpenPgpService extends RemoteService {
      * @param encryptionUserIds
      * @return
      */
-    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, long ownKeyId,
-            boolean allowUserInteraction) throws UserInteractionRequiredException {
+    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, boolean allowUserInteraction)
+            throws UserInteractionRequiredException {
         // find key ids to given emails in database
         ArrayList<Long> keyIds = new ArrayList<Long>();
 
@@ -141,9 +144,6 @@ public class OpenPgpService extends RemoteService {
                 Log.d(Constants.TAG, "more than one user id with the same email");
             }
         }
-
-        // also encrypt to our self (so that we can decrypt it later!)
-        keyIds.add(ownKeyId);
 
         // convert to long[]
         long[] keyIdsArray = new long[keyIds.size()];
@@ -215,24 +215,47 @@ public class OpenPgpService extends RemoteService {
         }
     };
 
-    private synchronized void encryptAndSignSafe(byte[] inputBytes, String[] encryptionUserIds,
-            boolean asciiArmor, boolean allowUserInteraction, IOpenPgpCallback callback,
-            AppSettings appSettings, boolean sign) {
+    private synchronized void getKeyIdsSafe(String[] userIds, boolean allowUserInteraction,
+            IOpenPgpKeyIdsCallback callback, AppSettings appSettings) {
         try {
-            // build InputData and write into OutputStream
-            InputStream inputStream = new ByteArrayInputStream(inputBytes);
-            long inputLength = inputBytes.length;
-            InputData inputData = new InputData(inputStream, inputLength);
-
-            OutputStream outputStream = new ByteArrayOutputStream();
-
-            long[] keyIds = getKeyIdsFromEmails(encryptionUserIds, appSettings.getKeyId(),
-                    allowUserInteraction);
+            long[] keyIds = getKeyIdsFromEmails(userIds, allowUserInteraction);
             if (keyIds == null) {
                 throw new NoUserIdsException("No user ids!");
             }
 
-            PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
+            callback.onSuccess(keyIds);
+        } catch (UserInteractionRequiredException e) {
+            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
+        } catch (NoUserIdsException e) {
+            callbackOpenPgpError(callback, OpenPgpError.NO_USER_IDS, e.getMessage());
+        } catch (Exception e) {
+            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
+    private synchronized void encryptAndSignSafe(OpenPgpData inputData,
+            final OpenPgpData outputData, long[] keyIds, boolean allowUserInteraction,
+            IOpenPgpCallback callback, AppSettings appSettings, boolean sign) {
+        try {
+            // TODO: other options of OpenPgpData!
+            byte[] inputBytes = getInput(inputData);
+            boolean asciiArmor = false;
+            if (outputData.getType() == OpenPgpData.TYPE_STRING) {
+                asciiArmor = true;
+            }
+
+            // add own key for encryption
+            keyIds = Arrays.copyOf(keyIds, keyIds.length + 1);
+            keyIds[keyIds.length - 1] = appSettings.getKeyId();
+
+            // build InputData and write into OutputStream
+            InputStream inputStream = new ByteArrayInputStream(inputBytes);
+            long inputLength = inputBytes.length;
+            InputData inputDt = new InputData(inputStream, inputLength);
+
+            OutputStream outputStream = new ByteArrayOutputStream();
+
+            PgpOperation operation = new PgpOperation(getContext(), null, inputDt, outputStream);
             if (sign) {
                 String passphrase = getCachedPassphrase(appSettings.getKeyId(),
                         allowUserInteraction);
@@ -253,12 +276,17 @@ public class OpenPgpService extends RemoteService {
 
             byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
 
+            OpenPgpData output = null;
+            if (asciiArmor) {
+                output = new OpenPgpData(new String(outputBytes));
+            } else {
+                output = new OpenPgpData(outputBytes);
+            }
+
             // return over handler on client side
-            callback.onSuccess(outputBytes, null);
+            callback.onSuccess(output, null);
         } catch (UserInteractionRequiredException e) {
             callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
-        } catch (NoUserIdsException e) {
-            callbackOpenPgpError(callback, OpenPgpError.NO_USER_IDS, e.getMessage());
         } catch (WrongPassphraseException e) {
             callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
         } catch (Exception e) {
@@ -289,9 +317,10 @@ public class OpenPgpService extends RemoteService {
             outputStream.close();
 
             byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
+            OpenPgpData output = new OpenPgpData(new String(outputBytes));
 
             // return over handler on client side
-            callback.onSuccess(outputBytes, null);
+            callback.onSuccess(output, null);
         } catch (UserInteractionRequiredException e) {
             callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
         } catch (WrongPassphraseException e) {
@@ -406,8 +435,8 @@ public class OpenPgpService extends RemoteService {
 
             OpenPgpSignatureResult sigResult = null;
             if (signature) {
-                // long signatureKeyId = outputBundle
-                // .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                long signatureKeyId = outputBundle
+                        .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
                 String signatureUserId = outputBundle
                         .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
                 boolean signatureSuccess = outputBundle
@@ -422,11 +451,13 @@ public class OpenPgpService extends RemoteService {
                     signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                 }
 
-                sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId, signedOnly);
+                sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
+                        signedOnly, signatureKeyId);
             }
+            OpenPgpData output = new OpenPgpData(new String(outputBytes));
 
             // return over handler on client side
-            callback.onSuccess(outputBytes, sigResult);
+            callback.onSuccess(output, sigResult);
         } catch (UserInteractionRequiredException e) {
             callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
         } catch (WrongPassphraseException e) {
@@ -452,49 +483,26 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
+    private void callbackOpenPgpError(IOpenPgpKeyIdsCallback callback, int errorId, String message) {
+        try {
+            callback.onError(new OpenPgpError(0, message));
+        } catch (Exception t) {
+            Log.e(Constants.TAG,
+                    "Exception while returning OpenPgpError to client via callback.onError()", t);
+        }
+    }
+
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
         @Override
-        public void encrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
-            final AppSettings settings = getAppSettings();
-
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, true, callback,
-                            settings, false);
-                }
-            };
-
-            checkAndEnqueue(r);
-        }
-
-        @Override
-        public void signAndEncrypt(final byte[] inputBytes, final String[] encryptionUserIds,
-                final boolean asciiArmor, final IOpenPgpCallback callback) throws RemoteException {
-            final AppSettings settings = getAppSettings();
-
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    encryptAndSignSafe(inputBytes, encryptionUserIds, asciiArmor, true, callback,
-                            settings, true);
-                }
-            };
-
-            checkAndEnqueue(r);
-        }
-
-        @Override
-        public void sign(final byte[] inputBytes, boolean asciiArmor,
+        public void encrypt(final OpenPgpData input, final OpenPgpData output, final long[] keyIds,
                 final IOpenPgpCallback callback) throws RemoteException {
             final AppSettings settings = getAppSettings();
 
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    signSafe(inputBytes, true, callback, settings);
+                    encryptAndSignSafe(input, output, keyIds, true, callback, settings, false);
                 }
             };
 
@@ -502,15 +510,45 @@ public class OpenPgpService extends RemoteService {
         }
 
         @Override
-        public void decryptAndVerify(final byte[] inputBytes, final IOpenPgpCallback callback)
-                throws RemoteException {
+        public void signAndEncrypt(final OpenPgpData input, final OpenPgpData output,
+                final long[] keyIds, final IOpenPgpCallback callback) throws RemoteException {
+            final AppSettings settings = getAppSettings();
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    encryptAndSignSafe(input, output, keyIds, true, callback, settings, true);
+                }
+            };
+
+            checkAndEnqueue(r);
+        }
+
+        @Override
+        public void sign(final OpenPgpData input, final OpenPgpData output,
+                final IOpenPgpCallback callback) throws RemoteException {
+            final AppSettings settings = getAppSettings();
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    signSafe(getInput(input), true, callback, settings);
+                }
+            };
+
+            checkAndEnqueue(r);
+        }
+
+        @Override
+        public void decryptAndVerify(final OpenPgpData input, final OpenPgpData output,
+                final IOpenPgpCallback callback) throws RemoteException {
 
             final AppSettings settings = getAppSettings();
 
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    decryptAndVerifySafe(inputBytes, true, callback, settings);
+                    decryptAndVerifySafe(getInput(input), true, callback, settings);
                 }
             };
 
@@ -518,12 +556,43 @@ public class OpenPgpService extends RemoteService {
         }
 
         @Override
-        public boolean isKeyAvailable(String[] userIds) throws RemoteException {
-            // TODO
-            return false;
+        public void getKeyIds(final String[] userIds, final boolean allowUserInteraction,
+                final IOpenPgpKeyIdsCallback callback) throws RemoteException {
+
+            final AppSettings settings = getAppSettings();
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    getKeyIdsSafe(userIds, allowUserInteraction, callback, settings);
+                }
+            };
+
+            checkAndEnqueue(r);
         }
 
     };
+
+    private static byte[] getInput(OpenPgpData data) {
+        // TODO: support Uri and ParcelFileDescriptor
+
+        byte[] inBytes = null;
+        switch (data.getType()) {
+        case OpenPgpData.TYPE_STRING:
+            inBytes = data.getString().getBytes();
+            break;
+
+        case OpenPgpData.TYPE_BYTE_ARRAY:
+            inBytes = data.getBytes();
+            break;
+
+        default:
+            Log.e(Constants.TAG, "Uri and ParcelFileDescriptor not supported right now!");
+            break;
+        }
+
+        return inBytes;
+    }
 
     @Override
     public IBinder onBind(Intent intent) {

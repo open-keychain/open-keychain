@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-package org.sufficientlysecure.keychain.demo;
+package org.openintents.openpgp;
 
-public final class Constants {
+import org.openintents.openpgp.OpenPgpError;
 
-    public static final boolean DEBUG = BuildConfig.DEBUG;
+interface IOpenPgpKeyIdsCallback {
+    
+    /**
+     * onSuccess returns on successful getKeyIds operations.
+     * 
+     * @param keyIds
+     *            returned key ids
+     */
+    oneway void onSuccess(in long[] keyIds);
 
-    public static final String TAG = "Keychain";
-
+    /**
+     * onError returns on errors or when allowUserInteraction was set to false, but user interaction
+     * was required execute an OpenPGP operation.
+     * 
+     * @param error
+     *            See OpenPgpError class for more information.
+     */
+    oneway void onError(in OpenPgpError error);
 }

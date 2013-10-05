@@ -53,6 +53,7 @@
         <item>@string/menu_importFromFile</item>
         <item>@string/menu_keyServer</item>
         <item>@string/menu_importFromQrCode</item>
+        <item>@string/import_from_clipboard</item>
         <item>@string/menu_importFromNfc</item>
     </string-array>
 

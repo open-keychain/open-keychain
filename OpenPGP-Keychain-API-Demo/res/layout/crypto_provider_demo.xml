@@ -26,7 +26,7 @@
     <EditText
         android:id="@+id/crypto_provider_demo_message"
         android:layout_width="match_parent"
-        android:layout_height="150dip"
+        android:layout_height="100dip"
         android:scrollHorizontally="true"
         android:scrollbars="vertical"
         android:text="message"
@@ -41,7 +41,7 @@
     <EditText
         android:id="@+id/crypto_provider_demo_ciphertext"
         android:layout_width="match_parent"
-        android:layout_height="150dip"
+        android:layout_height="100dip"
         android:text="ciphertext"
         android:textAppearance="@android:style/TextAppearance.Small" />
 
@@ -67,19 +67,17 @@
 
         <Button
             android:id="@+id/crypto_provider_demo_encrypt_and_sign"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="encryptAndSignOnClick"
-            android:text="Encrypt and Sign" />
-
-        <Button
-            android:id="@+id/crypto_provider_demo_decrypt_and_verify"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="decryptAndVerifyOnClick"
-            android:text="Decrypt and Verify" />
+            android:onClick="signAndEncryptOnClick"
+            android:text="Sign and Encrypt" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/crypto_provider_demo_decrypt_and_verify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="decryptAndVerifyOnClick"
+        android:text="Decrypt and Verify" />
 
 </LinearLayout>

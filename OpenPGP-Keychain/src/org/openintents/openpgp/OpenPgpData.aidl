@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+package org.openintents.openpgp;
 
-package org.sufficientlysecure.keychain.demo;
-
-public final class Constants {
-
-    public static final boolean DEBUG = BuildConfig.DEBUG;
-
-    public static final String TAG = "Keychain";
-
-}
+// Declare OpenPgpData so AIDL can find it and knows that it implements the parcelable protocol.
+parcelable OpenPgpData;
