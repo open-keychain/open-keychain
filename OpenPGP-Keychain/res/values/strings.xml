@@ -81,6 +81,8 @@
     <string name="btn_setPassPhrase">Set Passphrase</string>
     <string name="btn_search">Search</string>
     <string name="btn_export_to_server">Export To Server</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_back">Back</string>
 
     <!-- menu_lowerCase: capitalized words, no punctuation -->
     <string name="menu_about">About</string>
@@ -375,5 +377,9 @@
     <string name="api_select_pub_keys_missing_text">No public keys were found for these user ids:</string>
     <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these user ids:</string>
     <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
+
+    <!-- Share -->
+    <string name="share_qr_code_dialog_start">Go through all QR Codes using \'Next\', and scan them one by one.</string>
+    <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
 
 </resources>

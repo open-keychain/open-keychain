@@ -20,15 +20,14 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.ArrayList;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentIntegratorSupportV4;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ShareActivity extends SherlockFragmentActivity {
     // Actions for internal use only:
@@ -59,9 +58,6 @@ public class ShareActivity extends SherlockFragmentActivity {
         ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
                 new long[] { masterKeyId });
 
-        // close this activity
-        finish();
-
         if (ACTION_SHARE_KEYRING.equals(action)) {
             // let user choose application
             Intent sendIntent = new Intent(Intent.ACTION_SEND);
@@ -71,8 +67,13 @@ public class ShareActivity extends SherlockFragmentActivity {
                     getResources().getText(R.string.shareKeyringWith)));
         } else if (ACTION_SHARE_KEYRING_WITH_QR_CODE.equals(action)) {
             // use barcode scanner integration library
-//            new IntentIntegrator(this).shareText(keyringArmored.get(0));
-//            new IntentIntegratorSupportV4(this).shareText(activity, text);
+            // TODO: old new IntentIntegrator(this).shareText(keyringArmored.get(0));
+            ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
+                    .get(0));
+            dialog.show(getSupportFragmentManager(), "qrCodeShareDialog");
         }
+
+        // close this activity
+        // finish();
     }
 }
