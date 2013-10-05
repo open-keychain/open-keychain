@@ -85,7 +85,7 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
 
         // start with first
         mCounter = 0;
-        mImage.setImageBitmap(QrCodeUtils.getQRCodeBitmap(mContentList.get(mCounter), QR_CODE_SIZE));
+        updateQrCode();
 
         // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
         // http://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked

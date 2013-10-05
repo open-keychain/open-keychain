@@ -17,7 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,8 +31,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentIntegratorSupportV4;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -36,6 +42,10 @@ public class ImportKeysQrCodeFragment extends Fragment {
 
     private ImportKeysActivity mImportActivity;
     private Button mButton;
+    private TextView mText;
+    private ProgressBar mProgress;
+
+    private String[] scannedContent;
 
     /**
      * Creates new instance of this fragment
@@ -57,6 +67,9 @@ public class ImportKeysQrCodeFragment extends Fragment {
         View view = inflater.inflate(R.layout.import_keys_qr_code_fragment, container, false);
 
         mButton = (Button) view.findViewById(R.id.import_qrcode_button);
+        mText = (TextView) view.findViewById(R.id.import_qrcode_text);
+        mProgress = (ProgressBar) view.findViewById(R.id.import_qrcode_progress);
+
         mButton.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -79,28 +92,65 @@ public class ImportKeysQrCodeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-        case IntentIntegrator.REQUEST_CODE: {
-            IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
-                    data);
+        case IntentIntegratorSupportV4.REQUEST_CODE: {
+            IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
+                    resultCode, data);
             if (scanResult != null && scanResult.getFormatName() != null) {
 
-                // mScannedContent = scanResult.getContents();
+                Log.d(Constants.TAG, scanResult.getContents());
 
-                mImportActivity.loadCallback(scanResult.getContents().getBytes(), null);
+                String[] parts = scanResult.getContents().split(",");
 
-                // mImportData = scanResult.getContents().getBytes();
-                // mImportFilename = null;
+                if (parts.length != 3) {
+                    Toast.makeText(getActivity(), R.string.import_qr_code_wrong, Toast.LENGTH_LONG)
+                            .show();
+                    return;
+                }
 
-                // mContentView.setText(mScannedContent);
-                // String[] bits = scanResult.getContents().split(",");
-                // if (bits.length != 2) {
-                // return; // dont know how to handle this. Not a valid code
-                // }
-                //
-                // long keyId = Long.parseLong(bits[0]);
-                // String expectedFingerprint = bits[1];
+                int counter = Integer.valueOf(parts[0]);
+                int size = Integer.valueOf(parts[1]);
+                String content = parts[2];
 
-                // importAndSign(keyId, expectedFingerprint);
+                Log.d(Constants.TAG, "" + counter);
+                Log.d(Constants.TAG, "" + size);
+                Log.d(Constants.TAG, "" + content);
+
+                // first qr code -> setup
+                if (counter == 0) {
+                    scannedContent = new String[size];
+                    mProgress.setMax(size);
+                }
+
+                // save scanned content
+                scannedContent[counter] = content;
+
+                // get missing numbers
+                ArrayList<Integer> missing = new ArrayList<Integer>();
+                for (int i = 0; i < scannedContent.length; i++) {
+                    if (scannedContent[i] == null) {
+                        missing.add(i);
+                    }
+                }
+
+                // update progress and text
+                mProgress.setProgress(scannedContent.length - missing.size());
+                String missingString = "";
+                for (int m : missing) {
+                    if (!missingString.equals(""))
+                        missingString += ", ";
+                    missingString += String.valueOf(m + 1);
+                }
+                mText.setText(getString(R.string.import_qr_code_missing, missingString));
+
+                // finished!
+                if (missing.size() == 0) {
+                    mText.setText(R.string.import_qr_code_finished);
+                    String result = "";
+                    for (String in : scannedContent) {
+                        result += in;
+                    }
+                    mImportActivity.loadCallback(result.getBytes(), null);
+                }
             }
 
             break;
@@ -112,5 +162,4 @@ public class ImportKeysQrCodeFragment extends Fragment {
             break;
         }
     }
-
 }

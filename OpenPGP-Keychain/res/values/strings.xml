@@ -354,7 +354,10 @@
     <string name="import_sign_and_upload">Import, Sign, and upload selected keys</string>
     <string name="import_finish">Finish</string>
     <string name="import_from_clipboard">Import from Clipboard</string>
-
+    <string name="import_qr_code_missing">Missing QR Codes: %1$s</string>
+    <string name="import_qr_code_wrong">QR Code malformed! Please try again!</string>
+    <string name="import_qr_code_finished">QR Code scanning finished!</string>
+    
     <!-- Intent labels -->
     <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>
     <string name="intent_import_key">OpenPGP: Import Key</string>

@@ -66,14 +66,14 @@ public class ShareActivity extends SherlockFragmentActivity {
             startActivity(Intent.createChooser(sendIntent,
                     getResources().getText(R.string.shareKeyringWith)));
         } else if (ACTION_SHARE_KEYRING_WITH_QR_CODE.equals(action)) {
-            // use barcode scanner integration library
-            // TODO: old new IntentIntegrator(this).shareText(keyringArmored.get(0));
             ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
                     .get(0));
             dialog.show(getSupportFragmentManager(), "qrCodeShareDialog");
         }
 
         // close this activity
+        // TODO: finish() would also close dialog...
+        // integrate this into new KeyViewActivity when ready
         // finish();
     }
 }

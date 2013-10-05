@@ -2,12 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
     <Button
         android:id="@+id/import_qrcode_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/menu_importFromQrCode" />
+
+    <TextView
+        android:id="@+id/import_qrcode_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/import_qrcode_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:progress="0" />
 
 </LinearLayout>
