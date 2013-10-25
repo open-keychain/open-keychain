@@ -54,7 +54,7 @@ public class SelectPublicKeyActivity extends SherlockFragmentActivity {
                         // ok
                         okClicked();
                     }
-                }, R.string.btn_doNotSave, new View.OnClickListener() {
+                }, R.string.btn_do_not_save, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // cancel

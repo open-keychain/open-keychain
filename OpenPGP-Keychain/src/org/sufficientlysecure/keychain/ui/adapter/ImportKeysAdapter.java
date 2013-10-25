@@ -79,11 +79,11 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         View view = mInflater.inflate(R.layout.import_keys_list_entry, null);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknownUserId);
+        mainUserId.setText(R.string.unknown_user_id);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        keyId.setText(R.string.noKey);
+        keyId.setText(R.string.no_key);
         TextView fingerprint = (TextView) view.findViewById(R.id.fingerprint);
         TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
         algorithm.setText("");
@@ -98,7 +98,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 mainUserIdRest.setText("<" + chunks[1]);
             }
             if (entry.secretKey) {
-                userId = mActivity.getString(R.string.secretKey) + " " + userId;
+                userId = mActivity.getString(R.string.secret_key) + " " + userId;
                 mainUserId.setTextColor(Color.RED);
             }
             mainUserId.setText(userId);

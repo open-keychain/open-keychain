@@ -70,7 +70,7 @@ public class KeyListSecretFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
+        menu.add(0, Id.menu.edit, 0, R.string.menu_edit_key);
     }
 
     @Override

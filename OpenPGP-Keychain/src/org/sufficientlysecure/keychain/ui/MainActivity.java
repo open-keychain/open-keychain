@@ -81,7 +81,7 @@ public class MainActivity extends SherlockActivity {
         menu.add(0, Id.menu.option.preferences, 0, R.string.menu_preferences)
                 .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        menu.add(0, Id.menu.option.crypto_consumers, 0, R.string.menu_apiAppSettings)
+        menu.add(0, Id.menu.option.crypto_consumers, 0, R.string.menu_api_app_settings)
                 .setIcon(R.drawable.ic_menu_settings)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_WITH_TEXT);
         return true;

@@ -277,7 +277,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     if (!FileHelper.isStorageMounted(inputFile)
                             || !FileHelper.isStorageMounted(outputFile)) {
                         throw new PgpGeneralException(
-                                getString(R.string.error_externalStorageNotReady));
+                                getString(R.string.error_external_storage_not_ready));
                     }
 
                     inStream = new FileInputStream(inputFile);
@@ -421,7 +421,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     if (!FileHelper.isStorageMounted(inputFile)
                             || !FileHelper.isStorageMounted(outputFile)) {
                         throw new PgpGeneralException(
-                                getString(R.string.error_externalStorageNotReady));
+                                getString(R.string.error_external_storage_not_ready));
                     }
 
                     // InputStream
@@ -616,9 +616,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     PgpHelper.deleteFileSecurely(this, this, new File(deleteFile));
                 } catch (FileNotFoundException e) {
                     throw new PgpGeneralException(
-                            getString(R.string.error_fileNotFound, deleteFile));
+                            getString(R.string.error_file_not_found, deleteFile));
                 } catch (IOException e) {
-                    throw new PgpGeneralException(getString(R.string.error_fileDeleteFailed,
+                    throw new PgpGeneralException(getString(R.string.error_file_delete_failed,
                             deleteFile));
                 }
 
@@ -694,7 +694,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // check if storage is ready
                 if (!FileHelper.isStorageMounted(outputFile)) {
-                    throw new PgpGeneralException(getString(R.string.error_externalStorageNotReady));
+                    throw new PgpGeneralException(getString(R.string.error_external_storage_not_ready));
                 }
 
                 // OutputStream

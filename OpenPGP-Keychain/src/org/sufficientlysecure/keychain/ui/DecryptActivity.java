@@ -262,7 +262,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (matcher.matches()) {
                     data = matcher.group(1);
                     mMessage.setText(data);
-                    Toast.makeText(this, R.string.usingClipboardContent, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.using_clipboard_content, Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -399,7 +399,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             } else {
                 Log.e(Constants.TAG,
                         "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
-                Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
+                Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
                 finish();
@@ -463,7 +463,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
             }
 
             if (mInputFilename.equals("")) {
-                Toast.makeText(this, R.string.noFileSelected, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.no_file_selected, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -472,7 +472,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (!file.exists() || !file.isFile()) {
                     Toast.makeText(
                             this,
-                            getString(R.string.errorMessage, getString(R.string.error_fileNotFound)),
+                            getString(R.string.error_message, getString(R.string.error_file_not_found)),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -552,13 +552,13 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 inStream = getContentResolver().openInputStream(mContentUri);
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "File not found!", e);
-                Toast.makeText(this, getString(R.string.error_fileNotFound, e.getMessage()),
+                Toast.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
                         Toast.LENGTH_SHORT).show();
             }
         } else if (mDecryptTarget == Id.target.file) {
             // check if storage is ready
             if (!FileHelper.isStorageMounted(mInputFilename)) {
-                Toast.makeText(this, getString(R.string.error_externalStorageNotReady),
+                Toast.makeText(this, getString(R.string.error_external_storage_not_ready),
                         Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -567,7 +567,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "File not found!", e);
-                Toast.makeText(this, getString(R.string.error_fileNotFound, e.getMessage()),
+                Toast.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -583,7 +583,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 }
                 mSecretKeyId = PgpHelper.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
-                    throw new PgpGeneralException(getString(R.string.error_noSecretKeyFound));
+                    throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
                 }
                 mAssumeSymmetricEncryption = false;
             } catch (NoAsymmetricEncryptionException e) {
@@ -592,12 +592,12 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 }
                 mSecretKeyId = Id.key.symmetric;
                 if (!PgpOperation.hasSymmetricEncryption(this, inStream)) {
-                    throw new PgpGeneralException(getString(R.string.error_noKnownEncryptionFound));
+                    throw new PgpGeneralException(getString(R.string.error_no_known_encryption_found));
                 }
                 mAssumeSymmetricEncryption = true;
             }
         } catch (Exception e) {
-            Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
+            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -631,8 +631,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(returnHandler);
 
         mFileDialog = FileDialogFragment.newInstance(messenger,
-                getString(R.string.title_decryptToFile),
-                getString(R.string.specifyFileToDecryptTo), mOutputFilename, null,
+                getString(R.string.title_decrypt_to_file),
+                getString(R.string.specify_file_to_decrypt_to), mOutputFilename, null,
                 Id.request.output_filename);
 
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
@@ -730,7 +730,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                     // build new action bar
                     invalidateOptionsMenu();
 
-                    Toast.makeText(DecryptActivity.this, R.string.decryptionSuccessful,
+                    Toast.makeText(DecryptActivity.this, R.string.decryption_successful,
                             Toast.LENGTH_SHORT).show();
                     if (mReturnResult) {
                         Intent intent = new Intent();
@@ -775,7 +775,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                         mUserIdRest.setText("id: "
                                 + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
                         if (userId == null) {
-                            userId = getResources().getString(R.string.unknownUserId);
+                            userId = getResources().getString(R.string.unknown_user_id);
                         }
                         String chunks[] = userId.split(" <", 2);
                         userId = chunks[0];
@@ -790,7 +790,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
                                 .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
-                                    R.string.unknownSignatureKeyTouchToLookUp, Toast.LENGTH_LONG)
+                                    R.string.unknown_signature_key_touch_to_look_up, Toast.LENGTH_LONG)
                                     .show();
                         } else {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);

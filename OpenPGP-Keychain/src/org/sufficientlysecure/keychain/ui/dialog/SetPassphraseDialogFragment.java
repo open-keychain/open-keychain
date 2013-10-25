@@ -87,7 +87,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
         alert.setTitle(title);
-        alert.setMessage(R.string.enterPassPhraseTwice);
+        alert.setMessage(R.string.enter_passphrase_twice);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.passphrase_repeat, null);
@@ -107,8 +107,8 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
                 if (!passPhrase1.equals(passPhrase2)) {
                     Toast.makeText(
                             activity,
-                            getString(R.string.errorMessage,
-                                    getString(R.string.passPhrasesDoNotMatch)), Toast.LENGTH_SHORT)
+                            getString(R.string.error_message,
+                                    getString(R.string.passphrases_do_not_match)), Toast.LENGTH_SHORT)
                             .show();
                     return;
                 }
@@ -116,8 +116,8 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
                 if (passPhrase1.equals("")) {
                     Toast.makeText(
                             activity,
-                            getString(R.string.errorMessage,
-                                    getString(R.string.passPhraseMustNotBeEmpty)),
+                            getString(R.string.error_message,
+                                    getString(R.string.passphrase_must_not_be_empty)),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }

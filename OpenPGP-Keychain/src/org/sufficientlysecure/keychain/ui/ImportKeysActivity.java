@@ -345,13 +345,13 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
                         int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {
-                            toastMessage = getString(R.string.keysAddedAndUpdated, added, updated);
+                            toastMessage = getString(R.string.keys_added_and_updated, added, updated);
                         } else if (added > 0) {
-                            toastMessage = getString(R.string.keysAdded, added);
+                            toastMessage = getString(R.string.keys_added, added);
                         } else if (updated > 0) {
-                            toastMessage = getString(R.string.keysUpdated, updated);
+                            toastMessage = getString(R.string.keys_updated, updated);
                         } else {
-                            toastMessage = getString(R.string.noKeysAddedOrUpdated);
+                            toastMessage = getString(R.string.no_keys_added_or_updated);
                         }
                         Toast.makeText(ImportKeysActivity.this, toastMessage, Toast.LENGTH_SHORT)
                                 .show();
@@ -362,7 +362,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
                             alert.setIcon(android.R.drawable.ic_dialog_alert);
                             alert.setTitle(R.string.warning);
                             alert.setMessage(ImportKeysActivity.this.getString(
-                                    R.string.badKeysEncountered, bad));
+                                    R.string.bad_keys_encountered, bad));
 
                             alert.setPositiveButton(android.R.string.ok,
                                     new DialogInterface.OnClickListener() {
@@ -392,7 +392,7 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             // start service with intent
             startService(intent);
         } else {
-            Toast.makeText(this, R.string.error_nothingImport, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_nothing_import, Toast.LENGTH_LONG).show();
         }
     }
 

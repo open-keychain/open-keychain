@@ -124,7 +124,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     }
                 });
         ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
-                .setText(R.string.btn_doNotSave);
+                .setText(R.string.btn_do_not_save);
         customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -201,7 +201,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private void handleActionCreateKey(Intent intent) {
         Bundle extras = intent.getExtras();
 
-        mActionBar.setTitle(R.string.title_createKey);
+        mActionBar.setTitle(R.string.title_create_key);
 
         mCurrentPassPhrase = "";
 
@@ -330,7 +330,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private void handleActionEditKey(Intent intent) {
         Bundle extras = intent.getExtras();
 
-        mActionBar.setTitle(R.string.title_editKey);
+        mActionBar.setTitle(R.string.title_edit_key);
 
         if (extras != null) {
             if (extras.containsKey(EXTRA_MASTER_CAN_SIGN)) {
@@ -379,7 +379,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                 }
             } else {
                 Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
-                Toast.makeText(this, R.string.error_noSecretKeyFound, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
             }
             if (masterKey != null) {
                 for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
@@ -418,9 +418,9 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         // set title based on isPassphraseSet()
         int title = -1;
         if (isPassphraseSet()) {
-            title = R.string.title_changePassPhrase;
+            title = R.string.title_change_pass_phrase;
         } else {
-            title = R.string.title_setPassPhrase;
+            title = R.string.title_set_passphrase;
         }
 
         SetPassphraseDialogFragment setPassphraseDialog = SetPassphraseDialogFragment.newInstance(
@@ -473,7 +473,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private void saveClicked() {
         try {
             if (!isPassphraseSet()) {
-                throw new PgpGeneralException(this.getString(R.string.setAPassPhrase));
+                throw new PgpGeneralException(this.getString(R.string.set_a_passphrase));
             }
 
             // Send all information needed to service to edit key in other thread
@@ -530,7 +530,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             // start service with intent
             startService(intent);
         } catch (PgpGeneralException e) {
-            Toast.makeText(this, getString(R.string.errorMessage, e.getMessage()),
+            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -558,10 +558,10 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             try {
                 userId = editor.getValue();
             } catch (UserIdEditor.NoNameException e) {
-                throw new PgpGeneralException(this.getString(R.string.error_userIdNeedsAName));
+                throw new PgpGeneralException(this.getString(R.string.error_user_id_needs_a_name));
             } catch (UserIdEditor.NoEmailException e) {
                 throw new PgpGeneralException(
-                        this.getString(R.string.error_userIdNeedsAnEmailAddress));
+                        this.getString(R.string.error_user_id_needs_an_email_address));
             } catch (UserIdEditor.InvalidEmailException e) {
                 throw new PgpGeneralException(e.getMessage());
             }
@@ -579,11 +579,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         if (userIds.size() == 0) {
-            throw new PgpGeneralException(getString(R.string.error_keyNeedsAUserId));
+            throw new PgpGeneralException(getString(R.string.error_key_needs_a_user_id));
         }
 
         if (!gotMainUserId) {
-            throw new PgpGeneralException(getString(R.string.error_mainUserIdMustNotBeEmpty));
+            throw new PgpGeneralException(getString(R.string.error_main_user_id_must_not_be_empty));
         }
 
         return userIds;
@@ -601,7 +601,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PgpGeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PgpGeneralException(getString(R.string.error_key_needs_master_key));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -624,7 +624,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         ViewGroup keyEditors = keysView.getEditors();
 
         if (keyEditors.getChildCount() == 0) {
-            throw new PgpGeneralException(getString(R.string.error_keyNeedsMasterKey));
+            throw new PgpGeneralException(getString(R.string.error_key_needs_master_key));
         }
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
@@ -636,7 +636,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     }
 
     private void updatePassPhraseButtonText() {
-        mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_changePassPhrase
-                : R.string.btn_setPassPhrase);
+        mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_change_passphrase
+                : R.string.btn_set_passphrase);
     }
 }

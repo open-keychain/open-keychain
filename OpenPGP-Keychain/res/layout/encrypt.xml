@@ -119,7 +119,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
-                        android:text="@string/label_selectPublicKeys"
+                        android:text="@string/label_select_public_keys"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <Button
@@ -127,7 +127,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/btn_selectEncryptKeys" />
+                        android:text="@string/btn_select_encrypt_keys" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -146,7 +146,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:paddingRight="10dip"
-                        android:text="@string/label_passPhrase"
+                        android:text="@string/label_passphrase"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <EditText
@@ -164,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:paddingRight="10dip"
-                        android:text="@string/label_passPhraseAgain"
+                        android:text="@string/label_passphrase_again"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
                     <EditText
@@ -264,7 +264,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:paddingRight="10dip"
-                        android:text="@string/label_fileCompression"
+                        android:text="@string/label_file_compression"
                         android:textAppearance="?android:attr/textAppearanceSmall" />
 
                     <Spinner
@@ -284,7 +284,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/label_deleteAfterEncryption" />
+                        android:text="@string/label_delete_after_encryption" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -297,7 +297,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/label_asciiArmour" />
+                        android:text="@string/label_ascii_armor" />
                 </LinearLayout>
             </LinearLayout>
         </ViewFlipper>

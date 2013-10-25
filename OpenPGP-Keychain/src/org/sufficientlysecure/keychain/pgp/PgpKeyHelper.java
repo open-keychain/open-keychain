@@ -280,7 +280,7 @@ public class PgpKeyHelper {
     public static String getMainUserIdSafe(Context context, PGPPublicKey key) {
         String userId = getMainUserId(key);
         if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.unknownUserId);
+            userId = context.getString(R.string.unknown_user_id);
         }
         return userId;
     }
@@ -288,7 +288,7 @@ public class PgpKeyHelper {
     public static String getMainUserIdSafe(Context context, PGPSecretKey key) {
         String userId = getMainUserId(key);
         if (userId == null || userId.equals("")) {
-            userId = context.getString(R.string.unknownUserId);
+            userId = context.getString(R.string.unknown_user_id);
         }
         return userId;
     }

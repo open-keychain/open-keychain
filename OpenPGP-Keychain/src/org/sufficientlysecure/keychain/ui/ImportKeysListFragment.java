@@ -93,7 +93,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
-        setEmptyText(mActivity.getString(R.string.error_nothingImport));
+        setEmptyText(mActivity.getString(R.string.error_nothing_import));
 
         // Create an empty adapter we will use to display the loaded data.
         mAdapter = new ImportKeysAdapter(mActivity);

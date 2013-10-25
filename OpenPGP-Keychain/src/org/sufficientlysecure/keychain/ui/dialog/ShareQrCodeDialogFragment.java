@@ -74,7 +74,7 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-        alert.setTitle(R.string.menu_shareQrCode);
+        alert.setTitle(R.string.menu_share_qr_code);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.share_qr_code_dialog, null);

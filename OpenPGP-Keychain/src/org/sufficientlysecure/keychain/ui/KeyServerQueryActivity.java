@@ -235,7 +235,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                     if (mQueryType == Id.keyserver.search) {
                         if (mSearchResult != null) {
                             Toast.makeText(KeyServerQueryActivity.this,
-                                    getString(R.string.keysFound, mSearchResult.size()),
+                                    getString(R.string.keys_found, mSearchResult.size()),
                                     Toast.LENGTH_SHORT).show();
                             mAdapter.setKeys(mSearchResult);
                         }
@@ -322,11 +322,11 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
             View view = mInflater.inflate(R.layout.key_server_query_result_item, null);
 
             TextView mainUserId = (TextView)view.findViewById(R.id.mainUserId);
-            mainUserId.setText(R.string.unknownUserId);
+            mainUserId.setText(R.string.unknown_user_id);
             TextView mainUserIdRest = (TextView)view.findViewById(R.id.mainUserIdRest);
             mainUserIdRest.setText("");
             TextView keyId = (TextView)view.findViewById(R.id.keyId);
-            keyId.setText(R.string.noKey);
+            keyId.setText(R.string.no_key);
             TextView algorithm = (TextView)view.findViewById(R.id.algorithm);
             algorithm.setText("");
             TextView status = (TextView)view.findViewById(R.id.status);

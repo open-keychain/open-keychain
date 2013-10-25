@@ -72,7 +72,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
         int userIdIndex = cursor.getColumnIndex(UserIds.USER_ID);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknownUserId);
+        mainUserId.setText(R.string.unknown_user_id);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
 
@@ -87,7 +87,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
         }
 
         if (mainUserId.getText().length() == 0) {
-            mainUserId.setText(R.string.unknownUserId);
+            mainUserId.setText(R.string.unknown_user_id);
         }
 
         if (mainUserIdRest.getText().length() == 0) {

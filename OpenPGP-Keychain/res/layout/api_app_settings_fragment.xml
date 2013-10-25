@@ -88,7 +88,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_encryptionAlgorithm"
+            android:text="@string/label_encryption_algorithm"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -99,7 +99,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_hashAlgorithm"
+            android:text="@string/label_hash_algorithm"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner
@@ -110,7 +110,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_messageCompression"
+            android:text="@string/label_message_compression"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <Spinner

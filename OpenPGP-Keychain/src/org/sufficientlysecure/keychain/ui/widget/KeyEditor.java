@@ -91,11 +91,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mUsage = (Spinner) findViewById(R.id.usage);
         Choice choices[] = {
                 new Choice(Id.choice.usage.sign_only, getResources().getString(
-                        R.string.choice_signOnly)),
+                        R.string.choice_sign_only)),
                 new Choice(Id.choice.usage.encrypt_only, getResources().getString(
-                        R.string.choice_encryptOnly)),
+                        R.string.choice_encrypt_only)),
                 new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                        R.string.choice_signAndEncrypt)), };
+                        R.string.choice_sign_and_encrypt)), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -119,7 +119,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 mDatePickerResultCount = 0;
                 dialog.setCancelable(true);
                 dialog.setButton(Dialog.BUTTON_NEGATIVE, getContext()
-                        .getString(R.string.btn_noDate), new DialogInterface.OnClickListener() {
+                        .getString(R.string.btn_no_date), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         if (mDatePickerResultCount++ == 0) // Note: Ignore results after the first
                                                            // one - android sends multiples.
@@ -161,15 +161,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         boolean isDSAKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.DSA);
         if (!isElGamalKey) {
             choices.add(new Choice(Id.choice.usage.sign_only, getResources().getString(
-                    R.string.choice_signOnly)));
+                    R.string.choice_sign_only)));
         }
         if (!mIsMasterKey && !isDSAKey) {
             choices.add(new Choice(Id.choice.usage.encrypt_only, getResources().getString(
-                    R.string.choice_encryptOnly)));
+                    R.string.choice_encrypt_only)));
         }
         if (!isElGamalKey && !isDSAKey) {
             choices.add(new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                    R.string.choice_signAndEncrypt)));
+                    R.string.choice_sign_and_encrypt)));
         }
 
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),

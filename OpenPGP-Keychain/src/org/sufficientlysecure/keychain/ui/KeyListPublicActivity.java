@@ -43,14 +43,14 @@ public class KeyListPublicActivity extends KeyListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(1, Id.menu.option.key_server, 1, R.string.menu_keyServer)
+        menu.add(1, Id.menu.option.key_server, 1, R.string.menu_key_server)
                 .setIcon(R.drawable.ic_menu_search_list)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_importFromQrCode)
+        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_import_from_qr_code)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_importFromNfc)
+        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_import_from_nfc)
                 .setShowAsAction(
                         MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 

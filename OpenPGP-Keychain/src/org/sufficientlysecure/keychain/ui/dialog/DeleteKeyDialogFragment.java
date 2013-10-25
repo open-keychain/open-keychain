@@ -74,7 +74,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         final int keyType = getArguments().getInt(ARG_KEY_TYPE);
 
         // TODO: better way to do this?
-        String userId = activity.getString(R.string.unknownUserId);
+        String userId = activity.getString(R.string.unknown_user_id);
 
         if (keyType == Id.type.public_key) {
             PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,
@@ -89,8 +89,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.warning);
         builder.setMessage(getString(
-                keyType == Id.type.public_key ? R.string.keyDeletionConfirmation
-                        : R.string.secretKeyDeletionConfirmation, userId));
+                keyType == Id.type.public_key ? R.string.key_deletion_confirmation
+                        : R.string.secret_key_deletion_confirmation, userId));
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 

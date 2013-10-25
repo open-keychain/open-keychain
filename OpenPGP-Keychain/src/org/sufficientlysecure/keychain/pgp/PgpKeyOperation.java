@@ -122,7 +122,7 @@ public class PgpKeyOperation {
             NoSuchProviderException, PgpGeneralException, InvalidAlgorithmParameterException {
 
         if (keySize < 512) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_keySizeMinimum512bit));
+            throw new PgpGeneralException(mContext.getString(R.string.error_key_size_minimum512bit));
         }
 
         if (passPhrase == null) {
@@ -143,7 +143,7 @@ public class PgpKeyOperation {
         case Id.choice.algorithm.elgamal: {
             if (masterSecretKey == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_masterKeyMustNotBeElGamal));
+                        mContext.getString(R.string.error_master_key_must_not_be_el_gamal));
             }
             keyGen = KeyPairGenerator.getInstance("ElGamal", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             BigInteger p = Primes.getBestPrime(keySize);
@@ -165,7 +165,7 @@ public class PgpKeyOperation {
         }
 
         default: {
-            throw new PgpGeneralException(mContext.getString(R.string.error_unknownAlgorithmChoice));
+            throw new PgpGeneralException(mContext.getString(R.string.error_unknown_algorithm_choice));
         }
         }
 
@@ -216,7 +216,7 @@ public class PgpKeyOperation {
             String newPassPhrase) throws IOException, PGPException, PGPException,
             NoSuchProviderException {
 
-        updateProgress(R.string.progress_buildingKey, 0, 100);
+        updateProgress(R.string.progress_building_key, 0, 100);
         if (oldPassPhrase == null) {
             oldPassPhrase = "";
         }
@@ -232,7 +232,7 @@ public class PgpKeyOperation {
                 new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey()
                         .getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
 
-        updateProgress(R.string.progress_savingKeyRing, 50, 100);
+        updateProgress(R.string.progress_saving_key_ring, 50, 100);
 
         ProviderHelper.saveKeyRing(mContext, newKeyRing);
 
@@ -247,7 +247,7 @@ public class PgpKeyOperation {
 
         Log.d(Constants.TAG, "userIds: " + userIds.toString());
 
-        updateProgress(R.string.progress_buildingKey, 0, 100);
+        updateProgress(R.string.progress_building_key, 0, 100);
 
         if (oldPassPhrase == null) {
             oldPassPhrase = "";
@@ -256,7 +256,7 @@ public class PgpKeyOperation {
             newPassPhrase = "";
         }
 
-        updateProgress(R.string.progress_preparingMasterKey, 10, 100);
+        updateProgress(R.string.progress_preparing_master_key, 10, 100);
 
         int usageId = keysUsages.get(0);
         boolean canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
@@ -287,7 +287,7 @@ public class PgpKeyOperation {
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
         PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
 
-        updateProgress(R.string.progress_certifyingMasterKey, 20, 100);
+        updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
         for (String userId : userIds) {
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
@@ -332,7 +332,7 @@ public class PgpKeyOperation {
         // hashedPacketsGen.setKeyExpirationTime(true, numDays * 86400);
         // }
 
-        updateProgress(R.string.progress_buildingMasterKeyRing, 30, 100);
+        updateProgress(R.string.progress_building_master_key, 30, 100);
 
         // define hashing and signing algos
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(
@@ -350,7 +350,7 @@ public class PgpKeyOperation {
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
                 unhashedPacketsGen.generate(), certificationSignerBuilder, keyEncryptor);
 
-        updateProgress(R.string.progress_addingSubKeys, 40, 100);
+        updateProgress(R.string.progress_adding_sub_keys, 40, 100);
 
         for (int i = 1; i < keys.size(); ++i) {
             updateProgress(40 + 50 * (i - 1) / (keys.size() - 1), 100);
@@ -401,7 +401,7 @@ public class PgpKeyOperation {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        updateProgress(R.string.progress_savingKeyRing, 90, 100);
+        updateProgress(R.string.progress_saving_key_ring, 90, 100);
 
         ProviderHelper.saveKeyRing(mContext, secretKeyRing);
         ProviderHelper.saveKeyRing(mContext, publicKeyRing);
@@ -420,7 +420,7 @@ public class PgpKeyOperation {
 
             PGPSecretKey signingKey = PgpKeyHelper.getCertificationKey(mContext, masterKeyId);
             if (signingKey == null) {
-                throw new PgpGeneralException(mContext.getString(R.string.error_signatureFailed));
+                throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -428,7 +428,7 @@ public class PgpKeyOperation {
             PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                        mContext.getString(R.string.error_could_not_extract_private_key));
             }
 
             // TODO: SHA256 fixed?

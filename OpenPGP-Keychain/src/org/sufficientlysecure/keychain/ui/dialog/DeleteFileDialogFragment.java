@@ -63,7 +63,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         alert.setIcon(android.R.drawable.ic_dialog_alert);
         alert.setTitle(R.string.warning);
-        alert.setMessage(this.getString(R.string.fileDeleteConfirmation, deleteFile));
+        alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFile));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
             
@@ -82,7 +82,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                 ProgressDialogFragment deletingDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_deletingSecurely, ProgressDialog.STYLE_HORIZONTAL);
+                        R.string.progress_deleting_securely, ProgressDialog.STYLE_HORIZONTAL);
 
                 // Message is received after deleting is done in ApgService
                 KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(activity, deletingDialog) {
@@ -91,7 +91,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                         super.handleMessage(message);
 
                         if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                            Toast.makeText(activity, R.string.fileDeleteSuccessful,
+                            Toast.makeText(activity, R.string.file_delete_successful,
                                     Toast.LENGTH_SHORT).show();
                         }
                     };

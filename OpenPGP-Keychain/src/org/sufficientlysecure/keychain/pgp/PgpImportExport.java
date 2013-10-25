@@ -117,7 +117,7 @@ public class PgpImportExport {
             throws PgpGeneralException, FileNotFoundException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        updateProgress(R.string.progress_importingSecretKeys, 0, 100);
+        updateProgress(R.string.progress_importing_secret_keys, 0, 100);
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
 
@@ -158,7 +158,7 @@ public class PgpImportExport {
 
                         if (status == Id.return_value.error) {
                             throw new PgpGeneralException(
-                                    mContext.getString(R.string.error_savingKeys));
+                                    mContext.getString(R.string.error_saving_keys));
                         }
 
                         // update the counts to display to the user at the end
@@ -195,14 +195,14 @@ public class PgpImportExport {
         Bundle returnData = new Bundle();
 
         if (keyRingMasterKeyIds.size() == 1) {
-            updateProgress(R.string.progress_exportingKey, 0, 100);
+            updateProgress(R.string.progress_exporting_key, 0, 100);
         } else {
-            updateProgress(R.string.progress_exportingKeys, 0, 100);
+            updateProgress(R.string.progress_exporting_keys, 0, 100);
         }
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new PgpGeneralException(
-                    mContext.getString(R.string.error_externalStorageNotReady));
+                    mContext.getString(R.string.error_external_storage_not_ready));
         }
 
         // export public keyrings...

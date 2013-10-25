@@ -91,7 +91,7 @@ public class PgpHelper {
         }
 
         if (enc == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_invalidData));
+            throw new PgpGeneralException(context.getString(R.string.error_invalid_data));
         }
 
         // TODO: currently we always only look at the first known key
@@ -205,7 +205,7 @@ public class PgpHelper {
         raf.getFilePointer();
         byte[] data = new byte[1 << 16];
         int pos = 0;
-        String msg = context.getString(R.string.progress_deletingSecurely, file.getName());
+        String msg = context.getString(R.string.progress_deleting_securely, file.getName());
         while (pos < length) {
             if (progress != null)
                 progress.setProgress(msg, (int) (100 * pos / length), 100);

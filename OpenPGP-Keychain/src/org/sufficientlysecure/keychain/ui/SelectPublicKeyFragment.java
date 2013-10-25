@@ -85,7 +85,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
-        setEmptyText(getString(R.string.listEmpty));
+        setEmptyText(getString(R.string.list_empty));
 
         mAdapter = new SelectKeyCursorAdapter(mActivity, null, 0, mListView, Id.type.public_key);
 

@@ -170,7 +170,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="@string/label_deleteAfterDecryption" />
+                            android:text="@string/label_delete_after_decryption" />
                     </LinearLayout>
                 </LinearLayout>
             </ViewFlipper>

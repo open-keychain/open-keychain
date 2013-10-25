@@ -279,7 +279,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             } else {
                 Log.e(Constants.TAG,
                         "Direct binary data without actual file in filesystem is not supported by Intents. Please use the Remote Service API!");
-                Toast.makeText(this, R.string.error_onlyFilesAreSupported, Toast.LENGTH_LONG)
+                Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
                 finish();
@@ -404,7 +404,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private void updateActionBarButtons() {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
-            setActionbarButtons(true, R.string.btn_encryptFile, false, 0);
+            setActionbarButtons(true, R.string.btn_encrypt_file, false, 0);
 
             break;
         }
@@ -413,19 +413,19 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mSourceLabel.setText(R.string.label_message);
 
             if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                setActionbarButtons(true, R.string.btn_encryptAndSend, true,
-                        R.string.btn_encryptToClipboard);
+                setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
+                        R.string.btn_encrypt_to_clipboard);
             } else {
                 if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                     if (mSecretKeyId == 0) {
                         setActionbarButtons(false, 0, false, 0);
                     } else {
-                        setActionbarButtons(true, R.string.btn_signAndSend, true,
-                                R.string.btn_signToClipboard);
+                        setActionbarButtons(true, R.string.btn_sign_and_send, true,
+                                R.string.btn_sign_to_clipboard);
                     }
                 } else {
-                    setActionbarButtons(true, R.string.btn_encryptAndSend, true,
-                            R.string.btn_encryptToClipboard);
+                    setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
+                            R.string.btn_encrypt_to_clipboard);
                 }
             }
             break;
@@ -483,7 +483,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mOutputFilename = guessOutputFilename(mInputFilename);
 
             if (mInputFilename.equals("")) {
-                Toast.makeText(this, R.string.noFileSelected, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.no_file_selected, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -492,7 +492,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 if (!file.exists() || !file.isFile()) {
                     Toast.makeText(
                             this,
-                            getString(R.string.errorMessage, getString(R.string.error_fileNotFound)),
+                            getString(R.string.error_message, getString(R.string.error_file_not_found)),
                             Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -505,25 +505,25 @@ public class EncryptActivity extends SherlockFragmentActivity {
             String passPhrase = mPassPhrase.getText().toString();
             String passPhraseAgain = mPassPhraseAgain.getText().toString();
             if (!passPhrase.equals(passPhraseAgain)) {
-                Toast.makeText(this, R.string.passPhrasesDoNotMatch, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passphrases_do_not_match, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             gotPassPhrase = (passPhrase.length() != 0);
             if (!gotPassPhrase) {
-                Toast.makeText(this, R.string.passPhraseMustNotBeEmpty, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT).show();
                 return;
             }
         } else {
             boolean encryptIt = (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0);
             // for now require at least one form of encryption for files
             if (!encryptIt && mEncryptTarget == Id.target.file) {
-                Toast.makeText(this, R.string.selectEncryptionKey, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.select_encryption_key, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!encryptIt && mSecretKeyId == 0) {
-                Toast.makeText(this, R.string.selectEncryptionOrSignatureKey, Toast.LENGTH_SHORT)
+                Toast.makeText(this, R.string.select_encryption_or_signature_key, Toast.LENGTH_SHORT)
                         .show();
                 return;
             }
@@ -594,8 +594,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(returnHandler);
 
         mFileDialog = FileDialogFragment.newInstance(messenger,
-                getString(R.string.title_encryptToFile),
-                getString(R.string.specifyFileToEncryptTo), mOutputFilename, null,
+                getString(R.string.title_encrypt_to_file),
+                getString(R.string.specify_file_to_encrypt_to), mOutputFilename, null,
                 Id.request.output_filename);
 
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
@@ -686,7 +686,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
                         Log.d(Constants.TAG, "output: " + output);
                         ClipboardReflection.copyToClipboard(EncryptActivity.this, output);
                         Toast.makeText(EncryptActivity.this,
-                                R.string.encryptionToClipboardSuccessful, Toast.LENGTH_SHORT)
+                                R.string.encryption_to_clipboard_successful, Toast.LENGTH_SHORT)
                                 .show();
                         break;
 
@@ -703,11 +703,11 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
                         sendIntent.putExtra(Intent.EXTRA_TEXT, output);
                         startActivity(Intent.createChooser(sendIntent,
-                                getString(R.string.title_sendEmail)));
+                                getString(R.string.title_send_email)));
                         break;
 
                     case Id.target.file:
-                        Toast.makeText(EncryptActivity.this, R.string.encryptionSuccessful,
+                        Toast.makeText(EncryptActivity.this, R.string.encryption_successful,
                                 Toast.LENGTH_SHORT).show();
 
                         if (mDeleteAfter.isChecked()) {
@@ -852,10 +852,10 @@ public class EncryptActivity extends SherlockFragmentActivity {
         mFileCompression = (Spinner) findViewById(R.id.fileCompression);
         Choice[] choices = new Choice[] {
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
-                        + getString(R.string.fast) + ")"),
-                new Choice(Id.choice.compression.zip, "ZIP (" + getString(R.string.fast) + ")"),
-                new Choice(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.fast) + ")"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.very_slow)
+                        + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.zip, "ZIP (" + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.compression_very_slow)
                         + ")"), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
@@ -896,12 +896,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private void updateView() {
         if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-            mSelectKeysButton.setText(R.string.noKeysSelected);
+            mSelectKeysButton.setText(R.string.no_keys_selected);
         } else if (mEncryptionKeyIds.length == 1) {
-            mSelectKeysButton.setText(R.string.oneKeySelected);
+            mSelectKeysButton.setText(R.string.one_key_selected);
         } else {
             mSelectKeysButton.setText("" + mEncryptionKeyIds.length + " "
-                    + getResources().getString(R.string.nKeysSelected));
+                    + getResources().getString(R.string.n_keys_selected));
         }
 
         if (mSecretKeyId == Id.key.none) {
@@ -909,7 +909,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
         } else {
-            String uid = getResources().getString(R.string.unknownUserId);
+            String uid = getResources().getString(R.string.unknown_user_id);
             String uidExtra = "";
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this,
                     mSecretKeyId);

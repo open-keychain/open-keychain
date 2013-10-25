@@ -126,7 +126,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(KeyServerUploadActivity.this, R.string.keySendSuccess,
+                    Toast.makeText(KeyServerUploadActivity.this, R.string.key_send_success,
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }

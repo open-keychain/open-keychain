@@ -133,9 +133,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
         // TODO: reimplement!
         // menu.add(3, Id.menu.option.search, 0, R.string.menu_search)
         // .setIcon(R.drawable.ic_menu_search).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(0, Id.menu.option.import_from_file, 5, R.string.menu_importFromFile)
+        menu.add(0, Id.menu.option.import_from_file, 5, R.string.menu_import_from_file)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(0, Id.menu.option.export_keys, 6, R.string.menu_exportKeys).setShowAsAction(
+        menu.add(0, Id.menu.option.export_keys, 6, R.string.menu_export_keys).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
@@ -202,16 +202,16 @@ public class KeyListActivity extends SherlockFragmentActivity {
                 String title = null;
                 if (keyRingMasterKeyId != -1) {
                     // single key export
-                    title = getString(R.string.title_exportKey);
+                    title = getString(R.string.title_export_key);
                 } else {
-                    title = getString(R.string.title_exportKeys);
+                    title = getString(R.string.title_export_keys);
                 }
 
                 String message = null;
                 if (mKeyType == Id.type.public_key) {
-                    message = getString(R.string.specifyFileToExportTo);
+                    message = getString(R.string.specify_file_to_export_to);
                 } else {
-                    message = getString(R.string.specifyFileToExportSecretKeysTo);
+                    message = getString(R.string.specify_file_to_export_secret_keys_to);
                 }
 
                 mFileDialog = FileDialogFragment.newInstance(messenger, title, message,
@@ -289,11 +289,11 @@ public class KeyListActivity extends SherlockFragmentActivity {
                     int exported = returnData.getInt(KeychainIntentService.RESULT_EXPORT);
                     String toastMessage;
                     if (exported == 1) {
-                        toastMessage = getString(R.string.keyExported);
+                        toastMessage = getString(R.string.key_exported);
                     } else if (exported > 0) {
-                        toastMessage = getString(R.string.keysExported, exported);
+                        toastMessage = getString(R.string.keys_exported, exported);
                     } else {
-                        toastMessage = getString(R.string.noKeysExported);
+                        toastMessage = getString(R.string.no_keys_exported);
                     }
                     Toast.makeText(KeyListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
 

@@ -77,8 +77,8 @@ public class LookupUnknownKeyDialogFragment extends DialogFragment {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
         alert.setIcon(android.R.drawable.ic_dialog_alert);
-        alert.setTitle(R.string.title_unknownSignatureKey);
-        alert.setMessage(getString(R.string.lookupUnknownKey,
+        alert.setTitle(R.string.title_unknown_signature_key);
+        alert.setMessage(getString(R.string.lookup_unknown_key,
                 PgpKeyHelper.convertKeyIdToHex(unknownKeyId)));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

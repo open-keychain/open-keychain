@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:contentDescription="@string/filemanager_titleOpen"
+        android:contentDescription="@string/filemanager_title_open"
         android:src="@drawable/ic_menu_filebrowser" />
 
 </LinearLayout>

@@ -50,11 +50,11 @@
         <item>@string/key_size_4096</item>
     </string-array>
     <string-array name="import_action_list">
-        <item>@string/menu_importFromFile</item>
-        <item>@string/menu_keyServer</item>
-        <item>@string/menu_importFromQrCode</item>
+        <item>@string/menu_import_from_file</item>
+        <item>@string/menu_key_server</item>
+        <item>@string/menu_import_from_qr_code</item>
         <item>@string/import_from_clipboard</item>
-        <item>@string/menu_importFromNfc</item>
+        <item>@string/menu_import_from_nfc</item>
     </string-array>
 
 </resources>

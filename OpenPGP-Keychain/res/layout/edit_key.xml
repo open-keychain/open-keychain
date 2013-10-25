@@ -33,20 +33,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:text="@string/label_passPhrase" />
+            android:text="@string/label_passphrase" />
 
         <CheckBox
             android:id="@+id/edit_key_no_passphrase"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_noPassPhrase" />
+            android:text="@string/label_no_passphrase" />
 
         <Button
             android:id="@+id/edit_key_btn_change_pass_phrase"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="4dp"
-            android:text="@string/btn_setPassPhrase" />
+            android:text="@string/btn_set_passphrase" />
 
         <LinearLayout
             android:id="@+id/edit_key_container"

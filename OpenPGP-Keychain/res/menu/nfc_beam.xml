@@ -5,6 +5,6 @@
         android:id="@+id/menu_settings"
         android:icon="@drawable/ic_menu_settings"
         android:showAsAction="always|withText"
-        android:title="@string/menu_BeamPreferences"/>
+        android:title="@string/menu_beam_preferences"/>
 
 </menu>

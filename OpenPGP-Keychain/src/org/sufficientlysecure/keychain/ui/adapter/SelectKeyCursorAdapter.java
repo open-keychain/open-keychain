@@ -68,13 +68,13 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         boolean valid = cursor.getInt(cursor.getColumnIndex(PROJECTION_ROW_VALID)) > 0;
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknownUserId);
+        mainUserId.setText(R.string.unknown_user_id);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        keyId.setText(R.string.noKey);
+        keyId.setText(R.string.no_key);
         TextView status = (TextView) view.findViewById(R.id.status);
-        status.setText(R.string.unknownStatus);
+        status.setText(R.string.unknown_status);
 
         String userId = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
         if (userId != null) {
@@ -95,9 +95,9 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
 
         if (valid) {
             if (mKeyType == Id.type.public_key) {
-                status.setText(R.string.canEncrypt);
+                status.setText(R.string.can_encrypt);
             } else {
-                status.setText(R.string.canSign);
+                status.setText(R.string.can_sign);
             }
         } else {
             if (cursor.getInt(cursor.getColumnIndex(PROJECTION_ROW_AVAILABLE)) > 0) {
@@ -105,7 +105,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
                 // expired
                 status.setText(R.string.expired);
             } else {
-                status.setText(R.string.noKey);
+                status.setText(R.string.no_key);
             }
         }
 

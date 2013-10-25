@@ -23,41 +23,41 @@
             android:entryValues="@array/pass_phrase_cache_ttl_values"
             android:key="passPhraseCacheTtl"
             android:persistent="false"
-            android:title="@string/label_passPhraseCacheTtl" />
+            android:title="@string/label_passphrase_cache_ttl" />
 
         <PreferenceScreen
             android:key="keyServers"
             android:persistent="false"
-            android:title="@string/label_keyServers" />
+            android:title="@string/label_key_servers" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/section_defaults" >
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
             android:persistent="false"
-            android:title="@string/label_encryptionAlgorithm" />
+            android:title="@string/label_encryption_algorithm" />
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultHashAlgorithm"
             android:persistent="false"
-            android:title="@string/label_hashAlgorithm" />
+            android:title="@string/label_hash_algorithm" />
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultMessageCompression"
             android:persistent="false"
-            android:title="@string/label_messageCompression" />
+            android:title="@string/label_message_compression" />
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultFileCompression"
             android:persistent="false"
-            android:title="@string/label_fileCompression" />
+            android:title="@string/label_file_compression" />
 
         <CheckBoxPreference
             android:key="defaultAsciiArmour"
             android:persistent="false"
-            android:title="@string/label_asciiArmour" />
+            android:title="@string/label_ascii_armor" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/section_advanced" >
         <CheckBoxPreference
             android:key="forceV3Signatures"
             android:persistent="false"
-            android:title="@string/label_forceV3Signature" />
+            android:title="@string/label_force_v3_signature" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -25,11 +25,36 @@ import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
  * Results are returned to the callback, which has to be implemented on client side.
  */
 interface IOpenPgpService {
+
+    /**
+     * Sign
+     * 
+     * After successful signing, callback's onSuccess will contain the resulting output.
+     *
+     * @param input
+     *            OpenPgpData object containing String, byte[], ParcelFileDescriptor, or Uri
+     * @param output
+     *            Request output format by defining OpenPgpData object
+     *            
+     *            new OpenPgpData(OpenPgpData.TYPE_STRING)
+     *                Returns as String
+     *                (OpenPGP Radix-64, 33 percent overhead compared to binary, see http://tools.ietf.org/html/rfc4880#page-53)
+     *            new OpenPgpData(OpenPgpData.TYPE_BYTE_ARRAY)
+     *                Returns as byte[]
+     *            new OpenPgpData(uri)
+     *                Writes output to given Uri
+     *            new OpenPgpData(fileDescriptor)
+     *                Writes output to given ParcelFileDescriptor
+     * @param callback
+     *            Callback where to return results
+     */
+    oneway void sign(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
+    
     
     /**
      * Encrypt
      * 
-     * After successful encryption, callback's onSuccess will contain the resulting output bytes.
+     * After successful encryption, callback's onSuccess will contain the resulting output.
      * 
      * @param input
      *            OpenPgpData object containing String, byte[], ParcelFileDescriptor, or Uri
@@ -53,33 +78,9 @@ interface IOpenPgpService {
     oneway void encrypt(in OpenPgpData input, in OpenPgpData output, in long[] keyIds, in IOpenPgpCallback callback);
     
     /**
-     * Sign
-     * 
-     * After successful signing, callback's onSuccess will contain the resulting output bytes.
-     *
-     * @param input
-     *            OpenPgpData object containing String, byte[], ParcelFileDescriptor, or Uri
-     * @param output
-     *            Request output format by defining OpenPgpData object
-     *            
-     *            new OpenPgpData(OpenPgpData.TYPE_STRING)
-     *                Returns as String
-     *                (OpenPGP Radix-64, 33 percent overhead compared to binary, see http://tools.ietf.org/html/rfc4880#page-53)
-     *            new OpenPgpData(OpenPgpData.TYPE_BYTE_ARRAY)
-     *                Returns as byte[]
-     *            new OpenPgpData(uri)
-     *                Writes output to given Uri
-     *            new OpenPgpData(fileDescriptor)
-     *                Writes output to given ParcelFileDescriptor
-     * @param callback
-     *            Callback where to return results
-     */
-    oneway void sign(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
-    
-    /**
      * Sign then encrypt
      * 
-     * After successful signing and encryption, callback's onSuccess will contain the resulting output bytes.
+     * After successful signing and encryption, callback's onSuccess will contain the resulting output.
      *
      * @param input
      *            OpenPgpData object containing String, byte[], ParcelFileDescriptor, or Uri
@@ -104,9 +105,9 @@ interface IOpenPgpService {
     
     /**
      * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
-     * and also signed-only inputBytes.
+     * and also signed-only input.
      * 
-     * After successful decryption/verification, callback's onSuccess will contain the resulting output bytes.
+     * After successful decryption/verification, callback's onSuccess will contain the resulting output.
      * The signatureResult in onSuccess is only non-null if signed-and-encrypted or signed-only inputBytes were given.
      * 
      * @param input

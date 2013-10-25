@@ -56,13 +56,13 @@ public class AlgorithmNames {
         mHashNames.put(HashAlgorithmTags.SHA512, "SHA-512");
 
         mCompressionNames.put(Id.choice.compression.none, mActivity.getString(R.string.choice_none)
-                + " (" + mActivity.getString(R.string.fast) + ")");
+                + " (" + mActivity.getString(R.string.compression_fast) + ")");
         mCompressionNames.put(Id.choice.compression.zip,
-                "ZIP (" + mActivity.getString(R.string.fast) + ")");
+                "ZIP (" + mActivity.getString(R.string.compression_fast) + ")");
         mCompressionNames.put(Id.choice.compression.zlib,
-                "ZLIB (" + mActivity.getString(R.string.fast) + ")");
+                "ZLIB (" + mActivity.getString(R.string.compression_fast) + ")");
         mCompressionNames.put(Id.choice.compression.bzip2,
-                "BZIP2 (" + mActivity.getString(R.string.very_slow) + ")");
+                "BZIP2 (" + mActivity.getString(R.string.compression_very_slow) + ")");
     }
 
     public HashMap<Integer, String> getEncryptionNames() {

@@ -64,7 +64,7 @@ public class ShareActivity extends SherlockFragmentActivity {
             sendIntent.putExtra(Intent.EXTRA_TEXT, keyringArmored.get(0));
             sendIntent.setType("text/plain");
             startActivity(Intent.createChooser(sendIntent,
-                    getResources().getText(R.string.shareKeyringWith)));
+                    getResources().getText(R.string.action_share_key_with)));
         } else if (ACTION_SHARE_KEYRING_WITH_QR_CODE.equals(action)) {
             ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
                     .get(0));

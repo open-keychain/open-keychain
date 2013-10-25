@@ -137,32 +137,32 @@ public class PgpOperation {
 
         if (encryptionKeyIds.length == 0 && encryptionPassphrase == null) {
             throw new PgpGeneralException(
-                    mContext.getString(R.string.error_noEncryptionKeysOrPassPhrase));
+                    mContext.getString(R.string.error_no_encryption_keys_or_passphrase));
         }
 
         if (signatureKeyId != Id.key.none) {
             signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, signatureKeyId);
             signingKey = PgpKeyHelper.getSigningKey(mContext, signatureKeyId);
             if (signingKey == null) {
-                throw new PgpGeneralException(mContext.getString(R.string.error_signatureFailed));
+                throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
 
             if (signaturePassphrase == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_noSignaturePassPhrase));
+                        mContext.getString(R.string.error_no_signature_passphrase));
             }
 
-            updateProgress(R.string.progress_extractingSignatureKey, 0, 100);
+            updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassphrase.toCharArray());
             signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                        mContext.getString(R.string.error_could_not_extract_private_key));
             }
         }
-        updateProgress(R.string.progress_preparingStreams, 5, 100);
+        updateProgress(R.string.progress_preparing_streams, 5, 100);
 
         // encrypt and compress input file content
         JcePGPDataEncryptorBuilder encryptorBuilder = new JcePGPDataEncryptorBuilder(
@@ -196,7 +196,7 @@ public class PgpOperation {
         PGPV3SignatureGenerator signatureV3Generator = null;
 
         if (signatureKeyId != Id.key.none) {
-            updateProgress(R.string.progress_preparingSignature, 10, 100);
+            updateProgress(R.string.progress_preparing_signature, 10, 100);
 
             // content signer based on signing key algorithm and choosen hash algorithm
             JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
@@ -262,7 +262,7 @@ public class PgpOperation {
         literalGen.close();
 
         if (signatureKeyId != Id.key.none) {
-            updateProgress(R.string.progress_generatingSignature, 95, 100);
+            updateProgress(R.string.progress_generating_signature, 95, 100);
             if (signatureForceV3) {
                 signatureV3Generator.generate().encode(pOut);
             } else {
@@ -293,19 +293,19 @@ public class PgpOperation {
 
         if (signatureKeyId == 0) {
             armorOut.close();
-            throw new PgpGeneralException(mContext.getString(R.string.error_noSignatureKey));
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_key));
         }
 
         signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, signatureKeyId);
         signingKey = PgpKeyHelper.getSigningKey(mContext, signatureKeyId);
         if (signingKey == null) {
             armorOut.close();
-            throw new PgpGeneralException(mContext.getString(R.string.error_signatureFailed));
+            throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
         }
 
         if (signaturePassphrase == null) {
             armorOut.close();
-            throw new PgpGeneralException(mContext.getString(R.string.error_noSignaturePassPhrase));
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_passphrase));
         }
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassphrase.toCharArray());
@@ -313,11 +313,11 @@ public class PgpOperation {
         if (signaturePrivateKey == null) {
             armorOut.close();
             throw new PgpGeneralException(
-                    mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                    mContext.getString(R.string.error_could_not_extract_private_key));
         }
-        updateProgress(R.string.progress_preparingStreams, 0, 100);
+        updateProgress(R.string.progress_preparing_streams, 0, 100);
 
-        updateProgress(R.string.progress_preparingSignature, 30, 100);
+        updateProgress(R.string.progress_preparing_signature, 30, 100);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
@@ -408,17 +408,17 @@ public class PgpOperation {
         PGPPrivateKey signaturePrivateKey = null;
 
         if (signatureKeyId == 0) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_noSignatureKey));
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_key));
         }
 
         signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, signatureKeyId);
         signingKey = PgpKeyHelper.getSigningKey(mContext, signatureKeyId);
         if (signingKey == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_signatureFailed));
+            throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
         }
 
         if (signaturePassPhrase == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_noSignaturePassPhrase));
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_passphrase));
         }
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
@@ -426,11 +426,11 @@ public class PgpOperation {
         signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
             throw new PgpGeneralException(
-                    mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                    mContext.getString(R.string.error_could_not_extract_private_key));
         }
-        updateProgress(R.string.progress_preparingStreams, 0, 100);
+        updateProgress(R.string.progress_preparing_streams, 0, 100);
 
-        updateProgress(R.string.progress_preparingSignature, 30, 100);
+        updateProgress(R.string.progress_preparing_signature, 30, 100);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
@@ -520,7 +520,7 @@ public class PgpOperation {
         }
 
         if (enc == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_invalidData));
+            throw new PgpGeneralException(context.getString(R.string.error_invalid_data));
         }
 
         Iterator<?> it = enc.getEncryptedDataObjects();
@@ -548,7 +548,7 @@ public class PgpOperation {
         long signatureKeyId = 0;
 
         int currentProgress = 0;
-        updateProgress(R.string.progress_readingData, currentProgress, 100);
+        updateProgress(R.string.progress_reading_data, currentProgress, 100);
 
         if (o instanceof PGPEncryptedDataList) {
             enc = (PGPEncryptedDataList) o;
@@ -557,7 +557,7 @@ public class PgpOperation {
         }
 
         if (enc == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_invalidData));
+            throw new PgpGeneralException(mContext.getString(R.string.error_invalid_data));
         }
 
         InputStream clear = null;
@@ -581,10 +581,10 @@ public class PgpOperation {
 
             if (pbe == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_noSymmetricEncryptionPacket));
+                        mContext.getString(R.string.error_no_symmetric_encryption_packet));
             }
 
-            updateProgress(R.string.progress_preparingStreams, currentProgress, 100);
+            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build();
@@ -597,7 +597,7 @@ public class PgpOperation {
             encryptedData = pbe;
             currentProgress += 5;
         } else {
-            updateProgress(R.string.progress_findingKey, currentProgress, 100);
+            updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
             PGPPublicKeyEncryptedData pbe = null;
             PGPSecretKey secretKey = null;
@@ -616,11 +616,11 @@ public class PgpOperation {
             }
 
             if (secretKey == null) {
-                throw new PgpGeneralException(mContext.getString(R.string.error_noSecretKeyFound));
+                throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
             }
 
             currentProgress += 5;
-            updateProgress(R.string.progress_extractingKey, currentProgress, 100);
+            updateProgress(R.string.progress_extracting_key, currentProgress, 100);
             PGPPrivateKey privateKey = null;
             try {
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
@@ -628,14 +628,14 @@ public class PgpOperation {
                                 passphrase.toCharArray());
                 privateKey = secretKey.extractPrivateKey(keyDecryptor);
             } catch (PGPException e) {
-                throw new PGPException(mContext.getString(R.string.error_wrongPassPhrase));
+                throw new PGPException(mContext.getString(R.string.error_wrong_passphrase));
             }
             if (privateKey == null) {
                 throw new PgpGeneralException(
-                        mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                        mContext.getString(R.string.error_could_not_extract_private_key));
             }
             currentProgress += 5;
-            updateProgress(R.string.progress_preparingStreams, currentProgress, 100);
+            updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PublicKeyDataDecryptorFactory decryptorFactory = new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(privateKey);
@@ -653,7 +653,7 @@ public class PgpOperation {
         int signatureIndex = -1;
 
         if (dataChunk instanceof PGPCompressedData) {
-            updateProgress(R.string.progress_decompressingData, currentProgress, 100);
+            updateProgress(R.string.progress_decompressing_data, currentProgress, 100);
 
             PGPObjectFactory fact = new PGPObjectFactory(
                     ((PGPCompressedData) dataChunk).getDataStream());
@@ -663,7 +663,7 @@ public class PgpOperation {
         }
 
         if (dataChunk instanceof PGPOnePassSignatureList) {
-            updateProgress(R.string.progress_processingSignature, currentProgress, 100);
+            updateProgress(R.string.progress_processing_signature, currentProgress, 100);
 
             returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE, true);
             PGPOnePassSignatureList sigList = (PGPOnePassSignatureList) dataChunk;
@@ -753,7 +753,7 @@ public class PgpOperation {
             }
 
             if (signature != null) {
-                updateProgress(R.string.progress_verifyingSignature, 90, 100);
+                updateProgress(R.string.progress_verifying_signature, 90, 100);
 
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
@@ -767,7 +767,7 @@ public class PgpOperation {
 
         // TODO: add integrity somewhere
         if (encryptedData.isIntegrityProtected()) {
-            updateProgress(R.string.progress_verifyingIntegrity, 95, 100);
+            updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
             if (encryptedData.verify()) {
                 // passed
@@ -814,12 +814,12 @@ public class PgpOperation {
 
         returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE, true);
 
-        updateProgress(R.string.progress_processingSignature, 60, 100);
+        updateProgress(R.string.progress_processing_signature, 60, 100);
         PGPObjectFactory pgpFact = new PGPObjectFactory(aIn);
 
         PGPSignatureList sigList = (PGPSignatureList) pgpFact.nextObject();
         if (sigList == null) {
-            throw new PgpGeneralException(mContext.getString(R.string.error_corruptData));
+            throw new PgpGeneralException(mContext.getString(R.string.error_corrupt_data));
         }
         PGPSignature signature = null;
         long signatureKeyId = 0;

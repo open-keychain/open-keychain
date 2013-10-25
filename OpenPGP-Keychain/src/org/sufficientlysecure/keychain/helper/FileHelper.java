@@ -69,7 +69,7 @@ public class FileHelper {
             activity.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(activity, R.string.noFilemanagerInstalled, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.no_filemanager_installed, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -80,7 +80,7 @@ public class FileHelper {
             fragment.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
             // No compatible file manager was found.
-            Toast.makeText(fragment.getActivity(), R.string.noFilemanagerInstalled,
+            Toast.makeText(fragment.getActivity(), R.string.no_filemanager_installed,
                     Toast.LENGTH_SHORT).show();
         }
     }

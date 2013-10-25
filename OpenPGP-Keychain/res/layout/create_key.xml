@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="4dp"
-            android:text="@string/keyCreationElGamalInfo" />
+            android:text="@string/key_creation_el_gamal_info" />
 
         <TableRow>
 
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:padding="4dp"
-                android:text="@string/label_keySize" />
+                android:text="@string/label_key_size" />
 
             <Spinner
                 android:id="@+id/create_key_size"

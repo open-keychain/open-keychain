@@ -217,7 +217,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(SignKeyActivity.this, R.string.keySignSuccess,
+                    Toast.makeText(SignKeyActivity.this, R.string.key_sign_success,
                             Toast.LENGTH_SHORT).show();
 
                     // check if we need to send the key to the server or not
@@ -271,7 +271,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(SignKeyActivity.this, R.string.keySendSuccess,
+                    Toast.makeText(SignKeyActivity.this, R.string.key_send_success,
                             Toast.LENGTH_SHORT).show();
 
                     finish();

@@ -8,7 +8,7 @@
         android:id="@+id/import_qrcode_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/menu_importFromQrCode" />
+        android:text="@string/menu_import_from_qr_code" />
 
     <TextView
         android:id="@+id/import_qrcode_text"

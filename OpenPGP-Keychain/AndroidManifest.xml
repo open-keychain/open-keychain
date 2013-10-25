@@ -88,7 +88,7 @@
         <activity
             android:name=".ui.KeyListPublicActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_managePublicKeys"
+            android:label="@string/title_manage_public_keys"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
 
@@ -104,7 +104,7 @@
         <activity
             android:name=".ui.KeyListSecretActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_manageSecretKeys"
+            android:label="@string/title_manage_secret_keys"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
 
@@ -120,13 +120,13 @@
         <activity
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_editKey"
+            android:label="@string/title_edit_key"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_selectRecipients"
+            android:label="@string/title_select_recipients"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
 
@@ -142,7 +142,7 @@
         <activity
             android:name=".ui.SelectSecretKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_selectSignature"
+            android:label="@string/title_select_secret_key"
             android:launchMode="singleTop" >
 
             <!-- <intent-filter> -->
@@ -248,11 +248,11 @@
         <activity
             android:name=".ui.KeyServerQueryActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_keyServerQuery" />
+            android:label="@string/title_key_server_query" />
         <activity
             android:name=".ui.KeyServerUploadActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_sendKey" />
+            android:label="@string/title_send_key" />
         <activity
             android:name=".ui.PreferencesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -260,16 +260,16 @@
         <activity
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_keyServerPreference"
+            android:label="@string/title_key_server_preference"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SignKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_signKey" />
+            android:label="@string/title_sign_key" />
         <activity
             android:name=".ui.ImportKeysActivity"
-            android:label="@string/title_importKeys"
+            android:label="@string/title_import_keys"
             android:windowSoftInputMode="stateHidden" >
 
             <!-- Keychain's own Actions -->
@@ -332,7 +332,7 @@
         </activity>
         <activity
             android:name=".ui.ShareNfcBeamActivity"
-            android:label="@string/title_shareByNfc"
+            android:label="@string/title_share_by_nfc"
             android:launchMode="singleTop"
             android:uiOptions="splitActionBarWhenNarrow" >
 

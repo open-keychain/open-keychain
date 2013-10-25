@@ -20,6 +20,6 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="3dp"
-        android:text="@string/listInformation" />
+        android:text="@string/list_information" />
 
 </LinearLayout>

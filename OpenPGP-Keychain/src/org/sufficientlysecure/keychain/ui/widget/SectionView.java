@@ -86,7 +86,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         mType = type;
         switch (type) {
         case Id.type.user_id: {
-            mTitle.setText(R.string.section_userIds);
+            mTitle.setText(R.string.section_user_ids);
             break;
         }
 
@@ -157,7 +157,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
                 View view = mInflater.inflate(R.layout.create_key, null);
                 dialog.setView(view);
-                dialog.setTitle(R.string.title_createKey);
+                dialog.setTitle(R.string.title_create_key);
 
                 boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
 

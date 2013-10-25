@@ -2,6 +2,5 @@
 <resources>
 
     <string name="app_name" translate="false">OpenPGP Keychain</string>
-    <string name="about_url" translate="false">https://github.com/dschuermann/apg</string>
 
 </resources>

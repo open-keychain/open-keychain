@@ -115,7 +115,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
         if (secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none) {
             secretKey = null;
-            alert.setMessage(R.string.passPhraseForSymmetricEncryption);
+            alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
             // TODO: by master key id???
             secretKey = PgpKeyHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity,
@@ -123,8 +123,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
 
             if (secretKey == null) {
-                alert.setTitle(R.string.title_keyNotFound);
-                alert.setMessage(getString(R.string.keyNotFound, secretKeyId));
+                alert.setTitle(R.string.title_key_not_found);
+                alert.setMessage(getString(R.string.key_not_found, secretKeyId));
                 alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
@@ -137,7 +137,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             String userId = PgpKeyHelper.getMainUserIdSafe(activity, secretKey);
 
             Log.d(Constants.TAG, "User id: '" + userId + "'");
-            alert.setMessage(getString(R.string.passPhraseFor, userId));
+            alert.setMessage(getString(R.string.passphrase_for, userId));
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -169,7 +169,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                 if (testKey == null) {
                                     if (!clickSecretKey.isMasterKey()) {
                                         Toast.makeText(activity,
-                                                R.string.error_couldNotExtractPrivateKey,
+                                                R.string.error_could_not_extract_private_key,
                                                 Toast.LENGTH_SHORT).show();
                                         
                                         sendMessageToHandler(MESSAGE_CANCEL);
@@ -185,14 +185,14 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                     keyOK = false;
                                 }
                             } catch (PGPException e) {
-                                Toast.makeText(activity, R.string.wrongPassPhrase,
+                                Toast.makeText(activity, R.string.wrong_passphrase,
                                         Toast.LENGTH_SHORT).show();
                                 
                                 sendMessageToHandler(MESSAGE_CANCEL);
                                 return;
                             }
                         } else {
-                            Toast.makeText(activity, R.string.error_couldNotExtractPrivateKey,
+                            Toast.makeText(activity, R.string.error_could_not_extract_private_key,
                                     Toast.LENGTH_SHORT).show();
                             
                             sendMessageToHandler(MESSAGE_CANCEL);

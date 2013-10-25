@@ -39,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:paddingRight="10dip"
-                    android:text="@string/label_keyId" />
+                    android:text="@string/label_key_id" />
 
                 <TextView
                     android:id="@+id/keyId"

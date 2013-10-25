@@ -123,10 +123,10 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
                 Id.choice.compression.zlib, Id.choice.compression.bzip2, };
         entries = new String[] {
-                getString(R.string.choice_none) + " (" + getString(R.string.fast) + ")",
-                "ZIP (" + getString(R.string.fast) + ")",
-                "ZLIB (" + getString(R.string.fast) + ")",
-                "BZIP2 (" + getString(R.string.very_slow) + ")", };
+                getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
+                "ZIP (" + getString(R.string.compression_fast) + ")",
+                "ZLIB (" + getString(R.string.compression_fast) + ")",
+                "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -183,7 +183,7 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
 
         mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
         String servers[] = mPreferences.getKeyServers();
-        mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers,
+        mKeyServerPreference.setSummary(getResources().getString(R.string.n_key_servers,
                 servers.length));
         mKeyServerPreference
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -208,7 +208,7 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
             String servers[] = data
                     .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
             mPreferences.setKeyServers(servers);
-            mKeyServerPreference.setSummary(getResources().getString(R.string.nKeyServers,
+            mKeyServerPreference.setSummary(getResources().getString(R.string.n_key_servers,
                     servers.length));
             break;
         }

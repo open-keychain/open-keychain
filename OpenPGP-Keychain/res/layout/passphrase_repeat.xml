@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="4dp"
-            android:text="@string/label_passPhrase" />
+            android:text="@string/label_passphrase" />
 
         <EditText
             android:id="@+id/passphrase_passphrase"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:padding="4dp"
-            android:text="@string/label_passPhraseAgain" />
+            android:text="@string/label_passphrase_again" />
 
         <EditText
             android:id="@+id/passphrase_passphrase_again"

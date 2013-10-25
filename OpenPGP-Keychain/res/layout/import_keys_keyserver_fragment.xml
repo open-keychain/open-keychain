@@ -7,7 +7,7 @@
         android:id="@+id/import_keyserver_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/menu_keyServer" />
+        android:text="@string/menu_key_server" />
 
     <!-- <Spinner -->
     <!-- android:id="@+id/import_keys_server_key_server" -->

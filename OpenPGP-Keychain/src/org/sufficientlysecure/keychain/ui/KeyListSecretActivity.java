@@ -43,9 +43,9 @@ public class KeyListSecretActivity extends KeyListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(1, Id.menu.option.create, 1, R.string.menu_createKey).setShowAsAction(
+        menu.add(1, Id.menu.option.create, 1, R.string.menu_create_key).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.createExpert, 2, R.string.menu_createKeyExpert).setShowAsAction(
+        menu.add(1, Id.menu.option.createExpert, 2, R.string.menu_create_key_expert).setShowAsAction(
                 MenuItem.SHOW_AS_ACTION_NEVER);
 
         return true;

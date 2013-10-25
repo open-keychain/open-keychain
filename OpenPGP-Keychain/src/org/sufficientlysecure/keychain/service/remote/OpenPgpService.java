@@ -387,7 +387,7 @@ public class OpenPgpService extends RemoteService {
                     }
                     secretKeyId = PgpHelper.getDecryptionKeyId(this, inputStream2);
                     if (secretKeyId == Id.key.none) {
-                        throw new PgpGeneralException(getString(R.string.error_noSecretKeyFound));
+                        throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
                     }
                 } catch (NoAsymmetricEncryptionException e) {
                     if (inputStream2.markSupported()) {
@@ -396,7 +396,7 @@ public class OpenPgpService extends RemoteService {
                     secretKeyId = Id.key.symmetric;
                     if (!PgpOperation.hasSymmetricEncryption(this, inputStream2)) {
                         throw new PgpGeneralException(
-                                getString(R.string.error_noKnownEncryptionFound));
+                                getString(R.string.error_no_known_encryption_found));
                     }
                     // we do not support symmetric decryption from the API!
                     throw new Exception("Symmetric decryption is not supported!");

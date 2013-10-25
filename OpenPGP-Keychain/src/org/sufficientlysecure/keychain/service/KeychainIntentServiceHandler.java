@@ -79,7 +79,7 @@ public class KeychainIntentServiceHandler extends Handler {
             // show error from service
             if (data.containsKey(DATA_ERROR)) {
                 Toast.makeText(mActivity,
-                        mActivity.getString(R.string.errorMessage, data.getString(DATA_ERROR)),
+                        mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
                         Toast.LENGTH_SHORT).show();
             }
 

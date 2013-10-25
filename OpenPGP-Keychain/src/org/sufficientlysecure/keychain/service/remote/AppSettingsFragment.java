@@ -227,7 +227,7 @@ public class AppSettingsFragment extends Fragment {
             mKeyUserId.setText(R.string.api_settings_no_key);
             mKeyUserIdRest.setText("");
         } else {
-            String uid = getResources().getString(R.string.unknownUserId);
+            String uid = getResources().getString(R.string.unknown_user_id);
             String uidExtra = "";
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
                     getActivity(), secretKeyId);

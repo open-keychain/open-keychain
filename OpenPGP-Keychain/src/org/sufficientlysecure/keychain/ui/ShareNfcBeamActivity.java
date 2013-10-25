@@ -64,7 +64,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             Toast.makeText(this,
-                    getString(R.string.error) + ": " + getString(R.string.error_jellyBeanNeeded),
+                    getString(R.string.error) + ": " + getString(R.string.error_jelly_bean_needed),
                     Toast.LENGTH_LONG).show();
             finish();
         } else {
@@ -72,7 +72,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
             mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
             if (mNfcAdapter == null) {
                 Toast.makeText(this,
-                        getString(R.string.error) + ": " + getString(R.string.error_nfcNeeded),
+                        getString(R.string.error) + ": " + getString(R.string.error_nfc_needed),
                         Toast.LENGTH_LONG).show();
                 finish();
             } else {
@@ -170,7 +170,7 @@ public class ShareNfcBeamActivity extends SherlockFragmentActivity implements
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case MESSAGE_SENT:
-                Toast.makeText(getApplicationContext(), R.string.nfcSuccessfull, Toast.LENGTH_LONG)
+                Toast.makeText(getApplicationContext(), R.string.nfc_successfull, Toast.LENGTH_LONG)
                         .show();
                 break;
             }
