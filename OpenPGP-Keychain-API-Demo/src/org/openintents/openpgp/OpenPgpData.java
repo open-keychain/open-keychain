@@ -99,7 +99,7 @@ public class OpenPgpData implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
-    	dest.writeInt(type);
+        dest.writeInt(type);
         dest.writeString(string);
         dest.writeInt(bytes.length);
         dest.writeByteArray(bytes);
