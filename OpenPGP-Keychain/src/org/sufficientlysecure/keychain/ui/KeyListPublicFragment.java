@@ -73,9 +73,10 @@ public class KeyListPublicFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, Id.menu.update, 1, R.string.menu_update_key);
-        menu.add(0, Id.menu.signKey, 2, R.string.menu_sign_key);
-        menu.add(0, Id.menu.exportToServer, 3, R.string.menu_export_key_to_server);
+        menu.add(0, 23, 1, R.string.title_key_details); // :TODO: Fix magic number
+        menu.add(0, Id.menu.update, 2, R.string.menu_update_key);
+        menu.add(0, Id.menu.signKey, 3, R.string.menu_sign_key);
+        menu.add(0, Id.menu.exportToServer, 4, R.string.menu_export_key_to_server);
         menu.add(0, Id.menu.share, 6, R.string.menu_share);
         menu.add(0, Id.menu.share_qr_code, 7, R.string.menu_share_qr_code);
         menu.add(0, Id.menu.share_nfc, 8, R.string.menu_share_nfc);
@@ -112,7 +113,13 @@ public class KeyListPublicFragment extends KeyListFragment implements
             startActivityForResult(queryIntent, Id.request.look_up_key_id);
 
             return true;
-
+        case 23:
+            
+        	Intent detailsIntent = new Intent(mKeyListActivity, KeyDetailsActivity.class);
+        	detailsIntent.putExtra("key", ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId));
+        	startActivity(detailsIntent);
+            return true;
+            
         case Id.menu.exportToServer:
             Intent uploadIntent = new Intent(mKeyListActivity, KeyServerUploadActivity.class);
             uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
