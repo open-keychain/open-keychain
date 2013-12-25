@@ -44,6 +44,7 @@
     <string name="title_send_key">Export to Key Server</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
     <string name="title_sign_key">Sign Key</string>
+    <string name="title_keyDetails">Key Details</string>
     <string name="title_help">Help</string>
     <string name="title_share_by_nfc">Share key with NFC</string>
 
@@ -53,6 +54,7 @@
     <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
+    <string name="section_master_key">Master Key</string>
 
     <!-- button -->
     <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
@@ -142,6 +144,8 @@
     <string name="n_key_servers">%s key server(s)</string>
     <string name="fingerprint">Fingerprint:</string>
     <string name="secret_key">Secret Key:</string>
+    <string name="notValid">not valid</string>
+    <string name="secretKeyring">Secret Keyring</string>
 
     <!-- choice -->
     <string name="choice_none">None</string>
@@ -340,5 +344,4 @@
     <!-- Share -->
     <string name="share_qr_code_dialog_start">Go through all QR Codes using \'Next\', and scan them one by one.</string>
     <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
-
 </resources>

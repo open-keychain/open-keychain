@@ -1,0 +1,110 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="?android:attr/scrollbarSize"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
+
+    <TextView
+        style="@style/SectionHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/section_master_key" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:stretchColumns="1" >
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_keyId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_key_id" />
+
+            <TextView
+                android:id="@+id/fingerprint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip"
+                android:text="0000 0000"
+                android:typeface="monospace" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_algorithm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_algorithm" />
+
+            <TextView
+                android:id="@+id/algorithm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="5dip"
+                android:text="Name" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_creation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_creation" />
+
+            <TextView
+                android:id="@+id/creation"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/label_expiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingRight="10dip"
+                android:text="@string/label_expiry" />
+
+            <TextView
+                android:id="@+id/expiry"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        style="@style/SectionHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/section_user_ids" />
+    
+    <ListView android:id="@+id/user_ids"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></ListView>
+
+    <TextView
+        style="@style/SectionHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/section_keys" />
+
+</LinearLayout>
