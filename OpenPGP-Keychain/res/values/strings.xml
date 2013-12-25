@@ -44,7 +44,7 @@
     <string name="title_send_key">Export to Key Server</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
     <string name="title_sign_key">Sign Key</string>
-    <string name="title_keyDetails">Key Details</string>
+    <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
     <string name="title_share_by_nfc">Share key with NFC</string>
 

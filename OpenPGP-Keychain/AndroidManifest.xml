@@ -126,7 +126,7 @@
         <activity
             android:name=".ui.KeyDetailsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_keyDetails"
+            android:label="@string/title_key_details"
             android:parentActivityName=".ui.KeyListPublicActivity"
             android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
