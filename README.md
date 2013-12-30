@@ -220,6 +220,10 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 * ZXing QRCode Integration  
   http://code.google.com/p/zxing/  
   Apache License v2
+  
+* pinned-section-listview    
+  https://github.com/beworker/pinned-section-listview  
+  Apache License v2
 
 
 ## Images
