@@ -23,6 +23,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.exception.WrongPackageSignatureException;
@@ -140,8 +141,12 @@ public abstract class RemoteService extends Service {
                 }
             }
         } catch (WrongPackageSignatureException e) {
-            // TODO: Inform user about wrong signature!
-            Log.e(Constants.TAG, "RemoteService", e);
+            Log.e(Constants.TAG, e.getMessage());
+
+            Bundle extras = new Bundle();
+            extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+                    getString(R.string.api_error_wrong_signature));
+            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null, extras);
         }
     }
 
@@ -243,8 +248,13 @@ public abstract class RemoteService extends Service {
                         mThreadPool.shutdownNow();
                     }
                 } catch (WrongPackageSignatureException e) {
-                    // TODO: Inform user about wrong signature!
-                    Log.e(Constants.TAG, "RemoteService", e);
+                    Log.e(Constants.TAG, e.getMessage());
+
+                    Bundle extras = new Bundle();
+                    extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+                            getString(R.string.api_error_wrong_signature));
+                    pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null,
+                            extras);
                 }
             } else {
                 allowed = false;

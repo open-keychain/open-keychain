@@ -102,8 +102,7 @@ public class ActionBarHelper {
         final View customActionBarView = inflater
                 .inflate(R.layout.actionbar_custom_view_done, null);
 
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
-                .setText(R.string.api_settings_save);
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text)).setText(doneText);
         customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
                 doneOnClickListener);
 

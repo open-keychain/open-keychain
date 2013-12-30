@@ -48,6 +48,8 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
             + "API_ACTIVITY_CACHE_PASSPHRASE";
     public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
             + "API_ACTIVITY_SELECT_PUB_KEYS";
+    public static final String ACTION_ERROR_MESSAGE = Constants.INTENT_PREFIX
+            + "API_ACTIVITY_ERROR_MESSAGE";
 
     public static final String EXTRA_MESSENGER = "messenger";
 
@@ -60,6 +62,8 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
     public static final String EXTRA_DUBLICATE_USER_IDS = "dublicate_user_ids";
+    // error message
+    public static final String EXTRA_ERROR_MESSAGE = "error_message";
 
     private Messenger mMessenger;
 
@@ -271,6 +275,27 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.api_select_pub_keys_fragment_container, mSelectFragment).commit();
             }
+        } else if (ACTION_ERROR_MESSAGE.equals(action)) {
+            String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
+
+            String text = new String();
+            text += "<font color=\"red\">" + errorMessage + "</font>";
+
+            // Inflate a "Done" custom action bar view
+            ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_okay,
+                    new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+                            finish();
+                        }
+                    });
+
+            setContentView(R.layout.api_app_error_message);
+
+            // set text on view
+            HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_app_error_message_text);
+            textView.setHtmlFromString(text);
         } else {
             Log.e(Constants.TAG, "Wrong action!");
             finish();
