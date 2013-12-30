@@ -39,22 +39,19 @@ public class OpenPgpListPreference extends DialogPreference {
     ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
     private String mSelectedPackage;
 
-    public static final int REQUIRED_API_VERSION = 1;
-
     public OpenPgpListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        List<ResolveInfo> resInfo =
-                context.getPackageManager().queryIntentServices(
-                        new Intent(IOpenPgpService.class.getName()), PackageManager.GET_META_DATA);
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(
+                new Intent(OpenPgpConstants.SERVICE_INTENT), PackageManager.GET_META_DATA);
         if (!resInfo.isEmpty()) {
             for (ResolveInfo resolveInfo : resInfo) {
                 if (resolveInfo.serviceInfo == null)
                     continue;
 
                 String packageName = resolveInfo.serviceInfo.packageName;
-                String simpleName = String.valueOf(resolveInfo.serviceInfo
-                        .loadLabel(context.getPackageManager()));
+                String simpleName = String.valueOf(resolveInfo.serviceInfo.loadLabel(context
+                        .getPackageManager()));
                 Drawable icon = resolveInfo.serviceInfo.loadIcon(context.getPackageManager());
 
                 // get api version
@@ -95,22 +92,20 @@ public class OpenPgpListPreference extends DialogPreference {
                 TextView tv = (TextView) v.findViewById(android.R.id.text1);
 
                 // Put the image on the TextView
-                tv.setCompoundDrawablesWithIntrinsicBounds(mProviderList.get(position).icon,
-                        null, null, null);
+                tv.setCompoundDrawablesWithIntrinsicBounds(mProviderList.get(position).icon, null,
+                        null, null);
 
-                // Add margin between image and text (support various screen
-                // densities)
+                // Add margin between image and text (support various screen densities)
                 int dp5 = (int) (5 * getContext().getResources().getDisplayMetrics().density + 0.5f);
                 tv.setCompoundDrawablePadding(dp5);
 
                 // disable if it has the wrong api_version
-                if (mProviderList.get(position).apiVersion == REQUIRED_API_VERSION) {
+                if (mProviderList.get(position).apiVersion == OpenPgpConstants.REQUIRED_API_VERSION) {
                     tv.setEnabled(true);
                 } else {
                     tv.setEnabled(false);
-                    tv.setText(tv.getText() + " (API v"
-                            + mProviderList.get(position).apiVersion + ", needs v"
-                            + REQUIRED_API_VERSION + ")");
+                    tv.setText(tv.getText() + " (API v" + mProviderList.get(position).apiVersion
+                            + ", needs v" + OpenPgpConstants.REQUIRED_API_VERSION + ")");
                 }
 
                 return v;
@@ -125,8 +120,8 @@ public class OpenPgpListPreference extends DialogPreference {
                         mSelectedPackage = mProviderList.get(which).packageName;
 
                         /*
-                         * Clicking on an item simulates the positive button
-                         * click, and dismisses the dialog.
+                         * Clicking on an item simulates the positive button click, and dismisses
+                         * the dialog.
                          */
                         OpenPgpListPreference.this.onClick(dialog, DialogInterface.BUTTON_POSITIVE);
                         dialog.dismiss();
@@ -134,9 +129,8 @@ public class OpenPgpListPreference extends DialogPreference {
                 });
 
         /*
-         * The typical interaction for list-based dialogs is to have
-         * click-on-an-item dismiss the dialog instead of the user having to
-         * press 'Ok'.
+         * The typical interaction for list-based dialogs is to have click-on-an-item dismiss the
+         * dialog instead of the user having to press 'Ok'.
          */
         builder.setPositiveButton(null, null);
     }
