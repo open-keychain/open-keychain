@@ -26,6 +26,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
@@ -96,8 +98,8 @@ public class OpenPgpListPreference extends DialogPreference {
                         null, null);
 
                 // Add margin between image and text (support various screen densities)
-                int dp5 = (int) (5 * getContext().getResources().getDisplayMetrics().density + 0.5f);
-                tv.setCompoundDrawablePadding(dp5);
+                int dp10 = (int) (10 * getContext().getResources().getDisplayMetrics().density + 0.5f);
+                tv.setCompoundDrawablePadding(dp10);
 
                 // disable if it has the wrong api_version
                 if (mProviderList.get(position).apiVersion == OpenPgpConstants.REQUIRED_API_VERSION) {

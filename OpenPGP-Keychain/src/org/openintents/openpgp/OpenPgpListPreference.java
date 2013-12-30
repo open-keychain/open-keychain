@@ -95,10 +95,9 @@ public class OpenPgpListPreference extends DialogPreference {
                 tv.setCompoundDrawablesWithIntrinsicBounds(mProviderList.get(position).icon, null,
                         null, null);
 
-                // Add margin between image and text (support various screen
-                // densities)
-                int dp5 = (int) (5 * getContext().getResources().getDisplayMetrics().density + 0.5f);
-                tv.setCompoundDrawablePadding(dp5);
+                // Add margin between image and text (support various screen densities)
+                int dp10 = (int) (10 * getContext().getResources().getDisplayMetrics().density + 0.5f);
+                tv.setCompoundDrawablePadding(dp10);
 
                 // disable if it has the wrong api_version
                 if (mProviderList.get(position).apiVersion == OpenPgpConstants.REQUIRED_API_VERSION) {
