@@ -99,6 +99,7 @@ public class OpenPgpData implements Parcelable {
     }
 
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(type);
         dest.writeString(string);
         dest.writeInt(bytes.length);
         dest.writeByteArray(bytes);
@@ -109,6 +110,7 @@ public class OpenPgpData implements Parcelable {
     public static final Creator<OpenPgpData> CREATOR = new Creator<OpenPgpData>() {
         public OpenPgpData createFromParcel(final Parcel source) {
             OpenPgpData vr = new OpenPgpData();
+            vr.type = source.readInt();
             vr.string = source.readString();
             vr.bytes = new byte[source.readInt()];
             source.readByteArray(vr.bytes);
