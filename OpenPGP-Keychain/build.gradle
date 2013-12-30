@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.5.+'
+        classpath 'com.android.tools.build:gradle:0.6.3'
     }
 }
 
@@ -22,15 +22,16 @@ dependencies {
     compile 'com.android.support:support-v4:18.0.+' // already in actionbarsherlock
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:HtmlTextView')
+    compile project(':libraries:pinned-section-listview:library')
 }
 
 android {
-    compileSdkVersion 18
-    buildToolsVersion "18.0.1"
+    compileSdkVersion 19
+    buildToolsVersion "19"
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 18
+        targetSdkVersion 19
     }
 
     sourceSets {

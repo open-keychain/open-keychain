@@ -9,36 +9,27 @@ see http://sufficientlysecure.org/keychain
 
 Translations are managed at Transifex, please contribute there at https://www.transifex.com/projects/p/openpgp-keychain/
 
-# Build
+## Code Contributions
+
+I am happy about any pull requests and appreciate your effort to help us developing OpenPGP Keychain :)
+Fork OpenPGP Keychain and do a merge request. I will help with occuring problems and merge your changes back into the main project.
 
 ## Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 2. Export ANDROID_HOME pointing to your Android SDK
-3. Install gradle
-4. Execute ``gradle wrapper`` (http://www.gradle.org/docs/current/userguide/gradle_wrapper.html)
-5. Execute ``./gradlew build``
-
-## Build with Ant
-
-1. Have Android SDK "tools" directory in your PATH (http://developer.android.com/sdk/index.html)
-2. Execute ``android update project -p OpenPGP-Keychain``
-3. Execute ``android update project -p libraries/ActionBarSherlock``
-3. Execute ``android update project -p libraries/HtmlTextView``
-3. Execute ``cd OpenPGP-Kechain``, ``ant debug``
-
-# Contribute
-
-Fork OpenPGP Keychain and do a merge request. I will merge your changes back into the main project.
+3. Download Android Support Repository, and Google Repository using Android SDK Manager
+4. Execute ``./gradlew build``
 
 ## Development with Eclipse
 
 Android Studio is currently not supported or recommended!
 
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
-1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
-2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
-3. OpenPGP-Kechain can now be build
+2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
+3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/pinned-section-listview/library"
+4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
+5. OpenPGP-Kechain can now be build
 
 # Keychain API
 
