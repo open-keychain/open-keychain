@@ -58,10 +58,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class EditKeyActivity extends SherlockFragmentActivity {
@@ -80,8 +78,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     // results when saving key
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String RESULT_EXTRA_USER_ID = "user_id";
-
-    private ActionBar mActionBar;
 
     private PGPSecretKeyRing mKeyRing = null;
 
@@ -107,26 +103,15 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done"/"Cancel" custom action bar view
-        final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View customActionBarView = inflater.inflate(
-                R.layout.actionbar_custom_view_done_cancel, null);
-
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text))
-                .setText(R.string.btn_save);
-        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
+        // Inflate a "Done"/"Cancel" custom action bar
+        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // save
                         saveClicked();
                     }
-                });
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
-                .setText(R.string.btn_do_not_save);
-        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
-                new View.OnClickListener() {
+                }, R.string.btn_do_not_save, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // cancel
@@ -134,20 +119,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     }
                 });
 
-        // Show the custom action bar view and hide the normal Home icon and title.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM, ActionBar.DISPLAY_SHOW_CUSTOM
-                | ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE);
-        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
         setContentView(R.layout.edit_key);
-
-        mActionBar = getSupportActionBar();
-        mActionBar.setDisplayShowTitleEnabled(true);
-
-        // set actionbar without home button if called from another app
-        ActionBarHelper.setBackButton(this);
 
         // find views
         mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
@@ -200,8 +172,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      */
     private void handleActionCreateKey(Intent intent) {
         Bundle extras = intent.getExtras();
-
-        mActionBar.setTitle(R.string.title_create_key);
 
         mCurrentPassPhrase = "";
 
@@ -329,8 +299,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     @SuppressWarnings("unchecked")
     private void handleActionEditKey(Intent intent) {
         Bundle extras = intent.getExtras();
-
-        mActionBar.setTitle(R.string.title_edit_key);
 
         if (extras != null) {
             if (extras.containsKey(EXTRA_MASTER_CAN_SIGN)) {

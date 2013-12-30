@@ -41,7 +41,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
+        // Inflate a "Done" custom action bar
         ActionBarHelper.setDoneView(getSupportActionBar(), R.string.api_settings_save,
                 new View.OnClickListener() {
                     @Override
