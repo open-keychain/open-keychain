@@ -40,7 +40,7 @@ public class OpenPgpHelper {
     }
 
     public boolean isAvailable() {
-        Intent intent = new Intent(IOpenPgpService.class.getName());
+        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
         List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {
             return true;

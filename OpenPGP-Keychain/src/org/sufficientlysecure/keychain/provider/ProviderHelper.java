@@ -742,6 +742,7 @@ public class ProviderHelper {
     private static ContentValues contentValueForApiApps(AppSettings appSettings) {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
+        values.put(ApiApps.PACKAGE_SIGNATURE, appSettings.getPackageSignature());
         values.put(ApiApps.KEY_ID, appSettings.getKeyId());
         values.put(ApiApps.COMPRESSION, appSettings.getCompression());
         values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
@@ -770,6 +771,8 @@ public class ProviderHelper {
             settings = new AppSettings();
             settings.setPackageName(cur.getString(cur
                     .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+            settings.setPackageSignature(cur.getBlob(cur
+                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_SIGNATURE)));
             settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));
             settings.setCompression(cur.getInt(cur
                     .getColumnIndexOrThrow(KeychainContract.ApiApps.COMPRESSION)));
@@ -780,5 +783,27 @@ public class ProviderHelper {
         }
 
         return settings;
+    }
+
+    public static byte[] getApiAppSignature(Context context, String packageName) {
+        Uri queryUri = KeychainContract.ApiApps.buildByPackageNameUri(packageName);
+
+        String[] projection = new String[] { ApiApps.PACKAGE_SIGNATURE };
+
+        ContentResolver cr = context.getContentResolver();
+        Cursor cursor = cr.query(queryUri, projection, null, null, null);
+
+        byte[] signature = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            int signatureCol = 0;
+
+            signature = cursor.getBlob(signatureCol);
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return signature;
     }
 }

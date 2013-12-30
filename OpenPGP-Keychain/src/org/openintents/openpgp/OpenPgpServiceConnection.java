@@ -29,14 +29,12 @@ public class OpenPgpServiceConnection {
     private Context mApplicationContext;
 
     private IOpenPgpService mService;
-    private boolean bound;
-    private String cryptoProviderPackageName;
-
-    private static final String TAG = "OpenPgpServiceConnection";
+    private boolean mBound;
+    private String mCryptoProviderPackageName;
 
     public OpenPgpServiceConnection(Context context, String cryptoProviderPackageName) {
-        mApplicationContext = context.getApplicationContext();
-        this.cryptoProviderPackageName = cryptoProviderPackageName;
+        this.mApplicationContext = context.getApplicationContext();
+        this.mCryptoProviderPackageName = cryptoProviderPackageName;
     }
 
     public IOpenPgpService getService() {
@@ -44,20 +42,20 @@ public class OpenPgpServiceConnection {
     }
 
     public boolean isBound() {
-        return bound;
+        return mBound;
     }
 
     private ServiceConnection mCryptoServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = IOpenPgpService.Stub.asInterface(service);
-            Log.d(TAG, "connected to service");
-            bound = true;
+            Log.d(OpenPgpConstants.TAG, "connected to service");
+            mBound = true;
         }
 
         public void onServiceDisconnected(ComponentName name) {
             mService = null;
-            Log.d(TAG, "disconnected from service");
-            bound = false;
+            Log.d(OpenPgpConstants.TAG, "disconnected from service");
+            mBound = false;
         }
     };
 
@@ -67,23 +65,23 @@ public class OpenPgpServiceConnection {
      * @return
      */
     public boolean bindToService() {
-        if (mService == null && !bound) { // if not already connected
+        if (mService == null && !mBound) { // if not already connected
             try {
-                Log.d(TAG, "not bound yet");
+                Log.d(OpenPgpConstants.TAG, "not bound yet");
 
                 Intent serviceIntent = new Intent();
                 serviceIntent.setAction(IOpenPgpService.class.getName());
-                serviceIntent.setPackage(cryptoProviderPackageName);
+                serviceIntent.setPackage(mCryptoProviderPackageName);
                 mApplicationContext.bindService(serviceIntent, mCryptoServiceConnection,
                         Context.BIND_AUTO_CREATE);
 
                 return true;
             } catch (Exception e) {
-                Log.d(TAG, "Exception", e);
+                Log.d(OpenPgpConstants.TAG, "Exception on binding", e);
                 return false;
             }
-        } else { // already connected
-            Log.d(TAG, "already bound... ");
+        } else {
+            Log.d(OpenPgpConstants.TAG, "already bound");
             return true;
         }
     }

@@ -17,8 +17,12 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -67,6 +71,8 @@ public class AppSettingsFragment extends Fragment {
     private Spinner mEncryptionAlgorithm;
     private Spinner mHashAlgorithm;
     private Spinner mCompression;
+    private TextView mPackageName;
+    private TextView mPackageSignature;
 
     KeyValueSpinnerAdapter encryptionAdapter;
     KeyValueSpinnerAdapter hashAdapter;
@@ -79,6 +85,19 @@ public class AppSettingsFragment extends Fragment {
     public void setAppSettings(AppSettings appSettings) {
         this.appSettings = appSettings;
         setPackage(appSettings.getPackageName());
+        mPackageName.setText(appSettings.getPackageName());
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(appSettings.getPackageSignature());
+            byte[] digest = md.digest();
+            String signature = new String(Hex.encode(digest));
+
+            mPackageSignature.setText(signature);
+        } catch (NoSuchAlgorithmException e) {
+            Log.e(Constants.TAG, "Should not happen!", e);
+        }
+
         updateSelectedKeyView(appSettings.getKeyId());
         mEncryptionAlgorithm.setSelection(encryptionAdapter.getPosition(appSettings
                 .getEncryptionAlgorithm()));
@@ -110,6 +129,8 @@ public class AppSettingsFragment extends Fragment {
                 .findViewById(R.id.api_app_settings_encryption_algorithm);
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
         mCompression = (Spinner) view.findViewById(R.id.api_app_settings_compression);
+        mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
+        mPackageSignature = (TextView) view.findViewById(R.id.api_app_settings_package_signature);
 
         AlgorithmNames algorithmNames = new AlgorithmNames(getActivity());
 
@@ -182,7 +203,7 @@ public class AppSettingsFragment extends Fragment {
             public void onClick(View v) {
                 if (mAdvancedSettingsContainer.getVisibility() == View.VISIBLE) {
                     mAdvancedSettingsContainer.startAnimation(invisibleAnimation);
-                    mAdvancedSettingsContainer.setVisibility(View.INVISIBLE);
+                    mAdvancedSettingsContainer.setVisibility(View.GONE);
                     mAdvancedSettingsButton.setText(R.string.api_settings_show_advanced);
                 } else {
                     mAdvancedSettingsContainer.startAnimation(visibleAnimation);

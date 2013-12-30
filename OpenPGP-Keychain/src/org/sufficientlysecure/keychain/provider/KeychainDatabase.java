@@ -31,7 +31,7 @@ import android.provider.BaseColumns;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
@@ -66,9 +66,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, " + ApiAppsColumns.KEY_ID + " INT64, "
-            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, " + ApiAppsColumns.HASH_ALORITHM
-            + " INTEGER, " + ApiAppsColumns.COMPRESSION + " INTEGER)";
+            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, " + ApiAppsColumns.PACKAGE_SIGNATURE
+            + " BLOB, " + ApiAppsColumns.KEY_ID + " INT64, " + ApiAppsColumns.ENCRYPTION_ALGORITHM
+            + " INTEGER, " + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
+            + ApiAppsColumns.COMPRESSION + " INTEGER)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -109,6 +110,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
                 break;
             case 4:
+                db.execSQL(CREATE_API_APPS);
+            case 5:
+                // new column: package_signature
+                db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
                 db.execSQL(CREATE_API_APPS);
 
             default:

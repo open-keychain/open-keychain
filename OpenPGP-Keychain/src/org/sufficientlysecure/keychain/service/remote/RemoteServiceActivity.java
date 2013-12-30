@@ -55,6 +55,7 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
     public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
     // register action
     public static final String EXTRA_PACKAGE_NAME = "package_name";
+    public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
     // select pub keys action
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
@@ -110,6 +111,7 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
          */
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
+            final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
 
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.api_register_allow,
@@ -166,7 +168,7 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
             mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_app_settings_fragment);
 
-            AppSettings settings = new AppSettings(packageName);
+            AppSettings settings = new AppSettings(packageName, packageSignature);
             mSettingsFragment.setAppSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);

@@ -23,6 +23,7 @@ import org.sufficientlysecure.keychain.Id;
 
 public class AppSettings {
     private String packageName;
+    private byte[] packageSignature;
     private long keyId = Id.key.none;
     private int encryptionAlgorithm;
     private int hashAlgorithm;
@@ -32,9 +33,10 @@ public class AppSettings {
 
     }
 
-    public AppSettings(String packageName) {
+    public AppSettings(String packageName, byte[] packageSignature) {
         super();
         this.packageName = packageName;
+        this.packageSignature = packageSignature;
         // defaults:
         this.encryptionAlgorithm = PGPEncryptedData.AES_256;
         this.hashAlgorithm = HashAlgorithmTags.SHA512;
@@ -47,6 +49,14 @@ public class AppSettings {
 
     public void setPackageName(String packageName) {
         this.packageName = packageName;
+    }
+
+    public byte[] getPackageSignature() {
+        return packageSignature;
+    }
+
+    public void setPackageSignature(byte[] packageSignature) {
+        this.packageSignature = packageSignature;
     }
 
     public long getKeyId() {

@@ -50,7 +50,6 @@ interface IOpenPgpService {
      */
     oneway void sign(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
     
-    
     /**
      * Encrypt
      * 
