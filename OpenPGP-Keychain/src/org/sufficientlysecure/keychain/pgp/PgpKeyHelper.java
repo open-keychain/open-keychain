@@ -40,16 +40,16 @@ import android.content.Context;
 
 public class PgpKeyHelper {
 
-	/**
-	 * Returns the last 9 chars of a fingerprint 
-	 * 
-	 * @param fingerprint
-	 *            String containing short or long fingerprint
-	 * @return
-	 */
-	public static String shortifyFingerprint(String fingerprint) {
-		return fingerprint.substring(41);
-	}
+    /**
+     * Returns the last 9 chars of a fingerprint
+     * 
+     * @param fingerprint
+     *            String containing short or long fingerprint
+     * @return
+     */
+    public static String shortifyFingerprint(String fingerprint) {
+        return fingerprint.substring(41);
+    }
 
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
