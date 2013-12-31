@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_fastscroll"
+        android:showAsAction="never"
+        android:title="@string/action_fastscroll"
+        android:checkable="true"/>
+
+    <item
+        android:id="@+id/action_addpadding"
+        android:showAsAction="never"
+        android:title="@string/action_addpadding"
+        android:checkable="true"/>
+
+    <item
+        android:id="@+id/action_showShadow"
+        android:showAsAction="never"
+        android:title="@string/action_showShadow"
+        android:checkable="true"/>
+    
+    <item
+        android:id="@+id/action_showHeaderAndFooter"
+        android:showAsAction="never"
+        android:title="@string/action_showHeaderAndFooter"
+        android:checkable="true"/>
+
+</menu>
