@@ -99,8 +99,7 @@
     <ListView
         android:id="@+id/user_ids"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-    </ListView>
+        android:layout_height="wrap_content" />
 
     <TextView
         style="@style/SectionHeader"
@@ -108,5 +107,10 @@
         android:layout_height="wrap_content"
         android:padding="4dp"
         android:text="@string/section_keys" />
+
+    <ListView
+        android:id="@+id/keys"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
