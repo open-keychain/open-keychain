@@ -11,7 +11,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 
 ## Code Contributions
 
-Fork OpenPGP Keychain and do a pull request. I will help with occuring problems and merge your changes back into the main project.
+Fork OpenPGP Keychain and create a pull request. I will help with occuring problems and merge your changes back into the main project.
 I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain :)
 
 ## Build with Gradle
