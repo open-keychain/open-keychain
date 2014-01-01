@@ -119,12 +119,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     }
                 });
 
-        setContentView(R.layout.edit_key);
-
-        // find views
-        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
-        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
-
         mUserIds = new Vector<String>();
         mKeys = new Vector<PGPSecretKey>();
         mKeysUsages = new Vector<Integer>();
@@ -137,28 +131,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         } else if (ACTION_EDIT_KEY.equals(action)) {
             handleActionEditKey(intent);
         }
-
-        mChangePassPhrase.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                showSetPassphraseDialog();
-            }
-        });
-
-        // disable passphrase when no passphrase checkobox is checked!
-        mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // remove passphrase
-                    mNewPassPhrase = null;
-
-                    mChangePassPhrase.setVisibility(View.GONE);
-                } else {
-                    mChangePassPhrase.setVisibility(View.VISIBLE);
-                }
-            }
-        });
 
         if (mBuildLayout) {
             buildLayout();
@@ -402,6 +374,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * id and key.
      */
     private void buildLayout() {
+        setContentView(R.layout.edit_key);
+
+        // find views
+        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
+        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+
         // Build layout based on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -418,6 +396,28 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         container.addView(mKeysView);
 
         updatePassPhraseButtonText();
+
+        mChangePassPhrase.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                showSetPassphraseDialog();
+            }
+        });
+
+        // disable passphrase when no passphrase checkobox is checked!
+        mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // remove passphrase
+                    mNewPassPhrase = null;
+
+                    mChangePassPhrase.setVisibility(View.GONE);
+                } else {
+                    mChangePassPhrase.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private long getMasterKeyId() {
