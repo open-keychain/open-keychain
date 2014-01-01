@@ -20,12 +20,15 @@ package org.sufficientlysecure.keychain.ui;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.service.remote.AppSettingsActivity;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListAdapter;
 import org.sufficientlysecure.keychain.R;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -114,16 +117,17 @@ public class KeyListPublicFragment extends KeyListFragment implements
 
             return true;
         case 23:
-            
-        	Intent detailsIntent = new Intent(mKeyListActivity, KeyDetailsActivity.class);
-        	detailsIntent.putExtra("key", ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId));
-        	startActivity(detailsIntent);
+
+            Intent detailsIntent = new Intent(mKeyListActivity, KeyDetailsActivity.class);
+            detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long
+                    .toString(keyRingRowId)));
+            startActivity(detailsIntent);
             return true;
-            
+
         case Id.menu.exportToServer:
             Intent uploadIntent = new Intent(mKeyListActivity, KeyServerUploadActivity.class);
             uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
-            uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int)keyRingRowId);
+            uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int) keyRingRowId);
             startActivityForResult(uploadIntent, Id.request.export_to_server);
 
             return true;

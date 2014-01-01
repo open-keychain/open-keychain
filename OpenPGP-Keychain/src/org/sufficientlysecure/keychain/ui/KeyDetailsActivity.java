@@ -23,12 +23,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.TextView;
@@ -36,49 +39,59 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockActivity;
 
 public class KeyDetailsActivity extends SherlockActivity {
+    private Uri mDataUri;
 
-    private PGPPublicKey publicKey;
+    private PGPPublicKey mPublicKey;
+
     private TextView mAlgorithm;
+    private TextView mFingerint;
+    private TextView mExpiry;
+    private TextView mCreation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle extras = getIntent().getExtras();
-        setContentView(R.layout.key_view);
-        if (extras == null) {
-            return;
-        }
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        long key = extras.getLong("key");
+        setContentView(R.layout.key_view);
 
-        KeyRings.buildPublicKeyRingsByMasterKeyIdUri(key + "");
-        String[] projection = new String[] { "" };
+        mFingerint = (TextView) this.findViewById(R.id.fingerprint);
+        mExpiry = (TextView) this.findViewById(R.id.expiry);
+        mCreation = (TextView) this.findViewById(R.id.creation);
+        mAlgorithm = (TextView) this.findViewById(R.id.algorithm);
 
-        this.publicKey = ProviderHelper.getPGPPublicKeyByKeyId(getApplicationContext(), key);
+        Intent intent = getIntent();
+        mDataUri = intent.getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
+            finish();
+            return;
+        } else {
+            Log.d(Constants.TAG, "uri: " + mDataUri);
+            loadData(mDataUri);
+        }
+    }
 
-        TextView fingerprint = (TextView) this.findViewById(R.id.fingerprint);
-        fingerprint.setText(PgpKeyHelper.shortifyFingerprint(PgpKeyHelper.getFingerPrint(
-                getApplicationContext(), key)));
+    private void loadData(Uri dataUri) {
+        PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
+        mPublicKey = ring.getPublicKey();
+
+        mFingerint.setText(PgpKeyHelper.shortifyFingerprint(PgpKeyHelper
+                .convertFingerprintToHex(mPublicKey.getFingerprint())));
         String[] mainUserId = splitUserId("");
 
-        TextView expiry = (TextView) this.findViewById(R.id.expiry);
-        Date expiryDate = PgpKeyHelper.getExpiryDate(publicKey);
+        Date expiryDate = PgpKeyHelper.getExpiryDate(mPublicKey);
         if (expiryDate == null) {
-            expiry.setText("");
+            mExpiry.setText("");
         } else {
-            expiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
+            mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
         }
 
-        TextView creation = (TextView) this.findViewById(R.id.creation);
-        creation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                PgpKeyHelper.getCreationDate(publicKey)));
-        mAlgorithm = (TextView) this.findViewById(R.id.algorithm);
-        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(publicKey));
-
+        mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
+                PgpKeyHelper.getCreationDate(mPublicKey)));
+        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(mPublicKey));
     }
 
     private String[] splitUserId(String userId) {

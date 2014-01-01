@@ -60,7 +60,7 @@ public class ProviderHelper {
      * @param queryUri
      * @return
      */
-    private static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
+    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri,
                 new String[] { KeyRings._ID, KeyRings.KEY_RING_DATA }, null, null, null);
 
