@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_key_view_update"
+        android:showAsAction="ifRoom"
+        android:title="@string/menu_update_key"/>
+    <item
+        android:id="@+id/menu_key_view_sign"
+        android:showAsAction="never"
+        android:title="@string/menu_sign_key"/>
+    <item
+        android:id="@+id/menu_key_view_export_keyserver"
+        android:showAsAction="never"
+        android:title="@string/menu_export_key_to_server"/>
+    <item
+        android:id="@+id/menu_key_view_export_file"
+        android:showAsAction="never"
+        android:title="@string/menu_export_key"/>
+    <item
+        android:id="@+id/menu_key_view_share"
+        android:showAsAction="never"
+        android:title="@string/menu_share"/>
+    <item
+        android:id="@+id/menu_key_view_share_qr_code"
+        android:showAsAction="never"
+        android:title="@string/menu_share_qr_code"/>
+    <item
+        android:id="@+id/menu_key_view_share_nfc"
+        android:showAsAction="never"
+        android:title="@string/menu_share_nfc"/>
+    
+    <item
+        android:id="@+id/menu_key_view_delete"
+        android:showAsAction="never"
+        android:title="@string/menu_delete_key"/>
+
+</menu>

@@ -107,13 +107,6 @@ TODO
 
 # Libraries
 
-All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "libraries".
-
-* ActionBarSherlock to provide an ActionBar for Android < 3.0
-* HtmlTextView for non-crashing TextViews with HTML content
-* forked Spongy Castle Crypto Lib (Android version of Bouncy Castle)
-* barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
-
 ## Build Barcode Scanner Integration
 
 1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
@@ -212,8 +205,8 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   http://code.google.com/p/zxing/  
   Apache License v2
   
-* pinned-section-listview    
-  https://github.com/beworker/pinned-section-listview  
+* android-section-adapter  
+  https://github.com/monxalo/android-section-adapter  
   Apache License v2
 
 

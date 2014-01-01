@@ -123,11 +123,10 @@
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ui.KeyDetailsActivity"
+            android:name=".ui.KeyViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
-            android:parentActivityName=".ui.KeyListPublicActivity"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:parentActivityName=".ui.KeyListPublicActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.KeyListPublicActivity" />
