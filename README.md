@@ -27,7 +27,7 @@ Android Studio is currently not supported or recommended!
 
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
-3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/pinned-section-listview/library"
+3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/StickyListHeaders/library"
 4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
 5. OpenPGP-Kechain can now be build
 
@@ -205,8 +205,8 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   http://code.google.com/p/zxing/  
   Apache License v2
   
-* android-section-adapter  
-  https://github.com/monxalo/android-section-adapter  
+* StickyListHeaders    
+  https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
 
 
