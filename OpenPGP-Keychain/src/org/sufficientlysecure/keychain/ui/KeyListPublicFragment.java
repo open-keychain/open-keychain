@@ -44,19 +44,28 @@ import com.actionbarsherlock.app.SherlockFragment;
 /**
  * Public key list with sticky list headers.
  * 
- * - uses StickyListHeaders library - custom adapter: KeyListPublicAdapter
+ * - uses StickyListHeaders library
  * 
- * TODO: - fix loader with spinning animation - fix design - fix view holder in adapter
+ * - custom adapter: KeyListPublicAdapter
+ * 
+ * TODO: - fix view holder in adapter, fix loader
  * 
  */
 public class KeyListPublicFragment extends SherlockFragment implements
         AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListPublicActivity mKeyListPublicActivity;
-
     private KeyListPublicAdapter mAdapter;
+    private StickyListHeadersListView mStickyList;
 
-    StickyListHeadersListView stickyList;
+    /**
+     * Load custom layout with StickyListView from library
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
+        return view;
+    }
 
     /**
      * Define Adapter and Loader on create of Activity
@@ -67,20 +76,17 @@ public class KeyListPublicFragment extends SherlockFragment implements
         super.onActivityCreated(savedInstanceState);
 
         mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
+        mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
-        stickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
-
-        stickyList.setOnItemClickListener(this);
-        // stickyList.setOnHeaderClickListener(this);
-        // stickyList.setOnStickyHeaderOffsetChangedListener(this);
+        mStickyList.setOnItemClickListener(this);
         // mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
         // mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
-        stickyList.setEmptyView(getActivity().findViewById(R.id.empty));
-        stickyList.setAreHeadersSticky(true);
-        stickyList.setDrawingListUnderStickyHeader(true);
-        stickyList.setFastScrollEnabled(true);
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
+        mStickyList.setAreHeadersSticky(true);
+        mStickyList.setDrawingListUnderStickyHeader(false);
+        mStickyList.setFastScrollEnabled(true);
         try {
-            stickyList.setFastScrollAlwaysVisible(true);
+            mStickyList.setFastScrollAlwaysVisible(true);
         } catch (ApiLevelTooLowException e) {
         }
 
@@ -99,12 +105,6 @@ public class KeyListPublicFragment extends SherlockFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
-        return view;
     }
 
     // These are the rows that we will retrieve.
@@ -134,7 +134,7 @@ public class KeyListPublicFragment extends SherlockFragment implements
         mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, data, Id.type.public_key,
                 userIdIndex);
 
-        stickyList.setAdapter(mAdapter);
+        mStickyList.setAdapter(mAdapter);
 
         // The list should now be shown.
         if (isResumed()) {
@@ -152,9 +152,11 @@ public class KeyListPublicFragment extends SherlockFragment implements
         mAdapter.swapCursor(null);
     }
 
+    /**
+     * On click on item, start key view activity
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        // start key view on click
         Intent detailsIntent = new Intent(mKeyListPublicActivity, KeyViewActivity.class);
         detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(detailsIntent);

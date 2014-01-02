@@ -86,7 +86,6 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-
         HeaderViewHolder holder;
         if (convertView == null) {
             holder = new HeaderViewHolder();
@@ -97,6 +96,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
+        // similar to getView in CursorAdapter
         if (!mDataValid) {
             // no data available at this point
             Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
@@ -108,17 +108,18 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
 
-        // set header text as first char in name
+        // set header text as first char in user id
         String headerText = "" + mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
         holder.text.setText(headerText);
         return convertView;
     }
 
     /**
-     * Remember that these have to be static, position=1 should always return the same Id that is.
+     * Header IDs should be static, position=1 should always return the same Id that is.
      */
     @Override
     public long getHeaderId(int position) {
+        // similar to getView in CursorAdapter
         if (!mDataValid) {
             // no data available at this point
             Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
