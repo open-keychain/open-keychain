@@ -88,8 +88,7 @@
             android:name=".ui.KeyListPublicActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manage_public_keys"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:launchMode="singleTop" >
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
@@ -104,8 +103,7 @@
             android:name=".ui.KeyListSecretActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manage_secret_keys"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:launchMode="singleTop" >
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->

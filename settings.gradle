@@ -1,3 +1,4 @@
 include ':OpenPGP-Keychain'
 include ':libraries:ActionBarSherlock'
 include ':libraries:HtmlTextView'
+include ':libraries:StickyListHeaders:library'

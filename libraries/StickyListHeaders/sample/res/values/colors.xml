@@ -1,10 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="emphasis">#31b6e7</color>
-    <color name="bg_gray">#cecbce</color>
     <color name="header_normal">#ffe74c3c</color>
     <color name="header_pressed">#ffc0392b</color>
     <color name="menu_section_header">#FFDDDDDD</color>
-    
+
 </resources>

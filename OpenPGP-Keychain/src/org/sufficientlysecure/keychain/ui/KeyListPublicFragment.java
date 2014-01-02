@@ -24,6 +24,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListPublicAdapter;
 
+import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -31,56 +34,82 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
-import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.app.SherlockFragment;
 
-public class KeyListPublicFragment extends SherlockListFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+/**
+ * Public key list with sticky list headers.
+ * 
+ * - uses StickyListHeaders library
+ * - custom adapter: KeyListPublicAdapter
+ * 
+ * TODO:
+ * - fix loader with spinning animation
+ * - fix design
+ * - fix view holder in adapter
+ *
+ */
+public class KeyListPublicFragment extends SherlockFragment implements
+        AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListPublicActivity mKeyListPublicActivity;
 
     private KeyListPublicAdapter mAdapter;
 
+    StickyListHeadersListView stickyList;
+
     /**
      * Define Adapter and Loader on create of Activity
      */
+    @SuppressLint("NewApi")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
 
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // start key view on click
-                Intent detailsIntent = new Intent(mKeyListPublicActivity, KeyViewActivity.class);
-                detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long
-                        .toString(id)));
-                startActivity(detailsIntent);
-            }
-        });
+        stickyList = (StickyListHeadersListView) getActivity().findViewById(
+                R.id.key_list_public_fragment_stickylist);
+
+        stickyList.setOnItemClickListener(this);
+        // stickyList.setOnHeaderClickListener(this);
+        // stickyList.setOnStickyHeaderOffsetChangedListener(this);
+        // mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
+        // mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
+        // stickyList.setEmptyView(findViewById(R.id.empty));
+        stickyList.setAreHeadersSticky(true);
+        stickyList.setDrawingListUnderStickyHeader(true);
+        stickyList.setFastScrollEnabled(true);
+        try {
+            stickyList.setFastScrollAlwaysVisible(true);
+        } catch (ApiLevelTooLowException e) {
+        }
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
-        setEmptyText(getString(R.string.list_empty));
-
-        // We have a menu item to show in action bar.
-        setHasOptionsMenu(true);
+        // setEmptyText(getString(R.string.list_empty));
 
         // Start out with a progress indicator.
-        setListShown(false);
+        // setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, null, Id.type.public_key);
-        setListAdapter(mAdapter);
+        // mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, null, Id.type.public_key);
+        // setListAdapter(mAdapter);
+        // stickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
+        return view;
     }
 
     // These are the rows that we will retrieve.
@@ -104,13 +133,19 @@ public class KeyListPublicFragment extends SherlockListFragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        // mAdapter.swapCursor(data);
+        int userIdIndex = data.getColumnIndex(UserIds.USER_ID);
+
+        mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, data, Id.type.public_key,
+                userIdIndex);
+
+        stickyList.setAdapter(mAdapter);
 
         // The list should now be shown.
         if (isResumed()) {
-            setListShown(true);
+            // setListShown(true);
         } else {
-            setListShownNoAnimation(true);
+            // setListShownNoAnimation(true);
         }
     }
 
@@ -120,6 +155,14 @@ public class KeyListPublicFragment extends SherlockListFragment implements
         // above is about to be closed. We need to make sure we are no
         // longer using it.
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        // start key view on click
+        Intent detailsIntent = new Intent(mKeyListPublicActivity, KeyViewActivity.class);
+        detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
+        startActivity(detailsIntent);
     }
 
 }

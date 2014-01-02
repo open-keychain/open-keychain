@@ -210,7 +210,6 @@
     <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
     <string name="key_send_success">Successfully sent key to server</string>
     <string name="key_sign_success">Successfully signed key</string>
-    <string name="list_information">Long press one entry in this list to show more options!</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
 
