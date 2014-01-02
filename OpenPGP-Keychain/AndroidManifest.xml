@@ -351,7 +351,6 @@
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ShareActivity" />
         <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />

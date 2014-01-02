@@ -18,6 +18,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,20 +30,21 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract.DataUsageFeedback;
 import android.text.format.DateFormat;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class KeyViewActivity extends SherlockActivity {
+public class KeyViewActivity extends SherlockFragmentActivity {
     private Uri mDataUri;
 
     private PGPPublicKey mPublicKey;
@@ -136,32 +138,19 @@ public class KeyViewActivity extends SherlockActivity {
 
             return true;
         case R.id.menu_key_view_export_file:
-//            long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity, keyRingRowId);
-//            if (masterKeyId == -1) {
-//                masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
-//            }
-//
-//            mKeyListActivity.showExportKeysDialog(masterKeyId);
+            // long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity,
+            // keyRingRowId);
+            // if (masterKeyId == -1) {
+            // masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
+            // }
+            //
+            // mKeyListActivity.showExportKeysDialog(masterKeyId);
             return true;
         case R.id.menu_key_view_share:
-            // get master key id using row id
-            long masterKeyId3 = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
-
-            Intent shareIntent = new Intent(this, ShareActivity.class);
-            shareIntent.setAction(ShareActivity.ACTION_SHARE_KEYRING);
-            shareIntent.putExtra(ShareActivity.EXTRA_MASTER_KEY_ID, masterKeyId3);
-            startActivityForResult(shareIntent, 0);
-
+            shareKey();
             return true;
         case R.id.menu_key_view_share_qr_code:
-            // get master key id using row id
-            long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
-
-            Intent qrCodeIntent = new Intent(this, ShareActivity.class);
-            qrCodeIntent.setAction(ShareActivity.ACTION_SHARE_KEYRING_WITH_QR_CODE);
-            qrCodeIntent.putExtra(ShareActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
-            startActivityForResult(qrCodeIntent, 0);
-
+            shareKeyQrCode();
             return true;
         case R.id.menu_key_view_share_nfc:
             // get master key id using row id
@@ -174,7 +163,7 @@ public class KeyViewActivity extends SherlockActivity {
 
             return true;
         case R.id.menu_key_view_delete:
-//            mKeyListActivity.showDeleteKeyDialog(keyRingRowId);
+            // mKeyListActivity.showDeleteKeyDialog(keyRingRowId);
 
             return true;
 
@@ -224,5 +213,35 @@ public class KeyViewActivity extends SherlockActivity {
             return result;
         }
         return result;
+    }
+
+    private void shareKey() {
+        // TODO: use data uri!
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+
+        // get public keyring as ascii armored string
+        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+                new long[] { masterKeyId });
+
+        // let user choose application
+        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, keyringArmored.get(0));
+        sendIntent.setType("text/plain");
+        startActivity(Intent.createChooser(sendIntent,
+                getResources().getText(R.string.action_share_key_with)));
+    }
+
+    private void shareKeyQrCode() {
+        // TODO: use data uri!
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+        // get public keyring as ascii armored string
+        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+                new long[] { masterKeyId });
+
+        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
+                .get(0));
+        dialog.show(getSupportFragmentManager(), "qrCodeShareDialog");
     }
 }
