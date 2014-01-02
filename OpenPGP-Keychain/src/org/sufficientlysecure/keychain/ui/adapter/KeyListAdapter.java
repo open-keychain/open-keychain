@@ -61,7 +61,7 @@ public class KeyListAdapter extends CursorTreeAdapter {
      */
     @Override
     public View newGroupView(Context context, Cursor cursor, boolean isExpanded, ViewGroup parent) {
-        return mInflater.inflate(R.layout.key_list_group_item, null);
+        return mInflater.inflate(R.layout.key_list_item, null);
     }
 
     /**

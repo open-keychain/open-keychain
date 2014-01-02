@@ -2,15 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/header_selector" >
+    android:background="@color/abs__background_holo_light" >
 
     <se.emilsjolander.stickylistheaders.views.UnderlineTextView
         android:id="@+id/stickylist_header_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start|left"
-        android:padding="5dp"
-        android:textColor="@android:color/white"
+        android:padding="8dp"
+        android:textColor="@color/emphasis"
         android:textSize="17sp"
         android:textStyle="bold" />
 

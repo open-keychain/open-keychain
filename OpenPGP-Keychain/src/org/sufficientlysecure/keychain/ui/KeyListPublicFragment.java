@@ -44,14 +44,10 @@ import com.actionbarsherlock.app.SherlockFragment;
 /**
  * Public key list with sticky list headers.
  * 
- * - uses StickyListHeaders library
- * - custom adapter: KeyListPublicAdapter
+ * - uses StickyListHeaders library - custom adapter: KeyListPublicAdapter
  * 
- * TODO:
- * - fix loader with spinning animation
- * - fix design
- * - fix view holder in adapter
- *
+ * TODO: - fix loader with spinning animation - fix design - fix view holder in adapter
+ * 
  */
 public class KeyListPublicFragment extends SherlockFragment implements
         AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -72,15 +68,14 @@ public class KeyListPublicFragment extends SherlockFragment implements
 
         mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
 
-        stickyList = (StickyListHeadersListView) getActivity().findViewById(
-                R.id.key_list_public_fragment_stickylist);
+        stickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         stickyList.setOnItemClickListener(this);
         // stickyList.setOnHeaderClickListener(this);
         // stickyList.setOnStickyHeaderOffsetChangedListener(this);
         // mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
         // mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
-        // stickyList.setEmptyView(findViewById(R.id.empty));
+        stickyList.setEmptyView(getActivity().findViewById(R.id.empty));
         stickyList.setAreHeadersSticky(true);
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setFastScrollEnabled(true);
