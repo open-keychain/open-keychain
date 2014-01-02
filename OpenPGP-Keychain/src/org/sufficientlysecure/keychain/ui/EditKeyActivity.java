@@ -295,17 +295,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     }
 
     private void finallyEdit(final long masterKeyId, final boolean masterCanSign) {
-        // TODO: ???
-        if (mCurrentPassPhrase == null) {
-            mCurrentPassPhrase = "";
-        }
-
-        if (mCurrentPassPhrase.equals("")) {
-            // check "no passphrase" checkbox and remove button
-            mNoPassphrase.setChecked(true);
-            mChangePassPhrase.setVisibility(View.GONE);
-        }
-
         if (masterKeyId != 0) {
             PGPSecretKey masterKey = null;
             mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
@@ -328,6 +317,17 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
 
         buildLayout();
+
+        // TODO: ???
+        if (mCurrentPassPhrase == null) {
+            mCurrentPassPhrase = "";
+        }
+
+        if (mCurrentPassPhrase.equals("")) {
+            // check "no passphrase" checkbox and remove button
+            mNoPassphrase.setChecked(true);
+            mChangePassPhrase.setVisibility(View.GONE);
+        }
     }
 
     /**

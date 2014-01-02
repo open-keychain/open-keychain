@@ -19,8 +19,8 @@
 <resources>
 
     <!-- title -->
-    <string name="title_manage_public_keys">Manage Public Keys</string>
-    <string name="title_manage_secret_keys">Manage Secret Keys</string>
+    <string name="title_manage_public_keys">Public Keys</string>
+    <string name="title_manage_secret_keys">Secret Keys</string>
     <string name="title_select_recipients">Select Public Key</string>
     <string name="title_select_secret_key">Select Secret Key</string>
     <string name="title_encrypt">Encrypt</string>
