@@ -42,14 +42,8 @@ import android.widget.AdapterView;
 import com.actionbarsherlock.app.SherlockFragment;
 
 /**
- * Public key list with sticky list headers.
- * 
- * - uses StickyListHeaders library
- * 
- * - custom adapter: KeyListPublicAdapter
- * 
- * TODO: - fix view holder in adapter, fix loader
- * 
+ * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
+ * StickyListHeaders library which does not extend upon ListView.
  */
 public class KeyListPublicFragment extends SherlockFragment implements
         AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -79,9 +73,6 @@ public class KeyListPublicFragment extends SherlockFragment implements
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         mStickyList.setOnItemClickListener(this);
-        // mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
-        // mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
-        mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
@@ -90,17 +81,17 @@ public class KeyListPublicFragment extends SherlockFragment implements
         } catch (ApiLevelTooLowException e) {
         }
 
-        // Give some text to display if there is no data. In a real
-        // application this would come from a resource.
-        // setEmptyText(getString(R.string.list_empty));
+        // this view is made visible if no data is available
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
 
+        // NOTE: Not supported by StickyListHeader, thus no indicator is shown while loading
         // Start out with a progress indicator.
         // setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        // mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, null, Id.type.public_key);
-        // setListAdapter(mAdapter);
-        // stickyList.setAdapter(mAdapter);
+        mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, null, Id.type.public_key,
+                USER_ID_INDEX);
+        mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
@@ -110,6 +101,8 @@ public class KeyListPublicFragment extends SherlockFragment implements
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
             UserIds.USER_ID };
+
+    static final int USER_ID_INDEX = 2;
 
     static final String SORT_ORDER = UserIds.USER_ID + " ASC";
 
@@ -128,20 +121,17 @@ public class KeyListPublicFragment extends SherlockFragment implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        // mAdapter.swapCursor(data);
-        int userIdIndex = data.getColumnIndex(UserIds.USER_ID);
-
-        mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, data, Id.type.public_key,
-                userIdIndex);
+        mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
 
+        // NOTE: Not supported by StickyListHeader, thus no indicator is shown while loading
         // The list should now be shown.
-        if (isResumed()) {
-            // setListShown(true);
-        } else {
-            // setListShownNoAnimation(true);
-        }
+        // if (isResumed()) {
+        // setListShown(true);
+        // } else {
+        // setListShownNoAnimation(true);
+        // }
     }
 
     @Override

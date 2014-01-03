@@ -33,13 +33,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * - implements StickyListHeadersAdapter from library - uses view holder pattern for performance
- * 
+ * Implements StickyListHeadersAdapter from library
  */
 public class KeyListPublicAdapter extends CursorAdapter implements StickyListHeadersAdapter {
     private LayoutInflater mInflater;
-
-    int mSectionColumnIndex;
+    private int mSectionColumnIndex;
 
     public KeyListPublicAdapter(Context context, Cursor c, int flags, int sectionColumnIndex) {
         super(context, c, flags);
@@ -48,9 +46,14 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         mSectionColumnIndex = sectionColumnIndex;
     }
 
+    /**
+     * Bind cursor data to the item list view
+     * 
+     * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
+     * no ViewHolder is required here.
+     */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        // TODO: view holder pattern?
         int userIdIndex = cursor.getColumnIndex(UserIds.USER_ID);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
@@ -84,6 +87,13 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         return mInflater.inflate(R.layout.key_list_item, null);
     }
 
+    /**
+     * Creates a new header view and binds the section headers to it. It uses the ViewHolder
+     * pattern. Most functionality is similar to getView() from Android's CursorAdapter.
+     * 
+     * NOTE: The variables mDataValid and mCursor are available due to the super class
+     * CursorAdapter.
+     */
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;
@@ -96,14 +106,12 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        // similar to getView in CursorAdapter
         if (!mDataValid) {
             // no data available at this point
             Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
             return convertView;
         }
 
-        // similar to getView in CursorAdapter
         if (!mCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
@@ -119,14 +127,12 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
      */
     @Override
     public long getHeaderId(int position) {
-        // similar to getView in CursorAdapter
         if (!mDataValid) {
             // no data available at this point
             Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
             return -1;
         }
 
-        // similar to getView in CursorAdapter
         if (!mCursor.moveToPosition(position)) {
             throw new IllegalStateException("couldn't move cursor to position " + position);
         }
@@ -138,11 +144,6 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
     class HeaderViewHolder {
         TextView text;
-    }
-
-    class ViewHolder {
-        TextView mainUserId;
-        TextView mainUserIdRest;
     }
 
 }
