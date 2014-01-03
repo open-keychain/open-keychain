@@ -346,4 +346,6 @@
     <!-- Share -->
     <string name="share_qr_code_dialog_start">Go through all QR Codes using \'Next\', and scan them one by one.</string>
     <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
+    <string name="share_nfc_dialog">Share with NFC</string>
+
 </resources>

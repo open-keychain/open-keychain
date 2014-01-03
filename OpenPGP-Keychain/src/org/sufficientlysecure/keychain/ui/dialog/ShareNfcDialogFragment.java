@@ -53,8 +53,8 @@ public class ShareNfcDialogFragment extends DialogFragment {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-        alert.setIcon(android.R.drawable.ic_dialog_alert);
-        alert.setTitle(R.string.warning);
+        alert.setIcon(android.R.drawable.ic_dialog_info);
+        alert.setTitle(R.string.share_nfc_dialog);
         alert.setCancelable(true);
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
