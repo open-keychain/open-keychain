@@ -165,7 +165,7 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
             //
             // mKeyListActivity.showExportKeysDialog(masterKeyId);
             return true;
-        case R.id.menu_key_view_share:
+        case R.id.menu_key_view_share_default:
             shareKey();
             return true;
         case R.id.menu_key_view_share_qr_code:
