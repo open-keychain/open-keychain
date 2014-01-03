@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2013 Bahtiar 'kalkin' Gadimov
  * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013 Bahtiar 'kalkin' Gadimov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,21 +30,34 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.NfcAdapter.CreateNdefMessageCallback;
+import android.nfc.NfcAdapter.OnNdefPushCompleteCallback;
+import android.nfc.NfcEvent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.format.DateFormat;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class KeyViewActivity extends SherlockFragmentActivity {
+@SuppressLint("NewApi")
+public class KeyViewActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
+        OnNdefPushCompleteCallback {
     private Uri mDataUri;
 
     private PGPPublicKey mPublicKey;
@@ -53,6 +66,11 @@ public class KeyViewActivity extends SherlockFragmentActivity {
     private TextView mFingerint;
     private TextView mExpiry;
     private TextView mCreation;
+
+    // NFC
+    private NfcAdapter mNfcAdapter;
+    private byte[] mSharedKeyringBytes;
+    private static final int NFC_SENT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +95,7 @@ public class KeyViewActivity extends SherlockFragmentActivity {
         } else {
             Log.d(Constants.TAG, "uri: " + mDataUri);
             loadData(mDataUri);
+            initNfc();
         }
     }
 
@@ -154,12 +173,14 @@ public class KeyViewActivity extends SherlockFragmentActivity {
             return true;
         case R.id.menu_key_view_share_nfc:
             // get master key id using row id
-            long masterKeyId2 = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+            // long masterKeyId2 = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+            //
+            // Intent nfcIntent = new Intent(this, ShareNfcBeamActivity.class);
+            // nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_KEYRING_WITH_NFC);
+            // nfcIntent.putExtra(ShareNfcBeamActivity.EXTRA_MASTER_KEY_ID, masterKeyId2);
+            // startActivityForResult(nfcIntent, 0);
 
-            Intent nfcIntent = new Intent(this, ShareNfcBeamActivity.class);
-            nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_KEYRING_WITH_NFC);
-            nfcIntent.putExtra(ShareNfcBeamActivity.EXTRA_MASTER_KEY_ID, masterKeyId2);
-            startActivityForResult(nfcIntent, 0);
+            shareNfc();
 
             return true;
         case R.id.menu_key_view_delete:
@@ -191,8 +212,10 @@ public class KeyViewActivity extends SherlockFragmentActivity {
         mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(mPublicKey));
     }
 
+    /**
+     * TODO: does this duplicate functionality from elsewhere? put in helper!
+     */
     private String[] splitUserId(String userId) {
-
         String[] result = new String[] { "", "", "" };
         Log.v("UserID", userId);
 
@@ -219,7 +242,6 @@ public class KeyViewActivity extends SherlockFragmentActivity {
         // TODO: use data uri!
         long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
         long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
-
         // get public keyring as ascii armored string
         ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
                 new long[] { masterKeyId });
@@ -242,6 +264,79 @@ public class KeyViewActivity extends SherlockFragmentActivity {
 
         ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
                 .get(0));
-        dialog.show(getSupportFragmentManager(), "qrCodeShareDialog");
+        dialog.show(getSupportFragmentManager(), "shareQrCodeDialog");
     }
+
+    private void shareNfc() {
+        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
+        dialog.show(getSupportFragmentManager(), "shareNfcDialog");
+    }
+
+    /**
+     * NFC: Initialize NFC sharing if OS and device supports it
+     */
+    private void initNfc() {
+        // check if NFC Beam is supported (>= Android 4.1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // Check for available NFC Adapter
+            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            if (mNfcAdapter != null) {
+                // init nfc
+                // TODO: use data uri!
+                long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+                long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+
+                // get public keyring as byte array
+                mSharedKeyringBytes = ProviderHelper.getPublicKeyRingsAsByteArray(this,
+                        new long[] { masterKeyId });
+
+                // Register callback to set NDEF message
+                mNfcAdapter.setNdefPushMessageCallback(this, this);
+                // Register callback to listen for message-sent success
+                mNfcAdapter.setOnNdefPushCompleteCallback(this, this);
+            }
+        }
+    }
+
+    /**
+     * NFC: Implementation for the CreateNdefMessageCallback interface
+     */
+    @Override
+    public NdefMessage createNdefMessage(NfcEvent event) {
+        /**
+         * When a device receives a push with an AAR in it, the application specified in the AAR is
+         * guaranteed to run. The AAR overrides the tag dispatch system. You can add it back in to
+         * guarantee that this activity starts when receiving a beamed message. For now, this code
+         * uses the tag dispatch system.
+         */
+        NdefMessage msg = new NdefMessage(NdefRecord.createMime(Constants.NFC_MIME,
+                mSharedKeyringBytes), NdefRecord.createApplicationRecord(Constants.PACKAGE_NAME));
+        return msg;
+    }
+
+    /**
+     * NFC: Implementation for the OnNdefPushCompleteCallback interface
+     */
+    @Override
+    public void onNdefPushComplete(NfcEvent arg0) {
+        // A handler is needed to send messages to the activity when this
+        // callback occurs, because it happens from a binder thread
+        mNfcHandler.obtainMessage(NFC_SENT).sendToTarget();
+    }
+
+    /**
+     * NFC: This handler receives a message from onNdefPushComplete
+     */
+    private final Handler mNfcHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case NFC_SENT:
+                Toast.makeText(getApplicationContext(), R.string.nfc_successfull, Toast.LENGTH_LONG)
+                        .show();
+                break;
+            }
+        }
+    };
+
 }

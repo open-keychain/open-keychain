@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
@@ -29,21 +28,23 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -345,7 +346,8 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
                         int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {
-                            toastMessage = getString(R.string.keys_added_and_updated, added, updated);
+                            toastMessage = getString(R.string.keys_added_and_updated, added,
+                                    updated);
                         } else if (added > 0) {
                             toastMessage = getString(R.string.keys_added, added);
                         } else if (updated > 0) {
@@ -407,6 +409,45 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         // TODO: implement sign and upload!
         Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    /**
+     * NFC
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            handleActionNdefDiscovered(getIntent());
+        }
+    }
+
+    /**
+     * NFC
+     */
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+    }
+
+    /**
+     * NFC: Parses the NDEF Message from the intent and prints to the TextView
+     */
+    @SuppressLint("NewApi")
+    void handleActionNdefDiscovered(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+
+        Intent importIntent = new Intent(this, ImportKeysActivity.class);
+        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, receivedKeyringBytes);
+
+        handleActions(null, importIntent);
     }
 
 }
