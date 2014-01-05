@@ -225,9 +225,9 @@ public class KeyListActivity extends SherlockFragmentActivity {
     /**
      * Show dialog to delete key
      * 
-     * @param keyRingId
+     * @param keyRingIds
      */
-    public void showDeleteKeyDialog(long keyRingId) {
+    public void showDeleteKeyDialog(long[] keyRingIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
@@ -242,7 +242,7 @@ public class KeyListActivity extends SherlockFragmentActivity {
         Messenger messenger = new Messenger(returnHandler);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                keyRingId, mKeyType);
+                keyRingIds, mKeyType);
 
         deleteKeyDialog.show(getSupportFragmentManager(), "deleteKeyDialog");
     }

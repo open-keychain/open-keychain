@@ -17,12 +17,16 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListPublicAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
@@ -30,23 +34,32 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.provider.BaseColumns;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-
-import com.actionbarsherlock.app.SherlockFragment;
+import android.widget.ListView;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListPublicFragment extends SherlockFragment implements
-        AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class KeyListPublicFragment extends Fragment implements AdapterView.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListPublicActivity mKeyListPublicActivity;
     private KeyListPublicAdapter mAdapter;
@@ -83,6 +96,73 @@ public class KeyListPublicFragment extends SherlockFragment implements
 
         // this view is made visible if no data is available
         mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
+
+        /*
+         * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
+         * available for Android >= 3.0
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
+
+                private int count = 0;
+
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    android.view.MenuInflater inflater = getActivity().getMenuInflater();
+                    inflater.inflate(R.menu.key_list_multi_selection, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    // StringBuilder sb = new StringBuilder();
+                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
+                    // for (Integer pos : positions) {
+                    // sb.append(" " + pos + ",");
+                    // }
+                    switch (item.getItemId()) {
+                    case R.id.delete_entry:
+                        long[] ids = new long[positions.size()];
+                        for (int i=0; i < positions.size(); i++) {
+                            ids[i] = mAdapter.getItemId(positions.);
+                        }
+                        showDeleteKeyDialog(ids.to);
+
+                        break;
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    count = 0;
+                    mAdapter.clearSelection();
+                }
+
+                @Override
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
+                        boolean checked) {
+                    if (checked) {
+                        count++;
+                        mAdapter.setNewSelection(position, checked);
+                    } else {
+                        count--;
+                        mAdapter.removeSelection(position);
+                    }
+
+                    String keysSelected = getResources().getQuantityString(
+                            R.plurals.key_list_selected_keys, count, count);
+                    mode.setTitle(keysSelected);
+                }
+
+            });
+        }
 
         // NOTE: Not supported by StickyListHeader, thus no indicator is shown while loading
         // Start out with a progress indicator.
@@ -150,6 +230,33 @@ public class KeyListPublicFragment extends SherlockFragment implements
         Intent detailsIntent = new Intent(mKeyListPublicActivity, KeyViewActivity.class);
         detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(detailsIntent);
+    }
+
+    /**
+     * Show dialog to delete key
+     * 
+     * TODO: no messenger needed etc!
+     * 
+     * @param keyRingRowIds
+     */
+    public void showDeleteKeyDialog(long[] keyRingRowIds) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    // no further actions needed
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+                keyRingRowIds, Id.type.public_key);
+
+        deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
 
 }

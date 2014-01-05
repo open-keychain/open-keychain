@@ -17,15 +17,18 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import java.util.HashMap;
+import java.util.Set;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
-
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +41,9 @@ import android.widget.TextView;
 public class KeyListPublicAdapter extends CursorAdapter implements StickyListHeadersAdapter {
     private LayoutInflater mInflater;
     private int mSectionColumnIndex;
+
+    @SuppressLint("UseSparseArrays")
+    private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
     public KeyListPublicAdapter(Context context, Cursor c, int flags, int sectionColumnIndex) {
         super(context, c, flags);
@@ -138,12 +144,55 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         }
 
         // return the first character of the name as ID because this is what
-        // headers are based upon
+        // headers private HashMap<Integer, Boolean> mSelection = new HashMap<Integer,
+        // Boolean>();are based upon
         return mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
     }
 
     class HeaderViewHolder {
         TextView text;
+    }
+
+    /** -------------------------- MULTI-SELECTION METHODS -------------- */
+    public void setNewSelection(int position, boolean value) {
+        mSelection.put(position, value);
+        notifyDataSetChanged();
+    }
+
+    public boolean isPositionChecked(int position) {
+        Boolean result = mSelection.get(position);
+        return result == null ? false : result;
+    }
+
+    public Set<Integer> getCurrentCheckedPosition() {
+        return mSelection.keySet();
+    }
+
+    public void removeSelection(int position) {
+        mSelection.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void clearSelection() {
+        mSelection.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // let the adapter handle setting up the row views
+        View v = super.getView(position, convertView, parent);
+
+        /**
+         * Change color for multi-selection
+         */
+        // default color
+        v.setBackgroundColor(Color.TRANSPARENT);
+        if (mSelection.get(position) != null) {
+            // this is a selected position, change color!
+            v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+        }
+        return v;
     }
 
 }

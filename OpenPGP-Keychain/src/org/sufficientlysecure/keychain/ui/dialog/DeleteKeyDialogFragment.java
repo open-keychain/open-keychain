@@ -38,7 +38,7 @@ import android.support.v4.app.FragmentActivity;
 
 public class DeleteKeyDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_DELETE_KEY_RING_ROW_ID = "delete_file";
+    private static final String ARG_DELETE_KEY_RING_ROW_IDS = "delete_file";
     private static final String ARG_KEY_TYPE = "key_type";
 
     public static final int MESSAGE_OKAY = 1;
@@ -48,13 +48,13 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this delete file dialog fragment
      */
-    public static DeleteKeyDialogFragment newInstance(Messenger messenger, long deleteKeyRingRowId,
+    public static DeleteKeyDialogFragment newInstance(Messenger messenger, long[] keyRingRowIds,
             int keyType) {
         DeleteKeyDialogFragment frag = new DeleteKeyDialogFragment();
         Bundle args = new Bundle();
 
         args.putParcelable(ARG_MESSENGER, messenger);
-        args.putLong(ARG_DELETE_KEY_RING_ROW_ID, deleteKeyRingRowId);
+        args.putLongArray(ARG_DELETE_KEY_RING_ROW_IDS, keyRingRowIds);
         args.putInt(ARG_KEY_TYPE, keyType);
 
         frag.setArguments(args);
@@ -70,36 +70,48 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         final FragmentActivity activity = getActivity();
         mMessenger = getArguments().getParcelable(ARG_MESSENGER);
 
-        final long deleteKeyRingRowId = getArguments().getLong(ARG_DELETE_KEY_RING_ROW_ID);
+        final long[] keyRingRowIds = getArguments().getLongArray(ARG_DELETE_KEY_RING_ROW_IDS);
         final int keyType = getArguments().getInt(ARG_KEY_TYPE);
-
-        // TODO: better way to do this?
-        String userId = activity.getString(R.string.unknown_user_id);
-
-        if (keyType == Id.type.public_key) {
-            PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,
-                    deleteKeyRingRowId);
-            userId = PgpKeyHelper.getMainUserIdSafe(activity, PgpKeyHelper.getMasterKey(keyRing));
-        } else {
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByRowId(activity,
-                    deleteKeyRingRowId);
-            userId = PgpKeyHelper.getMainUserIdSafe(activity, PgpKeyHelper.getMasterKey(keyRing));
-        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle(R.string.warning);
-        builder.setMessage(getString(
-                keyType == Id.type.public_key ? R.string.key_deletion_confirmation
-                        : R.string.secret_key_deletion_confirmation, userId));
+
+        if (keyRingRowIds.length == 1) {
+            // TODO: better way to do this?
+            String userId = activity.getString(R.string.unknown_user_id);
+
+            if (keyType == Id.type.public_key) {
+                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,
+                        keyRingRowIds[0]);
+                userId = PgpKeyHelper.getMainUserIdSafe(activity,
+                        PgpKeyHelper.getMasterKey(keyRing));
+            } else {
+                PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByRowId(activity,
+                        keyRingRowIds[0]);
+                userId = PgpKeyHelper.getMainUserIdSafe(activity,
+                        PgpKeyHelper.getMasterKey(keyRing));
+            }
+
+            builder.setMessage(getString(
+                    keyType == Id.type.public_key ? R.string.key_deletion_confirmation
+                            : R.string.secret_key_deletion_confirmation, userId));
+        } else {
+            builder.setMessage(R.string.key_deletion_confirmation_multi);
+        }
+
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 if (keyType == Id.type.public_key) {
-                    ProviderHelper.deletePublicKeyRing(activity, deleteKeyRingRowId);
+                    for (long keyRowId : keyRingRowIds) {
+                        ProviderHelper.deletePublicKeyRing(activity, keyRowId);
+                    }
                 } else {
-                    ProviderHelper.deleteSecretKeyRing(activity, deleteKeyRingRowId);
+                    for (long keyRowId : keyRingRowIds) {
+                        ProviderHelper.deleteSecretKeyRing(activity, keyRowId);
+                    }
                 }
 
                 dismiss();

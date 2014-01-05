@@ -17,8 +17,8 @@ I am happy about every code contribution and appreciate your effort to help us d
 ## Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-2. Export ANDROID_HOME pointing to your Android SDK
-3. Download Android Support Repository, and Google Repository using Android SDK Manager
+2. Open the Android SDK Manager (shell command: ``android``). Expand the Extras directory and install "Android Support Repository"
+3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 
 ## Development with Eclipse
