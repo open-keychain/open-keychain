@@ -28,6 +28,7 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
@@ -108,62 +109,18 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // TODO: use data uri in the other activities instead of givin key ring row id!
-
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
         switch (item.getItemId()) {
         case R.id.menu_key_view_update:
-            long updateKeyId = 0;
-            PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(this,
-                    keyRingRowId);
-            if (updateKeyRing != null) {
-                updateKeyId = PgpKeyHelper.getMasterKey(updateKeyRing).getKeyID();
-            }
-            if (updateKeyId == 0) {
-                // this shouldn't happen
-                return true;
-            }
-
-            Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
-            queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
-            queryIntent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, updateKeyId);
-
-            // TODO: lookup??
-            startActivityForResult(queryIntent, Id.request.look_up_key_id);
-
+            updateFromKeyserver();
             return true;
         case R.id.menu_key_view_sign:
-            long keyId = 0;
-            PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(this,
-                    keyRingRowId);
-            if (signKeyRing != null) {
-                keyId = PgpKeyHelper.getMasterKey(signKeyRing).getKeyID();
-            }
-            if (keyId == 0) {
-                // this shouldn't happen
-                return true;
-            }
-
-            Intent signIntent = new Intent(this, SignKeyActivity.class);
-            signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, keyId);
-            startActivity(signIntent);
+            signKey();
             return true;
         case R.id.menu_key_view_export_keyserver:
-            Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
-            uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
-            uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int) keyRingRowId);
-            startActivityForResult(uploadIntent, Id.request.export_to_server);
-
+            uploadToKeyserver();
             return true;
         case R.id.menu_key_view_export_file:
-            // long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity,
-            // keyRingRowId);
-            // if (masterKeyId == -1) {
-            // masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
-            // }
-            //
-            // mKeyListActivity.showExportKeysDialog(masterKeyId);
+            exportToFile();
             return true;
         case R.id.menu_key_view_share_default:
             shareKey();
@@ -172,20 +129,13 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
             shareKeyQrCode();
             return true;
         case R.id.menu_key_view_share_nfc:
-            // get master key id using row id
-            // long masterKeyId2 = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
-            //
-            // Intent nfcIntent = new Intent(this, ShareNfcBeamActivity.class);
-            // nfcIntent.setAction(ShareNfcBeamActivity.ACTION_SHARE_KEYRING_WITH_NFC);
-            // nfcIntent.putExtra(ShareNfcBeamActivity.EXTRA_MASTER_KEY_ID, masterKeyId2);
-            // startActivityForResult(nfcIntent, 0);
-
             shareNfc();
-
+            return true;
+        case R.id.menu_key_view_share_clipboard:
+            copyToClipboard();
             return true;
         case R.id.menu_key_view_delete:
-            // mKeyListActivity.showDeleteKeyDialog(keyRingRowId);
-
+            deleteKey();
             return true;
 
         }
@@ -238,6 +188,75 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         return result;
     }
 
+    private void exportToFile() {
+        // long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity,
+        // keyRingRowId);
+        // if (masterKeyId == -1) {
+        // masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
+        // }
+        //
+        // mKeyListActivity.showExportKeysDialog(masterKeyId);
+    }
+
+    private void deleteKey() {
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+
+        // mKeyListActivity.showDeleteKeyDialog(keyRingRowId);
+    }
+
+    private void uploadToKeyserver() {
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+
+        Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
+        uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
+        uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int) keyRingRowId);
+        startActivityForResult(uploadIntent, Id.request.export_to_server);
+    }
+
+    private void updateFromKeyserver() {
+        // TODO: use data uri!
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+
+        long updateKeyId = 0;
+        PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(this,
+                keyRingRowId);
+        if (updateKeyRing != null) {
+            updateKeyId = PgpKeyHelper.getMasterKey(updateKeyRing).getKeyID();
+        }
+        // if (updateKeyId == 0) {
+        // // this shouldn't happen
+        // return true;
+        // }
+
+        Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
+        queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
+        queryIntent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, updateKeyId);
+
+        // TODO: lookup??
+        startActivityForResult(queryIntent, Id.request.look_up_key_id);
+
+    }
+
+    private void signKey() {
+        // TODO: use data uri!
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+
+        long keyId = 0;
+        PGPPublicKeyRing signKeyRing = ProviderHelper
+                .getPGPPublicKeyRingByRowId(this, keyRingRowId);
+        if (signKeyRing != null) {
+            keyId = PgpKeyHelper.getMasterKey(signKeyRing).getKeyID();
+        }
+        // if (keyId == 0) {
+        // // this shouldn't happen
+        // return true;
+        // }
+
+        Intent signIntent = new Intent(this, SignKeyActivity.class);
+        signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, keyId);
+        startActivity(signIntent);
+    }
+
     private void shareKey() {
         // TODO: use data uri!
         long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
@@ -270,6 +289,17 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
     private void shareNfc() {
         ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
         dialog.show(getSupportFragmentManager(), "shareNfcDialog");
+    }
+
+    private void copyToClipboard() {
+        // TODO: use data uri!
+        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+        // get public keyring as ascii armored string
+        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+                new long[] { masterKeyId });
+
+        ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
     }
 
     /**

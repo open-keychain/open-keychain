@@ -97,6 +97,7 @@
     <string name="menu_share">Share with…</string>
     <string name="menu_share_qr_code">Share with QR Code</string>
     <string name="menu_share_nfc">Share with NFC</string>
+    <string name="menu_copy_to_clipboard">Copy to clipboard</string>
     <string name="menu_sign_key">Sign key</string>
     <string name="menu_beam_preferences">Beam settings</string>
 
