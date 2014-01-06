@@ -90,7 +90,7 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         Intent intent = getIntent();
         mDataUri = intent.getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
             finish();
             return;
         } else {

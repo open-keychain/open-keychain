@@ -28,8 +28,9 @@ Android Studio is currently not supported or recommended!
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
 3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/StickyListHeaders/library"
-4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
-5. OpenPGP-Kechain can now be build
+4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/zxing"
+5. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
+6. OpenPGP-Kechain can now be build
 
 # Keychain API
 
