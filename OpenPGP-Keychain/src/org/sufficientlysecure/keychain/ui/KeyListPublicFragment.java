@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.Id;
@@ -39,7 +38,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.provider.BaseColumns;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -121,18 +119,18 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    // StringBuilder sb = new StringBuilder();
                     Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
-                    // for (Integer pos : positions) {
-                    // sb.append(" " + pos + ",");
-                    // }
                     switch (item.getItemId()) {
                     case R.id.delete_entry:
+                        
+                        // get IDs for checked positions as long array
                         long[] ids = new long[positions.size()];
-                        for (int i=0; i < positions.size(); i++) {
-                            ids[i] = mAdapter.getItemId(positions.);
+                        int i = 0;
+                        for (int pos : positions) {
+                            ids[i] = mAdapter.getItemId(pos);
+                            i++;
                         }
-                        showDeleteKeyDialog(ids.to);
+                        showDeleteKeyDialog(ids);
 
                         break;
                     }
