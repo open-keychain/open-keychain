@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <se.emilsjolander.stickylistheaders.views.UnderlineTextView
+    <org.sufficientlysecure.keychain.ui.widget.UnderlineTextView
         android:id="@+id/stickylist_header_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

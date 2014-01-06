@@ -118,6 +118,10 @@ TODO
 
 On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
+## ZXing
+
+XZing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
+Only classes related to QR Code generation are utilized.
 
 ## Bouncy Castle
 
