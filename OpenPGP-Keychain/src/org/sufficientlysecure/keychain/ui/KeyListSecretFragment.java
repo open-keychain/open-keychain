@@ -17,22 +17,32 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.Set;
+
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListSecretAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.actionbarsherlock.app.SherlockListFragment;
@@ -47,6 +57,7 @@ public class KeyListSecretFragment extends SherlockListFragment implements
     /**
      * Define Adapter and Loader on create of Activity
      */
+    @SuppressLint("NewApi")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -58,6 +69,75 @@ public class KeyListSecretFragment extends SherlockListFragment implements
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
+
+        /*
+         * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
+         * available for Android >= 3.0
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            getListView().setMultiChoiceModeListener(new MultiChoiceModeListener() {
+
+                private int count = 0;
+
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    android.view.MenuInflater inflater = getActivity().getMenuInflater();
+                    inflater.inflate(R.menu.key_list_secret_multi, menu);
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
+
+                    // get IDs for checked positions as long array
+                    long[] ids = new long[positions.size()];
+                    int i = 0;
+                    for (int pos : positions) {
+                        ids[i] = mAdapter.getItemId(pos);
+                        i++;
+                    }
+
+                    switch (item.getItemId()) {
+                    case R.id.menu_key_list_public_multi_delete: {
+                        showDeleteKeyDialog(ids);
+
+                        break;
+                    }
+                    }
+                    return false;
+                }
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    count = 0;
+                    mAdapter.clearSelection();
+                }
+
+                @Override
+                public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
+                        boolean checked) {
+                    if (checked) {
+                        count++;
+                        mAdapter.setNewSelection(position, checked);
+                    } else {
+                        count--;
+                        mAdapter.removeSelection(position);
+                    }
+
+                    String keysSelected = getResources().getQuantityString(
+                            R.plurals.key_list_selected_keys, count, count);
+                    mode.setTitle(keysSelected);
+                }
+
+            });
+        }
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -122,5 +202,17 @@ public class KeyListSecretFragment extends SherlockListFragment implements
         editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(id)));
         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
         startActivityForResult(editIntent, 0);
+    }
+
+    /**
+     * Show dialog to delete key
+     * 
+     * @param keyRingRowIds
+     */
+    public void showDeleteKeyDialog(long[] keyRingRowIds) {
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(null,
+                keyRingRowIds, Id.type.secret_key);
+
+        deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
 }

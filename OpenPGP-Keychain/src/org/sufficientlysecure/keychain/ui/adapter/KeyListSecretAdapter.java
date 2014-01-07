@@ -17,12 +17,17 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import java.util.HashMap;
+import java.util.Set;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +35,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 public class KeyListSecretAdapter extends CursorAdapter {
-
     private LayoutInflater mInflater;
+
+    @SuppressLint("UseSparseArrays")
+    private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
     public KeyListSecretAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -72,6 +79,48 @@ public class KeyListSecretAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.key_list_item, null);
+    }
+
+    /** -------------------------- MULTI-SELECTION METHODS -------------- */
+    public void setNewSelection(int position, boolean value) {
+        mSelection.put(position, value);
+        notifyDataSetChanged();
+    }
+
+    public boolean isPositionChecked(int position) {
+        Boolean result = mSelection.get(position);
+        return result == null ? false : result;
+    }
+
+    public Set<Integer> getCurrentCheckedPosition() {
+        return mSelection.keySet();
+    }
+
+    public void removeSelection(int position) {
+        mSelection.remove(position);
+        notifyDataSetChanged();
+    }
+
+    public void clearSelection() {
+        mSelection.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // let the adapter handle setting up the row views
+        View v = super.getView(position, convertView, parent);
+
+        /**
+         * Change color for multi-selection
+         */
+        // default color
+        v.setBackgroundColor(Color.TRANSPARENT);
+        if (mSelection.get(position) != null) {
+            // this is a selected position, change color!
+            v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+        }
+        return v;
     }
 
 }
