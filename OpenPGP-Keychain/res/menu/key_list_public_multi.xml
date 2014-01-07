@@ -2,7 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
-        android:id="@+id/delete_entry"
+        android:id="@+id/menu_key_list_public_multi_encrypt"
+        android:title="@string/menu_encrypt_to"/>
+    <item
+        android:id="@+id/menu_key_list_public_multi_delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/menu_delete_key"/>
 

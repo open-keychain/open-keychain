@@ -22,6 +22,7 @@ import java.util.Set;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListPublicAdapter;
@@ -56,7 +57,7 @@ import android.widget.ListView;
 public class KeyListPublicFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-//    private KeyListPublicActivity mKeyListPublicActivity;
+    // private KeyListPublicActivity mKeyListPublicActivity;
     private KeyListPublicAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
@@ -77,7 +78,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
+        // mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         mStickyList.setOnItemClickListener(this);
@@ -105,7 +106,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     android.view.MenuInflater inflater = getActivity().getMenuInflater();
-                    inflater.inflate(R.menu.key_list_multi_selection, menu);
+                    inflater.inflate(R.menu.key_list_public_multi, menu);
                     return true;
                 }
 
@@ -117,19 +118,26 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
-                    switch (item.getItemId()) {
-                    case R.id.delete_entry:
 
-                        // get IDs for checked positions as long array
-                        long[] ids = new long[positions.size()];
-                        int i = 0;
-                        for (int pos : positions) {
-                            ids[i] = mAdapter.getItemId(pos);
-                            i++;
-                        }
+                    // get IDs for checked positions as long array
+                    long[] ids = new long[positions.size()];
+                    int i = 0;
+                    for (int pos : positions) {
+                        ids[i] = mAdapter.getItemId(pos);
+                        i++;
+                    }
+
+                    switch (item.getItemId()) {
+                    case R.id.menu_key_list_public_multi_encrypt: {
+                        encrypt(ids);
+
+                        break;
+                    }
+                    case R.id.menu_key_list_public_multi_delete: {
                         showDeleteKeyDialog(ids);
 
                         break;
+                    }
                     }
                     return false;
                 }
@@ -164,8 +172,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         // setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListPublicAdapter(getActivity(), null, Id.type.public_key,
-                USER_ID_INDEX);
+        mAdapter = new KeyListPublicAdapter(getActivity(), null, Id.type.public_key, USER_ID_INDEX);
         mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -225,6 +232,20 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         Intent detailsIntent = new Intent(getActivity(), KeyViewActivity.class);
         detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(detailsIntent);
+    }
+
+    public void encrypt(long[] keyRingRowIds) {
+        // get master key ids from row ids
+        long[] keyRingIds = new long[keyRingRowIds.length];
+        for (int i = 0; i < keyRingRowIds.length; i++) {
+            keyRingIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), keyRingRowIds[i]);
+        }
+
+        Intent intent = new Intent(getActivity(), EncryptActivity.class);
+        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingIds);
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
     }
 
     /**

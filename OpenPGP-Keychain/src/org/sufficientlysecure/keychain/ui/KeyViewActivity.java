@@ -50,6 +50,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.format.DateFormat;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +70,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
     private TextView mFingerint;
     private TextView mExpiry;
     private TextView mCreation;
+    private Button mActionEncrypt;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -86,6 +90,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
         mExpiry = (TextView) this.findViewById(R.id.expiry);
         mCreation = (TextView) this.findViewById(R.id.creation);
         mAlgorithm = (TextView) this.findViewById(R.id.algorithm);
+        mActionEncrypt = (Button) this.findViewById(R.id.action_encrypt);
 
         Intent intent = getIntent();
         mDataUri = intent.getData();
@@ -146,7 +151,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
                     }
                 }
             };
-            
+
             deleteKey(mDataUri, Id.type.public_key, returnHandler);
             return true;
         }
@@ -172,6 +177,19 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
         mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
                 PgpKeyHelper.getCreationDate(mPublicKey)));
         mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(mPublicKey));
+
+        mActionEncrypt.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                long[] encryptionKeyIds = new long[] { mPublicKey.getKeyID() };
+                Intent intent = new Intent(KeyViewActivity.this, EncryptActivity.class);
+                intent.setAction(EncryptActivity.ACTION_ENCRYPT);
+                intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+                // used instead of startActivity set actionbar based on callingPackage
+                startActivityForResult(intent, 0);
+            }
+        });
     }
 
     /**

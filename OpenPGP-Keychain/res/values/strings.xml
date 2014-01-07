@@ -55,6 +55,7 @@
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
     <string name="section_master_key">Master Key</string>
+    <string name="section_actions">Actions</string>
 
     <!-- button -->
     <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
@@ -102,7 +103,8 @@
     <string name="menu_sign_key">Sign key</string>
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
-
+    <string name="menu_encrypt_to">Encrypt to…</string>
+    
     <!-- label -->
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>
@@ -356,5 +358,8 @@
         <item quantity="one">1 key selected.</item>
         <item quantity="other">%d keys selected.</item>
     </plurals>
+
+    <!-- Key view -->
+    <string name="key_view_action_encrypt">Encrypt to this contact</string>
 
 </resources>
