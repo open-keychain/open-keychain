@@ -19,11 +19,12 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListSecretAdapter;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,7 +38,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.actionbarsherlock.app.SherlockListFragment;
 
 public class KeyListSecretFragment extends SherlockListFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
     private KeyListSecretActivity mKeyListSecretActivity;
 
@@ -52,20 +53,7 @@ public class KeyListSecretFragment extends SherlockListFragment implements
 
         mKeyListSecretActivity = (KeyListSecretActivity) getActivity();
 
-        getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // TODO: currently this is EDIT directly, later first show VIEW
-
-                // get master key id using row id
-                long masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListSecretActivity, id);
-
-                boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(
-                        mKeyListSecretActivity, id);
-
-                mKeyListSecretActivity.editKey(masterKeyId, masterCanSign);
-            }
-        });
+        getListView().setOnItemClickListener(this);
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
@@ -123,5 +111,16 @@ public class KeyListSecretFragment extends SherlockListFragment implements
         // above is about to be closed. We need to make sure we are no
         // longer using it.
         mAdapter.swapCursor(null);
+    }
+
+    /**
+     * On click on item, start key view activity
+     */
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Intent editIntent = new Intent(mKeyListSecretActivity, EditKeyActivity.class);
+        editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(id)));
+        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+        startActivityForResult(editIntent, 0);
     }
 }

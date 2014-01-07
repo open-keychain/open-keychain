@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_key_edit_export_file"
+        android:showAsAction="never"
+        android:title="@string/menu_export_key"/>
+    <item
+        android:id="@+id/menu_key_edit_delete"
+        android:showAsAction="never"
+        android:title="@string/menu_delete_key"/>
+    <item
+        android:id="@+id/menu_key_edit_cancel"
+        android:showAsAction="never"
+        android:title="@string/menu_key_edit_cancel"/>
+
+</menu>

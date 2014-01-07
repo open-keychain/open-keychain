@@ -35,9 +35,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -122,7 +119,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
                     Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
                     switch (item.getItemId()) {
                     case R.id.delete_entry:
-                        
+
                         // get IDs for checked positions as long array
                         long[] ids = new long[positions.size()];
                         int i = 0;
@@ -233,25 +230,10 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     /**
      * Show dialog to delete key
      * 
-     * TODO: no messenger needed etc!
-     * 
      * @param keyRingRowIds
      */
     public void showDeleteKeyDialog(long[] keyRingRowIds) {
-        // Message is received after key is deleted
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    // no further actions needed
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(null,
                 keyRingRowIds, Id.type.public_key);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");

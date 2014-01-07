@@ -493,7 +493,7 @@ public class ProviderHelper {
      */
     public static long getPublicMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyId(context, queryUri, keyRingRowId);
+        return getMasterKeyId(context, queryUri);
     }
 
     /**
@@ -551,7 +551,7 @@ public class ProviderHelper {
      */
     public static long getSecretMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyId(context, queryUri, keyRingRowId);
+        return getMasterKeyId(context, queryUri);
     }
 
     /**
@@ -562,7 +562,7 @@ public class ProviderHelper {
      * @param keyRingRowId
      * @return
      */
-    private static long getMasterKeyId(Context context, Uri queryUri, long keyRingRowId) {
+    public static long getMasterKeyId(Context context, Uri queryUri) {
         String[] projection = new String[] { KeyRings.MASTER_KEY_ID };
 
         ContentResolver cr = context.getContentResolver();
@@ -592,7 +592,7 @@ public class ProviderHelper {
         return getKeyRingsAsArmoredString(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
     }
 
-    private static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
+    public static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
             long[] masterKeyIds) {
         ArrayList<String> output = new ArrayList<String>();
 
@@ -661,7 +661,7 @@ public class ProviderHelper {
         return getKeyRingsAsByteArray(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
     }
 
-    private static byte[] getKeyRingsAsByteArray(Context context, Uri uri, long[] masterKeyIds) {
+    public static byte[] getKeyRingsAsByteArray(Context context, Uri uri, long[] masterKeyIds) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         if (masterKeyIds != null && masterKeyIds.length > 0) {

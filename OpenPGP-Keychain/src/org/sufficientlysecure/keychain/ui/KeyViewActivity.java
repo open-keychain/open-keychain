@@ -52,12 +52,11 @@ import android.text.format.DateFormat;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
 @SuppressLint("NewApi")
-public class KeyViewActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
+public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
     private Uri mDataUri;
 
@@ -96,7 +95,7 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         } else {
             Log.d(Constants.TAG, "uri: " + mDataUri);
             loadData(mDataUri);
-            initNfc();
+            initNfc(mDataUri);
         }
     }
 
@@ -111,31 +110,32 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_key_view_update:
-            updateFromKeyserver();
+            updateFromKeyserver(mDataUri);
             return true;
         case R.id.menu_key_view_sign:
-            signKey();
+            signKey(mDataUri);
             return true;
         case R.id.menu_key_view_export_keyserver:
-            uploadToKeyserver();
+            uploadToKeyserver(mDataUri);
             return true;
         case R.id.menu_key_view_export_file:
-            exportToFile();
+            showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
+                    + "/pubexport.asc");
             return true;
         case R.id.menu_key_view_share_default:
-            shareKey();
+            shareKey(mDataUri);
             return true;
         case R.id.menu_key_view_share_qr_code:
-            shareKeyQrCode();
+            shareKeyQrCode(mDataUri);
             return true;
         case R.id.menu_key_view_share_nfc:
             shareNfc();
             return true;
         case R.id.menu_key_view_share_clipboard:
-            copyToClipboard();
+            copyToClipboard(mDataUri);
             return true;
         case R.id.menu_key_view_delete:
-            deleteKey();
+            deleteKey(mDataUri, Id.type.public_key);
             return true;
 
         }
@@ -188,24 +188,8 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         return result;
     }
 
-    private void exportToFile() {
-        // long masterKeyId = ProviderHelper.getPublicMasterKeyId(mKeyListActivity,
-        // keyRingRowId);
-        // if (masterKeyId == -1) {
-        // masterKeyId = ProviderHelper.getSecretMasterKeyId(mKeyListActivity, keyRingRowId);
-        // }
-        //
-        // mKeyListActivity.showExportKeysDialog(masterKeyId);
-    }
-
-    private void deleteKey() {
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
-        // mKeyListActivity.showDeleteKeyDialog(keyRingRowId);
-    }
-
-    private void uploadToKeyserver() {
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+    private void uploadToKeyserver(Uri dataUri) {
+        long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
 
         Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
         uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
@@ -213,20 +197,22 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         startActivityForResult(uploadIntent, Id.request.export_to_server);
     }
 
-    private void updateFromKeyserver() {
-        // TODO: use data uri!
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
+    private void updateFromKeyserver(Uri dataUri) {
         long updateKeyId = 0;
-        PGPPublicKeyRing updateKeyRing = ProviderHelper.getPGPPublicKeyRingByRowId(this,
-                keyRingRowId);
-        if (updateKeyRing != null) {
-            updateKeyId = PgpKeyHelper.getMasterKey(updateKeyRing).getKeyID();
+        PGPPublicKeyRing updateRing = (PGPPublicKeyRing) ProviderHelper
+                .getPGPKeyRing(this, dataUri);
+
+        if (updateRing != null) {
+            updateKeyId = PgpKeyHelper.getMasterKey(updateRing).getKeyID();
         }
-        // if (updateKeyId == 0) {
-        // // this shouldn't happen
-        // return true;
-        // }
+        if (updateKeyId == 0) {
+            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
+            return;
+        }
+
+        Intent signIntent = new Intent(this, SignKeyActivity.class);
+        signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, updateKeyId);
+        startActivity(signIntent);
 
         Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
         queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
@@ -234,35 +220,29 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
 
         // TODO: lookup??
         startActivityForResult(queryIntent, Id.request.look_up_key_id);
-
     }
 
-    private void signKey() {
-        // TODO: use data uri!
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
+    private void signKey(Uri dataUri) {
         long keyId = 0;
-        PGPPublicKeyRing signKeyRing = ProviderHelper
-                .getPGPPublicKeyRingByRowId(this, keyRingRowId);
-        if (signKeyRing != null) {
-            keyId = PgpKeyHelper.getMasterKey(signKeyRing).getKeyID();
+        PGPPublicKeyRing signKey = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
+
+        if (signKey != null) {
+            keyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
         }
-        // if (keyId == 0) {
-        // // this shouldn't happen
-        // return true;
-        // }
+        if (keyId == 0) {
+            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
+            return;
+        }
 
         Intent signIntent = new Intent(this, SignKeyActivity.class);
         signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, keyId);
         startActivity(signIntent);
     }
 
-    private void shareKey() {
-        // TODO: use data uri!
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+    private void shareKey(Uri dataUri) {
         // get public keyring as ascii armored string
-        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+        long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
                 new long[] { masterKeyId });
 
         // let user choose application
@@ -273,12 +253,10 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
                 getResources().getText(R.string.action_share_key_with)));
     }
 
-    private void shareKeyQrCode() {
-        // TODO: use data uri!
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+    private void shareKeyQrCode(Uri dataUri) {
         // get public keyring as ascii armored string
-        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+        long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
                 new long[] { masterKeyId });
 
         ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
@@ -286,38 +264,34 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         dialog.show(getSupportFragmentManager(), "shareQrCodeDialog");
     }
 
-    private void shareNfc() {
-        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
-        dialog.show(getSupportFragmentManager(), "shareNfcDialog");
-    }
-
-    private void copyToClipboard() {
-        // TODO: use data uri!
-        long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-        long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
+    private void copyToClipboard(Uri dataUri) {
         // get public keyring as ascii armored string
-        ArrayList<String> keyringArmored = ProviderHelper.getPublicKeyRingsAsArmoredString(this,
+        long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
                 new long[] { masterKeyId });
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
     }
 
+    private void shareNfc() {
+        ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
+        dialog.show(getSupportFragmentManager(), "shareNfcDialog");
+    }
+
     /**
      * NFC: Initialize NFC sharing if OS and device supports it
      */
-    private void initNfc() {
+    private void initNfc(Uri dataUri) {
         // check if NFC Beam is supported (>= Android 4.1)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // Check for available NFC Adapter
             mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
             if (mNfcAdapter != null) {
                 // init nfc
-                // TODO: use data uri!
-                long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-                long masterKeyId = ProviderHelper.getPublicMasterKeyId(this, keyRingRowId);
 
                 // get public keyring as byte array
-                mSharedKeyringBytes = ProviderHelper.getPublicKeyRingsAsByteArray(this,
+                long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+                mSharedKeyringBytes = ProviderHelper.getKeyRingsAsByteArray(this, dataUri,
                         new long[] { masterKeyId });
 
                 // Register callback to set NDEF message
