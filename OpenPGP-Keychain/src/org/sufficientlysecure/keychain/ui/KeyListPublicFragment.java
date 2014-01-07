@@ -46,8 +46,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 
 /**
@@ -57,9 +59,12 @@ import android.widget.ListView;
 public class KeyListPublicFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    // private KeyListPublicActivity mKeyListPublicActivity;
     private KeyListPublicAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
+
+    // empty layout
+    private Button mButtonEmptyCreate;
+    private Button mButtonEmptyImport;
 
     /**
      * Load custom layout with StickyListView from library
@@ -67,6 +72,31 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
+
+        mButtonEmptyCreate = (Button) view.findViewById(R.id.key_list_empty_button_create);
+        mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), EditKeyActivity.class);
+                intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
+                intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
+                intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, ""); // show user id view
+                startActivityForResult(intent, 0);
+            }
+        });
+
+        mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);
+        mButtonEmptyImport.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intentImportFromFile = new Intent(getActivity(), ImportKeysActivity.class);
+                intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
+                startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
+            }
+        });
+
         return view;
     }
 

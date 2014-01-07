@@ -104,7 +104,7 @@
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
     <string name="menu_encrypt_to">Encrypt to…</string>
-    
+
     <!-- label -->
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>
@@ -354,10 +354,17 @@
     <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
     <string name="share_nfc_dialog">Share with NFC</string>
 
+    <!-- Key list -->
     <plurals name="key_list_selected_keys">
         <item quantity="one">1 key selected.</item>
         <item quantity="other">%d keys selected.</item>
     </plurals>
+
+    <string name="key_list_empty_text1">No keys available yet…</string>
+    <string name="key_list_empty_text2">You can start by</string>
+    <string name="key_list_empty_text3">or</string>
+    <string name="key_list_empty_button_create">creating your own key pair</string>
+    <string name="key_list_empty_button_import">importing public keys.</string>
 
     <!-- Key view -->
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
