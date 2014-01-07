@@ -52,9 +52,6 @@
     <item
         android:id="@+id/menu_key_view_delete"
         android:showAsAction="never"
-        android:title="@string/menu_delete_key">
-        <menu>
-        </menu>
-    </item>
+        android:title="@string/menu_delete_key"/>
 
 </menu>

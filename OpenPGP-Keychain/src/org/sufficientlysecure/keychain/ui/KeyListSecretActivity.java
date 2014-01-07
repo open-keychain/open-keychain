@@ -27,46 +27,56 @@ import android.os.Bundle;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class KeyListSecretActivity extends KeyListActivity {
+public class KeyListSecretActivity extends KeyActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mKeyType = Id.type.secret_key;
-
         setContentView(R.layout.key_list_secret_activity);
 
-        mExportFilename = Constants.path.APP_DIR + "/secexport.asc";
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(1, Id.menu.option.create, 1, R.string.menu_create_key).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.createExpert, 2, R.string.menu_create_key_expert)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
+        getSupportMenuInflater().inflate(R.menu.key_list_secret, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case Id.menu.option.create: {
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+
+            return true;
+        case R.id.menu_key_list_secret_create:
             createKey();
-            return true;
-        }
 
-        case Id.menu.option.createExpert: {
+            return true;
+        case R.id.menu_key_list_secret_create_expert:
             createKeyExpert();
-            return true;
-        }
 
-        default: {
+            return true;
+        case R.id.menu_key_list_secret_export:
+            showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR
+                    + "/secexport.asc");
+
+            return true;
+        case R.id.menu_key_list_secret_import:
+            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
+            startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
+
+            return true;
+        default:
             return super.onOptionsItemSelected(item);
-        }
         }
     }
 

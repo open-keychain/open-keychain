@@ -56,7 +56,7 @@ import android.widget.ListView;
 public class KeyListPublicFragment extends Fragment implements AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private KeyListPublicActivity mKeyListPublicActivity;
+//    private KeyListPublicActivity mKeyListPublicActivity;
     private KeyListPublicAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
@@ -77,7 +77,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
+//        mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         mStickyList.setOnItemClickListener(this);
@@ -164,7 +164,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         // setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListPublicAdapter(mKeyListPublicActivity, null, Id.type.public_key,
+        mAdapter = new KeyListPublicAdapter(getActivity(), null, Id.type.public_key,
                 USER_ID_INDEX);
         mStickyList.setAdapter(mAdapter);
 
@@ -222,7 +222,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent detailsIntent = new Intent(mKeyListPublicActivity, KeyViewActivity.class);
+        Intent detailsIntent = new Intent(getActivity(), KeyViewActivity.class);
         detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(detailsIntent);
     }

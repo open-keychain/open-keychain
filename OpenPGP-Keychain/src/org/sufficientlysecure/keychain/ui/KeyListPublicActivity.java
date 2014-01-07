@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -27,71 +28,48 @@ import com.actionbarsherlock.view.MenuItem;
 import android.content.Intent;
 import android.os.Bundle;
 
-public class KeyListPublicActivity extends KeyListActivity {
+public class KeyListPublicActivity extends KeyActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mKeyType = Id.type.public_key;
-
         setContentView(R.layout.key_list_public_activity);
 
-        mExportFilename = Constants.path.APP_DIR + "/pubexport.asc";
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(1, Id.menu.option.key_server, 1, R.string.menu_key_server)
-                .setIcon(R.drawable.ic_menu_search_list)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_import_from_qr_code)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_import_from_nfc)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
+        getSupportMenuInflater().inflate(R.menu.key_list_public, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case Id.menu.option.key_server: {
-            startActivityForResult(new Intent(this, KeyServerQueryActivity.class), 0);
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
 
             return true;
-        }
-        case Id.menu.option.import_from_file: {
+        case R.id.menu_key_list_public_import:
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-            startActivityForResult(intentImportFromFile, 0);
-
-            return true;
-        }
-
-        case Id.menu.option.import_from_qr_code: {
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_QR_CODE);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
             startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
 
             return true;
-        }
-
-        case Id.menu.option.import_from_nfc: {
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_NFC);
-            startActivityForResult(intentImportFromFile, 0);
+        case R.id.menu_key_list_public_export:
+            showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR
+                    + "/pubexport.asc");
 
             return true;
-        }
-
-        default: {
+        default:
             return super.onOptionsItemSelected(item);
-        }
         }
     }
 

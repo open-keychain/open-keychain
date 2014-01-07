@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -134,10 +135,21 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
         case R.id.menu_key_view_share_clipboard:
             copyToClipboard(mDataUri);
             return true;
-        case R.id.menu_key_view_delete:
-            deleteKey(mDataUri, Id.type.public_key);
+        case R.id.menu_key_view_delete: {
+            // Message is received after key is deleted
+            Handler returnHandler = new Handler() {
+                @Override
+                public void handleMessage(Message message) {
+                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }
+            };
+            
+            deleteKey(mDataUri, Id.type.public_key, returnHandler);
             return true;
-
+        }
         }
         return super.onOptionsItemSelected(item);
     }

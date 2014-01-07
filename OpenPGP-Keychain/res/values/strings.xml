@@ -83,6 +83,7 @@
     <string name="menu_api_app_settings">Registered Apps</string>
     <string name="menu_import_from_file">Import from file</string>
     <string name="menu_import_from_qr_code">Import from QR Code</string>
+    <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
     <string name="menu_export_keys">Export all keys</string>
     <string name="menu_export_key">Export to file</string>
@@ -101,7 +102,7 @@
     <string name="menu_sign_key">Sign key</string>
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
-    
+
     <!-- label -->
     <string name="label_sign">Sign</string>
     <string name="label_message">Message</string>

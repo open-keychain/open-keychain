@@ -40,6 +40,8 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
+ * This implements export key method and delete key method. Used in lists and key view and key edit.
+ * 
  * TODO: get key type by looking at dataUri!
  * 
  */
@@ -48,22 +50,11 @@ public class KeyActivity extends SherlockFragmentActivity {
     protected FileDialogFragment mFileDialog;
     protected String mExportFilename;
 
-    protected void deleteKey(Uri dataUri, final int keyType) {
+    protected void deleteKey(Uri dataUri, final int keyType, Handler deleteHandler) {
         long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
 
-        // Message is received after key is deleted
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    setResult(RESULT_CANCELED);
-                    finish();
-                }
-            }
-        };
-
         // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
+        Messenger messenger = new Messenger(deleteHandler);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                 new long[] { keyRingRowId }, keyType);
@@ -77,11 +68,8 @@ public class KeyActivity extends SherlockFragmentActivity {
      * @param keyRingMasterKeyId
      *            if -1 export all keys
      */
-    public void showExportKeysDialog(Uri dataUri, final int keyType, final String exportFilename) {
-        long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
-
-        // TODO?
-        final long keyRingMasterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
+    public void showExportKeysDialog(final Uri dataUri, final int keyType,
+            final String exportFilename) {
         mExportFilename = exportFilename;
 
         // Message is received after file is selected
@@ -91,6 +79,12 @@ public class KeyActivity extends SherlockFragmentActivity {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
+
+                    long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
+
+                    // TODO?
+                    long keyRingMasterKeyId = ProviderHelper.getSecretMasterKeyId(KeyActivity.this,
+                            keyRingRowId);
 
                     exportKeys(keyRingMasterKeyId, keyType);
                 }
@@ -103,7 +97,7 @@ public class KeyActivity extends SherlockFragmentActivity {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 String title = null;
-                if (keyRingMasterKeyId != -1) {
+                if (dataUri != null) {
                     // single key export
                     title = getString(R.string.title_export_key);
                 } else {

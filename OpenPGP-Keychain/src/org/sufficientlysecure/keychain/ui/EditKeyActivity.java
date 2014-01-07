@@ -325,9 +325,21 @@ public class EditKeyActivity extends KeyActivity {
             showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
                     + "/secexport.asc");
             return true;
-        case R.id.menu_key_edit_delete:
-            deleteKey(mDataUri, Id.type.secret_key);
+        case R.id.menu_key_edit_delete: {
+            // Message is received after key is deleted
+            Handler returnHandler = new Handler() {
+                @Override
+                public void handleMessage(Message message) {
+                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }
+            };
+            
+            deleteKey(mDataUri, Id.type.secret_key, returnHandler);
             return true;
+        }
         }
         return super.onOptionsItemSelected(item);
     }
