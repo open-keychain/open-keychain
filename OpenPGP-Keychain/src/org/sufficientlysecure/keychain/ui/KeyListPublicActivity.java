@@ -20,13 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 public class KeyListPublicActivity extends KeyActivity {
 
@@ -59,7 +58,6 @@ public class KeyListPublicActivity extends KeyActivity {
             return true;
         case R.id.menu_key_list_public_import:
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
             startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
 
             return true;

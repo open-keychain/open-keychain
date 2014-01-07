@@ -92,7 +92,6 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 Intent intentImportFromFile = new Intent(getActivity(), ImportKeysActivity.class);
-                intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
                 startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
             }
         });

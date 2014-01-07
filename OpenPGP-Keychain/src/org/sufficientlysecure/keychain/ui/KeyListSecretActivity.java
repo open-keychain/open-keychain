@@ -71,7 +71,6 @@ public class KeyListSecretActivity extends KeyActivity {
             return true;
         case R.id.menu_key_list_secret_import:
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
             startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
 
             return true;
