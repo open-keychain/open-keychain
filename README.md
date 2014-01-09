@@ -29,8 +29,9 @@ Android Studio is currently not supported or recommended!
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
 3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/StickyListHeaders/library"
 4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/zxing"
-5. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
-6. OpenPGP-Kechain can now be build
+5. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/AndroidBootstrap"
+6. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
+7. OpenPGP-Kechain can now be build
 
 # Keychain API
 
@@ -206,13 +207,17 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   https://github.com/dschuermann/html-textview  
   Apache License v2
 
-* ZXing QRCode Integration  
+* ZXing  
   http://code.google.com/p/zxing/  
   Apache License v2
   
-* StickyListHeaders    
+* StickyListHeaders  
   https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
+  
+* Android-Bootstrap  
+  https://github.com/Bearded-Hen/Android-Bootstrap  
+  MIT License
 
 
 ## Images
