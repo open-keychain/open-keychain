@@ -19,7 +19,7 @@
 <resources>
 
     <!-- title -->
-    <string name="title_manage_public_keys">Public Keys</string>
+    <string name="title_manage_public_keys">Contacts</string>
     <string name="title_manage_secret_keys">Secret Keys</string>
     <string name="title_select_recipients">Select Public Key</string>
     <string name="title_select_secret_key">Select Secret Key</string>
@@ -301,7 +301,7 @@
     <string name="compression_very_slow">very slow</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_manage_keys">Manage Public Keys</string>
+    <string name="dashboard_manage_keys">Contacts</string>
     <string name="dashboard_my_keys">My Secret Keys</string>
     <string name="dashboard_encrypt">Encrypt</string>
     <string name="dashboard_decrypt">Decrypt</string>
@@ -331,8 +331,8 @@
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!</string>
-    <string name="api_settings_show_advanced">Show advanced settings…</string>
-    <string name="api_settings_hide_advanced">Hide advanced settings…</string>
+    <string name="api_settings_show_advanced">Show advanced settings</string>
+    <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
     <string name="api_settings_select_key">Select key</string>
     <string name="api_settings_save">Save</string>
@@ -368,5 +368,20 @@
 
     <!-- Key view -->
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
+
+    <!-- Navigation Drawer -->
+    <string-array name="drawer_array">
+        <item>Contacts</item>
+        <item>Encrypt</item>
+        <item>Decrypt</item>
+        <item>Import Keys</item>
+        <item>My Keys</item>
+        <item>Settings</item>
+        <item>Registered Apps</item>
+        <item>Help</item>
+    </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

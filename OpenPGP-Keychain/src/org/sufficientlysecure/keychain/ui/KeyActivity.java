@@ -45,8 +45,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * TODO: get key type by looking at dataUri!
  * 
  */
-public class KeyActivity extends SherlockFragmentActivity {
-
+public class KeyActivity extends DrawerActivity {
     protected FileDialogFragment mFileDialog;
     protected String mExportFilename;
 

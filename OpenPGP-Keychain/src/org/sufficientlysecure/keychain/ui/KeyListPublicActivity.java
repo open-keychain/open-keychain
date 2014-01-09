@@ -35,8 +35,8 @@ public class KeyListPublicActivity extends KeyActivity {
 
         setContentView(R.layout.key_list_public_activity);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        // now setup navigation drawer in DrawerActivity...
+        setupDrawerNavigation(savedInstanceState);
     }
 
     @Override
@@ -49,13 +49,6 @@ public class KeyListPublicActivity extends KeyActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-
-            return true;
         case R.id.menu_key_list_public_import:
             Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
             startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);

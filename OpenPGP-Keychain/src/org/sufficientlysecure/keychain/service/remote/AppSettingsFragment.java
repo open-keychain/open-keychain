@@ -49,11 +49,12 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class AppSettingsFragment extends Fragment {
 
@@ -62,12 +63,12 @@ public class AppSettingsFragment extends Fragment {
 
     // view
     private LinearLayout mAdvancedSettingsContainer;
-    private Button mAdvancedSettingsButton;
+    private BootstrapButton mAdvancedSettingsButton;
     private TextView mAppNameView;
     private ImageView mAppIconView;
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
-    private Button mSelectKeyButton;
+    private BootstrapButton mSelectKeyButton;
     private Spinner mEncryptionAlgorithm;
     private Spinner mHashAlgorithm;
     private Spinner mCompression;
@@ -116,7 +117,8 @@ public class AppSettingsFragment extends Fragment {
     }
 
     private void initView(View view) {
-        mAdvancedSettingsButton = (Button) view.findViewById(R.id.api_app_settings_advanced_button);
+        mAdvancedSettingsButton = (BootstrapButton) view
+                .findViewById(R.id.api_app_settings_advanced_button);
         mAdvancedSettingsContainer = (LinearLayout) view
                 .findViewById(R.id.api_app_settings_advanced);
 
@@ -124,7 +126,8 @@ public class AppSettingsFragment extends Fragment {
         mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
         mKeyUserId = (TextView) view.findViewById(R.id.api_app_settings_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.api_app_settings_user_id_rest);
-        mSelectKeyButton = (Button) view.findViewById(R.id.api_app_settings_select_key_button);
+        mSelectKeyButton = (BootstrapButton) view
+                .findViewById(R.id.api_app_settings_select_key_button);
         mEncryptionAlgorithm = (Spinner) view
                 .findViewById(R.id.api_app_settings_encryption_algorithm);
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
@@ -204,11 +207,13 @@ public class AppSettingsFragment extends Fragment {
                 if (mAdvancedSettingsContainer.getVisibility() == View.VISIBLE) {
                     mAdvancedSettingsContainer.startAnimation(invisibleAnimation);
                     mAdvancedSettingsContainer.setVisibility(View.GONE);
-                    mAdvancedSettingsButton.setText(R.string.api_settings_show_advanced);
+                    mAdvancedSettingsButton.setText(getString(R.string.api_settings_show_advanced));
+                    mAdvancedSettingsButton.setLeftIcon("fa-caret-up");
                 } else {
                     mAdvancedSettingsContainer.startAnimation(visibleAnimation);
                     mAdvancedSettingsContainer.setVisibility(View.VISIBLE);
-                    mAdvancedSettingsButton.setText(R.string.api_settings_hide_advanced);
+                    mAdvancedSettingsButton.setText(getString(R.string.api_settings_hide_advanced));
+                    mAdvancedSettingsButton.setLeftIcon("fa-caret-down");
                 }
             }
         });
