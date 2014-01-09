@@ -34,7 +34,7 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
-public class HelpActivity extends DrawerActivity {
+public class HelpActivity extends SherlockFragmentActivity {
     public static final String EXTRA_SELECTED_TAB = "selectedTab";
 
     ViewPager mViewPager;
@@ -50,10 +50,11 @@ public class HelpActivity extends DrawerActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
-        setupDrawerNavigation(savedInstanceState);
-
-        ActionBar bar = getSupportActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mTabsAdapter = new TabsAdapter(this, mViewPager);
 
@@ -65,20 +66,20 @@ public class HelpActivity extends DrawerActivity {
 
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_start);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_start)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_start)),
                 HelpFragmentHtml.class, startBundle, (selectedTab == 0 ? true : false));
 
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_nfc_beam);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
                 HelpFragmentHtml.class, nfcBundle, (selectedTab == 1 ? true : false));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_changelog);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_changelog)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
                 HelpFragmentHtml.class, changelogBundle, (selectedTab == 2 ? true : false));
 
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_about)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
                 HelpFragmentAbout.class, null, (selectedTab == 3 ? true : false));
     }
 

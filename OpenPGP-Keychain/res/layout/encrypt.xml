@@ -119,7 +119,7 @@
                             android:layout_gravity="center_vertical"
                             android:layout_margin="4dp"
                             android:text="@string/btn_select_encrypt_keys"
-                            bootstrapbutton:bb_icon_left="fa-users"
+                            bootstrapbutton:bb_icon_left="fa-user"
                             bootstrapbutton:bb_size="default"
                             bootstrapbutton:bb_type="default" />
                     </LinearLayout>

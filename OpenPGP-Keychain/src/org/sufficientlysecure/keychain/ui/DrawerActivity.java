@@ -60,8 +60,10 @@ public class DrawerActivity extends SherlockFragmentActivity {
 
     private static Class[] mItemsClass = new Class[] { KeyListPublicActivity.class,
             EncryptActivity.class, DecryptActivity.class, ImportKeysActivity.class,
-            KeyListSecretActivity.class, PreferencesActivity.class,
-            RegisteredAppsListActivity.class, HelpActivity.class };
+            KeyListSecretActivity.class, RegisteredAppsListActivity.class };
+
+    private static final int MENU_ID_PREFERENCE = 222;
+    private static final int MENU_ID_HELP = 223;
 
     protected void setupDrawerNavigation(Bundle savedInstanceState) {
         mDrawerTitle = getString(R.string.app_name);
@@ -78,9 +80,7 @@ public class DrawerActivity extends SherlockFragmentActivity {
                 new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
                 new NavItem("fa-download", getString(R.string.nav_import)),
                 new NavItem("fa-key", getString(R.string.nav_secret_keys)),
-                new NavItem("fa-wrench", getString(R.string.nav_settings)),
-                new NavItem("fa-android", getString(R.string.nav_apps)),
-                new NavItem("fa-question", getString(R.string.nav_help)), };
+                new NavItem("fa-android", getString(R.string.nav_apps)) };
 
         mDrawerList.setAdapter(new NavigationDrawerAdapter(this, R.layout.drawer_list_item,
                 mItemIconTexts));
@@ -119,6 +119,14 @@ public class DrawerActivity extends SherlockFragmentActivity {
         // }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(42, MENU_ID_PREFERENCE, 100, R.string.menu_preferences);
+        menu.add(42, MENU_ID_HELP, 101, R.string.menu_help);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /* Called whenever we call invalidateOptionsMenu() */
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -137,7 +145,20 @@ public class DrawerActivity extends SherlockFragmentActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+        case MENU_ID_PREFERENCE: {
+            Intent intent = new Intent(this, PreferencesActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        case MENU_ID_HELP: {
+            Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        default:
+            return super.onOptionsItemSelected(item);
+        }
 
         // Handle action buttons
         // switch (item.getItemId()) {
@@ -365,7 +386,7 @@ public class DrawerActivity extends SherlockFragmentActivity {
         };
     }
 
-    /* The click listner for ListView in the navigation drawer */
+    /* The click listener for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

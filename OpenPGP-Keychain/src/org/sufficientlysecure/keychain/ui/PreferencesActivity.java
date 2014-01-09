@@ -51,8 +51,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
 
         addPreferencesFromResource(R.xml.preferences);
 
@@ -218,5 +218,4 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         }
         }
     }
-
 }
