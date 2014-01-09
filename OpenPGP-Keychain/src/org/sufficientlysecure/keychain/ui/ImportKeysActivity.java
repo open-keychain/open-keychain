@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
@@ -28,6 +29,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -43,12 +45,15 @@ import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class ImportKeysActivity extends SherlockFragmentActivity implements OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
@@ -74,11 +79,29 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
     OnNavigationListener mOnNavigationListener;
     String[] mNavigationStrings;
 
+    BootstrapButton mImportButton;
+    BootstrapButton mImportSignUploadButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.import_keys);
+
+        mImportButton = (BootstrapButton) findViewById(R.id.import_import);
+        mImportButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                importKeys();
+            }
+        });
+        mImportSignUploadButton = (BootstrapButton) findViewById(R.id.import_sign_and_upload);
+        mImportSignUploadButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signAndUploadOnClick();
+            }
+        });
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);
@@ -398,11 +421,11 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         }
     }
 
-    public void importOnClick(View view) {
+    public void importOnClick() {
         importKeys();
     }
 
-    public void signAndUploadOnClick(View view) {
+    public void signAndUploadOnClick() {
         // first, import!
         // importOnClick(view);
 

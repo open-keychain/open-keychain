@@ -18,9 +18,9 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,7 +36,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 // TODO: return result from file manager activity to this dialog! not the activity!
 // do it like in ImportFileFragment!
@@ -54,6 +55,10 @@ public class FileDialogFragment extends DialogFragment {
     public static final String MESSAGE_DATA_CHECKED = "checked";
 
     private Messenger mMessenger;
+
+    private EditText mFilename;
+    private BootstrapButton mBrowse;
+    private CheckBox mCheckBox;
 
     /**
      * Creates new instance of this file dialog fragment
@@ -90,10 +95,6 @@ public class FileDialogFragment extends DialogFragment {
         String checkboxText = getArguments().getString(ARG_CHECKBOX_TEXT);
         final int requestCode = getArguments().getInt(ARG_REQUEST_CODE);
 
-        final EditText mFilename;
-        final ImageButton mBrowse;
-        final CheckBox mCheckBox;
-
         LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
@@ -105,13 +106,13 @@ public class FileDialogFragment extends DialogFragment {
 
         mFilename = (EditText) view.findViewById(R.id.input);
         mFilename.setText(defaultFile);
-        mBrowse = (ImageButton) view.findViewById(R.id.btn_browse);
+        mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // only .asc or .gpg files
-                // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc or gpg types!
-                FileHelper.openFile(activity, mFilename.getText().toString(), "*/*",
-                        requestCode);
+                // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
+                // or gpg types!
+                FileHelper.openFile(activity, mFilename.getText().toString(), "*/*", requestCode);
             }
         });
 
@@ -196,4 +197,3 @@ public class FileDialogFragment extends DialogFragment {
         }
     }
 }
-

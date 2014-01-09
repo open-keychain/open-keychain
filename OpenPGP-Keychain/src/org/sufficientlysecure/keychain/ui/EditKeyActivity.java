@@ -55,7 +55,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -64,6 +63,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class EditKeyActivity extends KeyActivity {
 
@@ -91,7 +91,7 @@ public class EditKeyActivity extends KeyActivity {
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
-    private Button mChangePassPhrase;
+    private BootstrapButton mChangePassPhrase;
 
     private CheckBox mNoPassphrase;
 
@@ -336,7 +336,7 @@ public class EditKeyActivity extends KeyActivity {
                     }
                 }
             };
-            
+
             deleteKey(mDataUri, Id.type.secret_key, returnHandler);
             return true;
         }
@@ -426,7 +426,7 @@ public class EditKeyActivity extends KeyActivity {
         setContentView(R.layout.edit_key);
 
         // find views
-        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
+        mChangePassPhrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_pass_phrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
 
         // Build layout based on given userIds and keys
@@ -653,7 +653,7 @@ public class EditKeyActivity extends KeyActivity {
     }
 
     private void updatePassPhraseButtonText() {
-        mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_change_passphrase
-                : R.string.btn_set_passphrase);
+        mChangePassPhrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
+                : getString(R.string.btn_set_passphrase));
     }
 }

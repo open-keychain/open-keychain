@@ -16,19 +16,20 @@
 -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fillViewport="true" >
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp" >
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="4dp" >
@@ -43,7 +44,7 @@
                 android:id="@+id/modeLabel"
                 style="@style/SectionHeader"
                 android:layout_width="0dip"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/label_asymmetric" />
@@ -57,18 +58,18 @@
 
         <ViewFlipper
             android:id="@+id/mode"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
             <LinearLayout
                 android:id="@+id/modeAsymmetric"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="4dp" >
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
@@ -80,7 +81,7 @@
                         android:text="@string/label_sign" />
 
                     <LinearLayout
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:paddingLeft="16dp" >
@@ -108,7 +109,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingBottom="3dip" >
@@ -122,18 +123,22 @@
                         android:text="@string/label_select_public_keys"
                         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                    <Button
+                    <com.beardedhen.androidbootstrap.BootstrapButton
                         android:id="@+id/btn_selectEncryptKeys"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:text="@string/btn_select_encrypt_keys" />
+                        android:layout_margin="4dp"
+                        android:text="@string/btn_select_encrypt_keys"
+                        bootstrapbutton:bb_icon_left="fa-key"
+                        bootstrapbutton:bb_size="default"
+                        bootstrapbutton:bb_type="default" />
                 </LinearLayout>
             </LinearLayout>
 
             <TableLayout
                 android:id="@+id/modeSymmetric"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:stretchColumns="1" >
@@ -151,7 +156,7 @@
 
                     <EditText
                         android:id="@+id/passPhrase"
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword" />
                 </TableRow>
@@ -169,7 +174,7 @@
 
                     <EditText
                         android:id="@+id/passPhraseAgain"
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword" />
                 </TableRow>
@@ -177,7 +182,7 @@
         </ViewFlipper>
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="4dp" >
@@ -192,7 +197,7 @@
                 android:id="@+id/sourceLabel"
                 style="@style/SectionHeader"
                 android:layout_width="0dip"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/label_message"
@@ -207,34 +212,34 @@
 
         <ViewFlipper
             android:id="@+id/source"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1" >
 
             <LinearLayout
                 android:id="@+id/sourceMessage"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="4dp" >
 
                 <EditText
                     android:id="@+id/message"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:gravity="top"
                     android:inputType="text|textCapSentences|textMultiLine|textLongMessage" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/sourceFile"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:padding="4dp" >
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
@@ -245,15 +250,19 @@
                         android:layout_weight="1"
                         android:inputType="textNoSuggestions" />
 
-                    <ImageButton
+                    <com.beardedhen.androidbootstrap.BootstrapButton
                         android:id="@+id/btn_browse"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_menu_filebrowser" />
+                        android:layout_margin="4dp"
+                        bootstrapbutton:bb_icon_left="fa-folder-open"
+                        bootstrapbutton:bb_roundedCorners="true"
+                        bootstrapbutton:bb_size="default"
+                        bootstrapbutton:bb_type="default" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
@@ -275,7 +284,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
@@ -288,7 +297,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 

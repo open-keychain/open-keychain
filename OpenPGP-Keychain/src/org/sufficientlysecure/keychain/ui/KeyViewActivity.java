@@ -52,12 +52,12 @@ import android.os.Message;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
 public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCallback,
@@ -70,7 +70,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
     private TextView mFingerint;
     private TextView mExpiry;
     private TextView mCreation;
-    private Button mActionEncrypt;
+    private BootstrapButton mActionEncrypt;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -90,7 +90,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
         mExpiry = (TextView) this.findViewById(R.id.expiry);
         mCreation = (TextView) this.findViewById(R.id.creation);
         mAlgorithm = (TextView) this.findViewById(R.id.algorithm);
-        mActionEncrypt = (Button) this.findViewById(R.id.action_encrypt);
+        mActionEncrypt = (BootstrapButton) this.findViewById(R.id.action_encrypt);
 
         Intent intent = getIntent();
         mDataUri = intent.getData();

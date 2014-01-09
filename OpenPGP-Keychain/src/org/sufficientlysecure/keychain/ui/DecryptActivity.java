@@ -60,7 +60,6 @@ import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -70,6 +69,7 @@ import android.widget.ViewFlipper;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
 public class DecryptActivity extends SherlockFragmentActivity {
@@ -107,7 +107,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
-    private ImageButton mBrowse = null;
+    private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -216,7 +216,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         mMessage.setMinimumHeight(height);
 
         mFilename = (EditText) findViewById(R.id.filename);
-        mBrowse = (ImageButton) findViewById(R.id.btn_browse);
+        mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",

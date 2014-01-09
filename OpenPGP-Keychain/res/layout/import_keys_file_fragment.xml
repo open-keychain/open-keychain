@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
@@ -16,12 +17,16 @@
         android:minLines="2"
         android:scrollbars="vertical" />
 
-    <ImageButton
+    <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/import_keys_file_browse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_margin="4dp"
         android:contentDescription="@string/filemanager_title_open"
-        android:src="@drawable/ic_menu_filebrowser" />
+        bootstrapbutton:bb_icon_left="fa-folder-open"
+        bootstrapbutton:bb_roundedCorners="true"
+        bootstrapbutton:bb_size="default"
+        bootstrapbutton:bb_type="default" />
 
 </LinearLayout>

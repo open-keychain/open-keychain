@@ -16,12 +16,13 @@
 -->
 
 <org.sufficientlysecure.keychain.ui.widget.KeyEditor xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
@@ -80,7 +81,7 @@
 
                 <TextView
                     android:id="@+id/creation"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </TableRow>
 
@@ -94,10 +95,12 @@
                     android:paddingRight="10dip"
                     android:text="@string/label_expiry" />
 
-                <Button
+                <com.beardedhen.androidbootstrap.BootstrapButton
                     android:id="@+id/expiry"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/none"
+                    bootstrapbutton:bb_type="default" />
             </TableRow>
 
             <TableRow>
@@ -112,22 +115,25 @@
 
                 <Spinner
                     android:id="@+id/usage"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </TableRow>
         </TableLayout>
 
-        <ImageButton
+        <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/delete"
-            style="@style/MinusButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
+            android:layout_margin="10dp"
+            bootstrapbutton:bb_icon_left="fa-minus"
+            bootstrapbutton:bb_roundedCorners="true"
+            bootstrapbutton:bb_size="small"
+            bootstrapbutton:bb_type="danger" />
     </LinearLayout>
 
     <View
         android:id="@+id/separator"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="1dip"
         android:background="?android:attr/listDivider" />
 

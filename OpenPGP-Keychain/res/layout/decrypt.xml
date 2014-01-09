@@ -16,18 +16,19 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:fillViewport="true"
     android:orientation="vertical" >
 
     <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:fillViewport="true" >
 
         <LinearLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingLeft="10dp"
@@ -35,7 +36,7 @@
 
             <LinearLayout
                 android:id="@+id/signature"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:orientation="horizontal"
@@ -85,7 +86,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal" >
 
@@ -99,7 +100,7 @@
                     android:id="@+id/sourceLabel"
                     style="@style/SectionHeader"
                     android:layout_width="0dip"
-                    android:layout_height="fill_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="@string/label_message"
@@ -114,21 +115,21 @@
 
             <ViewFlipper
                 android:id="@+id/source"
-                android:layout_width="fill_parent"
+                android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1" >
 
                 <LinearLayout
                     android:id="@+id/sourceMessage"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:padding="4dp" >
 
                     <EditText
                         android:id="@+id/message"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:gravity="top"
                         android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
                         android:scrollHorizontally="true" />
@@ -136,13 +137,13 @@
 
                 <LinearLayout
                     android:id="@+id/sourceFile"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:padding="4dp" >
 
                     <LinearLayout
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
 
@@ -153,15 +154,19 @@
                             android:layout_weight="1"
                             android:inputType="textNoSuggestions" />
 
-                        <ImageButton
+                        <com.beardedhen.androidbootstrap.BootstrapButton
                             android:id="@+id/btn_browse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_menu_filebrowser" />
+                            android:layout_margin="4dp"
+                            bootstrapbutton:bb_icon_left="fa-folder-open"
+                            bootstrapbutton:bb_roundedCorners="true"
+                            bootstrapbutton:bb_size="default"
+                            bootstrapbutton:bb_type="default" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="fill_parent"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
 

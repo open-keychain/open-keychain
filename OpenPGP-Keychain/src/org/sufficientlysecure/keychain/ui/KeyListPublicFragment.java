@@ -22,9 +22,9 @@ import java.util.Set;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.KeyListPublicAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
@@ -45,12 +45,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -63,8 +64,8 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     private StickyListHeadersListView mStickyList;
 
     // empty layout
-    private Button mButtonEmptyCreate;
-    private Button mButtonEmptyImport;
+    private BootstrapButton mButtonEmptyCreate;
+    private BootstrapButton mButtonEmptyImport;
 
     /**
      * Load custom layout with StickyListView from library
@@ -73,7 +74,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
 
-        mButtonEmptyCreate = (Button) view.findViewById(R.id.key_list_empty_button_create);
+        mButtonEmptyCreate = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -86,7 +87,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
             }
         });
 
-        mButtonEmptyImport = (Button) view.findViewById(R.id.key_list_empty_button_import);
+        mButtonEmptyImport = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_import);
         mButtonEmptyImport.setOnClickListener(new OnClickListener() {
 
             @Override

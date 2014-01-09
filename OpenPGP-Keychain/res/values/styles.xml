@@ -18,16 +18,6 @@
 
 <resources>
 
-    <style name="MinusButton">
-        <item name="android:background">@drawable/btn_circle</item>
-        <item name="android:src">@drawable/ic_btn_round_minus</item>
-    </style>
-
-    <style name="PlusButton">
-        <item name="android:background">@drawable/btn_circle</item>
-        <item name="android:src">@drawable/ic_btn_round_plus</item>
-    </style>
-
     <style name="DashboardButton">
         <item name="android:layout_gravity">center_vertical</item>
         <item name="android:layout_width">wrap_content</item>
@@ -44,7 +34,7 @@
         <item name="android:drawablePadding">4dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:paddingLeft">4dp</item>
-        <item name="android:textAllCaps">true</item>
+<!--         <item name="android:textAllCaps">true</item> -->
         <item name="android:textColor">@color/emphasis</item>
         <item name="android:textSize">14sp</item>
     </style>

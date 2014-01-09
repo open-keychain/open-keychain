@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/import_clipboard_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/import_from_clipboard" />
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:text="@string/import_from_clipboard"
+        bootstrapbutton:bb_size="default"
+        bootstrapbutton:bb_type="default" />
 
 </LinearLayout>

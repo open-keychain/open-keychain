@@ -27,14 +27,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
-    private ImageButton mDeleteButton;
+    private BootstrapButton mDeleteButton;
     private RadioButton mIsMainUserId;
     private EditText mName;
     private EditText mEmail;
@@ -95,7 +96,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         setDrawingCacheEnabled(true);
         setAlwaysDrawnWithCacheEnabled(true);
 
-        mDeleteButton = (ImageButton) findViewById(R.id.delete);
+        mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
         mIsMainUserId = (RadioButton) findViewById(R.id.isMainUserId);
         mIsMainUserId.setOnClickListener(this);

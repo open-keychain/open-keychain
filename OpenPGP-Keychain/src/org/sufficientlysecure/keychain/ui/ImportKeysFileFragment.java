@@ -31,14 +31,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageButton;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class ImportKeysFileFragment extends Fragment {
     public static final String ARG_PATH = "path";
 
     private ImportKeysActivity mImportActivity;
     private EditText mFilename;
-    private ImageButton mBrowse;
+    private BootstrapButton mBrowse;
 
     /**
      * Creates new instance of this fragment
@@ -61,7 +62,7 @@ public class ImportKeysFileFragment extends Fragment {
         View view = inflater.inflate(R.layout.import_keys_file_fragment, container, false);
 
         mFilename = (EditText) view.findViewById(R.id.import_keys_file_input);
-        mBrowse = (ImageButton) view.findViewById(R.id.import_keys_file_browse);
+        mBrowse = (BootstrapButton) view.findViewById(R.id.import_keys_file_browse);
 
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

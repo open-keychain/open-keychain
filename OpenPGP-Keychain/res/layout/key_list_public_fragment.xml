@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -45,12 +46,14 @@
             android:text="@string/key_list_empty_text2"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/key_list_empty_button_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="@string/key_list_empty_button_create"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            bootstrapbutton:bb_icon_left="fa-plus"
+            bootstrapbutton:bb_type="default" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -59,12 +62,14 @@
             android:text="@string/key_list_empty_text3"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
-        <Button
+        <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/key_list_empty_button_import"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:text="@string/key_list_empty_button_import"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            bootstrapbutton:bb_icon_left="fa-download"
+            bootstrapbutton:bb_type="default" />
     </LinearLayout>
 
 </FrameLayout>
