@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -55,13 +56,17 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
-public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCallback,
+public class KeyViewActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
+
+    ExportHelper mExportHelper;
+
     private Uri mDataUri;
 
     private PGPPublicKey mPublicKey;
@@ -80,6 +85,8 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -125,7 +132,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
             uploadToKeyserver(mDataUri);
             return true;
         case R.id.menu_key_view_export_file:
-            showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
+            mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
                     + "/pubexport.asc");
             return true;
         case R.id.menu_key_view_share_default:
@@ -152,7 +159,7 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
                 }
             };
 
-            deleteKey(mDataUri, Id.type.public_key, returnHandler);
+            mExportHelper.deleteKey(mDataUri, Id.type.public_key, returnHandler);
             return true;
         }
         }
@@ -372,5 +379,12 @@ public class KeyViewActivity extends KeyActivity implements CreateNdefMessageCal
             }
         }
     };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
 }

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,11 +28,15 @@ import android.os.Bundle;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class KeyListPublicActivity extends KeyActivity {
+public class KeyListPublicActivity extends DrawerActivity {
+
+    ExportHelper mExportHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(this);
 
         setContentView(R.layout.key_list_public_activity);
 
@@ -55,7 +60,7 @@ public class KeyListPublicActivity extends KeyActivity {
 
             return true;
         case R.id.menu_key_list_public_export:
-            showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR
+            mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR
                     + "/pubexport.asc");
 
             return true;
@@ -64,27 +69,30 @@ public class KeyListPublicActivity extends KeyActivity {
         }
     }
 
-    // @Override
-    // protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // switch (requestCode) {
-    // case Id.request.look_up_key_id: {
-    // if (resultCode == RESULT_CANCELED || data == null
-    // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
-    // return;
-    // }
-    //
-    // Intent intent = new Intent(this, KeyListPublicActivity.class);
-    // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
-    // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
-    // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
-    // handleActions(intent);
-    // break;
-    // }
-    //
-    // default: {
-    // super.onActivityResult(requestCode, resultCode, data);
-    // break;
-    // }
-    // }
-    // }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        // switch (requestCode) {
+        // case Id.request.look_up_key_id: {
+        // if (resultCode == RESULT_CANCELED || data == null
+        // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
+        // return;
+        // }
+        //
+        // Intent intent = new Intent(this, KeyListPublicActivity.class);
+        // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
+        // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
+        // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
+        // handleActions(intent);
+        // break;
+        // }
+        //
+        // default: {
+        // super.onActivityResult(requestCode, resultCode, data);
+        // break;
+        // }
+        // }
+    }
 }

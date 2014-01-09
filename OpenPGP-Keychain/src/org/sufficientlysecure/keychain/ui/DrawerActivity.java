@@ -71,9 +71,6 @@ public class DrawerActivity extends SherlockFragmentActivity {
         // set a custom shadow that overlays the main content when the drawer
         // opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-        // mDrawerList
-        // .setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mItemsText));
 
         NavItem mItemIconTexts[] = new NavItem[] {
                 new NavItem("fa-user", getString(R.string.nav_contacts)),
@@ -89,13 +86,6 @@ public class DrawerActivity extends SherlockFragmentActivity {
                 mItemIconTexts));
 
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        // <com.beardedhen.androidbootstrap.FontAwesomeText
-        // android:layout_width="wrap_content"
-        // android:layout_height="wrap_content"
-        // android:layout_margin="10dp"
-        // android:textSize="32sp"
-        // fontawesometext:fa_icon="fa-github" />
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

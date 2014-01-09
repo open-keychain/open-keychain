@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,11 +28,15 @@ import android.os.Bundle;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
-public class KeyListSecretActivity extends KeyActivity {
+public class KeyListSecretActivity extends DrawerActivity {
+
+    ExportHelper mExportHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(this);
 
         setContentView(R.layout.key_list_secret_activity);
 
@@ -58,7 +63,7 @@ public class KeyListSecretActivity extends KeyActivity {
 
             return true;
         case R.id.menu_key_list_secret_export:
-            showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR
+            mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR
                     + "/secexport.asc");
 
             return true;
@@ -84,6 +89,13 @@ public class KeyListSecretActivity extends KeyActivity {
         Intent intent = new Intent(this, EditKeyActivity.class);
         intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
         startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
 }

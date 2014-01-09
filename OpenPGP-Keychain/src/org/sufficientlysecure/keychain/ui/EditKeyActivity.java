@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -61,11 +62,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class EditKeyActivity extends KeyActivity {
+public class EditKeyActivity extends SherlockFragmentActivity {
 
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
@@ -100,9 +102,13 @@ public class EditKeyActivity extends KeyActivity {
     Vector<Integer> mKeysUsages;
     boolean masterCanSign = true;
 
+    ExportHelper mExportHelper;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mExportHelper = new ExportHelper(this);
 
         mUserIds = new Vector<String>();
         mKeys = new Vector<PGPSecretKey>();
@@ -322,7 +328,7 @@ public class EditKeyActivity extends KeyActivity {
             cancelClicked();
             return true;
         case R.id.menu_key_edit_export_file:
-            showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
+            mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
                     + "/secexport.asc");
             return true;
         case R.id.menu_key_edit_delete: {
@@ -337,7 +343,7 @@ public class EditKeyActivity extends KeyActivity {
                 }
             };
 
-            deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+            mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
             return true;
         }
         }
@@ -655,5 +661,12 @@ public class EditKeyActivity extends KeyActivity {
     private void updatePassPhraseButtonText() {
         mChangePassPhrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
