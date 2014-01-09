@@ -63,12 +63,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class EncryptActivity extends SherlockFragmentActivity {
+public class EncryptActivity extends DrawerActivity {
 
     /* Intents */
     public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
@@ -153,13 +152,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
         case Id.menu.option.encrypt_to_clipboard:
             encryptToClipboardClicked();
 
@@ -186,6 +178,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
         ActionBarHelper.setBackButton(this);
 
         initView();
+
+        setupDrawerNavigation(savedInstanceState);
 
         // Handle intent actions
         handleActions(getIntent());
@@ -491,8 +485,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 if (!file.exists() || !file.isFile()) {
                     Toast.makeText(
                             this,
-                            getString(R.string.error_message, getString(R.string.error_file_not_found)),
-                            Toast.LENGTH_SHORT).show();
+                            getString(R.string.error_message,
+                                    getString(R.string.error_file_not_found)), Toast.LENGTH_SHORT)
+                            .show();
                     return;
                 }
             }
@@ -510,7 +505,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
             gotPassPhrase = (passPhrase.length() != 0);
             if (!gotPassPhrase) {
-                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
         } else {
@@ -522,8 +518,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
             }
 
             if (!encryptIt && mSecretKeyId == 0) {
-                Toast.makeText(this, R.string.select_encryption_or_signature_key, Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(this, R.string.select_encryption_or_signature_key,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -852,10 +848,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Choice[] choices = new Choice[] {
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
                         + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zip, "ZIP (" + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.compression_very_slow)
-                        + ")"), };
+                new Choice(Id.choice.compression.zip, "ZIP ("
+                        + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.zlib, "ZLIB ("
+                        + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2 ("
+                        + getString(R.string.compression_very_slow) + ")"), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

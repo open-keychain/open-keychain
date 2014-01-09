@@ -370,17 +370,14 @@
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
 
     <!-- Navigation Drawer -->
-    <string-array name="drawer_array">
-        <item>Contacts</item>
-        <item>Encrypt</item>
-        <item>Decrypt</item>
-        <item>Import Keys</item>
-        <item>My Keys</item>
-        <item>Settings</item>
-        <item>Registered Apps</item>
-        <item>Help</item>
-    </string-array>
-
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_encrypt">Encrypt</string>
+    <string name="nav_decrypt">Decrypt</string>
+    <string name="nav_import">Import Keys</string>
+    <string name="nav_secret_keys">My Keys</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_apps">Registered Apps</string>
+    <string name="nav_help">Help</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 

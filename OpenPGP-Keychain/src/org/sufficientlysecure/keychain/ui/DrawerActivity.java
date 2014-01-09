@@ -1,26 +1,27 @@
 /*
- * 
- * from https://github.com/tobykurien/SherlockNavigationDrawer
- * 
- * Copyright 2013 The Android Open Source Project
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -30,45 +31,24 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.ActionProvider;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.SubMenu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.FontAwesomeText;
 
 /**
- * This example illustrates a common usage of the DrawerLayout widget in the Android support
- * library.
- * <p/>
- * <p>
- * When a navigation (left) drawer is present, the host activity should detect presses of the action
- * bar's Up affordance as a signal to open and close the navigation drawer. The
- * ActionBarDrawerToggle facilitates this behavior. Items within the drawer should fall into one of
- * two categories:
- * </p>
- * <p/>
- * <ul>
- * <li><strong>View switches</strong>. A view switch follows the same basic policies as list or tab
- * navigation in that a view switch does not create navigation history. This pattern should only be
- * used at the root activity of a task, leaving some form of Up navigation active for activities
- * further down the navigation hierarchy.</li>
- * <li><strong>Selective Up</strong>. The drawer allows the user to choose an alternate parent for
- * Up navigation. This allows a user to jump across an app's navigation hierarchy at will. The
- * application should treat this as it treats Up navigation from a different task, replacing the
- * current task stack using TaskStackBuilder or similar. This is the only form of navigation drawer
- * that should be used outside of the root activity of a task.</li>
- * </ul>
- * <p/>
- * <p>
- * Right side drawers should be used for actions, not navigation. This follows the pattern
- * established by the Action Bar that navigation should be to the left and actions to the right. An
- * action should be an operation performed on the current contents of the window, for example
- * enabling or disabling a data overlay on top of the current content.
- * </p>
+ * some fundamental ideas from https://github.com/tobykurien/SherlockNavigationDrawer
+ * 
+ * 
  */
 public class DrawerActivity extends SherlockFragmentActivity {
     private DrawerLayout mDrawerLayout;
@@ -77,11 +57,14 @@ public class DrawerActivity extends SherlockFragmentActivity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mDrawerTitles;
+
+    private static Class[] mItemsClass = new Class[] { KeyListPublicActivity.class,
+            EncryptActivity.class, DecryptActivity.class, ImportKeysActivity.class,
+            KeyListSecretActivity.class, PreferencesActivity.class,
+            RegisteredAppsListActivity.class, HelpActivity.class };
 
     protected void setupDrawerNavigation(Bundle savedInstanceState) {
-        // mTitle = mDrawerTitle = getTitle();
-        mDrawerTitles = getResources().getStringArray(R.array.drawer_array);
+        mDrawerTitle = getString(R.string.app_name);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -89,9 +72,30 @@ public class DrawerActivity extends SherlockFragmentActivity {
         // opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item,
-                mDrawerTitles));
+        // mDrawerList
+        // .setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mItemsText));
+
+        NavItem mItemIconTexts[] = new NavItem[] {
+                new NavItem("fa-user", getString(R.string.nav_contacts)),
+                new NavItem("fa-lock", getString(R.string.nav_encrypt)),
+                new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
+                new NavItem("fa-download", getString(R.string.nav_import)),
+                new NavItem("fa-key", getString(R.string.nav_secret_keys)),
+                new NavItem("fa-wrench", getString(R.string.nav_settings)),
+                new NavItem("fa-android", getString(R.string.nav_apps)),
+                new NavItem("fa-question", getString(R.string.nav_help)), };
+
+        mDrawerList.setAdapter(new NavigationDrawerAdapter(this, R.layout.drawer_list_item,
+                mItemIconTexts));
+
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // <com.beardedhen.androidbootstrap.FontAwesomeText
+        // android:layout_width="wrap_content"
+        // android:layout_height="wrap_content"
+        // android:layout_margin="10dp"
+        // android:textSize="32sp"
+        // fontawesometext:fa_icon="fa-github" />
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -107,21 +111,22 @@ public class DrawerActivity extends SherlockFragmentActivity {
         ) {
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
-                supportInvalidateOptionsMenu(); // creates call to
-                                                // onPrepareOptionsMenu()
+                // creates call to onPrepareOptionsMenu()
+                supportInvalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
+                mTitle = getSupportActionBar().getTitle();
                 getSupportActionBar().setTitle(mDrawerTitle);
-                supportInvalidateOptionsMenu(); // creates call to
-                                                // onPrepareOptionsMenu()
+                // creates call to onPrepareOptionsMenu()
+                supportInvalidateOptionsMenu();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        if (savedInstanceState == null) {
-            selectItem(0);
-        }
+        // if (savedInstanceState == null) {
+        // selectItem(0);
+        // }
     }
 
     /* Called whenever we call invalidateOptionsMenu() */
@@ -142,8 +147,10 @@ public class DrawerActivity extends SherlockFragmentActivity {
             return true;
         }
 
+        return super.onOptionsItemSelected(item);
+
         // Handle action buttons
-        switch (item.getItemId()) {
+        // switch (item.getItemId()) {
         // case R.id.action_websearch:
         // // create intent to perform web search for this planet
         // Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
@@ -155,9 +162,9 @@ public class DrawerActivity extends SherlockFragmentActivity {
         // Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
         // }
         // return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
+        // default:
+        // return super.onOptionsItemSelected(item);
+        // }
     }
 
     private android.view.MenuItem getMenuItem(final MenuItem item) {
@@ -377,32 +384,24 @@ public class DrawerActivity extends SherlockFragmentActivity {
     }
 
     private void selectItem(int position) {
-        // update the main content by replacing fragments
-        // Fragment fragment = new PlanetFragment();
-        // Bundle args = new Bundle();
-        // args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-        // fragment.setArguments(args);
-
-        // FragmentManager fragmentManager = getSupportFragmentManager();
-        // fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         // setTitle(mDrawerTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
-    }
 
-    // @Override
-    // public void setTitle(CharSequence title) {
-    // mTitle = title;
-    // getSupportActionBar().setTitle(mTitle);
-    // }
+        finish();
+        overridePendingTransition(0, 0);
+
+        Intent intent = new Intent(this, mItemsClass[position]);
+        startActivity(intent);
+        // disable animation of activity start
+        overridePendingTransition(0, 0);
+    }
 
     /**
      * When using the ActionBarDrawerToggle, you must call it during onPostCreate() and
      * onConfigurationChanged()...
      */
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -417,28 +416,59 @@ public class DrawerActivity extends SherlockFragmentActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    /**
-     * Fragment that appears in the "content_frame", shows a planet
-     */
-    // public static class PlanetFragment extends SherlockFragment {
-    // public static final String ARG_PLANET_NUMBER = "planet_number";
-    //
-    // public PlanetFragment() {
-    // // Empty constructor required for fragment subclasses
-    // }
-    //
-    // @Override
-    // public View onCreateView(LayoutInflater inflater, ViewGroup container,
-    // Bundle savedInstanceState) {
-    // View rootView = inflater.inflate(R.layout.fragment_planet, container, false);
-    // int i = getArguments().getInt(ARG_PLANET_NUMBER);
-    // String planet = getResources().getStringArray(R.array.drawer_array)[i];
-    //
-    // int imageId = getResources().getIdentifier(planet.toLowerCase(Locale.getDefault()),
-    // "drawable", getActivity().getPackageName());
-    // ((ImageView) rootView.findViewById(R.id.image)).setImageResource(imageId);
-    // getActivity().setTitle(planet);
-    // return rootView;
-    // }
-    // }
+    private class NavItem {
+        public String icon;
+        public String title;
+
+        public NavItem(String icon, String title) {
+            super();
+            this.icon = icon;
+            this.title = title;
+        }
+    }
+
+    private class NavigationDrawerAdapter extends ArrayAdapter<NavItem> {
+        Context context;
+        int layoutResourceId;
+        NavItem data[] = null;
+
+        public NavigationDrawerAdapter(Context context, int layoutResourceId, NavItem[] data) {
+            super(context, layoutResourceId, data);
+            this.layoutResourceId = layoutResourceId;
+            this.context = context;
+            this.data = data;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            NavItemHolder holder = null;
+
+            if (row == null) {
+                LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+                row = inflater.inflate(layoutResourceId, parent, false);
+
+                holder = new NavItemHolder();
+                holder.img = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
+                holder.txtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
+
+                row.setTag(holder);
+            } else {
+                holder = (NavItemHolder) row.getTag();
+            }
+
+            NavItem item = data[position];
+            holder.txtTitle.setText(item.title);
+            holder.img.setIcon(item.icon);
+
+            return row;
+        }
+
+    }
+
+    static class NavItemHolder {
+        FontAwesomeText img;
+        TextView txtTitle;
+    }
+
 }

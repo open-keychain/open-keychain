@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_centerHorizontal="true" >
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <FrameLayout
-        android:id="@+id/import_navigation_fragment"
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp" />
+        android:layout_centerHorizontal="true" >
 
-    <LinearLayout
-        android:id="@+id/import_footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp" >
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/import_import"
+        <FrameLayout
+            android:id="@+id/import_navigation_fragment"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:text="@string/import_import"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="info" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/import_sign_and_upload"
+        <LinearLayout
+            android:id="@+id/import_footer"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:text="@string/import_sign_and_upload"
-            bootstrapbutton:bb_type="info" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" >
 
-    <FrameLayout
-        android:id="@+id/import_keys_list_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/import_footer"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/import_navigation_fragment"
-        android:orientation="vertical"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp" />
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/import_import"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:padding="4dp"
+                android:text="@string/import_import"
+                bootstrapbutton:bb_icon_left="fa-download"
+                bootstrapbutton:bb_type="info" />
 
-</RelativeLayout>
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/import_sign_and_upload"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:padding="4dp"
+                android:text="@string/import_sign_and_upload"
+                bootstrapbutton:bb_type="info" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/import_keys_list_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/import_footer"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/import_navigation_fragment"
+            android:orientation="vertical"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp" />
+    </RelativeLayout>
+
+    <include layout="@layout/drawer_list" />
+
+</android.support.v4.widget.DrawerLayout>

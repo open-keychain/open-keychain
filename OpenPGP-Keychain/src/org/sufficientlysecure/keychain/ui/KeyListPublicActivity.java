@@ -50,8 +50,8 @@ public class KeyListPublicActivity extends KeyActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_key_list_public_import:
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
+            Intent intentImport = new Intent(this, ImportKeysActivity.class);
+            startActivityForResult(intentImport, Id.request.import_from_qr_code);
 
             return true;
         case R.id.menu_key_list_public_export:

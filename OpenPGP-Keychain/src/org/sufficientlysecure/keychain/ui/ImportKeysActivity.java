@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
@@ -51,11 +50,9 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class ImportKeysActivity extends SherlockFragmentActivity implements OnNavigationListener {
+public class ImportKeysActivity extends DrawerActivity implements OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
@@ -103,8 +100,12 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
             }
         });
 
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        setupDrawerNavigation(savedInstanceState);
+
         // set actionbar without home button if called from another app
-        ActionBarHelper.setBackButton(this);
+        // ActionBarHelper.setBackButton(this);
 
         // set drop down navigation
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
@@ -114,7 +115,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setListNavigationCallbacks(list, this);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         handleActions(savedInstanceState, getIntent());
     }
@@ -238,23 +238,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
 
     public void loadCallback(byte[] importData, String importFilename) {
         mListFragment.loadNew(importData, importFilename);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-
-        }
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {

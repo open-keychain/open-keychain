@@ -137,21 +137,4 @@ public class SelectSecretKeyActivity extends SherlockFragmentActivity {
         return true;
     }
 
-    /**
-     * Menu Options
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
 }
