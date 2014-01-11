@@ -71,6 +71,8 @@ public class KeyListSecretFragment extends KeyListFragment implements
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
+        //TODO: only do this if key is not cross-certified (and check all incoming keys
+        menu.add(0, Id.menu.crosscert, 150, R.string.menu_crossCertKey);
     }
 
     @Override
@@ -92,6 +94,11 @@ public class KeyListSecretFragment extends KeyListFragment implements
         switch (item.getItemId()) {
         case Id.menu.edit:
             mKeyListSecretActivity.editKey(masterKeyId, masterCanSign);
+
+            return true;
+
+        case Id.menu.crosscert:
+            mKeyListSecretActivity.crossCertKey(masterKeyId);
 
             return true;
 

@@ -77,6 +77,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ACTION_DECRYPT_VERIFY = Constants.INTENT_PREFIX + "DECRYPT_VERIFY";
 
     public static final String ACTION_SAVE_KEYRING = Constants.INTENT_PREFIX + "SAVE_KEYRING";
+    public static final String ACTION_CROSSCERTIFY_KEYRING = Constants.INTENT_PREFIX + "CC_KEYRING";
     public static final String ACTION_GENERATE_KEY = Constants.INTENT_PREFIX + "GENERATE_KEY";
     public static final String ACTION_GENERATE_DEFAULT_RSA_KEYS = Constants.INTENT_PREFIX
             + "GENERATE_DEFAULT_RSA_KEYS";
@@ -128,6 +129,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String SAVE_KEYRING_KEYS_USAGES = "keys_usages";
     public static final String SAVE_KEYRING_MASTER_KEY_ID = "master_key_id";
     public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
+
+    //cross-certify keyring
+    public static final String CROSSCERTIFY_KEYRING_MASTER_KEY_ID = "master_key_id";
+    public static final String CROSSCERTIFY_KEYRING_CURRENT_PASSPHRASE = "current_passphrase";
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
@@ -541,6 +546,19 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
+
+                /* Output */
+                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
+            } catch (Exception e) {
+                sendErrorToHandler(e);
+            }
+        } else if (ACTION_CROSSCERTIFY_KEYRING.equals(action)) {
+            try {
+                long masterKeyId = data.getLong(CROSSCERTIFY_KEYRING_MASTER_KEY_ID);
+                String ccPassPhrase = data.getString(CROSSCERTIFY_KEYRING_CURRENT_PASSPHRASE);
+
+                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
+                keyOperations.crossCertKeyRing(masterKeyId, ccPassPhrase);
 
                 /* Output */
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);

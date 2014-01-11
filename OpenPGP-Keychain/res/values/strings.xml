@@ -94,6 +94,7 @@
     <string name="menu_importFromNfc">Import from NFC</string>
     <string name="menu_exportKeys">Export all keys</string>
     <string name="menu_exportKey">Export to file</string>
+    <string name="menu_crossCertKey">Cross-certify Key</string>
     <string name="menu_deleteKey">Delete key</string>
     <string name="menu_createKey">Create key</string>
     <string name="menu_createKeyExpert">Create key (expert)</string>

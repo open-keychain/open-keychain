@@ -17,12 +17,23 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.app.ProgressDialog;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -90,6 +101,80 @@ public class KeyListSecretActivity extends KeyListActivity {
         intent.putExtra(EditKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
         intent.putExtra(EditKeyActivity.EXTRA_MASTER_CAN_SIGN, masterCanSign);
         startActivityForResult(intent, 0);
+    }
+
+    private void showPassphraseDialog(final long masterKeyId) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    String passPhrase = PassphraseCacheService.getCachedPassphrase(
+                            KeyListSecretActivity.this, masterKeyId);
+                    finallyCrossCertKey(masterKeyId, passPhrase);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                    KeyListSecretActivity.this, messenger, masterKeyId);
+
+            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
+        } catch (PgpGeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
+    }
+
+    void crossCertKey(long masterKeyId){
+        showPassphraseDialog(masterKeyId);
+    }
+
+    void finallyCrossCertKey(long masterKeyId, String passphrase){
+	    // Send all information needed to service to edit key in other thread
+	    Intent intent = new Intent(this, KeychainIntentService.class);
+
+	    intent.setAction(KeychainIntentService.ACTION_CROSSCERTIFY_KEYRING);
+
+	    // fill values for this action
+	    Bundle data = new Bundle();
+
+	    data.putLong(KeychainIntentService.CROSSCERTIFY_KEYRING_MASTER_KEY_ID, masterKeyId);
+            data.putString(KeychainIntentService.CROSSCERTIFY_KEYRING_CURRENT_PASSPHRASE, passphrase);
+
+	    intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+	    // Message is received after saving is done in ApgService
+	    KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+		    R.string.progress_saving, ProgressDialog.STYLE_HORIZONTAL) {
+		public void handleMessage(Message message) {
+		    // handle messages by standard ApgHandler first
+		    super.handleMessage(message);
+
+		    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+		        //Intent data = new Intent();
+		        //setResult(mContext.RESULT_OK, data);
+		        //mContext.finish();
+
+		        //remove option to cross certify
+		    }
+		};
+	    };
+
+	    // Create a new Messenger for the communication back
+	    Messenger messenger = new Messenger(saveHandler);
+	    intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+	    saveHandler.showProgressDialog(this);
+
+	    // start service with intent
+	    startService(intent);
+		
     }
 
 }

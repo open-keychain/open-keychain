@@ -39,6 +39,7 @@ public final class Id {
         public static final int share_qr_code = 0x21070007;
         public static final int share_nfc = 0x21070008;
         public static final int signKey = 0x21070009;
+        public static final int crosscert = 0x21070010;
 
         public static final class option {
             public static final int new_pass_phrase = 0x21070001;

@@ -506,5 +506,4 @@ public class PgpKeyHelper {
         String s1 = data.substring(0, len - 8);
         return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
     }
-
 }

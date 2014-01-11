@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Vector;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -382,18 +383,6 @@ public class PgpKeyOperation {
                 keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
             }
             hashedPacketsGen.setKeyFlags(false, keyFlags);
-            if (canSign) {
-                //we would like to set the signing times the same, like gpg
-                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    subPublicKey.getAlgorithm(), PGPUtil.SHA1)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
-
-                sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
-                certification = sGen.generateCertification(subPublicKey, masterPublicKey);
-		unhashedPacketsGen.setIssuerKeyID(false, masterPublicKey.getKeyID());
-                unhashedPacketsGen.setEmbeddedSignature(false, certification);
-            }
 
             // TODO: this doesn't work quite right yet (APG 1)
             // if (keyEditor.getExpiryDate() != null) {
@@ -419,8 +408,58 @@ public class PgpKeyOperation {
         ProviderHelper.saveKeyRing(mContext, secretKeyRing);
         ProviderHelper.saveKeyRing(mContext, publicKeyRing);
 
+        updateProgress(R.string.progress_savingKeyRing, 95, 100);
+
+        //XCertKeyRing(masterKeyId, newPassPhrase);
+
         updateProgress(R.string.progress_done, 100, 100);
     }
+
+    public void crossCertKeyRing(long masterKeyId, String passphrase)
+        throws PGPException, PgpGeneralException, SignatureException, IOException {
+        updateProgress(R.string.progress_savingKeyRing, 0, 100);
+        XCertKeyRing(masterKeyId, passphrase);
+        updateProgress(R.string.progress_savingKeyRing, 100, 100);
+    }
+
+    private void XCertKeyRing(long masterKeyId, String passphrase)
+        throws PGPException, PgpGeneralException, SignatureException, IOException {
+
+        //TODO: check for cross-cert first
+
+        PGPSecretKeyRing secring = ProviderHelper
+                    .getPGPSecretKeyRingByKeyId(mContext, masterKeyId);
+        PGPPublicKeyRing pubring = ProviderHelper
+                    .getPGPPublicKeyRingByKeyId(mContext, masterKeyId);
+        PGPPublicKey newMPKey = PgpKeyHelper.getMasterKey(pubring);
+
+        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
+
+        Vector<PGPSecretKey> keys = PgpKeyHelper.getSigningKeys(secring);
+
+        for (int i = 0; i < keys.size(); ++i) {
+            PGPSecretKey subKey = keys.get(i);
+            if (!subKey.isMasterKey()) {                //we would like to set the signing times the same, like gpg
+                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                    subKey.getPublicKey().getAlgorithm(), PGPUtil.SHA1)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                PGPPrivateKey signaturePrivateKey = subKey.extractPrivateKey(keyDecryptor);
+                if (signaturePrivateKey == null) {
+                    throw new PgpGeneralException(
+                       mContext.getString(R.string.error_couldNotExtractPrivateKey));
+                }
+                sGen.init(PGPSignature.PRIMARYKEY_BINDING, signaturePrivateKey);
+                PGPSignature certification = sGen.generateCertification(subKey.getPublicKey(), newMPKey);
+                newMPKey = PGPPublicKey.addCertification(newMPKey, certification);
+            }
+        }
+        pubring = PGPPublicKeyRing.insertPublicKey(pubring, newMPKey);
+        secring = PGPSecretKeyRing.replacePublicKeys(secring, pubring);
+        ProviderHelper.saveKeyRing(mContext, secring);
+        ProviderHelper.saveKeyRing(mContext, pubring);
+    } 
 
     public PGPPublicKeyRing signKey(long masterKeyId, long pubKeyId, String passphrase)
             throws PgpGeneralException, NoSuchAlgorithmException, NoSuchProviderException,
