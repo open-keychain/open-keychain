@@ -115,7 +115,7 @@
             android:label="@string/title_edit_key"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ui.KeyViewActivity"
+            android:name=".ui.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
             android:parentActivityName=".ui.KeyListPublicActivity" >

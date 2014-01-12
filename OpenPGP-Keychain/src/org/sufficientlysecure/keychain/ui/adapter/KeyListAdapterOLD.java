@@ -18,12 +18,12 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorTreeAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class KeyListAdapterOLD extends CursorTreeAdapter {
@@ -97,27 +96,27 @@ public class KeyListAdapterOLD extends CursorTreeAdapter {
         }
     }
 
-    /**
-     * Inflate new view for child items
-     */
-    @Override
-    public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
-        return mInflater.inflate(R.layout.key_list_child_item, null);
-    }
+//    /**
+//     * Inflate new view for child items
+//     */
+//    @Override
+//    public View newChildView(Context context, Cursor cursor, boolean isLastChild, ViewGroup parent) {
+//        return mInflater.inflate(R.layout.key_list_child_item, null);
+//    }
 
     /**
      * Bind TextViews from view of childs based on query results
      */
     @Override
     protected void bindChildView(View view, Context context, Cursor cursor, boolean isLastChild) {
-        LinearLayout keyLayout = (LinearLayout) view.findViewById(R.id.keyLayout);
-        LinearLayout userIdLayout = (LinearLayout) view.findViewById(R.id.userIdLayout);
+//        LinearLayout keyLayout = (LinearLayout) view.findViewById(R.id.keyLayout);
+//        LinearLayout userIdLayout = (LinearLayout) view.findViewById(R.id.userIdLayout);
 
         // first entry is fingerprint
         if (cursor.getPosition() == 0) {
             // show only userId layout
-            keyLayout.setVisibility(View.GONE);
-            userIdLayout.setVisibility(View.VISIBLE);
+//            keyLayout.setVisibility(View.GONE);
+//            userIdLayout.setVisibility(View.VISIBLE);
 
             String fingerprint = PgpKeyHelper.getFingerPrint(context,
                     cursor.getLong(cursor.getColumnIndex(Keys.KEY_ID)));
@@ -131,8 +130,8 @@ public class KeyListAdapterOLD extends CursorTreeAdapter {
         } else {
             // differentiate between keys and userIds in MergeCursor
             if (cursor.getColumnIndex(Keys.KEY_ID) != -1) {
-                keyLayout.setVisibility(View.VISIBLE);
-                userIdLayout.setVisibility(View.GONE);
+//                keyLayout.setVisibility(View.VISIBLE);
+//                userIdLayout.setVisibility(View.GONE);
 
                 String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(cursor
                         .getColumnIndex(Keys.KEY_ID)));
@@ -174,8 +173,8 @@ public class KeyListAdapterOLD extends CursorTreeAdapter {
                     signIcon.setVisibility(View.VISIBLE);
                 }
             } else {
-                keyLayout.setVisibility(View.GONE);
-                userIdLayout.setVisibility(View.VISIBLE);
+//                keyLayout.setVisibility(View.GONE);
+//                userIdLayout.setVisibility(View.VISIBLE);
 
                 String userIdStr = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
 
@@ -268,6 +267,13 @@ public class KeyListAdapterOLD extends CursorTreeAdapter {
         }
 
         return mContext.getContentResolver().query(uri, projection, selection, null, sortOrder);
+    }
+
+    @Override
+    protected View newChildView(Context context, Cursor cursor, boolean isLastChild,
+            ViewGroup parent) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
