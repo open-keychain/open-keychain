@@ -4,7 +4,6 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:layout_marginRight="?android:attr/scrollbarSize"
     android:orientation="vertical"
-    android:paddingLeft="36dip"
     android:singleLine="true" >
 
     <TextView

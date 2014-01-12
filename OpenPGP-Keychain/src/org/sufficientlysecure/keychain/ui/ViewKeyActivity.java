@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2013 Bahtiar 'kalkin' Gadimov
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -31,7 +29,12 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
@@ -39,6 +42,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -50,6 +54,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,7 +71,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
 public class ViewKeyActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
-        OnNdefPushCompleteCallback {
+        OnNdefPushCompleteCallback, LoaderManager.LoaderCallbacks<Cursor> {
 
     ExportHelper mExportHelper;
 
@@ -72,10 +79,14 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
 
     private PGPPublicKey mPublicKey;
 
+    private TextView mName;
+    private TextView mEmail;
+    private TextView mComment;
     private TextView mAlgorithm;
-    private TextView mFingerint;
+    private TextView mKeyId;
     private TextView mExpiry;
     private TextView mCreation;
+    private TextView mFingerprint;
     private BootstrapButton mActionEncrypt;
 
     private ListView mUserIds;
@@ -86,6 +97,12 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
     private byte[] mSharedKeyringBytes;
     private static final int NFC_SENT = 1;
 
+    private static final int LOADER_ID_KEYRING = 0;
+    private static final int LOADER_ID_USER_IDS = 1;
+    private static final int LOADER_ID_KEYS = 2;
+    private ViewKeyUserIdsAdapter mUserIdsAdapter;
+    private ViewKeyKeysAdapter mKeysAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,14 +110,19 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
         mExportHelper = new ExportHelper(this);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(android.R.color.transparent);
         getSupportActionBar().setHomeButtonEnabled(true);
 
         setContentView(R.layout.view_key_activity);
 
-        mFingerint = (TextView) findViewById(R.id.fingerprint);
-        mExpiry = (TextView) findViewById(R.id.expiry);
-        mCreation = (TextView) findViewById(R.id.creation);
+        mName = (TextView) findViewById(R.id.name);
+        mEmail = (TextView) findViewById(R.id.email);
+        mComment = (TextView) findViewById(R.id.comment);
+        mKeyId = (TextView) findViewById(R.id.key_id);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
+        mCreation = (TextView) findViewById(R.id.creation);
+        mExpiry = (TextView) findViewById(R.id.expiry);
+        mFingerprint = (TextView) findViewById(R.id.fingerprint);
         mActionEncrypt = (BootstrapButton) findViewById(R.id.action_encrypt);
         mUserIds = (ListView) findViewById(R.id.user_ids);
         mKeys = (ListView) findViewById(R.id.keys);
@@ -128,6 +150,11 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case android.R.id.home:
+            Intent homeIntent = new Intent(this, KeyListPublicActivity.class);
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
+            return true;
         case R.id.menu_key_view_update:
             updateFromKeyserver(mDataUri);
             return true;
@@ -173,16 +200,23 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
     }
 
     private void loadData(Uri dataUri) {
+        // TODO: don't use pubkey object, use database!!!
+
         PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
         mPublicKey = ring.getPublicKey();
 
-        mFingerint.setText(PgpKeyHelper.shortifyFingerprint(PgpKeyHelper
+        mKeyId.setText(PgpKeyHelper.shortifyFingerprint(PgpKeyHelper
                 .convertFingerprintToHex(mPublicKey.getFingerprint())));
-        String[] mainUserId = splitUserId("");
+
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(mPublicKey.getFingerprint());
+        fingerprint = fingerprint.replace("  ", "\n");
+        mFingerprint.setText(fingerprint);
+
+        // TODO: get image with getUserAttributes() on key and then PGPUserAttributeSubpacketVector
 
         Date expiryDate = PgpKeyHelper.getExpiryDate(mPublicKey);
         if (expiryDate == null) {
-            mExpiry.setText("");
+            mExpiry.setText(R.string.none);
         } else {
             mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
         }
@@ -203,32 +237,117 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
                 startActivityForResult(intent, 0);
             }
         });
+
+        mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0);
+
+        mUserIds.setAdapter(mUserIdsAdapter);
+        // mUserIds.setEmptyView(findViewById(android.R.id.empty));
+        // mUserIds.setClickable(true);
+        // mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // @Override
+        // public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+        // }
+        // });
+
+        mKeysAdapter = new ViewKeyKeysAdapter(this, null, 0);
+
+        mKeys.setAdapter(mKeysAdapter);
+
+        // Prepare the loader. Either re-connect with an existing one,
+        // or start a new one.
+        getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
+        getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+        getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
+    }
+
+    static final String[] KEYRING_PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            UserIds.USER_ID };
+
+    static final String[] USER_IDS_PROJECTION = new String[] { UserIds._ID, UserIds.USER_ID,
+            UserIds.RANK, };
+    // not the main user id
+    static final String USER_IDS_SELECTION = UserIds.RANK + " > 0 ";
+    static final String USER_IDS_SORT_ORDER = UserIds.USER_ID + " COLLATE LOCALIZED ASC";
+
+    static final String[] KEYS_PROJECTION = new String[] { Keys._ID, Keys.KEY_ID,
+            Keys.IS_MASTER_KEY, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN,
+            Keys.CAN_ENCRYPT, };
+    static final String KEYS_SORT_ORDER = Keys.RANK + " ASC";
+
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+        case LOADER_ID_KEYRING: {
+            Uri baseUri = mDataUri;
+
+            // Now create and return a CursorLoader that will take care of
+            // creating a Cursor for the data being displayed.
+            return new CursorLoader(this, baseUri, KEYRING_PROJECTION, null, null, null);
+        }
+        case LOADER_ID_USER_IDS: {
+            Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
+
+            // Now create and return a CursorLoader that will take care of
+            // creating a Cursor for the data being displayed.
+            return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
+                    USER_IDS_SORT_ORDER);
+        }
+        case LOADER_ID_KEYS: {
+            Uri baseUri = Keys.buildKeysUri(mDataUri);
+
+            // Now create and return a CursorLoader that will take care of
+            // creating a Cursor for the data being displayed.
+            return new CursorLoader(this, baseUri, KEYS_PROJECTION, null, null, KEYS_SORT_ORDER);
+        }
+
+        default:
+            return null;
+        }
+    }
+
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Swap the new cursor in. (The framework will take care of closing the
+        // old cursor once we return.)
+        switch (loader.getId()) {
+        case LOADER_ID_KEYRING:
+            if (data.moveToFirst()) {
+                String[] mainUserId = PgpKeyHelper.splitUserId(data.getString(2));
+                setTitle(mainUserId[0]);
+                mName.setText(mainUserId[0]);
+                mEmail.setText(mainUserId[1]);
+                mComment.setText(mainUserId[2]);
+            }
+
+            break;
+        case LOADER_ID_USER_IDS:
+            mUserIdsAdapter.swapCursor(data);
+            break;
+        case LOADER_ID_KEYS:
+            mKeysAdapter.swapCursor(data);
+            break;
+
+        default:
+            break;
+        }
     }
 
     /**
-     * TODO: does this duplicate functionality from elsewhere? put in helper!
+     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
+     * We need to make sure we are no longer using it.
      */
-    private String[] splitUserId(String userId) {
-        String[] result = new String[] { "", "", "" };
-        Log.v("UserID", userId);
-
-        Pattern withComment = Pattern.compile("^(.*) [(](.*)[)] <(.*)>$");
-        Matcher matcher = withComment.matcher(userId);
-        if (matcher.matches()) {
-            result[0] = matcher.group(1);
-            result[1] = matcher.group(2);
-            result[2] = matcher.group(3);
-            return result;
+    public void onLoaderReset(Loader<Cursor> loader) {
+        switch (loader.getId()) {
+        case LOADER_ID_KEYRING:
+            // TODO?
+            break;
+        case LOADER_ID_USER_IDS:
+            mUserIdsAdapter.swapCursor(null);
+            break;
+        case LOADER_ID_KEYS:
+            mKeysAdapter.swapCursor(null);
+            break;
+        default:
+            break;
         }
-
-        Pattern withoutComment = Pattern.compile("^(.*) <(.*)>$");
-        matcher = withoutComment.matcher(userId);
-        if (matcher.matches()) {
-            result[0] = matcher.group(1);
-            result[1] = matcher.group(2);
-            return result;
-        }
-        return result;
     }
 
     private void uploadToKeyserver(Uri dataUri) {

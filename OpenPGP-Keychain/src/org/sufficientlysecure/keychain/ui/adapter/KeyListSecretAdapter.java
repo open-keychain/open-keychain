@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
 import android.annotation.SuppressLint;
@@ -57,7 +57,7 @@ public class KeyListSecretAdapter extends CursorAdapter {
 
         String userId = cursor.getString(userIdIndex);
         if (userId != null) {
-            String[] userIdSplit = OtherHelper.splitUserId(userId);
+            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
             if (userIdSplit[1] != null) {
                 mainUserIdRest.setText(userIdSplit[1]);

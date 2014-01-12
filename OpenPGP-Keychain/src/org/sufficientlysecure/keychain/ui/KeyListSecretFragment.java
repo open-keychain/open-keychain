@@ -51,7 +51,6 @@ public class KeyListSecretFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
     private KeyListSecretActivity mKeyListSecretActivity;
-
     private KeyListSecretAdapter mAdapter;
 
     /**
@@ -146,7 +145,7 @@ public class KeyListSecretFragment extends SherlockListFragment implements
         setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListSecretAdapter(mKeyListSecretActivity, null, Id.type.secret_key);
+        mAdapter = new KeyListSecretAdapter(mKeyListSecretActivity, null, 0);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -157,8 +156,7 @@ public class KeyListSecretFragment extends SherlockListFragment implements
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
             UserIds.USER_ID };
-
-    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
+    static final String SORT_ORDER = UserIds.USER_ID + " COLLATE LOCALIZED ASC";
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -169,8 +167,7 @@ public class KeyListSecretFragment extends SherlockListFragment implements
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null, UserIds.USER_ID
-                + " COLLATE LOCALIZED ASC");
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null, SORT_ORDER);
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import java.util.HashMap;
-import java.util.Set;
-
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,35 +41,15 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         int userIdIndex = cursor.getColumnIndex(UserIds.USER_ID);
 
-        TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknown_user_id);
-        TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        mainUserIdRest.setText("");
+        String userIdStr = cursor.getString(userIdIndex);
 
-        String userId = cursor.getString(userIdIndex);
-        if (userId != null) {
-            String[] userIdSplit = OtherHelper.splitUserId(userId);
-
-            if (userIdSplit[1] != null) {
-                mainUserIdRest.setText(userIdSplit[1]);
-            }
-            mainUserId.setText(userIdSplit[0]);
-        }
-
-        if (mainUserId.getText().length() == 0) {
-            mainUserId.setText(R.string.unknown_user_id);
-        }
-
-        if (mainUserIdRest.getText().length() == 0) {
-            mainUserIdRest.setVisibility(View.GONE);
-        } else {
-            mainUserIdRest.setVisibility(View.VISIBLE);
-        }
+        TextView userId = (TextView) view.findViewById(R.id.userId);
+        userId.setText(userIdStr);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.key_list_item, null);
+        return mInflater.inflate(R.layout.view_key_userids_item, null);
     }
 
 }

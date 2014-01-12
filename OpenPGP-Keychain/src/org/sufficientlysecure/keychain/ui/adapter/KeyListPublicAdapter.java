@@ -19,11 +19,13 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.util.HashMap;
 import java.util.Set;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
+
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -69,7 +71,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
         String userId = cursor.getString(userIdIndex);
         if (userId != null) {
-            String[] userIdSplit = OtherHelper.splitUserId(userId);
+            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
             if (userIdSplit[1] != null) {
                 mainUserIdRest.setText(userIdSplit[1]);

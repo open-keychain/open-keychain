@@ -55,6 +55,7 @@
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
     <string name="section_master_key">Master Key</string>
+    <string name="section_master_user_id">Master User ID</string>
     <string name="section_actions">Actions</string>
 
     <!-- button -->
@@ -137,6 +138,7 @@
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
     <string name="label_send_key">Send Key to Server?</string>
+    <string name="label_fingerprint">Fingerprint</string>
     <string name="no_keys_selected">Select</string>
     <string name="one_key_selected">1 Selected</string>
     <string name="n_keys_selected">Selected</string>

@@ -18,11 +18,10 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -78,7 +77,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
 
         String userId = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
         if (userId != null) {
-            String[] userIdSplit = OtherHelper.splitUserId(userId);
+            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
             if (userIdSplit[1] != null) {
                 mainUserIdRest.setText(userIdSplit[1]);
