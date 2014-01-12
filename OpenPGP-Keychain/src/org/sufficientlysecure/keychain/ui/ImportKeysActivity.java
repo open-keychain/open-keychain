@@ -83,7 +83,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.import_keys);
+        setContentView(R.layout.import_keys_activity);
 
         mImportButton = (BootstrapButton) findViewById(R.id.import_import);
         mImportButton.setOnClickListener(new OnClickListener() {

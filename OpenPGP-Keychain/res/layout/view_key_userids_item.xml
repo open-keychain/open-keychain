@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_marginRight="?android:attr/scrollbarSize"
+    android:orientation="vertical"
+    android:paddingLeft="36dip"
+    android:singleLine="true" >
+
+    <TextView
+        android:id="@+id/userId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="3dip"
+        android:text="User ID"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</LinearLayout>

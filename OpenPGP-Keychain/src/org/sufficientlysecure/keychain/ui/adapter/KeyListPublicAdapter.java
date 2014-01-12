@@ -105,7 +105,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         HeaderViewHolder holder;
         if (convertView == null) {
             holder = new HeaderViewHolder();
-            convertView = mInflater.inflate(R.layout.stickylist_header, parent, false);
+            convertView = mInflater.inflate(R.layout.key_list_public_header, parent, false);
             holder.text = (TextView) convertView.findViewById(R.id.stickylist_header_text);
             convertView.setTag(holder);
         } else {

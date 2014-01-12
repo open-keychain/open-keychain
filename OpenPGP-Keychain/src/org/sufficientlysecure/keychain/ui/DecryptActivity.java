@@ -230,7 +230,7 @@ public class DecryptActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt);
+        setContentView(R.layout.decrypt_activity);
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);

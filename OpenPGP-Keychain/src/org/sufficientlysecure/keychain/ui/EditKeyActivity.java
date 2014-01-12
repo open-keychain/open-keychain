@@ -429,7 +429,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * id and key.
      */
     private void buildLayout() {
-        setContentView(R.layout.edit_key);
+        setContentView(R.layout.edit_key_activity);
 
         // find views
         mChangePassPhrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_pass_phrase);

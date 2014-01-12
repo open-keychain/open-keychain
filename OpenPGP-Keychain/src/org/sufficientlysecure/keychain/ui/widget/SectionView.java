@@ -153,7 +153,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             case Id.type.key: {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
-                View view = mInflater.inflate(R.layout.create_key, null);
+                View view = mInflater.inflate(R.layout.create_key_dialog, null);
                 dialog.setView(view);
                 dialog.setTitle(R.string.title_create_key);
 

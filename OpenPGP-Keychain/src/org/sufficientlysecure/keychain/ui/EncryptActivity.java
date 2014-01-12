@@ -172,7 +172,7 @@ public class EncryptActivity extends DrawerActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt);
+        setContentView(R.layout.encrypt_activity);
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);

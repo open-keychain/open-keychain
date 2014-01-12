@@ -111,7 +111,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.key_server_query_layout);
+        setContentView(R.layout.key_server_query);
 
         mQuery = (EditText)findViewById(R.id.query);
         mSearch = (Button)findViewById(R.id.btn_search);

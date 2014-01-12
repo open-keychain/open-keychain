@@ -53,6 +53,7 @@ import android.os.Message;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +63,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
-public class KeyViewActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
+public class ViewKeyActivity extends SherlockFragmentActivity implements CreateNdefMessageCallback,
         OnNdefPushCompleteCallback {
 
     ExportHelper mExportHelper;
@@ -76,6 +77,9 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
     private TextView mExpiry;
     private TextView mCreation;
     private BootstrapButton mActionEncrypt;
+
+    private ListView mUserIds;
+    private ListView mKeys;
 
     // NFC
     private NfcAdapter mNfcAdapter;
@@ -91,13 +95,15 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        setContentView(R.layout.key_view_activity);
+        setContentView(R.layout.view_key_activity);
 
-        mFingerint = (TextView) this.findViewById(R.id.fingerprint);
-        mExpiry = (TextView) this.findViewById(R.id.expiry);
-        mCreation = (TextView) this.findViewById(R.id.creation);
-        mAlgorithm = (TextView) this.findViewById(R.id.algorithm);
-        mActionEncrypt = (BootstrapButton) this.findViewById(R.id.action_encrypt);
+        mFingerint = (TextView) findViewById(R.id.fingerprint);
+        mExpiry = (TextView) findViewById(R.id.expiry);
+        mCreation = (TextView) findViewById(R.id.creation);
+        mAlgorithm = (TextView) findViewById(R.id.algorithm);
+        mActionEncrypt = (BootstrapButton) findViewById(R.id.action_encrypt);
+        mUserIds = (ListView) findViewById(R.id.user_ids);
+        mKeys = (ListView) findViewById(R.id.keys);
 
         Intent intent = getIntent();
         mDataUri = intent.getData();
@@ -190,7 +196,7 @@ public class KeyViewActivity extends SherlockFragmentActivity implements CreateN
             @Override
             public void onClick(View v) {
                 long[] encryptionKeyIds = new long[] { mPublicKey.getKeyID() };
-                Intent intent = new Intent(KeyViewActivity.this, EncryptActivity.class);
+                Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
                 intent.setAction(EncryptActivity.ACTION_ENCRYPT);
                 intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
                 // used instead of startActivity set actionbar based on callingPackage
