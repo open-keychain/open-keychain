@@ -68,7 +68,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         super.onCreate(savedInstanceState);
 
         // check we havent already signed it
-        setContentView(R.layout.sign_key_layout);
+        setContentView(R.layout.sign_key_activity);
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);

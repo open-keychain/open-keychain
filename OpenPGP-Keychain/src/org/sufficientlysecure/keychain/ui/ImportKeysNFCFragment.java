@@ -26,11 +26,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class ImportKeysNFCFragment extends Fragment {
 
-    private Button mButton;
+    private BootstrapButton mButton;
 
     /**
      * Creates new instance of this fragment
@@ -51,7 +52,7 @@ public class ImportKeysNFCFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_nfc_fragment, container, false);
 
-        mButton = (Button) view.findViewById(R.id.import_nfc_button);
+        mButton = (BootstrapButton) view.findViewById(R.id.import_nfc_button);
         mButton.setOnClickListener(new OnClickListener() {
 
             @Override

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:stretchColumns="1" >
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/passphrase_label_passphrase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:text="@string/label_passphrase" />
+
+        <EditText
+            android:id="@+id/passphrase_passphrase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:padding="4dp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/passphrase_label_passphrase_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:text="@string/label_passphrase_again" />
+
+        <EditText
+            android:id="@+id/passphrase_passphrase_again"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:padding="4dp" />
+    </TableRow>
+
+</TableLayout>

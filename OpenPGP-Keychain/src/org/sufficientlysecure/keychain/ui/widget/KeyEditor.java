@@ -16,12 +16,18 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
+
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Choice;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -32,18 +38,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Vector;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private PGPSecretKey mKey;
@@ -51,12 +51,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
     private boolean mIsMasterKey;
-    ImageButton mDeleteButton;
+    BootstrapButton mDeleteButton;
     TextView mAlgorithm;
     TextView mKeyId;
     Spinner mUsage;
     TextView mCreationDate;
-    Button mExpiryDateButton;
+    BootstrapButton mExpiryDateButton;
     GregorianCalendar mExpiryDate;
 
     private int mDatePickerResultCount = 0;
@@ -87,7 +87,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
         mKeyId = (TextView) findViewById(R.id.keyId);
         mCreationDate = (TextView) findViewById(R.id.creation);
-        mExpiryDateButton = (Button) findViewById(R.id.expiry);
+        mExpiryDateButton = (BootstrapButton) findViewById(R.id.expiry);
         mUsage = (Spinner) findViewById(R.id.usage);
         Choice choices[] = {
                 new Choice(Id.choice.usage.sign_only, getResources().getString(
@@ -101,7 +101,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mUsage.setAdapter(adapter);
 
-        mDeleteButton = (ImageButton) findViewById(R.id.delete);
+        mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
 
         setExpiryDate(null);
@@ -118,16 +118,18 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         date.get(Calendar.DAY_OF_MONTH));
                 mDatePickerResultCount = 0;
                 dialog.setCancelable(true);
-                dialog.setButton(Dialog.BUTTON_NEGATIVE, getContext()
-                        .getString(R.string.btn_no_date), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mDatePickerResultCount++ == 0) // Note: Ignore results after the first
-                                                           // one - android sends multiples.
-                        {
-                            setExpiryDate(null);
-                        }
-                    }
-                });
+                dialog.setButton(Dialog.BUTTON_NEGATIVE,
+                        getContext().getString(R.string.btn_no_date),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (mDatePickerResultCount++ == 0) // Note: Ignore results after the
+                                                                   // first
+                                                                   // one - android sends multiples.
+                                {
+                                    setExpiryDate(null);
+                                }
+                            }
+                        });
                 dialog.show();
             }
         });
@@ -237,7 +239,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private void setExpiryDate(GregorianCalendar date) {
         mExpiryDate = date;
         if (date == null) {
-            mExpiryDateButton.setText(R.string.none);
+            mExpiryDateButton.setText(getContext().getString(R.string.none));
         } else {
             mExpiryDateButton.setText(DateFormat.getDateInstance().format(date.getTime()));
         }

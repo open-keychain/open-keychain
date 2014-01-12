@@ -76,7 +76,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.key_server_export_layout);
+        setContentView(R.layout.key_server_export);
 
         export = (Button) findViewById(R.id.btn_export_to_server);
         keyServer = (Spinner) findViewById(R.id.keyServer);

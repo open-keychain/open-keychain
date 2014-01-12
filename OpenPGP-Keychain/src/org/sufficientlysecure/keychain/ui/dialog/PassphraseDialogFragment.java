@@ -141,7 +141,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
         }
 
         LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.passphrase, null);
+        View view = inflater.inflate(R.layout.passphrase_dialog, null);
         alert.setView(view);
 
         mPassphraseEditText = (EditText) view.findViewById(R.id.passphrase_passphrase);

@@ -11,14 +11,14 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 
 ## Code Contributions
 
-Fork OpenPGP Keychain and do a pull request. I will help with occuring problems and merge your changes back into the main project.
+Fork OpenPGP Keychain and create a pull request. I will help with occuring problems and merge your changes back into the main project.
 I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain :)
 
 ## Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-2. Export ANDROID_HOME pointing to your Android SDK
-3. Download Android Support Repository, and Google Repository using Android SDK Manager
+2. Open the Android SDK Manager (shell command: ``android``). Expand the Extras directory and install "Android Support Repository"
+3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 
 ## Development with Eclipse
@@ -27,9 +27,11 @@ Android Studio is currently not supported or recommended!
 
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
 2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
-3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/pinned-section-listview/library"
-4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
-5. OpenPGP-Kechain can now be build
+3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/StickyListHeaders/library"
+4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/zxing"
+5. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/AndroidBootstrap"
+6. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
+7. OpenPGP-Kechain can now be build
 
 # Keychain API
 
@@ -107,13 +109,6 @@ TODO
 
 # Libraries
 
-All JAR-Libraries are provided in this repository under "libs", all Android Library projects are under "libraries".
-
-* ActionBarSherlock to provide an ActionBar for Android < 3.0
-* HtmlTextView for non-crashing TextViews with HTML content
-* forked Spongy Castle Crypto Lib (Android version of Bouncy Castle)
-* barcodescanner-android-integration-supportv4.jar: Barcode Scanner Integration
-
 ## Build Barcode Scanner Integration
 
 1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
@@ -124,6 +119,10 @@ All JAR-Libraries are provided in this repository under "libs", all Android Libr
 
 On error see: http://code.google.com/p/zxing/issues/detail?id=1207
 
+## ZXing
+
+ZXing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
+Only classes related to QR Code generation are utilized.
 
 ## Bouncy Castle
 
@@ -208,13 +207,17 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   https://github.com/dschuermann/html-textview  
   Apache License v2
 
-* ZXing QRCode Integration  
+* ZXing  
   http://code.google.com/p/zxing/  
   Apache License v2
   
-* pinned-section-listview    
-  https://github.com/beworker/pinned-section-listview  
+* StickyListHeaders  
+  https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
+  
+* Android-Bootstrap  
+  https://github.com/Bearded-Hen/Android-Bootstrap  
+  MIT License
 
 
 ## Images

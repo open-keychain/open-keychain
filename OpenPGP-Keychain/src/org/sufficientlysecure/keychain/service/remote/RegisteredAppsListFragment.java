@@ -41,9 +41,6 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
     // This is the Adapter being used to display the list's data.
     RegisteredAppsAdapter mAdapter;
 
-    // If non-null, this is the current filter the user has provided.
-    String mCurFilter;
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -75,8 +72,7 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
     }
 
     // These are the Contacts rows that we will retrieve.
-    static final String[] CONSUMERS_SUMMARY_PROJECTION = new String[] { ApiApps._ID,
-            ApiApps.PACKAGE_NAME };
+    static final String[] PROJECTION = new String[] { ApiApps._ID, ApiApps.PACKAGE_NAME };
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -87,7 +83,7 @@ public class RegisteredAppsListFragment extends SherlockListFragment implements
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, CONSUMERS_SUMMARY_PROJECTION, null, null,
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null,
                 ApiApps.PACKAGE_NAME + " COLLATE LOCALIZED ASC");
     }
 

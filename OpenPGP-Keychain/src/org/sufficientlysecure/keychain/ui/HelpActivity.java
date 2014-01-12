@@ -17,24 +17,21 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
+
 import org.sufficientlysecure.keychain.R;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.view.MenuItem;
-
-import java.util.ArrayList;
-
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class HelpActivity extends SherlockFragmentActivity {
@@ -45,37 +42,19 @@ public class HelpActivity extends SherlockFragmentActivity {
     TextView tabCenter;
     TextView tabText;
 
-    /**
-     * Menu Items
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         setContentView(R.layout.help_activity);
 
-        mViewPager = new ViewPager(this);
-        mViewPager.setId(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
-        setContentView(mViewPager);
-        ActionBar bar = getSupportActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayShowTitleEnabled(true);
-        bar.setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         mTabsAdapter = new TabsAdapter(this, mViewPager);
 
@@ -87,20 +66,20 @@ public class HelpActivity extends SherlockFragmentActivity {
 
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_start);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_start)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_start)),
                 HelpFragmentHtml.class, startBundle, (selectedTab == 0 ? true : false));
 
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_nfc_beam);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
                 HelpFragmentHtml.class, nfcBundle, (selectedTab == 1 ? true : false));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpFragmentHtml.ARG_HTML_FILE, R.raw.help_changelog);
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_changelog)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
                 HelpFragmentHtml.class, changelogBundle, (selectedTab == 2 ? true : false));
 
-        mTabsAdapter.addTab(bar.newTab().setText(getString(R.string.help_tab_about)),
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
                 HelpFragmentAbout.class, null, (selectedTab == 3 ? true : false));
     }
 

@@ -19,8 +19,8 @@
 <resources>
 
     <!-- title -->
-    <string name="title_manage_public_keys">Manage Public Keys</string>
-    <string name="title_manage_secret_keys">Manage Secret Keys</string>
+    <string name="title_manage_public_keys">Contacts</string>
+    <string name="title_manage_secret_keys">Secret Keys</string>
     <string name="title_select_recipients">Select Public Key</string>
     <string name="title_select_secret_key">Select Secret Key</string>
     <string name="title_encrypt">Encrypt</string>
@@ -44,6 +44,7 @@
     <string name="title_send_key">Export to Key Server</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
     <string name="title_sign_key">Sign Key</string>
+    <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
     <string name="title_share_by_nfc">Share key with NFC</string>
 
@@ -53,6 +54,9 @@
     <string name="section_general">General</string>
     <string name="section_defaults">Defaults</string>
     <string name="section_advanced">Advanced</string>
+    <string name="section_master_key">Master Key</string>
+    <string name="section_master_user_id">Master User ID</string>
+    <string name="section_actions">Actions</string>
 
     <!-- button -->
     <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
@@ -78,9 +82,11 @@
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
+    <string name="menu_help">Help</string>
     <string name="menu_api_app_settings">Registered Apps</string>
     <string name="menu_import_from_file">Import from file</string>
     <string name="menu_import_from_qr_code">Import from QR Code</string>
+    <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
     <string name="menu_export_keys">Export all keys</string>
     <string name="menu_export_key">Export to file</string>
@@ -95,8 +101,11 @@
     <string name="menu_share">Share with…</string>
     <string name="menu_share_qr_code">Share with QR Code</string>
     <string name="menu_share_nfc">Share with NFC</string>
+    <string name="menu_copy_to_clipboard">Copy to clipboard</string>
     <string name="menu_sign_key">Sign key</string>
     <string name="menu_beam_preferences">Beam settings</string>
+    <string name="menu_key_edit_cancel">Cancel</string>
+    <string name="menu_encrypt_to">Encrypt to…</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -129,6 +138,7 @@
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
     <string name="label_send_key">Send Key to Server?</string>
+    <string name="label_fingerprint">Fingerprint</string>
     <string name="no_keys_selected">Select</string>
     <string name="one_key_selected">1 Selected</string>
     <string name="n_keys_selected">Selected</string>
@@ -142,6 +152,8 @@
     <string name="n_key_servers">%s key server(s)</string>
     <string name="fingerprint">Fingerprint:</string>
     <string name="secret_key">Secret Key:</string>
+    <string name="notValid">not valid</string>
+    <string name="secretKeyring">Secret Keyring</string>
 
     <!-- choice -->
     <string name="choice_none">None</string>
@@ -190,6 +202,7 @@
     <string name="specify_file_to_export_to">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
     <string name="specify_file_to_export_secret_keys_to">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
     <string name="keys_added_and_updated">Successfully added %1$s key(s) and updated %2$s key(s).</string>
     <string name="keys_added">Successfully added %s key(s).</string>
@@ -206,7 +219,6 @@
     <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
     <string name="key_send_success">Successfully sent key to server</string>
     <string name="key_sign_success">Successfully signed key</string>
-    <string name="list_information">Long press one entry in this list to show more options!</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
 
@@ -292,7 +304,7 @@
     <string name="compression_very_slow">very slow</string>
 
     <!-- Dashboard -->
-    <string name="dashboard_manage_keys">Manage Public Keys</string>
+    <string name="dashboard_manage_keys">Contacts</string>
     <string name="dashboard_my_keys">My Secret Keys</string>
     <string name="dashboard_encrypt">Encrypt</string>
     <string name="dashboard_decrypt">Decrypt</string>
@@ -322,8 +334,8 @@
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!</string>
-    <string name="api_settings_show_advanced">Show advanced settings…</string>
-    <string name="api_settings_hide_advanced">Hide advanced settings…</string>
+    <string name="api_settings_show_advanced">Show advanced settings</string>
+    <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
     <string name="api_settings_select_key">Select key</string>
     <string name="api_settings_save">Save</string>
@@ -343,5 +355,31 @@
     <!-- Share -->
     <string name="share_qr_code_dialog_start">Go through all QR Codes using \'Next\', and scan them one by one.</string>
     <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
+    <string name="share_nfc_dialog">Share with NFC</string>
+
+    <!-- Key list -->
+    <plurals name="key_list_selected_keys">
+        <item quantity="one">1 key selected.</item>
+        <item quantity="other">%d keys selected.</item>
+    </plurals>
+
+    <string name="key_list_empty_text1">No keys available yet…</string>
+    <string name="key_list_empty_text2">You can start by</string>
+    <string name="key_list_empty_text3">or</string>
+    <string name="key_list_empty_button_create">creating your own key pair</string>
+    <string name="key_list_empty_button_import">importing keys.</string>
+
+    <!-- Key view -->
+    <string name="key_view_action_encrypt">Encrypt to this contact</string>
+
+    <!-- Navigation Drawer -->
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_encrypt">Encrypt</string>
+    <string name="nav_decrypt">Decrypt</string>
+    <string name="nav_import">Import Keys</string>
+    <string name="nav_secret_keys">My Keys</string>
+    <string name="nav_apps">Registered Apps</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
 </resources>

@@ -55,21 +55,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class EncryptActivity extends SherlockFragmentActivity {
+public class EncryptActivity extends DrawerActivity {
 
     /* Intents */
     public static final String ACTION_ENCRYPT = Constants.INTENT_PREFIX + "ENCRYPT";
@@ -87,7 +85,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
     private long mEncryptionKeyIds[] = null;
 
     private EditText mMessage = null;
-    private Button mSelectKeysButton = null;
+    private BootstrapButton mSelectKeysButton = null;
 
     private boolean mEncryptEnabled = false;
     private String mEncryptString = "";
@@ -117,7 +115,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
-    private ImageButton mBrowse = null;
+    private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -154,13 +152,6 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
         case Id.menu.option.encrypt_to_clipboard:
             encryptToClipboardClicked();
 
@@ -181,12 +172,14 @@ public class EncryptActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.encrypt);
+        setContentView(R.layout.encrypt_activity);
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);
 
         initView();
+
+        setupDrawerNavigation(savedInstanceState);
 
         // Handle intent actions
         handleActions(getIntent());
@@ -492,8 +485,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
                 if (!file.exists() || !file.isFile()) {
                     Toast.makeText(
                             this,
-                            getString(R.string.error_message, getString(R.string.error_file_not_found)),
-                            Toast.LENGTH_SHORT).show();
+                            getString(R.string.error_message,
+                                    getString(R.string.error_file_not_found)), Toast.LENGTH_SHORT)
+                            .show();
                     return;
                 }
             }
@@ -511,7 +505,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
             gotPassPhrase = (passPhrase.length() != 0);
             if (!gotPassPhrase) {
-                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
         } else {
@@ -523,8 +518,8 @@ public class EncryptActivity extends SherlockFragmentActivity {
             }
 
             if (!encryptIt && mSecretKeyId == 0) {
-                Toast.makeText(this, R.string.select_encryption_or_signature_key, Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(this, R.string.select_encryption_or_signature_key,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -825,7 +820,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         mModeLabel.setOnClickListener(nextModeClickListener);
 
         mMessage = (EditText) findViewById(R.id.message);
-        mSelectKeysButton = (Button) findViewById(R.id.btn_selectEncryptKeys);
+        mSelectKeysButton = (BootstrapButton) findViewById(R.id.btn_selectEncryptKeys);
         mSign = (CheckBox) findViewById(R.id.sign);
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -841,7 +836,7 @@ public class EncryptActivity extends SherlockFragmentActivity {
         mMessage.setMinimumHeight(height);
 
         mFilename = (EditText) findViewById(R.id.filename);
-        mBrowse = (ImageButton) findViewById(R.id.btn_browse);
+        mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(EncryptActivity.this, mFilename.getText().toString(), "*/*",
@@ -853,10 +848,12 @@ public class EncryptActivity extends SherlockFragmentActivity {
         Choice[] choices = new Choice[] {
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
                         + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zip, "ZIP (" + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.zlib, "ZLIB (" + getString(R.string.compression_fast) + ")"),
-                new Choice(Id.choice.compression.bzip2, "BZIP2 (" + getString(R.string.compression_very_slow)
-                        + ")"), };
+                new Choice(Id.choice.compression.zip, "ZIP ("
+                        + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.zlib, "ZLIB ("
+                        + getString(R.string.compression_fast) + ")"),
+                new Choice(Id.choice.compression.bzip2, "BZIP2 ("
+                        + getString(R.string.compression_very_slow) + ")"), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -896,9 +893,9 @@ public class EncryptActivity extends SherlockFragmentActivity {
 
     private void updateView() {
         if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-            mSelectKeysButton.setText(R.string.no_keys_selected);
+            mSelectKeysButton.setText(getString(R.string.no_keys_selected));
         } else if (mEncryptionKeyIds.length == 1) {
-            mSelectKeysButton.setText(R.string.one_key_selected);
+            mSelectKeysButton.setText(getString(R.string.one_key_selected));
         } else {
             mSelectKeysButton.setText("" + mEncryptionKeyIds.length + " "
                     + getResources().getString(R.string.n_keys_selected));

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_marginRight="?android:attr/scrollbarSize"
+    android:orientation="horizontal"
+    android:paddingLeft="8dip"
+    android:paddingRight="3dip"
+    android:singleLine="true" >
+
+    <ImageView
+        android:id="@+id/ic_masterKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingRight="6dip"
+        android:src="@drawable/key_small" />
+
+    <TextView
+        android:id="@+id/keyId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="5dip"
+        android:text="Key ID"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:typeface="monospace" />
+
+    <TextView
+        android:id="@+id/keyDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(RSA, 1024bit)"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="right"
+        android:orientation="horizontal"
+        android:paddingBottom="2dip"
+        android:paddingTop="2dip" >
+
+        <ImageView
+            android:id="@+id/ic_certifyKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/certify_small" />
+
+        <ImageView
+            android:id="@+id/ic_encryptKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/encrypted_small" />
+
+        <ImageView
+            android:id="@+id/ic_signKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/signed_small" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -48,7 +48,7 @@ public class HelpFragmentAbout extends SherlockFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.help_fragment_about, container, false);
+        View view = inflater.inflate(R.layout.help_about_fragment, container, false);
 
         TextView versionText = (TextView) view.findViewById(R.id.help_about_version);
         versionText.setText(getString(R.string.help_about_version) + " " + getVersion());

@@ -69,8 +69,8 @@ public class KeychainContract {
 
     public static final String CONTENT_AUTHORITY = Constants.PACKAGE_NAME + ".provider";
 
-    private static final Uri BASE_CONTENT_URI_INTERNAL = Uri.parse("content://"
-            + CONTENT_AUTHORITY);
+    private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
+            .parse("content://" + CONTENT_AUTHORITY);
 
     public static final String BASE_KEY_RINGS = "key_rings";
     public static final String BASE_DATA = "data";
@@ -185,6 +185,14 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
                     .appendPath(PATH_KEYS).appendPath(keyRowId).build();
         }
+
+        public static Uri buildKeysUri(Uri keyRingUri) {
+            return keyRingUri.buildUpon().appendPath(PATH_KEYS).build();
+        }
+
+        public static Uri buildKeysUri(Uri keyRingUri, String keyRowId) {
+            return keyRingUri.buildUpon().appendPath(PATH_KEYS).appendPath(keyRowId).build();
+        }
     }
 
     public static class UserIds implements UserIdsColumns, BaseColumns {
@@ -215,6 +223,14 @@ public class KeychainContract {
         public static Uri buildSecretUserIdsUri(String keyRingRowId, String userIdRowId) {
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(keyRingRowId)
                     .appendPath(PATH_USER_IDS).appendPath(userIdRowId).build();
+        }
+
+        public static Uri buildUserIdsUri(Uri keyRingUri) {
+            return keyRingUri.buildUpon().appendPath(PATH_USER_IDS).build();
+        }
+
+        public static Uri buildUserIdsUri(Uri keyRingUri, String userIdRowId) {
+            return keyRingUri.buildUpon().appendPath(PATH_USER_IDS).appendPath(userIdRowId).build();
         }
     }
 

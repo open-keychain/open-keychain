@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
-     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="21103"
+    android:versionCode="21106"
     android:versionName="2.1.1" >
 
     <!--
@@ -75,21 +59,15 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Sherlock.Light" >
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.KeyListPublicActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.KeyListPublicActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_manage_public_keys"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" >
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
@@ -104,8 +82,7 @@
             android:name=".ui.KeyListSecretActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manage_secret_keys"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" >
+            android:launchMode="singleTop" >
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
@@ -120,8 +97,16 @@
             android:name=".ui.EditKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.ViewKeyActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_key_details"
+            android:parentActivityName=".ui.KeyListPublicActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.KeyListPublicActivity" />
+        </activity>
         <activity
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -269,8 +254,17 @@
         <activity
             android:name=".ui.ImportKeysActivity"
             android:label="@string/title_import_keys"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden" >
 
+            <!-- Handle NFC tags detected from outside our application -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
             <!-- Keychain's own Actions -->
             <intent-filter android:label="@string/intent_import_key" >
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
@@ -329,22 +323,6 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.asc" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.ShareNfcBeamActivity"
-            android:label="@string/title_share_by_nfc"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow" >
-
-            <!-- Handle NFC tags detected from outside our application -->
-            <intent-filter>
-                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
-                <data android:mimeType="application/pgp-keys" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.ShareActivity" />
         <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />

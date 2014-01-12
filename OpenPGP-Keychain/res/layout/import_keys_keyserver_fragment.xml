@@ -1,13 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/import_keyserver_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_key_server" />
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:text="@string/menu_key_server"
+        bootstrapbutton:bb_size="default"
+        bootstrapbutton:bb_type="default" />
 
     <!-- <Spinner -->
     <!-- android:id="@+id/import_keys_server_key_server" -->

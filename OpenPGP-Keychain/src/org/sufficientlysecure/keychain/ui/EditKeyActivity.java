@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.KeyEditor;
@@ -45,6 +47,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -53,7 +56,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -61,6 +63,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class EditKeyActivity extends SherlockFragmentActivity {
 
@@ -72,12 +77,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     public static final String EXTRA_USER_IDS = "user_ids";
     public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generate_default_keys";
-    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
-    public static final String EXTRA_MASTER_CAN_SIGN = "master_can_sign";
 
     // results when saving key
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String RESULT_EXTRA_USER_ID = "user_id";
+
+    // EDIT
+    private Uri mDataUri;
 
     private PGPSecretKeyRing mKeyRing = null;
 
@@ -87,7 +93,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
 
-    private Button mChangePassPhrase;
+    private BootstrapButton mChangePassPhrase;
 
     private CheckBox mNoPassphrase;
 
@@ -96,34 +102,13 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     Vector<Integer> mKeysUsages;
     boolean masterCanSign = true;
 
-    // will be set to false to build layout later in handler
-    private boolean mBuildLayout = true;
+    ExportHelper mExportHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // save
-                        saveClicked();
-                    }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // cancel
-                        cancelClicked();
-                    }
-                });
-
-        setContentView(R.layout.edit_key);
-
-        // find views
-        mChangePassPhrase = (Button) findViewById(R.id.edit_key_btn_change_pass_phrase);
-        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+        mExportHelper = new ExportHelper(this);
 
         mUserIds = new Vector<String>();
         mKeys = new Vector<PGPSecretKey>();
@@ -137,32 +122,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         } else if (ACTION_EDIT_KEY.equals(action)) {
             handleActionEditKey(intent);
         }
-
-        mChangePassPhrase.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                showSetPassphraseDialog();
-            }
-        });
-
-        // disable passphrase when no passphrase checkobox is checked!
-        mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // remove passphrase
-                    mNewPassPhrase = null;
-
-                    mChangePassPhrase.setVisibility(View.GONE);
-                } else {
-                    mChangePassPhrase.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        if (mBuildLayout) {
-            buildLayout();
-        }
     }
 
     /**
@@ -171,6 +130,20 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
+        // Inflate a "Done"/"Cancel" custom action bar
+        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveClicked();
+                    }
+                }, R.string.btn_do_not_save, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        cancelClicked();
+                    }
+                });
+
         Bundle extras = intent.getExtras();
 
         mCurrentPassPhrase = "";
@@ -196,9 +169,6 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             if (extras.containsKey(EXTRA_GENERATE_DEFAULT_KEYS)) {
                 boolean generateDefaultKeys = extras.getBoolean(EXTRA_GENERATE_DEFAULT_KEYS);
                 if (generateDefaultKeys) {
-
-                    // build layout in handler after generating keys not directly in onCreate
-                    mBuildLayout = false;
 
                     // Send all information needed to service generate keys in other thread
                     Intent serviceIntent = new Intent(this, KeychainIntentService.class);
@@ -256,12 +226,55 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     startService(serviceIntent);
                 }
             }
+        } else {
+            buildLayout();
+        }
+    }
+
+    /**
+     * Handle intent action to edit existing key
+     * 
+     * @param intent
+     */
+    private void handleActionEditKey(Intent intent) {
+        // Inflate a "Done"/"Cancel" custom action bar
+        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_save,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        saveClicked();
+                    }
+                });
+
+        mDataUri = intent.getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
+            finish();
+            return;
+        } else {
+            Log.d(Constants.TAG, "uri: " + mDataUri);
+
+            long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
+
+            // get master key id using row id
+            long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
+
+            boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
+
+            String passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
+            if (passphrase == null) {
+                showPassphraseDialog(masterKeyId, masterCanSign);
+            } else {
+                // PgpMain.setEditPassPhrase(passPhrase);
+                mCurrentPassPhrase = passphrase;
+
+                finallyEdit(masterKeyId, masterCanSign);
+            }
         }
     }
 
     private void showPassphraseDialog(final long masterKeyId, final boolean masterCanSign) {
         // Message is received after passphrase is cached
-        final boolean mCanSign = masterCanSign;
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -291,51 +304,54 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         }
     }
 
-    /**
-     * Handle intent action to edit existing key
-     * 
-     * @param intent
-     */
-    @SuppressWarnings("unchecked")
-    private void handleActionEditKey(Intent intent) {
-        Bundle extras = intent.getExtras();
-
-        if (extras != null) {
-            if (extras.containsKey(EXTRA_MASTER_CAN_SIGN)) {
-                masterCanSign = extras.getBoolean(EXTRA_MASTER_CAN_SIGN);
-            }
-            if (extras.containsKey(EXTRA_MASTER_KEY_ID)) {
-                long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
-
-                // build layout in edit()
-                mBuildLayout = false;
-
-                String passPhrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
-                if (passPhrase == null) {
-                    showPassphraseDialog(masterKeyId, masterCanSign);
-                } else {
-                    // PgpMain.setEditPassPhrase(passPhrase);
-                    mCurrentPassPhrase = passPhrase;
-
-                    finallyEdit(masterKeyId, masterCanSign);
-                }
-
-            }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // show menu only on edit
+        if (mDataUri != null) {
+            return super.onPrepareOptionsMenu(menu);
+        } else {
+            return false;
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getSupportMenuInflater().inflate(R.menu.key_edit, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_key_edit_cancel:
+            cancelClicked();
+            return true;
+        case R.id.menu_key_edit_export_file:
+            mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
+                    + "/secexport.asc");
+            return true;
+        case R.id.menu_key_edit_delete: {
+            // Message is received after key is deleted
+            Handler returnHandler = new Handler() {
+                @Override
+                public void handleMessage(Message message) {
+                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }
+            };
+
+            mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+            return true;
+        }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("unchecked")
     private void finallyEdit(final long masterKeyId, final boolean masterCanSign) {
-        // TODO: ???
-        if (mCurrentPassPhrase == null) {
-            mCurrentPassPhrase = "";
-        }
-
-        if (mCurrentPassPhrase.equals("")) {
-            // check "no passphrase" checkbox and remove button
-            mNoPassphrase.setChecked(true);
-            mChangePassPhrase.setVisibility(View.GONE);
-        }
-
         if (masterKeyId != 0) {
             PGPSecretKey masterKey = null;
             mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
@@ -357,7 +373,18 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             }
         }
 
+        // TODO: ???
+        if (mCurrentPassPhrase == null) {
+            mCurrentPassPhrase = "";
+        }
+
         buildLayout();
+
+        if (mCurrentPassPhrase.equals("")) {
+            // check "no passphrase" checkbox and remove button
+            mNoPassphrase.setChecked(true);
+            mChangePassPhrase.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -402,6 +429,12 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * id and key.
      */
     private void buildLayout() {
+        setContentView(R.layout.edit_key_activity);
+
+        // find views
+        mChangePassPhrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_pass_phrase);
+        mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
+
         // Build layout based on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -418,6 +451,28 @@ public class EditKeyActivity extends SherlockFragmentActivity {
         container.addView(mKeysView);
 
         updatePassPhraseButtonText();
+
+        mChangePassPhrase.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                showSetPassphraseDialog();
+            }
+        });
+
+        // disable passphrase when no passphrase checkobox is checked!
+        mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // remove passphrase
+                    mNewPassPhrase = null;
+
+                    mChangePassPhrase.setVisibility(View.GONE);
+                } else {
+                    mChangePassPhrase.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     private long getMasterKeyId() {
@@ -604,7 +659,14 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     }
 
     private void updatePassPhraseButtonText() {
-        mChangePassPhrase.setText(isPassphraseSet() ? R.string.btn_change_passphrase
-                : R.string.btn_set_passphrase);
+        mChangePassPhrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
+                : getString(R.string.btn_set_passphrase));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

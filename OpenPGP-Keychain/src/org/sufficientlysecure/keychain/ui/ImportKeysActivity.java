@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
@@ -30,26 +29,30 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class ImportKeysActivity extends SherlockFragmentActivity implements OnNavigationListener {
+public class ImportKeysActivity extends DrawerActivity implements OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
@@ -73,14 +76,36 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
     OnNavigationListener mOnNavigationListener;
     String[] mNavigationStrings;
 
+    BootstrapButton mImportButton;
+    BootstrapButton mImportSignUploadButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.import_keys);
+        setContentView(R.layout.import_keys_activity);
+
+        mImportButton = (BootstrapButton) findViewById(R.id.import_import);
+        mImportButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                importKeys();
+            }
+        });
+        mImportSignUploadButton = (BootstrapButton) findViewById(R.id.import_sign_and_upload);
+        mImportSignUploadButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signAndUploadOnClick();
+            }
+        });
+
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        setupDrawerNavigation(savedInstanceState);
 
         // set actionbar without home button if called from another app
-        ActionBarHelper.setBackButton(this);
+        // ActionBarHelper.setBackButton(this);
 
         // set drop down navigation
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
@@ -90,7 +115,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setListNavigationCallbacks(list, this);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         handleActions(savedInstanceState, getIntent());
     }
@@ -216,23 +240,6 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         mListFragment.loadNew(importData, importFilename);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
-
-        default:
-            return super.onOptionsItemSelected(item);
-
-        }
-    }
-
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
     // if (expectedFingerprint != null && expectedFingerprint.length() > 0) {
     //
@@ -345,7 +352,8 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
                         int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {
-                            toastMessage = getString(R.string.keys_added_and_updated, added, updated);
+                            toastMessage = getString(R.string.keys_added_and_updated, added,
+                                    updated);
                         } else if (added > 0) {
                             toastMessage = getString(R.string.keys_added, added);
                         } else if (updated > 0) {
@@ -396,17 +404,56 @@ public class ImportKeysActivity extends SherlockFragmentActivity implements OnNa
         }
     }
 
-    public void importOnClick(View view) {
+    public void importOnClick() {
         importKeys();
     }
 
-    public void signAndUploadOnClick(View view) {
+    public void signAndUploadOnClick() {
         // first, import!
         // importOnClick(view);
 
         // TODO: implement sign and upload!
         Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
                 .show();
+    }
+
+    /**
+     * NFC
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check to see that the Activity started due to an Android Beam
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
+            handleActionNdefDiscovered(getIntent());
+        }
+    }
+
+    /**
+     * NFC
+     */
+    @Override
+    public void onNewIntent(Intent intent) {
+        // onResume gets called after this to handle the intent
+        setIntent(intent);
+    }
+
+    /**
+     * NFC: Parses the NDEF Message from the intent and prints to the TextView
+     */
+    @SuppressLint("NewApi")
+    void handleActionNdefDiscovered(Intent intent) {
+        Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+        // only one message sent during the beam
+        NdefMessage msg = (NdefMessage) rawMsgs[0];
+        // record 0 contains the MIME type, record 1 is the AAR, if present
+        byte[] receivedKeyringBytes = msg.getRecords()[0].getPayload();
+
+        Intent importIntent = new Intent(this, ImportKeysActivity.class);
+        importIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY);
+        importIntent.putExtra(ImportKeysActivity.EXTRA_KEY_BYTES, receivedKeyringBytes);
+
+        handleActions(null, importIntent);
     }
 
 }

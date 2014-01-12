@@ -30,18 +30,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.zxing.integration.android.IntentIntegratorSupportV4;
 import com.google.zxing.integration.android.IntentResult;
 
 public class ImportKeysQrCodeFragment extends Fragment {
 
     private ImportKeysActivity mImportActivity;
-    private Button mButton;
+    private BootstrapButton mButton;
     private TextView mText;
     private ProgressBar mProgress;
 
@@ -66,7 +66,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_qr_code_fragment, container, false);
 
-        mButton = (Button) view.findViewById(R.id.import_qrcode_button);
+        mButton = (BootstrapButton) view.findViewById(R.id.import_qrcode_button);
         mText = (TextView) view.findViewById(R.id.import_qrcode_text);
         mProgress = (ProgressBar) view.findViewById(R.id.import_qrcode_progress);
 

@@ -60,19 +60,18 @@ import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
-public class DecryptActivity extends SherlockFragmentActivity {
+public class DecryptActivity extends DrawerActivity {
 
     /* Intents */
     // without permission
@@ -107,7 +106,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
-    private ImageButton mBrowse = null;
+    private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -143,13 +142,6 @@ public class DecryptActivity extends SherlockFragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
-        case android.R.id.home:
-            // app icon in Action Bar clicked; go home
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            return true;
 
         case Id.menu.option.decrypt: {
             decryptClicked();
@@ -216,7 +208,7 @@ public class DecryptActivity extends SherlockFragmentActivity {
         mMessage.setMinimumHeight(height);
 
         mFilename = (EditText) findViewById(R.id.filename);
-        mBrowse = (ImageButton) findViewById(R.id.btn_browse);
+        mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
@@ -238,12 +230,14 @@ public class DecryptActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.decrypt);
+        setContentView(R.layout.decrypt_activity);
 
         // set actionbar without home button if called from another app
         ActionBarHelper.setBackButton(this);
 
         initView();
+
+        setupDrawerNavigation(savedInstanceState);
 
         // Handle intent actions
         handleActions(getIntent());
@@ -262,7 +256,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (matcher.matches()) {
                     data = matcher.group(1);
                     mMessage.setText(data);
-                    Toast.makeText(this, R.string.using_clipboard_content, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.using_clipboard_content, Toast.LENGTH_SHORT)
+                            .show();
                 }
             }
         }
@@ -472,8 +467,9 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 if (!file.exists() || !file.isFile()) {
                     Toast.makeText(
                             this,
-                            getString(R.string.error_message, getString(R.string.error_file_not_found)),
-                            Toast.LENGTH_SHORT).show();
+                            getString(R.string.error_message,
+                                    getString(R.string.error_file_not_found)), Toast.LENGTH_SHORT)
+                            .show();
                     return;
                 }
             }
@@ -592,7 +588,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                 }
                 mSecretKeyId = Id.key.symmetric;
                 if (!PgpOperation.hasSymmetricEncryption(this, inStream)) {
-                    throw new PgpGeneralException(getString(R.string.error_no_known_encryption_found));
+                    throw new PgpGeneralException(
+                            getString(R.string.error_no_known_encryption_found));
                 }
                 mAssumeSymmetricEncryption = true;
             }
@@ -790,8 +787,8 @@ public class DecryptActivity extends SherlockFragmentActivity {
                                 .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                             Toast.makeText(DecryptActivity.this,
-                                    R.string.unknown_signature_key_touch_to_look_up, Toast.LENGTH_LONG)
-                                    .show();
+                                    R.string.unknown_signature_key_touch_to_look_up,
+                                    Toast.LENGTH_LONG).show();
                         } else {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
                         }

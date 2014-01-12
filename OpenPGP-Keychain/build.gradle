@@ -4,6 +4,7 @@ buildscript {
     }
 
     dependencies {
+        // NOTE: Avoid using dynamic versions (+). This breaks offline builds!
         classpath 'com.android.tools.build:gradle:0.6.3'
     }
 }
@@ -19,10 +20,12 @@ repositories {
  */
 dependencies {
     compile fileTree(dir: 'libs', includes: ['*.jar'], excludes: ['android-support-v4.jar'])
-    compile 'com.android.support:support-v4:18.0.+' // already in actionbarsherlock
+    compile 'com.android.support:support-v4:19.0.+' // already in actionbarsherlock
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:HtmlTextView')
-    compile project(':libraries:pinned-section-listview:library')
+    compile project(':libraries:StickyListHeaders:library')
+    compile project(':libraries:zxing')
+    compile project(':libraries:AndroidBootstrap')
 }
 
 android {

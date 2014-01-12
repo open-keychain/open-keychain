@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -39,6 +41,17 @@ import org.sufficientlysecure.keychain.util.Log;
 import android.content.Context;
 
 public class PgpKeyHelper {
+
+    /**
+     * Returns the last 9 chars of a fingerprint
+     * 
+     * @param fingerprint
+     *            String containing short or long fingerprint
+     * @return
+     */
+    public static String shortifyFingerprint(String fingerprint) {
+        return fingerprint.substring(41);
+    }
 
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
@@ -511,6 +524,34 @@ public class PgpKeyHelper {
         String s2 = data.substring(len - 8);
         String s1 = data.substring(0, len - 8);
         return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
+    }
+
+    /**
+     * Splits userId string into naming part, email part, and comment part
+     * 
+     * @param userId
+     * @return array with naming (0), email (1), comment (2)
+     */
+    public static String[] splitUserId(String userId) {
+        String[] result = new String[] { "", "", "" };
+
+        Pattern withComment = Pattern.compile("^(.*) \\((.*)\\) <(.*)>$");
+        Matcher matcher = withComment.matcher(userId);
+        if (matcher.matches()) {
+            result[0] = matcher.group(1);
+            result[1] = matcher.group(3);
+            result[2] = matcher.group(2);
+            return result;
+        }
+
+        Pattern withoutComment = Pattern.compile("^(.*) <(.*)>$");
+        matcher = withoutComment.matcher(userId);
+        if (matcher.matches()) {
+            result[0] = matcher.group(1);
+            result[1] = matcher.group(2);
+            return result;
+        }
+        return result;
     }
 
 }

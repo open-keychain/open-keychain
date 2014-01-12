@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
-    <Button
+    <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/import_qrcode_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/menu_import_from_qr_code" />
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:text="@string/menu_import_from_qr_code"
+        bootstrapbutton:bb_icon_left="fa-barcode"
+        bootstrapbutton:bb_size="default"
+        bootstrapbutton:bb_type="default" />
 
     <TextView
         android:id="@+id/import_qrcode_text"

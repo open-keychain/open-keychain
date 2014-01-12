@@ -45,17 +45,16 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
     private LayoutInflater mInflater;
-    private View mAdd;
-    private ImageView mPlusButton;
+    private BootstrapButton mPlusButton;
     private ViewGroup mEditors;
     private TextView mTitle;
     private int mType = 0;
@@ -103,7 +102,6 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     public void setCanEdit(boolean bCanEdit) {
         canEdit = bCanEdit;
-        mPlusButton = (ImageView) findViewById(R.id.plusbutton);
         if (!canEdit) {
             mPlusButton.setVisibility(View.INVISIBLE);
         }
@@ -117,8 +115,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         setDrawingCacheEnabled(true);
         setAlwaysDrawnWithCacheEnabled(true);
 
-        mAdd = findViewById(R.id.header);
-        mAdd.setOnClickListener(this);
+        mPlusButton = (BootstrapButton) findViewById(R.id.plusbutton);
+        mPlusButton.setOnClickListener(this);
 
         mEditors = (ViewGroup) findViewById(R.id.editors);
         mTitle = (TextView) findViewById(R.id.title);
@@ -155,7 +153,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             case Id.type.key: {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
 
-                View view = mInflater.inflate(R.layout.create_key, null);
+                View view = mInflater.inflate(R.layout.create_key_dialog, null);
                 dialog.setView(view);
                 dialog.setTitle(R.string.title_create_key);
 

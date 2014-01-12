@@ -20,102 +20,79 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-public class KeyListPublicActivity extends KeyListActivity {
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+
+public class KeyListPublicActivity extends DrawerActivity {
+
+    ExportHelper mExportHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mKeyType = Id.type.public_key;
+        mExportHelper = new ExportHelper(this);
 
         setContentView(R.layout.key_list_public_activity);
 
-        mExportFilename = Constants.path.APP_DIR + "/pubexport.asc";
+        // now setup navigation drawer in DrawerActivity...
+        setupDrawerNavigation(savedInstanceState);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        menu.add(1, Id.menu.option.key_server, 1, R.string.menu_key_server)
-                .setIcon(R.drawable.ic_menu_search_list)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(1, Id.menu.option.import_from_qr_code, 2, R.string.menu_import_from_qr_code)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-        menu.add(1, Id.menu.option.import_from_nfc, 3, R.string.menu_import_from_nfc)
-                .setShowAsAction(
-                        MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-
+        getSupportMenuInflater().inflate(R.menu.key_list_public, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case Id.menu.option.key_server: {
-            startActivityForResult(new Intent(this, KeyServerQueryActivity.class), 0);
+        case R.id.menu_key_list_public_import:
+            Intent intentImport = new Intent(this, ImportKeysActivity.class);
+            startActivityForResult(intentImport, Id.request.import_from_qr_code);
 
             return true;
-        }
-        case Id.menu.option.import_from_file: {
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-            startActivityForResult(intentImportFromFile, 0);
+        case R.id.menu_key_list_public_export:
+            mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR
+                    + "/pubexport.asc");
 
             return true;
-        }
-
-        case Id.menu.option.import_from_qr_code: {
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_QR_CODE);
-            startActivityForResult(intentImportFromFile, Id.request.import_from_qr_code);
-
-            return true;
-        }
-
-        case Id.menu.option.import_from_nfc: {
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_NFC);
-            startActivityForResult(intentImportFromFile, 0);
-
-            return true;
-        }
-
-        default: {
+        default:
             return super.onOptionsItemSelected(item);
-        }
         }
     }
 
-    // @Override
-    // protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // switch (requestCode) {
-    // case Id.request.look_up_key_id: {
-    // if (resultCode == RESULT_CANCELED || data == null
-    // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
-    // return;
-    // }
-    //
-    // Intent intent = new Intent(this, KeyListPublicActivity.class);
-    // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
-    // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
-    // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
-    // handleActions(intent);
-    // break;
-    // }
-    //
-    // default: {
-    // super.onActivityResult(requestCode, resultCode, data);
-    // break;
-    // }
-    // }
-    // }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        // switch (requestCode) {
+        // case Id.request.look_up_key_id: {
+        // if (resultCode == RESULT_CANCELED || data == null
+        // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
+        // return;
+        // }
+        //
+        // Intent intent = new Intent(this, KeyListPublicActivity.class);
+        // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
+        // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
+        // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
+        // handleActions(intent);
+        // break;
+        // }
+        //
+        // default: {
+        // super.onActivityResult(requestCode, resultCode, data);
+        // break;
+        // }
+        // }
+    }
 }
