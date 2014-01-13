@@ -366,7 +366,7 @@
     <string name="key_list_empty_text1">No keys available yet…</string>
     <string name="key_list_empty_text2">You can start by</string>
     <string name="key_list_empty_text3">or</string>
-    <string name="key_list_empty_button_create">creating your own key pair</string>
+    <string name="key_list_empty_button_create">creating your own key</string>
     <string name="key_list_empty_button_import">importing keys.</string>
 
     <!-- Key view -->
