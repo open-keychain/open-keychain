@@ -70,9 +70,17 @@ public class KeyListSecretFragment extends KeyListFragment implements
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
+        ExpandableListContextMenuInfo expInfo = (ExpandableListContextMenuInfo)menuInfo;
+        int groupPosition = ExpandableListView.getPackedPositionGroup(expInfo.packedPosition);
+        long keyRingRowId = getExpandableListAdapter().getGroupId(groupPosition);
+        long masterKeyId = ProviderHelper
+                .getSecretMasterKeyId(mKeyListSecretActivity, keyRingRowId); //use this to check crosscert
+
         menu.add(0, Id.menu.edit, 0, R.string.menu_editKey);
-        //TODO: only do this if key is not cross-certified (and check all incoming keys
-        menu.add(0, Id.menu.crosscert, 150, R.string.menu_crossCertKey);
+        //TODO: only do this if key is not cross-certified (and check all incoming keys)
+        if (false) {//disable for now
+            menu.add(0, Id.menu.crosscert, 150, R.string.menu_crossCertKey);
+        }
     }
 
     @Override

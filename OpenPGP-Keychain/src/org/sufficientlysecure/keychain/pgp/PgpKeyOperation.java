@@ -375,16 +375,14 @@ public class PgpKeyOperation {
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
-            if (canSign) {
+            if (canSign) { //TODO: ensure signing times are the same, like gpg
                 keyFlags |= KeyFlags.SIGN_DATA;
-//
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                     subKey.getPublicKey().getAlgorithm(), PGPUtil.SHA1)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
-                PGPSignature certification = sGen.generateCertification(masterPublicKey, subKey.getPublicKey());
-//
+                PGPSignature certification = sGen.generateCertification(masterPublicKey, subPublicKey);
                 unhashedPacketsGen.setEmbeddedSignature(false, certification);
             }
             if (canEncrypt) {
@@ -416,10 +414,6 @@ public class PgpKeyOperation {
         ProviderHelper.saveKeyRing(mContext, secretKeyRing);
         ProviderHelper.saveKeyRing(mContext, publicKeyRing);
 
-        updateProgress(R.string.progress_savingKeyRing, 95, 100);
-
-        //XCertKeyRing(masterKeyId, newPassPhrase);
-
         updateProgress(R.string.progress_done, 100, 100);
     }
 
@@ -434,6 +428,7 @@ public class PgpKeyOperation {
         throws PGPException, PgpGeneralException, SignatureException, IOException {
 
         //TODO: check for cross-cert first
+        //      change this so it loops through and fixes an un-cross-certified keychain
 
         PGPSecretKeyRing secring = ProviderHelper
                     .getPGPSecretKeyRingByKeyId(mContext, masterKeyId);
