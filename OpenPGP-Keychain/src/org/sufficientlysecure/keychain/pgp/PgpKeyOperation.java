@@ -375,9 +375,17 @@ public class PgpKeyOperation {
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
-            PGPSignature certification = null;
             if (canSign) {
                 keyFlags |= KeyFlags.SIGN_DATA;
+//
+                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                    subKey.getPublicKey().getAlgorithm(), PGPUtil.SHA1)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+                PGPSignature certification = sGen.generateCertification(masterPublicKey, subKey.getPublicKey());
+//
+                unhashedPacketsGen.setEmbeddedSignature(false, certification);
             }
             if (canEncrypt) {
                 keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
