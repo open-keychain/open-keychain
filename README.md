@@ -26,12 +26,8 @@ I am happy about every code contribution and appreciate your effort to help us d
 Android Studio is currently not supported or recommended!
 
 1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
-2. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/HtmlTextView"
-3. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/StickyListHeaders/library"
-4. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/zxing"
-5. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/AndroidBootstrap"
-6. File -> Import -> Android -> Existing Android Code Into Workspace, choose "OpenPGP-Keychain"
-7. OpenPGP-Kechain can now be build
+2. Repeat step 1 with "libraries/HtmlTextView", "libraries/StickyListHeaders/library", "libraries/AndroidBootstrap", "libraries/zxing", "libraries/zxing-android-integration", "OpenPGP-Keychain"
+3. Now all required source files are available in Eclipse
 
 # Keychain API
 
@@ -109,18 +105,16 @@ TODO
 
 # Libraries
 
-## Build Barcode Scanner Integration
+## ZXing Barcode Scanner Android Integration
+
+Classes can be found under "libraries/zxing-android-integration/".
 
 1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
-2. Change android-home variable in "build.properties" in the main directory to point to your Android SDK
-3. Change directory to android-integration
-4. Build using ``ant build``
-5. We use "android-integration-supportv4.jar"
-
-On error see: http://code.google.com/p/zxing/issues/detail?id=1207
+2. Copy all classes from their android-integration folder to our library folder
 
 ## ZXing
 
+Classes can be found under "libraries/zxing/".
 ZXing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
 Only classes related to QR Code generation are utilized.
 

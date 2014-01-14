@@ -24,8 +24,9 @@ dependencies {
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:HtmlTextView')
     compile project(':libraries:StickyListHeaders:library')
-    compile project(':libraries:zxing')
     compile project(':libraries:AndroidBootstrap')
+    compile project(':libraries:zxing')
+    compile project(':libraries:zxing-android-integration')
 }
 
 android {

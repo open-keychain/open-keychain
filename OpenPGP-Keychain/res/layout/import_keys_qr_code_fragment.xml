@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_margin="10dp"
-        android:text="@string/menu_import_from_qr_code"
+        android:text="@string/import_qr_scan_button"
         bootstrapbutton:bb_icon_left="fa-barcode"
         bootstrapbutton:bb_size="default"
         bootstrapbutton:bb_type="default" />
@@ -18,13 +18,19 @@
     <TextView
         android:id="@+id/import_qrcode_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/import_qrcode_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:progress="0" />
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:progress="0"
+        android:visibility="gone" />
 
 </LinearLayout>

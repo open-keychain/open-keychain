@@ -76,6 +76,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     OnNavigationListener mOnNavigationListener;
     String[] mNavigationStrings;
 
+    Fragment mCurrentFragment;
+
     BootstrapButton mImportButton;
     BootstrapButton mImportSignUploadButton;
 
@@ -226,12 +228,12 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     }
 
     private void loadFragment(Class<?> clss, Bundle args, String tag) {
-        Fragment fragment = Fragment.instantiate(this, clss.getName(), args);
+        mCurrentFragment = Fragment.instantiate(this, clss.getName(), args);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         // Replace whatever is in the fragment container with this fragment
         // and give the fragment a tag name equal to the string at the position selected
-        ft.replace(R.id.import_navigation_fragment, fragment, tag);
+        ft.replace(R.id.import_navigation_fragment, mCurrentFragment, tag);
         // Apply changes
         ft.commit();
     }
@@ -297,6 +299,15 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     // t.start();
     // }
     // }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // required for qr code scanning
+        if (mCurrentFragment != null) {
+            mCurrentFragment.onActivityResult(requestCode, resultCode, data);
+        }
+        // super.onActivityResult(requestCode, resultCode, data);
+    }
 
     /**
      * Import keys with mImportData

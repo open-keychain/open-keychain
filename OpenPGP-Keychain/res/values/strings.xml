@@ -322,9 +322,16 @@
     <string name="import_import">Import selected keys</string>
     <string name="import_sign_and_upload">Import, Sign, and upload selected keys</string>
     <string name="import_from_clipboard">Import from Clipboard</string>
-    <string name="import_qr_code_missing">Missing QR Codes: %1$s</string>
+
+    <plurals name="import_qr_code_missing">
+        <item quantity="one">Missing QR Code with ID %1$s</item>
+        <item quantity="other">Missing QR Codes with IDs %1$s</item>
+    </plurals>
+
+    <string name="import_qr_code_start_with_one">Please start with QR Code with ID 1</string>
     <string name="import_qr_code_wrong">QR Code malformed! Please try again!</string>
     <string name="import_qr_code_finished">QR Code scanning finished!</string>
+    <string name="import_qr_scan_button">Scan QR Code with \'Barcode Scanner\'</string>
 
     <!-- Intent labels -->
     <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>
@@ -354,7 +361,7 @@
 
     <!-- Share -->
     <string name="share_qr_code_dialog_start">Go through all QR Codes using \'Next\', and scan them one by one.</string>
-    <string name="share_qr_code_dialog_progress">QR Code %1$d of %2$d</string>
+    <string name="share_qr_code_dialog_progress">QR Code with ID %1$d of %2$d</string>
     <string name="share_nfc_dialog">Share with NFC</string>
 
     <!-- Key list -->

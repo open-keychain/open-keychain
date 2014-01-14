@@ -190,7 +190,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 keySizeAdapter
                         .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 keySize.setAdapter(keySizeAdapter);
-                keySize.setSelection(2); // Default to 2048 for the key length
+                keySize.setSelection(3); // Default to 4096 for the key length
                 dialog.setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface di, int id) {
