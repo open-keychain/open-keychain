@@ -80,13 +80,7 @@ public class ExportHelper {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
-
-                    // TODO?
-                    long keyRingMasterKeyId = ProviderHelper.getSecretMasterKeyId(activity,
-                            keyRingRowId);
-
-                    exportKeys(keyRingMasterKeyId, keyType);
+                    exportKeys(dataUri, keyType);
                 }
             }
         };
@@ -97,11 +91,12 @@ public class ExportHelper {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 String title = null;
-                if (dataUri != null) {
-                    // single key export
-                    title = activity.getString(R.string.title_export_key);
-                } else {
+                if (dataUri == null) {
+                    // export all keys
                     title = activity.getString(R.string.title_export_keys);
+                } else {
+                    // export only key specified at data uri
+                    title = activity.getString(R.string.title_export_key);
                 }
 
                 String message = null;
@@ -125,7 +120,7 @@ public class ExportHelper {
      * @param keyRingMasterKeyId
      *            if -1 export all keys
      */
-    public void exportKeys(long keyRingMasterKeyId, int keyType) {
+    public void exportKeys(Uri dataUri, int keyType) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -139,9 +134,12 @@ public class ExportHelper {
         data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFilename);
         data.putInt(KeychainIntentService.EXPORT_KEY_TYPE, keyType);
 
-        if (keyRingMasterKeyId == -1) {
+        if (dataUri == null) {
             data.putBoolean(KeychainIntentService.EXPORT_ALL, true);
         } else {
+            // TODO: put data uri into service???
+            long keyRingMasterKeyId = ProviderHelper.getMasterKeyId(activity, dataUri);
+
             data.putLong(KeychainIntentService.EXPORT_KEY_RING_MASTER_KEY_ID, keyRingMasterKeyId);
         }
 
