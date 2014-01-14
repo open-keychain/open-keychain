@@ -221,6 +221,7 @@
     <string name="key_sign_success">Successfully signed key</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
+    <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
 
     <!--
          errors

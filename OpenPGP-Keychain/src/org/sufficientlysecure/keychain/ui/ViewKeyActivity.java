@@ -433,6 +433,8 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
                 new long[] { masterKeyId });
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
+        Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)
+                .show();
     }
 
     private void shareNfc() {
