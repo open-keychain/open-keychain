@@ -125,7 +125,7 @@ Only classes related to QR Code generation are utilized.
 Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP Keychain uses a forked version with some small changes to improve key import speed. These changes have been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
-* Spongy Castle: http://rtyley.github.com/spongycastle/
+* Spongy Castle: https://github.com/rtyley/spongycastle-old and http://rtyley.github.com/spongycastle/
 * Fork: https://github.com/ashh87/spongycastle
 
 #### Bouncy Castle resources
