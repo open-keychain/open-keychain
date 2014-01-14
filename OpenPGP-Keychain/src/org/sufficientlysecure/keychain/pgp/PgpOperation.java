@@ -33,7 +33,11 @@ import java.util.Iterator;
 
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
+
+import org.spongycastle.bcpg.SignaturePacket;
+
 import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPCompressedData;
@@ -892,7 +896,11 @@ public class PgpOperation {
 
         boolean sig_isok = signature.verify();
 
-        //We should only do the next part if the singing key was a subkey - not the master key!
+        //Now check binding signatures
+        boolean subkeyBinding_isok = false;
+        boolean tmp_subkeyBinding_isok = false;
+        boolean primkeyBinding_isok = false;
+
         signatureKeyId = signature.getKeyID();
         String userId = null;
         PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
@@ -901,39 +909,46 @@ public class PgpOperation {
         if (signKeyRing != null) {
             mKey = PgpKeyHelper.getMasterKey(signKeyRing);
         }
-        Iterator<PGPSignature> itr = signatureKey.getSignatures();
+        if (signature.getKeyID() != mKey.getKeyID()) {
+            Iterator<PGPSignature> itr = signatureKey.getSignatures();
 
-        boolean subkeyBinding_isok = false;
-        boolean tmp_subkeyBinding_isok = false;
-        boolean primkeyBinding_isok = false;
-        while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
-            //gpg has an invalid subkey binding error on key import I think, but doesn't shout
-            //about keys without subkey signing. Can't get it to import a slightly broken one
-            //either, so we will err on bad subkey binding here.
-            PGPSignature sig = itr.next();
-            if (sig.getKeyID() == mKey.getKeyID() && sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
-                //check and if ok, check primary key binding.
-                sig.init(contentVerifierBuilderProvider, mKey);
-                tmp_subkeyBinding_isok = sig.verifyCertification(mKey, signatureKey);
-                if (tmp_subkeyBinding_isok)
-                    subkeyBinding_isok = true;
-                if (tmp_subkeyBinding_isok) {
-                    PGPSignatureSubpacketVector hPkts = sig.getHashedSubPackets();
-                    PGPSignatureSubpacketVector uhPkts = sig.getUnhashedSubPackets();
-                    if (hPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
-                        SignatureSubpacket[] subsigpkts = hPkts.getSubpackets(SignatureSubpacketTags.EMBEDDED_SIGNATURE);
-			PGPSignature[] vals = new PGPSignature[subsigpkts.length];
-			for (int i = 0; i < subsigpkts.length; i++)
-			{
-			    vals[i] = (PGPSignature)subsigpkts[i];
-			}
-                    }
-                    if (uhPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+            subkeyBinding_isok = false;
+            tmp_subkeyBinding_isok = false;
+            primkeyBinding_isok = false;
+            while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
+                //gpg has an invalid subkey binding error on key import I think, but doesn't shout
+                //about keys without subkey signing. Can't get it to import a slightly broken one
+                //either, so we will err on bad subkey binding here.
+                PGPSignature sig = itr.next();
+                if (sig.getKeyID() == mKey.getKeyID() && sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
+                    //check and if ok, check primary key binding.
+                    sig.init(contentVerifierBuilderProvider, mKey);
+                    tmp_subkeyBinding_isok = sig.verifyCertification(mKey, signatureKey);
+                    if (tmp_subkeyBinding_isok)
+                        subkeyBinding_isok = true;
+                    if (tmp_subkeyBinding_isok) {
+                        PGPSignatureSubpacketVector hPkts = sig.getHashedSubPackets();
+                        PGPSignatureSubpacketVector uhPkts = sig.getUnhashedSubPackets();
+                        if (uhPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+                            PGPSignatureList eSigList = uhPkts.getEmbeddedSignatures();
+                            for (int j = 0; j < eSigList.size(); ++j) {
+                                PGPSignature emSig = eSigList.get(j);
+                                emSig.init(contentVerifierBuilderProvider, signatureKey);
+                                primkeyBinding_isok = emSig.verifyCertification(mKey, signatureKey);
+                                if (primkeyBinding_isok)
+                                    break;
+                            }
+                        }
+                        if (hPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+                        }
                     }
                 }
             }
+        } else { //if the key used to make the signature was the master key, no need to check binding sigs
+            subkeyBinding_isok = true;
+            primkeyBinding_isok = true;
         }
-        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & subkeyBinding_isok);
+        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & subkeyBinding_isok & primkeyBinding_isok);
 
         updateProgress(R.string.progress_done, 100, 100);
         return returnData;
