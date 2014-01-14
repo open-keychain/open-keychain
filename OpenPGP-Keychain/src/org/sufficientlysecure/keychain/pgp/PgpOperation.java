@@ -927,20 +927,12 @@ public class PgpOperation {
                     if (tmp_subkeyBinding_isok)
                         subkeyBinding_isok = true;
                     if (tmp_subkeyBinding_isok) {
-                        PGPSignatureSubpacketVector hPkts = sig.getHashedSubPackets();
-                        PGPSignatureSubpacketVector uhPkts = sig.getUnhashedSubPackets();
-                        if (uhPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
-                            PGPSignatureList eSigList = uhPkts.getEmbeddedSignatures();
-                            for (int j = 0; j < eSigList.size(); ++j) {
-                                PGPSignature emSig = eSigList.get(j);
-                                emSig.init(contentVerifierBuilderProvider, signatureKey);
-                                primkeyBinding_isok = emSig.verifyCertification(mKey, signatureKey);
-                                if (primkeyBinding_isok)
-                                    break;
-                            }
-                        }
-                        if (hPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
-                        }
+                        primkeyBinding_isok = verifyPrimaryBinding(sig.getUnhashedSubPackets(), mKey, signatureKey);
+                        if (primkeyBinding_isok)
+                            break;
+                        primkeyBinding_isok = verifyPrimaryBinding(sig.getHashedSubPackets(), mKey, signatureKey);
+                        if (primkeyBinding_isok)
+                            break;
                     }
                 }
             }
@@ -952,6 +944,40 @@ public class PgpOperation {
 
         updateProgress(R.string.progress_done, 100, 100);
         return returnData;
+    }
+
+    private boolean verifyPrimaryBinding(PGPSignatureSubpacketVector Pkts, PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey)
+    {
+        boolean primkeyBinding_isok = false;
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureList eSigList;
+
+        if (Pkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+            try {
+				eSigList = Pkts.getEmbeddedSignatures();
+            } catch (IOException e) {
+                return false;
+            } catch (PGPException e) {
+                return false;
+            }
+			for (int j = 0; j < eSigList.size(); ++j) {
+				PGPSignature emSig = eSigList.get(j);
+	            if (emSig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                    try {
+						emSig.init(contentVerifierBuilderProvider, signingPublicKey);
+						primkeyBinding_isok = emSig.verifyCertification(masterPublicKey, signingPublicKey);
+						if (primkeyBinding_isok)
+							break;
+                    } catch (PGPException e) {
+                        continue;
+                    } catch (SignatureException e) {
+                        continue;
+                    }
+	            }
+			}
+        }
+        return primkeyBinding_isok;
     }
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
