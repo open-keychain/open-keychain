@@ -34,6 +34,8 @@ import java.util.Iterator;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
+import org.spongycastle.bcpg.SignatureSubpacket;
+import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -56,6 +58,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
@@ -887,7 +890,50 @@ public class PgpOperation {
             } while (lookAhead != -1);
         }
 
-        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, signature.verify());
+        boolean sig_isok = signature.verify();
+
+        //We should only do the next part if the singing key was a subkey - not the master key!
+        signatureKeyId = signature.getKeyID();
+        String userId = null;
+        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
+                signatureKeyId);
+        PGPPublicKey mKey = null;
+        if (signKeyRing != null) {
+            mKey = PgpKeyHelper.getMasterKey(signKeyRing);
+        }
+        Iterator<PGPSignature> itr = signatureKey.getSignatures();
+
+        boolean subkeyBinding_isok = false;
+        boolean tmp_subkeyBinding_isok = false;
+        boolean primkeyBinding_isok = false;
+        while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
+            //gpg has an invalid subkey binding error on key import I think, but doesn't shout
+            //about keys without subkey signing. Can't get it to import a slightly broken one
+            //either, so we will err on bad subkey binding here.
+            PGPSignature sig = itr.next();
+            if (sig.getKeyID() == mKey.getKeyID() && sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
+                //check and if ok, check primary key binding.
+                sig.init(contentVerifierBuilderProvider, mKey);
+                tmp_subkeyBinding_isok = sig.verifyCertification(mKey, signatureKey);
+                if (tmp_subkeyBinding_isok)
+                    subkeyBinding_isok = true;
+                if (tmp_subkeyBinding_isok) {
+                    PGPSignatureSubpacketVector hPkts = sig.getHashedSubPackets();
+                    PGPSignatureSubpacketVector uhPkts = sig.getUnhashedSubPackets();
+                    if (hPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+                        SignatureSubpacket[] subsigpkts = hPkts.getSubpackets(SignatureSubpacketTags.EMBEDDED_SIGNATURE);
+			PGPSignature[] vals = new PGPSignature[subsigpkts.length];
+			for (int i = 0; i < subsigpkts.length; i++)
+			{
+			    vals[i] = (PGPSignature)subsigpkts[i];
+			}
+                    }
+                    if (uhPkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+                    }
+                }
+            }
+        }
+        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & subkeyBinding_isok);
 
         updateProgress(R.string.progress_done, 100, 100);
         return returnData;
