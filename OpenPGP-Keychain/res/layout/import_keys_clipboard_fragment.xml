@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_margin="10dp"
-        android:text="@string/import_from_clipboard"
+        android:text="@string/import_clipboard_button"
+        bootstrapbutton:bb_icon_left="fa-clipboard"
         bootstrapbutton:bb_size="default"
         bootstrapbutton:bb_type="default" />
 
