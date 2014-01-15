@@ -33,7 +33,13 @@ import java.util.Iterator;
 
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.BCPGInputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
+
+import org.spongycastle.bcpg.SignaturePacket;
+
+import org.spongycastle.bcpg.SignatureSubpacket;
+import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.openpgp.PGPCompressedData;
 import org.spongycastle.openpgp.PGPCompressedDataGenerator;
 import org.spongycastle.openpgp.PGPEncryptedData;
@@ -56,6 +62,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureList;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
@@ -757,11 +764,11 @@ public class PgpOperation {
 
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
-                if (signature.verify(messageSignature)) {
-                    returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, true);
-                } else {
-                    returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, false);
-                }
+
+                //Now check binding signatures
+                boolean keyBinding_isok = verifyKeyBinding(mContext, messageSignature, signatureKey);
+                boolean sig_isok = signature.verify(messageSignature);
+                returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, keyBinding_isok & sig_isok);
             }
         }
 
@@ -887,10 +894,112 @@ public class PgpOperation {
             } while (lookAhead != -1);
         }
 
-        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, signature.verify());
+        boolean sig_isok = signature.verify();
+
+        //Now check binding signatures
+        boolean keyBinding_isok = verifyKeyBinding(mContext, signature, signatureKey);
+
+        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & keyBinding_isok);
 
         updateProgress(R.string.progress_done, 100, 100);
         return returnData;
+    }
+
+    public boolean verifyKeyBinding(Context mContext, PGPSignature signature, PGPPublicKey signatureKey)
+    {
+        long signatureKeyId = signature.getKeyID();
+        boolean keyBinding_isok = false;
+        String userId = null;
+        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
+                signatureKeyId);
+        PGPPublicKey mKey = null;
+        if (signKeyRing != null) {
+            mKey = PgpKeyHelper.getMasterKey(signKeyRing);
+        }
+        if (signature.getKeyID() != mKey.getKeyID()) {
+            keyBinding_isok = verifyKeyBinding(mKey, signatureKey);
+        } else { //if the key used to make the signature was the master key, no need to check binding sigs
+            keyBinding_isok = true;
+        }
+        return keyBinding_isok;
+    }
+
+    public boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey)
+    {
+        boolean subkeyBinding_isok = false;
+        boolean tmp_subkeyBinding_isok = false;
+        boolean primkeyBinding_isok = false;
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+
+        Iterator<PGPSignature> itr = signingPublicKey.getSignatures();
+
+        subkeyBinding_isok = false;
+        tmp_subkeyBinding_isok = false;
+        primkeyBinding_isok = false;
+        while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
+            //gpg has an invalid subkey binding error on key import I think, but doesn't shout
+            //about keys without subkey signing. Can't get it to import a slightly broken one
+            //either, so we will err on bad subkey binding here.
+            PGPSignature sig = itr.next();
+            if (sig.getKeyID() == masterPublicKey.getKeyID() && sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
+                //check and if ok, check primary key binding.
+                try {
+		            sig.init(contentVerifierBuilderProvider, masterPublicKey);
+		            tmp_subkeyBinding_isok = sig.verifyCertification(masterPublicKey, signingPublicKey);
+                } catch (PGPException e) {
+                    continue;
+                } catch (SignatureException e) {
+                    continue;
+                }
+
+                if (tmp_subkeyBinding_isok)
+                    subkeyBinding_isok = true;
+                if (tmp_subkeyBinding_isok) {
+                    primkeyBinding_isok = verifyPrimaryBinding(sig.getUnhashedSubPackets(), masterPublicKey, signingPublicKey);
+                    if (primkeyBinding_isok)
+                        break;
+                    primkeyBinding_isok = verifyPrimaryBinding(sig.getHashedSubPackets(), masterPublicKey, signingPublicKey);
+                    if (primkeyBinding_isok)
+                        break;
+                }
+            }
+        }
+        return (subkeyBinding_isok & primkeyBinding_isok);
+    }
+
+    private boolean verifyPrimaryBinding(PGPSignatureSubpacketVector Pkts, PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey)
+    {
+        boolean primkeyBinding_isok = false;
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        PGPSignatureList eSigList;
+
+        if (Pkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
+            try {
+				eSigList = Pkts.getEmbeddedSignatures();
+            } catch (IOException e) {
+                return false;
+            } catch (PGPException e) {
+                return false;
+            }
+			for (int j = 0; j < eSigList.size(); ++j) {
+				PGPSignature emSig = eSigList.get(j);
+	            if (emSig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
+                    try {
+						emSig.init(contentVerifierBuilderProvider, signingPublicKey);
+						primkeyBinding_isok = emSig.verifyCertification(masterPublicKey, signingPublicKey);
+						if (primkeyBinding_isok)
+							break;
+                    } catch (PGPException e) {
+                        continue;
+                    } catch (SignatureException e) {
+                        continue;
+                    }
+	            }
+			}
+        }
+        return primkeyBinding_isok;
     }
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
