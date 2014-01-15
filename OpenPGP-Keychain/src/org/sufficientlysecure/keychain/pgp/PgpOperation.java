@@ -764,11 +764,11 @@ public class PgpOperation {
 
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
-                if (signature.verify(messageSignature)) {
-                    returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, true);
-                } else {
-                    returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, false);
-                }
+
+                //Now check binding signatures
+                boolean keyBinding_isok = verifyKeyBinding(mContext, messageSignature, signatureKey);
+                boolean sig_isok = signature.verify(messageSignature);
+                returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, keyBinding_isok & sig_isok);
             }
         }
 
@@ -897,9 +897,18 @@ public class PgpOperation {
         boolean sig_isok = signature.verify();
 
         //Now check binding signatures
-        boolean keyBinding_isok = false;
+        boolean keyBinding_isok = verifyKeyBinding(mContext, signature, signatureKey);
 
-        signatureKeyId = signature.getKeyID();
+        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & keyBinding_isok);
+
+        updateProgress(R.string.progress_done, 100, 100);
+        return returnData;
+    }
+
+    public boolean verifyKeyBinding(Context mContext, PGPSignature signature, PGPPublicKey signatureKey)
+    {
+        long signatureKeyId = signature.getKeyID();
+        boolean keyBinding_isok = false;
         String userId = null;
         PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
                 signatureKeyId);
@@ -912,13 +921,10 @@ public class PgpOperation {
         } else { //if the key used to make the signature was the master key, no need to check binding sigs
             keyBinding_isok = true;
         }
-        returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, sig_isok & keyBinding_isok);
-
-        updateProgress(R.string.progress_done, 100, 100);
-        return returnData;
+        return keyBinding_isok;
     }
 
-    private boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey)
+    public boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey)
     {
         boolean subkeyBinding_isok = false;
         boolean tmp_subkeyBinding_isok = false;
