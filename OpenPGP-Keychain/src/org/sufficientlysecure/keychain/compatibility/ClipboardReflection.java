@@ -50,7 +50,7 @@ public class ClipboardReflection {
                 methodNewPlainText.invoke(clipboard, clip);
             }
         } catch (Exception e) {
-            Log.e("ProjectsException", "There was and error copying the text to the clipboard: "
+            Log.e("ProjectsException", "There was an error copying the text to the clipboard: "
                     + e.getMessage());
         }
     }
@@ -89,7 +89,7 @@ public class ClipboardReflection {
                 return null;
             }
         } catch (Exception e) {
-            Log.e("ProjectsException", "There was and error getting the text from the clipboard: "
+            Log.e("ProjectsException", "There was an error getting the text from the clipboard: "
                     + e.getMessage());
 
             return null;
