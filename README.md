@@ -148,11 +148,6 @@ see
 If you have problems starting OpenPGP Kechain from Eclipse, consider increasing the memory limits in eclipse.ini.
 See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exceeded for more information.
 
-## Generate pressed dashboard icons
-
-1. Open svg file in Inkscape
-2. Extensions -> Color -> darker (2 times!)
-
 ## Gradle Build System
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
@@ -235,15 +230,8 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
 
-* dashboard_manage_keys.svg, dashboard_my_keys.svg, key.svg  
+* key.svg  
   http://rrze-icon-set.berlios.de/  
   Creative Commons Attribution Share-Alike licence 3.0
 
-* dashboard_decrypt.svg, dashboard_encrypt.svg, dashboard_help.svg  
-  http://tango.freedesktop.org/  
-  Public Domain
-
-* dashboard_scan_qrcode.svg  
-  New creation for OpenPGP Kechain  
-  Apache License v2
 
