@@ -164,9 +164,9 @@ When changing build files or dependencies, respect the following requirements:
 - Commit the corresponding gradle wrapper version to the repository
 
 TODO:
-[ ] include support lib as source
-[ ] include Spongy Castle as source
-[ ] resolve lint errors (currently abortOnError is false in some build.gradle files of main project and libraries)
+- [ ] include support lib as source
+- [ ] include Spongy Castle as source
+- [ ] resolve lint errors (currently abortOnError is false in some build.gradle files of main project and libraries)
 
 # Coding Style
 
