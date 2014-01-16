@@ -93,7 +93,7 @@ public class ImportKeysFileFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+        switch (requestCode & 0xFFFF) {
         case Id.request.filename: {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 String path = null;

@@ -378,7 +378,7 @@ public class PgpKeyOperation {
                 keyFlags |= KeyFlags.SIGN_DATA;
                 //cross-certify signing keys
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    subKey.getPublicKey().getAlgorithm(), PGPUtil.SHA1)
+                    subPublicKey.getAlgorithm(), PGPUtil.SHA1)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);

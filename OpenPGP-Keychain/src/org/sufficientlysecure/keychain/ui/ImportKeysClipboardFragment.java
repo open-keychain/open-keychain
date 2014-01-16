@@ -59,8 +59,10 @@ public class ImportKeysClipboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
-
-                mImportActivity.loadCallback(clipboardText.toString().getBytes(), null);
+                String sendText = "";
+                if (clipboardText != null)
+                    sendText = clipboardText.toString();
+                mImportActivity.loadCallback(sendText.getBytes(), null);
             }
         });
 
