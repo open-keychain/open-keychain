@@ -105,6 +105,8 @@ TODO
 
 # Libraries
 
+
+
 ## ZXing Barcode Scanner Android Integration
 
 Classes can be found under "libraries/zxing-android-integration/".
@@ -150,6 +152,21 @@ See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exc
 
 1. Open svg file in Inkscape
 2. Extensions -> Color -> darker (2 times!)
+
+## Gradle Build System
+
+We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
+This is also a key requirement to be part of F-Droid.
+When changing build files or dependencies, respect the following requirements:
+- No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder
+- No dependencies from Maven
+- Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+``
+- Commit the corresponding gradle wrapper version to the repository
+
+TODO:
+[ ] include support lib as source
+[ ] include Spongy Castle as source
+[ ] resolve lint errors (currently abortOnError is false in some build.gradle files of main project and libraries)
 
 # Coding Style
 

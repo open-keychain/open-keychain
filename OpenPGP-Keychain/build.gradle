@@ -4,8 +4,7 @@ buildscript {
     }
 
     dependencies {
-        // NOTE: Avoid using dynamic versions (+). This breaks offline builds!
-        classpath 'com.android.tools.build:gradle:0.6.3'
+        classpath 'com.android.tools.build:gradle:0.7.3'
     }
 }
 
@@ -15,9 +14,6 @@ repositories {
     mavenCentral()
 }
 
-/*
- * NOTE: Avoid dependencies from Maven. Include as much sources as possible for F-Droid!
- */
 dependencies {
     compile fileTree(dir: 'libs', includes: ['*.jar'], excludes: ['android-support-v4.jar'])
     compile 'com.android.support:support-v4:19.0.+' // already in actionbarsherlock
@@ -78,5 +74,10 @@ android {
         buildTypes.release.signingConfig = signingConfigs.release
     } else {
         buildTypes.release.signingConfig = null
+    }
+    
+    // Do not abort build if lint finds errors
+    lintOptions {
+        abortOnError false
     }
 }

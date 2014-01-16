@@ -333,7 +333,7 @@
     <string name="import_qr_code_wrong">QR Code malformed! Please try again!</string>
     <string name="import_qr_code_finished">QR Code scanning finished!</string>
     <string name="import_qr_scan_button">Scan QR Code with \'Barcode Scanner\'</string>
-    <string name="import_nfc_text">To exchange keys via NFC, the device needs to be unlocked.</string>
+    <string name="import_nfc_text">To receive keys via NFC, the device needs to be unlocked.</string>
     <string name="import_nfc_help_button">Help</string>
     <string name="import_clipboard_button">Get key from clipboard</string>
 

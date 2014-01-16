@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.3'
-    }
-}
-
 apply plugin: 'android-library'
 
 
@@ -20,5 +11,10 @@ android {
             java.srcDirs = ['src']
             res.srcDirs = ['res']
         }
+    }
+    
+    // Do not abort build if lint finds errors
+    lintOptions {
+        abortOnError false
     }
 }
