@@ -165,7 +165,8 @@ public class PgpKeyOperation {
         }
 
         default: {
-            throw new PgpGeneralException(mContext.getString(R.string.error_unknown_algorithm_choice));
+            throw new PgpGeneralException(
+                    mContext.getString(R.string.error_unknown_algorithm_choice));
         }
         }
 
@@ -289,7 +290,7 @@ public class PgpKeyOperation {
 
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
-        //TODO: if we are editing a key, keep old certs, don't remake certs we don't have to.
+        // TODO: if we are editing a key, keep old certs, don't remake certs we don't have to.
 
         for (String userId : userIds) {
             PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
@@ -374,15 +375,16 @@ public class PgpKeyOperation {
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
-            if (canSign) { //TODO: ensure signing times are the same, like gpg
+            if (canSign) { // TODO: ensure signing times are the same, like gpg
                 keyFlags |= KeyFlags.SIGN_DATA;
-                //cross-certify signing keys
+                // cross-certify signing keys
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                    subPublicKey.getAlgorithm(), PGPUtil.SHA1)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                        subPublicKey.getAlgorithm(), PGPUtil.SHA1)
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
-                PGPSignature certification = sGen.generateCertification(masterPublicKey, subPublicKey);
+                PGPSignature certification = sGen.generateCertification(masterPublicKey,
+                        subPublicKey);
                 unhashedPacketsGen.setEmbeddedSignature(false, certification);
             }
             if (canEncrypt) {
@@ -420,7 +422,7 @@ public class PgpKeyOperation {
     public PGPPublicKeyRing signKey(long masterKeyId, long pubKeyId, String passphrase)
             throws PgpGeneralException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
-        if (passphrase == null || passphrase.length() <= 0) {
+        if (passphrase == null) {
             throw new PgpGeneralException("Unable to obtain passphrase");
         } else {
             PGPPublicKeyRing pubring = ProviderHelper
