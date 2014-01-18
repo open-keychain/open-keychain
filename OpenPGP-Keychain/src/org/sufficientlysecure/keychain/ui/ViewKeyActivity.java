@@ -77,8 +77,6 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
 
     private Uri mDataUri;
 
-    private PGPPublicKey mPublicKey;
-
     private TextView mName;
     private TextView mEmail;
     private TextView mComment;
@@ -200,36 +198,16 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
     }
 
     private void loadData(Uri dataUri) {
-        // TODO: don't use pubkey object, use database!!!
-
-        PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
-        mPublicKey = ring.getPublicKey();
-
-        mKeyId.setText(PgpKeyHelper.shortifyFingerprint(PgpKeyHelper
-                .convertFingerprintToHex(mPublicKey.getFingerprint())));
-
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(mPublicKey.getFingerprint());
-        fingerprint = fingerprint.replace("  ", "\n");
-        mFingerprint.setText(fingerprint);
-
-        // TODO: get image with getUserAttributes() on key and then PGPUserAttributeSubpacketVector
-
-        Date expiryDate = PgpKeyHelper.getExpiryDate(mPublicKey);
-        if (expiryDate == null) {
-            mExpiry.setText(R.string.none);
-        } else {
-            mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(expiryDate));
-        }
-
-        mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                PgpKeyHelper.getCreationDate(mPublicKey)));
-        mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(mPublicKey));
-
         mActionEncrypt.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                long[] encryptionKeyIds = new long[] { mPublicKey.getKeyID() };
+                // TODO: don't get object here!!! solve this differently!
+                PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(
+                        ViewKeyActivity.this, mDataUri);
+                PGPPublicKey publicKey = ring.getPublicKey();
+
+                long[] encryptionKeyIds = new long[] { publicKey.getKeyID() };
                 Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
                 intent.setAction(EncryptActivity.ACTION_ENCRYPT);
                 intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
@@ -262,6 +240,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
 
     static final String[] KEYRING_PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
             UserIds.USER_ID };
+    static final int KEYRING_INDEX_ID = 0;
+    static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
+    static final int KEYRING_INDEX_USER_ID = 2;
 
     static final String[] USER_IDS_PROJECTION = new String[] { UserIds._ID, UserIds.USER_ID,
             UserIds.RANK, };
@@ -271,8 +252,18 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
 
     static final String[] KEYS_PROJECTION = new String[] { Keys._ID, Keys.KEY_ID,
             Keys.IS_MASTER_KEY, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN,
-            Keys.CAN_ENCRYPT, };
+            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY };
     static final String KEYS_SORT_ORDER = Keys.RANK + " ASC";
+    static final int KEYS_INDEX_ID = 0;
+    static final int KEYS_INDEX_KEY_ID = 1;
+    static final int KEYS_INDEX_IS_MASTER_KEY = 2;
+    static final int KEYS_INDEX_ALGORITHM = 3;
+    static final int KEYS_INDEX_KEY_SIZE = 4;
+    static final int KEYS_INDEX_CAN_CERTIFY = 5;
+    static final int KEYS_INDEX_CAN_SIGN = 6;
+    static final int KEYS_INDEX_CAN_ENCRYPT = 7;
+    static final int KEYS_INDEX_CREATION = 8;
+    static final int KEYS_INDEX_EXPIRY = 9;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -310,7 +301,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
         switch (loader.getId()) {
         case LOADER_ID_KEYRING:
             if (data.moveToFirst()) {
-                String[] mainUserId = PgpKeyHelper.splitUserId(data.getString(2));
+                // get name, email, and comment from USER_ID
+                String[] mainUserId = PgpKeyHelper.splitUserId(data
+                        .getString(KEYRING_INDEX_USER_ID));
                 setTitle(mainUserId[0]);
                 mName.setText(mainUserId[0]);
                 mEmail.setText(mainUserId[1]);
@@ -322,6 +315,50 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
             mUserIdsAdapter.swapCursor(data);
             break;
         case LOADER_ID_KEYS:
+            // the first key here is our master key
+            if (data.moveToFirst()) {
+                // get key id from MASTER_KEY_ID
+                String keyId = "0x"
+                        + PgpKeyHelper.convertKeyIdToHex(data.getLong(KEYS_INDEX_KEY_ID));
+                mKeyId.setText(keyId);
+
+                if (data.isNull(KEYS_INDEX_CREATION)) {
+                    mCreation.setText(R.string.none);
+                } else {
+                    Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
+
+                    mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
+                            creationDate));
+                }
+
+                if (data.isNull(KEYS_INDEX_EXPIRY)) {
+                    mExpiry.setText(R.string.none);
+                } else {
+                    Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
+
+                    mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(
+                            expiryDate));
+                }
+
+                String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
+                        data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
+                mAlgorithm.setText(algorithmStr);
+
+                // TODO: Don't get key object here!!!
+                // put fingerprint in database?
+                PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this,
+                        mDataUri);
+                PGPPublicKey publicKey = ring.getPublicKey();
+
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex(publicKey
+                        .getFingerprint());
+                fingerprint = fingerprint.replace("  ", "\n");
+                mFingerprint.setText(fingerprint);
+
+                // TODO: get image with getUserAttributes() on key and then
+                // PGPUserAttributeSubpacketVector
+            }
+
             mKeysAdapter.swapCursor(data);
             break;
 

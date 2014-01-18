@@ -183,10 +183,10 @@
     <string name="enter_passphrase_twice">Enter the passphrase twice.</string>
     <string name="select_encryption_key">Select at least one encryption key.</string>
     <string name="select_encryption_or_signature_key">Select at least one encryption key or a signature key.</string>
-    <string name="specify_file_to_encrypt_to">Please specify which file to encrypt to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specify_file_to_decrypt_to">Please specify which file to decrypt to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specify_file_to_export_to">Please specify which file to export to.\nWARNING! File will be overwritten if it exists.</string>
-    <string name="specify_file_to_export_secret_keys_to">Please specify which file to export to.\nWARNING! You are about to export SECRET keys.\nWARNING! File will be overwritten if it exists.</string>
+    <string name="specify_file_to_encrypt_to">Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists.</string>
+    <string name="specify_file_to_decrypt_to">Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists.</string>
+    <string name="specify_file_to_export_to">Please specify which file to export to.\nWARNING: File will be overwritten if it exists.</string>
+    <string name="specify_file_to_export_secret_keys_to">Please specify which file to export to.\nWARNING: You are about to export SECRET keys.\nWARNING: File will be overwritten if it exists.</string>
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>

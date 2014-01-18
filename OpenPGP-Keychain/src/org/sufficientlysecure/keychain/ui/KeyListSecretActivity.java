@@ -68,8 +68,9 @@ public class KeyListSecretActivity extends DrawerActivity {
 
             return true;
         case R.id.menu_key_list_secret_import:
-            Intent intentImport = new Intent(this, ImportKeysActivity.class);
-            startActivityForResult(intentImport, Id.request.import_from_qr_code);
+            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
+            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
+            startActivityForResult(intentImportFromFile, 0);
 
             return true;
         default:

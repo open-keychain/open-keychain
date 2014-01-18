@@ -43,6 +43,7 @@ import android.widget.TextView;
 public class KeyListPublicAdapter extends CursorAdapter implements StickyListHeadersAdapter {
     private LayoutInflater mInflater;
     private int mSectionColumnIndex;
+    private int mIndexUserId;
 
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
@@ -52,6 +53,26 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
         mInflater = LayoutInflater.from(context);
         mSectionColumnIndex = sectionColumnIndex;
+        initIndex(c);
+    }
+    
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        initIndex(newCursor);
+
+        return super.swapCursor(newCursor);
+    }
+
+    /**
+     * Get column indexes for performance reasons just once in constructor and swapCursor. For a
+     * performance comparison see http://stackoverflow.com/a/17999582
+     * 
+     * @param cursor
+     */
+    private void initIndex(Cursor cursor) {
+        if (cursor != null) {
+            mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+        }
     }
 
     /**
@@ -62,14 +83,12 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        int userIdIndex = cursor.getColumnIndex(UserIds.USER_ID);
-
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknown_user_id);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
 
-        String userId = cursor.getString(userIdIndex);
+        String userId = cursor.getString(mIndexUserId);
         if (userId != null) {
             String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 

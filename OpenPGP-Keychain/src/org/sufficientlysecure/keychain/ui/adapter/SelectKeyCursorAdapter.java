@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,11 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
     private ListView mListView;
 
+    private int mIndexUserId;
+    private int mIndexMasterKeyId;
+    private int mIndexProjectionValid;
+    private int mIndexProjectionAvailable;
+
     public final static String PROJECTION_ROW_AVAILABLE = "available";
     public final static String PROJECTION_ROW_VALID = "valid";
 
@@ -50,21 +55,45 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         mInflater = LayoutInflater.from(context);
         mListView = listView;
         mKeyType = keyType;
+
+        initIndex(c);
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        initIndex(newCursor);
+
+        return super.swapCursor(newCursor);
+    }
+
+    /**
+     * Get column indexes for performance reasons just once in constructor and swapCursor. For a
+     * performance comparison see http://stackoverflow.com/a/17999582
+     * 
+     * @param cursor
+     */
+    private void initIndex(Cursor cursor) {
+        if (cursor != null) {
+            mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+            mIndexMasterKeyId = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
+            mIndexProjectionValid = cursor.getColumnIndexOrThrow(PROJECTION_ROW_VALID);
+            mIndexProjectionAvailable = cursor.getColumnIndexOrThrow(PROJECTION_ROW_AVAILABLE);
+        }
     }
 
     public String getUserId(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getString(mCursor.getColumnIndex(UserIds.USER_ID));
+        return mCursor.getString(mIndexUserId);
     }
 
     public long getMasterKeyId(int position) {
         mCursor.moveToPosition(position);
-        return mCursor.getLong(mCursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+        return mCursor.getLong(mIndexMasterKeyId);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        boolean valid = cursor.getInt(cursor.getColumnIndex(PROJECTION_ROW_VALID)) > 0;
+        boolean valid = cursor.getInt(mIndexProjectionValid) > 0;
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
         mainUserId.setText(R.string.unknown_user_id);
@@ -75,7 +104,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         TextView status = (TextView) view.findViewById(R.id.status);
         status.setText(R.string.unknown_status);
 
-        String userId = cursor.getString(cursor.getColumnIndex(UserIds.USER_ID));
+        String userId = cursor.getString(mIndexUserId);
         if (userId != null) {
             String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
@@ -85,7 +114,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
             mainUserId.setText(userIdSplit[0]);
         }
 
-        long masterKeyId = cursor.getLong(cursor.getColumnIndex(KeyRings.MASTER_KEY_ID));
+        long masterKeyId = cursor.getLong(mIndexMasterKeyId);
         keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
 
         if (mainUserIdRest.getText().length() == 0) {
@@ -99,7 +128,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
                 status.setText(R.string.can_sign);
             }
         } else {
-            if (cursor.getInt(cursor.getColumnIndex(PROJECTION_ROW_AVAILABLE)) > 0) {
+            if (cursor.getInt(mIndexProjectionAvailable) > 0) {
                 // has some CAN_ENCRYPT keys, but col(ROW_VALID) = 0, so must be revoked or
                 // expired
                 status.setText(R.string.expired);

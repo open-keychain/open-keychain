@@ -447,11 +447,11 @@ public class PgpKeyHelper {
         }
 
         default: {
-            algorithmStr = "???";
+            algorithmStr = "Unknown";
             break;
         }
         }
-        return algorithmStr + ", " + keySize + "bit";
+        return algorithmStr + ", " + keySize + " bit";
     }
 
     public static String convertFingerprintToHex(byte[] fp) {
@@ -510,7 +510,7 @@ public class PgpKeyHelper {
     }
 
     /**
-     * TODO: what is the difference to the other function?
+     * TODO: documentation
      * 
      * @param keyId
      * @return

@@ -33,19 +33,52 @@ import android.widget.TextView;
 public class ViewKeyKeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
 
+    private int mIndexKeyId;
+    private int mIndexAlgorithm;
+    private int mIndexKeySize;
+    private int mIndexIsMasterKey;
+    private int mIndexCanCertify;
+    private int mIndexCanEncrypt;
+    private int mIndexCanSign;
+
     public ViewKeyKeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
+
+        initIndex(c);
+    }
+
+    @Override
+    public Cursor swapCursor(Cursor newCursor) {
+        initIndex(newCursor);
+
+        return super.swapCursor(newCursor);
+    }
+
+    /**
+     * Get column indexes for performance reasons just once in constructor and swapCursor. For a
+     * performance comparison see http://stackoverflow.com/a/17999582
+     * 
+     * @param cursor
+     */
+    private void initIndex(Cursor cursor) {
+        if (cursor != null) {
+            mIndexKeyId = cursor.getColumnIndexOrThrow(Keys.KEY_ID);
+            mIndexAlgorithm = cursor.getColumnIndexOrThrow(Keys.ALGORITHM);
+            mIndexKeySize = cursor.getColumnIndexOrThrow(Keys.KEY_SIZE);
+            mIndexIsMasterKey = cursor.getColumnIndexOrThrow(Keys.IS_MASTER_KEY);
+            mIndexCanCertify = cursor.getColumnIndexOrThrow(Keys.CAN_CERTIFY);
+            mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
+            mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
+        }
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(cursor
-                .getColumnIndex(Keys.KEY_ID)));
-        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
-                cursor.getInt(cursor.getColumnIndex(Keys.ALGORITHM)),
-                cursor.getInt(cursor.getColumnIndex(Keys.KEY_SIZE)));
+        String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
+        String algorithmStr = PgpKeyHelper.getAlgorithmInfo(cursor.getInt(mIndexAlgorithm),
+                cursor.getInt(mIndexKeySize));
 
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
         keyId.setText(keyIdStr);
@@ -54,28 +87,28 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         keyDetails.setText("(" + algorithmStr + ")");
 
         ImageView masterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
-        if (cursor.getInt(cursor.getColumnIndex(Keys.IS_MASTER_KEY)) != 1) {
+        if (cursor.getInt(mIndexIsMasterKey) != 1) {
             masterKeyIcon.setVisibility(View.INVISIBLE);
         } else {
             masterKeyIcon.setVisibility(View.VISIBLE);
         }
 
         ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
-        if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_CERTIFY)) != 1) {
+        if (cursor.getInt(mIndexCanCertify) != 1) {
             certifyIcon.setVisibility(View.GONE);
         } else {
             certifyIcon.setVisibility(View.VISIBLE);
         }
 
         ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
-        if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_ENCRYPT)) != 1) {
+        if (cursor.getInt(mIndexCanEncrypt) != 1) {
             encryptIcon.setVisibility(View.GONE);
         } else {
             encryptIcon.setVisibility(View.VISIBLE);
         }
 
         ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
-        if (cursor.getInt(cursor.getColumnIndex(Keys.CAN_SIGN)) != 1) {
+        if (cursor.getInt(mIndexCanSign) != 1) {
             signIcon.setVisibility(View.GONE);
         } else {
             signIcon.setVisibility(View.VISIBLE);
