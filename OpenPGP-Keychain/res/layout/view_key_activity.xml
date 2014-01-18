@@ -14,7 +14,8 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
             android:text="@string/section_master_user_id" />
 
         <TableLayout
@@ -79,7 +80,8 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
             android:text="@string/section_master_key" />
 
         <TableLayout
@@ -175,31 +177,34 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
             android:text="@string/section_user_ids" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/user_ids"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
             android:text="@string/section_keys" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/keys"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
             android:text="@string/section_actions" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton

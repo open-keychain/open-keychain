@@ -1,5 +1,3 @@
-package org.sufficientlysecure.keychain.ui.widget;
-
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
@@ -17,12 +15,14 @@ package org.sufficientlysecure.keychain.ui.widget;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package org.sufficientlysecure.keychain.ui.widget;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ListView;
 
 /**
- * Automatically calculate height of listview based on contained items. This enables to put this
+ * Automatically calculate height of ListView based on contained items. This enables to put this
  * ListView into a ScrollView without messing up.
  * 
  * from

@@ -42,6 +42,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="4dp"
             android:gravity="center"
             android:text="@string/key_list_empty_text2"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -50,7 +51,7 @@
             android:id="@+id/key_list_empty_button_create"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="4dp"
             android:text="@string/key_list_empty_button_create"
             bootstrapbutton:bb_icon_left="fa-plus"
             bootstrapbutton:bb_type="default" />
@@ -58,6 +59,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="4dp"
             android:gravity="center"
             android:text="@string/key_list_empty_text3"
             android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -66,7 +68,7 @@
             android:id="@+id/key_list_empty_button_import"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_margin="4dp"
             android:text="@string/key_list_empty_button_import"
             bootstrapbutton:bb_icon_left="fa-download"
             bootstrapbutton:bb_type="default" />
