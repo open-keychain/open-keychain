@@ -27,7 +27,6 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -107,7 +106,7 @@ public class ExportHelper {
                 }
 
                 mFileDialog = FileDialogFragment.newInstance(messenger, title, message,
-                        exportFilename, null, Id.request.filename);
+                        exportFilename, null);
 
                 mFileDialog.show(activity.getSupportFragmentManager(), "fileDialog");
             }
@@ -182,22 +181,4 @@ public class ExportHelper {
         activity.startService(intent);
     }
 
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Id.request.filename) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                try {
-                    String path = data.getData().getPath();
-                    Log.d(Constants.TAG, "path=" + path);
-
-                    // set filename used in export/import dialogs
-                    mFileDialog.setFilename(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
-                }
-            }
-            return true;
-        }
-
-        return false;
-    }
 }

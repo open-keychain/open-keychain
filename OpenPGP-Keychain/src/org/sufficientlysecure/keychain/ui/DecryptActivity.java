@@ -629,8 +629,7 @@ public class DecryptActivity extends DrawerActivity {
 
         mFileDialog = FileDialogFragment.newInstance(messenger,
                 getString(R.string.title_decrypt_to_file),
-                getString(R.string.specify_file_to_decrypt_to), mOutputFilename, null,
-                Id.request.output_filename);
+                getString(R.string.specify_file_to_decrypt_to), mOutputFilename, null);
 
         mFileDialog.show(getSupportFragmentManager(), "fileDialog");
     }
@@ -819,20 +818,6 @@ public class DecryptActivity extends DrawerActivity {
                     Log.d(Constants.TAG, "path=" + path);
 
                     mFilename.setText(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
-                }
-            }
-            return;
-        }
-
-        case Id.request.output_filename: {
-            if (resultCode == RESULT_OK && data != null) {
-                try {
-                    String path = FileHelper.getPath(this, data.getData());
-                    Log.d(Constants.TAG, "path=" + path);
-
-                    mFileDialog.setFilename(path);
                 } catch (NullPointerException e) {
                     Log.e(Constants.TAG, "Nullpointer while retrieving path!");
                 }

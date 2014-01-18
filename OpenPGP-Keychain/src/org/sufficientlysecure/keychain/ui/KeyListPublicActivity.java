@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class KeyListPublicActivity extends DrawerActivity {
         switch (item.getItemId()) {
         case R.id.menu_key_list_public_import:
             Intent intentImport = new Intent(this, ImportKeysActivity.class);
-            startActivityForResult(intentImport, Id.request.import_from_qr_code);
+            startActivityForResult(intentImport, 0);
 
             return true;
         case R.id.menu_key_list_public_export:
@@ -69,30 +69,27 @@ public class KeyListPublicActivity extends DrawerActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        // switch (requestCode) {
-        // case Id.request.look_up_key_id: {
-        // if (resultCode == RESULT_CANCELED || data == null
-        // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
-        // return;
-        // }
-        //
-        // Intent intent = new Intent(this, KeyListPublicActivity.class);
-        // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
-        // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
-        // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
-        // handleActions(intent);
-        // break;
-        // }
-        //
-        // default: {
-        // super.onActivityResult(requestCode, resultCode, data);
-        // break;
-        // }
-        // }
-    }
+    // @Override
+    // protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    // switch (requestCode) {
+    // case Id.request.look_up_key_id: {
+    // if (resultCode == RESULT_CANCELED || data == null
+    // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
+    // return;
+    // }
+    //
+    // Intent intent = new Intent(this, KeyListPublicActivity.class);
+    // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
+    // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
+    // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
+    // handleActions(intent);
+    // break;
+    // }
+    //
+    // default: {
+    // super.onActivityResult(requestCode, resultCode, data);
+    // break;
+    // }
+    // }
+    // }
 }

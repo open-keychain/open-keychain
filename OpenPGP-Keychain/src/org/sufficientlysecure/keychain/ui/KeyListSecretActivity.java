@@ -91,11 +91,4 @@ public class KeyListSecretActivity extends DrawerActivity {
         startActivityForResult(intent, 0);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
 }

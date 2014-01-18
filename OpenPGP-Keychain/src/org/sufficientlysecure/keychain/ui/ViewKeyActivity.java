@@ -503,11 +503,4 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
         }
     };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!mExportHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
 }

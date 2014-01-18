@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -39,15 +40,12 @@ import android.widget.EditText;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-// TODO: return result from file manager activity to this dialog! not the activity!
-// do it like in ImportFileFragment!
 public class FileDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_DEFAULT_FILE = "default_file";
     private static final String ARG_CHECKBOX_TEXT = "checkbox_text";
-    private static final String ARG_REQUEST_CODE = "request_code";
 
     public static final int MESSAGE_OKAY = 1;
 
@@ -60,11 +58,13 @@ public class FileDialogFragment extends DialogFragment {
     private BootstrapButton mBrowse;
     private CheckBox mCheckBox;
 
+    private static final int REQUEST_CODE = 0x00007004;
+
     /**
      * Creates new instance of this file dialog fragment
      */
     public static FileDialogFragment newInstance(Messenger messenger, String title, String message,
-            String defaultFile, String checkboxText, int requestCode) {
+            String defaultFile, String checkboxText) {
         FileDialogFragment frag = new FileDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
@@ -73,7 +73,6 @@ public class FileDialogFragment extends DialogFragment {
         args.putString(ARG_MESSAGE, message);
         args.putString(ARG_DEFAULT_FILE, defaultFile);
         args.putString(ARG_CHECKBOX_TEXT, checkboxText);
-        args.putInt(ARG_REQUEST_CODE, requestCode);
 
         frag.setArguments(args);
 
@@ -93,7 +92,6 @@ public class FileDialogFragment extends DialogFragment {
         String message = getArguments().getString(ARG_MESSAGE);
         String defaultFile = getArguments().getString(ARG_DEFAULT_FILE);
         String checkboxText = getArguments().getString(ARG_CHECKBOX_TEXT);
-        final int requestCode = getArguments().getInt(ARG_REQUEST_CODE);
 
         LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -112,7 +110,8 @@ public class FileDialogFragment extends DialogFragment {
                 // only .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(activity, mFilename.getText().toString(), "*/*", requestCode);
+                FileHelper.openFile(FileDialogFragment.this, mFilename.getText().toString(), "*/*",
+                        REQUEST_CODE);
             }
         });
 
@@ -166,12 +165,38 @@ public class FileDialogFragment extends DialogFragment {
      * @param progress
      * @param max
      */
-    public void setFilename(String filename) {
+    private void setFilename(String filename) {
         AlertDialog dialog = (AlertDialog) getDialog();
         EditText filenameEditText = (EditText) dialog.findViewById(R.id.input);
 
         if (filenameEditText != null) {
             filenameEditText.setText(filename);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode & 0xFFFF) {
+        case REQUEST_CODE: {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                try {
+                    String path = data.getData().getPath();
+                    Log.d(Constants.TAG, "path=" + path);
+
+                    // set filename used in export/import dialogs
+                    setFilename(path);
+                } catch (NullPointerException e) {
+                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                }
+            }
+
+            break;
+        }
+
+        default:
+            super.onActivityResult(requestCode, resultCode, data);
+
+            break;
         }
     }
 
