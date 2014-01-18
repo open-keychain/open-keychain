@@ -13,9 +13,10 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
             android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingBottom="3dip" >
+            android:orientation="horizontal" >
 
             <ImageView
                 android:id="@+id/api_app_settings_app_icon"
@@ -50,7 +51,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_margin="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
             android:text="@string/api_settings_show_advanced"
             bootstrapbutton:bb_icon_left="fa-caret-up"
             bootstrapbutton:bb_size="default"
@@ -107,7 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="com.example"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:layout_width="match_parent"

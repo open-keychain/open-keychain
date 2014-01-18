@@ -372,10 +372,6 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
             return;
         }
 
-        Intent signIntent = new Intent(this, SignKeyActivity.class);
-        signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, updateKeyId);
-        startActivity(signIntent);
-
         Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
         queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
         queryIntent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, updateKeyId);
