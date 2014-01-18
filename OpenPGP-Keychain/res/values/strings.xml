@@ -57,6 +57,8 @@
     <string name="section_master_key">Master Key</string>
     <string name="section_master_user_id">Master User ID</string>
     <string name="section_actions">Actions</string>
+    <string name="section_signing_key">Your Key used for Signing</string>
+    <string name="section_upload_key">Upload Key</string>
 
     <!-- button -->
     <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
@@ -137,7 +139,7 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
-    <string name="label_send_key">Send Key to Server?</string>
+    <string name="label_send_key">Upload key to selected keyserver after signing</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="no_keys_selected">Select</string>
     <string name="one_key_selected">1 Selected</string>
@@ -222,6 +224,8 @@
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
+    <string name="key_has_already_been_signed">Key has already been signed!</string>
+    <string name="select_key_to_sign">Please select a key to be used for signing!</string>
 
     <!--
          errors

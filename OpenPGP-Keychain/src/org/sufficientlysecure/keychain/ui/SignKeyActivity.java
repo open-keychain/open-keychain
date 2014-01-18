@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Senecaso
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +22,6 @@ import java.util.Iterator;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -41,7 +41,6 @@ import android.os.Messenger;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -57,9 +56,10 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
  * 
  * signs the specified public key with the specified secret master key
  */
-public class SignKeyActivity extends SherlockFragmentActivity {
+public class SignKeyActivity extends SherlockFragmentActivity implements
+        SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
 
-    public static final String EXTRA_KEY_ID = "keyId";
+    public static final String EXTRA_KEY_ID = "key_id";
 
     private long mPubKeyId = 0;
     private long mMasterKeyId = 0;
@@ -67,7 +67,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
     private BootstrapButton mSignButton;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
-    private BootstrapButton mSelectKeyButton;
+
+    private SelectSecretKeyLayoutFragment mSelectKeyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,10 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
+
+        mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.sign_key_select_key_fragment);
+        mSelectKeyFragment.setCallback(this);
 
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -107,26 +112,24 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         });
 
         mSignButton = (BootstrapButton) findViewById(R.id.sign_key_sign_button);
-        mSignButton.setEnabled(false); // disabled until the user selects a key to sign with
         mSignButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 if (mPubKeyId != 0) {
-                    initiateSigning();
+                    if (mMasterKeyId == 0) {
+                        mSelectKeyFragment.setError(getString(R.string.select_key_to_sign));
+                    } else {
+                        initiateSigning();
+                    }
                 }
             }
         });
 
         mPubKeyId = getIntent().getLongExtra(EXTRA_KEY_ID, 0);
         if (mPubKeyId == 0) {
-            finish(); // nothing to do if we dont know what key to sign
-        } else {
-            // kick off the SecretKey selection activity so the user chooses which key to sign with
-            // first
-            Intent intent = new Intent(this, SelectSecretKeyActivity.class);
-            intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_CERTIFY, true);
-            startActivityForResult(intent, Id.request.secret_keys);
+            Log.e(Constants.TAG, "No pub key id given!");
+            finish();
         }
     }
 
@@ -188,7 +191,8 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                     startSigning();
                 }
             } else {
-                Toast.makeText(this, "Key has already been signed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.key_has_already_been_signed, Toast.LENGTH_SHORT)
+                        .show();
 
                 setResult(RESULT_CANCELED);
                 finish();
@@ -226,8 +230,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                             Toast.LENGTH_SHORT).show();
 
                     // check if we need to send the key to the server or not
-                    CheckBox sendKey = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
-                    if (sendKey.isChecked()) {
+                    if (mUploadKeyCheckbox.isChecked()) {
                         /*
                          * upload the newly signed key to the key server
                          */
@@ -295,25 +298,11 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         startService(intent);
     }
 
+    /**
+     * callback from select key fragment
+     */
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case Id.request.secret_keys: {
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                mMasterKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
-
-                // re-enable the sign button so the user can initiate the sign process
-                Button sign = (Button) findViewById(R.id.sign_key_sign_button);
-                sign.setEnabled(true);
-            }
-
-            break;
-        }
-
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-        }
+    public void onKeySelected(long secretKeyId) {
+        mMasterKeyId = secretKeyId;
     }
 }

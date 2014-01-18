@@ -54,32 +54,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         mCallback = callback;
     }
 
-    /**
-     * Inflate the layout for this fragment
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.select_secret_key_layout_fragment, container, false);
-
-        mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
-        mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
-        mSelectKeyButton = (BootstrapButton) view
-                .findViewById(R.id.select_secret_key_select_key_button);
-        mSelectKeyButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectSecretKey();
-            }
-        });
-
-        return view;
-    }
-
-    private void selectSecretKey() {
-        Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_SELECT_KEY);
-    }
-
     public void selectKey(long secretKeyId) {
         if (secretKeyId == Id.key.none) {
             mKeyUserId.setText(R.string.api_settings_no_key);
@@ -105,6 +79,37 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         }
     }
 
+    public void setError(String error) {
+        mKeyUserId.requestFocus();
+        mKeyUserId.setError(error);
+    }
+
+    /**
+     * Inflate the layout for this fragment
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.select_secret_key_layout_fragment, container, false);
+
+        mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
+        mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
+        mSelectKeyButton = (BootstrapButton) view
+                .findViewById(R.id.select_secret_key_select_key_button);
+        mSelectKeyButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startSelectKeyActivity();
+            }
+        });
+
+        return view;
+    }
+
+    private void startSelectKeyActivity() {
+        Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_SELECT_KEY);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
@@ -115,6 +120,9 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                 secretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
 
                 selectKey(secretKeyId);
+
+                // remove displayed errors
+                mKeyUserId.setError(null);
 
                 // give value back to callback
                 mCallback.onKeySelected(secretKeyId);
