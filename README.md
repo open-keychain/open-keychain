@@ -245,5 +245,8 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 * key.svg  
   http://rrze-icon-set.berlios.de/  
   Creative Commons Attribution Share-Alike licence 3.0
+  
+* Menu icons  
+  http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
 
 

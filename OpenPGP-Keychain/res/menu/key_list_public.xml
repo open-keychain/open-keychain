@@ -4,6 +4,7 @@
     <item
         android:id="@+id/menu_key_list_public_import"
         android:showAsAction="always|withText"
+        android:icon="@drawable/ic_action_add_person"
         android:title="@string/menu_import"/>
     <item
         android:id="@+id/menu_key_list_public_export"

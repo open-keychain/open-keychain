@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/menu_key_view_share"
-        android:icon="@android:drawable/ic_menu_share"
+        android:icon="@drawable/ic_action_share"
         android:showAsAction="always"
         android:title="@string/menu_share">
         <menu>
@@ -27,7 +27,7 @@
     </item>
     <item
         android:id="@+id/menu_key_keyserver"
-        android:icon="@android:drawable/ic_menu_upload"
+        android:icon="@drawable/ic_action_import_export"
         android:showAsAction="always"
         android:title="@string/menu_share">
         <menu>
@@ -43,7 +43,7 @@
     </item>
     <item
         android:id="@+id/menu_key_view_sign"
-        android:showAsAction="never"
+        android:showAsAction="ifRoom"
         android:title="@string/menu_sign_key"/>
     <item
         android:id="@+id/menu_key_view_export_file"
