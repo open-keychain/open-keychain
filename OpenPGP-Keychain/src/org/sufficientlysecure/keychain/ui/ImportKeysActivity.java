@@ -146,10 +146,10 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 String importFilename = intent.getData().getPath();
 
                 // display selected filename
-                getSupportActionBar().setSelectedNavigationItem(0);
+                getSupportActionBar().setSelectedNavigationItem(1);
                 Bundle args = new Bundle();
                 args.putString(ImportKeysFileFragment.ARG_PATH, importFilename);
-                loadFragment(ImportKeysFileFragment.class, args, mNavigationStrings[0]);
+                loadFragment(ImportKeysFileFragment.class, args, mNavigationStrings[1]);
 
                 // directly load data
                 startListFragment(savedInstanceState, null, importFilename);
@@ -164,8 +164,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             startListFragment(savedInstanceState, null, null);
 
             if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
-                getSupportActionBar().setSelectedNavigationItem(0);
-                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[0]);
+                getSupportActionBar().setSelectedNavigationItem(1);
+                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
             } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
                 getSupportActionBar().setSelectedNavigationItem(2);
                 loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
@@ -206,10 +206,10 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         // Create new fragment from our own Fragment class
         switch (itemPosition) {
         case 0:
-            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[itemPosition]);
+            loadFragment(ImportKeysServerFragment.class, null, mNavigationStrings[itemPosition]);
             break;
         case 1:
-            loadFragment(ImportKeysServerFragment.class, null, mNavigationStrings[itemPosition]);
+            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[itemPosition]);
             break;
         case 2:
             loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
