@@ -69,27 +69,4 @@ public class KeyListPublicActivity extends DrawerActivity {
         }
     }
 
-    // @Override
-    // protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    // switch (requestCode) {
-    // case Id.request.look_up_key_id: {
-    // if (resultCode == RESULT_CANCELED || data == null
-    // || data.getStringExtra(KeyServerQueryActivity.RESULT_EXTRA_TEXT) == null) {
-    // return;
-    // }
-    //
-    // Intent intent = new Intent(this, KeyListPublicActivity.class);
-    // intent.setAction(KeyListPublicActivity.ACTION_IMPORT);
-    // intent.putExtra(KeyListPublicActivity.EXTRA_TEXT,
-    // data.getStringExtra(KeyListActivity.EXTRA_TEXT));
-    // handleActions(intent);
-    // break;
-    // }
-    //
-    // default: {
-    // super.onActivityResult(requestCode, resultCode, data);
-    // break;
-    // }
-    // }
-    // }
 }

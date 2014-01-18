@@ -20,13 +20,12 @@ package org.sufficientlysecure.keychain.ui;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
-import android.content.Intent;
-import android.os.Bundle;
 
 public class SelectSecretKeyActivity extends SherlockFragmentActivity {
 
