@@ -37,13 +37,13 @@
                 bootstrapbutton:bb_icon_left="fa-download"
                 bootstrapbutton:bb_type="info" />
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/import_sign_and_upload"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:padding="4dp"
-                android:text="@string/import_sign_and_upload"
-                bootstrapbutton:bb_type="info" />
+            <!-- <com.beardedhen.androidbootstrap.BootstrapButton -->
+            <!-- android:id="@+id/import_sign_and_upload" -->
+            <!-- android:layout_width="match_parent" -->
+            <!-- android:layout_height="60dp" -->
+            <!-- android:padding="4dp" -->
+            <!-- android:text="@string/import_sign_and_upload" -->
+            <!-- bootstrapbutton:bb_type="info" /> -->
         </LinearLayout>
 
         <FrameLayout

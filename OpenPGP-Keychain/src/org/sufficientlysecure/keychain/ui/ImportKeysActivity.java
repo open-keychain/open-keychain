@@ -79,7 +79,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     Fragment mCurrentFragment;
 
     BootstrapButton mImportButton;
-    BootstrapButton mImportSignUploadButton;
+
+    // BootstrapButton mImportSignUploadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,13 +95,13 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 importKeys();
             }
         });
-        mImportSignUploadButton = (BootstrapButton) findViewById(R.id.import_sign_and_upload);
-        mImportSignUploadButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signAndUploadOnClick();
-            }
-        });
+        // mImportSignUploadButton = (BootstrapButton) findViewById(R.id.import_sign_and_upload);
+        // mImportSignUploadButton.setOnClickListener(new OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // signAndUploadOnClick();
+        // }
+        // });
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -300,15 +301,6 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     // }
     // }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // required for qr code scanning
-        if (mCurrentFragment != null) {
-            mCurrentFragment.onActivityResult(requestCode, resultCode, data);
-        }
-        // super.onActivityResult(requestCode, resultCode, data);
-    }
-
     /**
      * Import keys with mImportData
      */
@@ -419,14 +411,14 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         importKeys();
     }
 
-    public void signAndUploadOnClick() {
-        // first, import!
-        // importOnClick(view);
-
-        // TODO: implement sign and upload!
-        Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
-                .show();
-    }
+    // public void signAndUploadOnClick() {
+    // // first, import!
+    // // importOnClick(view);
+    //
+    // // TODO: implement sign and upload!
+    // Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
+    // .show();
+    // }
 
     /**
      * NFC

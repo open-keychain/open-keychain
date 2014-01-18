@@ -91,7 +91,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+        switch (requestCode & 0xFFFF) {
         case IntentIntegrator.REQUEST_CODE: {
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode,
                     data);
