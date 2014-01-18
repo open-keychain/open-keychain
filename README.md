@@ -20,7 +20,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 5. Fork OpenPGP Keychain and contribute code (the best part ;) )
 6. Open a pull request on Github. I will help with occuring problems and merge your changes back into the main project.
 
-I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain :)
+I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain!
 
 ## Development
 
