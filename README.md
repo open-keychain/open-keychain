@@ -5,23 +5,35 @@ The development began as a fork of Android Privacy Guard (APG).
 
 see http://sufficientlysecure.org/keychain
 
-## Translations
+## How to help the project?
+
+### Translate the application
 
 Translations are managed at Transifex, please contribute there at https://www.transifex.com/projects/p/openpgp-keychain/
 
-## Code Contributions
+### Contribute Code
 
-Fork OpenPGP Keychain and create a pull request. I will help with occuring problems and merge your changes back into the main project.
+1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
+2. Lookout for interesting issues on our issue page at Github: https://github.com/dschuermann/openpgp-keychain/issues
+3. Tell us about your plans on the mailinglist
+4. Read this README, especially the notes about coding style
+5. Fork OpenPGP Keychain and contribute code (the best part ;) )
+6. Open a pull request on Github. I will help with occuring problems and merge your changes back into the main project.
+
 I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain :)
 
-## Build with Gradle
+## Development
+
+Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
+
+### Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 2. Open the Android SDK Manager (shell command: ``android``). Expand the Extras directory and install "Android Support Repository"
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 
-## Development with Eclipse
+### Development with Eclipse
 
 Android Studio is currently not supported or recommended!
 
@@ -29,9 +41,9 @@ Android Studio is currently not supported or recommended!
 2. Repeat step 1 with "libraries/HtmlTextView", "libraries/StickyListHeaders/library", "libraries/AndroidBootstrap", "libraries/zxing", "libraries/zxing-android-integration", "OpenPGP-Keychain"
 3. Now all required source files are available in Eclipse
 
-# Keychain API
+## Keychain API
 
-## Intent API
+### Intent API
 All Intents require user interaction, e.g. to finally encrypt the user needs to press the "Encrypt" button.
 To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 
@@ -55,7 +67,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras, starts Barcode Scanner to get QR Code
 
-## OpenPGP Remote API
+### OpenPGP Remote API
 To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.
 The API Demo contains all required AIDL files and a demo activity.
 
@@ -103,24 +115,24 @@ for integration.
 
 TODO
 
-# Libraries
+## Libraries
 
 
 
-## ZXing Barcode Scanner Android Integration
+### ZXing Barcode Scanner Android Integration
 
 Classes can be found under "libraries/zxing-android-integration/".
 
 1. Checkout their SVN (see http://code.google.com/p/zxing/source/checkout)
 2. Copy all classes from their android-integration folder to our library folder
 
-## ZXing
+### ZXing
 
 Classes can be found under "libraries/zxing/".
 ZXing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
 Only classes related to QR Code generation are utilized.
 
-## Bouncy Castle
+### Bouncy Castle
 
 #### Spongy Castle
 
@@ -141,14 +153,14 @@ see
 * Mailinglist Archive at http://bouncy-castle.1462172.n4.nabble.com/Bouncy-Castle-Dev-f1462173.html
 
 
-# Notes
+## Notes
 
-## Eclipse: "GC overhead limit exceeded"
+### Eclipse: "GC overhead limit exceeded"
 
 If you have problems starting OpenPGP Kechain from Eclipse, consider increasing the memory limits in eclipse.ini.
 See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exceeded for more information.
 
-## Gradle Build System
+### Gradle Build System
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
 This is also a key requirement to be part of F-Droid.
@@ -163,9 +175,9 @@ TODO:
 - include Spongy Castle as source
 - resolve lint errors (currently abortOnError is false in some build.gradle files of main project and libraries)
 
-# Coding Style
+## Coding Style
 
-## Code
+### Code
 * Indentation: 4 spaces, no tabs
 * Maximum line width for code and comments: 100
 * Opening braces don't go on their own line
@@ -174,14 +186,14 @@ TODO:
 
 See http://source.android.com/source/code-style.html
 
-## XML Eclipse Settings
+### XML Eclipse Settings
 * XML Maximum line width 999
 * XML: Split multiple attributes each on a new line (Eclipse: Properties -> XML -> XML Files -> Editor)
 * XML: Indent using spaces with Indention size 4 (Eclipse: Properties -> XML -> XML Files -> Editor)
 
 See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
 
-# Licenses
+## Licenses
 OpenPGP Kechain is licensed under GPLv3+.
 Some parts (older parts and some libraries are Apache License v2, MIT X11 License)
 
@@ -199,7 +211,7 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 > along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-## Libraries
+### Libraries
 
 * SpongyCastle  
   https://github.com/rtyley/spongycastle  
@@ -226,7 +238,7 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   MIT License
 
 
-## Images
+### Images
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
 
