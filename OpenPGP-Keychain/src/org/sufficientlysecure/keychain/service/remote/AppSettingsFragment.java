@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,21 +20,14 @@ package org.sufficientlysecure.keychain.service.remote;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.SelectSecretKeyActivity;
+import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.util.AlgorithmNames;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -56,7 +49,8 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class AppSettingsFragment extends Fragment {
+public class AppSettingsFragment extends Fragment implements
+        SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
 
     // model
     private AppSettings appSettings;
@@ -66,14 +60,13 @@ public class AppSettingsFragment extends Fragment {
     private BootstrapButton mAdvancedSettingsButton;
     private TextView mAppNameView;
     private ImageView mAppIconView;
-    private TextView mKeyUserId;
-    private TextView mKeyUserIdRest;
-    private BootstrapButton mSelectKeyButton;
     private Spinner mEncryptionAlgorithm;
     private Spinner mHashAlgorithm;
     private Spinner mCompression;
     private TextView mPackageName;
     private TextView mPackageSignature;
+
+    private SelectSecretKeyLayoutFragment mSelectKeyFragment;
 
     KeyValueSpinnerAdapter encryptionAdapter;
     KeyValueSpinnerAdapter hashAdapter;
@@ -99,7 +92,7 @@ public class AppSettingsFragment extends Fragment {
             Log.e(Constants.TAG, "Should not happen!", e);
         }
 
-        updateSelectedKeyView(appSettings.getKeyId());
+        mSelectKeyFragment.selectKey(appSettings.getKeyId());
         mEncryptionAlgorithm.setSelection(encryptionAdapter.getPosition(appSettings
                 .getEncryptionAlgorithm()));
         mHashAlgorithm.setSelection(hashAdapter.getPosition(appSettings.getHashAlgorithm()));
@@ -117,6 +110,10 @@ public class AppSettingsFragment extends Fragment {
     }
 
     private void initView(View view) {
+        mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getFragmentManager().findFragmentById(
+                R.id.api_app_settings_select_key_fragment);
+        mSelectKeyFragment.setCallback(this);
+
         mAdvancedSettingsButton = (BootstrapButton) view
                 .findViewById(R.id.api_app_settings_advanced_button);
         mAdvancedSettingsContainer = (LinearLayout) view
@@ -124,10 +121,6 @@ public class AppSettingsFragment extends Fragment {
 
         mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
-        mKeyUserId = (TextView) view.findViewById(R.id.api_app_settings_user_id);
-        mKeyUserIdRest = (TextView) view.findViewById(R.id.api_app_settings_user_id_rest);
-        mSelectKeyButton = (BootstrapButton) view
-                .findViewById(R.id.api_app_settings_select_key_button);
         mEncryptionAlgorithm = (Spinner) view
                 .findViewById(R.id.api_app_settings_encryption_algorithm);
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
@@ -181,14 +174,6 @@ public class AppSettingsFragment extends Fragment {
             }
         });
 
-        mSelectKeyButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                selectSecretKey();
-            }
-        });
-
         final Animation visibleAnimation = new AlphaAnimation(0.0f, 1.0f);
         visibleAnimation.setDuration(250);
         final Animation invisibleAnimation = new AlphaAnimation(1.0f, 0.0f);
@@ -219,16 +204,6 @@ public class AppSettingsFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    private void selectSecretKey() {
-        Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
-        startActivityForResult(intent, Id.request.secret_keys);
-    }
-
     private void setPackage(String packageName) {
         PackageManager pm = getActivity().getApplicationContext().getPackageManager();
 
@@ -248,56 +223,12 @@ public class AppSettingsFragment extends Fragment {
         mAppIconView.setImageDrawable(appIcon);
     }
 
-    private void updateSelectedKeyView(long secretKeyId) {
-        if (secretKeyId == Id.key.none) {
-            mKeyUserId.setText(R.string.api_settings_no_key);
-            mKeyUserIdRest.setText("");
-        } else {
-            String uid = getResources().getString(R.string.unknown_user_id);
-            String uidExtra = "";
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
-                    getActivity(), secretKeyId);
-            if (keyRing != null) {
-                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
-                if (key != null) {
-                    String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
-                    String chunks[] = userId.split(" <", 2);
-                    uid = chunks[0];
-                    if (chunks.length > 1) {
-                        uidExtra = "<" + chunks[1];
-                    }
-                }
-            }
-            mKeyUserId.setText(uid);
-            mKeyUserIdRest.setText(uidExtra);
-        }
-    }
-
+    /**
+     * callback from select secret key fragment
+     */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "onactivityresult     " + requestCode + "   " + resultCode);
-        switch (requestCode) {
-
-        case Id.request.secret_keys: {
-            long secretKeyId;
-            if (resultCode == Activity.RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                secretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
-
-            } else {
-                secretKeyId = Id.key.none;
-            }
-            appSettings.setKeyId(secretKeyId);
-            updateSelectedKeyView(secretKeyId);
-            break;
-        }
-
-        default: {
-            break;
-        }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onKeySelected(long secretKeyId) {
+        appSettings.setKeyId(secretKeyId);
     }
 
 }

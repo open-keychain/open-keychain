@@ -35,7 +35,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class AppSettingsActivity extends SherlockFragmentActivity {
     private Uri mAppUri;
 
-    private AppSettingsFragment settingsFragment;
+    private AppSettingsFragment mSettingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
 
         setContentView(R.layout.api_app_settings_activity);
 
-        settingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+        mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                 R.id.api_app_settings_fragment);
 
         Intent intent = getIntent();
@@ -90,7 +90,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
 
     private void loadData(Uri appUri) {
         AppSettings settings = ProviderHelper.getApiAppSettings(this, appUri);
-        settingsFragment.setAppSettings(settings);
+        mSettingsFragment.setAppSettings(settings);
     }
 
     private void revokeAccess() {
@@ -101,7 +101,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     }
 
     private void save() {
-        ProviderHelper.updateApiApp(this, settingsFragment.getAppSettings(), mAppUri);
+        ProviderHelper.updateApiApp(this, mSettingsFragment.getAppSettings(), mAppUri);
 
         finish();
     }

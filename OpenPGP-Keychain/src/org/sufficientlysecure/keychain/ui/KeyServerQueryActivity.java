@@ -119,7 +119,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         mAdapter = new KeyInfoListAdapter(this);
         mList.setAdapter(mAdapter);
 
-        mKeyServer = (Spinner)findViewById(R.id.keyServer);
+        mKeyServer = (Spinner)findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                         .getKeyServers());

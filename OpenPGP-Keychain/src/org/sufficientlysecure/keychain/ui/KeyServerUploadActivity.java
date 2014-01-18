@@ -79,7 +79,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
         setContentView(R.layout.key_server_export);
 
         export = (Button) findViewById(R.id.btn_export_to_server);
-        keyServer = (Spinner) findViewById(R.id.keyServer);
+        keyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)

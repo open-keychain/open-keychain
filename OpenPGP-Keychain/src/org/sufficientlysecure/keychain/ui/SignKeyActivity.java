@@ -50,6 +50,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
  * gpg --sign-key
@@ -63,11 +64,15 @@ public class SignKeyActivity extends SherlockFragmentActivity {
     private long mPubKeyId = 0;
     private long mMasterKeyId = 0;
 
+    private BootstrapButton mSignButton;
+    private CheckBox mUploadKeyCheckbox;
+    private Spinner mSelectKeyserverSpinner;
+    private BootstrapButton mSelectKeyButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // check we havent already signed it
         setContentView(R.layout.sign_key_activity);
 
         final ActionBar actionBar = getSupportActionBar();
@@ -75,35 +80,35 @@ public class SignKeyActivity extends SherlockFragmentActivity {
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
 
-        final Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+        mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                         .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        keyServer.setAdapter(adapter);
+        mSelectKeyserverSpinner.setAdapter(adapter);
 
-        final CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
-        if (!sendKey.isChecked()) {
-            keyServer.setEnabled(false);
+        mUploadKeyCheckbox = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
+        if (!mUploadKeyCheckbox.isChecked()) {
+            mSelectKeyserverSpinner.setEnabled(false);
         } else {
-            keyServer.setEnabled(true);
+            mSelectKeyserverSpinner.setEnabled(true);
         }
 
-        sendKey.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+        mUploadKeyCheckbox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
-                    keyServer.setEnabled(false);
+                    mSelectKeyserverSpinner.setEnabled(false);
                 } else {
-                    keyServer.setEnabled(true);
+                    mSelectKeyserverSpinner.setEnabled(true);
                 }
             }
         });
 
-        Button sign = (Button) findViewById(R.id.sign);
-        sign.setEnabled(false); // disabled until the user selects a key to sign with
-        sign.setOnClickListener(new OnClickListener() {
+        mSignButton = (BootstrapButton) findViewById(R.id.sign_key_sign_button);
+        mSignButton.setEnabled(false); // disabled until the user selects a key to sign with
+        mSignButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -221,7 +226,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                             Toast.LENGTH_SHORT).show();
 
                     // check if we need to send the key to the server or not
-                    CheckBox sendKey = (CheckBox) findViewById(R.id.sendKey);
+                    CheckBox sendKey = (CheckBox) findViewById(R.id.sign_key_upload_checkbox);
                     if (sendKey.isChecked()) {
                         /*
                          * upload the newly signed key to the key server
@@ -256,7 +261,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
 
         data.putLong(KeychainIntentService.UPLOAD_KEY_KEYRING_ROW_ID, mPubKeyId);
 
-        Spinner keyServer = (Spinner) findViewById(R.id.keyServer);
+        Spinner keyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
         String server = (String) keyServer.getSelectedItem();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);
 
@@ -299,7 +304,7 @@ public class SignKeyActivity extends SherlockFragmentActivity {
                 mMasterKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
 
                 // re-enable the sign button so the user can initiate the sign process
-                Button sign = (Button) findViewById(R.id.sign);
+                Button sign = (Button) findViewById(R.id.sign_key_sign_button);
                 sign.setEnabled(true);
             }
 

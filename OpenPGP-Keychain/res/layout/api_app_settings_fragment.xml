@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
@@ -37,49 +38,12 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </RelativeLayout>
 
-        <LinearLayout
+        <fragment
+            android:id="@+id/api_app_settings_select_key_fragment"
+            android:name="org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/api_app_settings_select_key_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="4dp"
-                android:text="@string/api_settings_select_key"
-                bootstrapbutton:bb_icon_left="fa-key"
-                bootstrapbutton:bb_size="default"
-                bootstrapbutton:bb_type="default" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="16dp" >
-
-                <TextView
-                    android:id="@+id/api_app_settings_user_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text="@string/api_settings_no_key"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <TextView
-                    android:id="@+id/api_app_settings_user_id_rest"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text=""
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-            </LinearLayout>
-        </LinearLayout>
+            tools:layout="@layout/select_secret_key_layout_fragment" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/api_app_settings_advanced_button"
