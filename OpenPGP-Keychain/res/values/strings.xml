@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
-     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <resources>
 
     <!-- title -->
@@ -41,7 +24,7 @@
     <string name="title_export_keys">Export Keys</string>
     <string name="title_key_not_found">Key Not Found</string>
     <string name="title_key_server_query">Query Key Server</string>
-    <string name="title_send_key">Export to Key Server</string>
+    <string name="title_send_key">Upload to Key Server</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
     <string name="title_sign_key">Sign Key</string>
     <string name="title_key_details">Key Details</string>
@@ -59,7 +42,8 @@
     <string name="section_actions">Actions</string>
     <string name="section_signing_key">Your Key used for Signing</string>
     <string name="section_upload_key">Upload Key</string>
-
+    <string name="section_key_server">Key Server</string>
+    
     <!-- button -->
     <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
     <string name="btn_encrypt_to_clipboard">Encrypt to Clipboard</string>
@@ -78,7 +62,7 @@
     <string name="btn_change_passphrase">Change Passphrase</string>
     <string name="btn_set_passphrase">Set Passphrase</string>
     <string name="btn_search">Search</string>
-    <string name="btn_export_to_server">Export To Server</string>
+    <string name="btn_export_to_server">Upload To Key Server</string>
     <string name="btn_next">Next</string>
     <string name="btn_back">Back</string>
 
@@ -98,8 +82,8 @@
     <string name="menu_edit_key">Edit key</string>
     <string name="menu_search">Search</string>
     <string name="menu_key_server">Import from key server</string>
-    <string name="menu_update_key">Update from server</string>
-    <string name="menu_export_key_to_server">Export to server</string>
+    <string name="menu_update_key">Update from key server</string>
+    <string name="menu_export_key_to_server">Upload to key server</string>
     <string name="menu_share">Share with…</string>
     <string name="menu_share_qr_code">Share with QR Code</string>
     <string name="menu_share_nfc">Share with NFC</string>
@@ -139,7 +123,7 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
-    <string name="label_send_key">Upload key to selected keyserver after signing</string>
+    <string name="label_send_key">Upload key to selected key server after signing</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="no_keys_selected">Select</string>
     <string name="one_key_selected">1 Selected</string>
