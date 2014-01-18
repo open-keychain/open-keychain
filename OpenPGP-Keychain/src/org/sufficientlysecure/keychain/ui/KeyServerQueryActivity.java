@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,23 +66,19 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
             + "LOOK_UP_KEY_ID_AND_RETURN";
 
     public static final String EXTRA_KEY_ID = "key_id";
+    public static final String EXTRA_FINGERPRINT = "fingerprint";
 
     public static final String RESULT_EXTRA_TEXT = "text";
 
     private ListView mList;
-
     private EditText mQuery;
-
     private Button mSearch;
+    private Spinner mKeyServer;
 
     private KeyInfoListAdapter mAdapter;
 
-    private Spinner mKeyServer;
-
     private int mQueryType;
-
     private String mQueryString;
-
     private long mQueryId;
 
     private volatile List<KeyInfo> mSearchResult;
@@ -93,15 +89,15 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case android.R.id.home:
-                // app icon in Action Bar clicked; go home
-                Intent intent = new Intent(this, KeyListPublicActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
+        case android.R.id.home:
+            // app icon in Action Bar clicked; go home
+            Intent intent = new Intent(this, KeyListPublicActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
 
-            default:
-                break;
+        default:
+            break;
 
         }
         return false;
@@ -113,13 +109,13 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         setContentView(R.layout.key_server_query);
 
-        mQuery = (EditText)findViewById(R.id.query);
-        mSearch = (Button)findViewById(R.id.btn_search);
-        mList = (ListView)findViewById(R.id.list);
+        mQuery = (EditText) findViewById(R.id.query);
+        mSearch = (Button) findViewById(R.id.btn_search);
+        mList = (ListView) findViewById(R.id.list);
         mAdapter = new KeyInfoListAdapter(this);
         mList.setAdapter(mAdapter);
 
-        mKeyServer = (Spinner)findViewById(R.id.sign_key_keyserver);
+        mKeyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
                         .getKeyServers());
@@ -168,6 +164,12 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                 mQuery.setText(query);
                 search(query);
             }
+            String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
+            if (fingerprint != null) {
+                fingerprint = "0x" + fingerprint;
+                mQuery.setText(fingerprint);
+                search(fingerprint);
+            }
         }
     }
 
@@ -197,7 +199,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         // fill values for this action
         Bundle data = new Bundle();
 
-        String server = (String)mKeyServer.getSelectedItem();
+        String server = (String) mKeyServer.getSelectedItem();
         data.putString(KeychainIntentService.QUERY_KEY_SERVER, server);
 
         data.putInt(KeychainIntentService.QUERY_KEY_TYPE, mQueryType);
@@ -286,7 +288,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
         public KeyInfoListAdapter(Activity activity) {
             mActivity = activity;
-            mInflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             mKeys = new ArrayList<KeyInfo>();
         }
 
@@ -321,15 +323,15 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
 
             View view = mInflater.inflate(R.layout.key_server_query_result_item, null);
 
-            TextView mainUserId = (TextView)view.findViewById(R.id.mainUserId);
+            TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
             mainUserId.setText(R.string.unknown_user_id);
-            TextView mainUserIdRest = (TextView)view.findViewById(R.id.mainUserIdRest);
+            TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             mainUserIdRest.setText("");
-            TextView keyId = (TextView)view.findViewById(R.id.keyId);
+            TextView keyId = (TextView) view.findViewById(R.id.keyId);
             keyId.setText(R.string.no_key);
-            TextView algorithm = (TextView)view.findViewById(R.id.algorithm);
+            TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
             algorithm.setText("");
-            TextView status = (TextView)view.findViewById(R.id.status);
+            TextView status = (TextView) view.findViewById(R.id.status);
             status.setText("");
 
             String userId = keyInfo.userIds.get(0);
@@ -356,7 +358,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                 status.setVisibility(View.GONE);
             }
 
-            LinearLayout ll = (LinearLayout)view.findViewById(R.id.list);
+            LinearLayout ll = (LinearLayout) view.findViewById(R.id.list);
             if (keyInfo.userIds.size() == 1) {
                 ll.setVisibility(View.GONE);
             } else {
@@ -373,7 +375,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                         sep.setBackgroundResource(android.R.drawable.divider_horizontal_dark);
                         ll.addView(sep);
                     }
-                    TextView uidView = (TextView)mInflater.inflate(
+                    TextView uidView = (TextView) mInflater.inflate(
                             R.layout.key_server_query_result_user_id, null);
                     uidView.setText(uid);
                     ll.addView(uidView);
