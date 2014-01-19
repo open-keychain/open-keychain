@@ -130,6 +130,7 @@
     <string name="select_keys_button_default">Select</string>
 
     <plurals name="select_keys_button">
+        <item quantity="one">%d selected</item>
         <item quantity="other">%d selected</item>
     </plurals>
 
