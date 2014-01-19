@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_select_recipients">Selezionare Chiave Pubblica</string>
+  <string name="title_select_secret_key">Selezionare Chiave Privata</string>
+  <string name="title_encrypt">Cifrare</string>
+  <string name="title_decrypt">Decifrare</string>
+  <string name="title_authentication">Passphrase</string>
+  <string name="title_create_key">Creare Chiave</string>
+  <string name="title_edit_key">Modificare Chiave</string>
+  <string name="title_preferences">Preferenze</string>
+  <string name="title_set_passphrase">Impostare Passphrase</string>
+  <string name="title_send_email">Inviare Mail...</string>
+  <string name="title_import_keys">Importare Chiavi</string>
+  <string name="title_export_key">Esportare Chiave</string>
+  <string name="title_export_keys">Esportare Chiavi</string>
+  <string name="title_key_not_found">Chiave Non Trovata</string>
+  <string name="title_sign_key">Firma Chiave</string>
+  <string name="title_help">Aiuto</string>
+  <!--section-->
+  <string name="section_user_ids">ID Utente</string>
+  <string name="section_keys">Chiavi</string>
+  <string name="section_general">Generale</string>
+  <string name="section_advanced">Avanzato</string>
+  <!--button-->
+  <string name="btn_sign_and_send">Firmare ed inviare...</string>
+  <string name="btn_sign">Firmare</string>
+  <string name="btn_decrypt">Decifrare</string>
+  <string name="btn_verify">Verificare</string>
+  <string name="btn_encrypt_file">Cifrare File</string>
+  <string name="btn_save">Salva</string>
+  <string name="btn_do_not_save">Cancella</string>
+  <string name="btn_delete">Eliminare</string>
+  <string name="btn_no_date">Nessuno</string>
+  <string name="btn_okay">Okay</string>
+  <string name="btn_change_passphrase">Cambiare passphrase</string>
+  <string name="btn_search">Cercare</string>
+  <!--menu-->
+  <string name="menu_preferences">Impostazioni</string>
+  <string name="menu_api_app_settings">App Registrate</string>
+  <string name="menu_import_from_file">Importare da file</string>
+  <string name="menu_import_from_qr_code">Importare da QR Code</string>
+  <string name="menu_delete_key">Eliminare chiave</string>
+  <string name="menu_create_key">Creare chiave</string>
+  <string name="menu_edit_key">Modificare chiave</string>
+  <string name="menu_search">Cercare</string>
+  <!--label-->
+  <string name="unknown_status"></string>
+  <!--choice-->
+  <string name="choice_1hour">1 ora</string>
+  <string name="choice_2hours">2 ore</string>
+  <string name="choice_4hours">4 ore</string>
+  <string name="choice_8hours">8 ore</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="warning">Attenzione</string>
+  <string name="error">Errore</string>
+  <string name="error_message">Errore: %s</string>
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <string name="key_size_512">512</string>
+  <string name="key_size_1024">1024</string>
+  <string name="key_size_2048">2048</string>
+  <string name="key_size_4096">4096</string>
+  <!--compression-->
+  <!--Dashboard-->
+  <string name="dashboard_help">Aiuto</string>
+  <!--Help-->
+  <string name="help_tab_nfc_beam">NFC Beam</string>
+  <string name="help_tab_changelog">Changelog</string>
+  <string name="help_tab_about">About</string>
+  <string name="help_about_version">Versione:</string>
+  <!--Import-->
+  <!--Intent labels-->
+  <string name="intent_send_encrypt">OpenPGP: Cifrare</string>
+  <string name="intent_send_decrypt">OpenPGP: Decifrare</string>
+  <!--Remote API-->
+  <string name="api_settings_no_key">Nessuna chiave selezionata</string>
+  <string name="api_settings_select_key">Selezionare chiave</string>
+  <string name="api_settings_save">Salvare</string>
+  <string name="api_settings_cancel">Cancellare</string>
+  <string name="api_settings_revoke">Revocare l\'accesso</string>
+  <string name="api_register_allow">Permettere l\'accesso</string>
+  <string name="api_register_disallow">Disabilitare l\'accesso</string>
+  <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+</resources>
