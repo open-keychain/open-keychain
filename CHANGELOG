@@ -1,3 +1,14 @@
+2.2
+* New design with navigation drawer
+* New public key list design
+* New public key view
+* Bug fixes for importing of keys
+* Key cross-certification (thanks to Ash Hughes)
+* Handle UTF-8 passwords properly (thanks to Ash Hughes)
+* First version with new languages (thanks to the contributors on Transifex)
+* Sharing of keys via QR Codes fixed and improved
+* Package signature verification for API
+
 2.1
 * Lots of bug fixes
 * New API for developers
