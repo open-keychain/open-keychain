@@ -1,23 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
 <resources>
 
-    <string-array name="pass_phrase_cache_ttl_entries">
+    <string-array name="pass_phrase_cache_ttl_entries" translatable="false">
         <item>@string/choice_15secs</item>
         <item>@string/choice_1min</item>
         <item>@string/choice_3mins</item>
@@ -30,7 +14,7 @@
         <item>@string/choice_4hours</item>
         <item>@string/choice_8hours</item>
     </string-array>
-    <string-array name="pass_phrase_cache_ttl_values">
+    <string-array name="pass_phrase_cache_ttl_values" translatable="false">
         <item>15</item>
         <item>60</item>
         <item>180</item>
@@ -43,13 +27,13 @@
         <item>14400</item>
         <item>28800</item>
     </string-array>
-    <string-array name="key_size_spinner_values">
+    <string-array name="key_size_spinner_values" translatable="false">
         <item>@string/key_size_512</item>
         <item>@string/key_size_1024</item>
         <item>@string/key_size_2048</item>
         <item>@string/key_size_4096</item>
     </string-array>
-    <string-array name="import_action_list">
+    <string-array name="import_action_list" translatable="false">
         <item>@string/menu_key_server</item>
         <item>@string/menu_import_from_file</item>
         <item>@string/menu_import_from_qr_code</item>

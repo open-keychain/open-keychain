@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPException;
@@ -67,6 +64,12 @@ public class PgpImportExport {
     }
 
     public void updateProgress(int message, int current, int total) {
+        if (mProgress != null) {
+            mProgress.setProgress(message, current, total);
+        }
+    }
+
+    public void updateProgress(String message, int current, int total) {
         if (mProgress != null) {
             mProgress.setProgress(message, current, total);
         }
@@ -194,11 +197,9 @@ public class PgpImportExport {
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        if (keyRingMasterKeyIds.size() == 1) {
-            updateProgress(R.string.progress_exporting_key, 0, 100);
-        } else {
-            updateProgress(R.string.progress_exporting_keys, 0, 100);
-        }
+        updateProgress(
+                mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
+                        keyRingMasterKeyIds.size()), 0, 100);
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new PgpGeneralException(

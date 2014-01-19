@@ -29,7 +29,6 @@
     <string name="title_sign_key">Sign Key</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
-    <string name="title_share_by_nfc">Share key with NFC</string>
 
     <!-- section -->
     <string name="section_user_ids">User IDs</string>
@@ -69,7 +68,6 @@
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
     <string name="menu_help">Help</string>
-    <string name="menu_api_app_settings">Registered Apps</string>
     <string name="menu_import_from_file">Import from file</string>
     <string name="menu_import_from_qr_code">Import from QR Code</string>
     <string name="menu_import">Import</string>
@@ -79,7 +77,6 @@
     <string name="menu_delete_key">Delete key</string>
     <string name="menu_create_key">Create key</string>
     <string name="menu_create_key_expert">Create key (expert)</string>
-    <string name="menu_edit_key">Edit key</string>
     <string name="menu_search">Search</string>
     <string name="menu_key_server">Import from key server</string>
     <string name="menu_update_key">Update from key server</string>
@@ -151,7 +148,6 @@
 
     <string name="fingerprint">Fingerprint:</string>
     <string name="secret_key">Secret Key:</string>
-    <string name="notValid">not valid</string>
 
     <!-- choice -->
     <string name="choice_none">None</string>
@@ -211,12 +207,10 @@
         <item quantity="one"> and updated %d key.</item>
         <item quantity="other"> and updated %d keys.</item>
     </plurals>
-    
     <plurals name="keys_added">
         <item quantity="one">Successfully added %d key.</item>
         <item quantity="other">Successfully added %d keys.</item>
     </plurals>
-    
     <plurals name="keys_updated">
         <item quantity="one">Successfully updated %d key.</item>
         <item quantity="other">Successfully updated %d keys.</item>
@@ -228,10 +222,12 @@
     <string name="no_keys_exported">No keys exported.</string>
     <string name="key_creation_el_gamal_info">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
+
     <plurals name="keys_found">
         <item quantity="one">Found %d key.</item>
         <item quantity="other">Found %d keys.</item>
     </plurals>
+
     <string name="unknown_signature_key_touch_to_look_up">Unknown signature, touch to look up key.</string>
     <string name="bad_keys_encountered">%d bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
     <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
@@ -289,10 +285,14 @@
     <string name="progress_certifying_master_key">certifying master key…</string>
     <string name="progress_building_master_key">building master ring…</string>
     <string name="progress_adding_sub_keys">adding sub keys…</string>
-    <string name="progress_saving_key_ring">saving key key…</string>
+    <string name="progress_saving_key_ring">saving key…</string>
     <string name="progress_importing_secret_keys">importing secret keys…</string>
-    <string name="progress_exporting_key">exporting key…</string>
-    <string name="progress_exporting_keys">exporting keys…</string>
+
+    <plurals name="progress_exporting_key">
+        <item quantity="one">exporting key…</item>
+        <item quantity="other">exporting keys…</item>
+    </plurals>
+
     <string name="progress_extracting_signature_key">extracting signature key…</string>
     <string name="progress_extracting_key">extracting key…</string>
     <string name="progress_preparing_streams">preparing streams…</string>
@@ -324,14 +324,6 @@
     <!-- compression -->
     <string name="compression_fast">fast</string>
     <string name="compression_very_slow">very slow</string>
-
-    <!-- Dashboard -->
-    <string name="dashboard_manage_keys">Contacts</string>
-    <string name="dashboard_my_keys">My Secret Keys</string>
-    <string name="dashboard_encrypt">Encrypt</string>
-    <string name="dashboard_decrypt">Decrypt</string>
-    <string name="dashboard_help">Help</string>
-    <string name="dashboard_import_keys">Import Keys</string>
 
     <!-- Help -->
     <string name="help_tab_start">Start</string>
