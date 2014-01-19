@@ -144,7 +144,6 @@
     <string name="fingerprint">Fingerprint:</string>
     <string name="secret_key">Secret Key:</string>
     <string name="notValid">not valid</string>
-    <string name="secretKeyring">Secret Keyring</string>
 
     <!-- choice -->
     <string name="choice_none">None</string>
