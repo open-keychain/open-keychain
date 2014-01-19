@@ -85,9 +85,8 @@
     <string name="menu_update_key">Update from key server</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
     <string name="menu_share">Share</string>
-        <string name="menu_share_title_fingerprint">Share fingerprint…</string>
-            <string name="menu_share_title">Share data…</string>
-        
+    <string name="menu_share_title_fingerprint">Share fingerprint…</string>
+    <string name="menu_share_title">Share whole key…</string>
     <string name="menu_share_default_fingerprint">with…</string>
     <string name="menu_share_default">with…</string>
     <string name="menu_share_qr_code">with QR Code</string>
