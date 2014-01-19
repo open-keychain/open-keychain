@@ -1,25 +1,118 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_create_key">Anahtar oluştur</string>
+  <string name="title_edit_key">Anahtarı düzenle</string>
+  <string name="title_preferences">Seçenekler</string>
+  <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
+  <string name="title_key_not_found">Anahtar Bulunamadı</string>
+  <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
+  <string name="title_sign_key">Anahtarı İmzala</string>
+  <string name="title_help">Yardım</string>
   <!--section-->
+  <string name="section_keys">Anahtarlar</string>
+  <string name="section_general">Genel</string>
+  <string name="section_defaults">Varsayılanlar</string>
+  <string name="section_upload_key">Anahtar Yükle</string>
+  <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
+  <string name="btn_sign">İmzala</string>
+  <string name="btn_verify">Doğrula</string>
+  <string name="btn_select_encrypt_keys">Alıcıları Seç</string>
+  <string name="btn_save">Kaydet</string>
+  <string name="btn_do_not_save">İptal</string>
+  <string name="btn_delete">Sil</string>
+  <string name="btn_okay">Tamam</string>
+  <string name="btn_search">Ara</string>
+  <string name="btn_export_to_server">Sunucuya Anahtar Yükle</string>
+  <string name="btn_next">İleri</string>
+  <string name="btn_back">Geri</string>
   <!--menu-->
+  <string name="menu_preferences">Ayarlar</string>
+  <string name="menu_help">Yardım</string>
+  <string name="menu_import_from_file">Dosyadan al</string>
+  <string name="menu_import_from_qr_code">QR Kodundan al</string>
+  <string name="menu_import_from_nfc">NFCden al</string>
+  <string name="menu_export_key">Dosyaya ver</string>
+  <string name="menu_delete_key">Anahtar sil</string>
+  <string name="menu_create_key">Anahtar oluştur</string>
+  <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
+  <string name="menu_edit_key">Anahtarı düzenle</string>
+  <string name="menu_search">Ara</string>
+  <string name="menu_key_server">Anahtar sunucusundan al</string>
+  <string name="menu_sign_key">Anahtarı imzala</string>
+  <string name="menu_key_edit_cancel">İptal</string>
   <!--label-->
+  <string name="label_sign">İmzala</string>
+  <string name="label_message">Mesaj</string>
+  <string name="label_file">Dosya</string>
+  <string name="label_passphrase_again">Tekrar</string>
+  <string name="label_algorithm">Algoritma</string>
+  <string name="label_creation">Oluşturma</string>
+  <string name="label_usage">Kullanım</string>
+  <string name="label_key_size">Anahtar Boyutu</string>
+  <string name="label_name">İsim</string>
+  <string name="label_comment">Yorum</string>
+  <string name="label_email">Eposta</string>
+  <string name="no_keys_selected">Seç</string>
+  <string name="one_key_selected">1 Seçili</string>
+  <string name="n_keys_selected">Seçili</string>
   <string name="unknown_status"></string>
   <!--choice-->
+  <string name="choice_15secs">15 saniye</string>
+  <string name="choice_1min">1 dakika</string>
+  <string name="choice_3mins">3 dakika</string>
+  <string name="choice_5mins">5 dakika</string>
+  <string name="choice_10mins">10 dakika</string>
+  <string name="choice_20mins">20 dakika</string>
+  <string name="choice_40mins">40 dakika</string>
+  <string name="choice_1hour">1 saat</string>
+  <string name="choice_2hours">2 saat</string>
+  <string name="choice_4hours">4 saat</string>
+  <string name="choice_8hours">8 saat</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="filemanager_title_open">Aç...</string>
+  <string name="warning">Uyarı</string>
+  <string name="error">Hata</string>
+  <string name="error_message">Hata: %s</string>
   <!--sentences-->
+  <string name="file_delete_successful">Başarıyla silindi.</string>
+  <string name="no_file_selected">Önce bir dosya seçin.</string>
+  <string name="key_not_found">Anahtar %08X bulunamadı.</string>
+  <string name="keys_found">%s anahtar() bulundu.</string>
+  <string name="key_send_success">Anahtar sunucuya başarıyla gönderildi</string>
+  <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
+  <string name="list_empty">Liste boş!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_not_found">dosya bulunamadı</string>
+  <string name="error_corrupt_data">bozuk veri</string>
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_saving">kaydediliyor...</string>
+  <string name="progress_preparing_signature">imza hazırlanıyor...</string>
+  <string name="progress_generating_signature">imza oluşturuluyor...</string>
+  <string name="progress_processing_signature">imza işleniyor...</string>
+  <string name="progress_verifying_signature">imza doğrulanıyor...</string>
   <!--action strings-->
   <!--key bit length selections-->
+  <string name="key_size_512">512</string>
+  <string name="key_size_1024">1024</string>
+  <string name="key_size_2048">2048</string>
+  <string name="key_size_4096">4096</string>
   <!--compression-->
   <!--Dashboard-->
   <!--Help-->
+  <string name="help_tab_about">Hakkında</string>
   <!--Import-->
+  <string name="import_nfc_help_button">Yardım</string>
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">Anahtar seçilmedi</string>
+  <string name="api_settings_select_key">Anahtar seç</string>
+  <string name="api_settings_save">Kaydet</string>
   <!--Share-->
   <!--Key list-->
   <!--Key view-->

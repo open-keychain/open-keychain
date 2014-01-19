@@ -182,8 +182,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
 
         mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
         String servers[] = mPreferences.getKeyServers();
-        mKeyServerPreference.setSummary(getResources().getString(R.string.n_key_servers,
-                servers.length));
+        mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
+                servers.length, servers.length));
         mKeyServerPreference
                 .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     public boolean onPreferenceClick(Preference preference) {
@@ -207,8 +207,8 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
             String servers[] = data
                     .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
             mPreferences.setKeyServers(servers);
-            mKeyServerPreference.setSummary(getResources().getString(R.string.n_key_servers,
-                    servers.length));
+            mKeyServerPreference.setSummary(getResources().getQuantityString(
+                    R.plurals.n_key_servers, servers.length, servers.length));
             break;
         }
 

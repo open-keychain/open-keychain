@@ -355,12 +355,17 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                         int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
                         String toastMessage;
                         if (added > 0 && updated > 0) {
-                            toastMessage = getString(R.string.keys_added_and_updated, added,
-                                    updated);
+                            String addedStr = getResources().getQuantityString(
+                                    R.plurals.keys_added_and_updated_1, added, added);
+                            String updatedStr = getResources().getQuantityString(
+                                    R.plurals.keys_added_and_updated_2, updated, updated);
+                            toastMessage = addedStr + updatedStr;
                         } else if (added > 0) {
-                            toastMessage = getString(R.string.keys_added, added);
+                            toastMessage = getResources().getQuantityString(R.plurals.keys_added,
+                                    added, added);
                         } else if (updated > 0) {
-                            toastMessage = getString(R.string.keys_updated, updated);
+                            toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
+                                    updated, updated);
                         } else {
                             toastMessage = getString(R.string.no_keys_added_or_updated);
                         }

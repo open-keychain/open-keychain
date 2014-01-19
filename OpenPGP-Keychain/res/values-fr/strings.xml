@@ -23,6 +23,7 @@
   <string name="title_export_keys">Exporter les clefs</string>
   <string name="title_key_not_found">Clef introuvable</string>
   <string name="title_key_server_query">Interroger le serveur de clefs</string>
+  <string name="title_send_key">Téléverser vers le serveur de clefs</string>
   <string name="title_unknown_signature_key">Clef de signature inconnue</string>
   <string name="title_sign_key">Signer la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
@@ -37,6 +38,9 @@
   <string name="section_master_key">Clef maîtresse</string>
   <string name="section_master_user_id">ID maîtresse d\'utilisateur utilisateur</string>
   <string name="section_actions">Actions</string>
+  <string name="section_signing_key">Votre clef utilisée pour la signature</string>
+  <string name="section_upload_key">Téléverser la clef</string>
+  <string name="section_key_server">Serveur de clefs</string>
   <!--button-->
   <string name="btn_sign_to_clipboard">Signer (presse-papiers)</string>
   <string name="btn_encrypt_to_clipboard">Déchiffrer vers le presse-papiers</string>
@@ -55,6 +59,7 @@
   <string name="btn_change_passphrase">Changer la phrase de passe</string>
   <string name="btn_set_passphrase">Définir la phrase de passe</string>
   <string name="btn_search">Rechercher</string>
+  <string name="btn_export_to_server">Téléverser vers le serveur de clefs</string>
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
   <!--menu-->
@@ -73,7 +78,11 @@
   <string name="menu_edit_key">Modifier la clef</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_key_server">Importer depuis le serveur de clefs</string>
+  <string name="menu_update_key">Mettre à jour depuis le serveur de clefs</string>
+  <string name="menu_export_key_to_server">Téléverser vers le serveur de clefs</string>
   <string name="menu_share">Partager avec...</string>
+  <string name="menu_share_qr_code">Partager par un code QR (clef entière)</string>
+  <string name="menu_share_qr_code_fingerprint">Partager par un code QR (empreinte)</string>
   <string name="menu_share_nfc">Partager via NFC</string>
   <string name="menu_copy_to_clipboard">Copier vers le presse-papiers</string>
   <string name="menu_sign_key">Signer la clef</string>
@@ -110,6 +119,7 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
+  <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après signature</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="no_keys_selected">Choisir</string>
   <string name="one_key_selected">1 choisi</string>
@@ -167,6 +177,10 @@
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
+  <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_export_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
+  <string name="specify_file_to_export_secret_keys_to">Veuillez spécifier vers quel fichier exporter.\nAVERTISSEMENT ! Vous allez exporter les clefs SECRÈTES.\nAVERTISSEMENT ! Le fichier sera écrasé s\'il existe.</string>
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
@@ -188,6 +202,8 @@
   <string name="list_empty">Cette liste est vide !</string>
   <string name="nfc_successfull">Clef envoyée par faisceau NFC avec succès !</string>
   <string name="key_copied_to_clipboard">La clef a été copié vers le presse-papiers !</string>
+  <string name="key_has_already_been_signed">La clef a déjà été signée !</string>
+  <string name="select_key_to_sign">Veuillez choisir une clef a utiliser pour la signature !</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -278,6 +294,7 @@
   <!--Import-->
   <string name="import_import">Importer les clefs choisies</string>
   <string name="import_sign_and_upload">Importer, signer et téléverser les clefs choisies</string>
+  <string name="import_from_clipboard">Importer à partir du presse-papiers</string>
   <plurals name="import_qr_code_missing">
     <item quantity="one">Le code QR avec l\'ID %1$s est manquant</item>
     <item quantity="other">Les codes QR avec les ID %1$s sont manquants</item>
@@ -285,6 +302,7 @@
   <string name="import_qr_code_start_with_one">Veuillez commencer par le code QR avec l\'ID 1</string>
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_finished">Balayage de code QR terminé !</string>
+  <string name="import_qr_code_too_short_fingerprint">L\'empreinte contenue dans ce code QR est trop courte (&lt; 16 caractères)</string>
   <string name="import_qr_scan_button">Numériser le code QR avec le lecteur de code-barres</string>
   <string name="import_nfc_text">Pour recevoir des clefs par NFC, les appareils doivent être déverrouillés.</string>
   <string name="import_nfc_help_button">Aide</string>
@@ -305,16 +323,18 @@
   <string name="api_settings_revoke">Révoquer l\'accès</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
-  <string name="api_register_text">L\'application suivante demande l\'accès à l\'API de porte-clefs OpenPGP.\n\nPermettre l\'accès permanent ?</string>
+  <string name="api_register_text">L\'application suivante demande l\'accès à l\'API du Porte-clefs OpenPGP.\n\nPermettre l\'accès permanent ?</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
   <string name="api_select_pub_keys_missing_text">Aucune clef publique n\'a été trouvée pour ces IDs utilisateur :</string>
   <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef publique existe pour ces IDs utilisateur</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
-  <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquer l\'enregistrement de cette appli dans le porte-clefs et l\'enregistrer à nouveau.</string>
+  <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquer l\'enregistrement de cette appli dans le Porte-clefs OpenPGP et l\'enregistrer à nouveau.</string>
   <!--Share-->
+  <string name="share_qr_code_dialog_title">Partager par un code QR</string>
   <string name="share_qr_code_dialog_start">Balayer tous les codes QR un par un en utilisant « Suivant ».</string>
+  <string name="share_qr_code_dialog_fingerprint_text">Empreinte :</string>
   <string name="share_qr_code_dialog_progress">Code QR avec l\'ID %1$d de %2$d</string>
   <string name="share_nfc_dialog">Partager avec la NFC</string>
   <!--Key list-->

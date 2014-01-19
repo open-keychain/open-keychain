@@ -236,8 +236,10 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
                     // avoided!!!
                     if (mQueryType == Id.keyserver.search) {
                         if (mSearchResult != null) {
-                            Toast.makeText(KeyServerQueryActivity.this,
-                                    getString(R.string.keys_found, mSearchResult.size()),
+                            Toast.makeText(
+                                    KeyServerQueryActivity.this,
+                                    getResources().getQuantityString(R.plurals.keys_found,
+                                            mSearchResult.size(), mSearchResult.size()),
                                     Toast.LENGTH_SHORT).show();
                             mAdapter.setKeys(mSearchResult);
                         }

@@ -107,7 +107,7 @@
     <string name="label_passphrase_again">Again</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
-    <string name="label_select_public_keys">Public Key(s)</string>
+    <string name="label_select_public_keys">Public Keys</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
@@ -130,17 +130,25 @@
     <string name="label_email">Email</string>
     <string name="label_send_key">Upload key to selected key server after signing</string>
     <string name="label_fingerprint">Fingerprint</string>
-    <string name="no_keys_selected">Select</string>
-    <string name="one_key_selected">1 Selected</string>
-    <string name="n_keys_selected">Selected</string>
-    <string name="unknown_user_id">&lt;unknown></string>
-    <string name="none">&lt;none></string>
-    <string name="no_key">&lt;no key></string>
+    <string name="select_keys_button_default">Select</string>
+
+    <plurals name="select_keys_button">
+        <item quantity="other">%d selected</item>
+    </plurals>
+
+    <string name="unknown_user_id">&lt;unknown&gt;</string>
+    <string name="none">&lt;none&gt;</string>
+    <string name="no_key">&lt;no key&gt;</string>
     <string name="unknown_status"></string>
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
     <string name="expired">expired</string>
-    <string name="n_key_servers">%s key server(s)</string>
+
+    <plurals name="n_key_servers">
+        <item quantity="one">%d key server</item>
+        <item quantity="other">%d key servers</item>
+    </plurals>
+
     <string name="fingerprint">Fingerprint:</string>
     <string name="secret_key">Secret Key:</string>
     <string name="notValid">not valid</string>
@@ -194,18 +202,38 @@
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
-    <string name="keys_added_and_updated">Successfully added %1$s key(s) and updated %2$s key(s).</string>
-    <string name="keys_added">Successfully added %s key(s).</string>
-    <string name="keys_updated">Successfully updated %s key(s).</string>
+
+    <plurals name="keys_added_and_updated_1">
+        <item quantity="one">Successfully added %d key</item>
+        <item quantity="other">Successfully added %d keys</item>
+    </plurals>
+    <plurals name="keys_added_and_updated_2">
+        <item quantity="one"> and updated %d key.</item>
+        <item quantity="other"> and updated %d keys.</item>
+    </plurals>
+    
+    <plurals name="keys_added">
+        <item quantity="one">Successfully added %d key.</item>
+        <item quantity="other">Successfully added %d keys.</item>
+    </plurals>
+    
+    <plurals name="keys_updated">
+        <item quantity="one">Successfully updated %d key.</item>
+        <item quantity="other">Successfully updated %d keys.</item>
+    </plurals>
+
     <string name="no_keys_added_or_updated">No keys added or updated.</string>
     <string name="key_exported">Successfully exported 1 key.</string>
-    <string name="keys_exported">Successfully exported %s keys.</string>
+    <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
     <string name="key_creation_el_gamal_info">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
-    <string name="keys_found">Found %s key(s).</string>
+    <plurals name="keys_found">
+        <item quantity="one">Found %d key.</item>
+        <item quantity="other">Found %d keys.</item>
+    </plurals>
     <string name="unknown_signature_key_touch_to_look_up">Unknown signature, touch to look up key.</string>
-    <string name="bad_keys_encountered">%s bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
+    <string name="bad_keys_encountered">%d bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
     <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
     <string name="key_send_success">Successfully sent key to server</string>
     <string name="key_sign_success">Successfully signed key</string>
@@ -235,7 +263,7 @@
     <string name="error_key_needs_a_user_id">need at least one user id</string>
     <string name="error_main_user_id_must_not_be_empty">main user id must not be empty</string>
     <string name="error_key_needs_master_key">need at least a master key</string>
-    <string name="error_no_encryption_keys_or_passphrase">no encryption key(s) or passphrase given</string>
+    <string name="error_no_encryption_keys_or_passphrase">no encryption keys or passphrase given</string>
     <string name="error_signature_failed">signature failed</string>
     <string name="error_no_signature_passphrase">no passphrase given</string>
     <string name="error_no_signature_key">no signature key given</string>
@@ -243,7 +271,7 @@
     <string name="error_corrupt_data">corrupt data</string>
     <string name="error_no_symmetric_encryption_packet">couldn\'t find a packet with symmetric encryption</string>
     <string name="error_wrong_passphrase">wrong passphrase</string>
-    <string name="error_saving_keys">error saving some key(s)</string>
+    <string name="error_saving_keys">error saving some keys</string>
     <string name="error_could_not_extract_private_key">could not extract private key</string>
     <string name="error_only_files_are_supported">Direct binary data without actual file in filesystem is not supported. This is only supported by ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
     <string name="error_jelly_bean_needed">You need Android 4.1 alias Jelly Bean to use Androids NFC Beam feature!</string>
@@ -318,8 +346,8 @@
     <string name="import_from_clipboard">Import from clipboard</string>
 
     <plurals name="import_qr_code_missing">
-        <item quantity="one">Missing QR Code with ID %1$s</item>
-        <item quantity="other">Missing QR Codes with IDs %1$s</item>
+        <item quantity="one">Missing QR Code with ID %s</item>
+        <item quantity="other">Missing QR Codes with IDs %s</item>
     </plurals>
 
     <string name="import_qr_code_start_with_one">Please start with QR Code with ID 1</string>

@@ -892,12 +892,11 @@ public class EncryptActivity extends DrawerActivity {
 
     private void updateView() {
         if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-            mSelectKeysButton.setText(getString(R.string.no_keys_selected));
-        } else if (mEncryptionKeyIds.length == 1) {
-            mSelectKeysButton.setText(getString(R.string.one_key_selected));
+            mSelectKeysButton.setText(getString(R.string.select_keys_button_default));
         } else {
-            mSelectKeysButton.setText("" + mEncryptionKeyIds.length + " "
-                    + getResources().getString(R.string.n_keys_selected));
+            mSelectKeysButton.setText(getResources().getQuantityString(
+                    R.plurals.select_keys_button, mEncryptionKeyIds.length,
+                    mEncryptionKeyIds.length));
         }
 
         if (mSecretKeyId == Id.key.none) {
