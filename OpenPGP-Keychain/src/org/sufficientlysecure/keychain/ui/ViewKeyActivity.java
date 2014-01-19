@@ -166,8 +166,11 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
             mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
                     + "/pubexport.asc");
             return true;
+        case R.id.menu_key_view_share_default_fingerprint:
+            shareKey(mDataUri, true);
+            return true;
         case R.id.menu_key_view_share_default:
-            shareKey(mDataUri);
+            shareKey(mDataUri, false);
             return true;
         case R.id.menu_key_view_share_qr_code_fingerprint:
             shareKeyQrCode(mDataUri, true);
@@ -435,15 +438,37 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
         startActivity(signIntent);
     }
 
-    private void shareKey(Uri dataUri) {
-        // get public keyring as ascii armored string
-        long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[] { masterKeyId });
+    private void shareKey(Uri dataUri, boolean fingerprintOnly) {
+        String content = null;
+        if (fingerprintOnly) {
+            long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+
+            // TODO: dublicated in ShareQrCodeDialog
+            content = "openpgp4fpr:";
+
+            String fingerprint = PgpKeyHelper.convertKeyToHex(masterKeyId);
+
+            content = content + fingerprint;
+        } else {
+            // get public keyring as ascii armored string
+            long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this,
+                    dataUri, new long[] { masterKeyId });
+
+            content = keyringArmored.get(0);
+
+            // Android will fail with android.os.TransactionTooLargeException if key is too big
+            // see http://www.lonestarprod.com/?p=34
+            if (content.length() >= 86389) {
+                Toast.makeText(getApplicationContext(), R.string.key_too_big_for_sharing,
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
 
         // let user choose application
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, keyringArmored.get(0));
+        sendIntent.putExtra(Intent.EXTRA_TEXT, content);
         sendIntent.setType("text/plain");
         startActivity(Intent.createChooser(sendIntent,
                 getResources().getText(R.string.action_share_key_with)));

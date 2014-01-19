@@ -84,10 +84,15 @@
     <string name="menu_key_server">Import from key server</string>
     <string name="menu_update_key">Update from key server</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
-    <string name="menu_share">Share with…</string>
-    <string name="menu_share_qr_code">Share with QR Code (whole key)</string>
-    <string name="menu_share_qr_code_fingerprint">Share with QR Code (fingerprint)</string>
-    <string name="menu_share_nfc">Share with NFC</string>
+    <string name="menu_share">Share</string>
+        <string name="menu_share_title_fingerprint">Share fingerprint…</string>
+            <string name="menu_share_title">Share data…</string>
+        
+    <string name="menu_share_default_fingerprint">with…</string>
+    <string name="menu_share_default">with…</string>
+    <string name="menu_share_qr_code">with QR Code</string>
+    <string name="menu_share_qr_code_fingerprint">with QR Code</string>
+    <string name="menu_share_nfc">with NFC</string>
     <string name="menu_copy_to_clipboard">Copy to clipboard</string>
     <string name="menu_sign_key">Sign key</string>
     <string name="menu_beam_preferences">Beam settings</string>
@@ -211,6 +216,7 @@
     <string name="key_copied_to_clipboard">Key has been copied to the clipboard!</string>
     <string name="key_has_already_been_signed">Key has already been signed!</string>
     <string name="select_key_to_sign">Please select a key to be used for signing!</string>
+    <string name="key_too_big_for_sharing">Key is too big to be shared this way!</string>
 
     <!--
          errors

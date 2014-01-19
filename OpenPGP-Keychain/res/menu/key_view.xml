@@ -8,25 +8,43 @@
         android:title="@string/menu_share">
         <menu>
             <item
-                android:id="@+id/menu_key_view_share_default"
+                android:id="@+id/menu_key_view_share_fingerprint_title"
                 android:showAsAction="never"
-                android:title="@string/menu_share"/>
+                android:title="@string/menu_share_title_fingerprint">
+                <menu>
+                    <item
+                        android:id="@+id/menu_key_view_share_default_fingerprint"
+                        android:showAsAction="never"
+                        android:title="@string/menu_share_default_fingerprint"/>
+                    <item
+                        android:id="@+id/menu_key_view_share_qr_code_fingerprint"
+                        android:showAsAction="never"
+                        android:title="@string/menu_share_qr_code_fingerprint"/>
+                </menu>
+            </item>
             <item
-                android:id="@+id/menu_key_view_share_qr_code_fingerprint"
+                android:id="@+id/menu_key_view_share_title"
                 android:showAsAction="never"
-                android:title="@string/menu_share_qr_code_fingerprint"/>
-            <item
-                android:id="@+id/menu_key_view_share_qr_code"
-                android:showAsAction="never"
-                android:title="@string/menu_share_qr_code"/>
-            <item
-                android:id="@+id/menu_key_view_share_nfc"
-                android:showAsAction="never"
-                android:title="@string/menu_share_nfc"/>
-            <item
-                android:id="@+id/menu_key_view_share_clipboard"
-                android:showAsAction="never"
-                android:title="@string/menu_copy_to_clipboard"/>
+                android:title="@string/menu_share_title">
+                <menu>
+                    <item
+                        android:id="@+id/menu_key_view_share_default"
+                        android:showAsAction="never"
+                        android:title="@string/menu_share_default"/>
+                    <item
+                        android:id="@+id/menu_key_view_share_qr_code"
+                        android:showAsAction="never"
+                        android:title="@string/menu_share_qr_code"/>
+                    <item
+                        android:id="@+id/menu_key_view_share_nfc"
+                        android:showAsAction="never"
+                        android:title="@string/menu_share_nfc"/>
+                    <item
+                        android:id="@+id/menu_key_view_share_clipboard"
+                        android:showAsAction="never"
+                        android:title="@string/menu_copy_to_clipboard"/>
+                </menu>
+            </item>
         </menu>
     </item>
     <item
