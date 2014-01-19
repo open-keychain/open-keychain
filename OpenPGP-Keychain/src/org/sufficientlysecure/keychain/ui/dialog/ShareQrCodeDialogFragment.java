@@ -19,12 +19,17 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import java.util.ArrayList;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +40,8 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
-    private static final String ARG_CONTENT = "content";
+    private static final String ARG_URI = "uri";
+    private static final String ARG_FINGERPRINT_ONLY = "fingerprint_only";
 
     private ImageView mImage;
     private TextView mText;
@@ -52,10 +58,11 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
      *            Content to be shared via QR Codes
      * @return
      */
-    public static ShareQrCodeDialogFragment newInstance(String content) {
+    public static ShareQrCodeDialogFragment newInstance(Uri dataUri, boolean fingerprintOnly) {
         ShareQrCodeDialogFragment frag = new ShareQrCodeDialogFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_CONTENT, content);
+        args.putParcelable(ARG_URI, dataUri);
+        args.putBoolean(ARG_FINGERPRINT_ONLY, fingerprintOnly);
 
         frag.setArguments(args);
 
@@ -69,12 +76,12 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        String content = getArguments().getString(ARG_CONTENT);
-        mContentList = splitString(content, 1000);
+        Uri dataUri = getArguments().getParcelable(ARG_URI);
+        boolean fingerprintOnly = getArguments().getBoolean(ARG_FINGERPRINT_ONLY);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-        alert.setTitle(R.string.menu_share_qr_code);
+        alert.setTitle(R.string.share_qr_code_dialog_title);
 
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.share_qr_code_dialog, null);
@@ -83,14 +90,45 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
         mImage = (ImageView) view.findViewById(R.id.share_qr_code_dialog_image);
         mText = (TextView) view.findViewById(R.id.share_qr_code_dialog_text);
 
+        // TODO
+        long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+
+        String content = null;
+        if (fingerprintOnly) {
+            content = "openpgp4fpr:";
+
+            String fingerprint = PgpKeyHelper.convertKeyToHex(masterKeyId);
+
+            mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " "
+                    + fingerprint);
+
+            content = content + fingerprint;
+
+            Log.d(Constants.TAG, "content: " + content);
+
+            alert.setPositiveButton(R.string.btn_okay, null);
+        } else {
+            mText.setText(R.string.share_qr_code_dialog_start);
+
+            // get public keyring as ascii armored string
+            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                    getActivity(), dataUri, new long[] { masterKeyId });
+
+            // TODO: binary?
+
+            content = keyringArmored.get(0);
+
+            // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
+            // http://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
+            alert.setPositiveButton(R.string.btn_next, null);
+            alert.setNegativeButton(android.R.string.cancel, null);
+        }
+
+        mContentList = splitString(content, 1000);
+
         // start with first
         mCounter = 0;
         updateQrCode();
-
-        // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
-        // http://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
-        alert.setPositiveButton(R.string.btn_next, null);
-        alert.setNegativeButton(android.R.string.cancel, null);
 
         return alert.create();
     }

@@ -454,6 +454,12 @@ public class PgpKeyHelper {
         return algorithmStr + ", " + keySize + " bit";
     }
 
+    /**
+     * Converts fingerprint to hex with whitespaces after 4 characters
+     * 
+     * @param fp
+     * @return
+     */
     public static String convertFingerprintToHex(byte[] fp) {
         String fingerPrint = "";
         for (int i = 0; i < fp.length; ++i) {

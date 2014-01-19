@@ -169,8 +169,11 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
         case R.id.menu_key_view_share_default:
             shareKey(mDataUri);
             return true;
+        case R.id.menu_key_view_share_qr_code_fingerprint:
+            shareKeyQrCode(mDataUri, true);
+            return true;
         case R.id.menu_key_view_share_qr_code:
-            shareKeyQrCode(mDataUri);
+            shareKeyQrCode(mDataUri, false);
             return true;
         case R.id.menu_key_view_share_nfc:
             shareNfc();
@@ -318,10 +321,12 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
             // the first key here is our master key
             if (data.moveToFirst()) {
                 // get key id from MASTER_KEY_ID
-                String keyId = "0x"
-                        + PgpKeyHelper.convertKeyIdToHex(data.getLong(KEYS_INDEX_KEY_ID));
-                mKeyId.setText(keyId);
+                long keyId = data.getLong(KEYS_INDEX_KEY_ID);
 
+                String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
+                mKeyId.setText(keyIdStr);
+
+                // get creation date from CREATION
                 if (data.isNull(KEYS_INDEX_CREATION)) {
                     mCreation.setText(R.string.none);
                 } else {
@@ -331,6 +336,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
                             creationDate));
                 }
 
+                // get creation date from EXPIRY
                 if (data.isNull(KEYS_INDEX_EXPIRY)) {
                     mExpiry.setText(R.string.none);
                 } else {
@@ -344,14 +350,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
                         data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
                 mAlgorithm.setText(algorithmStr);
 
-                // TODO: Don't get key object here!!!
-                // put fingerprint in database?
-                PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this,
-                        mDataUri);
-                PGPPublicKey publicKey = ring.getPublicKey();
+                // TODO: Can this be done better? fingerprint in db?
+                String fingerprint = PgpKeyHelper.getFingerPrint(this, keyId);
 
-                String fingerprint = PgpKeyHelper.convertFingerprintToHex(publicKey
-                        .getFingerprint());
                 fingerprint = fingerprint.replace("  ", "\n");
                 mFingerprint.setText(fingerprint);
 
@@ -448,14 +449,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements CreateN
                 getResources().getText(R.string.action_share_key_with)));
     }
 
-    private void shareKeyQrCode(Uri dataUri) {
-        // get public keyring as ascii armored string
-        long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[] { masterKeyId });
-
-        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(keyringArmored
-                .get(0));
+    private void shareKeyQrCode(Uri dataUri, boolean fingerprintOnly) {
+        ShareQrCodeDialogFragment dialog = ShareQrCodeDialogFragment.newInstance(dataUri,
+                fingerprintOnly);
         dialog.show(getSupportFragmentManager(), "shareQrCodeDialog");
     }
 

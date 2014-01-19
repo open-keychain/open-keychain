@@ -9,7 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="@string/share_qr_code_dialog_start"
         android:textAppearance="@android:style/TextAppearance.Medium" />
 
     <ImageView
