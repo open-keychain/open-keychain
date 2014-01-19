@@ -19,7 +19,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/hint_secret_keys"
+            android:hint="@string/hint_public_keys"
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:singleLine="true" />
