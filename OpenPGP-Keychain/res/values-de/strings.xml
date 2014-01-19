@@ -63,17 +63,17 @@
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
-  <string name="menu_import_from_file">Aus Datei importieren</string>
-  <string name="menu_import_from_qr_code">Mittels QR Code importieren</string>
+  <string name="menu_import_from_file">Aus Datei</string>
+  <string name="menu_import_from_qr_code">Von einem QR-Code</string>
   <string name="menu_import">Importieren</string>
-  <string name="menu_import_from_nfc">Mittels NFC importieren</string>
+  <string name="menu_import_from_nfc">Über NFC</string>
   <string name="menu_export_keys">Alle Schlüssel exportieren</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_create_key">Schlüssel erstellen</string>
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
-  <string name="menu_key_server">Von einem Schlüssel-Server importieren</string>
+  <string name="menu_key_server">Vom Schlüssel-Server</string>
   <string name="menu_update_key">Von einem Schlüssel-Server aktualisieren</string>
   <string name="menu_export_key_to_server">Auf Schlüssel-Server hochladen</string>
   <string name="menu_share">Teilen</string>
@@ -301,13 +301,14 @@
   <!--Import-->
   <string name="import_import">Ausgewählte Schlüssel importieren</string>
   <string name="import_sign_and_upload">Ausgewählte Schlüssel importieren, signieren und hochladen</string>
-  <string name="import_from_clipboard">Aus Zwischenablage importieren</string>
+  <string name="import_from_clipboard">Aus der Zwischenablage</string>
   <plurals name="import_qr_code_missing">
     <item quantity="one">QR-Codes mit folgender ID fehlt: %s</item>
     <item quantity="other">QR-Codes mit folgenden IDs fehlen: %s</item>
   </plurals>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_finished">QR-Code wurde erfolgreich eingescannt!</string>
+  <string name="import_qr_scan_button">Qr-Code mittels \'Barcode Scanner\' einscannen</string>
   <string name="import_nfc_help_button">Hilfe</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenPGP: Datei entschlüsseln</string>

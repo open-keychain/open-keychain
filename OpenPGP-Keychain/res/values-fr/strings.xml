@@ -99,6 +99,7 @@
   <string name="label_passphrase_again">À nouveau</string>
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Armure ASCII</string>
+  <string name="label_select_public_keys">Clefs publiques</string>
   <string name="label_delete_after_encryption">Supprimer après le chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
@@ -121,6 +122,11 @@
   <string name="label_email">Courriel</string>
   <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après signature</string>
   <string name="label_fingerprint">Empreinte</string>
+  <string name="select_keys_button_default">Choisir</string>
+  <plurals name="select_keys_button">
+    <item quantity="one">%d choisie</item>
+    <item quantity="other">%d choisies</item>
+  </plurals>
   <string name="unknown_user_id">&lt;inconnue&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <string name="no_key">&lt;pas de clef&gt;</string>
@@ -128,6 +134,10 @@
   <string name="can_encrypt">peut chiffrer</string>
   <string name="can_sign">peut signer</string>
   <string name="expired">expiré</string>
+  <plurals name="n_key_servers">
+    <item quantity="one">%d serveur de clef</item>
+    <item quantity="other">%d serveurs de clef</item>
+  </plurals>
   <string name="fingerprint">Empreinte :</string>
   <string name="secret_key">Clef secrète :</string>
   <!--choice-->
@@ -308,7 +318,7 @@
   <string name="share_qr_code_dialog_start">Balayer tous les codes QR un par un en utilisant « Suivant ».</string>
   <string name="share_qr_code_dialog_fingerprint_text">Empreinte :</string>
   <string name="share_qr_code_dialog_progress">Code QR avec l\'ID %1$d de %2$d</string>
-  <string name="share_nfc_dialog">Partager avec la NFC</string>
+  <string name="share_nfc_dialog">Partager par la NFC</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 clef choisie</item>
