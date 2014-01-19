@@ -24,7 +24,6 @@
   <string name="title_unknown_signature_key">Clave de firma desconocida</string>
   <string name="title_sign_key">Clave de firma</string>
   <string name="title_help">Ayuda</string>
-  <string name="title_share_by_nfc">Compartir clave vía NFC</string>
   <!--section-->
   <string name="section_user_ids">IDs de usuario</string>
   <string name="section_keys">Claves</string>
@@ -53,7 +52,6 @@
   <string name="btn_back">Atrás</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
-  <string name="menu_api_app_settings">Aplicaciones registradas</string>
   <string name="menu_import_from_file">Importar desde archivo</string>
   <string name="menu_import_from_qr_code">Importar desde código QR</string>
   <string name="menu_import_from_nfc">Importar desde NFC</string>
@@ -62,11 +60,8 @@
   <string name="menu_delete_key">Borrar clave</string>
   <string name="menu_create_key">Crear clave</string>
   <string name="menu_create_key_expert">Crear clave (experto)</string>
-  <string name="menu_edit_key">Editar clave</string>
   <string name="menu_search">Buscar</string>
   <string name="menu_key_server">Importar desde servidor de claves</string>
-  <string name="menu_share">Compartir con...</string>
-  <string name="menu_share_nfc">Compartir vía NFC</string>
   <string name="menu_sign_key">Clave de firma</string>
   <!--label-->
   <string name="label_sign">Firmar</string>
@@ -77,7 +72,6 @@
   <string name="label_passphrase_again">De nuevo</string>
   <string name="label_algorithm">Algoritmo</string>
   <string name="label_ascii_armor">Armadura ASCII</string>
-  <string name="label_select_public_keys">Clave(s) pública(s)</string>
   <string name="label_delete_after_encryption">Borrar después de cifrar</string>
   <string name="label_delete_after_decryption">Borrar después de descifrar</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
@@ -97,9 +91,6 @@
   <string name="label_name">Nombre</string>
   <string name="label_comment">Comentario</string>
   <string name="label_email">Correo electrónico</string>
-  <string name="no_keys_selected">Seleccionar</string>
-  <string name="one_key_selected">1 seleccionado</string>
-  <string name="n_keys_selected">Seleccionados</string>
   <string name="unknown_user_id">&lt;desconocido&gt;</string>
   <string name="unknown_status"></string>
   <!--choice-->
@@ -111,7 +102,6 @@
   <!--action strings-->
   <!--key bit length selections-->
   <!--compression-->
-  <!--Dashboard-->
   <!--Help-->
   <!--Import-->
   <!--Intent labels-->

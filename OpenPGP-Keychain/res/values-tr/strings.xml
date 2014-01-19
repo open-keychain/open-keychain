@@ -45,7 +45,6 @@
   <string name="menu_delete_key">Anahtar sil</string>
   <string name="menu_create_key">Anahtar oluştur</string>
   <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
-  <string name="menu_edit_key">Anahtarı düzenle</string>
   <string name="menu_search">Ara</string>
   <string name="menu_key_server">Anahtar sunucusundan al</string>
   <string name="menu_copy_to_clipboard">Panoya kopyala</string>
@@ -57,7 +56,6 @@
   <string name="label_file">Dosya</string>
   <string name="label_passphrase_again">Tekrar</string>
   <string name="label_algorithm">Algoritma</string>
-  <string name="label_select_public_keys">Açık Anahtar(lar)</string>
   <string name="label_asymmetric">Açık Anahtar</string>
   <string name="label_key_servers">Anahtar Sunucuları</string>
   <string name="label_creation">Oluşturma</string>
@@ -66,9 +64,6 @@
   <string name="label_name">İsim</string>
   <string name="label_comment">Yorum</string>
   <string name="label_email">Eposta</string>
-  <string name="no_keys_selected">Seç</string>
-  <string name="one_key_selected">1 Seçili</string>
-  <string name="n_keys_selected">Seçili</string>
   <string name="unknown_status"></string>
   <string name="secret_key">Özel Anahtar:</string>
   <!--choice-->
@@ -94,10 +89,7 @@
   <string name="file_delete_successful">Başarıyla silindi.</string>
   <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encryption_successful">Başarıyla şifrelendi.</string>
-  <string name="keys_added">%s anahtar() başarıyla eklendi.</string>
-  <string name="keys_updated">%s anahtar() başarıyla yenilendi.</string>
   <string name="key_not_found">Anahtar %08X bulunamadı.</string>
-  <string name="keys_found">%s anahtar() bulundu.</string>
   <string name="key_send_success">Anahtar sunucuya başarıyla gönderildi</string>
   <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
   <string name="list_empty">Liste boş!</string>
@@ -131,10 +123,6 @@
   <!--compression-->
   <string name="compression_fast">hızlı</string>
   <string name="compression_very_slow">çok yavaş</string>
-  <!--Dashboard-->
-  <string name="dashboard_my_keys">Özel Anahtarlarım</string>
-  <string name="dashboard_encrypt">Şifrele</string>
-  <string name="dashboard_help">Yardım</string>
   <!--Help-->
   <string name="help_tab_about">Hakkında</string>
   <string name="help_about_version">Sürüm:</string>

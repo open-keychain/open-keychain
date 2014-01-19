@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_manage_public_keys">Kontakte</string>
+  <string name="title_manage_secret_keys">Private Schlüssel</string>
   <string name="title_select_recipients">Öffentlichen Schlüssel auswählen</string>
   <string name="title_select_secret_key">Privaten Schlüssel auswählen</string>
   <string name="title_encrypt">Verschlüsseln</string>
@@ -21,102 +23,125 @@
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
   <string name="title_key_server_query">Schlüssel-Server abfragen</string>
+  <string name="title_send_key">Auf Schlüssel-Server hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
   <string name="title_sign_key">Schlüssel signieren</string>
+  <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
-  <string name="title_share_by_nfc">Schlüssel über NFC teilen</string>
   <!--section-->
-  <string name="section_user_ids">Benutzer IDs</string>
+  <string name="section_user_ids">Benutzer-IDs</string>
   <string name="section_keys">Schlüssel</string>
   <string name="section_general">Allgemein</string>
   <string name="section_defaults">Standardwerte</string>
-  <string name="section_advanced">Fortgeschritten</string>
+  <string name="section_advanced">Fortgeschrittene Einstellungen</string>
+  <string name="section_master_key">Hauptschlüssel</string>
+  <string name="section_master_user_id">Hauptbenutzer-ID</string>
+  <string name="section_actions">Aktionen</string>
+  <string name="section_upload_key">Schlüssel hochladen</string>
+  <string name="section_key_server">Schlüssel-Server</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Unterschreiben (Zwischenablage)</string>
+  <string name="btn_sign_to_clipboard">Signieren (Zwischenablage)</string>
   <string name="btn_encrypt_to_clipboard">In die Zwischenablage verschlüsseln</string>
   <string name="btn_encrypt_and_send">Verschlüsseln und senden...</string>
-  <string name="btn_sign_and_send">Unterschreiben und senden...</string>
-  <string name="btn_sign">Unterschreiben</string>
+  <string name="btn_sign_and_send">Signieren und senden...</string>
+  <string name="btn_sign">Signieren</string>
   <string name="btn_decrypt">Entschlüsseln</string>
-  <string name="btn_verify">Prüfen</string>
+  <string name="btn_verify">Verifizieren</string>
   <string name="btn_select_encrypt_keys">Empfänger wählen</string>
   <string name="btn_encrypt_file">Datei verschlüsseln</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
   <string name="btn_delete">Löschen</string>
   <string name="btn_no_date">Keine</string>
-  <string name="btn_okay">Ok</string>
+  <string name="btn_okay">Okay</string>
   <string name="btn_change_passphrase">Passwort ändern</string>
   <string name="btn_set_passphrase">Passwort setzen</string>
   <string name="btn_search">Suchen</string>
+  <string name="btn_export_to_server">Auf Schlüssel-Server hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
-  <string name="menu_api_app_settings">Registrierte Anwendungen</string>
-  <string name="menu_import_from_file">Von Datei importieren</string>
-  <string name="menu_import_from_qr_code">Von QR Code importieren</string>
-  <string name="menu_import_from_nfc">Von NFC importieren</string>
+  <string name="menu_help">Hilfe</string>
+  <string name="menu_import_from_file">Aus Datei importieren</string>
+  <string name="menu_import_from_qr_code">Mittels QR Code importieren</string>
+  <string name="menu_import">Importieren</string>
+  <string name="menu_import_from_nfc">Mittels NFC importieren</string>
   <string name="menu_export_keys">Alle Schlüssel exportieren</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
   <string name="menu_create_key">Schlüssel erstellen</string>
-  <string name="menu_create_key_expert">Schlüssel erstellen (Experten)</string>
-  <string name="menu_edit_key">Schlüssel bearbeiten</string>
+  <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
-  <string name="menu_key_server">Schlüssel von Server importieren</string>
-  <string name="menu_share">Teilen mit...</string>
-  <string name="menu_share_nfc">Über NFC teilen</string>
-  <string name="menu_sign_key">Schlüssel unterschreiben</string>
-  <string name="menu_beam_preferences">Beam Einstellungen</string>
+  <string name="menu_key_server">Von einem Schlüssel-Server importieren</string>
+  <string name="menu_update_key">Von einem Schlüssel-Server aktualisieren</string>
+  <string name="menu_export_key_to_server">Auf Schlüssel-Server hochladen</string>
+  <string name="menu_share">Teilen</string>
+  <string name="menu_share_title_fingerprint">Teile Fingerabdruck…</string>
+  <string name="menu_share_title">Teile gesamten Schlüssel…</string>
+  <string name="menu_share_default_fingerprint">mit…</string>
+  <string name="menu_share_default">mit…</string>
+  <string name="menu_share_qr_code">mit QR-Code</string>
+  <string name="menu_share_qr_code_fingerprint">mit QR-Code</string>
+  <string name="menu_share_nfc">mit NFC</string>
+  <string name="menu_copy_to_clipboard">In die Zwischenablage kopieren</string>
+  <string name="menu_sign_key">Schlüssel signieren</string>
+  <string name="menu_beam_preferences">Beam-Einstellungen</string>
+  <string name="menu_key_edit_cancel">Abbrechen</string>
+  <string name="menu_encrypt_to">Verschlüsseln nach…</string>
   <!--label-->
-  <string name="label_sign">Unterschreiben</string>
+  <string name="label_sign">Signieren</string>
   <string name="label_message">Nachricht</string>
   <string name="label_file">Datei</string>
   <string name="label_no_passphrase">Kein Passwort</string>
   <string name="label_passphrase">Passwort</string>
-  <string name="label_passphrase_again">Noch einmal</string>
+  <string name="label_passphrase_again">Wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
-  <string name="label_ascii_armor">ASCII Armor</string>
-  <string name="label_select_public_keys">Öffentliche(r) Schlüssel</string>
+  <string name="label_ascii_armor">ASCII-Armor</string>
+  <string name="label_select_public_keys">Öffentliche Schlüssel</string>
   <string name="label_delete_after_encryption">Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
-  <string name="label_encryption_algorithm">Algorithmus zum Verschlüsseln</string>
-  <string name="label_hash_algorithm">Hash Algorithmus</string>
+  <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
+  <string name="label_hash_algorithm">Hash-Algorithmus</string>
   <string name="label_asymmetric">Öffentlicher Schlüssel</string>
   <string name="label_symmetric">Passwort</string>
-  <string name="label_passphrase_cache_ttl">Passwort Cache</string>
+  <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
-  <string name="label_force_v3_signature">V3 Unterschriften erzwingen</string>
-  <string name="label_key_servers">Schlüssel Server</string>
-  <string name="label_key_id">Schlüssel ID</string>
-  <string name="label_creation">Erstellung</string>
-  <string name="label_expiry">Verfall</string>
-  <string name="label_usage">Verwendung</string>
+  <string name="label_force_v3_signature">OpenPGPv3 Signaturen erzwingen</string>
+  <string name="label_key_servers">Schlüssel-Server</string>
+  <string name="label_key_id">Schlüssel-ID</string>
+  <string name="label_creation">Erstellungsdatum</string>
+  <string name="label_expiry">Ablaufdatum</string>
+  <string name="label_usage">Verwendungszweck</string>
   <string name="label_key_size">Schlüssellänge</string>
-  <string name="label_main_user_id">Haupt Benutzer ID</string>
+  <string name="label_main_user_id">Hauptbenutzer-ID</string>
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
-  <string name="label_email">Email</string>
-  <string name="no_keys_selected">Auswählen</string>
-  <string name="one_key_selected">1 ausgewählt</string>
-  <string name="n_keys_selected">Ausgewählt</string>
+  <string name="label_email">E-Mail</string>
+  <string name="label_fingerprint">Fingerabdruck</string>
+  <plurals name="select_keys_button">
+    <item quantity="one">%d ausgewählt</item>
+    <item quantity="other">%d ausgewählt</item>
+  </plurals>
   <string name="unknown_user_id">&lt;Unbekannt&gt;</string>
   <string name="none">&lt;keine&gt;</string>
   <string name="no_key">&lt;Kein Schlüssel&gt;</string>
   <string name="unknown_status"></string>
-  <string name="can_encrypt">Verschlüsseln möglich</string>
-  <string name="can_sign">Unterschreiben möglich</string>
+  <string name="can_encrypt">kann verschlüsseln</string>
+  <string name="can_sign">kann signieren</string>
   <string name="expired">abgelaufen</string>
-  <string name="n_key_servers">%s Schlüssel-Server</string>
+  <plurals name="n_key_servers">
+    <item quantity="one">%d Schlüssel-Server</item>
+    <item quantity="other">%d Schlüssel-Server</item>
+  </plurals>
   <string name="fingerprint">Fingerabdruck:</string>
-  <string name="secret_key">Geheimer Schlüssel:</string>
+  <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
   <string name="choice_none">Keine</string>
-  <string name="choice_sign_only">Nur unterschreiben</string>
+  <string name="choice_sign_only">Nur signieren</string>
   <string name="choice_encrypt_only">Nur verschlüsseln</string>
-  <string name="choice_sign_and_encrypt">Unterschreiben und verschlüsseln</string>
+  <string name="choice_sign_and_encrypt">Signieren und verschlüsseln</string>
   <string name="choice_15secs">15 s</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 min</string>
@@ -152,32 +177,53 @@
   <string name="encryption_to_clipboard_successful">Erfolgreich in die Zwischenablage verschlüsselt.</string>
   <string name="enter_passphrase_twice">Passwort zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum verschlüsseln auswählen.</string>
-  <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder unterschreiben auswählen.</string>
+  <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
+  <string name="specify_file_to_encrypt_to">Bitte angeben, in welche Datei verschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_decrypt_to">Bitte angeben, in welche Datei entschlüsselt werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_export_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG: Datei wird überschrieben, wenn sie bereits existiert. </string>
+  <string name="specify_file_to_export_secret_keys_to">Bitte angeben, in welche Datei exportiert werden soll.\nWARNUNG! Sie exportieren GEHEIME Schlüssel.\nWARNUNG! Datei wird überschrieben, wenn sie bereits existiert. </string>
   <string name="key_deletion_confirmation">Soll der Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden! </string>
-  <string name="secret_key_deletion_confirmation">Soll der GEHEIME Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
-  <string name="keys_added_and_updated">Erfolgreich %1$s Schlüssel hinzugefügt und %2$s Schlüssel aktualisiert.</string>
-  <string name="keys_added">%s Schlüssel erfolgreich hinzugefügt.</string>
-  <string name="keys_updated">%s Schlüssel erfolgreich aktualisiert.</string>
+  <string name="key_deletion_confirmation_multi">Möchtest du wirklich alle ausgewählten Schlüssel löschen?\nDies kann nicht rückgängig gemacht werden!</string>
+  <string name="secret_key_deletion_confirmation">Soll der PRIVATE Schlüssel \'%s\' wirklich gelöscht werden?\nDies kann nicht rückgängig gemacht werden!</string>
+  <plurals name="keys_added_and_updated_1">
+    <item quantity="one">%d Schlüssel erfolgreich hinzugefügt</item>
+    <item quantity="other">%d Schlüssel erfolgreich hinzugefügt</item>
+  </plurals>
+  <plurals name="keys_added_and_updated_2">
+    <item quantity="one">und %d Schlüssel erfolgreich aktualisiert.</item>
+    <item quantity="other">und %d Schlüssel erfolgreich aktualisiert.</item>
+  </plurals>
+  <plurals name="keys_added">
+    <item quantity="one">%d Schlüssel erfolgreich hinzugefügt.</item>
+    <item quantity="other">%d Schlüssel erfolgreich hinzugefügt.</item>
+  </plurals>
+  <plurals name="keys_updated">
+    <item quantity="one">%d Schlüssel erfolgreich aktualisiert.</item>
+    <item quantity="other">%d Schlüssel erfolgreich aktualisiert.</item>
+  </plurals>
   <string name="no_keys_added_or_updated">Keine Schlüssel hinzugefügt oder aktualisiert.</string>
   <string name="key_exported">1 Schlüssel erfolgreich exportiert.</string>
-  <string name="keys_exported">%s Schlüssel erfolgreich exportiert.</string>
+  <string name="keys_exported">%d Schlüssel erfolgreich exportiert.</string>
   <string name="no_keys_exported">Keine Schlüssel exportiert.</string>
   <string name="key_creation_el_gamal_info">Beachte: nur Unterschlüssel unterstützen ElGamal. Für ElGamal wird die am nächsten liegende Schlüssellänge von 1536, 2048, 3072, 4096 oder 8192 verwendet.</string>
   <string name="key_not_found">Schlüssel %08X konnte nicht gefunden werden.</string>
-  <string name="keys_found">%s Schlüssel gefunden.</string>
+  <plurals name="keys_found">
+    <item quantity="one">%d Schlüssel gefunden.</item>
+    <item quantity="other">%d Schlüssel gefunden.</item>
+  </plurals>
   <string name="unknown_signature_key_touch_to_look_up">Unbekannte Unterschrift, zum Suchen berühren. </string>
-  <string name="bad_keys_encountered">%s schlechte geheime Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</string>
   <string name="lookup_unknown_key">Unbekannter Schlüssel %s, soll dieser auf einem Schlüsselserver gesucht werden?</string>
   <string name="key_send_success">Schlüssel erfolgreich zum Server geschickt.</string>
   <string name="key_sign_success">Schlüssel erfolgreich signiert</string>
   <string name="list_empty">Diese Liste ist leer!</string>
   <string name="nfc_successfull">Schlüssel erfolgreich mit NFC Beam gesendet!</string>
+  <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">Löschen von \'%s\' ist fehlgeschlagen</string>
   <string name="error_file_not_found">Datei nicht gefunden</string>
-  <string name="error_no_secret_key_found">kein geeigneter geheimer Schlüssel gefunden</string>
+  <string name="error_no_secret_key_found">kein geeigneter privater Schlüssel gefunden</string>
   <string name="error_no_known_encryption_found">keine bekannte Art von Verschlüsselung gefunden</string>
   <string name="error_external_storage_not_ready">Externes Laufwerk ist nicht bereit</string>
   <string name="error_invalid_email">ungültige Email \'%s\'</string>
@@ -189,16 +235,14 @@
   <string name="error_key_needs_a_user_id">Mindestens eine Benutzer-ID wird benötigt</string>
   <string name="error_main_user_id_must_not_be_empty">Hauptbenutzer-ID darf nicht leer sein</string>
   <string name="error_key_needs_master_key">Mindestens ein Hauptschlüssel wird benötigt</string>
-  <string name="error_no_encryption_keys_or_passphrase">Kein(e) Schlüssel zur Verschlüsselung oder kein Passwort angegeben</string>
-  <string name="error_signature_failed">Unterschreiben fehlgeschlagen</string>
+  <string name="error_signature_failed">Signieren fehlgeschlagen</string>
   <string name="error_no_signature_passphrase">kein Passwort angegeben</string>
-  <string name="error_no_signature_key">kein Schlüssel für die Unterschrift angegeben</string>
+  <string name="error_no_signature_key">kein Signaturschlüssel angegeben</string>
   <string name="error_invalid_data">Verschlüsselte Daten nicht gültig</string>
   <string name="error_corrupt_data">beschädigte Daten</string>
   <string name="error_no_symmetric_encryption_packet">Paket mit symmetrischer Verschlüsselung konnte nicht gefunden werden</string>
   <string name="error_wrong_passphrase">falsches Passwort</string>
-  <string name="error_saving_keys">Fehler beim Speichern von Schlüssel(n)</string>
-  <string name="error_could_not_extract_private_key">privater Schlüssel konnte nicht entnommen werden</string>
+  <string name="error_could_not_extract_private_key">Privater Schlüssel konnte nicht extrahiert werden</string>
   <string name="error_only_files_are_supported">Binäre Daten ohne Datei im Dateisystem werden nicht unterstützt. Dies wird nur durch ACTION_ENCRYPT_STREAM_AND_RETURN unterstützt.</string>
   <string name="error_jelly_bean_needed">Android 4.1 alias Jelly Bean wird benötigt um Androids NFC-Beam nutzen zu können!</string>
   <string name="error_nfc_needed">NFC steht auf diesem Gerät nicht zur Verfügung!</string>
@@ -215,19 +259,21 @@
   <string name="progress_building_master_key">erstelle Hauptring...</string>
   <string name="progress_adding_sub_keys">füge Unterschlüssel hinzu...</string>
   <string name="progress_saving_key_ring">Schlüssel wird gespeichert...</string>
-  <string name="progress_importing_secret_keys">importiere geheime Schlüssel...</string>
-  <string name="progress_exporting_key">exportiere Schlüssel...</string>
-  <string name="progress_exporting_keys">exportiere Schlüssel...</string>
-  <string name="progress_extracting_signature_key">Entnehme Schlüssel für Unterschriften...</string>
-  <string name="progress_extracting_key">entnehme Schlüssel...</string>
+  <string name="progress_importing_secret_keys">importiere private Schlüssel...</string>
+  <plurals name="progress_exporting_key">
+    <item quantity="one">Schlüssel wird exportiert…</item>
+    <item quantity="other">Schlüssel werden exportiert…</item>
+  </plurals>
+  <string name="progress_extracting_signature_key">extrahiere Signaturschlüssel...</string>
+  <string name="progress_extracting_key">extrahiere Schlüssel...</string>
   <string name="progress_preparing_streams">Datenstrom wird vorbereitet...</string>
   <string name="progress_encrypting">Daten werden verschlüsselt...</string>
   <string name="progress_decrypting">Daten werden entschlüsselt...</string>
-  <string name="progress_preparing_signature">Unterschrift wird vorbereitet...</string>
-  <string name="progress_generating_signature">Unterschrift wird erstellt...</string>
-  <string name="progress_processing_signature">Unterschrift wird verarbeitet...</string>
-  <string name="progress_verifying_signature">Unterschrift wird überprüft...</string>
-  <string name="progress_signing">unterschreibe...</string>
+  <string name="progress_preparing_signature">Signatur wird vorbereitet...</string>
+  <string name="progress_generating_signature">Signatur wird erstellt...</string>
+  <string name="progress_processing_signature">Signatur wird verarbeitet...</string>
+  <string name="progress_verifying_signature">Signatur wird verifiziert...</string>
+  <string name="progress_signing">signiere...</string>
   <string name="progress_reading_data">Daten werden gelesen...</string>
   <string name="progress_finding_key">Schlüssel wird gesucht...</string>
   <string name="progress_decompressing_data">Daten werden entpackt...</string>
@@ -236,7 +282,7 @@
   <string name="progress_querying">Anfrage wird gestellt...</string>
   <!--action strings-->
   <string name="hint_public_keys">Öffentliche Schlüssel suchen</string>
-  <string name="hint_secret_keys">Geheime Schlüssel suchen</string>
+  <string name="hint_secret_keys">Private Schlüssel suchen</string>
   <string name="action_share_key_with">Teile Schlüssel über...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
@@ -246,23 +292,23 @@
   <!--compression-->
   <string name="compression_fast">schnell</string>
   <string name="compression_very_slow">sehr langsam</string>
-  <!--Dashboard-->
-  <string name="dashboard_my_keys">Meine geheimen Schlüssel</string>
-  <string name="dashboard_encrypt">Verschlüsseln</string>
-  <string name="dashboard_decrypt">Entschlüsseln</string>
-  <string name="dashboard_help">Hilfe</string>
-  <string name="dashboard_import_keys">Schlüssel importieren</string>
   <!--Help-->
   <string name="help_tab_start">Start</string>
-  <string name="help_tab_nfc_beam">NFC Beam</string>
-  <string name="help_tab_changelog">Änderungsprotokoll</string>
+  <string name="help_tab_nfc_beam">NFC-Beam</string>
+  <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">Über</string>
   <string name="help_about_version">Version:</string>
   <!--Import-->
   <string name="import_import">Ausgewählte Schlüssel importieren</string>
   <string name="import_sign_and_upload">Ausgewählte Schlüssel importieren, signieren und hochladen</string>
-  <string name="import_qr_code_wrong">Schlechter QR Code! Bitte erneut versuchen!</string>
-  <string name="import_qr_code_finished">QR Code scanning beendet!</string>
+  <string name="import_from_clipboard">Aus Zwischenablage importieren</string>
+  <plurals name="import_qr_code_missing">
+    <item quantity="one">QR-Codes mit folgender ID fehlt: %s</item>
+    <item quantity="other">QR-Codes mit folgenden IDs fehlen: %s</item>
+  </plurals>
+  <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
+  <string name="import_qr_code_finished">QR-Code wurde erfolgreich eingescannt!</string>
+  <string name="import_nfc_help_button">Hilfe</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenPGP: Datei entschlüsseln</string>
   <string name="intent_import_key">OpenPGP: Schlüssel importieren</string>
@@ -270,24 +316,47 @@
   <string name="intent_send_decrypt">OpenPGP: Entschlüsseln</string>
   <!--Remote API-->
   <string name="api_no_apps">Nicht registrierte Anwendungen!</string>
+  <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
+  <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
   <string name="api_settings_select_key">Schlüssel auswählen</string>
   <string name="api_settings_save">Speichern</string>
   <string name="api_settings_cancel">Abbrechen</string>
   <string name="api_settings_revoke">Zugang widerufen</string>
   <string name="api_settings_package_name">Paketname</string>
-  <string name="api_settings_package_signature">SHA-256 der Paket-Signatur</string>
+  <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
   <string name="api_register_text">Folgende Anwendung beantragt Zugriff zur API von OpenPGP Keychain.\n\nZugriff dauerhaft erlauben?</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
-  <string name="api_select_pub_keys_missing_text">Für diese Benutzer IDs wurden keine öffentlichen Schlüssel gefunden:</string>
-  <string name="api_select_pub_keys_dublicates_text">Für diese Benutzer IDs existieren mehrere öffentliche Schlüssel:</string>
+  <string name="api_select_pub_keys_missing_text">Für diese Benutzer-IDs wurden keine öffentlichen Schlüssel gefunden:</string>
+  <string name="api_select_pub_keys_dublicates_text">Für diese Benutzer-IDs existieren mehrere öffentliche Schlüssel:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
-  <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese App von einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenPGP Keychain rückgänging widerrufen und die App erneut registrieren.</string>
+  <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese App von einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenPGP Keychain widerrufen und die App erneut registrieren.</string>
   <!--Share-->
-  <string name="share_qr_code_dialog_start">Mit \'Weiter\' durch alle QR Codes gehen und diese nacheinander scannen.</string>
+  <string name="share_qr_code_dialog_title">Über QR Code teilen</string>
+  <string name="share_qr_code_dialog_start">Mit \'Weiter\' durch alle QR-Codes gehen und diese nacheinander scannen.</string>
+  <string name="share_qr_code_dialog_fingerprint_text">Fingerabdruck:</string>
+  <string name="share_nfc_dialog">Über NFC teilen</string>
   <!--Key list-->
+  <plurals name="key_list_selected_keys">
+    <item quantity="one">1 Schlüssel ausgewählt.</item>
+    <item quantity="other">%d Schlüssel ausgewählt.</item>
+  </plurals>
+  <string name="key_list_empty_text1">Keine Schlüssel verfügbar…</string>
+  <string name="key_list_empty_text2">Du kannst anfangen OpenPGP Keychain zu benutzen indem du</string>
+  <string name="key_list_empty_text3">oder</string>
+  <string name="key_list_empty_button_create">deinen eigenen Schlüssel erstellst</string>
+  <string name="key_list_empty_button_import">existierende Schlüssel importierst.</string>
   <!--Key view-->
+  <string name="key_view_action_encrypt">Für diesen Kontakt verschlüsseln</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Kontakte</string>
+  <string name="nav_encrypt">Verschlüsseln</string>
+  <string name="nav_decrypt">Entschlüsseln</string>
+  <string name="nav_import">Schlüssel Importieren</string>
+  <string name="nav_secret_keys">Meine Schlüssel</string>
+  <string name="nav_apps">Registrierte Anwendungen</string>
+  <string name="drawer_open">Menu öffnen</string>
+  <string name="drawer_close">Menu schließen</string>
 </resources>

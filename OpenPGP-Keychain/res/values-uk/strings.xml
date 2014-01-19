@@ -24,7 +24,6 @@
   <string name="title_unknown_signature_key">Невідомий підпис ключа</string>
   <string name="title_sign_key">Підписати ключ</string>
   <string name="title_help">Довідка</string>
-  <string name="title_share_by_nfc">Поширити ключ через NFC</string>
   <!--section-->
   <string name="section_user_ids">ІД користувача</string>
   <string name="section_keys">Ключі</string>
@@ -53,7 +52,6 @@
   <string name="btn_back">Назад</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
-  <string name="menu_api_app_settings">Зареєстровані програми</string>
   <string name="menu_import_from_file">Імпорт з файлу</string>
   <string name="menu_import_from_qr_code">Імпорт з штрих-коду</string>
   <string name="menu_import_from_nfc">Імпорт з NFC</string>
@@ -62,11 +60,8 @@
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_create_key">Створити ключ</string>
   <string name="menu_create_key_expert">Створити ключ (експерт)</string>
-  <string name="menu_edit_key">Редагувати ключ</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_key_server">Імпорт з сервера ключів</string>
-  <string name="menu_share">Поділитися через…</string>
-  <string name="menu_share_nfc">Поділитися з NFC</string>
   <string name="menu_sign_key">Підписати ключ</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
   <!--label-->
@@ -78,7 +73,6 @@
   <string name="label_passphrase_again">Знову</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">ASCII Броня</string>
-  <string name="label_select_public_keys">Публічний ключ(і)</string>
   <string name="label_delete_after_encryption">Вилучити після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
@@ -99,9 +93,6 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
-  <string name="no_keys_selected">Вибрати</string>
-  <string name="one_key_selected">1 вибраний</string>
-  <string name="n_keys_selected">Вибране</string>
   <string name="unknown_user_id">&lt;невідомий&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <string name="no_key">&lt;без ключа&gt;</string>
@@ -109,7 +100,6 @@
   <string name="can_encrypt">можна зашифрувати</string>
   <string name="can_sign">можна підписати</string>
   <string name="expired">закінчився</string>
-  <string name="n_key_servers">%s сервер(ів) ключа</string>
   <string name="fingerprint">Відбиток:</string>
   <string name="secret_key">Секретний ключ:</string>
   <!--choice-->
@@ -155,18 +145,12 @@
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
-  <string name="keys_added_and_updated">Успішно додано %1$s ключ(і) та оновлено %2$s ключ(і).</string>
-  <string name="keys_added">Успішно додано %s ключ(і).</string>
-  <string name="keys_updated">Успішно оновлено %s ключ(і).</string>
   <string name="no_keys_added_or_updated">Жодного ключа не додано та не оновлено.</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
-  <string name="keys_exported">Успішно експортовано %s ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: тільки підключі підтримують ElGamal, а для ElGamal буде використаний найближчий розмір ключа з 1536, 2048, 3072, 4096, або 8192.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
-  <string name="keys_found">Знайдено %s ключ(і).</string>
   <string name="unknown_signature_key_touch_to_look_up">Невідомий підпис, натисніть, щоб шукати ключ.</string>
-  <string name="bad_keys_encountered">%s поганий секретний ключ(і) проігноровано. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</string>
   <string name="lookup_unknown_key">Невідомий ключ %s, ви хочете віднайти його на сервері ключів?</string>
   <string name="key_send_success">Успішно надіслано ключ на сервер</string>
   <string name="key_sign_success">Успішно підписаний ключ</string>
@@ -189,7 +173,6 @@
   <string name="error_key_needs_a_user_id">потрібний хоча б один ІД користувача</string>
   <string name="error_main_user_id_must_not_be_empty">ІД основного користувача не має бути порожнім</string>
   <string name="error_key_needs_master_key">потрібний хоча б один основний ключ</string>
-  <string name="error_no_encryption_keys_or_passphrase">не подано ключ(і) шифрування або парольна фраза</string>
   <string name="error_signature_failed">підпис не вдався</string>
   <string name="error_no_signature_passphrase">не подано парольної фрази</string>
   <string name="error_no_signature_key">не подано ключ підпису</string>
@@ -197,7 +180,6 @@
   <string name="error_corrupt_data">пошкодити дані</string>
   <string name="error_no_symmetric_encryption_packet">не знайдено пакунок з симетричним шифруванням</string>
   <string name="error_wrong_passphrase">помилкова парольна фраза</string>
-  <string name="error_saving_keys">помилка збереження деякого ключа(ів)</string>
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
   <string name="error_only_files_are_supported">Прямі двійкові дані без справжнього файлу у файловій системі не підтримуються. Підтримується лише  ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 Jelly Bean для використання функції Androids NFC промінь!</string>
@@ -214,10 +196,7 @@
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
   <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_adding_sub_keys">додавання підключів…</string>
-  <string name="progress_saving_key_ring">збереження ключа…</string>
   <string name="progress_importing_secret_keys">імпортуються секретні ключі…</string>
-  <string name="progress_exporting_key">експортується ключ…</string>
-  <string name="progress_exporting_keys">експортуються ключі…</string>
   <string name="progress_extracting_signature_key">видобування ключа підпису…</string>
   <string name="progress_extracting_key">видобувається ключа…</string>
   <string name="progress_preparing_streams">підготовка потоків…</string>
@@ -246,12 +225,6 @@
   <!--compression-->
   <string name="compression_fast">швидке</string>
   <string name="compression_very_slow">дуже повільне</string>
-  <!--Dashboard-->
-  <string name="dashboard_my_keys">Мої секретні ключі</string>
-  <string name="dashboard_encrypt">Зашифрувати</string>
-  <string name="dashboard_decrypt">Розшифрувати</string>
-  <string name="dashboard_help">Довідка</string>
-  <string name="dashboard_import_keys">Імпортувати ключі</string>
   <!--Help-->
   <string name="help_tab_start">Початок</string>
   <string name="help_tab_nfc_beam">NFC промінь</string>

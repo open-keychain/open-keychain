@@ -24,7 +24,6 @@
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
   <string name="title_sign_key">Sleutel ondertekenen</string>
   <string name="title_help">Help</string>
-  <string name="title_share_by_nfc">Sleutel delen met NFC</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
   <string name="section_keys">Sleutels</string>
@@ -53,7 +52,6 @@
   <string name="btn_back">Terug</string>
   <!--menu-->
   <string name="menu_preferences">Instellingen</string>
-  <string name="menu_api_app_settings">Geregistreerde apps</string>
   <string name="menu_import_from_file">Importeren uit bestand</string>
   <string name="menu_import_from_qr_code">Importeren met QR-code</string>
   <string name="menu_import_from_nfc">Importeren met NFC</string>
@@ -62,11 +60,8 @@
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_create_key">Sleutel aanmaken</string>
   <string name="menu_create_key_expert">Sleutel aanmaken (expert)</string>
-  <string name="menu_edit_key">Sleutel bewerken</string>
   <string name="menu_search">Zoeken</string>
   <string name="menu_key_server">Importeren uit sleutelserver</string>
-  <string name="menu_share">Delen met...</string>
-  <string name="menu_share_nfc">Delen met NFC</string>
   <string name="menu_sign_key">Sleutel ondertekenen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
   <!--label-->
@@ -78,7 +73,6 @@
   <string name="label_passphrase_again">Opnieuw</string>
   <string name="label_algorithm">Algoritme</string>
   <string name="label_ascii_armor">ASCII-armor</string>
-  <string name="label_select_public_keys">Publieke sleutel(s)</string>
   <string name="label_delete_after_encryption">Verwijderen na versleuteling</string>
   <string name="label_delete_after_decryption">Verwijderen na ontsleuteling</string>
   <string name="label_encryption_algorithm">Versleutelingsalgoritme</string>
@@ -99,9 +93,6 @@
   <string name="label_name">Naam</string>
   <string name="label_comment">Opmerking</string>
   <string name="label_email">E-mailadres</string>
-  <string name="no_keys_selected">Selecteren</string>
-  <string name="one_key_selected">1 geselecteerd</string>
-  <string name="n_keys_selected">geselecteerd</string>
   <string name="unknown_user_id">&lt;onbekend&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <string name="no_key">&lt;geen sleutel&gt;</string>
@@ -109,7 +100,6 @@
   <string name="can_encrypt">versleutelbaar</string>
   <string name="can_sign">ondertekenbaar</string>
   <string name="expired">verlopen</string>
-  <string name="n_key_servers">%s sleutelserver(s)</string>
   <string name="fingerprint">VIngerafdruk:</string>
   <string name="secret_key">Privésleutel:</string>
   <!--choice-->
@@ -155,18 +145,12 @@
   <string name="select_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>
   <string name="key_deletion_confirmation">Weet u zeker dat u de sleutel \'%s\' wilt verwijderen?\nDit kan niet ongedaan worden gemaakt.</string>
   <string name="secret_key_deletion_confirmation">Weet u zeker dat u de privésleutel \'%s\' wilt verwijderen?\nDit kan niet ongedaan worden gemaakt.</string>
-  <string name="keys_added_and_updated">%1$s sleutel(s) succesvol toegevoegd en %2$s sleutel(s) bijgewerkt.</string>
-  <string name="keys_added">%s sleutel(s) succesvol toegevoegd.</string>
-  <string name="keys_updated">%s sleutel(s) succesvol bijgewerkt.</string>
   <string name="no_keys_added_or_updated">Geen sleutels toegevoegd of bijgewerkt.</string>
   <string name="key_exported">1 sleutel succesvol geëxporteerd.</string>
-  <string name="keys_exported">%s sleutels succesvol geëxporteerd.</string>
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen sub-sleutels ondersteunen ElGamal, en voor ElGamal wordt de dichtstbijzijnde sleutelgrootte van 1536, 2048, 4096 of 8192 gebruikt.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="keys_found">%s sleutel(s) gevonden.</string>
   <string name="unknown_signature_key_touch_to_look_up">Onbekende handtekening, tik om sleutel op te zoeken.</string>
-  <string name="bad_keys_encountered">%s onjuiste privésleutel(s) genegeerd. Wellicht heeft u geëxporteerd met de parameter\n --export-secret-subkeys\nExporteer met\n --export-secret-keys\nin plaats daarvan.</string>
   <string name="lookup_unknown_key">Onbekende sleutel %s, wilt u het bij een sleutelserver opvragen?</string>
   <string name="key_send_success">Sleutel succesvol verzonden naar server</string>
   <string name="key_sign_success">Sleutel succesvol ondertekend</string>
@@ -189,7 +173,6 @@
   <string name="error_key_needs_a_user_id">ten minste één gebruiksers-id vereist</string>
   <string name="error_main_user_id_must_not_be_empty">hoofdgebruikers-id kan niet leeg zijn</string>
   <string name="error_key_needs_master_key">ten minste een hoofdsleutel is vereist</string>
-  <string name="error_no_encryption_keys_or_passphrase">geen versleutelingssleutel(s) of wachtwoord opgegeven</string>
   <string name="error_signature_failed">handtekening mislukt</string>
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
@@ -197,7 +180,6 @@
   <string name="error_corrupt_data">gegevens beschadigd</string>
   <string name="error_no_symmetric_encryption_packet">kan geen pakket vinden met symmetrische versleuteling</string>
   <string name="error_wrong_passphrase">wachtwoord verekerd</string>
-  <string name="error_saving_keys">fout bij het opslaan van bepaalde sleutel(s)</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
   <string name="error_only_files_are_supported">Ruwe invoer van binaire gegevens wordt niet ondersteund, alleen bij ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Android 4.1 Jelly Bean of hoger is vereist voor NFC Beam.</string>
@@ -214,10 +196,7 @@
   <string name="progress_certifying_master_key">hoofdsleutel certificeren...</string>
   <string name="progress_building_master_key">hoofdsleutelbos maken...</string>
   <string name="progress_adding_sub_keys">sub-sleutels toevoegen...</string>
-  <string name="progress_saving_key_ring">hoofdsleutel opslaan...</string>
   <string name="progress_importing_secret_keys">privésleutels importeren...</string>
-  <string name="progress_exporting_key">sleutel exporteren...</string>
-  <string name="progress_exporting_keys">sleutels exporteren...</string>
   <string name="progress_extracting_signature_key">ondertekeningssleutel uitpakken...</string>
   <string name="progress_extracting_key">sleutel uitpakken...</string>
   <string name="progress_preparing_streams">streams voorbereiden...</string>
@@ -246,12 +225,6 @@
   <!--compression-->
   <string name="compression_fast">snel</string>
   <string name="compression_very_slow">zeer langzaam</string>
-  <!--Dashboard-->
-  <string name="dashboard_my_keys">Mijn privésleutels</string>
-  <string name="dashboard_encrypt">Versleutelen</string>
-  <string name="dashboard_decrypt">Ontsleutelen</string>
-  <string name="dashboard_help">Help</string>
-  <string name="dashboard_import_keys">Sleutels importeren</string>
   <!--Help-->
   <string name="help_tab_start">Beginnen</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>

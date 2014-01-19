@@ -37,12 +37,10 @@
   <string name="btn_search">Cercare</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
-  <string name="menu_api_app_settings">App Registrate</string>
   <string name="menu_import_from_file">Importare da file</string>
   <string name="menu_import_from_qr_code">Importare da QR Code</string>
   <string name="menu_delete_key">Eliminare chiave</string>
   <string name="menu_create_key">Creare chiave</string>
-  <string name="menu_edit_key">Modificare chiave</string>
   <string name="menu_search">Cercare</string>
   <!--label-->
   <string name="unknown_status"></string>
@@ -69,8 +67,6 @@
   <string name="key_size_2048">2048</string>
   <string name="key_size_4096">4096</string>
   <!--compression-->
-  <!--Dashboard-->
-  <string name="dashboard_help">Aiuto</string>
   <!--Help-->
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Changelog</string>

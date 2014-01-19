@@ -28,7 +28,6 @@
   <string name="title_sign_key">Signer la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
-  <string name="title_share_by_nfc">Partager la clef avec NFC</string>
   <!--section-->
   <string name="section_user_ids">IDs d\'utilisateurs</string>
   <string name="section_keys">Clefs</string>
@@ -65,7 +64,6 @@
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
-  <string name="menu_api_app_settings">Applis enregistrées</string>
   <string name="menu_import_from_file">Importer depuis un fichier</string>
   <string name="menu_import_from_qr_code">Importer depuis un code QR</string>
   <string name="menu_import">Importer</string>
@@ -75,15 +73,18 @@
   <string name="menu_delete_key">Supprimer la clef</string>
   <string name="menu_create_key">Créer une clef</string>
   <string name="menu_create_key_expert">Créer une clef (expert)</string>
-  <string name="menu_edit_key">Modifier la clef</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_key_server">Importer depuis le serveur de clefs</string>
   <string name="menu_update_key">Mettre à jour depuis le serveur de clefs</string>
   <string name="menu_export_key_to_server">Téléverser vers le serveur de clefs</string>
-  <string name="menu_share">Partager avec...</string>
-  <string name="menu_share_qr_code">Partager par un code QR (clef entière)</string>
-  <string name="menu_share_qr_code_fingerprint">Partager par un code QR (empreinte)</string>
-  <string name="menu_share_nfc">Partager via NFC</string>
+  <string name="menu_share">Partager</string>
+  <string name="menu_share_title_fingerprint">Partager l\'empreinte...</string>
+  <string name="menu_share_title">Partager la clef entière...</string>
+  <string name="menu_share_default_fingerprint">avec...</string>
+  <string name="menu_share_default">avec...</string>
+  <string name="menu_share_qr_code">par un code QR</string>
+  <string name="menu_share_qr_code_fingerprint">par un code QR</string>
+  <string name="menu_share_nfc">par la NFC</string>
   <string name="menu_copy_to_clipboard">Copier vers le presse-papiers</string>
   <string name="menu_sign_key">Signer la clef</string>
   <string name="menu_beam_preferences">Paramètres du faisceau</string>
@@ -98,7 +99,6 @@
   <string name="label_passphrase_again">À nouveau</string>
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Armure ASCII</string>
-  <string name="label_select_public_keys">Clef(s) publique(s)</string>
   <string name="label_delete_after_encryption">Supprimer après le chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
@@ -121,9 +121,6 @@
   <string name="label_email">Courriel</string>
   <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après signature</string>
   <string name="label_fingerprint">Empreinte</string>
-  <string name="no_keys_selected">Choisir</string>
-  <string name="one_key_selected">1 choisi</string>
-  <string name="n_keys_selected">Choisi</string>
   <string name="unknown_user_id">&lt;inconnue&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <string name="no_key">&lt;pas de clef&gt;</string>
@@ -131,11 +128,8 @@
   <string name="can_encrypt">peut chiffrer</string>
   <string name="can_sign">peut signer</string>
   <string name="expired">expiré</string>
-  <string name="n_key_servers">%s serveur(s) de clefs</string>
   <string name="fingerprint">Empreinte :</string>
   <string name="secret_key">Clef secrète :</string>
-  <string name="notValid">invalide</string>
-  <string name="secretKeyring">Porte-clefs secret</string>
   <!--choice-->
   <string name="choice_none">Aucune</string>
   <string name="choice_sign_only">Signer seulement</string>
@@ -184,18 +178,12 @@
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
-  <string name="keys_added_and_updated">%1$s clef(s) ajoutée(s) et %2$s mise(s) à jour avec succès.</string>
-  <string name="keys_added">%s clef(s) ajoutée(s) avec succès.</string>
-  <string name="keys_updated">%s clef(s) mise(s) à jour avec succès.</string>
   <string name="no_keys_added_or_updated">Aucune clef ajoutée ou mise à jour.</string>
   <string name="key_exported">1 clef exportée avec succès.</string>
-  <string name="keys_exported">%s clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>
   <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal, et pour ElGamal la taille de clef la plus proche de 1 536, 2 048, 3 072, 4 096 ou  8 192 sera utilisée.</string>
   <string name="key_not_found">Clef %08X introuvable.</string>
-  <string name="keys_found">%s clef(s) trouvée(s).</string>
   <string name="unknown_signature_key_touch_to_look_up">Signature inconnue. Toucher pour rechercher la clef.</string>
-  <string name="bad_keys_encountered">%s clef(s) erronée(s) ignorée(s). Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nVous assurer d\'exporter plutôt avec\n --export-secret-keys.</string>
   <string name="lookup_unknown_key">Clef %s inconnue, voulez-vous essayer de la trouver sur un serveur de clefs ?</string>
   <string name="key_send_success">Clef envoyée vers le serveur avec succès</string>
   <string name="key_sign_success">Clef signée avec succès</string>
@@ -221,7 +209,6 @@
   <string name="error_key_needs_a_user_id">vous avez besoin d\'au moins une ID utilisateur</string>
   <string name="error_main_user_id_must_not_be_empty">l\'ID de l\'utilisateur principal ne doit pas être vide</string>
   <string name="error_key_needs_master_key">au moins une clef maîtresse est nécessaire</string>
-  <string name="error_no_encryption_keys_or_passphrase">aucune clef ni phrase de passe n\'a été donnée</string>
   <string name="error_signature_failed">échec lors de la signature</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
@@ -229,7 +216,6 @@
   <string name="error_corrupt_data">données corrompues</string>
   <string name="error_no_symmetric_encryption_packet">paquet avec chiffrement symétrique introuvable</string>
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
-  <string name="error_saving_keys">erreur lors de la sauvegarde d\'une/de clef(s)</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
   <string name="error_only_files_are_supported">Les données binaires directes sans fichier dans le système de fichiers ne sont pas prises en charge. C\'est uniquement pris en charge par ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction de faisceau NFC !</string>
@@ -246,10 +232,7 @@
   <string name="progress_certifying_master_key">certification de la clef maîtresse...</string>
   <string name="progress_building_master_key">assemblage du trousseau maître...</string>
   <string name="progress_adding_sub_keys">ajout des sous-clefs...</string>
-  <string name="progress_saving_key_ring">sauvegarde du trousseau...</string>
   <string name="progress_importing_secret_keys">Importation des clefs secrètes...</string>
-  <string name="progress_exporting_key">exportation de la clef...</string>
-  <string name="progress_exporting_keys">exportation des clefs...</string>
   <string name="progress_extracting_signature_key">extraction de la clef de signature...</string>
   <string name="progress_extracting_key">extraction de la clef...</string>
   <string name="progress_preparing_streams">préparation des flux...</string>
@@ -278,13 +261,6 @@
   <!--compression-->
   <string name="compression_fast">rapide</string>
   <string name="compression_very_slow">très lent</string>
-  <!--Dashboard-->
-  <string name="dashboard_manage_keys">Contacts</string>
-  <string name="dashboard_my_keys">Mes clefs secrètes</string>
-  <string name="dashboard_encrypt">Chiffrer</string>
-  <string name="dashboard_decrypt">Déchiffrer</string>
-  <string name="dashboard_help">Aide</string>
-  <string name="dashboard_import_keys">Importer des clefs</string>
   <!--Help-->
   <string name="help_tab_start">Commencer</string>
   <string name="help_tab_nfc_beam">Faisceau NFC</string>
@@ -295,10 +271,6 @@
   <string name="import_import">Importer les clefs choisies</string>
   <string name="import_sign_and_upload">Importer, signer et téléverser les clefs choisies</string>
   <string name="import_from_clipboard">Importer à partir du presse-papiers</string>
-  <plurals name="import_qr_code_missing">
-    <item quantity="one">Le code QR avec l\'ID %1$s est manquant</item>
-    <item quantity="other">Les codes QR avec les ID %1$s sont manquants</item>
-  </plurals>
   <string name="import_qr_code_start_with_one">Veuillez commencer par le code QR avec l\'ID 1</string>
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_finished">Balayage de code QR terminé !</string>
