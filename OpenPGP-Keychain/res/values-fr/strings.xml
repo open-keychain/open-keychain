@@ -12,7 +12,7 @@
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Préférences</string>
   <string name="title_api_registered_apps">Applications enregistrées</string>
-  <string name="title_key_server_preference">Préférences du serveur de clefs</string>
+  <string name="title_key_server_preference">Serveurs de clefs préférés</string>
   <string name="title_change_pass_phrase">Changer la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
   <string name="title_send_email">Envoyer un courriel...</string>
@@ -53,7 +53,7 @@
   <string name="btn_save">Sauvegarder</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
-  <string name="btn_no_date">Aucun</string>
+  <string name="btn_no_date">Aucune</string>
   <string name="btn_okay">OK</string>
   <string name="btn_change_passphrase">Changer la phrase de passe</string>
   <string name="btn_set_passphrase">Définir la phrase de passe</string>
@@ -87,7 +87,7 @@
   <string name="menu_share_nfc">par la NFC</string>
   <string name="menu_copy_to_clipboard">Copier vers le presse-papiers</string>
   <string name="menu_sign_key">Signer la clef</string>
-  <string name="menu_beam_preferences">Paramètres du faisceau</string>
+  <string name="menu_beam_preferences">Paramètres Beam</string>
   <string name="menu_key_edit_cancel">Annuler</string>
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <!--label-->
@@ -188,20 +188,43 @@
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
+  <plurals name="keys_added_and_updated_1">
+    <item quantity="one">%d clef ajoutée avec succès</item>
+    <item quantity="other">%d clefs ajoutées avec succès</item>
+  </plurals>
+  <plurals name="keys_added_and_updated_2">
+    <item quantity="one">et %d clef mise à jour.</item>
+    <item quantity="other">et %d clefs mises à jour.</item>
+  </plurals>
+  <plurals name="keys_added">
+    <item quantity="one">%d clef ajoutée avec succès.</item>
+    <item quantity="other">%d clefs ajoutées avec succès.</item>
+  </plurals>
+  <plurals name="keys_updated">
+    <item quantity="one">%d clef mise à jour avec succès.</item>
+    <item quantity="other">%d clefs mises à jour avec succès.</item>
+  </plurals>
   <string name="no_keys_added_or_updated">Aucune clef ajoutée ou mise à jour.</string>
   <string name="key_exported">1 clef exportée avec succès.</string>
+  <string name="keys_exported">%d clefs exportées avec succès.</string>
   <string name="no_keys_exported">Aucune clef exportée.</string>
   <string name="key_creation_el_gamal_info">Note : seules les sous-clefs prennent en charge ElGamal, et pour ElGamal la taille de clef la plus proche de 1 536, 2 048, 3 072, 4 096 ou  8 192 sera utilisée.</string>
   <string name="key_not_found">Clef %08X introuvable.</string>
+  <plurals name="keys_found">
+    <item quantity="one">%d clef trouvée.</item>
+    <item quantity="other">%d clefs trouvées.</item>
+  </plurals>
   <string name="unknown_signature_key_touch_to_look_up">Signature inconnue. Toucher pour rechercher la clef.</string>
+  <string name="bad_keys_encountered">%d mauvaise(s) clef(s) ignorée(s). Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</string>
   <string name="lookup_unknown_key">Clef %s inconnue, voulez-vous essayer de la trouver sur un serveur de clefs ?</string>
   <string name="key_send_success">Clef envoyée vers le serveur avec succès</string>
   <string name="key_sign_success">Clef signée avec succès</string>
   <string name="list_empty">Cette liste est vide !</string>
-  <string name="nfc_successfull">Clef envoyée par faisceau NFC avec succès !</string>
+  <string name="nfc_successfull">Clef envoyée par NFC BEAM avec succès !</string>
   <string name="key_copied_to_clipboard">La clef a été copié vers le presse-papiers !</string>
   <string name="key_has_already_been_signed">La clef a déjà été signée !</string>
   <string name="select_key_to_sign">Veuillez choisir une clef a utiliser pour la signature !</string>
+  <string name="key_too_big_for_sharing">La clef est trop grosse pour être partagée ainsi !</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -219,6 +242,7 @@
   <string name="error_key_needs_a_user_id">vous avez besoin d\'au moins une ID utilisateur</string>
   <string name="error_main_user_id_must_not_be_empty">l\'ID de l\'utilisateur principal ne doit pas être vide</string>
   <string name="error_key_needs_master_key">au moins une clef maîtresse est nécessaire</string>
+  <string name="error_no_encryption_keys_or_passphrase">aucune clef ni phrase de passe n\'a été donnée</string>
   <string name="error_signature_failed">échec lors de la signature</string>
   <string name="error_no_signature_passphrase">aucune phrase de passe n\'a été donnée</string>
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
@@ -226,9 +250,10 @@
   <string name="error_corrupt_data">données corrompues</string>
   <string name="error_no_symmetric_encryption_packet">paquet avec chiffrement symétrique introuvable</string>
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
+  <string name="error_saving_keys">erreur lors de la sauvegarde de certaines clefs</string>
   <string name="error_could_not_extract_private_key">impossible d\'extraire la clef privée</string>
   <string name="error_only_files_are_supported">Les données binaires directes sans fichier dans le système de fichiers ne sont pas prises en charge. C\'est uniquement pris en charge par ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
-  <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction de faisceau NFC !</string>
+  <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction NFC Beam !</string>
   <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
   <!--progress dialogs, usually ending in '…'-->
@@ -242,7 +267,12 @@
   <string name="progress_certifying_master_key">certification de la clef maîtresse...</string>
   <string name="progress_building_master_key">assemblage du trousseau maître...</string>
   <string name="progress_adding_sub_keys">ajout des sous-clefs...</string>
+  <string name="progress_saving_key_ring">sauvegarde de la clef...</string>
   <string name="progress_importing_secret_keys">Importation des clefs secrètes...</string>
+  <plurals name="progress_exporting_key">
+    <item quantity="one">exportation de la clef...</item>
+    <item quantity="other">exportation des clefs...</item>
+  </plurals>
   <string name="progress_extracting_signature_key">extraction de la clef de signature...</string>
   <string name="progress_extracting_key">extraction de la clef...</string>
   <string name="progress_preparing_streams">préparation des flux...</string>
@@ -273,7 +303,7 @@
   <string name="compression_very_slow">très lent</string>
   <!--Help-->
   <string name="help_tab_start">Commencer</string>
-  <string name="help_tab_nfc_beam">Faisceau NFC</string>
+  <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Journal des changements</string>
   <string name="help_tab_about">À propos de</string>
   <string name="help_about_version">Version :</string>
@@ -281,6 +311,10 @@
   <string name="import_import">Importer les clefs choisies</string>
   <string name="import_sign_and_upload">Importer, signer et téléverser les clefs choisies</string>
   <string name="import_from_clipboard">Importer à partir du presse-papiers</string>
+  <plurals name="import_qr_code_missing">
+    <item quantity="one">Le code QR avec l\'ID %s est manquant</item>
+    <item quantity="other">Les codes QR avec les ID %s sont manquants</item>
+  </plurals>
   <string name="import_qr_code_start_with_one">Veuillez commencer par le code QR avec l\'ID 1</string>
   <string name="import_qr_code_wrong">Code QR incorrecte ! Veuillez réessayer !</string>
   <string name="import_qr_code_finished">Balayage de code QR terminé !</string>

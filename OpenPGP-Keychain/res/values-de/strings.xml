@@ -8,11 +8,11 @@
   <string name="title_encrypt">Verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_authentication">Passwort</string>
-  <string name="title_create_key">Schlüssel erzeugen</string>
+  <string name="title_create_key">Schlüssel erstellen</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Registrierte Anwendungen</string>
-  <string name="title_key_server_preference">Einstellungen Schlüssel-Server</string>
+  <string name="title_key_server_preference">Einstellung der Schlüsselserver</string>
   <string name="title_change_pass_phrase">Passwort ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_send_email">E-Mail senden...</string>
@@ -22,8 +22,8 @@
   <string name="title_export_key">Schlüssel exportieren</string>
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
-  <string name="title_key_server_query">Schlüssel-Server abfragen</string>
-  <string name="title_send_key">Auf Schlüssel-Server hochladen</string>
+  <string name="title_key_server_query">Schlüsselserver abfragen</string>
+  <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
   <string name="title_sign_key">Schlüssel signieren</string>
   <string name="title_key_details">Schlüsseldetails</string>
@@ -37,8 +37,9 @@
   <string name="section_master_key">Hauptschlüssel</string>
   <string name="section_master_user_id">Hauptbenutzer-ID</string>
   <string name="section_actions">Aktionen</string>
+  <string name="section_signing_key">Dein Signaturschlüssel</string>
   <string name="section_upload_key">Schlüssel hochladen</string>
-  <string name="section_key_server">Schlüssel-Server</string>
+  <string name="section_key_server">Schlüsselserver</string>
   <!--button-->
   <string name="btn_sign_to_clipboard">Signieren (Zwischenablage)</string>
   <string name="btn_encrypt_to_clipboard">In die Zwischenablage verschlüsseln</string>
@@ -46,8 +47,8 @@
   <string name="btn_sign_and_send">Signieren und senden...</string>
   <string name="btn_sign">Signieren</string>
   <string name="btn_decrypt">Entschlüsseln</string>
-  <string name="btn_verify">Verifizieren</string>
-  <string name="btn_select_encrypt_keys">Empfänger wählen</string>
+  <string name="btn_verify">Signatur prüfen</string>
+  <string name="btn_select_encrypt_keys">Empfänger auswählen</string>
   <string name="btn_encrypt_file">Datei verschlüsseln</string>
   <string name="btn_save">Speichern</string>
   <string name="btn_do_not_save">Abbrechen</string>
@@ -57,7 +58,7 @@
   <string name="btn_change_passphrase">Passwort ändern</string>
   <string name="btn_set_passphrase">Passwort setzen</string>
   <string name="btn_search">Suchen</string>
-  <string name="btn_export_to_server">Auf Schlüssel-Server hochladen</string>
+  <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <!--menu-->
@@ -73,9 +74,9 @@
   <string name="menu_create_key">Schlüssel erstellen</string>
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
-  <string name="menu_key_server">Schlüssel-Server</string>
-  <string name="menu_update_key">Von einem Schlüssel-Server aktualisieren</string>
-  <string name="menu_export_key_to_server">Auf Schlüssel-Server hochladen</string>
+  <string name="menu_key_server">Schlüsselserver</string>
+  <string name="menu_update_key">Von einem Schlüsselserver aktualisieren</string>
+  <string name="menu_export_key_to_server">Auf Schlüsselserver hochladen</string>
   <string name="menu_share">Teilen</string>
   <string name="menu_share_title_fingerprint">Teile Fingerabdruck…</string>
   <string name="menu_share_title">Teile gesamten Schlüssel…</string>
@@ -108,8 +109,8 @@
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
-  <string name="label_force_v3_signature">OpenPGPv3 Signaturen erzwingen</string>
-  <string name="label_key_servers">Schlüssel-Server</string>
+  <string name="label_force_v3_signature">OpenPGPv3-Signaturen erzwingen</string>
+  <string name="label_key_servers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
   <string name="label_expiry">Ablaufdatum</string>
@@ -119,29 +120,31 @@
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
+  <string name="label_send_key">Lade Schlüssel nach dem Signieren auf den ausgewählten Schlüsselserver hoch</string>
   <string name="label_fingerprint">Fingerabdruck</string>
+  <string name="select_keys_button_default">Auswählen</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d ausgewählt</item>
     <item quantity="other">%d ausgewählt</item>
   </plurals>
-  <string name="unknown_user_id">&lt;Unbekannt&gt;</string>
+  <string name="unknown_user_id">&lt;unbekannt&gt;</string>
   <string name="none">&lt;keine&gt;</string>
-  <string name="no_key">&lt;Kein Schlüssel&gt;</string>
+  <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">kann verschlüsseln</string>
   <string name="can_sign">kann signieren</string>
   <string name="expired">abgelaufen</string>
   <plurals name="n_key_servers">
-    <item quantity="one">%d Schlüssel-Server</item>
-    <item quantity="other">%d Schlüssel-Server</item>
+    <item quantity="one">%d Schlüsselserver</item>
+    <item quantity="other">%d Schlüsselserver</item>
   </plurals>
   <string name="fingerprint">Fingerabdruck:</string>
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
   <string name="choice_none">Keine</string>
-  <string name="choice_sign_only">Nur signieren</string>
-  <string name="choice_encrypt_only">Nur verschlüsseln</string>
-  <string name="choice_sign_and_encrypt">Signieren und verschlüsseln</string>
+  <string name="choice_sign_only">Nur Signieren</string>
+  <string name="choice_encrypt_only">Nur Verschlüsseln</string>
+  <string name="choice_sign_and_encrypt">Signieren und Verschlüsseln</string>
   <string name="choice_15secs">15 s</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 min</string>
@@ -218,6 +221,9 @@
   <string name="list_empty">Diese Liste ist leer!</string>
   <string name="nfc_successfull">Schlüssel erfolgreich mit NFC Beam gesendet!</string>
   <string name="key_copied_to_clipboard">Schlüssel wurde in die Zwischenablage kopiert!</string>
+  <string name="key_has_already_been_signed">Dieser Schlüssel wurde schon signiert!</string>
+  <string name="select_key_to_sign">Bitte wähle einen Signaturschlüssel!</string>
+  <string name="key_too_big_for_sharing">Schlüssel ist zu groß um so geteilt zu werden!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -235,6 +241,7 @@
   <string name="error_key_needs_a_user_id">Mindestens eine Benutzer-ID wird benötigt</string>
   <string name="error_main_user_id_must_not_be_empty">Hauptbenutzer-ID darf nicht leer sein</string>
   <string name="error_key_needs_master_key">Mindestens ein Hauptschlüssel wird benötigt</string>
+  <string name="error_no_encryption_keys_or_passphrase">Keine Schlüssel zur Verschlüsselung gegeben bzw. kein symmetrisches Passwort festgelegt</string>
   <string name="error_signature_failed">Signieren fehlgeschlagen</string>
   <string name="error_no_signature_passphrase">kein Passwort angegeben</string>
   <string name="error_no_signature_key">kein Signaturschlüssel angegeben</string>
@@ -242,6 +249,7 @@
   <string name="error_corrupt_data">beschädigte Daten</string>
   <string name="error_no_symmetric_encryption_packet">Paket mit symmetrischer Verschlüsselung konnte nicht gefunden werden</string>
   <string name="error_wrong_passphrase">falsches Passwort</string>
+  <string name="error_saving_keys">Es trat ein Fehler beim Speichern einiger Schlüssel auf</string>
   <string name="error_could_not_extract_private_key">Privater Schlüssel konnte nicht extrahiert werden</string>
   <string name="error_only_files_are_supported">Binäre Daten ohne Datei im Dateisystem werden nicht unterstützt. Dies wird nur durch ACTION_ENCRYPT_STREAM_AND_RETURN unterstützt.</string>
   <string name="error_jelly_bean_needed">Android 4.1 alias Jelly Bean wird benötigt um Androids NFC-Beam nutzen zu können!</string>
@@ -306,10 +314,14 @@
     <item quantity="one">QR-Codes mit folgender ID fehlt: %s</item>
     <item quantity="other">QR-Codes mit folgenden IDs fehlen: %s</item>
   </plurals>
+  <string name="import_qr_code_start_with_one">Bitte fange mit QR-Code der ID 1 an</string>
   <string name="import_qr_code_wrong">Falsch formatierter QR-Code! Bitte erneut versuchen!</string>
   <string name="import_qr_code_finished">QR-Code wurde erfolgreich eingescannt!</string>
+  <string name="import_qr_code_too_short_fingerprint">Der Fingerabdruck in diesem QR-Code ist zu kurz (&lt; 16 Zeichen)</string>
   <string name="import_qr_scan_button">Qr-Code mittels \'Barcode Scanner\' einscannen</string>
+  <string name="import_nfc_text">Um Schlüssel über NFC zu erhalten muss das Gerät entsperrt sein.</string>
   <string name="import_nfc_help_button">Hilfe</string>
+  <string name="import_clipboard_button">Füge den Schlüssel aus der Zwischenablage ein</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenPGP: Datei entschlüsseln</string>
   <string name="intent_import_key">OpenPGP: Schlüssel importieren</string>
@@ -338,6 +350,7 @@
   <string name="share_qr_code_dialog_title">Über QR Code teilen</string>
   <string name="share_qr_code_dialog_start">Mit \'Weiter\' durch alle QR-Codes gehen und diese nacheinander scannen.</string>
   <string name="share_qr_code_dialog_fingerprint_text">Fingerabdruck:</string>
+  <string name="share_qr_code_dialog_progress">QR-Code mit ID %1$d von %2$d</string>
   <string name="share_nfc_dialog">Über NFC teilen</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
