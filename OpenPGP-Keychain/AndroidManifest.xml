@@ -108,6 +108,15 @@
                 android:value=".ui.KeyListPublicActivity" />
         </activity>
         <activity
+            android:name=".ui.ViewKeyActivityJB"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
+            android:label="@string/title_key_details"
+            android:parentActivityName=".ui.KeyListPublicActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.KeyListPublicActivity" />
+        </activity>
+        <activity
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_recipients"

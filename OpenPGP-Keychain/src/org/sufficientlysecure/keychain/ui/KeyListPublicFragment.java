@@ -260,9 +260,14 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent detailsIntent = new Intent(getActivity(), ViewKeyActivity.class);
-        detailsIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
-        startActivity(detailsIntent);
+        Intent viewIntent = null;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+            viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
+        } else {
+            viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
+        }
+        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
+        startActivity(viewIntent);
     }
 
     public void encrypt(long[] keyRingRowIds) {

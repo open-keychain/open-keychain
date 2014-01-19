@@ -21,10 +21,10 @@ import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,10 +33,11 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 
-public class DeleteKeyDialogFragment extends DialogFragment {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class DeleteKeyDialogFragment extends SherlockDialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_DELETE_KEY_RING_ROW_IDS = "delete_file";
     private static final String ARG_KEY_TYPE = "key_type";

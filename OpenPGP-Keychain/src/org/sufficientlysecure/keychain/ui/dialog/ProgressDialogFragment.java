@@ -23,10 +23,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 
-public class ProgressDialogFragment extends DialogFragment {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class ProgressDialogFragment extends SherlockDialogFragment {
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
 

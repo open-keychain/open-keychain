@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -29,8 +29,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
-
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,10 +37,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
+import android.widget.Toast;
 
-public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+public class SetPassphraseDialogFragment extends SherlockDialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
 

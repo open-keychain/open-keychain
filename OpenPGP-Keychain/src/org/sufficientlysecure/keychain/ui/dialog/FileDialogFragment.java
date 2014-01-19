@@ -32,15 +32,15 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class FileDialogFragment extends DialogFragment {
+public class FileDialogFragment extends SherlockDialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
     private static final String ARG_MESSAGE = "message";

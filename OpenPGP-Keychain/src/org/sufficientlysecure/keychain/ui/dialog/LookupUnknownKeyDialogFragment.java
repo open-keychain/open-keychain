@@ -19,10 +19,10 @@ package org.sufficientlysecure.keychain.ui.dialog;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.KeyServerQueryActivity;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -34,10 +34,11 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.DialogFragment;
+
+import com.actionbarsherlock.app.SherlockDialogFragment;
 
 
-public class LookupUnknownKeyDialogFragment extends DialogFragment {
+public class LookupUnknownKeyDialogFragment extends SherlockDialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_UNKNOWN_KEY_ID = "unknown_key_id";
 
