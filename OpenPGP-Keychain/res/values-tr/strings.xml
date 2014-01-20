@@ -3,19 +3,26 @@
   <!--title-->
   <string name="title_select_recipients">Açık Anahtar Seç</string>
   <string name="title_select_secret_key">Özel Anahtar Seç</string>
+  <string name="title_encrypt">Şifrele</string>
   <string name="title_create_key">Anahtar oluştur</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>
   <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
+  <string name="title_import_keys">Anahtarları Al</string>
+  <string name="title_export_key">Anahtarı Ver</string>
+  <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
+  <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
   <string name="title_sign_key">Anahtarı İmzala</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
+  <string name="section_user_ids">Kullanıcı IDleri</string>
   <string name="section_keys">Anahtarlar</string>
   <string name="section_general">Genel</string>
   <string name="section_defaults">Varsayılanlar</string>
+  <string name="section_advanced">Gelişmiş</string>
   <string name="section_upload_key">Anahtar Yükle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
