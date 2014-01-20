@@ -17,5 +17,7 @@ License:
 GPLv3+
 
 Permissions:
-• Internet access: Internet access is ONLY used for key server queries.
-• Modify/delete SD card content: To export keys to the sd card
+• Full network access: Internet access is ONLY used for key server queries
+• Control Near Field Communication: To exchange keys via NFC
+• Modify or delete the contents of your USB storage: To export keys to the sd card
+• Read the contents of your USB storage: To import keys from the sd card
