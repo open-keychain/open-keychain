@@ -5,7 +5,7 @@
   <string name="title_manage_secret_keys">Секретные ключи</string>
   <string name="title_select_recipients">Выбрать Публичный ключ</string>
   <string name="title_select_secret_key">Выбрать Секретный ключ</string>
-  <string name="title_encrypt">Шифровать</string>
+  <string name="title_encrypt">Зашифровать</string>
   <string name="title_decrypt">Расшифровать</string>
   <string name="title_authentication">Пароль</string>
   <string name="title_create_key">Создать ключ</string>
