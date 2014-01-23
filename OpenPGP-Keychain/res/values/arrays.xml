@@ -13,6 +13,7 @@
         <item>@string/choice_2hours</item>
         <item>@string/choice_4hours</item>
         <item>@string/choice_8hours</item>
+        <item>@string/choice_forever</item>
     </string-array>
     <string-array name="pass_phrase_cache_ttl_values" translatable="false">
         <item>15</item>
@@ -26,6 +27,7 @@
         <item>7200</item>
         <item>14400</item>
         <item>28800</item>
+        <item>-1</item>
     </string-array>
     <string-array name="key_size_spinner_values" translatable="false">
         <item>@string/key_size_512</item>
