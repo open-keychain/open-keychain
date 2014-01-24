@@ -377,8 +377,9 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
 
                             alert.setIcon(android.R.drawable.ic_dialog_alert);
                             alert.setTitle(R.string.warning);
-                            alert.setMessage(ImportKeysActivity.this.getString(
-                                    R.string.bad_keys_encountered, bad));
+
+                            alert.setMessage(ImportKeysActivity.this.getResources()
+                                    .getQuantityString(R.plurals.bad_keys_encountered, bad, bad));
 
                             alert.setPositiveButton(android.R.string.ok,
                                     new DialogInterface.OnClickListener() {

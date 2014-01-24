@@ -230,7 +230,12 @@
     </plurals>
 
     <string name="unknown_signature_key_touch_to_look_up">Unknown signature, touch to look up key.</string>
-    <string name="bad_keys_encountered">%d bad secret key(s) ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</string>
+
+    <plurals name="bad_keys_encountered">
+        <item quantity="one">%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
+        <item quantity="other">%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
+    </plurals>
+
     <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
     <string name="key_send_success">Successfully sent key to server</string>
     <string name="key_sign_success">Successfully signed key</string>
