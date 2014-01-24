@@ -291,10 +291,12 @@ public class PassphraseCacheService extends Service {
                 // add keyId and passphrase to memory
                 mPassphraseCache.put(keyId, passphrase);
 
-                // register new alarm with keyId for this passphrase
-                long triggerTime = new Date().getTime() + (ttl * 1000);
-                AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-                am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, keyId));
+                if (ttl > 0) {
+                    // register new alarm with keyId for this passphrase
+                    long triggerTime = new Date().getTime() + (ttl * 1000);
+                    AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+                    am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, keyId));
+                }
             } else if (ACTION_PASSPHRASE_CACHE_GET.equals(intent.getAction())) {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
                 Messenger messenger = intent.getParcelableExtra(EXTRA_MESSENGER);
