@@ -79,20 +79,13 @@ public class KeyListSecretAdapter extends CursorAdapter {
         if (userId != null) {
             String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
-            if (userIdSplit[1] != null) {
+            if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
+                mainUserId.setText(userIdSplit[0]);
+            }
+
+            if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
                 mainUserIdRest.setText(userIdSplit[1]);
             }
-            mainUserId.setText(userIdSplit[0]);
-        }
-
-        if (mainUserId.getText().length() == 0) {
-            mainUserId.setText(R.string.unknown_user_id);
-        }
-
-        if (mainUserIdRest.getText().length() == 0) {
-            mainUserIdRest.setVisibility(View.GONE);
-        } else {
-            mainUserIdRest.setVisibility(View.VISIBLE);
         }
     }
 

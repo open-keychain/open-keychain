@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.util.List;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -52,7 +53,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         clear();
         if (data != null) {
             this.data = data;
-            
+
             // add data to extended ArrayAdapter
             if (Build.VERSION.SDK_INT >= 11) {
                 addAll(data);
@@ -92,24 +93,29 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         String userId = entry.userIds.get(0);
         if (userId != null) {
-            String chunks[] = userId.split(" <", 2);
-            userId = chunks[0];
-            if (chunks.length > 1) {
-                mainUserIdRest.setText("<" + chunks[1]);
+            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+
+            if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
+                // show red user id if it is a secret key
+                if (entry.secretKey) {
+                    userId = mActivity.getString(R.string.secret_key) + " " + userId;
+                    mainUserId.setTextColor(Color.RED);
+                } else {
+                    mainUserId.setText(userIdSplit[0]);
+                }
             }
-            if (entry.secretKey) {
-                userId = mActivity.getString(R.string.secret_key) + " " + userId;
-                mainUserId.setTextColor(Color.RED);
+
+            if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
+                mainUserIdRest.setText(userIdSplit[1]);
+                mainUserIdRest.setVisibility(View.VISIBLE);
+            } else {
+                mainUserIdRest.setVisibility(View.GONE);
             }
-            mainUserId.setText(userId);
+
         }
 
         keyId.setText(entry.hexKeyId);
         fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
-
-        if (mainUserIdRest.getText().length() == 0) {
-            mainUserIdRest.setVisibility(View.GONE);
-        }
 
         algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 

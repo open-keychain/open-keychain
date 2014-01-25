@@ -55,7 +55,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         mSectionColumnIndex = sectionColumnIndex;
         initIndex(c);
     }
-    
+
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         initIndex(newCursor);
@@ -92,20 +92,13 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         if (userId != null) {
             String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
-            if (userIdSplit[1] != null) {
+            if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
+                mainUserId.setText(userIdSplit[0]);
+            }
+
+            if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
                 mainUserIdRest.setText(userIdSplit[1]);
             }
-            mainUserId.setText(userIdSplit[0]);
-        }
-
-        if (mainUserId.getText().length() == 0) {
-            mainUserId.setText(R.string.unknown_user_id);
-        }
-
-        if (mainUserIdRest.getText().length() == 0) {
-            mainUserIdRest.setVisibility(View.GONE);
-        } else {
-            mainUserIdRest.setVisibility(View.VISIBLE);
         }
     }
 
@@ -144,7 +137,11 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         }
 
         // set header text as first char in user id
-        String headerText = "" + mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
+        String userId = mCursor.getString(mSectionColumnIndex);
+        String headerText = convertView.getResources().getString(R.string.unknown_user_id);
+        if (userId != null && userId.length() > 0) {
+            headerText = "" + mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
+        }
         holder.text.setText(headerText);
         return convertView;
     }
@@ -167,7 +164,12 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         // return the first character of the name as ID because this is what
         // headers private HashMap<Integer, Boolean> mSelection = new HashMap<Integer,
         // Boolean>();are based upon
-        return mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
+        String userId = mCursor.getString(mSectionColumnIndex);
+        if (userId != null && userId.length() > 0) {
+            return userId.subSequence(0, 1).charAt(0);
+        } else {
+            return Long.MAX_VALUE;
+        }
     }
 
     class HeaderViewHolder {
