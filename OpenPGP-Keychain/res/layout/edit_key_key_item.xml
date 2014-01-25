@@ -82,8 +82,9 @@
                 <com.beardedhen.androidbootstrap.BootstrapButton
                     android:id="@+id/expiry"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="40dp"
                     android:text="@string/none"
+                    bootstrapbutton:bb_size="small"
                     bootstrapbutton:bb_type="default" />
             </TableRow>
 
