@@ -1,9 +1,13 @@
 package org.spongycastle.openpgp;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.spongycastle.bcpg.BCPGInputStream;
+import org.spongycastle.bcpg.SignaturePacket;
 import org.spongycastle.bcpg.SignatureSubpacket;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
 import org.spongycastle.bcpg.sig.Features;
@@ -16,6 +20,7 @@ import org.spongycastle.bcpg.sig.PrimaryUserID;
 import org.spongycastle.bcpg.sig.SignatureCreationTime;
 import org.spongycastle.bcpg.sig.SignatureExpirationTime;
 import org.spongycastle.bcpg.sig.SignerUserID;
+import org.spongycastle.openpgp.PGPException;
 
 /**
  * Container for a list of signature subpackets.
@@ -87,6 +92,27 @@ public class PGPSignatureSubpacketVector
         }
 
         return vals;
+    }
+
+    public PGPSignatureList getEmbeddedSignatures() throws IOException, PGPException
+    {
+        SignatureSubpacket[] sigs = getSubpackets(SignatureSubpacketTags.EMBEDDED_SIGNATURE);
+        ArrayList l = new ArrayList();
+        for (int i = 0; i < sigs.length; i++) {
+            byte[] data = sigs[i].getData();
+            PGPSignature tmpSig = null;
+            BCPGInputStream in = new BCPGInputStream(new ByteArrayInputStream(data));
+            try {
+                tmpSig = new PGPSignature(new SignaturePacket(in));
+            } catch (IOException e) {
+                tmpSig = null;
+            } catch (PGPException e) {
+                tmpSig = null;
+            }
+            if (tmpSig != null)
+                l.add(tmpSig);
+        }
+        return new PGPSignatureList((PGPSignature[])l.toArray(new PGPSignature[l.size()]));
     }
 
     public long getIssuerKeyID()
