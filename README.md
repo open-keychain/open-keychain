@@ -33,6 +33,12 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 
+### Build API Demo with Gradle
+
+1. Follow 1-3 from above
+2. Change to API Demo directory ``cd OpenPGP-Keychain-API-Demo``
+3. Execute ``./gradlew build``
+
 ### Development with Android Studio
 
 I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
