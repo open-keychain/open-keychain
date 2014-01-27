@@ -973,16 +973,16 @@ public class PgpOperation {
         boolean primkeyBinding_isok = false;
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-        PGPSignatureList eSigList;
+        PGPSignatureList eSigList = null;
 
         if (Pkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
-            try {
-				eSigList = Pkts.getEmbeddedSignatures();
-            } catch (IOException e) {
-                return false;
-            } catch (PGPException e) {
-                return false;
-            }
+//            try {
+//				eSigList = Pkts.getEmbeddedSignatures();
+//            } catch (IOException e) {
+//                return false;
+//            } catch (PGPException e) {
+//                return false;
+//            }
 			for (int j = 0; j < eSigList.size(); ++j) {
 				PGPSignature emSig = eSigList.get(j);
 	            if (emSig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
