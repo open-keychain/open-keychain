@@ -33,13 +33,13 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 
-### Development with Eclipse
+### Development with Android Studio
 
-Android Studio is currently not supported or recommended!
+I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
-1. File -> Import -> Android -> Existing Android Code Into Workspace, choose "libraries/ActionBarSherlock"
-2. Repeat step 1 with "libraries/HtmlTextView", "libraries/StickyListHeaders/library", "libraries/AndroidBootstrap", "libraries/zxing", "libraries/zxing-android-integration", "OpenPGP-Keychain"
-3. Now all required source files are available in Eclipse
+1. Clone the project from github
+2. From Android Studio: File -> Import Project -> Select the cloned top folder
+3. Import project from external model -> choose Gradle
 
 ## Keychain API
 
