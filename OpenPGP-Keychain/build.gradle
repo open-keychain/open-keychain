@@ -23,6 +23,10 @@ dependencies {
     compile project(':libraries:AndroidBootstrap')
     compile project(':libraries:zxing')
     compile project(':libraries:zxing-android-integration')
+    compile project(':libraries:spongycastle:core')
+    compile project(':libraries:spongycastle:pg')
+    compile project(':libraries:spongycastle:pkix')
+    compile project(':libraries:spongycastle:prov')
 }
 
 android {
