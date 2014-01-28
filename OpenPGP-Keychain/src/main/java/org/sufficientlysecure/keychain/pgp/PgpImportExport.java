@@ -206,30 +206,6 @@ public class PgpImportExport {
                     mContext.getString(R.string.error_external_storage_not_ready));
         }
 
-        // export public keyrings...
-        ArmoredOutputStream outPub = new ArmoredOutputStream(outStream);
-        outPub.setHeader("Version", PgpHelper.getFullVersion(mContext));
-
-        int numKeys = 0;
-        for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
-            // double the needed time if exporting both public and secret parts
-            if (keyType == Id.type.secret_key) {
-                updateProgress(i * 100 / keyRingMasterKeyIds.size() / 2, 100);
-            } else {
-                updateProgress(i * 100 / keyRingMasterKeyIds.size(), 100);
-            }
-
-            PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
-                    mContext, keyRingMasterKeyIds.get(i));
-
-            if (publicKeyRing != null) {
-                publicKeyRing.encode(outPub);
-            }
-            ++numKeys;
-        }
-        outPub.close();
-
-        // if we export secret keyrings, append all secret parts after the public parts
         if (keyType == Id.type.secret_key) {
             ArmoredOutputStream outSec = new ArmoredOutputStream(outStream);
             outSec.setHeader("Version", PgpHelper.getFullVersion(mContext));
@@ -245,9 +221,30 @@ public class PgpImportExport {
                 }
             }
             outSec.close();
+        } else {
+            // export public keyrings...
+            ArmoredOutputStream outPub = new ArmoredOutputStream(outStream);
+            outPub.setHeader("Version", PgpHelper.getFullVersion(mContext));
+
+            for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
+                // double the needed time if exporting both public and secret parts
+                if (keyType == Id.type.secret_key) {
+                    updateProgress(i * 100 / keyRingMasterKeyIds.size() / 2, 100);
+                } else {
+                    updateProgress(i * 100 / keyRingMasterKeyIds.size(), 100);
+                }
+
+                PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
+                        mContext, keyRingMasterKeyIds.get(i));
+
+                if (publicKeyRing != null) {
+                    publicKeyRing.encode(outPub);
+                }
+            }
+            outPub.close();
         }
 
-        returnData.putInt(KeychainIntentService.RESULT_EXPORT, numKeys);
+        returnData.putInt(KeychainIntentService.RESULT_EXPORT, keyRingMasterKeyIds.size());
 
         updateProgress(R.string.progress_done, 100, 100);
 
