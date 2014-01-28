@@ -14,7 +14,7 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 ### Contribute Code
 
 1. Join the development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
-2. Lookout for interesting issues on our issue page at Github: https://github.com/dschuermann/openpgp-keychain/issues
+2. Lookout for interesting issues on our issue page at Github: https://github.com/openpgp-keychain/openpgp-keychain/issues
 3. Tell us about your plans on the mailinglist
 4. Read this README, especially the notes about coding style
 5. Fork OpenPGP Keychain and contribute code (the best part ;) )
@@ -112,10 +112,10 @@ to query). If other OpenPGP apps implement the service, no additional
 code is required in k9mail per provider. See [3] for a complete example
 for integration.
 
-[1] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl  
-[2] https://github.com/dschuermann/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
-[3] https://github.com/dschuermann/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
+[1] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl  
+[2] https://github.com/openpgp-keychain/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
+[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
+[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
 [4] https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
 
 ## Extended Remote API
