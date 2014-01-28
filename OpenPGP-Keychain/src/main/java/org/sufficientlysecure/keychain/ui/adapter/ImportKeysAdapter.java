@@ -98,8 +98,9 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
                 // show red user id if it is a secret key
                 if (entry.secretKey) {
-                    userId = mActivity.getString(R.string.secret_key) + " " + userId;
+                    userId = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
                     mainUserId.setTextColor(Color.RED);
+                    mainUserId.setText(userId);
                 } else {
                     mainUserId.setText(userIdSplit[0]);
                 }
