@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ClipboardReflection {
@@ -50,8 +51,7 @@ public class ClipboardReflection {
                 methodNewPlainText.invoke(clipboard, clip);
             }
         } catch (Exception e) {
-            Log.e("ProjectsException", "There was an error copying the text to the clipboard: "
-                    + e.getMessage());
+            Log.e(Constants.TAG, "There was an error copying the text to the clipboard", e);
         }
     }
 
@@ -89,9 +89,7 @@ public class ClipboardReflection {
                 return null;
             }
         } catch (Exception e) {
-            Log.e("ProjectsException", "There was an error getting the text from the clipboard: "
-                    + e.getMessage());
-
+            Log.e(Constants.TAG, "There was an error getting the text from the clipboard", e);
             return null;
         }
     }
