@@ -91,28 +91,28 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         TextView status = (TextView) view.findViewById(R.id.status);
         status.setText("");
 
+        // main user id
         String userId = entry.userIds.get(0);
         if (userId != null) {
             String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
+            // name
             if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
                 // show red user id if it is a secret key
                 if (entry.secretKey) {
-                    userId = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
+                    userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
                     mainUserId.setTextColor(Color.RED);
-                    mainUserId.setText(userId);
-                } else {
-                    mainUserId.setText(userIdSplit[0]);
                 }
+                mainUserId.setText(userIdSplit[0]);
             }
 
+            // email
             if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
                 mainUserIdRest.setText(userIdSplit[1]);
                 mainUserIdRest.setVisibility(View.VISIBLE);
             } else {
                 mainUserIdRest.setVisibility(View.GONE);
             }
-
         }
 
         keyId.setText(entry.hexKeyId);
