@@ -59,7 +59,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
             mKeyUserId.setText(R.string.api_settings_no_key);
             mKeyUserIdRest.setText("");
         } else {
-            String uid = getResources().getString(R.string.unknown_user_id);
+            String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
                     getActivity(), secretKeyId);

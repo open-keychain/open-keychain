@@ -904,7 +904,7 @@ public class EncryptActivity extends DrawerActivity {
             mMainUserId.setText("");
             mMainUserIdRest.setText("");
         } else {
-            String uid = getResources().getString(R.string.unknown_user_id);
+            String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this,
                     mSecretKeyId);

@@ -79,7 +79,7 @@ public class DeleteKeyDialogFragment extends SherlockDialogFragment {
 
         if (keyRingRowIds.length == 1) {
             // TODO: better way to do this?
-            String userId = activity.getString(R.string.unknown_user_id);
+            String userId = activity.getString(R.string.user_id_no_name);
 
             if (keyType == Id.type.public_key) {
                 PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByRowId(activity,

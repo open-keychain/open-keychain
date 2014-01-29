@@ -128,7 +128,7 @@
     <item quantity="few">%d выбрано</item>
     <item quantity="other">%d выбрано</item>
   </plurals>
-  <string name="unknown_user_id">&lt;неизв.&gt;</string>
+  <string name="user_id_no_name">&lt;неизв.&gt;</string>
   <string name="none">&lt;нет&gt;</string>
   <string name="no_key">&lt;нет ключа&gt;</string>
   <string name="unknown_status"></string>

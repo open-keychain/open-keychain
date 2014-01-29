@@ -326,7 +326,7 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
             View view = mInflater.inflate(R.layout.key_server_query_result_item, null);
 
             TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-            mainUserId.setText(R.string.unknown_user_id);
+            mainUserId.setText(R.string.user_id_no_name);
             TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
             mainUserIdRest.setText("");
             TextView keyId = (TextView) view.findViewById(R.id.keyId);

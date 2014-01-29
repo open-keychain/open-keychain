@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -305,8 +304,8 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
                         setTitle(mainUserId[0]);
                         mName.setText(mainUserId[0]);
                     } else {
-                        setTitle(R.string.unknown_user_id);
-                        mName.setText(R.string.unknown_user_id);
+                        setTitle(R.string.user_id_no_name);
+                        mName.setText(R.string.user_id_no_name);
                     }
                     mEmail.setText(mainUserId[1]);
                     mComment.setText(mainUserId[2]);

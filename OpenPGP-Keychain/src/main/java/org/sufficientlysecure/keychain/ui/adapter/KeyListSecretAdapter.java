@@ -71,7 +71,7 @@ public class KeyListSecretAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknown_user_id);
+        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
 

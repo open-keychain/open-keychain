@@ -134,7 +134,7 @@
         <item quantity="other">%d selected</item>
     </plurals>
 
-    <string name="unknown_user_id">&lt;no user id&gt;</string>
+    <string name="user_id_no_name">&lt;no name&gt;</string>
     <string name="none">&lt;none&gt;</string>
     <string name="no_key">&lt;no key&gt;</string>
     <string name="unknown_status"></string>

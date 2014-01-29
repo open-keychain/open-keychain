@@ -771,7 +771,7 @@ public class DecryptActivity extends DrawerActivity {
                         mUserIdRest.setText("id: "
                                 + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
                         if (userId == null) {
-                            userId = getResources().getString(R.string.unknown_user_id);
+                            userId = getResources().getString(R.string.user_id_no_name);
                         }
                         String chunks[] = userId.split(" <", 2);
                         userId = chunks[0];

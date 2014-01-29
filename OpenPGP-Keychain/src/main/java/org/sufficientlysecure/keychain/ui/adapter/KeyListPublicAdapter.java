@@ -84,7 +84,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.unknown_user_id);
+        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         mainUserIdRest.setText("");
 
@@ -138,7 +138,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
         // set header text as first char in user id
         String userId = mCursor.getString(mSectionColumnIndex);
-        String headerText = convertView.getResources().getString(R.string.unknown_user_id);
+        String headerText = convertView.getResources().getString(R.string.user_id_no_name);
         if (userId != null && userId.length() > 0) {
             headerText = "" + mCursor.getString(mSectionColumnIndex).subSequence(0, 1).charAt(0);
         }

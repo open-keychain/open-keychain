@@ -91,7 +91,7 @@
   <string name="label_name">Nombre</string>
   <string name="label_comment">Comentario</string>
   <string name="label_email">Correo electrónico</string>
-  <string name="unknown_user_id">&lt;desconocido&gt;</string>
+  <string name="user_id_no_name">&lt;desconocido&gt;</string>
   <string name="unknown_status"></string>
   <!--choice-->
   <!--sentences-->
