@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -111,16 +112,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
         mUserIds = (ListView) findViewById(R.id.user_ids);
         mKeys = (ListView) findViewById(R.id.keys);
 
-        Intent intent = getIntent();
-        mDataUri = intent.getData();
-        if (mDataUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
-            finish();
-            return;
-        } else {
-            Log.d(Constants.TAG, "uri: " + mDataUri);
-            loadData(mDataUri);
-        }
+        loadData(getIntent());
     }
 
     @Override
@@ -133,62 +125,76 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            Intent homeIntent = new Intent(this, KeyListPublicActivity.class);
-            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(homeIntent);
-            return true;
-        case R.id.menu_key_view_update:
-            updateFromKeyserver(mDataUri);
-            return true;
-        case R.id.menu_key_view_sign:
-            signKey(mDataUri);
-            return true;
-        case R.id.menu_key_view_export_keyserver:
-            uploadToKeyserver(mDataUri);
-            return true;
-        case R.id.menu_key_view_export_file:
-            mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
-                    + "/pubexport.asc");
-            return true;
-        case R.id.menu_key_view_share_default_fingerprint:
-            shareKey(mDataUri, true);
-            return true;
-        case R.id.menu_key_view_share_default:
-            shareKey(mDataUri, false);
-            return true;
-        case R.id.menu_key_view_share_qr_code_fingerprint:
-            shareKeyQrCode(mDataUri, true);
-            return true;
-        case R.id.menu_key_view_share_qr_code:
-            shareKeyQrCode(mDataUri, false);
-            return true;
-        case R.id.menu_key_view_share_nfc:
-            shareNfc();
-            return true;
-        case R.id.menu_key_view_share_clipboard:
-            copyToClipboard(mDataUri);
-            return true;
-        case R.id.menu_key_view_delete: {
-            // Message is received after key is deleted
-            Handler returnHandler = new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                        setResult(RESULT_CANCELED);
-                        finish();
+            case android.R.id.home:
+                Intent homeIntent = new Intent(this, KeyListPublicActivity.class);
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(homeIntent);
+                return true;
+            case R.id.menu_key_view_update:
+                updateFromKeyserver(mDataUri);
+                return true;
+            case R.id.menu_key_view_sign:
+                signKey(mDataUri);
+                return true;
+            case R.id.menu_key_view_export_keyserver:
+                uploadToKeyserver(mDataUri);
+                return true;
+            case R.id.menu_key_view_export_file:
+                mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
+                        + "/pubexport.asc");
+                return true;
+            case R.id.menu_key_view_share_default_fingerprint:
+                shareKey(mDataUri, true);
+                return true;
+            case R.id.menu_key_view_share_default:
+                shareKey(mDataUri, false);
+                return true;
+            case R.id.menu_key_view_share_qr_code_fingerprint:
+                shareKeyQrCode(mDataUri, true);
+                return true;
+            case R.id.menu_key_view_share_qr_code:
+                shareKeyQrCode(mDataUri, false);
+                return true;
+            case R.id.menu_key_view_share_nfc:
+                shareNfc();
+                return true;
+            case R.id.menu_key_view_share_clipboard:
+                copyToClipboard(mDataUri);
+                return true;
+            case R.id.menu_key_view_delete: {
+                // Message is received after key is deleted
+                Handler returnHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        }
                     }
-                }
-            };
+                };
 
-            mExportHelper.deleteKey(mDataUri, Id.type.public_key, returnHandler);
-            return true;
-        }
+                mExportHelper.deleteKey(mDataUri, Id.type.public_key, returnHandler);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadData(Uri dataUri) {
+    private void loadData(Intent intent) {
+        if (intent.getData().equals(mDataUri)) {
+            Log.d(Constants.TAG, "Same URI, no need to load the data again!");
+            return;
+        }
+
+        mDataUri = intent.getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
+            finish();
+            return;
+        }
+
+        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
         mActionEncrypt.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -198,7 +204,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
                         ViewKeyActivity.this, mDataUri);
                 PGPPublicKey publicKey = ring.getPublicKey();
 
-                long[] encryptionKeyIds = new long[] { publicKey.getKeyID() };
+                long[] encryptionKeyIds = new long[]{publicKey.getKeyID()};
                 Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
                 intent.setAction(EncryptActivity.ACTION_ENCRYPT);
                 intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
@@ -229,21 +235,21 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
         getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
     }
 
-    static final String[] KEYRING_PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            UserIds.USER_ID };
+    static final String[] KEYRING_PROJECTION = new String[]{KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            UserIds.USER_ID};
     static final int KEYRING_INDEX_ID = 0;
     static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
     static final int KEYRING_INDEX_USER_ID = 2;
 
-    static final String[] USER_IDS_PROJECTION = new String[] { UserIds._ID, UserIds.USER_ID,
-            UserIds.RANK, };
+    static final String[] USER_IDS_PROJECTION = new String[]{UserIds._ID, UserIds.USER_ID,
+            UserIds.RANK,};
     // not the main user id
     static final String USER_IDS_SELECTION = UserIds.RANK + " > 0 ";
     static final String USER_IDS_SORT_ORDER = UserIds.USER_ID + " COLLATE LOCALIZED ASC";
 
-    static final String[] KEYS_PROJECTION = new String[] { Keys._ID, Keys.KEY_ID,
+    static final String[] KEYS_PROJECTION = new String[]{Keys._ID, Keys.KEY_ID,
             Keys.IS_MASTER_KEY, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN,
-            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY };
+            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY};
     static final String KEYS_SORT_ORDER = Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -258,31 +264,31 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-        case LOADER_ID_KEYRING: {
-            Uri baseUri = mDataUri;
+            case LOADER_ID_KEYRING: {
+                Uri baseUri = mDataUri;
 
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(this, baseUri, KEYRING_PROJECTION, null, null, null);
-        }
-        case LOADER_ID_USER_IDS: {
-            Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
+                // Now create and return a CursorLoader that will take care of
+                // creating a Cursor for the data being displayed.
+                return new CursorLoader(this, baseUri, KEYRING_PROJECTION, null, null, null);
+            }
+            case LOADER_ID_USER_IDS: {
+                Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
 
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
-                    USER_IDS_SORT_ORDER);
-        }
-        case LOADER_ID_KEYS: {
-            Uri baseUri = Keys.buildKeysUri(mDataUri);
+                // Now create and return a CursorLoader that will take care of
+                // creating a Cursor for the data being displayed.
+                return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
+                        USER_IDS_SORT_ORDER);
+            }
+            case LOADER_ID_KEYS: {
+                Uri baseUri = Keys.buildKeysUri(mDataUri);
 
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(this, baseUri, KEYS_PROJECTION, null, null, KEYS_SORT_ORDER);
-        }
+                // Now create and return a CursorLoader that will take care of
+                // creating a Cursor for the data being displayed.
+                return new CursorLoader(this, baseUri, KEYS_PROJECTION, null, null, KEYS_SORT_ORDER);
+            }
 
-        default:
-            return null;
+            default:
+                return null;
         }
     }
 
@@ -290,69 +296,68 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
-        case LOADER_ID_KEYRING:
-            if (data.moveToFirst()) {
-                // get name, email, and comment from USER_ID
-                String[] mainUserId = PgpKeyHelper.splitUserId(data
-                        .getString(KEYRING_INDEX_USER_ID));
-                setTitle(mainUserId[0]);
-                mName.setText(mainUserId[0]);
-                mEmail.setText(mainUserId[1]);
-                mComment.setText(mainUserId[2]);
-            }
-
-            break;
-        case LOADER_ID_USER_IDS:
-            mUserIdsAdapter.swapCursor(data);
-            break;
-        case LOADER_ID_KEYS:
-            // the first key here is our master key
-            if (data.moveToFirst()) {
-                // get key id from MASTER_KEY_ID
-                long keyId = data.getLong(KEYS_INDEX_KEY_ID);
-
-                String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
-                mKeyId.setText(keyIdStr);
-
-                // get creation date from CREATION
-                if (data.isNull(KEYS_INDEX_CREATION)) {
-                    mCreation.setText(R.string.none);
-                } else {
-                    Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
-
-                    mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                            creationDate));
+            case LOADER_ID_KEYRING:
+                if (data.moveToFirst()) {
+                    // get name, email, and comment from USER_ID
+                    String[] mainUserId = PgpKeyHelper.splitUserId(data
+                            .getString(KEYRING_INDEX_USER_ID));
+                    setTitle(mainUserId[0]);
+                    mName.setText(mainUserId[0]);
+                    mEmail.setText(mainUserId[1]);
+                    mComment.setText(mainUserId[2]);
                 }
 
-                // get creation date from EXPIRY
-                if (data.isNull(KEYS_INDEX_EXPIRY)) {
-                    mExpiry.setText(R.string.none);
-                } else {
-                    Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
+                break;
+            case LOADER_ID_USER_IDS:
+                mUserIdsAdapter.swapCursor(data);
+                break;
+            case LOADER_ID_KEYS:
+                // the first key here is our master key
+                if (data.moveToFirst()) {
+                    // get key id from MASTER_KEY_ID
+                    long keyId = data.getLong(KEYS_INDEX_KEY_ID);
 
-                    mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                            expiryDate));
+                    String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
+                    mKeyId.setText(keyIdStr);
+
+                    // get creation date from CREATION
+                    if (data.isNull(KEYS_INDEX_CREATION)) {
+                        mCreation.setText(R.string.none);
+                    } else {
+                        Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
+
+                        mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
+                                creationDate));
+                    }
+
+                    // get creation date from EXPIRY
+                    if (data.isNull(KEYS_INDEX_EXPIRY)) {
+                        mExpiry.setText(R.string.none);
+                    } else {
+                        Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
+
+                        mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(
+                                expiryDate));
+                    }
+
+                    String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
+                            data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
+                    mAlgorithm.setText(algorithmStr);
+
+                    // TODO: Can this be done better? fingerprint in db?
+                    String fingerprint = PgpKeyHelper.getFingerPrint(this, keyId);
+                    fingerprint = fingerprint.replace("  ", "\n");
+                    mFingerprint.setText(fingerprint);
+
+                    // TODO: get image with getUserAttributes() on key and then
+                    // PGPUserAttributeSubpacketVector
                 }
 
-                String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
-                        data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
-                mAlgorithm.setText(algorithmStr);
+                mKeysAdapter.swapCursor(data);
+                break;
 
-                // TODO: Can this be done better? fingerprint in db?
-                String fingerprint = PgpKeyHelper.getFingerPrint(this, keyId);
-
-                fingerprint = fingerprint.replace("  ", "\n");
-                mFingerprint.setText(fingerprint);
-
-                // TODO: get image with getUserAttributes() on key and then
-                // PGPUserAttributeSubpacketVector
-            }
-
-            mKeysAdapter.swapCursor(data);
-            break;
-
-        default:
-            break;
+            default:
+                break;
         }
     }
 
@@ -362,17 +367,17 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
      */
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-        case LOADER_ID_KEYRING:
-            // TODO?
-            break;
-        case LOADER_ID_USER_IDS:
-            mUserIdsAdapter.swapCursor(null);
-            break;
-        case LOADER_ID_KEYS:
-            mKeysAdapter.swapCursor(null);
-            break;
-        default:
-            break;
+            case LOADER_ID_KEYRING:
+                // TODO?
+                break;
+            case LOADER_ID_USER_IDS:
+                mUserIdsAdapter.swapCursor(null);
+                break;
+            case LOADER_ID_KEYS:
+                mKeysAdapter.swapCursor(null);
+                break;
+            default:
+                break;
         }
     }
 
@@ -438,7 +443,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
             ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this,
-                    dataUri, new long[] { masterKeyId });
+                    dataUri, new long[]{masterKeyId});
 
             content = keyringArmored.get(0);
 
@@ -469,7 +474,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
         // get public keyring as ascii armored string
         long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
         ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[] { masterKeyId });
+                new long[]{masterKeyId});
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
         Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)

@@ -236,6 +236,7 @@ public class SignKeyActivity extends SherlockFragmentActivity implements
                          */
                         uploadKey();
                     } else {
+                        setResult(RESULT_OK);
                         finish();
                     }
                 }
@@ -278,10 +279,10 @@ public class SignKeyActivity extends SherlockFragmentActivity implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-
                     Toast.makeText(SignKeyActivity.this, R.string.key_send_success,
                             Toast.LENGTH_SHORT).show();
 
+                    setResult(RESULT_OK);
                     finish();
                 }
             };
