@@ -29,7 +29,10 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 ### Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-2. Open the Android SDK Manager (shell command: ``android``). Expand the Extras directory and install "Android Support Repository"
+2. Open the Android SDK Manager (shell command: ``android``).  
+Expand the Tools directory and select "Android SDK Build-tools" newest version.  
+Expand the Extras directory and install "Android Support Repository"  
+Select everything for the newest SDK
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 5. You can install the app with ``adb install -r OpenPGP-Keychain/build/apk/OpenPGP-Keychain-debug-unaligned.apk``

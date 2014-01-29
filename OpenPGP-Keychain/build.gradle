@@ -1,21 +1,7 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.3'
-    }
-}
-
 apply plugin: 'android'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    compile 'com.android.support:support-v4:19.0.+' // already in actionbarsherlock
+    compile 'com.android.support:support-v4:19.0.1'
     compile project(':libraries:ActionBarSherlock')
     compile project(':libraries:HtmlTextView')
     compile project(':libraries:StickyListHeaders:library')
@@ -30,7 +16,7 @@ dependencies {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19"
+    buildToolsVersion "19.0.1"
 
     defaultConfig {
         minSdkVersion 8
