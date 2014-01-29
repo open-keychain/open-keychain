@@ -104,7 +104,7 @@
     <string name="label_passphrase_again">Again</string>
     <string name="label_algorithm">Algorithm</string>
     <string name="label_ascii_armor">ASCII Armor</string>
-    <string name="label_select_public_keys">Public Keys</string>
+    <string name="label_select_public_keys">Recipients</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
@@ -134,7 +134,7 @@
         <item quantity="other">%d selected</item>
     </plurals>
 
-    <string name="unknown_user_id">&lt;unknown&gt;</string>
+    <string name="unknown_user_id">&lt;no user id&gt;</string>
     <string name="none">&lt;none&gt;</string>
     <string name="no_key">&lt;no key&gt;</string>
     <string name="unknown_status"></string>
