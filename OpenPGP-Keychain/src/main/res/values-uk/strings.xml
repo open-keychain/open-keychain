@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_manage_public_keys">Контакти</string>
+  <string name="title_manage_secret_keys">Секретні ключі</string>
   <string name="title_select_recipients">Виберіть публічний ключ</string>
   <string name="title_select_secret_key">Виберіть секретний ключ</string>
   <string name="title_encrypt">Зашифрувати</string>
@@ -21,8 +23,10 @@
   <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
   <string name="title_key_server_query">Сервер запиту ключа</string>
+  <string name="title_send_key">Завантажити на сервер ключів</string>
   <string name="title_unknown_signature_key">Невідомий підпис ключа</string>
   <string name="title_sign_key">Підписати ключ</string>
+  <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <!--section-->
   <string name="section_user_ids">ІД користувача</string>
@@ -30,6 +34,12 @@
   <string name="section_general">Загальне</string>
   <string name="section_defaults">Типове</string>
   <string name="section_advanced">Додаткове</string>
+  <string name="section_master_key">Основний ключ</string>
+  <string name="section_master_user_id">ІД основного ключа</string>
+  <string name="section_actions">Дії</string>
+  <string name="section_signing_key">Ваш ключ, використаний для підпису</string>
+  <string name="section_upload_key">Завантажити ключ</string>
+  <string name="section_key_server">Сервер ключів</string>
   <!--button-->
   <string name="btn_sign_to_clipboard">Підпис (буфер обміну)</string>
   <string name="btn_encrypt_to_clipboard">Зашифрувати у буфер обміну</string>
@@ -48,12 +58,15 @@
   <string name="btn_change_passphrase">Змінити парольну фразу</string>
   <string name="btn_set_passphrase">Задати парольну фразу</string>
   <string name="btn_search">Пошук</string>
+  <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
+  <string name="menu_help">Довідка</string>
   <string name="menu_import_from_file">Імпорт з файлу</string>
   <string name="menu_import_from_qr_code">Імпорт з штрих-коду</string>
+  <string name="menu_import">Імпорт</string>
   <string name="menu_import_from_nfc">Імпорт з NFC</string>
   <string name="menu_export_keys">Експортувати усі ключі</string>
   <string name="menu_export_key">Експорт до файлу</string>
@@ -62,8 +75,21 @@
   <string name="menu_create_key_expert">Створити ключ (експерт)</string>
   <string name="menu_search">Пошук</string>
   <string name="menu_key_server">Імпорт з сервера ключів</string>
+  <string name="menu_update_key">Оновити з сервера ключів</string>
+  <string name="menu_export_key_to_server">Завантажити на сервер ключів</string>
+  <string name="menu_share">Поділитися</string>
+  <string name="menu_share_title_fingerprint">Поділитися відбитком…</string>
+  <string name="menu_share_title">Поділитися цілим ключем…</string>
+  <string name="menu_share_default_fingerprint">з…</string>
+  <string name="menu_share_default">з…</string>
+  <string name="menu_share_qr_code">з QR кодом</string>
+  <string name="menu_share_qr_code_fingerprint">з QR кодом</string>
+  <string name="menu_share_nfc">з NFC</string>
+  <string name="menu_copy_to_clipboard">Копіювати у буфер обміну</string>
   <string name="menu_sign_key">Підписати ключ</string>
   <string name="menu_beam_preferences">Налаштування променя</string>
+  <string name="menu_key_edit_cancel">Скасувати</string>
+  <string name="menu_encrypt_to">Зашифрувати…</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -73,6 +99,7 @@
   <string name="label_passphrase_again">Знову</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">ASCII Броня</string>
+  <string name="label_select_public_keys">Публічні ключі</string>
   <string name="label_delete_after_encryption">Вилучити після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
@@ -93,6 +120,14 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_send_key">Завантажити ключ на вибраний сервер ключів після підписування</string>
+  <string name="label_fingerprint">Відбиток</string>
+  <string name="select_keys_button_default">Вибрати</string>
+  <plurals name="select_keys_button">
+    <item quantity="one">%d вибраний</item>
+    <item quantity="few">%d вибрані</item>
+    <item quantity="other">%d вибраних</item>
+  </plurals>
   <string name="unknown_user_id">&lt;невідомий&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <string name="no_key">&lt;без ключа&gt;</string>
@@ -100,6 +135,11 @@
   <string name="can_encrypt">можна зашифрувати</string>
   <string name="can_sign">можна підписати</string>
   <string name="expired">закінчився</string>
+  <plurals name="n_key_servers">
+    <item quantity="one">%d сервер ключів</item>
+    <item quantity="few">%d сервери ключів</item>
+    <item quantity="other">%d серверів ключів</item>
+  </plurals>
   <string name="fingerprint">Відбиток:</string>
   <string name="secret_key">Секретний ключ:</string>
   <!--choice-->
@@ -118,6 +158,7 @@
   <string name="choice_2hours">2 години</string>
   <string name="choice_4hours">4 години</string>
   <string name="choice_8hours">8 годин</string>
+  <string name="choice_forever">назавжди</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
@@ -143,19 +184,59 @@
   <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
+  <string name="specify_file_to_encrypt_to">Будь ласка, виберіть файл для шифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="specify_file_to_decrypt_to">Будь ласка, виберіть файл для розшифрування.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="specify_file_to_export_to">Будь ласка, виберіть файл для експорту.\nУВАГА! Якщо файл існує, то він буде переписаний.</string>
+  <string name="specify_file_to_export_secret_keys_to">Будь ласка, виберіть файл для експорту.\nУВАГА: Ви експортуєте СЕКРЕТНИЙ ключ.\nУВАГА: Якщо файл існує, то він буде переписаний.</string>
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
+  <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
+  <plurals name="keys_added_and_updated_1">
+    <item quantity="one">Успішно додано %d ключ</item>
+    <item quantity="few">Успішно додано %d ключі</item>
+    <item quantity="other">Успішно додано %d ключів</item>
+  </plurals>
+  <plurals name="keys_added_and_updated_2">
+    <item quantity="one">і оновлено %d ключ.</item>
+    <item quantity="few">і оновлено %d ключі.</item>
+    <item quantity="other">і оновлено %d ключів.</item>
+  </plurals>
+  <plurals name="keys_added">
+    <item quantity="one">Успішно додано %d ключ.</item>
+    <item quantity="few">Успішно додано %d ключі.</item>
+    <item quantity="other">Успішно додано %d ключів.</item>
+  </plurals>
+  <plurals name="keys_updated">
+    <item quantity="one">Успішно оновлено %d ключ.</item>
+    <item quantity="few">Успішно оновлено %d ключі.</item>
+    <item quantity="other">Успішно оновлено %d ключів.</item>
+  </plurals>
   <string name="no_keys_added_or_updated">Жодного ключа не додано та не оновлено.</string>
   <string name="key_exported">Успішно експортовано 1 ключ.</string>
+  <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: тільки підключі підтримують ElGamal, а для ElGamal буде використаний найближчий розмір ключа з 1536, 2048, 3072, 4096, або 8192.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
+  <plurals name="keys_found">
+    <item quantity="one">Знайдено %d ключ.</item>
+    <item quantity="few">Знайдено %d ключі.</item>
+    <item quantity="other">Знайдено %d ключів.</item>
+  </plurals>
   <string name="unknown_signature_key_touch_to_look_up">Невідомий підпис, натисніть, щоб шукати ключ.</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
+    <item quantity="few">%d погані секретні ключі проігноровані. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
+    <item quantity="other">%d поганих секретних ключів проігноровано. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
+  </plurals>
   <string name="lookup_unknown_key">Невідомий ключ %s, ви хочете віднайти його на сервері ключів?</string>
   <string name="key_send_success">Успішно надіслано ключ на сервер</string>
   <string name="key_sign_success">Успішно підписаний ключ</string>
   <string name="list_empty">Цей список - порожній!</string>
   <string name="nfc_successfull">Успішно відправлений ключ з NFC променем!</string>
+  <string name="key_copied_to_clipboard">Ключ вже скопійовано у буфер обміну!</string>
+  <string name="key_has_already_been_signed">Ключ уже був підписаний раніше!</string>
+  <string name="select_key_to_sign">Будь ласка, виберіть ключ, використаний для підписування!</string>
+  <string name="key_too_big_for_sharing">Ключ надто великий для цього способу поширення!</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -173,6 +254,7 @@
   <string name="error_key_needs_a_user_id">потрібний хоча б один ІД користувача</string>
   <string name="error_main_user_id_must_not_be_empty">ІД основного користувача не має бути порожнім</string>
   <string name="error_key_needs_master_key">потрібний хоча б один основний ключ</string>
+  <string name="error_no_encryption_keys_or_passphrase">не вказано ключі шифрування або парольну фразу</string>
   <string name="error_signature_failed">підпис не вдався</string>
   <string name="error_no_signature_passphrase">не подано парольної фрази</string>
   <string name="error_no_signature_key">не подано ключ підпису</string>
@@ -180,6 +262,7 @@
   <string name="error_corrupt_data">пошкодити дані</string>
   <string name="error_no_symmetric_encryption_packet">не знайдено пакунок з симетричним шифруванням</string>
   <string name="error_wrong_passphrase">помилкова парольна фраза</string>
+  <string name="error_saving_keys">помилка збереження деяких ключів</string>
   <string name="error_could_not_extract_private_key">не можна витягти секретний ключ</string>
   <string name="error_only_files_are_supported">Прямі двійкові дані без справжнього файлу у файловій системі не підтримуються. Підтримується лише  ACTION_ENCRYPT_STREAM_AND_RETURN.</string>
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 Jelly Bean для використання функції Androids NFC промінь!</string>
@@ -196,7 +279,13 @@
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
   <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_adding_sub_keys">додавання підключів…</string>
+  <string name="progress_saving_key_ring">зберігається ключ…</string>
   <string name="progress_importing_secret_keys">імпортуються секретні ключі…</string>
+  <plurals name="progress_exporting_key">
+    <item quantity="one">експортується ключ…</item>
+    <item quantity="few">експортуються ключі…</item>
+    <item quantity="other">експортуються ключі…</item>
+  </plurals>
   <string name="progress_extracting_signature_key">видобування ключа підпису…</string>
   <string name="progress_extracting_key">видобувається ключа…</string>
   <string name="progress_preparing_streams">підготовка потоків…</string>
@@ -234,8 +323,20 @@
   <!--Import-->
   <string name="import_import">Імпортувати вибрані ключі</string>
   <string name="import_sign_and_upload">Імпорт, підпис та завантаження вибраних ключів</string>
+  <string name="import_from_clipboard">Імпорт з буфера обміну</string>
+  <plurals name="import_qr_code_missing">
+    <item quantity="one">Пропущений QR код із ID %s</item>
+    <item quantity="few">Пропущені QR коди із ID %s</item>
+    <item quantity="other">Пропущені QR коди із ID %s</item>
+  </plurals>
+  <string name="import_qr_code_start_with_one">Будь ласка, почніть з QR коду із ІД 1</string>
   <string name="import_qr_code_wrong">Невірний штрих-код! Спробуйте знову!</string>
   <string name="import_qr_code_finished">Сканування штрих-коду завершено!</string>
+  <string name="import_qr_code_too_short_fingerprint">Штрих-код містить надто короткий відбиток (&lt; 16 символів)</string>
+  <string name="import_qr_scan_button">Сканувати QR код з \'Barcode Scanner\'</string>
+  <string name="import_nfc_text">Розблокуйте пристрій, щоб отримати ключ через NFC.</string>
+  <string name="import_nfc_help_button">Довідка</string>
+  <string name="import_clipboard_button">Отримати ключ з буфера обміну</string>
   <!--Intent labels-->
   <string name="intent_decrypt_file">OpenPGP: розшифрувати файл</string>
   <string name="intent_import_key">OpenPGP: імпортувати ключ</string>
@@ -243,11 +344,15 @@
   <string name="intent_send_decrypt">OpenPGP: розшифрувати</string>
   <!--Remote API-->
   <string name="api_no_apps">Немає зареєстрованих програм!</string>
+  <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
+  <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
   <string name="api_settings_select_key">Вибрати ключ</string>
   <string name="api_settings_save">Зберегти</string>
   <string name="api_settings_cancel">Скасувати</string>
   <string name="api_settings_revoke">Відкликати доступ</string>
+  <string name="api_settings_package_name">Назва пакунку</string>
+  <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
   <string name="api_register_text">Наступна програм запитала доступ до OpenPGP Keychain API.\n\nДозволити постійний доступ?</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
@@ -255,9 +360,33 @@
   <string name="api_select_pub_keys_missing_text">Не знайдено публічних ключів для цих ІД  користувачів:</string>
   <string name="api_select_pub_keys_dublicates_text">Більше ніж один публічний ключ існує для цих ІД користувачів:</string>
   <string name="api_select_pub_keys_text">Будь ласка, перевірте список одержувачів!</string>
+  <string name="api_error_wrong_signature">Перевірка підпису пакета не вдалася! Якщо ви встановили програму з іншого джерела, відкличте або поновіть право доступу.</string>
   <!--Share-->
+  <string name="share_qr_code_dialog_title">Відправити як штрих-код</string>
   <string name="share_qr_code_dialog_start">Пройдіть через усі штрих-коди за допомогою \"Далі\", а також проскануйте їх по одному.</string>
+  <string name="share_qr_code_dialog_fingerprint_text">Відбиток:</string>
+  <string name="share_qr_code_dialog_progress">Штрих-код з ID %1$d із %2$d</string>
+  <string name="share_nfc_dialog">Поділитися з NFC</string>
   <!--Key list-->
+  <plurals name="key_list_selected_keys">
+    <item quantity="one">1 ключ вибрано.</item>
+    <item quantity="few">%d ключі вибрано.</item>
+    <item quantity="other">%d ключів вибрано.</item>
+  </plurals>
+  <string name="key_list_empty_text1">Ще немає доступних ключів…</string>
+  <string name="key_list_empty_text2">Ви можете розпочати за</string>
+  <string name="key_list_empty_text3">чи</string>
+  <string name="key_list_empty_button_create">створюється ваш власний ключ</string>
+  <string name="key_list_empty_button_import">імпортуюся ключі.</string>
   <!--Key view-->
+  <string name="key_view_action_encrypt">Зашифрувати у цей контакт</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Контакти</string>
+  <string name="nav_encrypt">Зашифрувати</string>
+  <string name="nav_decrypt">Розшифрувати</string>
+  <string name="nav_import">Імпортувати ключі</string>
+  <string name="nav_secret_keys">Мої ключі</string>
+  <string name="nav_apps">Зареєстровані програми</string>
+  <string name="drawer_open">Відкрити панель навігації</string>
+  <string name="drawer_close">Закрити панель навігації</string>
 </resources>

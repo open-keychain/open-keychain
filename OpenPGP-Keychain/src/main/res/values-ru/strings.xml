@@ -158,6 +158,7 @@
   <string name="choice_2hours">2 часа</string>
   <string name="choice_4hours">4 часа</string>
   <string name="choice_8hours">8 часов</string>
+  <string name="choice_forever">всегда</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
@@ -222,7 +223,11 @@
     <item quantity="other">Найдено %d ключей.</item>
   </plurals>
   <string name="unknown_signature_key_touch_to_look_up">Неизвестная подпись. Нажмите для выбора ключа.</string>
-  <string name="bad_keys_encountered">%d секретных ключей проигнорировано.\nВозможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
+    <item quantity="few">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
+    <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
+  </plurals>
   <string name="lookup_unknown_key">Неизвестный ключ %s. Хотите искать на сервере ключей?</string>
   <string name="key_send_success">Ключ успешно отправлен на сервер</string>
   <string name="key_sign_success">Ключ успешно подписан</string>
@@ -377,7 +382,7 @@
   <string name="key_view_action_encrypt">Зашифровать для этого получателя</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакты</string>
-  <string name="nav_encrypt">Шифровать</string>
+  <string name="nav_encrypt">Зашифровать</string>
   <string name="nav_decrypt">Расшифровать</string>
   <string name="nav_import">Импорт ключей</string>
   <string name="nav_secret_keys">Мои ключи</string>

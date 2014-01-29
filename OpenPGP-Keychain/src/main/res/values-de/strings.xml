@@ -22,7 +22,7 @@
   <string name="title_export_key">Schlüssel exportieren</string>
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
-  <string name="title_key_server_query">Schlüsselserver abfragen</string>
+  <string name="title_key_server_query">Schlüssel-Server abfragen</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
   <string name="title_sign_key">Schlüssel signieren</string>
@@ -156,6 +156,7 @@
   <string name="choice_2hours">2 Stunden</string>
   <string name="choice_4hours">4 Stunden</string>
   <string name="choice_8hours">8 Stunden</string>
+  <string name="choice_forever">für immer</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>

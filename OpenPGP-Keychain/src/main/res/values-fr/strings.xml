@@ -156,6 +156,7 @@
   <string name="choice_2hours">2 heures</string>
   <string name="choice_4hours">4 heures</string>
   <string name="choice_8hours">8 heures</string>
+  <string name="choice_forever">pour toujours</string>
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
@@ -215,7 +216,10 @@
     <item quantity="other">%d clefs trouvées.</item>
   </plurals>
   <string name="unknown_signature_key_touch_to_look_up">Signature inconnue. Toucher pour rechercher la clef.</string>
-  <string name="bad_keys_encountered">%d mauvaise(s) clef(s) ignorée(s). Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d mauvaise clef ignorée. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
+    <item quantity="other">%d mauvaises clefs ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
+  </plurals>
   <string name="lookup_unknown_key">Clef %s inconnue, voulez-vous essayer de la trouver sur un serveur de clefs ?</string>
   <string name="key_send_success">Clef envoyée vers le serveur avec succès</string>
   <string name="key_sign_success">Clef signée avec succès</string>
