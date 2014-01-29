@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -242,7 +243,8 @@ public class PgpKeyOperation {
     }
 
     public void buildSecretKey(ArrayList<String> userIds, ArrayList<PGPSecretKey> keys,
-            ArrayList<Integer> keysUsages, long masterKeyId, String oldPassPhrase,
+            ArrayList<Integer> keysUsages, ArrayList<GregorianCalendar> keysExpiryDates,
+            long masterKeyId, String oldPassPhrase,
             String newPassPhrase) throws PgpGeneralException, NoSuchProviderException,
             PGPException, NoSuchAlgorithmException, SignatureException, IOException {
 
@@ -319,6 +321,8 @@ public class PgpKeyOperation {
         hashedPacketsGen.setPreferredSymmetricAlgorithms(true, PREFERRED_SYMMETRIC_ALGORITHMS);
         hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
         hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
+
+        // TODO: Now use keysExpiryDates here!!! (and some lines below)
 
         // TODO: this doesn't work quite right yet (APG 1)
         // if (keyEditor.getExpiryDate() != null) {

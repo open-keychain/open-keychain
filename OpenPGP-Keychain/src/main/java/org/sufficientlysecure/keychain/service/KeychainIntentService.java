@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.spongycastle.openpgp.PGPKeyRing;
@@ -129,6 +130,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String SAVE_KEYRING_USER_IDS = "user_ids";
     public static final String SAVE_KEYRING_KEYS = "keys";
     public static final String SAVE_KEYRING_KEYS_USAGES = "keys_usages";
+    public static final String SAVE_KEYRING_KEYS_EXPIRY_DATES = "keys_expiry_dates";
     public static final String SAVE_KEYRING_MASTER_KEY_ID = "master_key_id";
     public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
 
@@ -532,6 +534,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 ArrayList<PGPSecretKey> keys = PgpConversionHelper.BytesToPGPSecretKeyList(data
                         .getByteArray(SAVE_KEYRING_KEYS));
                 ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
+                ArrayList<GregorianCalendar> keysExpiryDates = (ArrayList<GregorianCalendar>) data.getSerializable(SAVE_KEYRING_KEYS_EXPIRY_DATES);
+
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
@@ -541,7 +545,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, masterKeyId,
+                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates, masterKeyId,
                             oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);

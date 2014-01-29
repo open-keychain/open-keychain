@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -516,6 +518,8 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                     PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
             data.putIntegerArrayList(KeychainIntentService.SAVE_KEYRING_KEYS_USAGES,
                     getKeysUsages(mKeysView));
+            data.putSerializable(KeychainIntentService.SAVE_KEYRING_KEYS_EXPIRY_DATES,
+                    getKeysExpiryDates(mKeysView));
             data.putLong(KeychainIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
             data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
 
@@ -642,7 +646,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
      * @return
      */
     private ArrayList<Integer> getKeysUsages(SectionView keysView) throws PgpGeneralException {
-        ArrayList<Integer> getKeysUsages = new ArrayList<Integer>();
+        ArrayList<Integer> keysUsages = new ArrayList<Integer>();
 
         ViewGroup keyEditors = keysView.getEditors();
 
@@ -652,10 +656,27 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
         for (int i = 0; i < keyEditors.getChildCount(); ++i) {
             KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
-            getKeysUsages.add(editor.getUsage());
+            keysUsages.add(editor.getUsage());
         }
 
-        return getKeysUsages;
+        return keysUsages;
+    }
+
+    private ArrayList<GregorianCalendar> getKeysExpiryDates(SectionView keysView) throws PgpGeneralException {
+        ArrayList<GregorianCalendar> keysExpiryDates = new ArrayList<GregorianCalendar>();
+
+        ViewGroup keyEditors = keysView.getEditors();
+
+        if (keyEditors.getChildCount() == 0) {
+            throw new PgpGeneralException(getString(R.string.error_key_needs_master_key));
+        }
+
+        for (int i = 0; i < keyEditors.getChildCount(); ++i) {
+            KeyEditor editor = (KeyEditor) keyEditors.getChildAt(i);
+            keysExpiryDates.add(editor.getExpiryDate());
+        }
+
+        return keysExpiryDates;
     }
 
     private void updatePassPhraseButtonText() {

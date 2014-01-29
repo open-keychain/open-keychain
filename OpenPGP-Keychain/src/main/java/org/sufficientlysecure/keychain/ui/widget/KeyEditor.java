@@ -62,9 +62,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            if (mDatePickerResultCount++ == 0) // Note: Ignore results after the first one - android
-                                               // sends multiples.
-            {
+            // Note: Ignore results after the first one - android sends multiples.
+            if (mDatePickerResultCount++ == 0) {
                 GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
                 setExpiryDate(date);
             }
@@ -122,10 +121,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         getContext().getString(R.string.btn_no_date),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                if (mDatePickerResultCount++ == 0) // Note: Ignore results after the
-                                                                   // first
-                                                                   // one - android sends multiples.
-                                {
+                                // Note: Ignore results after the first one - android sends multiples.
+                                if (mDatePickerResultCount++ == 0) {
                                     setExpiryDate(null);
                                 }
                             }
@@ -208,8 +205,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         cal.setTime(PgpKeyHelper.getCreationDate(key));
         mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
         cal = new GregorianCalendar();
-        Date date = PgpKeyHelper.getExpiryDate(key);
-        if (date == null) {
+        Date expiryDate = PgpKeyHelper.getExpiryDate(key);
+        if (expiryDate == null) {
             setExpiryDate(null);
         } else {
             cal.setTime(PgpKeyHelper.getExpiryDate(key));

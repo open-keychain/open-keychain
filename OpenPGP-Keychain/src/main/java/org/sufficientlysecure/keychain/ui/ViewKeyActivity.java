@@ -368,7 +368,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
             case LOADER_ID_KEYRING:
-                // TODO?
+                // No resources need to be freed for this ID
                 break;
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(null);
@@ -383,7 +383,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
     private void uploadToKeyserver(Uri dataUri) {
         Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
-        uploadIntent.setData(mDataUri);
+        uploadIntent.setData(dataUri);
         startActivityForResult(uploadIntent, Id.request.export_to_server);
     }
 
@@ -410,7 +410,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
     private void signKey(Uri dataUri) {
         Intent signIntent = new Intent(this, SignKeyActivity.class);
-        signIntent.setData(mDataUri);
+        signIntent.setData(dataUri);
         startActivity(signIntent);
     }
 
