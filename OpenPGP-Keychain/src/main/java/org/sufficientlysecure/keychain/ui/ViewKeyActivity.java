@@ -382,11 +382,8 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     }
 
     private void uploadToKeyserver(Uri dataUri) {
-        long keyRingRowId = Long.valueOf(dataUri.getLastPathSegment());
-
         Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
-        uploadIntent.setAction(KeyServerUploadActivity.ACTION_EXPORT_KEY_TO_SERVER);
-        uploadIntent.putExtra(KeyServerUploadActivity.EXTRA_KEYRING_ROW_ID, (int) keyRingRowId);
+        uploadIntent.setData(mDataUri);
         startActivityForResult(uploadIntent, Id.request.export_to_server);
     }
 
@@ -412,19 +409,8 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     }
 
     private void signKey(Uri dataUri) {
-        long keyId = 0;
-        PGPPublicKeyRing signKey = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
-
-        if (signKey != null) {
-            keyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
-        }
-        if (keyId == 0) {
-            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
-            return;
-        }
-
         Intent signIntent = new Intent(this, SignKeyActivity.class);
-        signIntent.putExtra(SignKeyActivity.EXTRA_KEY_ID, keyId);
+        signIntent.setData(mDataUri);
         startActivity(signIntent);
     }
 

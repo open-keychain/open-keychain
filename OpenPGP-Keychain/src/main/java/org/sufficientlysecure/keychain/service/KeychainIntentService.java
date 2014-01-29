@@ -156,7 +156,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
-    public static final String UPLOAD_KEY_KEYRING_ROW_ID = "upload_key_ring_id";
 
     // query key
     public static final String QUERY_KEY_SERVER = "query_key_server";
@@ -230,6 +229,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     "Extra bundle must contain a messenger, a data bundle, and an action!");
             return;
         }
+
+        Uri dataUri = intent.getData();
 
         mMessenger = (Messenger) extras.get(EXTRA_MESSENGER);
         Bundle data = extras.getBundle(EXTRA_DATA);
@@ -727,14 +728,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             try {
 
                 /* Input */
-                int keyRingRowId = data.getInt(UPLOAD_KEY_KEYRING_ROW_ID);
                 String keyServer = data.getString(UPLOAD_KEY_SERVER);
+                // and dataUri!
 
                 /* Operation */
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
-                PGPPublicKeyRing keyring = ProviderHelper.getPGPPublicKeyRingByRowId(this,
-                        keyRingRowId);
+                PGPPublicKeyRing keyring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, dataUri);
                 if (keyring != null) {
                     PgpImportExport pgpImportExport = new PgpImportExport(this, null);
 

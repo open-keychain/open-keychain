@@ -22,9 +22,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -43,15 +45,10 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
  * Sends the selected public key to a key server
  */
 public class KeyServerUploadActivity extends SherlockFragmentActivity {
-
-    // Not used in sourcode, but listed in AndroidManifest!
-    public static final String ACTION_EXPORT_KEY_TO_SERVER = Constants.INTENT_PREFIX
-            + "EXPORT_KEY_TO_SERVER";
-
-    public static final String EXTRA_KEYRING_ROW_ID = "key_row_id";
-
     private BootstrapButton mUploadButton;
     private Spinner mKeyServerSpinner;
+
+    private Uri mDataUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +76,13 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
                 uploadKey();
             }
         });
+
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
+            finish();
+            return;
+        }
     }
 
     private void uploadKey() {
@@ -87,11 +91,11 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
+        // set data uri as path to keyring
+        intent.setData(mDataUri);
+
         // fill values for this action
         Bundle data = new Bundle();
-
-        int keyRingId = getIntent().getIntExtra(EXTRA_KEYRING_ROW_ID, -1);
-        data.putInt(KeychainIntentService.UPLOAD_KEY_KEYRING_ROW_ID, keyRingId);
 
         String server = (String) mKeyServerSpinner.getSelectedItem();
         data.putString(KeychainIntentService.UPLOAD_KEY_SERVER, server);

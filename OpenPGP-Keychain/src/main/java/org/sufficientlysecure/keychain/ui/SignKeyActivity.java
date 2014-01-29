@@ -24,6 +24,7 @@ import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -34,6 +35,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -58,17 +60,15 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
  */
 public class SignKeyActivity extends SherlockFragmentActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
-
-    public static final String EXTRA_KEY_ID = "key_id";
-
-    private long mPubKeyId = 0;
-    private long mMasterKeyId = 0;
-
     private BootstrapButton mSignButton;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
 
     private SelectSecretKeyLayoutFragment mSelectKeyFragment;
+
+    private Uri mDataUri;
+    private long mPubKeyId = 0;
+    private long mMasterKeyId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,10 +126,22 @@ public class SignKeyActivity extends SherlockFragmentActivity implements
             }
         });
 
-        mPubKeyId = getIntent().getLongExtra(EXTRA_KEY_ID, 0);
-        if (mPubKeyId == 0) {
-            Log.e(Constants.TAG, "No pub key id given!");
+        mDataUri = getIntent().getData();
+        if (mDataUri == null) {
+            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
             finish();
+            return;
+        }
+
+        PGPPublicKeyRing signKey = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, mDataUri);
+
+        if (signKey != null) {
+            mPubKeyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
+        }
+        if (mPubKeyId == 0) {
+            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
+            finish();
+            return;
         }
     }
 
@@ -260,10 +272,11 @@ public class SignKeyActivity extends SherlockFragmentActivity implements
 
         intent.setAction(KeychainIntentService.ACTION_UPLOAD_KEYRING);
 
+        // set data uri as path to keyring
+        intent.setData(mDataUri);
+
         // fill values for this action
         Bundle data = new Bundle();
-
-        data.putLong(KeychainIntentService.UPLOAD_KEY_KEYRING_ROW_ID, mPubKeyId);
 
         Spinner keyServer = (Spinner) findViewById(R.id.sign_key_keyserver);
         String server = (String) keyServer.getSelectedItem();
