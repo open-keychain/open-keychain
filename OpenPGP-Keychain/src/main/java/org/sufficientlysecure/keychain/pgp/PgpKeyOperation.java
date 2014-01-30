@@ -103,15 +103,12 @@ public class PgpKeyOperation {
     }
 
     /**
-     * Creates new secret key. The returned PGPSecretKeyRing contains only one newly generated key
-     * when this key is the new masterkey. If a masterkey is supplied in the parameters
-     * PGPSecretKeyRing contains the masterkey and the new key as a subkey (certified by the
-     * masterkey).
+     * Creates new secret key.
      * 
      * @param algorithmChoice
      * @param keySize
      * @param passPhrase
-     * @param masterSecretKey
+     * @param isMasterKey
      * @return
      * @throws NoSuchAlgorithmException
      * @throws PGPException
@@ -119,9 +116,9 @@ public class PgpKeyOperation {
      * @throws PgpGeneralException
      * @throws InvalidAlgorithmParameterException
      */
-    public PGPSecretKeyRing createKey(int algorithmChoice, int keySize, String passPhrase,
-            PGPSecretKey masterSecretKey) throws NoSuchAlgorithmException, PGPException,
-            NoSuchProviderException, PgpGeneralException, InvalidAlgorithmParameterException {
+    public PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase,
+       boolean isMasterKey) throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
+       PgpGeneralException, InvalidAlgorithmParameterException {
 
         if (keySize < 512) {
             throw new PgpGeneralException(mContext.getString(R.string.error_key_size_minimum512bit));
@@ -143,7 +140,7 @@ public class PgpKeyOperation {
         }
 
         case Id.choice.algorithm.elgamal: {
-            if (masterSecretKey == null) {
+            if (isMasterKey) {
                 throw new PgpGeneralException(
                         mContext.getString(R.string.error_master_key_must_not_be_el_gamal));
             }
@@ -183,36 +180,11 @@ public class PgpKeyOperation {
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passPhrase.toCharArray());
-        PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passPhrase.toCharArray());
 
-        PGPKeyRingGenerator ringGen = null;
-        PGPContentSignerBuilder certificationSignerBuilder = null;
-        if (masterSecretKey == null) {
-            certificationSignerBuilder = new JcaPGPContentSignerBuilder(keyPair.getPublicKey()
-                    .getAlgorithm(), HashAlgorithmTags.SHA1);
+        PGPSecretKey secKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
+            sha1Calc, isMasterKey, keyEncryptor);
 
-            // build keyRing with only this one master key in it!
-            ringGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, keyPair, "",
-                    sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
-        } else {
-            PGPPublicKey masterPublicKey = masterSecretKey.getPublicKey();
-            PGPPrivateKey masterPrivateKey = masterSecretKey.extractPrivateKey(keyDecryptor);
-            PGPKeyPair masterKeyPair = new PGPKeyPair(masterPublicKey, masterPrivateKey);
-
-            certificationSignerBuilder = new JcaPGPContentSignerBuilder(masterKeyPair
-                    .getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
-
-            // build keyRing with master key and new key as subkey (certified by masterkey)
-            ringGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, masterKeyPair,
-                    "", sha1Calc, null, null, certificationSignerBuilder, keyEncryptor);
-
-            ringGen.addSubKey(keyPair);
-        }
-
-        PGPSecretKeyRing secKeyRing = ringGen.generateSecretKeyRing();
-
-        return secKeyRing;
+        return secKey;
     }
 
     public void changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassPhrase,

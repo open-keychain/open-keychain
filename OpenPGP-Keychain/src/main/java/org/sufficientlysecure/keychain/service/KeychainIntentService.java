@@ -561,21 +561,17 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 int algorithm = data.getInt(GENERATE_KEY_ALGORITHM);
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
                 int keysize = data.getInt(GENERATE_KEY_KEY_SIZE);
-                PGPSecretKey masterKey = null;
-                if (data.containsKey(GENERATE_KEY_MASTER_KEY)) {
-                    masterKey = PgpConversionHelper.BytesToPGPSecretKey(data
-                            .getByteArray(GENERATE_KEY_MASTER_KEY));
-                }
+                boolean masterKey = data.getBoolean(GENERATE_KEY_MASTER_KEY);
 
                 /* Operation */
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
-                PGPSecretKeyRing newKeyRing = keyOperations.createKey(algorithm, keysize,
+                PGPSecretKey newKey = keyOperations.createKey(algorithm, keysize,
                         passphrase, masterKey);
 
                 /* Output */
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(newKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(newKey));
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
