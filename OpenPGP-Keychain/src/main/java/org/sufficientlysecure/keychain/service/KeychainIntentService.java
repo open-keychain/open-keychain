@@ -588,18 +588,21 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Operation */
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
-                PGPSecretKeyRing masterKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
-                        4096, passphrase, null);
+                PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                        4096, passphrase, true);
 
-                PGPSecretKeyRing subKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
-                        4096, passphrase, masterKeyRing.getSecretKey());
+                PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                        4096, passphrase, false);
+
+                // TODO: default to one master for cert, one sub for encrypt and one sub
+                //       for sign
 
                 /* Output */
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(masterKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
                 resultData.putByteArray(RESULT_NEW_KEY2,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(subKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(subKey));
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
