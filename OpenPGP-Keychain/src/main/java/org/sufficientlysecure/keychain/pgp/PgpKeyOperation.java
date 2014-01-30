@@ -379,14 +379,19 @@ public class PgpKeyOperation {
             usageId = keysUsages.get(i);
             canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
             canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
-            if (canSign) { // TODO: ensure signing times are the same, like gpg
+            if (canSign) {
+                Date todayDate = new Date(); //both sig times the same
                 keyFlags |= KeyFlags.SIGN_DATA;
                 // cross-certify signing keys
+                hashedPacketsGen.setSignatureCreationTime(false, todayDate); //set outer creation time
+                PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                subHashedPacketsGen.setSignatureCreationTime(false, todayDate); //set inner creation time
                 PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                         subPublicKey.getAlgorithm(), PGPUtil.SHA1)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
                 PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
                 sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+                sGen.setHashedSubpackets(subHashedPacketsGen.generate());
                 PGPSignature certification = sGen.generateCertification(masterPublicKey,
                         subPublicKey);
                 unhashedPacketsGen.setEmbeddedSignature(false, certification);
