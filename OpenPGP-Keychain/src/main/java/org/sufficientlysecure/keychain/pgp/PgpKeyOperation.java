@@ -28,6 +28,7 @@ import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
@@ -323,7 +324,7 @@ public class PgpKeyOperation {
         hashedPacketsGen.setPreferredCompressionAlgorithms(true, PREFERRED_COMPRESSION_ALGORITHMS);
 
         if (keysExpiryDates.get(0) != null) {
-            GregorianCalendar creationDate = new GregorianCalendar();
+            GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
             creationDate.setTime(masterPublicKey.getCreationTime());
             GregorianCalendar expiryDate = keysExpiryDates.get(0);
             //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
@@ -402,7 +403,7 @@ public class PgpKeyOperation {
             hashedPacketsGen.setKeyFlags(false, keyFlags);
 
             if (keysExpiryDates.get(i) != null) {
-                GregorianCalendar creationDate = new GregorianCalendar();
+                GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 creationDate.setTime(subPublicKey.getCreationTime());
                 GregorianCalendar expiryDate = keysExpiryDates.get(i);
                 //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c

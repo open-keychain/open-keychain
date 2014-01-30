@@ -30,25 +30,6 @@ import android.os.Bundle;
 public class OtherHelper {
 
     /**
-     * Return the number if days between two dates
-     * 
-     * @param first
-     * @param second
-     * @return number of days
-     */
-    public static long getNumDaysBetween(GregorianCalendar first, GregorianCalendar second) {
-        GregorianCalendar tmp = new GregorianCalendar();
-        tmp.setTime(first.getTime());
-        long numDays = (second.getTimeInMillis() - first.getTimeInMillis()) / 1000 / 86400;
-        tmp.add(Calendar.DAY_OF_MONTH, (int) numDays);
-        while (tmp.before(second)) {
-            tmp.add(Calendar.DAY_OF_MONTH, 1);
-            ++numDays;
-        }
-        return numDays;
-    }
-
-    /**
      * Logs bundle content to debug for inspecting the content
      * 
      * @param bundle

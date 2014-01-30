@@ -20,6 +20,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -64,7 +65,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // Note: Ignore results after the first one - android sends multiples.
             if (mDatePickerResultCount++ == 0) {
-                GregorianCalendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+                GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                date.set(year, monthOfYear, dayOfMonth);
                 setExpiryDate(date);
             }
         }
@@ -109,7 +111,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
                 if (date == null) {
-                    date = new GregorianCalendar();
+                    date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
 
                 DatePickerDialog dialog = new DatePickerDialog(getContext(),
@@ -201,10 +203,10 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             }
         }
 
-        GregorianCalendar cal = new GregorianCalendar();
+        GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
         mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
-        cal = new GregorianCalendar();
+        cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate == null) {
             setExpiryDate(null);

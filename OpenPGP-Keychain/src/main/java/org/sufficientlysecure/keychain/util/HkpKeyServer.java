@@ -29,6 +29,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -182,8 +183,11 @@ public class HkpKeyServer extends KeyServer {
             info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(3));
             info.fingerPrint = PgpKeyHelper.convertKeyIdToHex(info.keyId);
             String chunks[] = matcher.group(4).split("-");
-            info.date = new GregorianCalendar(Integer.parseInt(chunks[0]),
-                    Integer.parseInt(chunks[1]), Integer.parseInt(chunks[2])).getTime();
+
+            GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            tmpGreg.set(Integer.parseInt(chunks[0]), Integer.parseInt(chunks[1]),
+               Integer.parseInt(chunks[2]));
+            info.date = tmpGreg.getTime();
             info.userIds = new ArrayList<String>();
             if (matcher.group(5).startsWith("*** KEY")) {
                 info.revoked = matcher.group(5);
