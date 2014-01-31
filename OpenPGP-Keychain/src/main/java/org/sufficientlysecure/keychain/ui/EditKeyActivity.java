@@ -193,25 +193,21 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                                 // get new key from data bundle returned from service
                                 Bundle data = message.getData();
-                                PGPSecretKeyRing masterKeyRing = (PGPSecretKeyRing) PgpConversionHelper
-                                        .BytesToPGPKeyRing(data
+                                PGPSecretKeyRing masterKey = (PGPSecretKey) PgpConversionHelper
+                                        .BytesToPGPKey(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
-                                PGPSecretKeyRing subKeyRing = (PGPSecretKeyRing) PgpConversionHelper
-                                        .BytesToPGPKeyRing(data
+                                PGPSecretKey subKey = (PGPSecretKey) PgpConversionHelper
+                                        .BytesToPGPKey(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY2));
 
                                 // add master key
-                                @SuppressWarnings("unchecked")
-                                Iterator<PGPSecretKey> masterIt = masterKeyRing.getSecretKeys();
-                                mKeys.add(masterIt.next());
-                                mKeysUsages.add(Id.choice.usage.sign_only);
+                                mKeys.add(maskterKey);
+                                mKeysUsages.add(Id.choice.usage.sign_only); //TODO: get from key flags
 
                                 // add sub key
-                                @SuppressWarnings("unchecked")
-                                Iterator<PGPSecretKey> subIt = subKeyRing.getSecretKeys();
                                 subIt.next(); // masterkey
-                                mKeys.add(subIt.next());
-                                mKeysUsages.add(Id.choice.usage.encrypt_only);
+                                mKeys.add(subKey);
+                                mKeysUsages.add(Id.choice.usage.encrypt_only); //TODO: get from key flags
 
                                 buildLayout();
                             }
