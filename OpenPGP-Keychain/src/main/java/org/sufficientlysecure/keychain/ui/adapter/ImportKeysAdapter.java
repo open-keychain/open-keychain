@@ -93,26 +93,24 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
         // main user id
         String userId = entry.userIds.get(0);
-        if (userId != null) {
-            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+        String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
-            // name
-            if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
-                // show red user id if it is a secret key
-                if (entry.secretKey) {
-                    userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
-                    mainUserId.setTextColor(Color.RED);
-                }
-                mainUserId.setText(userIdSplit[0]);
+        // name
+        if (userIdSplit[0] != null) {
+            // show red user id if it is a secret key
+            if (entry.secretKey) {
+                userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
+                mainUserId.setTextColor(Color.RED);
             }
+            mainUserId.setText(userIdSplit[0]);
+        }
 
-            // email
-            if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
-                mainUserIdRest.setText(userIdSplit[1]);
-                mainUserIdRest.setVisibility(View.VISIBLE);
-            } else {
-                mainUserIdRest.setVisibility(View.GONE);
-            }
+        // email
+        if (userIdSplit[1] != null) {
+            mainUserIdRest.setText(userIdSplit[1]);
+            mainUserIdRest.setVisibility(View.VISIBLE);
+        } else {
+            mainUserIdRest.setVisibility(View.GONE);
         }
 
         keyId.setText(entry.hexKeyId);

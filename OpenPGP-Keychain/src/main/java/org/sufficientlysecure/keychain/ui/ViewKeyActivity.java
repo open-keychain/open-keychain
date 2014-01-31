@@ -300,7 +300,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
                     // get name, email, and comment from USER_ID
                     String[] mainUserId = PgpKeyHelper.splitUserId(data
                             .getString(KEYRING_INDEX_USER_ID));
-                    if (mainUserId[0] != null && mainUserId[0].length() > 0) {
+                    if (mainUserId[0] != null) {
                         setTitle(mainUserId[0]);
                         mName.setText(mainUserId[0]);
                     } else {

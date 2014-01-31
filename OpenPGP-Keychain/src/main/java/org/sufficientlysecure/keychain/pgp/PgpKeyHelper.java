@@ -539,9 +539,23 @@ public class PgpKeyHelper {
      * @return array with naming (0), email (1), comment (2)
      */
     public static String[] splitUserId(String userId) {
-        String[] result = new String[] { "", "", "" };
+        String[] result = new String[] { null, null, null };
 
-        Pattern withComment = Pattern.compile("^(.*) \\((.*)\\) <(.*)>$");
+        if (userId == null || userId.equals("")) {
+            return result;
+        }
+
+        /*
+         * User ID matching:
+         * http://fiddle.re/t4p6f
+         *
+         * test cases:
+         * "Max Mustermann (this is a comment) <max@example.com>"
+         * "Max Mustermann <max@example.com>"
+         * "Max Mustermann (this is a comment)"
+         * "Max Mustermann [this is nothing]"
+         */
+        Pattern withComment = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
         Matcher matcher = withComment.matcher(userId);
         if (matcher.matches()) {
             result[0] = matcher.group(1);
@@ -550,13 +564,6 @@ public class PgpKeyHelper {
             return result;
         }
 
-        Pattern withoutComment = Pattern.compile("^(.*) <(.*)>$");
-        matcher = withoutComment.matcher(userId);
-        if (matcher.matches()) {
-            result[0] = matcher.group(1);
-            result[1] = matcher.group(2);
-            return result;
-        }
         return result;
     }
 

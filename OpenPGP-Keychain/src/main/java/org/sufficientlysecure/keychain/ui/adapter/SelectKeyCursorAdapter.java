@@ -105,16 +105,13 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         status.setText(R.string.unknown_status);
 
         String userId = cursor.getString(mIndexUserId);
-        if (userId != null) {
-            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+        String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
-            if (userIdSplit[0] != null && userIdSplit[0].length() > 0) {
-                mainUserId.setText(userIdSplit[0]);
-            }
-
-            if (userIdSplit[1] != null && userIdSplit[1].length() > 0) {
-                mainUserIdRest.setText(userIdSplit[1]);
-            }
+        if (userIdSplit[0] != null) {
+            mainUserId.setText(userIdSplit[0]);
+        }
+        if (userIdSplit[1] != null) {
+            mainUserIdRest.setText(userIdSplit[1]);
         }
 
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
