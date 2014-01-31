@@ -193,19 +193,18 @@ public class EditKeyActivity extends SherlockFragmentActivity {
                             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                                 // get new key from data bundle returned from service
                                 Bundle data = message.getData();
-                                PGPSecretKeyRing masterKey = (PGPSecretKey) PgpConversionHelper
-                                        .BytesToPGPKey(data
+                                PGPSecretKey masterKey = (PGPSecretKey) PgpConversionHelper
+                                        .BytesToPGPSecretKey(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
                                 PGPSecretKey subKey = (PGPSecretKey) PgpConversionHelper
-                                        .BytesToPGPKey(data
+                                        .BytesToPGPSecretKey(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY2));
 
                                 // add master key
-                                mKeys.add(maskterKey);
+                                mKeys.add(masterKey);
                                 mKeysUsages.add(Id.choice.usage.sign_only); //TODO: get from key flags
 
                                 // add sub key
-                                subIt.next(); // masterkey
                                 mKeys.add(subKey);
                                 mKeysUsages.add(Id.choice.usage.encrypt_only); //TODO: get from key flags
 

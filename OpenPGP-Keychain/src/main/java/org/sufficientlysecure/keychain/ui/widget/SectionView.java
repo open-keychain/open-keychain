@@ -324,7 +324,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
                     PGPSecretKey newKey = (PGPSecretKey) PgpConversionHelper
-                            .BytesToPGPKey(data
+                            .BytesToPGPSecretKey(data
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
 
                     // add view with new key
