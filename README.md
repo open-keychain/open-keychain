@@ -165,11 +165,6 @@ see
 
 ## Notes
 
-### Eclipse: "GC overhead limit exceeded"
-
-If you have problems starting OpenPGP Kechain from Eclipse, consider increasing the memory limits in eclipse.ini.
-See http://docs.oseems.com/general/application/eclipse/fix-gc-overhead-limit-exceeded for more information.
-
 ### Gradle Build System
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
