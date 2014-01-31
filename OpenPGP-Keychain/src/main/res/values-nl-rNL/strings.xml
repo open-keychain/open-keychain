@@ -93,7 +93,6 @@
   <string name="label_name">Naam</string>
   <string name="label_comment">Opmerking</string>
   <string name="label_email">E-mailadres</string>
-  <string name="user_id_no_name">&lt;onbekend&gt;</string>
   <string name="none">&lt;geen&gt;</string>
   <string name="no_key">&lt;geen sleutel&gt;</string>
   <string name="unknown_status"></string>

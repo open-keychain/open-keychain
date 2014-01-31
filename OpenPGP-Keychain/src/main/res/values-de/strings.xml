@@ -99,7 +99,6 @@
   <string name="label_passphrase_again">Wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
   <string name="label_ascii_armor">ASCII-Armor</string>
-  <string name="label_select_public_keys">Öffentliche Schlüssel</string>
   <string name="label_delete_after_encryption">Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
@@ -127,7 +126,6 @@
     <item quantity="one">%d ausgewählt</item>
     <item quantity="other">%d ausgewählt</item>
   </plurals>
-  <string name="user_id_no_name">&lt;unbekannt&gt;</string>
   <string name="none">&lt;keine&gt;</string>
   <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="unknown_status"></string>

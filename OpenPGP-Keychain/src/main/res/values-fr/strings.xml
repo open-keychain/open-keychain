@@ -99,7 +99,7 @@
   <string name="label_passphrase_again">Confirmation</string>
   <string name="label_algorithm">Algorithme</string>
   <string name="label_ascii_armor">Armure ASCII</string>
-  <string name="label_select_public_keys">Clefs publiques</string>
+  <string name="label_select_public_keys">Destinataires</string>
   <string name="label_delete_after_encryption">Supprimer après le chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
@@ -127,7 +127,7 @@
     <item quantity="one">%d choisie</item>
     <item quantity="other">%d choisies</item>
   </plurals>
-  <string name="user_id_no_name">&lt;inconnue&gt;</string>
+  <string name="user_id_no_name">&lt;aucun nom&gt;</string>
   <string name="none">&lt;aucune&gt;</string>
   <string name="no_key">&lt;pas de clef&gt;</string>
   <string name="unknown_status"></string>
@@ -260,6 +260,7 @@
   <string name="error_jelly_bean_needed">Vous devez avoir Android 4.1 Jelly Bean pour utiliser la fonction NFC Beam !</string>
   <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
+  <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fait.</string>
   <string name="progress_saving">sauvegarde...</string>

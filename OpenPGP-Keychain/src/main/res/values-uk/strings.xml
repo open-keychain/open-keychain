@@ -99,7 +99,7 @@
   <string name="label_passphrase_again">Знову</string>
   <string name="label_algorithm">Алгоритм</string>
   <string name="label_ascii_armor">ASCII Броня</string>
-  <string name="label_select_public_keys">Публічні ключі</string>
+  <string name="label_select_public_keys">Отримувачі</string>
   <string name="label_delete_after_encryption">Вилучити після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
@@ -128,7 +128,7 @@
     <item quantity="few">%d вибрані</item>
     <item quantity="other">%d вибраних</item>
   </plurals>
-  <string name="user_id_no_name">&lt;невідомий&gt;</string>
+  <string name="user_id_no_name">&lt;без імені&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <string name="no_key">&lt;без ключа&gt;</string>
   <string name="unknown_status"></string>
@@ -268,6 +268,7 @@
   <string name="error_jelly_bean_needed">Вам потрібний Android 4.1 Jelly Bean для використання функції Androids NFC промінь!</string>
   <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Нема що імпортувати!</string>
+  <string name="error_expiry_must_come_after_creation">дата завершення дії має йти після дати створення</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">збереження…</string>
