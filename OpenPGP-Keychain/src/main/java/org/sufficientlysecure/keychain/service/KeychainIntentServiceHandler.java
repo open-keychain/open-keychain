@@ -69,12 +69,12 @@ public class KeychainIntentServiceHandler extends Handler {
 
         switch (message.arg1) {
         case MESSAGE_OKAY:
-            mProgressDialogFragment.dismiss();
+            mProgressDialogFragment.dismissAllowingStateLoss();
 
             break;
 
         case MESSAGE_EXCEPTION:
-            mProgressDialogFragment.dismiss();
+            mProgressDialogFragment.dismissAllowingStateLoss();
 
             // show error from service
             if (data.containsKey(DATA_ERROR)) {

@@ -326,28 +326,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                             .BytesToPGPKeyRing(data
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
 
-                    boolean isMasterKey = (mEditors.getChildCount() == 0);
-
-                    // take only the key from this ring
-                    PGPSecretKey newKey = null;
-                    @SuppressWarnings("unchecked")
-                    Iterator<PGPSecretKey> it = newKeyRing.getSecretKeys();
-
-                    if (isMasterKey) {
-                        newKey = it.next();
-                    } else {
-                        // first one is the master key
-                        it.next();
-                        newKey = it.next();
-                    }
-
-                    // add view with new key
-                    KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
-                            mEditors, false);
-                    view.setEditorListener(SectionView.this);
-                    view.setValue(newKey, isMasterKey, -1);
-                    mEditors.addView(view);
-                    SectionView.this.updateEditorsVisible();
+                    addGeneratedKeyToView(newKeyRing);
                 }
             };
         };
@@ -360,5 +339,30 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // start service with intent
         mActivity.startService(intent);
+    }
+
+    private void addGeneratedKeyToView(PGPSecretKeyRing newKeyRing) {
+        boolean isMasterKey = (mEditors.getChildCount() == 0);
+
+        // take only the key from this ring
+        PGPSecretKey newKey = null;
+        @SuppressWarnings("unchecked")
+        Iterator<PGPSecretKey> it = newKeyRing.getSecretKeys();
+
+        if (isMasterKey) {
+            newKey = it.next();
+        } else {
+            // first one is the master key
+            it.next();
+            newKey = it.next();
+        }
+
+        // add view with new key
+        KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
+                mEditors, false);
+        view.setEditorListener(SectionView.this);
+        view.setValue(newKey, isMasterKey, -1);
+        mEditors.addView(view);
+        SectionView.this.updateEditorsVisible();
     }
 }
