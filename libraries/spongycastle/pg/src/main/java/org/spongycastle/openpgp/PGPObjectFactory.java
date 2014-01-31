@@ -103,6 +103,15 @@ public class PGPObjectFactory
             {
                 throw new IOException("can't create secret key object: " + e);
             }
+        case PacketTags.SECRET_SUBKEY:
+            try
+            {
+                return PGPSecretKeyRing.readSubkey(in, fingerPrintCalculator);
+            }
+            catch (PGPException e)
+            {
+                throw new IOException("processing error: " + e.getMessage());
+            }
         case PacketTags.PUBLIC_KEY:
             return new PGPPublicKeyRing(in, fingerPrintCalculator);
         case PacketTags.PUBLIC_SUBKEY:
