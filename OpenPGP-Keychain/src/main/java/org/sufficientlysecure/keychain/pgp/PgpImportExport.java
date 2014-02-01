@@ -110,10 +110,11 @@ public class PgpImportExport {
     /**
      * Imports keys from given data. If keyIds is given only those are imported
      */
-    public Bundle importKeyRings(List<ImportKeysListEntry> entries) throws PgpGeneralException, PGPException, IOException {
+    public Bundle importKeyRings(List<ImportKeysListEntry> entries)
+            throws PgpGeneralException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        updateProgress(R.string.progress_importing, 0, entries.size());
+        updateProgress(R.string.progress_importing, 0, 100);
 
         int newKeys = 0;
         int oldKeys = 0;
@@ -142,12 +143,12 @@ public class PgpImportExport {
                     } else if (status == Id.return_value.bad) {
                         ++badKeys;
                     }
-
-                    position++;
-                    updateProgress(position, entries.size());
                 } else {
                     Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
                 }
+
+                position++;
+                updateProgress(position / entries.size() * 100, 100);
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
