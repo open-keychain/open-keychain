@@ -113,7 +113,7 @@ public class PgpImportExport {
     public Bundle importKeyRings(List<ImportKeysListEntry> entries) throws PgpGeneralException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        updateProgress(R.string.progress_importing_secret_keys, 0, entries.size());
+        updateProgress(R.string.progress_importing, 0, entries.size());
 
         int newKeys = 0;
         int oldKeys = 0;

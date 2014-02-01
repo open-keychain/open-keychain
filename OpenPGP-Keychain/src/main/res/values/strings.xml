@@ -294,7 +294,6 @@
     <string name="progress_building_master_key">building master ring…</string>
     <string name="progress_adding_sub_keys">adding sub keys…</string>
     <string name="progress_saving_key_ring">saving key…</string>
-    <string name="progress_importing_secret_keys">importing secret keys…</string>
 
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>
