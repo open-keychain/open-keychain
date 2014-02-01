@@ -42,13 +42,4 @@
             bootstrapbutton:bb_type="default" />
     </LinearLayout>
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/import_server_button"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_margin="10dp"
-        android:text="@string/menu_key_server"
-        bootstrapbutton:bb_size="default"
-        bootstrapbutton:bb_type="default" />
-
 </LinearLayout>

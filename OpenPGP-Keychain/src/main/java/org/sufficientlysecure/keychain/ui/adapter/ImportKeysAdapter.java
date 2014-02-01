@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.sufficientlysecure.keychain.R;
@@ -67,6 +68,15 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
     public List<ImportKeysListEntry> getData() {
         return data;
+    }
+
+    public ArrayList<ImportKeysListEntry> getSelectedData() {
+        ArrayList<ImportKeysListEntry> selectedData = new ArrayList<ImportKeysListEntry>();
+        for (ImportKeysListEntry entry : data) {
+            if (entry.isSelected())
+                selectedData.add(entry);
+        }
+        return selectedData;
     }
 
     @Override

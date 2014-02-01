@@ -271,9 +271,9 @@ public class DecryptActivity extends DrawerActivity {
                 PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRingByKeyId(
                         DecryptActivity.this, mSignatureKeyId);
                 if (key != null) {
-                    Intent intent = new Intent(DecryptActivity.this, KeyServerQueryActivity.class);
-                    intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-                    intent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, mSignatureKeyId);
+                    Intent intent = new Intent(DecryptActivity.this, ImportKeysActivity.class);
+                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+                    intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }
             }
@@ -676,7 +676,7 @@ public class DecryptActivity extends DrawerActivity {
 
             data.putParcelable(KeychainIntentService.ENCRYPT_PROVIDER_URI, mContentUri);
         } else if (mDecryptTarget == Id.target.file) {
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
+            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);
@@ -826,7 +826,7 @@ public class DecryptActivity extends DrawerActivity {
         }
 
         // this request is returned after LookupUnknownKeyDialogFragment started
-        // KeyServerQueryActivity and user looked uo key
+        // ImportKeysActivity and user looked uo key
         case Id.request.look_up_key_id: {
             Log.d(Constants.TAG, "Returning from Lookup Key...");
             // decrypt again without lookup

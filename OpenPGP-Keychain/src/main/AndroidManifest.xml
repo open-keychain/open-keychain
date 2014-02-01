@@ -239,10 +239,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.KeyServerQueryActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_key_server_query" />
-        <activity
             android:name=".ui.UploadKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_send_key" />

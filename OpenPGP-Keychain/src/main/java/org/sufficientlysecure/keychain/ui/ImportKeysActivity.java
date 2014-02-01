@@ -18,10 +18,10 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -270,9 +270,9 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             return;
         }
 
-        Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
-        queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-        queryIntent.putExtra(KeyServerQueryActivity.EXTRA_FINGERPRINT, fingerprint);
+        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
         startActivity(queryIntent);
     }
 
@@ -338,6 +338,63 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     // }
     // }
 
+
+    // Message is received after importing is done in ApgService
+    KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
+            R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
+        public void handleMessage(Message message) {
+            // handle messages by standard ApgHandler first
+            super.handleMessage(message);
+
+            if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                // get returned data bundle
+                Bundle returnData = message.getData();
+
+                int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
+                int updated = returnData
+                        .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
+                int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
+                String toastMessage;
+                if (added > 0 && updated > 0) {
+                    String addedStr = getResources().getQuantityString(
+                            R.plurals.keys_added_and_updated_1, added, added);
+                    String updatedStr = getResources().getQuantityString(
+                            R.plurals.keys_added_and_updated_2, updated, updated);
+                    toastMessage = addedStr + updatedStr;
+                } else if (added > 0) {
+                    toastMessage = getResources().getQuantityString(R.plurals.keys_added,
+                            added, added);
+                } else if (updated > 0) {
+                    toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
+                            updated, updated);
+                } else {
+                    toastMessage = getString(R.string.no_keys_added_or_updated);
+                }
+                Toast.makeText(ImportKeysActivity.this, toastMessage, Toast.LENGTH_SHORT)
+                        .show();
+                if (bad > 0) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(
+                            ImportKeysActivity.this);
+
+                    alert.setIcon(android.R.drawable.ic_dialog_alert);
+                    alert.setTitle(R.string.warning);
+
+                    alert.setMessage(ImportKeysActivity.this.getResources()
+                            .getQuantityString(R.plurals.bad_keys_encountered, bad, bad));
+
+                    alert.setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    alert.setCancelable(true);
+                    alert.create().show();
+                }
+            }
+        }
+    };
+
     /**
      * Import keys with mImportData
      */
@@ -353,84 +410,11 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             // fill values for this action
             Bundle data = new Bundle();
 
-            // get selected key ids
-            List<ImportKeysListEntry> listEntries = mListFragment.getData();
-            ArrayList<Long> selectedKeyIds = new ArrayList<Long>();
-            for (ImportKeysListEntry entry : listEntries) {
-                if (entry.isSelected()) {
-                    selectedKeyIds.add(entry.keyId);
-                }
-            }
-
-            data.putSerializable(KeychainIntentService.IMPORT_KEY_LIST, selectedKeyIds);
-
-            if (mListFragment.getKeyBytes() != null) {
-                data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-                data.putByteArray(KeychainIntentService.IMPORT_BYTES, mListFragment.getKeyBytes());
-            } else {
-                data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
-                intent.setData(mListFragment.getDataUri());
-            }
+            // get selected key entries
+            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            data.putParcelableArrayList(KeychainIntentService.IMPORT_KEY_LIST, selectedEntries);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-
-            // Message is received after importing is done in ApgService
-            KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                    R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
-                public void handleMessage(Message message) {
-                    // handle messages by standard ApgHandler first
-                    super.handleMessage(message);
-
-                    if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                        // get returned data bundle
-                        Bundle returnData = message.getData();
-
-                        int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
-                        int updated = returnData
-                                .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
-                        int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
-                        String toastMessage;
-                        if (added > 0 && updated > 0) {
-                            String addedStr = getResources().getQuantityString(
-                                    R.plurals.keys_added_and_updated_1, added, added);
-                            String updatedStr = getResources().getQuantityString(
-                                    R.plurals.keys_added_and_updated_2, updated, updated);
-                            toastMessage = addedStr + updatedStr;
-                        } else if (added > 0) {
-                            toastMessage = getResources().getQuantityString(R.plurals.keys_added,
-                                    added, added);
-                        } else if (updated > 0) {
-                            toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
-                                    updated, updated);
-                        } else {
-                            toastMessage = getString(R.string.no_keys_added_or_updated);
-                        }
-                        Toast.makeText(ImportKeysActivity.this, toastMessage, Toast.LENGTH_SHORT)
-                                .show();
-                        if (bad > 0) {
-                            AlertDialog.Builder alert = new AlertDialog.Builder(
-                                    ImportKeysActivity.this);
-
-                            alert.setIcon(android.R.drawable.ic_dialog_alert);
-                            alert.setTitle(R.string.warning);
-
-                            alert.setMessage(ImportKeysActivity.this.getResources()
-                                    .getQuantityString(R.plurals.bad_keys_encountered, bad, bad));
-
-                            alert.setPositiveButton(android.R.string.ok,
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-                            alert.setCancelable(true);
-                            alert.create().show();
-                        }
-                    }
-                }
-
-                ;
-            };
 
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
@@ -442,7 +426,31 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             // start service with intent
             startService(intent);
         } else if (mListFragment.getServerQuery() != null) {
-            // TODO!
+            // Send all information needed to service to query keys in other thread
+            Intent intent = new Intent(this, KeychainIntentService.class);
+
+            intent.setAction(KeychainIntentService.ACTION_DOWNLOAD_AND_IMPORT_KEYS);
+
+            // fill values for this action
+            Bundle data = new Bundle();
+
+            data.putString(KeychainIntentService.DOWNLOAD_KEY_SERVER, mListFragment.getKeyServer());
+
+            // get selected key entries
+            ArrayList<ImportKeysListEntry> selectedEntries = mListFragment.getSelectedData();
+            data.putParcelableArrayList(KeychainIntentService.DOWNLOAD_KEY_LIST, selectedEntries);
+
+            intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+            // Create a new Messenger for the communication back
+            Messenger messenger = new Messenger(saveHandler);
+            intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+            // show progress dialog
+            saveHandler.showProgressDialog(this);
+
+            // start service with intent
+            startService(intent);
         } else {
             Toast.makeText(this, R.string.error_nothing_import, Toast.LENGTH_LONG).show();
         }

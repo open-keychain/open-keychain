@@ -397,9 +397,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
             return;
         }
 
-        Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
-        queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID_AND_RETURN);
-        queryIntent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, updateKeyId);
+        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+        queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
 
         // TODO: lookup??
         startActivityForResult(queryIntent, Id.request.look_up_key_id);

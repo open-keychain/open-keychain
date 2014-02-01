@@ -628,7 +628,7 @@ public class EncryptActivity extends DrawerActivity {
             useAsciiArmor = mAsciiArmor.isChecked();
             compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
 
-            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
+            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
 
             Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                     + mOutputFilename);

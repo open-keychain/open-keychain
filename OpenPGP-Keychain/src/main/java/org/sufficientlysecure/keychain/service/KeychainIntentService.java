@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,9 +29,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPUtil;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -45,9 +50,11 @@ import org.sufficientlysecure.keychain.pgp.PgpOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import android.app.IntentService;
@@ -87,7 +94,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ACTION_EXPORT_KEYRING = Constants.INTENT_PREFIX + "EXPORT_KEYRING";
 
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
-    public static final String ACTION_QUERY_KEYRING = Constants.INTENT_PREFIX + "QUERY_KEYRING";
+    public static final String ACTION_DOWNLOAD_AND_IMPORT_KEYS = Constants.INTENT_PREFIX + "QUERY_KEYRING";
 
     public static final String ACTION_SIGN_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
@@ -97,7 +104,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String TARGET = "target";
     // possible targets:
     public static final int TARGET_BYTES = 1;
-    public static final int TARGET_FILE = 2;
+    public static final int TARGET_URI = 2;
     public static final int TARGET_STREAM = 3;
 
     // encrypt
@@ -139,7 +146,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String DELETE_FILE = "deleteFile";
 
     // import key
-    public static final String IMPORT_BYTES = "import_bytes";
     public static final String IMPORT_KEY_LIST = "import_key_list";
 
     // export key
@@ -153,8 +159,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
 
     // query key
-    public static final String QUERY_KEY_SERVER = "query_key_server";
-    public static final String QUERY_KEY_ID = "query_key_id";
+    public static final String DOWNLOAD_KEY_SERVER = "query_key_server";
+    public static final String DOWNLOAD_KEY_LIST = "query_key_id";
 
     // sign key
     public static final String SIGN_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
@@ -253,62 +259,62 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 OutputStream outStream = null;
                 String streamFilename = null;
                 switch (target) {
-                case TARGET_BYTES: /* encrypting bytes directly */
-                    byte[] bytes = data.getByteArray(ENCRYPT_MESSAGE_BYTES);
+                    case TARGET_BYTES: /* encrypting bytes directly */
+                        byte[] bytes = data.getByteArray(ENCRYPT_MESSAGE_BYTES);
 
-                    inStream = new ByteArrayInputStream(bytes);
-                    inLength = bytes.length;
+                        inStream = new ByteArrayInputStream(bytes);
+                        inLength = bytes.length;
 
-                    inputData = new InputData(inStream, inLength);
-                    outStream = new ByteArrayOutputStream();
+                        inputData = new InputData(inStream, inLength);
+                        outStream = new ByteArrayOutputStream();
 
-                    break;
-                case TARGET_FILE: /* encrypting file */
-                    String inputFile = data.getString(ENCRYPT_INPUT_FILE);
-                    String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
+                        break;
+                    case TARGET_URI: /* encrypting file */
+                        String inputFile = data.getString(ENCRYPT_INPUT_FILE);
+                        String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
 
-                    // check if storage is ready
-                    if (!FileHelper.isStorageMounted(inputFile)
-                            || !FileHelper.isStorageMounted(outputFile)) {
-                        throw new PgpGeneralException(
-                                getString(R.string.error_external_storage_not_ready));
-                    }
-
-                    inStream = new FileInputStream(inputFile);
-                    File file = new File(inputFile);
-                    inLength = file.length();
-                    inputData = new InputData(inStream, inLength);
-
-                    outStream = new FileOutputStream(outputFile);
-
-                    break;
-
-                case TARGET_STREAM: /* Encrypting stream from content uri */
-                    Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-
-                    // InputStream
-                    InputStream in = getContentResolver().openInputStream(providerUri);
-                    inLength = PgpHelper.getLengthOfStream(in);
-                    inputData = new InputData(in, inLength);
-
-                    // OutputStream
-                    try {
-                        while (true) {
-                            streamFilename = PgpHelper.generateRandomFilename(32);
-                            if (streamFilename == null) {
-                                throw new PgpGeneralException("couldn't generate random file name");
-                            }
-                            openFileInput(streamFilename).close();
+                        // check if storage is ready
+                        if (!FileHelper.isStorageMounted(inputFile)
+                                || !FileHelper.isStorageMounted(outputFile)) {
+                            throw new PgpGeneralException(
+                                    getString(R.string.error_external_storage_not_ready));
                         }
-                    } catch (FileNotFoundException e) {
-                        // found a name that isn't used yet
-                    }
-                    outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
 
-                    break;
+                        inStream = new FileInputStream(inputFile);
+                        File file = new File(inputFile);
+                        inLength = file.length();
+                        inputData = new InputData(inStream, inLength);
 
-                default:
-                    throw new PgpGeneralException("No target choosen!");
+                        outStream = new FileOutputStream(outputFile);
+
+                        break;
+
+                    case TARGET_STREAM: /* Encrypting stream from content uri */
+                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
+
+                        // InputStream
+                        InputStream in = getContentResolver().openInputStream(providerUri);
+                        inLength = PgpHelper.getLengthOfStream(in);
+                        inputData = new InputData(in, inLength);
+
+                        // OutputStream
+                        try {
+                            while (true) {
+                                streamFilename = PgpHelper.generateRandomFilename(32);
+                                if (streamFilename == null) {
+                                    throw new PgpGeneralException("couldn't generate random file name");
+                                }
+                                openFileInput(streamFilename).close();
+                            }
+                        } catch (FileNotFoundException e) {
+                            // found a name that isn't used yet
+                        }
+                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+
+                        break;
+
+                    default:
+                        throw new PgpGeneralException("No target choosen!");
 
                 }
 
@@ -319,7 +325,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     operation.generateSignature(useAsciiArmor, false, secretKeyId,
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
                             Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures());
+                            .getPreferences(this).getForceV3Signatures());
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
                     operation.signText(secretKeyId, PassphraseCacheService.getCachedPassphrase(
@@ -330,9 +336,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     Log.d(Constants.TAG, "encrypt...");
                     operation.signAndEncrypt(useAsciiArmor, compressionId, encryptionKeyIds,
                             encryptionPassphrase, Preferences.getPreferences(this)
-                                    .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
-                                    .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                                    .getPreferences(this).getForceV3Signatures(),
+                            .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
+                            .getPreferences(this).getDefaultHashAlgorithm(), Preferences
+                            .getPreferences(this).getForceV3Signatures(),
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
                 }
 
@@ -343,34 +349,34 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 Bundle resultData = new Bundle();
 
                 switch (target) {
-                case TARGET_BYTES:
-                    if (useAsciiArmor) {
-                        String output = new String(
-                                ((ByteArrayOutputStream) outStream).toByteArray());
-                        if (generateSignature) {
-                            resultData.putString(RESULT_SIGNATURE_STRING, output);
+                    case TARGET_BYTES:
+                        if (useAsciiArmor) {
+                            String output = new String(
+                                    ((ByteArrayOutputStream) outStream).toByteArray());
+                            if (generateSignature) {
+                                resultData.putString(RESULT_SIGNATURE_STRING, output);
+                            } else {
+                                resultData.putString(RESULT_ENCRYPTED_STRING, output);
+                            }
                         } else {
-                            resultData.putString(RESULT_ENCRYPTED_STRING, output);
+                            byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                            if (generateSignature) {
+                                resultData.putByteArray(RESULT_SIGNATURE_BYTES, output);
+                            } else {
+                                resultData.putByteArray(RESULT_ENCRYPTED_BYTES, output);
+                            }
                         }
-                    } else {
-                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                        if (generateSignature) {
-                            resultData.putByteArray(RESULT_SIGNATURE_BYTES, output);
-                        } else {
-                            resultData.putByteArray(RESULT_ENCRYPTED_BYTES, output);
-                        }
-                    }
 
-                    break;
-                case TARGET_FILE:
-                    // nothing, file was written, just send okay
+                        break;
+                    case TARGET_URI:
+                        // nothing, file was written, just send okay
 
-                    break;
-                case TARGET_STREAM:
-                    String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-                    resultData.putString(RESULT_URI, uri);
+                        break;
+                    case TARGET_STREAM:
+                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
+                        resultData.putString(RESULT_URI, uri);
 
-                    break;
+                        break;
                 }
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
@@ -398,64 +404,64 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 OutputStream outStream = null;
                 String streamFilename = null;
                 switch (target) {
-                case TARGET_BYTES: /* decrypting bytes directly */
-                    inStream = new ByteArrayInputStream(bytes);
-                    inLength = bytes.length;
+                    case TARGET_BYTES: /* decrypting bytes directly */
+                        inStream = new ByteArrayInputStream(bytes);
+                        inLength = bytes.length;
 
-                    inputData = new InputData(inStream, inLength);
-                    outStream = new ByteArrayOutputStream();
+                        inputData = new InputData(inStream, inLength);
+                        outStream = new ByteArrayOutputStream();
 
-                    break;
+                        break;
 
-                case TARGET_FILE: /* decrypting file */
-                    String inputFile = data.getString(ENCRYPT_INPUT_FILE);
-                    String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
+                    case TARGET_URI: /* decrypting file */
+                        String inputFile = data.getString(ENCRYPT_INPUT_FILE);
+                        String outputFile = data.getString(ENCRYPT_OUTPUT_FILE);
 
-                    // check if storage is ready
-                    if (!FileHelper.isStorageMounted(inputFile)
-                            || !FileHelper.isStorageMounted(outputFile)) {
-                        throw new PgpGeneralException(
-                                getString(R.string.error_external_storage_not_ready));
-                    }
-
-                    // InputStream
-                    inLength = -1;
-                    inStream = new FileInputStream(inputFile);
-                    File file = new File(inputFile);
-                    inLength = file.length();
-                    inputData = new InputData(inStream, inLength);
-
-                    // OutputStream
-                    outStream = new FileOutputStream(outputFile);
-
-                    break;
-
-                case TARGET_STREAM: /* decrypting stream from content uri */
-                    Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-
-                    // InputStream
-                    InputStream in = getContentResolver().openInputStream(providerUri);
-                    inLength = PgpHelper.getLengthOfStream(in);
-                    inputData = new InputData(in, inLength);
-
-                    // OutputStream
-                    try {
-                        while (true) {
-                            streamFilename = PgpHelper.generateRandomFilename(32);
-                            if (streamFilename == null) {
-                                throw new PgpGeneralException("couldn't generate random file name");
-                            }
-                            openFileInput(streamFilename).close();
+                        // check if storage is ready
+                        if (!FileHelper.isStorageMounted(inputFile)
+                                || !FileHelper.isStorageMounted(outputFile)) {
+                            throw new PgpGeneralException(
+                                    getString(R.string.error_external_storage_not_ready));
                         }
-                    } catch (FileNotFoundException e) {
-                        // found a name that isn't used yet
-                    }
-                    outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
 
-                    break;
+                        // InputStream
+                        inLength = -1;
+                        inStream = new FileInputStream(inputFile);
+                        File file = new File(inputFile);
+                        inLength = file.length();
+                        inputData = new InputData(inStream, inLength);
 
-                default:
-                    throw new PgpGeneralException("No target choosen!");
+                        // OutputStream
+                        outStream = new FileOutputStream(outputFile);
+
+                        break;
+
+                    case TARGET_STREAM: /* decrypting stream from content uri */
+                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
+
+                        // InputStream
+                        InputStream in = getContentResolver().openInputStream(providerUri);
+                        inLength = PgpHelper.getLengthOfStream(in);
+                        inputData = new InputData(in, inLength);
+
+                        // OutputStream
+                        try {
+                            while (true) {
+                                streamFilename = PgpHelper.generateRandomFilename(32);
+                                if (streamFilename == null) {
+                                    throw new PgpGeneralException("couldn't generate random file name");
+                                }
+                                openFileInput(streamFilename).close();
+                            }
+                        } catch (FileNotFoundException e) {
+                            // found a name that isn't used yet
+                        }
+                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+
+                        break;
+
+                    default:
+                        throw new PgpGeneralException("No target choosen!");
 
                 }
 
@@ -479,26 +485,26 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Output */
 
                 switch (target) {
-                case TARGET_BYTES:
-                    if (returnBytes) {
-                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                        resultData.putByteArray(RESULT_DECRYPTED_BYTES, output);
-                    } else {
-                        String output = new String(
-                                ((ByteArrayOutputStream) outStream).toByteArray());
-                        resultData.putString(RESULT_DECRYPTED_STRING, output);
-                    }
+                    case TARGET_BYTES:
+                        if (returnBytes) {
+                            byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                            resultData.putByteArray(RESULT_DECRYPTED_BYTES, output);
+                        } else {
+                            String output = new String(
+                                    ((ByteArrayOutputStream) outStream).toByteArray());
+                            resultData.putString(RESULT_DECRYPTED_STRING, output);
+                        }
 
-                    break;
-                case TARGET_FILE:
-                    // nothing, file was written, just send okay and verification bundle
+                        break;
+                    case TARGET_URI:
+                        // nothing, file was written, just send okay and verification bundle
 
-                    break;
-                case TARGET_STREAM:
-                    String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-                    resultData.putString(RESULT_URI, uri);
+                        break;
+                    case TARGET_STREAM:
+                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
+                        resultData.putString(RESULT_URI, uri);
 
-                    break;
+                        break;
                 }
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
@@ -624,51 +630,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             }
         } else if (ACTION_IMPORT_KEYRING.equals(action)) {
             try {
-
-                /* Input */
-                int target = data.getInt(TARGET);
-
-                /* Operation */
-                InputStream inStream = null;
-                long inLength = -1;
-                InputData inputData = null;
-                switch (target) {
-                case TARGET_BYTES: /* import key from bytes directly */
-                    byte[] bytes = data.getByteArray(IMPORT_BYTES);
-
-                    inStream = new ByteArrayInputStream(bytes);
-                    inLength = bytes.length;
-
-                    inputData = new InputData(inStream, inLength);
-
-                    break;
-                case TARGET_FILE: /* import key from file */
-                    // dataUri!
-
-                    try {
-                        inStream = getContentResolver().openInputStream(dataUri);
-                        inLength = inStream.available();
-
-                        inputData = new InputData(inStream, inLength);
-                    } catch (FileNotFoundException e) {
-                        Log.e(Constants.TAG, "FileNotFoundException!", e);
-                    } catch (IOException e) {
-                        Log.e(Constants.TAG, "IOException!", e);
-                    }
-
-                    break;
-
-                case TARGET_STREAM:
-                    // TODO: not implemented
-                    break;
-                }
+                List<ImportKeysListEntry> entries = data.getParcelableArrayList(IMPORT_KEY_LIST);
 
                 Bundle resultData = new Bundle();
 
-                ArrayList<Long> keyIds = (ArrayList<Long>) data.getSerializable(IMPORT_KEY_LIST);
-
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
-                resultData = pgpImportExport.importKeyRings(inputData, keyIds);
+                resultData = pgpImportExport.importKeyRings(entries);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -749,31 +716,64 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_QUERY_KEYRING.equals(action)) {
+        } else if (ACTION_DOWNLOAD_AND_IMPORT_KEYS.equals(action)) {
             try {
+                ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
+                String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
-                /* Input */
-//                int queryType = data.getInt(QUERY_KEY_TYPE);
-                String keyServer = data.getString(QUERY_KEY_SERVER);
-
-//                String queryString = data.getString(QUERY_KEY_STRING);
-                long keyId = data.getLong(QUERY_KEY_ID);
-
-                /* Operation */
-                Bundle resultData = new Bundle();
-
+                // this downloads the keys and places them into the ImportKeysListEntry entries
                 HkpKeyServer server = new HkpKeyServer(keyServer);
-//                if (queryType == Id.keyserver.search) {
-//                    ArrayList<KeyInfo> searchResult = server.search(queryString);
-//
-//                    resultData.putParcelableArrayList(RESULT_QUERY_KEY_SEARCH_RESULT, searchResult);
-//                } else if (queryType == Id.keyserver.get) {
-                    String keyData = server.get(keyId);
 
-                    resultData.putString(RESULT_QUERY_KEY_DATA, keyData);
-//                }
+                for (ImportKeysListEntry entry : entries) {
+                    byte[] downloadedKey = server.get(entry.getKeyId()).getBytes();
 
-                sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
+                    /**
+                     * TODO: copied from ImportKeysListLoader
+                     *
+                     *
+                     * this parses the downloaded key
+                     */
+                    // need to have access to the bufferedInput, so we can reuse it for the possible
+                    // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
+                    // armour blocks
+                    BufferedInputStream bufferedInput = new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
+                    try {
+
+                        // read all available blocks... (asc files can contain many blocks with BEGIN END)
+                        while (bufferedInput.available() > 0) {
+                            InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+                            PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+
+                            // go through all objects in this block
+                            Object obj;
+                            while ((obj = objectFactory.nextObject()) != null) {
+                                Log.d(Constants.TAG, "Found class: " + obj.getClass());
+
+                                if (obj instanceof PGPKeyRing) {
+                                    PGPKeyRing newKeyring = (PGPKeyRing) obj;
+
+                                    entry.setBytes(newKeyring.getEncoded());
+                                } else {
+                                    Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(Constants.TAG, "Exception on parsing key file!", e);
+                    }
+                }
+
+                Intent importIntent = new Intent(this, KeychainIntentService.class);
+                importIntent.setAction(ACTION_IMPORT_KEYRING);
+                Bundle importData = new Bundle();
+                importData.putParcelableArrayList(IMPORT_KEY_LIST, entries);
+                importIntent.putExtra(EXTRA_DATA, importData);
+                importIntent.putExtra(EXTRA_MESSENGER, mMessenger);
+
+                // now import it with this service
+                onHandleIntent(importIntent);
+
+                // result is handled in ACTION_IMPORT_KEYRING
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }

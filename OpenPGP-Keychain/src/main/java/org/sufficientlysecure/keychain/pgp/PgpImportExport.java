@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.PGPException;
@@ -41,6 +42,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -107,76 +109,44 @@ public class PgpImportExport {
 
     /**
      * Imports keys from given data. If keyIds is given only those are imported
-     * 
-     * @param data
-     * @param keyIds
-     * @return
-     * @throws PgpGeneralException
-     * @throws FileNotFoundException
-     * @throws PGPException
-     * @throws IOException
      */
-    public Bundle importKeyRings(InputData data, ArrayList<Long> keyIds)
-            throws PgpGeneralException, FileNotFoundException, PGPException, IOException {
+    public Bundle importKeyRings(List<ImportKeysListEntry> entries) throws PgpGeneralException, PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        updateProgress(R.string.progress_importing_secret_keys, 0, 100);
+        updateProgress(R.string.progress_importing_secret_keys, 0, entries.size());
 
-        PositionAwareInputStream progressIn = new PositionAwareInputStream(data.getInputStream());
-
-        // need to have access to the bufferedInput, so we can reuse it for the possible
-        // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
-        // armour blocks
-        BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         int newKeys = 0;
         int oldKeys = 0;
         int badKeys = 0;
+
+        int position = 0;
         try {
+            for (ImportKeysListEntry entry : entries) {
+                Object obj = PgpConversionHelper.BytesToPGPKeyRing(entry.getBytes());
 
-            // read all available blocks... (asc files can contain many blocks with BEGIN END)
-            while (bufferedInput.available() > 0) {
-                InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-                PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+                if (obj instanceof PGPKeyRing) {
+                    PGPKeyRing keyring = (PGPKeyRing) obj;
 
-                // go through all objects in this block
-                Object obj;
-                while ((obj = objectFactory.nextObject()) != null) {
-                    Log.d(Constants.TAG, "Found class: " + obj.getClass());
+                    int status = storeKeyRingInCache(keyring);
 
-                    if (obj instanceof PGPKeyRing) {
-                        PGPKeyRing keyring = (PGPKeyRing) obj;
-
-                        int status = Integer.MIN_VALUE; // out of bounds value
-
-                        if (keyIds != null) {
-                            if (keyIds.contains(keyring.getPublicKey().getKeyID())) {
-                                status = storeKeyRingInCache(keyring);
-                            } else {
-                                Log.d(Constants.TAG, "not selected! key id: "
-                                        + keyring.getPublicKey().getKeyID());
-                            }
-                        } else {
-                            status = storeKeyRingInCache(keyring);
-                        }
-
-                        if (status == Id.return_value.error) {
-                            throw new PgpGeneralException(
-                                    mContext.getString(R.string.error_saving_keys));
-                        }
-
-                        // update the counts to display to the user at the end
-                        if (status == Id.return_value.updated) {
-                            ++oldKeys;
-                        } else if (status == Id.return_value.ok) {
-                            ++newKeys;
-                        } else if (status == Id.return_value.bad) {
-                            ++badKeys;
-                        }
-
-                        updateProgress((int) (100 * progressIn.position() / data.getSize()), 100);
-                    } else {
-                        Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
+                    if (status == Id.return_value.error) {
+                        throw new PgpGeneralException(
+                                mContext.getString(R.string.error_saving_keys));
                     }
+
+                    // update the counts to display to the user at the end
+                    if (status == Id.return_value.updated) {
+                        ++oldKeys;
+                    } else if (status == Id.return_value.ok) {
+                        ++newKeys;
+                    } else if (status == Id.return_value.bad) {
+                        ++badKeys;
+                    }
+
+                    position++;
+                    updateProgress(position, entries.size());
+                } else {
+                    Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
                 }
             }
         } catch (Exception e) {
@@ -187,13 +157,11 @@ public class PgpImportExport {
         returnData.putInt(KeychainIntentService.RESULT_IMPORT_UPDATED, oldKeys);
         returnData.putInt(KeychainIntentService.RESULT_IMPORT_BAD, badKeys);
 
-        updateProgress(R.string.progress_done, 100, 100);
-
         return returnData;
     }
 
     public Bundle exportKeyRings(ArrayList<Long> keyRingMasterKeyIds, int keyType,
-            OutputStream outStream) throws PgpGeneralException, FileNotFoundException,
+                                 OutputStream outStream) throws PgpGeneralException, FileNotFoundException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
@@ -253,10 +221,6 @@ public class PgpImportExport {
 
     /**
      * TODO: implement Id.return_value.updated as status when key already existed
-     * 
-     * @param context
-     * @param keyring
-     * @return
      */
     @SuppressWarnings("unchecked")
     public int storeKeyRingInCache(PGPKeyRing keyring) {

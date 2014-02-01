@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -72,8 +73,16 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         return mServerQuery;
     }
 
+    public String getKeyServer() {
+        return mKeyServer;
+    }
+
     public List<ImportKeysListEntry> getData() {
         return mAdapter.getData();
+    }
+
+    public ArrayList<ImportKeysListEntry> getSelectedData() {
+        return mAdapter.getSelectedData();
     }
 
     /**

@@ -21,7 +21,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.ui.KeyServerQueryActivity;
+import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
@@ -90,9 +90,9 @@ public class LookupUnknownKeyDialogFragment extends SherlockDialogFragment {
 
                 sendMessageToHandler(MESSAGE_OKAY);
 
-                Intent intent = new Intent(activity, KeyServerQueryActivity.class);
-                intent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-                intent.putExtra(KeyServerQueryActivity.EXTRA_KEY_ID, unknownKeyId);
+                Intent intent = new Intent(activity, ImportKeysActivity.class);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+                intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
                 startActivityForResult(intent, Id.request.look_up_key_id);
             }
         });

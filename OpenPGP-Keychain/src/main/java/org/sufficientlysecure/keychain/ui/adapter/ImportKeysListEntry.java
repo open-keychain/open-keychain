@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,15 +28,16 @@ import java.util.Date;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.util.AlgorithmNames;
 import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.Log;
 
-public class ImportKeysListEntry implements Serializable {
+public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
     public ArrayList<String> userIds;
-    public long keyId;
 
+    public long keyId;
     public boolean revoked;
     public Date date; // TODO: not displayed
     public String fingerPrint;
@@ -40,9 +45,81 @@ public class ImportKeysListEntry implements Serializable {
     public int bitStrength;
     public String algorithm;
     public boolean secretKey;
-    AlgorithmNames algorithmNames;
 
     private boolean selected;
+
+    private byte[] bytes = new byte[] {};
+
+    public ImportKeysListEntry(ImportKeysListEntry b) {
+        this.userIds = b.userIds;
+        this.keyId = b.keyId;
+        this.revoked = b.revoked;
+        this.date = b.date;
+        this.fingerPrint = b.fingerPrint;
+        this.hexKeyId = b.hexKeyId;
+        this.bitStrength = b.bitStrength;
+        this.algorithm = b.algorithm;
+        this.secretKey = b.secretKey;
+        this.selected = b.selected;
+        this.bytes = b.bytes;
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringList(userIds);
+        dest.writeLong(keyId);
+        dest.writeByte((byte) (revoked ? 1 : 0));
+        dest.writeSerializable(date);
+        dest.writeString(fingerPrint);
+        dest.writeString(hexKeyId);
+        dest.writeInt(bitStrength);
+        dest.writeString(algorithm);
+        dest.writeByte((byte) (secretKey ? 1 : 0));
+        dest.writeByte((byte) (selected ? 1 : 0));
+        dest.writeInt(bytes.length);
+        dest.writeByteArray(bytes);
+    }
+
+    public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
+        public ImportKeysListEntry createFromParcel(final Parcel source) {
+            ImportKeysListEntry vr = new ImportKeysListEntry();
+            vr.userIds = new ArrayList<String>();
+            source.readStringList(vr.userIds);
+            vr.keyId = source.readLong();
+            vr.revoked = source.readByte() == 1;
+            vr.date = (Date) source.readSerializable();
+            vr.fingerPrint = source.readString();
+            vr.hexKeyId = source.readString();
+            vr.bitStrength = source.readInt();
+            vr.algorithm = source.readString();
+            vr.secretKey = source.readByte() == 1;
+            vr.selected = source.readByte() == 1;
+            vr.bytes = new byte[source.readInt()];
+            source.readByteArray(vr.bytes);
+
+            return vr;
+        }
+
+        public ImportKeysListEntry[] newArray(final int size) {
+            return new ImportKeysListEntry[size];
+        }
+    };
+
+    public long getKeyId() {
+        return keyId;
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
 
     /**
      * Constructor for later querying from keyserver
@@ -62,11 +139,16 @@ public class ImportKeysListEntry implements Serializable {
 
     /**
      * Constructor based on key object, used for import from NFC, QR Codes, files
-     * 
-     * @param pgpKey
      */
     @SuppressWarnings("unchecked")
     public ImportKeysListEntry(PGPKeyRing pgpKeyRing) {
+        // save actual key object into entry, used to import it later
+        try {
+            this.bytes = pgpKeyRing.getEncoded();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "IOException on pgpKeyRing.getEncoded()", e);
+        }
+
         // selected is default
         this.selected = true;
 
