@@ -297,10 +297,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
             passPhrase = PassphraseCacheService
                     .getCachedPassphrase(mActivity, masterKey.getKeyID());
-            isMasterKey = true;
+            isMasterKey = false;
         } else {
             passPhrase = "";
-            isMasterKey = false;
+            isMasterKey = true;
         }
         data.putBoolean(KeychainIntentService.GENERATE_KEY_MASTER_KEY, isMasterKey);
         data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
