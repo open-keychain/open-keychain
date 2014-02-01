@@ -64,7 +64,7 @@ public class PGPSecretKey
         this(privKey, pubKey, checksumCalculator, false, keyEncryptor);
     }
     
-    PGPSecretKey(
+    public PGPSecretKey(
         PGPPrivateKey   privKey,
         PGPPublicKey    pubKey,
         PGPDigestCalculator checksumCalculator,
