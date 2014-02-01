@@ -44,7 +44,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
  * 
  * Sends the selected public key to a key server
  */
-public class KeyServerUploadActivity extends SherlockFragmentActivity {
+public class UploadKeyActivity extends SherlockFragmentActivity {
     private BootstrapButton mUploadButton;
     private Spinner mKeyServerSpinner;
 
@@ -111,7 +111,7 @@ public class KeyServerUploadActivity extends SherlockFragmentActivity {
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(KeyServerUploadActivity.this, R.string.key_send_success,
+                    Toast.makeText(UploadKeyActivity.this, R.string.key_send_success,
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }

@@ -384,7 +384,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     }
 
     private void uploadToKeyserver(Uri dataUri) {
-        Intent uploadIntent = new Intent(this, KeyServerUploadActivity.class);
+        Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
         uploadIntent.setData(dataUri);
         startActivityForResult(uploadIntent, Id.request.export_to_server);
     }
