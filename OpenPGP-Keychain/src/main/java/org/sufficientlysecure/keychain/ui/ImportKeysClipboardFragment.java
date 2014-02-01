@@ -62,7 +62,7 @@ public class ImportKeysClipboardFragment extends Fragment {
                 String sendText = "";
                 if (clipboardText != null)
                     sendText = clipboardText.toString();
-                mImportActivity.loadCallback(sendText.getBytes(), null);
+                mImportActivity.loadCallback(sendText.getBytes(), null, null);
             }
         });
 
