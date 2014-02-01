@@ -40,8 +40,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
- * gpg --send-key activity
- * 
  * Sends the selected public key to a key server
  */
 public class UploadKeyActivity extends SherlockFragmentActivity {

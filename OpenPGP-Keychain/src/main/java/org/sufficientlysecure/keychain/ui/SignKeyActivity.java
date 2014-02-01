@@ -54,9 +54,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
- * gpg --sign-key
- * 
- * signs the specified public key with the specified secret master key
+ * Signs the specified public key with the specified secret master key
  */
 public class SignKeyActivity extends SherlockFragmentActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {

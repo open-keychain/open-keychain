@@ -178,7 +178,6 @@ public class HkpKeyServer extends KeyServer {
 
         Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
-//            KeyInfo info = new KeyInfo();
             ImportKeysListEntry info = new ImportKeysListEntry();
             info.bitStrength = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
