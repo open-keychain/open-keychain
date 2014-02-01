@@ -21,8 +21,6 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -198,12 +196,9 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
             @Override
             public void onClick(View v) {
-                // TODO: don't get object here!!! solve this differently!
-                PGPPublicKeyRing ring = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(
-                        ViewKeyActivity.this, mDataUri);
-                PGPPublicKey publicKey = ring.getPublicKey();
+                long keyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
 
-                long[] encryptionKeyIds = new long[]{publicKey.getKeyID()};
+                long[] encryptionKeyIds = new long[]{keyId};
                 Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
                 intent.setAction(EncryptActivity.ACTION_ENCRYPT);
                 intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
@@ -248,7 +243,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
     static final String[] KEYS_PROJECTION = new String[]{Keys._ID, Keys.KEY_ID,
             Keys.IS_MASTER_KEY, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN,
-            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY};
+            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY, Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -260,6 +255,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     static final int KEYS_INDEX_CAN_ENCRYPT = 7;
     static final int KEYS_INDEX_CREATION = 8;
     static final int KEYS_INDEX_EXPIRY = 9;
+    static final int KEYS_INDEX_FINGERPRINT = 10;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -348,13 +344,15 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
                             data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
                     mAlgorithm.setText(algorithmStr);
 
-                    // TODO: Can this be done better? fingerprint in db?
-                    String fingerprint = PgpKeyHelper.getFingerPrint(this, keyId);
+                    byte[] fingerprintBlob = data.getBlob(KEYS_INDEX_FINGERPRINT);
+                    if (fingerprintBlob == null) {
+                        // FALLBACK for old databases
+                        fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
+                    }
+                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
                     fingerprint = fingerprint.replace("  ", "\n");
-                    mFingerprint.setText(fingerprint);
 
-                    // TODO: get image with getUserAttributes() on key and then
-                    // PGPUserAttributeSubpacketVector
+                    mFingerprint.setText(fingerprint);
                 }
 
                 mKeysAdapter.swapCursor(data);
@@ -392,13 +390,8 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = 0;
-        PGPPublicKeyRing updateRing = (PGPPublicKeyRing) ProviderHelper
-                .getPGPKeyRing(this, dataUri);
+        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
 
-        if (updateRing != null) {
-            updateKeyId = PgpKeyHelper.getMasterKey(updateRing).getKeyID();
-        }
         if (updateKeyId == 0) {
             Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
             return;
@@ -421,14 +414,10 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content = null;
         if (fingerprintOnly) {
-            long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
+            byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
 
-            // TODO: dublicated in ShareQrCodeDialog
-            content = "openpgp4fpr:";
-
-            String fingerprint = PgpKeyHelper.convertKeyToHex(masterKeyId);
-
-            content = content + fingerprint;
+            content = Constants.FINGERPRINT_SCHEME + fingerprint;
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);

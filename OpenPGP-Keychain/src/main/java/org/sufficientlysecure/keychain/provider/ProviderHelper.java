@@ -488,7 +488,7 @@ public class ProviderHelper {
         String[] projection = new String[]{KeyRings.MASTER_KEY_ID};
         Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
 
-        long masterKeyId = -1;
+        long masterKeyId = 0;
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 int masterKeyIdCol = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);

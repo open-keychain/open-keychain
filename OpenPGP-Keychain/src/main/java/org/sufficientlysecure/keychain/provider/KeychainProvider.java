@@ -346,7 +346,7 @@ public class KeychainProvider extends ContentProvider {
     }
 
     /**
-     * Set result of query to specific columns, don't show blob column for external content provider
+     * Set result of query to specific columns, don't show blob column
      *
      * @return
      */
@@ -367,7 +367,7 @@ public class KeychainProvider extends ContentProvider {
     }
 
     /**
-     * Set result of query to specific columns, don't show blob column for external content provider
+     * Set result of query to specific columns, don't show blob column
      *
      * @return
      */
@@ -388,6 +388,7 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeysColumns.KEY_RING_ROW_ID, KeysColumns.KEY_RING_ROW_ID);
         projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
         projectionMap.put(KeysColumns.RANK, KeysColumns.RANK);
+        projectionMap.put(KeysColumns.FINGERPRINT, KeysColumns.FINGERPRINT);
 
         return projectionMap;
     }

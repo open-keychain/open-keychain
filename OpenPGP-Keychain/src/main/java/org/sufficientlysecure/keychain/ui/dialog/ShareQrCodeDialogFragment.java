@@ -90,13 +90,11 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
 
         String content = null;
         if (mFingerprintOnly) {
-            content = "openpgp4fpr:";
-
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), dataUri);
             String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
 
             mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
-            content = content + fingerprint;
+            content = Constants.FINGERPRINT_SCHEME + fingerprint;
 
             Log.d(Constants.TAG, "content: " + content);
 

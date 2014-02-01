@@ -102,7 +102,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
                 Log.d(Constants.TAG, "scanResult content: " + scanResult.getContents());
 
                 // look if it's fingerprint only
-                if (scanResult.getContents().toLowerCase(Locale.ENGLISH).startsWith(ImportKeysActivity.FINGERPRINT_SCHEME)) {
+                if (scanResult.getContents().toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
                     importFingerprint(Uri.parse(scanResult.getContents()));
                     return;
                 }

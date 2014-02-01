@@ -73,8 +73,6 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
     public static final String EXTRA_QUERY = "query";
 
-    public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
-
     protected boolean mDeleteAfterImport = false;
 
     // view
@@ -135,7 +133,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         /**
          * Scanning a fingerprint directly with Barcode Scanner
          */
-        if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(FINGERPRINT_SCHEME)) {
+        if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             getSupportActionBar().setSelectedNavigationItem(0);
             loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[0]);
             loadFromFingerprintUri(dataUri);

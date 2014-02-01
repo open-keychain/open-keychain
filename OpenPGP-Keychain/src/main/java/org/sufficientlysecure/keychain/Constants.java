@@ -31,6 +31,9 @@ public final class Constants {
     // as defined in http://tools.ietf.org/html/rfc3156, section 7
     public static final String NFC_MIME = "application/pgp-keys";
 
+    // used by QR Codes (Guardian Project, Monkeysphere compatiblity)
+    public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
+
     // Not BC due to the use of Spongy Castle for Android
     public static final String SC = BouncyCastleProvider.PROVIDER_NAME;
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = SC;
