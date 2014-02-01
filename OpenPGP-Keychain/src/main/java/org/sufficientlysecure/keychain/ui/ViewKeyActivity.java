@@ -330,7 +330,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
                                 creationDate));
                     }
 
-                    // get creation date from EXPIRY
+                    // get expiry date from EXPIRY
                     if (data.isNull(KEYS_INDEX_EXPIRY)) {
                         mExpiry.setText(R.string.none);
                     } else {
@@ -346,7 +346,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
 
                     byte[] fingerprintBlob = data.getBlob(KEYS_INDEX_FINGERPRINT);
                     if (fingerprintBlob == null) {
-                        // FALLBACK for old databases
+                        // FALLBACK for old database entries
                         fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
                     }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);

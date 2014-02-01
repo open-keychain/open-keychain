@@ -190,7 +190,7 @@ public class ImportKeysQrCodeFragment extends Fragment {
             for (String in : mScannedContent) {
                 result += in;
             }
-            mImportActivity.loadCallback(result.getBytes(), null);
+            mImportActivity.loadCallback(result.getBytes(), null, null);
         }
     }
 

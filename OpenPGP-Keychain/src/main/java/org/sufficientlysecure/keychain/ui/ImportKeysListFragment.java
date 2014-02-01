@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.sufficientlysecure.keychain.ui;
@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.ui;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -31,6 +33,7 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -41,21 +44,26 @@ import com.actionbarsherlock.app.SherlockListFragment;
 
 public class ImportKeysListFragment extends SherlockListFragment implements
         LoaderManager.LoaderCallbacks<List<ImportKeysListEntry>> {
-    private static final String ARG_FILENAME = "filename";
+    private static final String ARG_DATA_URI = "uri";
     private static final String ARG_BYTES = "bytes";
+    private static final String ARG_SERVER_QUERY = "query";
 
     private Activity mActivity;
     private ImportKeysAdapter mAdapter;
 
     private byte[] mKeyBytes;
-    private String mImportFilename;
+    private Uri mDataUri;
+    private String mServerQuery;
+
+    private static final int LOADER_ID_BYTES = 0;
+    private static final int LOADER_ID_SERVER_QUERY = 1;
 
     public byte[] getKeyBytes() {
         return mKeyBytes;
     }
 
-    public String getImportFilename() {
-        return mImportFilename;
+    public Uri getDataUri() {
+        return mDataUri;
     }
 
     public List<ImportKeysListEntry> getData() {
@@ -65,12 +73,13 @@ public class ImportKeysListFragment extends SherlockListFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysListFragment newInstance(byte[] bytes, String filename) {
+    public static ImportKeysListFragment newInstance(byte[] bytes, Uri dataUri, String serverQuery) {
         ImportKeysListFragment frag = new ImportKeysListFragment();
 
         Bundle args = new Bundle();
         args.putByteArray(ARG_BYTES, bytes);
-        args.putString(ARG_FILENAME, filename);
+        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putString(ARG_SERVER_QUERY, serverQuery);
 
         frag.setArguments(args);
 
@@ -87,8 +96,9 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mActivity = getActivity();
 
         if (getArguments() != null) {
-            mImportFilename = getArguments().getString(ARG_FILENAME);
+            mDataUri = getArguments().getParcelable(ARG_DATA_URI);
             mKeyBytes = getArguments().getByteArray(ARG_BYTES);
+            mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
         }
 
         // Give some text to display if there is no data. In a real
@@ -105,7 +115,8 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         // give arguments to onCreateLoader()
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
+        getLoaderManager().initLoader(LOADER_ID_SERVER_QUERY, null, this);
     }
 
     @Override
@@ -120,58 +131,101 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(byte[] importData, String importFilename) {
-        this.mKeyBytes = importData;
-        this.mImportFilename = importFilename;
+    public void loadNew(byte[] importData, Uri dataUri, String serverQuery) {
+        mKeyBytes = importData;
+        mDataUri = dataUri;
+        mServerQuery = serverQuery;
 
-        getLoaderManager().restartLoader(0, null, this);
+        if (mKeyBytes != null || mDataUri != null)
+            getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
+
+        if (mServerQuery != null)
+            getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
     }
 
     @Override
     public Loader<List<ImportKeysListEntry>> onCreateLoader(int id, Bundle args) {
-        InputData inputData = getInputData(mKeyBytes, mImportFilename);
-        return new ImportKeysListLoader(mActivity, inputData);
-    }
+        switch (id) {
+            case LOADER_ID_BYTES: {
+                InputData inputData = getInputData(mKeyBytes, mDataUri);
 
-    private InputData getInputData(byte[] importBytes, String importFilename) {
-        InputData inputData = null;
-        if (importBytes != null) {
-            inputData = new InputData(new ByteArrayInputStream(importBytes), importBytes.length);
-        } else if (importFilename != null) {
-            try {
-                inputData = new InputData(new FileInputStream(importFilename),
-                        importFilename.length());
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "Failed to init FileInputStream!", e);
+                return new ImportKeysListLoader(mActivity, inputData);
             }
-        }
+            case LOADER_ID_SERVER_QUERY: {
 
-        return inputData;
+            }
+
+            default:
+                return null;
+        }
     }
 
     @Override
     public void onLoadFinished(Loader<List<ImportKeysListEntry>> loader,
-            List<ImportKeysListEntry> data) {
-        Log.d(Constants.TAG, "data: " + data);
+                               List<ImportKeysListEntry> data) {
+        // Swap the new cursor in. (The framework will take care of closing the
+        // old cursor once we return.)
+        switch (loader.getId()) {
+            case LOADER_ID_BYTES:
+                Log.d(Constants.TAG, "data: " + data);
 
-        // swap in the real data!
-        mAdapter.setData(data);
-        mAdapter.notifyDataSetChanged();
+                // swap in the real data!
+                mAdapter.setData(data);
+                mAdapter.notifyDataSetChanged();
 
-        setListAdapter(mAdapter);
+                setListAdapter(mAdapter);
 
-        // The list should now be shown.
-        if (isResumed()) {
-            setListShown(true);
-        } else {
-            setListShownNoAnimation(true);
+                // The list should now be shown.
+                if (isResumed()) {
+                    setListShown(true);
+                } else {
+                    setListShownNoAnimation(true);
+                }
+
+                break;
+
+            case LOADER_ID_SERVER_QUERY:
+                break;
+
+            default:
+                break;
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<ImportKeysListEntry>> loader) {
-        // Clear the data in the adapter.
-        mAdapter.clear();
+        switch (loader.getId()) {
+            case LOADER_ID_BYTES:
+                // Clear the data in the adapter.
+                mAdapter.clear();
+                break;
+            case LOADER_ID_SERVER_QUERY:
+                // Clear the data in the adapter.
+                mAdapter.clear();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private InputData getInputData(byte[] importBytes, Uri dataUri) {
+        InputData inputData = null;
+        if (importBytes != null) {
+            inputData = new InputData(new ByteArrayInputStream(importBytes), importBytes.length);
+        } else if (dataUri != null) {
+            try {
+                InputStream inputStream = getActivity().getContentResolver().openInputStream(dataUri);
+                int length = inputStream.available();
+
+                inputData = new InputData(inputStream, length);
+            } catch (FileNotFoundException e) {
+                Log.e(Constants.TAG, "FileNotFoundException!", e);
+            } catch (IOException e) {
+                Log.e(Constants.TAG, "IOException!", e);
+            }
+        }
+
+        return inputData;
     }
 
 }

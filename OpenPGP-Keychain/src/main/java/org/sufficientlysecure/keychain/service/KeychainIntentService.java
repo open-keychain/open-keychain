@@ -653,12 +653,18 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                     break;
                 case TARGET_FILE: /* import key from file */
-                    String inputFile = data.getString(IMPORT_FILENAME);
+                    // dataUri!
 
-                    inStream = new FileInputStream(inputFile);
-                    File file = new File(inputFile);
-                    inLength = file.length();
-                    inputData = new InputData(inStream, inLength);
+                    try {
+                        inStream = getContentResolver().openInputStream(dataUri);
+                        inLength = inStream.available();
+
+                        inputData = new InputData(inStream, inLength);
+                    } catch (FileNotFoundException e) {
+                        Log.e(Constants.TAG, "FileNotFoundException!", e);
+                    } catch (IOException e) {
+                        Log.e(Constants.TAG, "IOException!", e);
+                    }
 
                     break;
 

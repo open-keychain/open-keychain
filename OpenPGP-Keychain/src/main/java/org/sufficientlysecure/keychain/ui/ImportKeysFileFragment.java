@@ -21,7 +21,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -30,25 +29,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class ImportKeysFileFragment extends Fragment {
-    public static final String ARG_PATH = "path";
-
     private ImportKeysActivity mImportActivity;
-    private EditText mFilename;
     private BootstrapButton mBrowse;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysFileFragment newInstance(String path) {
+    public static ImportKeysFileFragment newInstance() {
         ImportKeysFileFragment frag = new ImportKeysFileFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_PATH, path);
 
         frag.setArguments(args);
         return frag;
@@ -61,7 +55,6 @@ public class ImportKeysFileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_file_fragment, container, false);
 
-        mFilename = (EditText) view.findViewById(R.id.import_keys_file_input);
         mBrowse = (BootstrapButton) view.findViewById(R.id.import_keys_file_browse);
 
         mBrowse.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +62,7 @@ public class ImportKeysFileFragment extends Fragment {
                 // open .asc or .gpg files
                 // setting it to text/plain prevents Cynaogenmod's file manager from selecting asc
                 // or gpg types!
-                FileHelper.openFile(ImportKeysFileFragment.this, mFilename.getText().toString(),
+                FileHelper.openFile(ImportKeysFileFragment.this, Constants.path.APP_DIR + "/",
                         "*/*", Id.request.filename);
             }
         });
@@ -82,42 +75,25 @@ public class ImportKeysFileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         mImportActivity = (ImportKeysActivity) getActivity();
-
-        // set default path
-        String path = Constants.path.APP_DIR + "/";
-        if (getArguments() != null && getArguments().containsKey(ARG_PATH)) {
-            path = getArguments().getString(ARG_PATH);
-        }
-        mFilename.setText(path);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
-        case Id.request.filename: {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                String path = null;
-                try {
-                    path = data.getData().getPath();
-                    Log.d(Constants.TAG, "path=" + path);
+            case Id.request.filename: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
 
-                    // set filename to edittext
-                    mFilename.setText(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                    // load data
+                    mImportActivity.loadCallback(null, data.getData(), null);
                 }
 
-                // load data
-                mImportActivity.loadCallback(null, path);
+                break;
             }
 
-            break;
-        }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
 
-        default:
-            super.onActivityResult(requestCode, resultCode, data);
-
-            break;
+                break;
         }
     }
 

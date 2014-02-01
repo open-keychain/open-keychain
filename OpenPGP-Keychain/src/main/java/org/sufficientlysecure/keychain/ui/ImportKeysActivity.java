@@ -23,11 +23,10 @@ import java.util.Locale;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.annotation.SuppressLint;
@@ -72,8 +71,9 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
 
     // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
     public static final String EXTRA_QUERY = "query";
-
-    protected boolean mDeleteAfterImport = false;
+    public static final String EXTRA_KEY_ID = "key_id";
+    public static final String EXTRA_FINGERPRINT = "fingerprint";
+//    public static final String RESULT_EXTRA_TEXT = "text";
 
     // view
     private ImportKeysListFragment mListFragment;
@@ -143,17 +143,12 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
          * Keychain's own Actions
          */
         if (ACTION_IMPORT_KEY.equals(action)) {
-            if ("file".equals(intent.getScheme()) && intent.getDataString() != null) {
-                String importFilename = intent.getData().getPath();
+            getSupportActionBar().setSelectedNavigationItem(1);
+            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
 
-                // display selected filename
-                getSupportActionBar().setSelectedNavigationItem(1);
-                Bundle args = new Bundle();
-                args.putString(ImportKeysFileFragment.ARG_PATH, importFilename);
-                loadFragment(ImportKeysFileFragment.class, args, mNavigationStrings[1]);
-
+            if (dataUri != null) {
                 // directly load data
-                startListFragment(savedInstanceState, null, importFilename);
+                startListFragment(savedInstanceState, null, dataUri);
             } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
                 byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
 
@@ -161,12 +156,29 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 startListFragment(savedInstanceState, importData, null);
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
-            if (!extras.containsKey(EXTRA_QUERY)) {
-                Log.e(Constants.TAG, "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query' extra!");
+            String query = null;
+            if (extras.containsKey(EXTRA_QUERY)) {
+                query = extras.getString(EXTRA_QUERY);
+            } else if (extras.containsKey(EXTRA_KEY_ID)) {
+                long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
+                if (keyId != 0) {
+                    query = "0x" + PgpKeyHelper.convertKeyToHex(keyId);
+                }
+            } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
+                String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
+                if (fingerprint != null) {
+                    query = "0x" + fingerprint;
+                }
+            } else {
+                Log.e(Constants.TAG, "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or 'fingerprint' extra!");
                 return;
             }
 
-            String query = extras.getString(EXTRA_QUERY);
+            // search directly
+            getSupportActionBar().setSelectedNavigationItem(0);
+            Bundle args = new Bundle();
+            args.putString(ImportKeysServerFragment.ARG_QUERY, query);
+            loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
 
             // TODO: implement KEYSERVER!
 
@@ -188,7 +200,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         }
     }
 
-    private void startListFragment(Bundle savedInstanceState, byte[] bytes, String filename) {
+    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.import_keys_list_container) != null) {
@@ -201,7 +213,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             }
 
             // Create an instance of the fragment
-            mListFragment = ImportKeysListFragment.newInstance(bytes, filename);
+            mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, null);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
@@ -217,24 +229,24 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
         // Create new fragment from our own Fragment class
         switch (itemPosition) {
-        case 0:
-            loadFragment(ImportKeysServerFragment.class, null, mNavigationStrings[itemPosition]);
-            break;
-        case 1:
-            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[itemPosition]);
-            break;
-        case 2:
-            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
-            break;
-        case 3:
-            loadFragment(ImportKeysClipboardFragment.class, null, mNavigationStrings[itemPosition]);
-            break;
-        case 4:
-            loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[itemPosition]);
-            break;
+            case 0:
+                loadFragment(ImportKeysServerFragment.class, null, mNavigationStrings[itemPosition]);
+                break;
+            case 1:
+                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[itemPosition]);
+                break;
+            case 2:
+                loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
+                break;
+            case 3:
+                loadFragment(ImportKeysClipboardFragment.class, null, mNavigationStrings[itemPosition]);
+                break;
+            case 4:
+                loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[itemPosition]);
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
         return true;
     }
@@ -267,8 +279,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         startActivity(queryIntent);
     }
 
-    public void loadCallback(byte[] importData, String importFilename) {
-        mListFragment.loadNew(importData, importFilename);
+    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery) {
+        mListFragment.loadNew(importData, dataUri, serverQuery);
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
@@ -333,7 +345,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
      * Import keys with mImportData
      */
     public void importKeys() {
-        if (mListFragment.getKeyBytes() != null || mListFragment.getImportFilename() != null) {
+        if (mListFragment.getKeyBytes() != null || mListFragment.getDataUri() != null) {
             Log.d(Constants.TAG, "importKeys started");
 
             // Send all information needed to service to import key in other thread
@@ -360,8 +372,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 data.putByteArray(KeychainIntentService.IMPORT_BYTES, mListFragment.getKeyBytes());
             } else {
                 data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_FILE);
-                data.putString(KeychainIntentService.IMPORT_FILENAME,
-                        mListFragment.getImportFilename());
+                intent.setData(mListFragment.getDataUri());
             }
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
@@ -417,14 +428,11 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                                     });
                             alert.setCancelable(true);
                             alert.create().show();
-                        } else if (mDeleteAfterImport) {
-                            // everything went well, so now delete, if that was turned on
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mListFragment.getImportFilename());
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                         }
                     }
-                };
+                }
+
+                ;
             };
 
             // Create a new Messenger for the communication back
