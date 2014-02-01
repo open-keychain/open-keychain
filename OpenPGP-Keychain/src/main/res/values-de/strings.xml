@@ -327,7 +327,7 @@
   <string name="intent_send_encrypt">OpenPGP: Verschlüsseln</string>
   <string name="intent_send_decrypt">OpenPGP: Entschlüsseln</string>
   <!--Remote API-->
-  <string name="api_no_apps">Nicht registrierte Anwendungen!</string>
+  <string name="api_no_apps">Keine registrierten Anwendungen vorhanden!</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
   <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
