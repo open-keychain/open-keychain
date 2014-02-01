@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -33,7 +34,7 @@ public class ImportKeysListEntry implements Serializable {
     public long keyId;
 
     public boolean revoked;
-    // public Date date;
+    public Date date; // TODO: not displayed
     public String fingerPrint;
     public String hexKeyId;
     public int bitStrength;

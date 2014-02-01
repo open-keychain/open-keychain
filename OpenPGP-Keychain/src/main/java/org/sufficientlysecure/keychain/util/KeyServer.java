@@ -24,6 +24,8 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+
 public abstract class KeyServer {
     static public class QueryException extends Exception {
         private static final long serialVersionUID = 2703768928624654512L;
@@ -88,7 +90,7 @@ public abstract class KeyServer {
         }
     }
 
-    abstract List<KeyInfo> search(String query) throws QueryException, TooManyResponses,
+    abstract List<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery;
 
     abstract String get(long keyId) throws QueryException;

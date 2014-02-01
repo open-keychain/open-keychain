@@ -84,7 +84,7 @@ public class ImportKeysFileFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK && data != null) {
 
                     // load data
-                    mImportActivity.loadCallback(null, data.getData(), null);
+                    mImportActivity.loadCallback(null, data.getData(), null, null);
                 }
 
                 break;

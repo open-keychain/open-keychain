@@ -179,9 +179,6 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             Bundle args = new Bundle();
             args.putString(ImportKeysServerFragment.ARG_QUERY, query);
             loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
-
-            // TODO: implement KEYSERVER!
-
         } else {
             // Other actions
             startListFragment(savedInstanceState, null, null);
@@ -279,8 +276,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         startActivity(queryIntent);
     }
 
-    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery) {
-        mListFragment.loadNew(importData, dataUri, serverQuery);
+    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyserver) {
+        mListFragment.loadNew(importData, dataUri, serverQuery, keyserver);
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
@@ -444,6 +441,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
 
             // start service with intent
             startService(intent);
+        } else if (mListFragment.getServerQuery() != null) {
+            // TODO!
         } else {
             Toast.makeText(this, R.string.error_nothing_import, Toast.LENGTH_LONG).show();
         }

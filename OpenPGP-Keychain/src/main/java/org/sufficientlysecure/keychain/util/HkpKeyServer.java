@@ -46,6 +46,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
 import android.text.Html;
 
@@ -141,9 +142,9 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public ArrayList<KeyInfo> search(String query) throws QueryException, TooManyResponses,
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery {
-        ArrayList<KeyInfo> results = new ArrayList<KeyInfo>();
+        ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
         if (query.length() < 3) {
             throw new InsufficientQuery();
@@ -177,8 +178,9 @@ public class HkpKeyServer extends KeyServer {
 
         Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
-            KeyInfo info = new KeyInfo();
-            info.size = Integer.parseInt(matcher.group(1));
+//            KeyInfo info = new KeyInfo();
+            ImportKeysListEntry info = new ImportKeysListEntry();
+            info.bitStrength = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
             info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(3));
             info.fingerPrint = PgpKeyHelper.convertKeyIdToHex(info.keyId);
@@ -186,11 +188,11 @@ public class HkpKeyServer extends KeyServer {
 
             GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
             tmpGreg.set(Integer.parseInt(chunks[0]), Integer.parseInt(chunks[1]),
-               Integer.parseInt(chunks[2]));
+                    Integer.parseInt(chunks[2]));
             info.date = tmpGreg.getTime();
             info.userIds = new ArrayList<String>();
             if (matcher.group(5).startsWith("*** KEY")) {
-                info.revoked = matcher.group(5);
+                info.revoked = true;
             } else {
                 String tmp = matcher.group(5).replaceAll("<.*?>", "");
                 tmp = Html.fromHtml(tmp).toString();

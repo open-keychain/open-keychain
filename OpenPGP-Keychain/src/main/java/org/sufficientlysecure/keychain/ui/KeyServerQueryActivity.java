@@ -202,13 +202,13 @@ public class KeyServerQueryActivity extends SherlockFragmentActivity {
         String server = (String) mKeyServer.getSelectedItem();
         data.putString(KeychainIntentService.QUERY_KEY_SERVER, server);
 
-        data.putInt(KeychainIntentService.QUERY_KEY_TYPE, mQueryType);
+//        data.putInt(KeychainIntentService.QUERY_KEY_TYPE, mQueryType);
 
-        if (mQueryType == Id.keyserver.search) {
-            data.putString(KeychainIntentService.QUERY_KEY_STRING, mQueryString);
-        } else if (mQueryType == Id.keyserver.get) {
-            data.putLong(KeychainIntentService.QUERY_KEY_ID, mQueryId);
-        }
+//        if (mQueryType == Id.keyserver.search) {
+//            data.putString(KeychainIntentService.QUERY_KEY_STRING, mQueryString);
+//        } else if (mQueryType == Id.keyserver.get) {
+//            data.putLong(KeychainIntentService.QUERY_KEY_ID, mQueryId);
+//        }
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

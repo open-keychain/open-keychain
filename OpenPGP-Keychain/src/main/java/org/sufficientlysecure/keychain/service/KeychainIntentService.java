@@ -28,12 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
-import java.util.List;
 
-import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -48,10 +45,8 @@ import org.sufficientlysecure.keychain.pgp.PgpOperation;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.KeyServer.KeyInfo;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
@@ -144,8 +139,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String DELETE_FILE = "deleteFile";
 
     // import key
-    public static final String IMPORT_INPUT_STREAM = "import_input_stream";
-    public static final String IMPORT_FILENAME = "import_filename";
     public static final String IMPORT_BYTES = "import_bytes";
     public static final String IMPORT_KEY_LIST = "import_key_list";
 
@@ -161,8 +154,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     // query key
     public static final String QUERY_KEY_SERVER = "query_key_server";
-    public static final String QUERY_KEY_TYPE = "query_key_type";
-    public static final String QUERY_KEY_STRING = "query_key_string";
     public static final String QUERY_KEY_ID = "query_key_id";
 
     // sign key
@@ -762,25 +753,25 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             try {
 
                 /* Input */
-                int queryType = data.getInt(QUERY_KEY_TYPE);
+//                int queryType = data.getInt(QUERY_KEY_TYPE);
                 String keyServer = data.getString(QUERY_KEY_SERVER);
 
-                String queryString = data.getString(QUERY_KEY_STRING);
+//                String queryString = data.getString(QUERY_KEY_STRING);
                 long keyId = data.getLong(QUERY_KEY_ID);
 
                 /* Operation */
                 Bundle resultData = new Bundle();
 
                 HkpKeyServer server = new HkpKeyServer(keyServer);
-                if (queryType == Id.keyserver.search) {
-                    ArrayList<KeyInfo> searchResult = server.search(queryString);
-
-                    resultData.putParcelableArrayList(RESULT_QUERY_KEY_SEARCH_RESULT, searchResult);
-                } else if (queryType == Id.keyserver.get) {
+//                if (queryType == Id.keyserver.search) {
+//                    ArrayList<KeyInfo> searchResult = server.search(queryString);
+//
+//                    resultData.putParcelableArrayList(RESULT_QUERY_KEY_SEARCH_RESULT, searchResult);
+//                } else if (queryType == Id.keyserver.get) {
                     String keyData = server.get(keyId);
 
                     resultData.putString(RESULT_QUERY_KEY_DATA, keyData);
-                }
+//                }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

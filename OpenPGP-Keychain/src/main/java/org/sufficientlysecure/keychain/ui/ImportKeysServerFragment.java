@@ -17,11 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
@@ -30,6 +29,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -39,23 +39,24 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class ImportKeysServerFragment extends Fragment {
     public static final String ARG_QUERY = "query";
+    public static final String ARG_KEY_SERVER = "key_server";
 
     private ImportKeysActivity mImportActivity;
-
-    private BootstrapButton mOldButton;
 
     private BootstrapButton mSearchButton;
     private EditText mQueryEditText;
     private Spinner mServerSpinner;
+    private ArrayAdapter<String> mServerAdapter;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysServerFragment newInstance(String query) {
+    public static ImportKeysServerFragment newInstance(String query, String keyServer) {
         ImportKeysServerFragment frag = new ImportKeysServerFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_QUERY, query);
+        args.putString(ARG_KEY_SERVER, keyServer);
 
         frag.setArguments(args);
 
@@ -69,17 +70,17 @@ public class ImportKeysServerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.import_keys_server_fragment, container, false);
 
-        mSearchButton = (BootstrapButton) view.findViewById(R.id.import_server_button);
+        mSearchButton = (BootstrapButton) view.findViewById(R.id.import_server_search);
         mQueryEditText = (EditText) view.findViewById(R.id.import_server_query);
         mServerSpinner = (Spinner) view.findViewById(R.id.import_server_spinner);
 
         // add keyservers to spinner
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        mServerAdapter = new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(getActivity())
                 .getKeyServers());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mServerSpinner.setAdapter(adapter);
-        if (adapter.getCount() > 0) {
+        mServerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mServerSpinner.setAdapter(mServerAdapter);
+        if (mServerAdapter.getCount() > 0) {
             mServerSpinner.setSelection(0);
         } else {
             mSearchButton.setEnabled(false);
@@ -89,31 +90,28 @@ public class ImportKeysServerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String query = mQueryEditText.getText().toString();
+                String keyServer = (String) mServerSpinner.getSelectedItem();
+                search(query, keyServer);
 
+                // close keyboard after pressing search
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mQueryEditText.getWindowToken(), 0);
             }
         });
-        // TODO: not supported by BootstrapButton
-//        mSearchButton.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//                    String query = mQueryEditText.getText().toString();
-//                    search(query);
-//                    // FIXME This is a hack to hide a keyboard after search
-//                    // http://tinyurl.com/pwdc3q9
-//                    return false;
-//                }
-//                return false;
-//            }
-//        });
 
-        // TODO: remove:
-        mOldButton = (BootstrapButton) view.findViewById(R.id.import_server_button);
-        mOldButton.setOnClickListener(new OnClickListener() {
-
+        mQueryEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                startActivityForResult(new Intent(getActivity(), KeyServerQueryActivity.class), 0);
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    String query = mQueryEditText.getText().toString();
+                    String keyServer = (String) mServerSpinner.getSelectedItem();
+                    search(query, keyServer);
+
+                    // Don't return true to let the keyboard close itself after pressing search
+                    // http://stackoverflow.com/questions/2342620/how-to-hide-keyboard-after-typing-in-edittext-in-android
+                    return false;
+                }
+                return false;
             }
         });
 
@@ -130,12 +128,22 @@ public class ImportKeysServerFragment extends Fragment {
         if (getArguments() != null && getArguments().containsKey(ARG_QUERY)) {
             String query = getArguments().getString(ARG_QUERY);
             mQueryEditText.setText(query);
-            search(query);
+
+            String keyServer = null;
+            if (getArguments().containsKey(ARG_KEY_SERVER)) {
+                keyServer = getArguments().getString(ARG_KEY_SERVER);
+                int keyServerPos = mServerAdapter.getPosition(keyServer);
+                mServerSpinner.setSelection(keyServerPos);
+            } else {
+                keyServer = (String) mServerSpinner.getSelectedItem();
+            }
+
+            search(query, keyServer);
         }
     }
 
-    private void search(String query) {
-
+    private void search(String query, String keyServer) {
+        mImportActivity.loadCallback(null, null, query, keyServer);
     }
 
 }

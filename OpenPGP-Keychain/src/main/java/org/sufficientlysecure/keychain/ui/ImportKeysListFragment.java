@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -54,6 +54,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
     private byte[] mKeyBytes;
     private Uri mDataUri;
     private String mServerQuery;
+    private String mKeyServer;
 
     private static final int LOADER_ID_BYTES = 0;
     private static final int LOADER_ID_SERVER_QUERY = 1;
@@ -64,6 +65,10 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
     public Uri getDataUri() {
         return mDataUri;
+    }
+
+    public String getServerQuery() {
+        return mServerQuery;
     }
 
     public List<ImportKeysListEntry> getData() {
@@ -131,15 +136,16 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(byte[] importData, Uri dataUri, String serverQuery) {
+    public void loadNew(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {
         mKeyBytes = importData;
         mDataUri = dataUri;
         mServerQuery = serverQuery;
+        mKeyServer = keyServer;
 
         if (mKeyBytes != null || mDataUri != null)
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
 
-        if (mServerQuery != null)
+        if (mServerQuery != null && mKeyServer != null)
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
     }
 
@@ -152,7 +158,7 @@ public class ImportKeysListFragment extends SherlockListFragment implements
                 return new ImportKeysListLoader(mActivity, inputData);
             }
             case LOADER_ID_SERVER_QUERY: {
-
+                return new ImportKeysListServerLoader(getActivity(), mServerQuery, mKeyServer);
             }
 
             default:
@@ -165,31 +171,32 @@ public class ImportKeysListFragment extends SherlockListFragment implements
                                List<ImportKeysListEntry> data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_BYTES:
-                Log.d(Constants.TAG, "data: " + data);
 
-                // swap in the real data!
-                mAdapter.setData(data);
-                mAdapter.notifyDataSetChanged();
+        Log.d(Constants.TAG, "data: " + data);
 
-                setListAdapter(mAdapter);
+        // swap in the real data!
+        mAdapter.setData(data);
+        mAdapter.notifyDataSetChanged();
 
-                // The list should now be shown.
-                if (isResumed()) {
-                    setListShown(true);
-                } else {
-                    setListShownNoAnimation(true);
-                }
+        setListAdapter(mAdapter);
 
-                break;
-
-            case LOADER_ID_SERVER_QUERY:
-                break;
-
-            default:
-                break;
+        // The list should now be shown.
+        if (isResumed()) {
+            setListShown(true);
+        } else {
+            setListShownNoAnimation(true);
         }
+//        switch (loader.getId()) {
+//            case LOADER_ID_BYTES:
+//
+//                break;
+//
+//            case LOADER_ID_SERVER_QUERY:
+//                break;
+//
+//            default:
+//                break;
+//        }
     }
 
     @Override
