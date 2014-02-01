@@ -417,7 +417,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
             String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
 
-            content = Constants.FINGERPRINT_SCHEME + fingerprint;
+            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
