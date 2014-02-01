@@ -478,7 +478,7 @@ public class PGPSecretKeyRing
         return new PGPSecretKeyRing(keys, secRing.extraPubKeys);
     }
 
-    static PGPSecretKey readSubkey(BCPGInputStream in, KeyFingerPrintCalculator fingerPrintCalculator)
+    public static PGPSecretKey readSubkey(BCPGInputStream in, KeyFingerPrintCalculator fingerPrintCalculator)
         throws IOException, PGPException
     {
         SecretSubkeyPacket    sub = (SecretSubkeyPacket)in.readPacket();
