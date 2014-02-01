@@ -256,7 +256,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             // get master key id using row id
             long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
 
-            boolean masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
+            masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
 
             String passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
             if (passphrase == null) {
