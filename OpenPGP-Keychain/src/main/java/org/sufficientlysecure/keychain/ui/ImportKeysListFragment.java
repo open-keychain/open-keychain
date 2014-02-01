@@ -39,6 +39,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListFragment;
 
@@ -100,12 +101,6 @@ public class ImportKeysListFragment extends SherlockListFragment implements
 
         mActivity = getActivity();
 
-        if (getArguments() != null) {
-            mDataUri = getArguments().getParcelable(ARG_DATA_URI);
-            mKeyBytes = getArguments().getByteArray(ARG_BYTES);
-            mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
-        }
-
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(mActivity.getString(R.string.error_nothing_import));
@@ -114,14 +109,29 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mAdapter = new ImportKeysAdapter(mActivity);
         setListAdapter(mAdapter);
 
-        // Start out with a progress indicator.
-        setListShown(false);
+        mDataUri = getArguments().getParcelable(ARG_DATA_URI);
+        mKeyBytes = getArguments().getByteArray(ARG_BYTES);
+        mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
 
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        // give arguments to onCreateLoader()
-        getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
-        getLoaderManager().initLoader(LOADER_ID_SERVER_QUERY, null, this);
+        if (mDataUri != null || mKeyBytes != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
+
+            // Prepare the loader. Either re-connect with an existing one,
+            // or start a new one.
+            // give arguments to onCreateLoader()
+            getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
+        }
+
+        if (mServerQuery != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
+
+            // Prepare the loader. Either re-connect with an existing one,
+            // or start a new one.
+            // give arguments to onCreateLoader()
+            getLoaderManager().initLoader(LOADER_ID_SERVER_QUERY, null, this);
+        }
     }
 
     @Override
@@ -141,6 +151,9 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mDataUri = dataUri;
         mServerQuery = serverQuery;
         mKeyServer = keyServer;
+
+        // Start out with a progress indicator.
+        setListShown(false);
 
         if (mKeyBytes != null || mDataUri != null)
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
@@ -186,17 +199,21 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         } else {
             setListShownNoAnimation(true);
         }
-//        switch (loader.getId()) {
-//            case LOADER_ID_BYTES:
-//
-//                break;
-//
-//            case LOADER_ID_SERVER_QUERY:
-//                break;
-//
-//            default:
-//                break;
-//        }
+        switch (loader.getId()) {
+            case LOADER_ID_BYTES:
+                break;
+
+            case LOADER_ID_SERVER_QUERY:
+                Toast.makeText(
+                        getActivity(), getResources().getQuantityString(R.plurals.keys_found,
+                        mAdapter.getCount(), mAdapter.getCount()),
+                        Toast.LENGTH_SHORT
+                ).show();
+                break;
+
+            default:
+                break;
+        }
     }
 
     @Override
