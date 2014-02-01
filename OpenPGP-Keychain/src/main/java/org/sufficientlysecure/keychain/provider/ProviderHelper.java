@@ -306,6 +306,7 @@ public class ProviderHelper {
         values.put(Keys.KEY_RING_ROW_ID, keyRingRowId);
         values.put(Keys.KEY_DATA, key.getEncoded());
         values.put(Keys.RANK, rank);
+        values.put(Keys.FINGERPRINT, key.getFingerprint());
 
         Uri uri = Keys.buildPublicKeysUri(Long.toString(keyRingRowId));
 
@@ -357,6 +358,7 @@ public class ProviderHelper {
         values.put(Keys.KEY_RING_ROW_ID, keyRingRowId);
         values.put(Keys.KEY_DATA, key.getEncoded());
         values.put(Keys.RANK, rank);
+        values.put(Keys.FINGERPRINT, key.getPublicKey().getFingerprint());
 
         Uri uri = Keys.buildSecretKeysUri(Long.toString(keyRingRowId));
 
