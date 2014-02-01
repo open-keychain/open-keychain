@@ -121,39 +121,30 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             extras = new Bundle();
         }
 
-        /**
-         * Android Standard Actions
-         */
         if (Intent.ACTION_VIEW.equals(action)) {
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
             // override action to delegate it to Keychain's ACTION_IMPORT_KEY
             action = ACTION_IMPORT_KEY;
         }
 
-        /**
-         * Scanning a fingerprint directly with Barcode Scanner
-         */
         if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
+            /* Scanning a fingerprint directly with Barcode Scanner */
             getSupportActionBar().setSelectedNavigationItem(0);
             loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[0]);
             loadFromFingerprintUri(dataUri);
-        }
-
-        /**
-         * Keychain's own Actions
-         */
-        if (ACTION_IMPORT_KEY.equals(action)) {
+        } else if (ACTION_IMPORT_KEY.equals(action)) {
+            /* Keychain's own Actions */
             getSupportActionBar().setSelectedNavigationItem(1);
             loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
 
             if (dataUri != null) {
                 // directly load data
-                startListFragment(savedInstanceState, null, dataUri);
+                startListFragment(savedInstanceState, null, dataUri, null);
             } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
                 byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
 
                 // directly load data
-                startListFragment(savedInstanceState, importData, null);
+                startListFragment(savedInstanceState, importData, null, null);
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
             String query = null;
@@ -179,9 +170,11 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             Bundle args = new Bundle();
             args.putString(ImportKeysServerFragment.ARG_QUERY, query);
             loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
+
+            startListFragment(savedInstanceState, null, null, query);
         } else {
             // Other actions
-            startListFragment(savedInstanceState, null, null);
+            startListFragment(savedInstanceState, null, null, null);
 
             if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
                 getSupportActionBar().setSelectedNavigationItem(1);
@@ -197,7 +190,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         }
     }
 
-    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri) {
+    private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
         if (findViewById(R.id.import_keys_list_container) != null) {
@@ -210,7 +203,7 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             }
 
             // Create an instance of the fragment
-            mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, null);
+            mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
@@ -270,14 +263,19 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             return;
         }
 
-        Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-        queryIntent.putExtra(ImportKeysActivity.EXTRA_FINGERPRINT, fingerprint);
-        startActivity(queryIntent);
+        String query = "0x" + fingerprint;
+
+        // search directly
+        getSupportActionBar().setSelectedNavigationItem(0);
+        Bundle args = new Bundle();
+        args.putString(ImportKeysServerFragment.ARG_QUERY, query);
+        loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
+
+        startListFragment(null, null, null, query);
     }
 
-    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyserver) {
-        mListFragment.loadNew(importData, dataUri, serverQuery, keyserver);
+    public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {
+        mListFragment.loadNew(importData, dataUri, serverQuery, keyServer);
     }
 
     // private void importAndSignOld(final long keyId, final String expectedFingerprint) {

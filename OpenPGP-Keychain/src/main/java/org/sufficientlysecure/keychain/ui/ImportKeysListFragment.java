@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
@@ -122,6 +123,10 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mKeyBytes = getArguments().getByteArray(ARG_BYTES);
         mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
 
+        // TODO: this is used when scanning QR Code. Currently it simply uses key server nr 0
+        mKeyServer = Preferences.getPreferences(getActivity())
+                .getKeyServers()[0];
+
         if (mDataUri != null || mKeyBytes != null) {
             // Start out with a progress indicator.
             setListShown(false);
@@ -155,8 +160,8 @@ public class ImportKeysListFragment extends SherlockListFragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    public void loadNew(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {
-        mKeyBytes = importData;
+    public void loadNew(byte[] keyBytes, Uri dataUri, String serverQuery, String keyServer) {
+        mKeyBytes = keyBytes;
         mDataUri = dataUri;
         mServerQuery = serverQuery;
         mKeyServer = keyServer;

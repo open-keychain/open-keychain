@@ -17,8 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -124,10 +126,10 @@ public class ImportKeysServerFragment extends Fragment {
 
         mImportActivity = (ImportKeysActivity) getActivity();
 
-        // if query has been set on instantiation, search immediately!
+        // set displayed values
         if (getArguments() != null && getArguments().containsKey(ARG_QUERY)) {
             String query = getArguments().getString(ARG_QUERY);
-            mQueryEditText.setText(query);
+            mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
 
             String keyServer = null;
             if (getArguments().containsKey(ARG_KEY_SERVER)) {
@@ -138,7 +140,8 @@ public class ImportKeysServerFragment extends Fragment {
                 keyServer = (String) mServerSpinner.getSelectedItem();
             }
 
-            search(query, keyServer);
+            Log.d(Constants.TAG, "query: " + query);
+            Log.d(Constants.TAG, "keyServer: " + keyServer);
         }
     }
 
