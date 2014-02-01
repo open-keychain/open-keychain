@@ -83,7 +83,7 @@ public class ImportKeysListEntry implements Serializable {
 
         this.revoked = pgpKeyRing.getPublicKey().isRevoked();
         this.fingerPrint = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
-                .getFingerprint());
+                .getFingerprint(), true);
         this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
         int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();

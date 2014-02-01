@@ -7,7 +7,7 @@
     <com.beardedhen.androidbootstrap.BootstrapButton
         android:id="@+id/import_keyserver_button"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_margin="10dp"
         android:text="@string/menu_key_server"
         bootstrapbutton:bb_size="default"

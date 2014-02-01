@@ -266,6 +266,20 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden" >
 
+            <!-- Handle URIs with fingerprints when scanning directly from Barcode Scanner -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <!-- Android's scheme matcher is case-sensitive, so include most likely variations -->
+                <data android:scheme="openpgp4fpr" />
+                <data android:scheme="OPENPGP4FPR" />
+                <data android:scheme="OpenPGP4FPR" />
+                <data android:scheme="OpenPGP4Fpr" />
+                <data android:scheme="OpenPGP4fpr" />
+            </intent-filter>
             <!-- Handle NFC tags detected from outside our application -->
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />

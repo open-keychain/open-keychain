@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -35,6 +36,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -56,6 +58,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_KEYSERVER";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -63,24 +67,21 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     public static final String ACTION_IMPORT_KEY_FROM_NFC = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_NFC";
 
-    // only used by IMPORT
+    // only used by ACTION_IMPORT_KEY
     public static final String EXTRA_KEY_BYTES = "key_bytes";
 
-    // TODO: import keys from server
-    // public static final String EXTRA_KEY_ID = "keyId";
+    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
+    public static final String EXTRA_QUERY = "query";
+
+    public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
     protected boolean mDeleteAfterImport = false;
 
-    FileDialogFragment mFileDialog;
-    ImportKeysListFragment mListFragment;
-    OnNavigationListener mOnNavigationListener;
-    String[] mNavigationStrings;
-
-    Fragment mCurrentFragment;
-
-    BootstrapButton mImportButton;
-
-    // BootstrapButton mImportSignUploadButton;
+    // view
+    private ImportKeysListFragment mListFragment;
+    private String[] mNavigationStrings;
+    private Fragment mCurrentFragment;
+    private BootstrapButton mImportButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,20 +96,10 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 importKeys();
             }
         });
-        // mImportSignUploadButton = (BootstrapButton) findViewById(R.id.import_sign_and_upload);
-        // mImportSignUploadButton.setOnClickListener(new OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        // signAndUploadOnClick();
-        // }
-        // });
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         setupDrawerNavigation(savedInstanceState);
-
-        // set actionbar without home button if called from another app
-        // ActionBarHelper.setBackButton(this);
 
         // set drop down navigation
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
@@ -125,6 +116,8 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
+        Uri dataUri = intent.getData();
+        String scheme = intent.getScheme();
 
         if (extras == null) {
             extras = new Bundle();
@@ -137,6 +130,15 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             // Android's Action when opening file associated to Keychain (see AndroidManifest.xml)
             // override action to delegate it to Keychain's ACTION_IMPORT_KEY
             action = ACTION_IMPORT_KEY;
+        }
+
+        /**
+         * Scanning a fingerprint directly with Barcode Scanner
+         */
+        if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(FINGERPRINT_SCHEME)) {
+            getSupportActionBar().setSelectedNavigationItem(0);
+            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[0]);
+            loadFromFingerprintUri(dataUri);
         }
 
         /**
@@ -160,14 +162,25 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
                 // directly load data
                 startListFragment(savedInstanceState, importData, null);
             }
+        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
+            if (!extras.containsKey(EXTRA_QUERY)) {
+                Log.e(Constants.TAG, "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query' extra!");
+                return;
+            }
+
+            String query = extras.getString(EXTRA_QUERY);
+
+            // TODO: implement KEYSERVER!
+
         } else {
-            // Internal actions
+            // Other actions
             startListFragment(savedInstanceState, null, null);
 
             if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
                 getSupportActionBar().setSelectedNavigationItem(1);
                 loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
             } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
+                // also exposed in AndroidManifest
                 getSupportActionBar().setSelectedNavigationItem(2);
                 loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
             } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
@@ -237,6 +250,23 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         ft.replace(R.id.import_navigation_fragment, mCurrentFragment, tag);
         // Apply changes
         ft.commit();
+    }
+
+    public void loadFromFingerprintUri(Uri dataUri) {
+        String fingerprint = dataUri.toString().split(":")[1].toLowerCase(Locale.ENGLISH);
+
+        Log.d(Constants.TAG, "fingerprint: " + fingerprint);
+
+        if (fingerprint.length() < 16) {
+            Toast.makeText(this, R.string.import_qr_code_too_short_fingerprint,
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Intent queryIntent = new Intent(this, KeyServerQueryActivity.class);
+        queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
+        queryIntent.putExtra(KeyServerQueryActivity.EXTRA_FINGERPRINT, fingerprint);
+        startActivity(queryIntent);
     }
 
     public void loadCallback(byte[] importData, String importFilename) {
@@ -412,19 +442,6 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
             Toast.makeText(this, R.string.error_nothing_import, Toast.LENGTH_LONG).show();
         }
     }
-
-    public void importOnClick() {
-        importKeys();
-    }
-
-    // public void signAndUploadOnClick() {
-    // // first, import!
-    // // importOnClick(view);
-    //
-    // // TODO: implement sign and upload!
-    // Toast.makeText(ImportKeysActivity.this, "Not implemented right now!", Toast.LENGTH_SHORT)
-    // .show();
-    // }
 
     /**
      * NFC

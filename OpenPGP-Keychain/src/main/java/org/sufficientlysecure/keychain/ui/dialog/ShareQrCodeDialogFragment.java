@@ -40,11 +40,13 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 
 public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
-    private static final String ARG_URI = "uri";
+    private static final String ARG_KEY_URI = "uri";
     private static final String ARG_FINGERPRINT_ONLY = "fingerprint_only";
 
     private ImageView mImage;
     private TextView mText;
+
+    private boolean mFingerprintOnly;
 
     private ArrayList<String> mContentList;
     private int mCounter;
@@ -53,15 +55,11 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
 
     /**
      * Creates new instance of this dialog fragment
-     * 
-     * @param content
-     *            Content to be shared via QR Codes
-     * @return
      */
     public static ShareQrCodeDialogFragment newInstance(Uri dataUri, boolean fingerprintOnly) {
         ShareQrCodeDialogFragment frag = new ShareQrCodeDialogFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_URI, dataUri);
+        args.putParcelable(ARG_KEY_URI, dataUri);
         args.putBoolean(ARG_FINGERPRINT_ONLY, fingerprintOnly);
 
         frag.setArguments(args);
@@ -76,8 +74,8 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        Uri dataUri = getArguments().getParcelable(ARG_URI);
-        boolean fingerprintOnly = getArguments().getBoolean(ARG_FINGERPRINT_ONLY);
+        Uri dataUri = getArguments().getParcelable(ARG_KEY_URI);
+        mFingerprintOnly = getArguments().getBoolean(ARG_FINGERPRINT_ONLY);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
@@ -90,29 +88,31 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
         mImage = (ImageView) view.findViewById(R.id.share_qr_code_dialog_image);
         mText = (TextView) view.findViewById(R.id.share_qr_code_dialog_text);
 
-        // TODO
-        long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
-
         String content = null;
-        if (fingerprintOnly) {
+        if (mFingerprintOnly) {
             content = "openpgp4fpr:";
 
-            String fingerprint = PgpKeyHelper.convertKeyToHex(masterKeyId);
+            byte[] fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), dataUri);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
 
-            mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " "
-                    + fingerprint);
-
+            mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
             content = content + fingerprint;
 
             Log.d(Constants.TAG, "content: " + content);
 
             alert.setPositiveButton(R.string.btn_okay, null);
+
+            setQrCode(content);
         } else {
             mText.setText(R.string.share_qr_code_dialog_start);
 
+            // TODO
+            long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+
+
             // get public keyring as ascii armored string
             ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
-                    getActivity(), dataUri, new long[] { masterKeyId });
+                    getActivity(), dataUri, new long[]{masterKeyId});
 
             // TODO: binary?
 
@@ -122,13 +122,13 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
             // http://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
             alert.setPositiveButton(R.string.btn_next, null);
             alert.setNegativeButton(android.R.string.cancel, null);
+
+            mContentList = splitString(content, 1000);
+
+            // start with first
+            mCounter = 0;
+            updatePartsQrCode();
         }
-
-        mContentList = splitString(content, 1000);
-
-        // start with first
-        mCounter = 0;
-        updateQrCode();
 
         return alert.create();
     }
@@ -136,41 +136,47 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        AlertDialog alertDialog = (AlertDialog) getDialog();
-        final Button backButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-        final Button nextButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mCounter > 0) {
-                    mCounter--;
-                    updateQrCode();
-                    updateDialog(backButton, nextButton);
-                } else {
-                    dismiss();
-                }
-            }
-        });
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (!mFingerprintOnly) {
+            AlertDialog alertDialog = (AlertDialog) getDialog();
+            final Button backButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            final Button nextButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
 
-                if (mCounter < mContentList.size() - 1) {
-                    mCounter++;
-                    updateQrCode();
-                    updateDialog(backButton, nextButton);
-                } else {
-                    dismiss();
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mCounter > 0) {
+                        mCounter--;
+                        updatePartsQrCode();
+                        updateDialog(backButton, nextButton);
+                    } else {
+                        dismiss();
+                    }
                 }
-            }
-        });
+            });
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (mCounter < mContentList.size() - 1) {
+                        mCounter++;
+                        updatePartsQrCode();
+                        updateDialog(backButton, nextButton);
+                    } else {
+                        dismiss();
+                    }
+                }
+            });
+        }
     }
 
-    private void updateQrCode() {
+    private void updatePartsQrCode() {
         // Content: <counter>,<size>,<content>
-        mImage.setImageBitmap(QrCodeUtils.getQRCodeBitmap(mCounter + "," + mContentList.size()
-                + "," + mContentList.get(mCounter), QR_CODE_SIZE));
+        setQrCode(mCounter + "," + mContentList.size() + "," + mContentList.get(mCounter));
+    }
+
+    private void setQrCode(String data) {
+        mImage.setImageBitmap(QrCodeUtils.getQRCodeBitmap(data, QR_CODE_SIZE));
     }
 
     private void updateDialog(Button backButton, Button nextButton) {
@@ -191,7 +197,7 @@ public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
 
     /**
      * Split String by number of characters
-     * 
+     *
      * @param text
      * @param size
      * @return

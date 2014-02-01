@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.bcpg.UserAttributePacket;
+import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -55,10 +57,6 @@ public class ProviderHelper {
 
     /**
      * Private helper method to get PGPKeyRing from database
-     *
-     * @param context
-     * @param queryUri
-     * @return
      */
     public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri,
@@ -83,10 +81,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves the actual PGPPublicKeyRing object from the database blob based on the rowId
-     *
-     * @param context
-     * @param rowId
-     * @return
      */
     public static PGPPublicKeyRing getPGPPublicKeyRingByRowId(Context context, long rowId) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
@@ -95,10 +89,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves the actual PGPPublicKeyRing object from the database blob based on the maserKeyId
-     *
-     * @param context
-     * @param masterKeyId
-     * @return
      */
     public static PGPPublicKeyRing getPGPPublicKeyRingByMasterKeyId(Context context,
                                                                     long masterKeyId) {
@@ -109,10 +99,6 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPPublicKeyRing object from the database blob associated with a key
      * with this keyId
-     *
-     * @param context
-     * @param keyId
-     * @return
      */
     public static PGPPublicKeyRing getPGPPublicKeyRingByKeyId(Context context, long keyId) {
         Uri queryUri = KeyRings.buildPublicKeyRingsByKeyIdUri(Long.toString(keyId));
@@ -122,10 +108,6 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPPublicKey object from the database blob associated with a key with
      * this keyId
-     *
-     * @param context
-     * @param keyId
-     * @return
      */
     public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
         PGPPublicKeyRing keyRing = getPGPPublicKeyRingByKeyId(context, keyId);
@@ -138,10 +120,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves the actual PGPSecretKeyRing object from the database blob based on the rowId
-     *
-     * @param context
-     * @param rowId
-     * @return
      */
     public static PGPSecretKeyRing getPGPSecretKeyRingByRowId(Context context, long rowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
@@ -150,10 +128,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves the actual PGPSecretKeyRing object from the database blob based on the maserKeyId
-     *
-     * @param context
-     * @param masterKeyId
-     * @return
      */
     public static PGPSecretKeyRing getPGPSecretKeyRingByMasterKeyId(Context context,
                                                                     long masterKeyId) {
@@ -164,10 +138,6 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPSecretKeyRing object from the database blob associated with a key
      * with this keyId
-     *
-     * @param context
-     * @param keyId
-     * @return
      */
     public static PGPSecretKeyRing getPGPSecretKeyRingByKeyId(Context context, long keyId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsByKeyIdUri(Long.toString(keyId));
@@ -177,10 +147,6 @@ public class ProviderHelper {
     /**
      * Retrieves the actual PGPSecretKey object from the database blob associated with a key with
      * this keyId
-     *
-     * @param context
-     * @param keyId
-     * @return
      */
     public static PGPSecretKey getPGPSecretKeyByKeyId(Context context, long keyId) {
         PGPSecretKeyRing keyRing = getPGPSecretKeyRingByKeyId(context, keyId);
@@ -193,12 +159,6 @@ public class ProviderHelper {
 
     /**
      * Saves PGPPublicKeyRing with its keys and userIds in DB
-     *
-     * @param context
-     * @param keyRing
-     * @return
-     * @throws IOException
-     * @throws GeneralException
      */
     @SuppressWarnings("unchecked")
     public static void saveKeyRing(Context context, PGPPublicKeyRing keyRing) throws IOException {
@@ -263,12 +223,6 @@ public class ProviderHelper {
 
     /**
      * Saves PGPSecretKeyRing with its keys and userIds in DB
-     *
-     * @param context
-     * @param keyRing
-     * @return
-     * @throws IOException
-     * @throws GeneralException
      */
     @SuppressWarnings("unchecked")
     public static void saveKeyRing(Context context, PGPSecretKeyRing keyRing) throws IOException {
@@ -333,13 +287,6 @@ public class ProviderHelper {
 
     /**
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
-     *
-     * @param context
-     * @param keyRingRowId
-     * @param key
-     * @param rank
-     * @return
-     * @throws IOException
      */
     private static ContentProviderOperation buildPublicKeyOperations(Context context,
                                                                      long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
@@ -367,13 +314,6 @@ public class ProviderHelper {
 
     /**
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
-     *
-     * @param context
-     * @param keyRingRowId
-     * @param key
-     * @param rank
-     * @return
-     * @throws IOException
      */
     private static ContentProviderOperation buildPublicUserIdOperations(Context context,
                                                                         long keyRingRowId, String userId, int rank) {
@@ -389,13 +329,6 @@ public class ProviderHelper {
 
     /**
      * Build ContentProviderOperation to add PGPSecretKey to database corresponding to a keyRing
-     *
-     * @param context
-     * @param keyRingRowId
-     * @param key
-     * @param rank
-     * @return
-     * @throws IOException
      */
     private static ContentProviderOperation buildSecretKeyOperations(Context context,
                                                                      long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
@@ -432,13 +365,6 @@ public class ProviderHelper {
 
     /**
      * Build ContentProviderOperation to add SecretUserIds to database corresponding to a keyRing
-     *
-     * @param context
-     * @param keyRingRowId
-     * @param key
-     * @param rank
-     * @return
-     * @throws IOException
      */
     private static ContentProviderOperation buildSecretUserIdOperations(Context context,
                                                                         long keyRingRowId, String userId, int rank) {
@@ -454,10 +380,6 @@ public class ProviderHelper {
 
     /**
      * Private helper method
-     *
-     * @param context
-     * @param queryUri
-     * @return
      */
     private static ArrayList<Long> getKeyRingsMasterKeyIds(Context context, Uri queryUri) {
         Cursor cursor = context.getContentResolver().query(queryUri,
@@ -482,9 +404,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves ids of all SecretKeyRings
-     *
-     * @param context
-     * @return
      */
     public static ArrayList<Long> getSecretKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri();
@@ -493,9 +412,6 @@ public class ProviderHelper {
 
     /**
      * Retrieves ids of all PublicKeyRings
-     *
-     * @param context
-     * @return
      */
     public static ArrayList<Long> getPublicKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
@@ -514,10 +430,6 @@ public class ProviderHelper {
 
     /**
      * Get master key id of keyring by its row id
-     *
-     * @param context
-     * @param keyRingRowId
-     * @return
      */
     public static long getPublicMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri(String.valueOf(keyRingRowId));
@@ -526,10 +438,6 @@ public class ProviderHelper {
 
     /**
      * Get empty status of master key of keyring by its row id
-     *
-     * @param context
-     * @param keyRingRowId
-     * @return
      */
     public static boolean getSecretMasterKeyCanSign(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
@@ -538,11 +446,6 @@ public class ProviderHelper {
 
     /**
      * Private helper method to get master key private empty status of keyring by its row id
-     *
-     * @param context
-     * @param queryUri
-     * @param keyRingRowId
-     * @return
      */
     private static boolean getMasterKeyCanSign(Context context, Uri queryUri, long keyRingRowId) {
         String[] projection = new String[]{
@@ -572,10 +475,6 @@ public class ProviderHelper {
 
     /**
      * Get master key id of keyring by its row id
-     *
-     * @param context
-     * @param keyRingRowId
-     * @return
      */
     public static long getSecretMasterKeyId(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
@@ -583,41 +482,84 @@ public class ProviderHelper {
     }
 
     /**
-     * Private helper method to get master key id of keyring by its row id
-     *
-     * @param context
-     * @param queryUri
-     * @param keyRingRowId
-     * @return
+     * Get master key id of key
      */
     public static long getMasterKeyId(Context context, Uri queryUri) {
         String[] projection = new String[]{KeyRings.MASTER_KEY_ID};
-
-        ContentResolver cr = context.getContentResolver();
-        Cursor cursor = cr.query(queryUri, projection, null, null, null);
+        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
 
         long masterKeyId = -1;
-        if (cursor != null && cursor.moveToFirst()) {
-            int masterKeyIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int masterKeyIdCol = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
 
-            masterKeyId = cursor.getLong(masterKeyIdCol);
-        }
-
-        if (cursor != null) {
-            cursor.close();
+                masterKeyId = cursor.getLong(masterKeyIdCol);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         return masterKeyId;
     }
 
-    public static ArrayList<String> getPublicKeyRingsAsArmoredString(Context context,
-                                                                     long[] masterKeyIds) {
-        return getKeyRingsAsArmoredString(context, KeyRings.buildPublicKeyRingsUri(), masterKeyIds);
-    }
+    /**
+     * Get fingerprint of key
+     */
+    public static byte[] getFingerprint(Context context, Uri queryUri) {
+        String[] projection = new String[]{Keys.FINGERPRINT};
+        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
 
-    public static ArrayList<String> getSecretKeyRingsAsArmoredString(Context context,
-                                                                     long[] masterKeyIds) {
-        return getKeyRingsAsArmoredString(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
+        byte[] fingerprint = null;
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int col = cursor.getColumnIndexOrThrow(Keys.FINGERPRINT);
+
+                fingerprint = cursor.getBlob(col);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        // FALLBACK: If fingerprint is not in database, get it from key blob!
+        // this could happen if the key was saved by a previous version of Keychain!
+        if (fingerprint == null) {
+            Log.d(Constants.TAG, "FALLBACK: fingerprint is not in database, get it from key blob!");
+
+            // get master key id
+            projection = new String[]{KeyRings.MASTER_KEY_ID};
+            cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
+            long masterKeyId = 0;
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int col = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
+
+                    masterKeyId = cursor.getLong(col);
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+
+            PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, masterKeyId);
+            // if it is no public key get it from your own keys...
+            if (key == null) {
+                PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, masterKeyId);
+                if (secretKey == null) {
+                    Log.e(Constants.TAG, "Key could not be found!");
+                    return null;
+                }
+                key = secretKey.getPublicKey();
+            }
+
+            fingerprint = key.getFingerprint();
+        }
+
+        return fingerprint;
     }
 
     public static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
@@ -679,14 +621,6 @@ public class ProviderHelper {
         } else {
             return null;
         }
-    }
-
-    public static byte[] getPublicKeyRingsAsByteArray(Context context, long[] masterKeyIds) {
-        return getKeyRingsAsByteArray(context, KeyRings.buildPublicKeyRingsUri(), masterKeyIds);
-    }
-
-    public static byte[] getSecretKeyRingsAsByteArray(Context context, long[] masterKeyIds) {
-        return getKeyRingsAsByteArray(context, KeyRings.buildSecretKeyRingsUri(), masterKeyIds);
     }
 
     public static byte[] getKeyRingsAsByteArray(Context context, Uri uri, long[] masterKeyIds) {

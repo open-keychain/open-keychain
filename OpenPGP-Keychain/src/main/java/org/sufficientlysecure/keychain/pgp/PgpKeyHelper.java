@@ -42,17 +42,6 @@ import android.content.Context;
 
 public class PgpKeyHelper {
 
-    /**
-     * Returns the last 9 chars of a fingerprint
-     * 
-     * @param fingerprint
-     *            String containing short or long fingerprint
-     * @return
-     */
-    public static String shortifyFingerprint(String fingerprint) {
-        return fingerprint.substring(41);
-    }
-
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
     }
@@ -173,10 +162,6 @@ public class PgpKeyHelper {
             return false;
         }
         return true;
-    }
-
-    public static boolean isExpired(PGPSecretKey key) {
-        return isExpired(key.getPublicKey());
     }
 
     public static Vector<PGPSecretKey> getUsableCertificationKeys(PGPSecretKeyRing keyRing) {
@@ -460,12 +445,12 @@ public class PgpKeyHelper {
      * @param fp
      * @return
      */
-    public static String convertFingerprintToHex(byte[] fp) {
+    public static String convertFingerprintToHex(byte[] fp, boolean chunked) {
         String fingerPrint = "";
         for (int i = 0; i < fp.length; ++i) {
-            if (i != 0 && i % 10 == 0) {
+            if (chunked && i != 0 && i % 10 == 0) {
                 fingerPrint += "  ";
-            } else if (i != 0 && i % 2 == 0) {
+            } else if (chunked && i != 0 && i % 2 == 0) {
                 fingerPrint += " ";
             }
             String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase(Locale.US);
@@ -491,21 +476,21 @@ public class PgpKeyHelper {
             key = secretKey.getPublicKey();
         }
 
-        return convertFingerprintToHex(key.getFingerprint());
+        return convertFingerprintToHex(key.getFingerprint(), true);
     }
 
     public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
         return secretKey.isPrivateKeyEmpty();
     }
 
-    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
-        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-        if (secretKey == null) {
-            Log.e(Constants.TAG, "Key could not be found!");
-            return false; // could be a public key, assume it is not empty
-        }
-        return isSecretKeyPrivateEmpty(secretKey);
-    }
+//    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
+//        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
+//        if (secretKey == null) {
+//            Log.e(Constants.TAG, "Key could not be found!");
+//            return false; // could be a public key, assume it is not empty
+//        }
+//        return isSecretKeyPrivateEmpty(secretKey);
+//    }
 
     public static String convertKeyIdToHex(long keyId) {
         String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);

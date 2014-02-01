@@ -57,12 +57,12 @@ I am using the newest [Android Studio](http://developer.android.com/sdk/installi
 All Intents require user interaction, e.g. to finally encrypt the user needs to press the "Encrypt" button.
 To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 
-#### Android Intent actions provided by OpenPGP Keychain:
+#### Android Intent actions:
 
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 
-#### OpenPGP Keychain specific Intent actions:
+#### OpenPGP Keychain Intent actions:
 
 * ``org.sufficientlysecure.keychain.action.ENCRYPT``
   * To encrypt or sign text, use extra ``text`` (type: ``String``)
@@ -74,8 +74,14 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``key_bytes`` (type: ``byte[]``)
   * or set data ``Uri`` (``intent.setData()``) pointing to a file
+* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER``
+  * Extras: ``query`` (type: ``String``)
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras, starts Barcode Scanner to get QR Code
+  
+#### OpenPGP Keychain special registered Intents:
+* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
+* NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
 
 ### OpenPGP Remote API
 To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.

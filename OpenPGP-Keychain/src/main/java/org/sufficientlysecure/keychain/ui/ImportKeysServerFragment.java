@@ -32,10 +32,12 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 public class ImportKeysServerFragment extends Fragment {
     private BootstrapButton mButton;
 
+    String mQuery;
+
     /**
      * Creates new instance of this fragment
      */
-    public static ImportKeysServerFragment newInstance() {
+    public static ImportKeysServerFragment newInstance(String query) {
         ImportKeysServerFragment frag = new ImportKeysServerFragment();
 
         Bundle args = new Bundle();

@@ -45,6 +45,7 @@ public class KeychainContract {
         String KEY_RING_ROW_ID = "key_ring_row_id"; // foreign key to key_rings._ID
         String KEY_DATA = "key_data"; // PGPPublicKey/PGPSecretKey blob
         String RANK = "rank";
+        String FINGERPRINT = "fingerprint";
     }
 
     interface UserIdsColumns {

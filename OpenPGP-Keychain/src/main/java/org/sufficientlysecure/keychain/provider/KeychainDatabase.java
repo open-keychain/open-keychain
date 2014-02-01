@@ -31,7 +31,7 @@ import android.provider.BaseColumns;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
@@ -42,33 +42,45 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + KeyRingsColumns.MASTER_KEY_ID + " INT64, " + KeyRingsColumns.TYPE + " INTEGER, "
+            + KeyRingsColumns.MASTER_KEY_ID + " INT64, "
+            + KeyRingsColumns.TYPE + " INTEGER, "
             + KeyRingsColumns.KEY_RING_DATA + " BLOB)";
 
     private static final String CREATE_KEYS = "CREATE TABLE IF NOT EXISTS " + Tables.KEYS + " ("
-            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KeysColumns.KEY_ID
-            + " INT64, " + KeysColumns.TYPE + " INTEGER, " + KeysColumns.IS_MASTER_KEY
-            + " INTEGER, " + KeysColumns.ALGORITHM + " INTEGER, " + KeysColumns.KEY_SIZE
-            + " INTEGER, " + KeysColumns.CAN_CERTIFY + " INTEGER, " + KeysColumns.CAN_SIGN
-            + " INTEGER, " + KeysColumns.CAN_ENCRYPT + " INTEGER, " + KeysColumns.IS_REVOKED
-            + " INTEGER, " + KeysColumns.CREATION + " INTEGER, " + KeysColumns.EXPIRY
-            + " INTEGER, " + KeysColumns.KEY_DATA + " BLOB," + KeysColumns.RANK + " INTEGER, "
+            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + KeysColumns.KEY_ID + " INT64, "
+            + KeysColumns.TYPE + " INTEGER, "
+            + KeysColumns.IS_MASTER_KEY + " INTEGER, "
+            + KeysColumns.ALGORITHM + " INTEGER, "
+            + KeysColumns.KEY_SIZE + " INTEGER, "
+            + KeysColumns.CAN_CERTIFY + " INTEGER, "
+            + KeysColumns.CAN_SIGN + " INTEGER, "
+            + KeysColumns.CAN_ENCRYPT + " INTEGER, "
+            + KeysColumns.IS_REVOKED + " INTEGER, "
+            + KeysColumns.CREATION + " INTEGER, "
+            + KeysColumns.EXPIRY + " INTEGER, "
+            + KeysColumns.KEY_DATA + " BLOB,"
+            + KeysColumns.RANK + " INTEGER, "
+            + KeysColumns.FINGERPRINT + " BLOB, "
             + KeysColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
             + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
             + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + UserIdsColumns.USER_ID + " TEXT, " + UserIdsColumns.RANK + " INTEGER, "
+            + UserIdsColumns.USER_ID + " TEXT, "
+            + UserIdsColumns.RANK + " INTEGER, "
             + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
             + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
             + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, " + ApiAppsColumns.PACKAGE_SIGNATURE
-            + " BLOB, " + ApiAppsColumns.KEY_ID + " INT64, " + ApiAppsColumns.ENCRYPTION_ALGORITHM
-            + " INTEGER, " + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
+            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, "
+            + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB, "
+            + ApiAppsColumns.KEY_ID + " INT64, "
+            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
+            + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
             + ApiAppsColumns.COMPRESSION + " INTEGER)";
 
     KeychainDatabase(Context context) {
@@ -103,21 +115,24 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             Log.w(Constants.TAG, "Upgrading database to version " + version);
 
             switch (version) {
-            case 3:
-                db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.CAN_CERTIFY
-                        + " INTEGER DEFAULT 0;");
-                db.execSQL("UPDATE " + Tables.KEYS + " SET " + KeysColumns.CAN_CERTIFY
-                        + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
-                break;
-            case 4:
-                db.execSQL(CREATE_API_APPS);
-            case 5:
-                // new column: package_signature
-                db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
-                db.execSQL(CREATE_API_APPS);
-
-            default:
-                break;
+                case 3:
+                    db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.CAN_CERTIFY
+                            + " INTEGER DEFAULT 0;");
+                    db.execSQL("UPDATE " + Tables.KEYS + " SET " + KeysColumns.CAN_CERTIFY
+                            + " = 1 WHERE " + KeysColumns.IS_MASTER_KEY + "= 1;");
+                    break;
+                case 4:
+                    db.execSQL(CREATE_API_APPS);
+                case 5:
+                    // new column: package_signature
+                    db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
+                    db.execSQL(CREATE_API_APPS);
+                case 6:
+                    // new column: fingerprint
+                    db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.FINGERPRINT
+                            + " BLOB;");
+                default:
+                    break;
 
             }
         }

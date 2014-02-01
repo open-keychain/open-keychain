@@ -26,6 +26,7 @@ import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -101,8 +102,8 @@ public class ImportKeysQrCodeFragment extends Fragment {
                 Log.d(Constants.TAG, "scanResult content: " + scanResult.getContents());
 
                 // look if it's fingerprint only
-                if (scanResult.getContents().toLowerCase(Locale.ENGLISH).startsWith("openpgp4fpr")) {
-                    importFingerprint(scanResult.getContents().toLowerCase(Locale.ENGLISH));
+                if (scanResult.getContents().toLowerCase(Locale.ENGLISH).startsWith(ImportKeysActivity.FINGERPRINT_SCHEME)) {
+                    importFingerprint(Uri.parse(scanResult.getContents()));
                     return;
                 }
 
@@ -128,21 +129,8 @@ public class ImportKeysQrCodeFragment extends Fragment {
         }
     }
 
-    private void importFingerprint(String uri) {
-        String fingerprint = uri.split(":")[1];
-
-        Log.d(Constants.TAG, "fingerprint: " + fingerprint);
-
-        if (fingerprint.length() < 16) {
-            Toast.makeText(getActivity(), R.string.import_qr_code_too_short_fingerprint,
-                    Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        Intent queryIntent = new Intent(getActivity(), KeyServerQueryActivity.class);
-        queryIntent.setAction(KeyServerQueryActivity.ACTION_LOOK_UP_KEY_ID);
-        queryIntent.putExtra(KeyServerQueryActivity.EXTRA_FINGERPRINT, fingerprint);
-        startActivity(queryIntent);
+    public void importFingerprint(Uri dataUri) {
+        mImportActivity.loadFromFingerprintUri(dataUri);
     }
 
     private void importParts(String[] parts) {
