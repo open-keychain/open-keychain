@@ -477,4 +477,23 @@ public class PGPSecretKeyRing
         
         return new PGPSecretKeyRing(keys, secRing.extraPubKeys);
     }
+
+    public static PGPSecretKey readSubkey(BCPGInputStream in, KeyFingerPrintCalculator fingerPrintCalculator)
+        throws IOException, PGPException
+    {
+        SecretSubkeyPacket    sub = (SecretSubkeyPacket)in.readPacket();
+
+        //
+        // ignore GPG comment packets if found.
+        //
+        while (in.nextPacketTag() == PacketTags.EXPERIMENTAL_2)
+        {
+            in.readPacket();
+        }
+
+        TrustPacket subTrust = readOptionalTrustPacket(in);
+        List        sigList = readSignaturesAndTrust(in);
+
+        return new PGPSecretKey(sub, new PGPPublicKey(sub.getPublicKeyPacket(), subTrust, sigList, fingerPrintCalculator));
+    }
 }

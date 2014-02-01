@@ -80,9 +80,27 @@ public class PgpConversionHelper {
      * @return
      */
     public static PGPSecretKey BytesToPGPSecretKey(byte[] keyBytes) {
-        PGPSecretKey key = BytesToPGPSecretKeyList(keyBytes).get(0);
+        PGPObjectFactory factory = new PGPObjectFactory(keyBytes);
+        Object obj = null;
+        try {
+            obj = factory.nextObject();
+        } catch (IOException e) {
+            Log.e(Constants.TAG, "Error while converting to PGPSecretKey!", e);
+        }
+        PGPSecretKey secKey = null;
+        if(obj instanceof PGPSecretKey) {
+            if ((secKey = (PGPSecretKey)obj ) == null) {
+                Log.e(Constants.TAG, "No keys given!");
+            }
+        } else if(obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
+            PGPSecretKeyRing keyRing = null;
+            if ((keyRing = (PGPSecretKeyRing)obj) == null) {
+                Log.e(Constants.TAG, "No keys given!");
+            }
+            secKey = keyRing.getSecretKey();
+        }
 
-        return key;
+        return secKey;
     }
 
     /**

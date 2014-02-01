@@ -290,18 +290,19 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // fill values for this action
         Bundle data = new Bundle();
+        Boolean isMasterKey;
 
         String passPhrase;
         if (mEditors.getChildCount() > 0) {
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
             passPhrase = PassphraseCacheService
                     .getCachedPassphrase(mActivity, masterKey.getKeyID());
-
-            data.putByteArray(KeychainIntentService.GENERATE_KEY_MASTER_KEY,
-                    PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
+            isMasterKey = false;
         } else {
             passPhrase = "";
+            isMasterKey = true;
         }
+        data.putBoolean(KeychainIntentService.GENERATE_KEY_MASTER_KEY, isMasterKey);
         data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
         data.putInt(KeychainIntentService.GENERATE_KEY_ALGORITHM, mNewKeyAlgorithmChoice.getId());
         data.putInt(KeychainIntentService.GENERATE_KEY_KEY_SIZE, mNewKeySize);
@@ -322,11 +323,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get new key from data bundle returned from service
                     Bundle data = message.getData();
-                    PGPSecretKeyRing newKeyRing = (PGPSecretKeyRing) PgpConversionHelper
-                            .BytesToPGPKeyRing(data
+                    PGPSecretKey newKey = (PGPSecretKey) PgpConversionHelper
+                            .BytesToPGPSecretKey(data
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
-
-                    addGeneratedKeyToView(newKeyRing);
+                    addGeneratedKeyToView(newKey);
                 }
             };
         };
@@ -341,27 +341,12 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         mActivity.startService(intent);
     }
 
-    private void addGeneratedKeyToView(PGPSecretKeyRing newKeyRing) {
-        boolean isMasterKey = (mEditors.getChildCount() == 0);
-
-        // take only the key from this ring
-        PGPSecretKey newKey = null;
-        @SuppressWarnings("unchecked")
-        Iterator<PGPSecretKey> it = newKeyRing.getSecretKeys();
-
-        if (isMasterKey) {
-            newKey = it.next();
-        } else {
-            // first one is the master key
-            it.next();
-            newKey = it.next();
-        }
-
+    private void addGeneratedKeyToView(PGPSecretKey newKey) {
         // add view with new key
         KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
                 mEditors, false);
         view.setEditorListener(SectionView.this);
-        view.setValue(newKey, isMasterKey, -1);
+        view.setValue(newKey, newKey.isMasterKey(), -1);
         mEditors.addView(view);
         SectionView.this.updateEditorsVisible();
     }

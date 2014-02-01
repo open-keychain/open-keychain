@@ -561,21 +561,17 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 int algorithm = data.getInt(GENERATE_KEY_ALGORITHM);
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
                 int keysize = data.getInt(GENERATE_KEY_KEY_SIZE);
-                PGPSecretKey masterKey = null;
-                if (data.containsKey(GENERATE_KEY_MASTER_KEY)) {
-                    masterKey = PgpConversionHelper.BytesToPGPSecretKey(data
-                            .getByteArray(GENERATE_KEY_MASTER_KEY));
-                }
+                boolean masterKey = data.getBoolean(GENERATE_KEY_MASTER_KEY);
 
                 /* Operation */
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
-                PGPSecretKeyRing newKeyRing = keyOperations.createKey(algorithm, keysize,
+                PGPSecretKey newKey = keyOperations.createKey(algorithm, keysize,
                         passphrase, masterKey);
 
                 /* Output */
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(newKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(newKey));
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
@@ -592,18 +588,21 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Operation */
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
-                PGPSecretKeyRing masterKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
-                        4096, passphrase, null);
+                PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                        4096, passphrase, true);
 
-                PGPSecretKeyRing subKeyRing = keyOperations.createKey(Id.choice.algorithm.rsa,
-                        4096, passphrase, masterKeyRing.getSecretKey());
+                PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
+                        4096, passphrase, false);
+
+                // TODO: default to one master for cert, one sub for encrypt and one sub
+                //       for sign
 
                 /* Output */
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(masterKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
                 resultData.putByteArray(RESULT_NEW_KEY2,
-                        PgpConversionHelper.PGPSecretKeyRingToBytes(subKeyRing));
+                        PgpConversionHelper.PGPSecretKeyToBytes(subKey));
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
