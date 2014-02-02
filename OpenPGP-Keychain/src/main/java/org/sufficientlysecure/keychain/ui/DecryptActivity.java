@@ -55,6 +55,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.view.MenuCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -127,12 +129,12 @@ public class DecryptActivity extends DrawerActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mDecryptEnabled) {
-            menu.add(1, Id.menu.option.decrypt, 0, mDecryptString).setShowAsAction(
-                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            MenuItem item = menu.add(1, Id.menu.option.decrypt, 0, mDecryptString);
+            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mReplyEnabled) {
-            menu.add(1, Id.menu.option.reply, 1, mReplyString).setShowAsAction(
-                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            MenuItem item = menu.add(1, Id.menu.option.reply, 1, mReplyString);
+            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -281,7 +283,7 @@ public class DecryptActivity extends DrawerActivity {
         mReplyEnabled = false;
 
         // build new actionbar
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
 
         if (mReturnResult) {
             mSourcePrevious.setClickable(false);
@@ -372,7 +374,7 @@ public class DecryptActivity extends DrawerActivity {
 
                     mDecryptString = getString(R.string.btn_verify);
                     // build new action bar
-                    invalidateOptionsMenu();
+                    supportInvalidateOptionsMenu();
                 } else {
                     Log.d(Constants.TAG, "Nothing matched!");
                 }
@@ -421,7 +423,7 @@ public class DecryptActivity extends DrawerActivity {
             mDecryptString = getString(R.string.btn_decrypt);
 
             // build new action bar
-            invalidateOptionsMenu();
+            supportInvalidateOptionsMenu();
             break;
         }
 
@@ -430,7 +432,7 @@ public class DecryptActivity extends DrawerActivity {
             mDecryptString = getString(R.string.btn_decrypt);
 
             // build new action bar
-            invalidateOptionsMenu();
+            supportInvalidateOptionsMenu();
             break;
         }
 
@@ -723,7 +725,7 @@ public class DecryptActivity extends DrawerActivity {
                     mReplyEnabled = false;
 
                     // build new action bar
-                    invalidateOptionsMenu();
+                    supportInvalidateOptionsMenu();
 
                     Toast.makeText(DecryptActivity.this, R.string.decryption_successful,
                             Toast.LENGTH_SHORT).show();
@@ -744,7 +746,7 @@ public class DecryptActivity extends DrawerActivity {
                         mReplyEnabled = false;
 
                         // build new action bar
-                        invalidateOptionsMenu();
+                        supportInvalidateOptionsMenu();
                         break;
 
                     case Id.target.file:

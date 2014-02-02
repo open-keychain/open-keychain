@@ -51,6 +51,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -131,18 +132,16 @@ public class EncryptActivity extends DrawerActivity {
 
     /**
      * ActionBar menu is created based on class variables to change it at runtime
-     * 
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (mEncryptToClipboardEnabled) {
-            menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString)
-                    .setShowAsAction(
-                            MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            MenuItem item = menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString);
+            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
         }
         if (mEncryptEnabled) {
-            menu.add(1, Id.menu.option.encrypt, 1, mEncryptString).setShowAsAction(
-                    MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+            MenuItem item = menu.add(1, Id.menu.option.encrypt, 1, mEncryptString);
+            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
         }
 
         return true;
@@ -152,18 +151,18 @@ public class EncryptActivity extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-        case Id.menu.option.encrypt_to_clipboard:
-            encryptToClipboardClicked();
+            case Id.menu.option.encrypt_to_clipboard:
+                encryptToClipboardClicked();
 
-            return true;
+                return true;
 
-        case Id.menu.option.encrypt:
-            encryptClicked();
+            case Id.menu.option.encrypt:
+                encryptClicked();
 
-            return true;
+                return true;
 
-        default:
-            return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
 
         }
     }
@@ -193,7 +192,7 @@ public class EncryptActivity extends DrawerActivity {
 
     /**
      * Handles all actions with this intent
-     * 
+     *
      * @param intent
      */
     private void handleActions(Intent intent) {
@@ -285,7 +284,7 @@ public class EncryptActivity extends DrawerActivity {
 
     /**
      * If an Intent gives a signatureKeyId and/or encryptionKeyIds, preselect those!
-     * 
+     *
      * @param preselectedSignatureKeyId
      * @param preselectedEncryptionKeyIds
      */
@@ -335,7 +334,7 @@ public class EncryptActivity extends DrawerActivity {
 
     /**
      * Guess output filename based on input path
-     * 
+     *
      * @param path
      * @return Suggestion for output filename
      */
@@ -350,26 +349,26 @@ public class EncryptActivity extends DrawerActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-        case R.id.sourceFile: {
-            mSourceLabel.setText(R.string.label_file);
-            break;
-        }
+            case R.id.sourceFile: {
+                mSourceLabel.setText(R.string.label_file);
+                break;
+            }
 
-        case R.id.sourceMessage: {
-            mSourceLabel.setText(R.string.label_message);
-            break;
-        }
+            case R.id.sourceMessage: {
+                mSourceLabel.setText(R.string.label_message);
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
         updateActionBarButtons();
     }
 
     /**
      * Set ActionBar buttons based on parameters
-     * 
+     *
      * @param encryptEnabled
      * @param encryptStringRes
      * @param encryptToClipboardEnabled
@@ -377,7 +376,7 @@ public class EncryptActivity extends DrawerActivity {
      */
     @SuppressLint("NewApi")
     private void setActionbarButtons(boolean encryptEnabled, int encryptStringRes,
-            boolean encryptToClipboardEnabled, int encryptToClipboardStringRes) {
+                                     boolean encryptToClipboardEnabled, int encryptToClipboardStringRes) {
         mEncryptEnabled = encryptEnabled;
         if (encryptEnabled) {
             mEncryptString = getString(encryptStringRes);
@@ -388,7 +387,7 @@ public class EncryptActivity extends DrawerActivity {
         }
 
         // build new action bar based on these class variables
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
     }
 
     /**
@@ -396,56 +395,56 @@ public class EncryptActivity extends DrawerActivity {
      */
     private void updateActionBarButtons() {
         switch (mSource.getCurrentView().getId()) {
-        case R.id.sourceFile: {
-            setActionbarButtons(true, R.string.btn_encrypt_file, false, 0);
+            case R.id.sourceFile: {
+                setActionbarButtons(true, R.string.btn_encrypt_file, false, 0);
 
-            break;
-        }
+                break;
+            }
 
-        case R.id.sourceMessage: {
-            mSourceLabel.setText(R.string.label_message);
+            case R.id.sourceMessage: {
+                mSourceLabel.setText(R.string.label_message);
 
-            if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
-                        R.string.btn_encrypt_to_clipboard);
-            } else {
-                if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-                    if (mSecretKeyId == 0) {
-                        setActionbarButtons(false, 0, false, 0);
-                    } else {
-                        setActionbarButtons(true, R.string.btn_sign_and_send, true,
-                                R.string.btn_sign_to_clipboard);
-                    }
-                } else {
+                if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
                     setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
                             R.string.btn_encrypt_to_clipboard);
+                } else {
+                    if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
+                        if (mSecretKeyId == 0) {
+                            setActionbarButtons(false, 0, false, 0);
+                        } else {
+                            setActionbarButtons(true, R.string.btn_sign_and_send, true,
+                                    R.string.btn_sign_to_clipboard);
+                        }
+                    } else {
+                        setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
+                                R.string.btn_encrypt_to_clipboard);
+                    }
                 }
+                break;
             }
-            break;
-        }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
 
     }
 
     private void updateMode() {
         switch (mMode.getCurrentView().getId()) {
-        case R.id.modeAsymmetric: {
-            mModeLabel.setText(R.string.label_asymmetric);
-            break;
-        }
+            case R.id.modeAsymmetric: {
+                mModeLabel.setText(R.string.label_asymmetric);
+                break;
+            }
 
-        case R.id.modeSymmetric: {
-            mModeLabel.setText(R.string.label_symmetric);
-            break;
-        }
+            case R.id.modeSymmetric: {
+                mModeLabel.setText(R.string.label_symmetric);
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
         updateActionBarButtons();
     }
@@ -675,50 +674,52 @@ public class EncryptActivity extends DrawerActivity {
 
                     String output;
                     switch (mEncryptTarget) {
-                    case Id.target.clipboard:
-                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
-                        Log.d(Constants.TAG, "output: " + output);
-                        ClipboardReflection.copyToClipboard(EncryptActivity.this, output);
-                        Toast.makeText(EncryptActivity.this,
-                                R.string.encryption_to_clipboard_successful, Toast.LENGTH_SHORT)
-                                .show();
-                        break;
+                        case Id.target.clipboard:
+                            output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
+                            Log.d(Constants.TAG, "output: " + output);
+                            ClipboardReflection.copyToClipboard(EncryptActivity.this, output);
+                            Toast.makeText(EncryptActivity.this,
+                                    R.string.encryption_to_clipboard_successful, Toast.LENGTH_SHORT)
+                                    .show();
+                            break;
 
-                    case Id.target.email:
+                        case Id.target.email:
 
-                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
-                        Log.d(Constants.TAG, "output: " + output);
+                            output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
+                            Log.d(Constants.TAG, "output: " + output);
 
-                        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                            Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
-                        // Type is set to text/plain so that encrypted messages can
-                        // be sent with Whatsapp, Hangouts, SMS etc...
-                        sendIntent.setType("text/plain");
+                            // Type is set to text/plain so that encrypted messages can
+                            // be sent with Whatsapp, Hangouts, SMS etc...
+                            sendIntent.setType("text/plain");
 
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, output);
-                        startActivity(Intent.createChooser(sendIntent,
-                                getString(R.string.title_send_email)));
-                        break;
+                            sendIntent.putExtra(Intent.EXTRA_TEXT, output);
+                            startActivity(Intent.createChooser(sendIntent,
+                                    getString(R.string.title_send_email)));
+                            break;
 
-                    case Id.target.file:
-                        Toast.makeText(EncryptActivity.this, R.string.encryption_successful,
-                                Toast.LENGTH_SHORT).show();
+                        case Id.target.file:
+                            Toast.makeText(EncryptActivity.this, R.string.encryption_successful,
+                                    Toast.LENGTH_SHORT).show();
 
-                        if (mDeleteAfter.isChecked()) {
-                            // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                        }
-                        break;
+                            if (mDeleteAfter.isChecked()) {
+                                // Create and show dialog to delete original file
+                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                        .newInstance(mInputFilename);
+                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                            }
+                            break;
 
-                    default:
-                        // shouldn't happen
-                        break;
+                        default:
+                            // shouldn't happen
+                            break;
 
                     }
                 }
-            };
+            }
+
+            ;
         };
 
         // Create a new Messenger for the communication back
@@ -734,7 +735,7 @@ public class EncryptActivity extends DrawerActivity {
 
     /**
      * Fixes bad message characters for gmail
-     * 
+     *
      * @param message
      * @return
      */
@@ -844,7 +845,7 @@ public class EncryptActivity extends DrawerActivity {
         });
 
         mFileCompression = (Spinner) findViewById(R.id.fileCompression);
-        Choice[] choices = new Choice[] {
+        Choice[] choices = new Choice[]{
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.zip, "ZIP ("
@@ -852,7 +853,7 @@ public class EncryptActivity extends DrawerActivity {
                 new Choice(Id.choice.compression.zlib, "ZLIB ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.bzip2, "BZIP2 ("
-                        + getString(R.string.compression_very_slow) + ")"), };
+                        + getString(R.string.compression_very_slow) + ")"),};
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -957,44 +958,44 @@ public class EncryptActivity extends DrawerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-        case Id.request.filename: {
-            if (resultCode == RESULT_OK && data != null) {
-                try {
-                    String path = FileHelper.getPath(this, data.getData());
-                    Log.d(Constants.TAG, "path=" + path);
+            case Id.request.filename: {
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        String path = FileHelper.getPath(this, data.getData());
+                        Log.d(Constants.TAG, "path=" + path);
 
-                    mFilename.setText(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                        mFilename.setText(path);
+                    } catch (NullPointerException e) {
+                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                    }
                 }
+                return;
             }
-            return;
-        }
 
-        case Id.request.public_keys: {
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                mEncryptionKeyIds = bundle
-                        .getLongArray(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS);
+            case Id.request.public_keys: {
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    mEncryptionKeyIds = bundle
+                            .getLongArray(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS);
+                }
+                updateView();
+                break;
             }
-            updateView();
-            break;
-        }
 
-        case Id.request.secret_keys: {
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
-            } else {
-                mSecretKeyId = Id.key.none;
+            case Id.request.secret_keys: {
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
+                } else {
+                    mSecretKeyId = Id.key.none;
+                }
+                updateView();
+                break;
             }
-            updateView();
-            break;
-        }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);

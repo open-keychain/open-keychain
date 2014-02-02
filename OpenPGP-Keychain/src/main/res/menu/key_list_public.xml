@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_key_list_public_import"
-        android:showAsAction="always|withText"
+        app:showAsAction="always|withText"
         android:icon="@drawable/ic_action_add_person"
-        android:title="@string/menu_import"/>
+        android:title="@string/menu_import" />
     <item
         android:id="@+id/menu_key_list_public_export"
-        android:showAsAction="never"
-        android:title="@string/menu_export_keys"/>
+        app:showAsAction="never"
+        android:title="@string/menu_export_keys" />
 
 </menu>
