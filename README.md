@@ -81,7 +81,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
   * without extras, starts Barcode Scanner to get QR Code
   
 #### OpenPGP Keychain special registered Intents:
-* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
+* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
 * NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
 
 ### OpenPGP Remote API
