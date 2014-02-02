@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="22000"
+    android:versionCode="22001"
     android:versionName="2.2">
 
     <!--
