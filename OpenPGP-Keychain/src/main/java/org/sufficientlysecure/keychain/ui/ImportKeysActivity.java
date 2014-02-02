@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -56,8 +55,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
-    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String ACTION_IMPORT_KEY_FROM_KEY_SERVER = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_KEY_SERVER";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -68,11 +67,10 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     // only used by ACTION_IMPORT_KEY
     public static final String EXTRA_KEY_BYTES = "key_bytes";
 
-    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
+    // only used by ACTION_IMPORT_KEY_FROM_KEY_SERVER
     public static final String EXTRA_QUERY = "query";
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_FINGERPRINT = "fingerprint";
-//    public static final String RESULT_EXTRA_TEXT = "text";
 
     // view
     private ImportKeysListFragment mListFragment;
@@ -103,7 +101,6 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         Context context = getSupportActionBar().getThemedContext();
         ArrayAdapter<CharSequence> navigationAdapter = ArrayAdapter.createFromResource(context,
                 R.array.import_action_list, android.R.layout.simple_spinner_dropdown_item);
-//        list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         getSupportActionBar().setListNavigationCallbacks(navigationAdapter, this);
 
@@ -145,7 +142,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 // directly load data
                 startListFragment(savedInstanceState, importData, null, null);
             }
-        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_KEY_SERVER.equals(action)) {
             String query = null;
             if (extras.containsKey(EXTRA_QUERY)) {
                 query = extras.getString(EXTRA_QUERY);

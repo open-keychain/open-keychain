@@ -239,7 +239,7 @@ public class DecryptActivity extends DrawerActivity {
                         DecryptActivity.this, mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, ImportKeysActivity.class);
-                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
                     intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }

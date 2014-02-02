@@ -74,8 +74,9 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``key_bytes`` (type: ``byte[]``)
   * or set data ``Uri`` (``intent.setData()``) pointing to a file
-* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER``
+* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEY_SERVER``
   * Extras: ``query`` (type: ``String``)
+  * or ``fingerprint`` (type: ``String``)
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras, starts Barcode Scanner to get QR Code
   

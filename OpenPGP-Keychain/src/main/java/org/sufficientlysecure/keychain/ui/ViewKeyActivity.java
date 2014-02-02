@@ -398,7 +398,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
         }
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
         queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
 
         // TODO: lookup??

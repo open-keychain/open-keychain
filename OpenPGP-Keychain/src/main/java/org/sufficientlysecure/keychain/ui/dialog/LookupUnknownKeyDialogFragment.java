@@ -89,7 +89,7 @@ public class LookupUnknownKeyDialogFragment extends DialogFragment {
                 sendMessageToHandler(MESSAGE_OKAY);
 
                 Intent intent = new Intent(activity, ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
                 intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
                 startActivityForResult(intent, Id.request.look_up_key_id);
             }
