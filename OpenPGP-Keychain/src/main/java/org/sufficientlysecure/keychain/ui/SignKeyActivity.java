@@ -84,6 +84,7 @@ public class SignKeyActivity extends SherlockFragmentActivity implements
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
         mSelectKeyFragment.setCallback(this);
+        mSelectKeyFragment.setFilterCertify(true);
 
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
