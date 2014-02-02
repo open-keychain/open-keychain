@@ -11,6 +11,7 @@
         android:orientation="horizontal" >
 
         <TableLayout
+            android:id="@+id/table_keylayout"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -88,7 +89,8 @@
                     bootstrapbutton:bb_type="default" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:id="@+id/row_certify">
 
                 <TextView
                     android:id="@+id/label_usage"
@@ -105,13 +107,16 @@
                     android:text="@string/flag_certify" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:id="@+id/row_sign">
 
                 <TextView
+                    android:id="@+id/label_usage2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:paddingRight="10dip" />
+                    android:paddingRight="10dip"
+                    android:text="@string/label_usage" />
                 <CheckBox
                     android:id="@+id/chkSign"
                     android:layout_width="wrap_content"
@@ -119,7 +124,8 @@
                     android:text="@string/flag_sign" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:id="@+id/row_encrypt">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -133,7 +139,8 @@
                     android:text="@string/flag_encrypt" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:id="@+id/row_authenticate">
 
                 <TextView
                     android:layout_width="wrap_content"
