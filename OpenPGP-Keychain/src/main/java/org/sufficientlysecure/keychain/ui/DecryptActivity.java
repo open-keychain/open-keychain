@@ -55,10 +55,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.view.MenuCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -99,11 +95,6 @@ public class DecryptActivity extends DrawerActivity {
     private ImageView mSourcePrevious = null;
     private ImageView mSourceNext = null;
 
-    private boolean mDecryptEnabled = true;
-    private String mDecryptString = "";
-    private boolean mReplyEnabled = true;
-    private String mReplyString = "";
-
     private int mDecryptTarget;
 
     private EditText mFilename = null;
@@ -126,40 +117,7 @@ public class DecryptActivity extends DrawerActivity {
 
     private boolean mDecryptImmediately = false;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (mDecryptEnabled) {
-            MenuItem item = menu.add(1, Id.menu.option.decrypt, 0, mDecryptString);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
-        }
-        if (mReplyEnabled) {
-            MenuItem item = menu.add(1, Id.menu.option.reply, 1, mReplyString);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-        case Id.menu.option.decrypt: {
-            decryptClicked();
-
-            return true;
-        }
-        case Id.menu.option.reply: {
-            replyClicked();
-
-            return true;
-        }
-
-        default: {
-            return super.onOptionsItemSelected(item);
-        }
-        }
-    }
+    private BootstrapButton mDecryptButton;
 
     private void initView() {
         mSource = (ViewFlipper) findViewById(R.id.source);
@@ -225,6 +183,14 @@ public class DecryptActivity extends DrawerActivity {
         while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
             mSource.showNext();
         }
+
+        mDecryptButton = (BootstrapButton) findViewById(R.id.action_decrypt);
+        mDecryptButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                decryptClicked();
+            }
+        });
     }
 
     @Override
@@ -279,11 +245,6 @@ public class DecryptActivity extends DrawerActivity {
                 }
             }
         });
-
-        mReplyEnabled = false;
-
-        // build new actionbar
-        supportInvalidateOptionsMenu();
 
         if (mReturnResult) {
             mSourcePrevious.setClickable(false);
@@ -371,10 +332,6 @@ public class DecryptActivity extends DrawerActivity {
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
                     mMessage.setText(textData);
-
-                    mDecryptString = getString(R.string.btn_verify);
-                    // build new action bar
-                    supportInvalidateOptionsMenu();
                 } else {
                     Log.d(Constants.TAG, "Nothing matched!");
                 }
@@ -420,19 +377,13 @@ public class DecryptActivity extends DrawerActivity {
         switch (mSource.getCurrentView().getId()) {
         case R.id.sourceFile: {
             mSourceLabel.setText(R.string.label_file);
-            mDecryptString = getString(R.string.btn_decrypt);
-
-            // build new action bar
-            supportInvalidateOptionsMenu();
+            mDecryptButton.setText(getString(R.string.btn_decrypt));
             break;
         }
 
         case R.id.sourceMessage: {
             mSourceLabel.setText(R.string.label_message);
-            mDecryptString = getString(R.string.btn_decrypt);
-
-            // build new action bar
-            supportInvalidateOptionsMenu();
+            mDecryptButton.setText(getString(R.string.btn_decrypt));
             break;
         }
 
@@ -722,10 +673,6 @@ public class DecryptActivity extends DrawerActivity {
 
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
-                    mReplyEnabled = false;
-
-                    // build new action bar
-                    supportInvalidateOptionsMenu();
 
                     Toast.makeText(DecryptActivity.this, R.string.decryption_successful,
                             Toast.LENGTH_SHORT).show();
@@ -743,10 +690,7 @@ public class DecryptActivity extends DrawerActivity {
                                 .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
                         mMessage.setText(decryptedMessage);
                         mMessage.setHorizontallyScrolling(false);
-                        mReplyEnabled = false;
 
-                        // build new action bar
-                        supportInvalidateOptionsMenu();
                         break;
 
                     case Id.target.file:

@@ -120,8 +120,7 @@
             android:name=".ui.SelectPublicKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_recipients"
-            android:launchMode="singleTop"
-            android:uiOptions="splitActionBarWhenNarrow">
+            android:launchMode="singleTop">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.SEARCH" /> -->
@@ -151,7 +150,6 @@
             android:name=".ui.EncryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden">
 
             <!-- Keychain's own Actions -->
@@ -175,7 +173,6 @@
             android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden">
 
             <!-- Keychain's own Actions -->
@@ -250,7 +247,6 @@
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_server_preference"
-            android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".ui.SignKeyActivity"

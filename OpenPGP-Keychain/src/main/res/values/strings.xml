@@ -42,15 +42,13 @@
     <string name="section_signing_key">Your Key used for Signing</string>
     <string name="section_upload_key">Upload Key</string>
     <string name="section_key_server">Key Server</string>
+    <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
+    <string name="section_decrypt_verify">Decrypt and Verify</string>
 
     <!-- button -->
-    <string name="btn_sign_to_clipboard">Sign (Clipboard)</string>
-    <string name="btn_encrypt_to_clipboard">Encrypt to Clipboard</string>
-    <string name="btn_encrypt_and_send">Encrypt and send…</string>
-    <string name="btn_sign_and_send">Sign and send…</string>
     <string name="btn_sign">Sign</string>
     <string name="btn_decrypt">Decrypt</string>
-    <string name="btn_verify">Verify</string>
+    <string name="btn_decrypt_verify">Decrypt and Verify</string>
     <string name="btn_select_encrypt_keys">Select Recipients</string>
     <string name="btn_encrypt_file">Encrypt File</string>
     <string name="btn_save">Save</string>
@@ -64,6 +62,9 @@
     <string name="btn_export_to_server">Upload To Key Server</string>
     <string name="btn_next">Next</string>
     <string name="btn_back">Back</string>
+    <string name="btn_clipboard">Clipboard</string>
+    <string name="btn_share">Share with…</string>
+
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>

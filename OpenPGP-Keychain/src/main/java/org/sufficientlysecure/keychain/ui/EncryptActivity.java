@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -51,9 +50,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.view.MenuItemCompat;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -87,11 +83,6 @@ public class EncryptActivity extends DrawerActivity {
 
     private EditText mMessage = null;
     private BootstrapButton mSelectKeysButton = null;
-
-    private boolean mEncryptEnabled = false;
-    private String mEncryptString = "";
-    private boolean mEncryptToClipboardEnabled = false;
-    private String mEncryptToClipboardString = "";
 
     private CheckBox mSign = null;
     private TextView mMainUserId = null;
@@ -130,42 +121,9 @@ public class EncryptActivity extends DrawerActivity {
 
     private FileDialogFragment mFileDialog;
 
-    /**
-     * ActionBar menu is created based on class variables to change it at runtime
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (mEncryptToClipboardEnabled) {
-            MenuItem item = menu.add(1, Id.menu.option.encrypt_to_clipboard, 0, mEncryptToClipboardString);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
-        }
-        if (mEncryptEnabled) {
-            MenuItem item = menu.add(1, Id.menu.option.encrypt, 1, mEncryptString);
-            MenuItemCompat.setShowAsAction(item, MenuItemCompat.SHOW_AS_ACTION_ALWAYS | MenuItemCompat.SHOW_AS_ACTION_WITH_TEXT);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case Id.menu.option.encrypt_to_clipboard:
-                encryptToClipboardClicked();
-
-                return true;
-
-            case Id.menu.option.encrypt:
-                encryptClicked();
-
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
+    private BootstrapButton mEncryptShare;
+    private BootstrapButton mEncryptClipboard;
+    private BootstrapButton mEncryptFile;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -367,57 +325,39 @@ public class EncryptActivity extends DrawerActivity {
     }
 
     /**
-     * Set ActionBar buttons based on parameters
-     *
-     * @param encryptEnabled
-     * @param encryptStringRes
-     * @param encryptToClipboardEnabled
-     * @param encryptToClipboardStringRes
-     */
-    @SuppressLint("NewApi")
-    private void setActionbarButtons(boolean encryptEnabled, int encryptStringRes,
-                                     boolean encryptToClipboardEnabled, int encryptToClipboardStringRes) {
-        mEncryptEnabled = encryptEnabled;
-        if (encryptEnabled) {
-            mEncryptString = getString(encryptStringRes);
-        }
-        mEncryptToClipboardEnabled = encryptToClipboardEnabled;
-        if (encryptToClipboardEnabled) {
-            mEncryptToClipboardString = getString(encryptToClipboardStringRes);
-        }
-
-        // build new action bar based on these class variables
-        supportInvalidateOptionsMenu();
-    }
-
-    /**
      * Update ActionBar buttons based on current selection in view
      */
     private void updateActionBarButtons() {
         switch (mSource.getCurrentView().getId()) {
             case R.id.sourceFile: {
-                setActionbarButtons(true, R.string.btn_encrypt_file, false, 0);
-
+                mEncryptShare.setVisibility(View.GONE);
+                mEncryptClipboard.setVisibility(View.GONE);
+                mEncryptFile.setVisibility(View.VISIBLE);
                 break;
             }
 
             case R.id.sourceMessage: {
                 mSourceLabel.setText(R.string.label_message);
 
+                mEncryptShare.setVisibility(View.VISIBLE);
+                mEncryptClipboard.setVisibility(View.VISIBLE);
+                mEncryptFile.setVisibility(View.GONE);
+
                 if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-                    setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
-                            R.string.btn_encrypt_to_clipboard);
+                    mEncryptShare.setEnabled(true);
+                    mEncryptClipboard.setEnabled(true);
                 } else {
                     if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
                         if (mSecretKeyId == 0) {
-                            setActionbarButtons(false, 0, false, 0);
+                            mEncryptShare.setEnabled(false);
+                            mEncryptClipboard.setEnabled(false);
                         } else {
-                            setActionbarButtons(true, R.string.btn_sign_and_send, true,
-                                    R.string.btn_sign_to_clipboard);
+                            mEncryptShare.setEnabled(true);
+                            mEncryptClipboard.setEnabled(true);
                         }
                     } else {
-                        setActionbarButtons(true, R.string.btn_encrypt_and_send, true,
-                                R.string.btn_encrypt_to_clipboard);
+                        mEncryptShare.setEnabled(true);
+                        mEncryptClipboard.setEnabled(true);
                     }
                 }
                 break;
@@ -887,6 +827,28 @@ public class EncryptActivity extends DrawerActivity {
                     mSecretKeyId = Id.key.none;
                     updateView();
                 }
+            }
+        });
+
+        mEncryptClipboard = (BootstrapButton) findViewById(R.id.action_encrypt_clipboard);
+        mEncryptClipboard.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptToClipboardClicked();
+            }
+        });
+        mEncryptShare = (BootstrapButton) findViewById(R.id.action_encrypt_share);
+        mEncryptShare.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked();
+            }
+        });
+        mEncryptFile = (BootstrapButton) findViewById(R.id.action_encrypt_file);
+        mEncryptFile.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked();
             }
         });
     }
