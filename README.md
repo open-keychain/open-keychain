@@ -234,8 +234,12 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   https://github.com/rtyley/spongycastle  
   MIT X11 License
 
-* ActionBarSherlock  
-  http://actionbarsherlock.com/  
+* Android Support Library v4  
+  http://developer.android.com/tools/support-library/index.html  
+  Apache License v2
+  
+* Android Support Library v7 'appcompat'  
+  http://developer.android.com/tools/support-library/index.html  
   Apache License v2
 
 * HtmlTextView  
