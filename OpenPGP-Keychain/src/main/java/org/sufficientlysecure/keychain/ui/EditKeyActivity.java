@@ -93,6 +93,7 @@ public class EditKeyActivity extends ActionBarActivity {
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
     private String mSavedNewPassPhrase = null;
+    private boolean mIsPassPhraseSet;
 
     private BootstrapButton mChangePassPhrase;
 
@@ -256,16 +257,7 @@ public class EditKeyActivity extends ActionBarActivity {
             long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
 
             masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
-
-            String passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
-            if (passphrase == null) {
-                showPassphraseDialog(masterKeyId, masterCanSign);
-            } else {
-                // PgpMain.setEditPassPhrase(passPhrase);
-                mCurrentPassPhrase = passphrase;
-
-                finallyEdit(masterKeyId, masterCanSign);
-            }
+            finallyEdit(masterKeyId, masterCanSign);
         }
     }
 
@@ -278,9 +270,7 @@ public class EditKeyActivity extends ActionBarActivity {
                     String passPhrase = PassphraseCacheService.getCachedPassphrase(
                             EditKeyActivity.this, masterKeyId);
                     mCurrentPassPhrase = passPhrase;
-                    finallyEdit(masterKeyId, masterCanSign);
-                } else {
-                    finish();
+                    finallySaveClicked();
                 }
             }
         };
@@ -369,14 +359,11 @@ public class EditKeyActivity extends ActionBarActivity {
             }
         }
 
-        // TODO: ???
-        if (mCurrentPassPhrase == null) {
-            mCurrentPassPhrase = "";
-        }
+        mCurrentPassPhrase = "";
 
         buildLayout();
-
-        if (mCurrentPassPhrase.equals("")) {
+        mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
+        if (!mIsPassPhraseSet) {
             // check "no passphrase" checkbox and remove button
             mNoPassphrase.setChecked(true);
             mChangePassPhrase.setVisibility(View.GONE);
@@ -482,7 +469,7 @@ public class EditKeyActivity extends ActionBarActivity {
     public boolean isPassphraseSet() {
         if (mNoPassphrase.isChecked()) {
             return true;
-        } else if ((!mCurrentPassPhrase.equals(""))
+        } else if ((mIsPassPhraseSet)
                 || (mNewPassPhrase != null && !mNewPassPhrase.equals(""))) {
             return true;
         } else {
@@ -491,11 +478,31 @@ public class EditKeyActivity extends ActionBarActivity {
     }
 
     private void saveClicked() {
+        long masterKeyId = getMasterKeyId();
         try {
             if (!isPassphraseSet()) {
                 throw new PgpGeneralException(this.getString(R.string.set_a_passphrase));
             }
 
+            String passphrase = null;
+            if (mIsPassPhraseSet)
+                passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
+            else
+                passphrase = "";
+            if (passphrase == null) {
+                showPassphraseDialog(masterKeyId, masterCanSign);
+            } else {
+                mCurrentPassPhrase = passphrase;
+                finallySaveClicked();
+            }
+        } catch (PgpGeneralException e) {
+            //Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
+            //        Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void finallySaveClicked() {
+        try {
             // Send all information needed to service to edit key in other thread
             Intent intent = new Intent(this, KeychainIntentService.class);
 
@@ -552,8 +559,8 @@ public class EditKeyActivity extends ActionBarActivity {
             // start service with intent
             startService(intent);
         } catch (PgpGeneralException e) {
-            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                    Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
+            //        Toast.LENGTH_SHORT).show();
         }
     }
 
