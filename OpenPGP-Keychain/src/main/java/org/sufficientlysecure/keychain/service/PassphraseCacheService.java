@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -210,8 +211,21 @@ public class PassphraseCacheService extends Service {
     public static boolean hasPassphrase(Context context, long secretKeyId) {
         // check if the key has no passphrase
         try {
-            PGPSecretKey secretKey = PgpKeyHelper.getMasterKey(ProviderHelper
-                    .getPGPSecretKeyRingByKeyId(context, secretKeyId));
+            PGPSecretKeyRing secRing = ProviderHelper
+                    .getPGPSecretKeyRingByKeyId(context, secretKeyId);
+            PGPSecretKey secretKey = null;
+            boolean foundValidKey = false;
+            for (Iterator keys = secRing.getSecretKeys(); keys.hasNext();) {
+                secretKey = (PGPSecretKey)keys.next();
+                if (!secretKey.isPrivateKeyEmpty()) {
+                    foundValidKey = true;
+                    break;
+                }
+            }
+
+            if (!foundValidKey)
+                return false;
+
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     "SC").build("".toCharArray());
             PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
