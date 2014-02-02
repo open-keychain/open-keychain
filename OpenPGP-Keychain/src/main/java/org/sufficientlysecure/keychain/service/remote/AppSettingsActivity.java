@@ -26,13 +26,12 @@ import org.sufficientlysecure.keychain.util.Log;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-
-public class AppSettingsActivity extends SherlockFragmentActivity {
+public class AppSettingsActivity extends ActionBarActivity {
     private Uri mAppUri;
 
     private AppSettingsFragment mSettingsFragment;
@@ -71,7 +70,7 @@ public class AppSettingsActivity extends SherlockFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.api_app_settings, menu);
+        getMenuInflater().inflate(R.menu.api_app_settings, menu);
         return true;
     }
 

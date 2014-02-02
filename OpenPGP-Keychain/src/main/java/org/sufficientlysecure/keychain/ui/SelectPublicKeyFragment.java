@@ -78,7 +78,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = getSherlockActivity();
+        mActivity = getActivity();
         mListView = getListView();
 
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);

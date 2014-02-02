@@ -44,16 +44,15 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class ImportKeysActivity extends DrawerActivity implements OnNavigationListener {
+public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
@@ -102,11 +101,11 @@ public class ImportKeysActivity extends DrawerActivity implements OnNavigationLi
         // set drop down navigation
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
         Context context = getSupportActionBar().getThemedContext();
-        ArrayAdapter<CharSequence> list = ArrayAdapter.createFromResource(context,
-                R.array.import_action_list, R.layout.sherlock_spinner_item);
-        list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> navigationAdapter = ArrayAdapter.createFromResource(context,
+                R.array.import_action_list, android.R.layout.simple_spinner_dropdown_item);
+//        list.setDropDownViewResource(R.layout.sherlock_spinner_dropdown_item);
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getSupportActionBar().setListNavigationCallbacks(list, this);
+        getSupportActionBar().setListNavigationCallbacks(navigationAdapter, this);
 
         handleActions(savedInstanceState, getIntent());
     }

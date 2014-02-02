@@ -34,11 +34,9 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.DialogFragment;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
-
-public class LookupUnknownKeyDialogFragment extends SherlockDialogFragment {
+public class LookupUnknownKeyDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_UNKNOWN_KEY_ID = "unknown_key_id";
 

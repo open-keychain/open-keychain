@@ -47,19 +47,19 @@ import android.os.Message;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class ViewKeyActivity extends SherlockFragmentActivity implements
+public class ViewKeyActivity extends ActionBarActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     ExportHelper mExportHelper;
@@ -115,7 +115,7 @@ public class ViewKeyActivity extends SherlockFragmentActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.key_view, menu);
+        getMenuInflater().inflate(R.menu.key_view, menu);
         return true;
     }
 

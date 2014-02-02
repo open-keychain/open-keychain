@@ -55,6 +55,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
@@ -66,8 +68,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 @SuppressLint("NewApi")
@@ -126,7 +126,6 @@ public class DecryptActivity extends DrawerActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         if (mDecryptEnabled) {
             menu.add(1, Id.menu.option.decrypt, 0, mDecryptString).setShowAsAction(
                     MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);

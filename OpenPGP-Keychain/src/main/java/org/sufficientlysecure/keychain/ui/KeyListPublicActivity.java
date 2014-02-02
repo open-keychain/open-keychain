@@ -24,9 +24,8 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class KeyListPublicActivity extends DrawerActivity {
 
@@ -47,7 +46,7 @@ public class KeyListPublicActivity extends DrawerActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.key_list_public, menu);
+        getMenuInflater().inflate(R.menu.key_list_public, menu);
         return true;
     }
 

@@ -22,14 +22,13 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ActionBarHelper {
 
@@ -38,7 +37,7 @@ public class ActionBarHelper {
      * 
      * @param activity
      */
-    public static void setBackButton(SherlockFragmentActivity activity) {
+    public static void setBackButton(ActionBarActivity activity) {
         // set actionbar without home button if called from another app
         final ActionBar actionBar = activity.getSupportActionBar();
         Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="

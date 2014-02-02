@@ -28,13 +28,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class HelpActivity extends SherlockFragmentActivity {
+public class HelpActivity extends ActionBarActivity {
     public static final String EXTRA_SELECTED_TAB = "selectedTab";
 
     ViewPager mViewPager;
@@ -100,7 +98,7 @@ public class HelpActivity extends SherlockFragmentActivity {
             }
         }
 
-        public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+        public TabsAdapter(ActionBarActivity activity, ViewPager pager) {
             super(activity.getSupportFragmentManager());
             mContext = activity;
             mActionBar = activity.getSupportActionBar();
@@ -139,7 +137,7 @@ public class HelpActivity extends SherlockFragmentActivity {
         public void onPageScrollStateChanged(int state) {
         }
 
-        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
             Object tag = tab.getTag();
             for (int i = 0; i < mTabs.size(); i++) {
                 if (mTabs.get(i) == tag) {
@@ -148,10 +146,10 @@ public class HelpActivity extends SherlockFragmentActivity {
             }
         }
 
-        public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
 
-        public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
         }
     }
 }

@@ -36,12 +36,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class RemoteServiceActivity extends SherlockFragmentActivity {
+public class RemoteServiceActivity extends ActionBarActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
     public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
@@ -165,7 +164,8 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
                             finishHandled = true;
                             finish();
                         }
-                    });
+                    }
+            );
 
             setContentView(R.layout.api_app_register_activity);
 
@@ -248,7 +248,8 @@ public class RemoteServiceActivity extends SherlockFragmentActivity {
                             finishHandled = true;
                             finish();
                         }
-                    });
+                    }
+            );
 
             setContentView(R.layout.api_app_select_pub_keys_activity);
 

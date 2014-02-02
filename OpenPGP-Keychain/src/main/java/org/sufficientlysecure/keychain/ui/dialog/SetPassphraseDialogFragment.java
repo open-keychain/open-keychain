@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,9 +41,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
-public class SetPassphraseDialogFragment extends SherlockDialogFragment implements OnEditorActionListener {
+public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
 

@@ -16,11 +16,9 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -39,6 +37,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +48,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
@@ -63,18 +61,18 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private int mNewKeySize;
     private boolean canEdit = true;
 
-    private SherlockFragmentActivity mActivity;
+    private ActionBarActivity mActivity;
 
     private ProgressDialogFragment mGeneratingDialog;
 
     public SectionView(Context context) {
         super(context);
-        mActivity = (SherlockFragmentActivity) context;
+        mActivity = (ActionBarActivity) context;
     }
 
     public SectionView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mActivity = (SherlockFragmentActivity) context;
+        mActivity = (ActionBarActivity) context;
     }
 
     public ViewGroup getEditors() {

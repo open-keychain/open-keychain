@@ -24,15 +24,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.ActionProvider;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.SubMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -40,17 +39,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.FontAwesomeText;
 
-/**
- * some fundamental ideas from https://github.com/tobykurien/SherlockNavigationDrawer
- * 
- * 
- */
-public class DrawerActivity extends SherlockFragmentActivity {
+public class DrawerActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -138,10 +129,10 @@ public class DrawerActivity extends SherlockFragmentActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
         // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(getMenuItem(item))) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
@@ -176,214 +167,6 @@ public class DrawerActivity extends SherlockFragmentActivity {
         // default:
         // return super.onOptionsItemSelected(item);
         // }
-    }
-
-    private android.view.MenuItem getMenuItem(final MenuItem item) {
-        return new android.view.MenuItem() {
-            @Override
-            public int getItemId() {
-                return item.getItemId();
-            }
-
-            public boolean isEnabled() {
-                return true;
-            }
-
-            @Override
-            public boolean collapseActionView() {
-                return false;
-            }
-
-            @Override
-            public boolean expandActionView() {
-                return false;
-            }
-
-            @Override
-            public ActionProvider getActionProvider() {
-                return null;
-            }
-
-            @Override
-            public View getActionView() {
-                return null;
-            }
-
-            @Override
-            public char getAlphabeticShortcut() {
-                return 0;
-            }
-
-            @Override
-            public int getGroupId() {
-                return 0;
-            }
-
-            @Override
-            public Drawable getIcon() {
-                return null;
-            }
-
-            @Override
-            public Intent getIntent() {
-                return null;
-            }
-
-            @Override
-            public ContextMenuInfo getMenuInfo() {
-                return null;
-            }
-
-            @Override
-            public char getNumericShortcut() {
-                return 0;
-            }
-
-            @Override
-            public int getOrder() {
-                return 0;
-            }
-
-            @Override
-            public SubMenu getSubMenu() {
-                return null;
-            }
-
-            @Override
-            public CharSequence getTitle() {
-                return null;
-            }
-
-            @Override
-            public CharSequence getTitleCondensed() {
-                return null;
-            }
-
-            @Override
-            public boolean hasSubMenu() {
-                return false;
-            }
-
-            @Override
-            public boolean isActionViewExpanded() {
-                return false;
-            }
-
-            @Override
-            public boolean isCheckable() {
-                return false;
-            }
-
-            @Override
-            public boolean isChecked() {
-                return false;
-            }
-
-            @Override
-            public boolean isVisible() {
-                return false;
-            }
-
-            @Override
-            public android.view.MenuItem setActionProvider(ActionProvider actionProvider) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setActionView(View view) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setActionView(int resId) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setAlphabeticShortcut(char alphaChar) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setCheckable(boolean checkable) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setChecked(boolean checked) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setEnabled(boolean enabled) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setIcon(Drawable icon) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setIcon(int iconRes) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setIntent(Intent intent) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setNumericShortcut(char numericChar) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setOnActionExpandListener(OnActionExpandListener listener) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setOnMenuItemClickListener(
-                    OnMenuItemClickListener menuItemClickListener) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setShortcut(char numericChar, char alphaChar) {
-                return null;
-            }
-
-            @Override
-            public void setShowAsAction(int actionEnum) {
-            }
-
-            @Override
-            public android.view.MenuItem setShowAsActionFlags(int actionEnum) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setTitle(CharSequence title) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setTitle(int title) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setTitleCondensed(CharSequence title) {
-                return null;
-            }
-
-            @Override
-            public android.view.MenuItem setVisible(boolean visible) {
-                return null;
-            }
-        };
     }
 
     /* The click listener for ListView in the navigation drawer */

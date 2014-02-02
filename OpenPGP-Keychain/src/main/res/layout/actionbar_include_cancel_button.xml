@@ -16,14 +16,13 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/actionbar_cancel"
-    style="@style/Widget.Sherlock.ActionButton"
+    style="@style/Widget.AppCompat.ActionButton"
     android:layout_width="0dp"
     android:layout_height="match_parent"
-    android:layout_weight="1" >
+    android:layout_weight="1">
 
     <TextView
         android:id="@+id/actionbar_cancel_text"
-        style="@style/Widget.Sherlock.ActionBar.TabText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -31,6 +30,7 @@
         android:drawablePadding="8dp"
         android:gravity="center_vertical"
         android:paddingRight="20dp"
+        style="@style/Widget.AppCompat.Light.ActionBar.TabText"
         android:text="Cancel (set in-code!)" />
 
 </FrameLayout>

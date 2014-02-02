@@ -37,15 +37,14 @@ import org.sufficientlysecure.keychain.util.Log;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-
-public class ImportKeysListFragment extends SherlockListFragment implements
+public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<List<ImportKeysListEntry>> {
     private static final String ARG_DATA_URI = "uri";
     private static final String ARG_BYTES = "bytes";

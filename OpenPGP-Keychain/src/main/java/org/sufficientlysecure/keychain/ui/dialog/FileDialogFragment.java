@@ -32,15 +32,15 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class FileDialogFragment extends SherlockDialogFragment {
+public class FileDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
     private static final String ARG_TITLE = "title";
     private static final String ARG_MESSAGE = "message";
@@ -160,10 +160,6 @@ public class FileDialogFragment extends SherlockDialogFragment {
     /**
      * Updates filename in dialog, normally called in onActivityResult in activity using the
      * FileDialog
-     * 
-     * @param messageId
-     * @param progress
-     * @param max
      */
     private void setFilename(String filename) {
         AlertDialog dialog = (AlertDialog) getDialog();

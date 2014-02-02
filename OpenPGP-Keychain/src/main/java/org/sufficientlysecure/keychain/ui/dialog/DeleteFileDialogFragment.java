@@ -29,12 +29,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
-public class DeleteFileDialogFragment extends SherlockDialogFragment {
+public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_FILE = "delete_file";
 
     /**

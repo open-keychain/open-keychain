@@ -30,19 +30,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
  * Sends the selected public key to a key server
  */
-public class UploadKeyActivity extends SherlockFragmentActivity {
+public class UploadKeyActivity extends ActionBarActivity {
     private BootstrapButton mUploadButton;
     private Spinner mKeyServerSpinner;
 

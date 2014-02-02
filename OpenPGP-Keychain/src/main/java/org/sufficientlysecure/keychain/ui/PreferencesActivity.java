@@ -28,12 +28,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.support.v7.app.ActionBarActivity;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockPreferenceActivity;
-
-public class PreferencesActivity extends SherlockPreferenceActivity {
+public class PreferencesActivity extends PreferenceActivity {
     private IntegerListPreference mPassPhraseCacheTtl = null;
     private IntegerListPreference mEncryptionAlgorithm = null;
     private IntegerListPreference mHashAlgorithm = null;
@@ -49,10 +48,10 @@ public class PreferencesActivity extends SherlockPreferenceActivity {
         mPreferences = Preferences.getPreferences(this);
         super.onCreate(savedInstanceState);
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeButtonEnabled(false);
+//        final ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayShowTitleEnabled(true);
+//        actionBar.setDisplayHomeAsUpEnabled(false);
+//        actionBar.setHomeButtonEnabled(false);
 
         addPreferencesFromResource(R.xml.preferences);
 

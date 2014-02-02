@@ -22,12 +22,11 @@ import org.sufficientlysecure.keychain.R;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-
-public class SelectSecretKeyActivity extends SherlockFragmentActivity {
+public class SelectSecretKeyActivity extends ActionBarActivity {
 
     // Actions for internal use only:
     public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX

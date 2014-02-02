@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -33,9 +34,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-
-public class RegisteredAppsListFragment extends SherlockListFragment implements
+public class RegisteredAppsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // This is the Adapter being used to display the list's data.

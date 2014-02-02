@@ -23,11 +23,10 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
-public class SelectPublicKeyActivity extends SherlockFragmentActivity {
+public class SelectPublicKeyActivity extends ActionBarActivity {
 
     // Actions for internal use only:
     public static final String ACTION_SELECT_PUBLIC_KEYS = Constants.INTENT_PREFIX

@@ -31,15 +31,14 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
-public class ShareQrCodeDialogFragment extends SherlockDialogFragment {
+public class ShareQrCodeDialogFragment extends DialogFragment {
     private static final String ARG_KEY_URI = "uri";
     private static final String ARG_FINGERPRINT_ONLY = "fingerprint_only";
 

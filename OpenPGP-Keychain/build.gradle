@@ -2,7 +2,7 @@ apply plugin: 'android'
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
-    compile project(':libraries:ActionBarSherlock')
+    compile 'com.android.support:appcompat-v7:19.0.1'
     compile project(':libraries:HtmlTextView')
     compile project(':libraries:StickyListHeaders:library')
     compile project(':libraries:AndroidBootstrap')

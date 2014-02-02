@@ -17,19 +17,18 @@
 
 package org.sufficientlysecure.keychain.compatibility;
 
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-
 /**
  * Bug on Android >= 4.1
- * 
+ * <p/>
  * http://code.google.com/p/android/issues/detail?id=35885
- * 
+ * <p/>
  * Items are not checked in layout
  */
-public class ListFragmentWorkaround extends SherlockListFragment {
+public class ListFragmentWorkaround extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {

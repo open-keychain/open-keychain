@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -39,9 +40,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-
-public class SelectSecretKeyFragment extends SherlockListFragment implements
+public class SelectSecretKeyFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private SelectSecretKeyActivity mActivity;
@@ -80,7 +79,7 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = (SelectSecretKeyActivity) getSherlockActivity();
+        mActivity = (SelectSecretKeyActivity) getActivity();
         mListView = getListView();
 
         mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -116,9 +115,9 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeyRings.buildSecretKeyRingsUri();
 
-        String CapFilter = null;
+        String capFilter = null;
         if (mFilterCertify) {
-            CapFilter = "(cert > 0)";
+            capFilter = "(cert > 0)";
         }
 
         // These are the rows that we will retrieve.
@@ -145,23 +144,11 @@ public class SelectSecretKeyFragment extends SherlockListFragment implements
                         + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
                         + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
-        // if (searchString != null && searchString.trim().length() > 0) {
-        // String[] chunks = searchString.trim().split(" +");
-        // qb.appendWhere("EXISTS (SELECT tmp." + UserIds._ID + " FROM " + UserIds.TABLE_NAME
-        // + " AS tmp WHERE " + "tmp." + UserIds.KEY_ID + " = " + Keys.TABLE_NAME + "."
-        // + Keys._ID);
-        // for (int i = 0; i < chunks.length; ++i) {
-        // qb.appendWhere(" AND tmp." + UserIds.USER_ID + " LIKE ");
-        // qb.appendWhereEscapeString("%" + chunks[i] + "%");
-        // }
-        // qb.appendWhere(")");
-        // }
-
         String orderBy = UserIds.USER_ID + " ASC";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, CapFilter, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, capFilter, null, orderBy);
     }
 
     @Override

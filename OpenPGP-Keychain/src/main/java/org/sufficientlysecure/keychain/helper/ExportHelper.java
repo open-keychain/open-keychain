@@ -34,17 +34,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class ExportHelper {
     protected FileDialogFragment mFileDialog;
     protected String mExportFilename;
 
-    SherlockFragmentActivity activity;
+    ActionBarActivity activity;
 
-    public ExportHelper(SherlockFragmentActivity activity) {
+    public ExportHelper(ActionBarActivity activity) {
         super();
         this.activity = activity;
     }
@@ -63,9 +62,6 @@ public class ExportHelper {
 
     /**
      * Show dialog where to export keys
-     * 
-     * @param keyRingMasterKeyId
-     *            if -1 export all keys
      */
     public void showExportKeysDialog(final Uri dataUri, final int keyType,
             final String exportFilename) {
@@ -115,9 +111,6 @@ public class ExportHelper {
 
     /**
      * Export keys
-     * 
-     * @param keyRingMasterKeyId
-     *            if -1 export all keys
      */
     public void exportKeys(Uri dataUri, int keyType) {
         Log.d(Constants.TAG, "exportKeys started");

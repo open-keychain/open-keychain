@@ -40,6 +40,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -49,14 +51,12 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class SignKeyActivity extends SherlockFragmentActivity implements
+public class SignKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
     private BootstrapButton mSignButton;
     private CheckBox mUploadKeyCheckbox;

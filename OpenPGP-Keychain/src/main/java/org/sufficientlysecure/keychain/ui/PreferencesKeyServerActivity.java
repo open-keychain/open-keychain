@@ -27,15 +27,14 @@ import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockActivity;
-
-public class PreferencesKeyServerActivity extends SherlockActivity implements OnClickListener,
+public class PreferencesKeyServerActivity extends ActionBarActivity implements OnClickListener,
         EditorListener {
 
     public static final String EXTRA_KEY_SERVERS = "key_servers";

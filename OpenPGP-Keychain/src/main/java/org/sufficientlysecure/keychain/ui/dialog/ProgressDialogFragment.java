@@ -23,17 +23,16 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
-public class ProgressDialogFragment extends SherlockDialogFragment {
+public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
 
     /**
      * Creates new instance of this fragment
-     * 
+     *
      * @param id
      * @return
      */
@@ -49,7 +48,7 @@ public class ProgressDialogFragment extends SherlockDialogFragment {
 
     /**
      * Updates progress of dialog
-     * 
+     *
      * @param messageId
      * @param progress
      * @param max
@@ -60,7 +59,7 @@ public class ProgressDialogFragment extends SherlockDialogFragment {
 
     /**
      * Updates progress of dialog
-     * 
+     *
      * @param messageId
      * @param progress
      * @param max
@@ -74,7 +73,7 @@ public class ProgressDialogFragment extends SherlockDialogFragment {
 
     /**
      * Updates progress of dialog
-     * 
+     *
      * @param messageId
      * @param progress
      * @param max

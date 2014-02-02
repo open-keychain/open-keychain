@@ -17,10 +17,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:divider="@drawable/abs__list_divider_holo_light"
     android:dividerPadding="12dp"
+    android:divider="@drawable/abc_list_divider_holo_light"
     android:orientation="horizontal"
-    android:showDividers="middle" >
+    android:showDividers="middle">
 
     <include layout="@layout/actionbar_include_cancel_button" />
 

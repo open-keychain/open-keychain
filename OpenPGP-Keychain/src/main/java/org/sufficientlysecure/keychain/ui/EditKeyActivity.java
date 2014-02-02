@@ -18,9 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -54,7 +52,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -64,12 +65,9 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class EditKeyActivity extends SherlockFragmentActivity {
+public class EditKeyActivity extends ActionBarActivity {
 
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
@@ -315,7 +313,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getSupportMenuInflater().inflate(R.menu.key_edit, menu);
+        getMenuInflater().inflate(R.menu.key_edit, menu);
         return true;
     }
 
