@@ -153,9 +153,6 @@
 
     <!-- choice -->
     <string name="choice_none">None</string>
-    <string name="choice_sign_only">Sign only</string>
-    <string name="choice_encrypt_only">Encrypt only</string>
-    <string name="choice_sign_and_encrypt">Sign and Encrypt</string>
     <string name="choice_15secs">15 secs</string>
     <string name="choice_1min">1 min</string>
     <string name="choice_3mins">3 mins</string>
@@ -175,6 +172,12 @@
     <string name="warning">Warning</string>
     <string name="error">Error</string>
     <string name="error_message">Error: %s</string>
+
+    <!-- key flags -->
+    <string name="flag_certify">Certify</string>
+    <string name="flag_sign">Sign</string>
+    <string name="flag_encrypt">Encrypt</string>
+    <string name="flag_authenticate">Authenticate</string>
 
     <!-- sentences -->
     <string name="wrong_passphrase">Wrong passphrase.</string>

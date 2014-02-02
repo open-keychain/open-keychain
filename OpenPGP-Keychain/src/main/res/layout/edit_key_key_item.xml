@@ -97,11 +97,54 @@
                     android:layout_gravity="center_vertical"
                     android:paddingRight="10dip"
                     android:text="@string/label_usage" />
+                <CheckBox
+                    android:id="@+id/chkCertify"
+                    android:enabled = "false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flag_certify" />
+            </TableRow>
 
-                <Spinner
-                    android:id="@+id/usage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip" />
+                <CheckBox
+                    android:id="@+id/chkSign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flag_sign" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip" />
+                <CheckBox
+                    android:id="@+id/chkEncrypt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flag_encrypt" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip" />
+                <CheckBox
+                    android:id="@+id/chkAuthenticate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/flag_authenticate" />
             </TableRow>
         </TableLayout>
 
@@ -123,3 +166,4 @@
         android:background="?android:attr/listDivider" />
 
 </org.sufficientlysecure.keychain.ui.widget.KeyEditor>
+

@@ -89,18 +89,18 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mKeyId = (TextView) findViewById(R.id.keyId);
         mCreationDate = (TextView) findViewById(R.id.creation);
         mExpiryDateButton = (BootstrapButton) findViewById(R.id.expiry);
-        mUsage = (Spinner) findViewById(R.id.usage);
-        Choice choices[] = {
-                new Choice(Id.choice.usage.sign_only, getResources().getString(
-                        R.string.choice_sign_only)),
-                new Choice(Id.choice.usage.encrypt_only, getResources().getString(
-                        R.string.choice_encrypt_only)),
-                new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                        R.string.choice_sign_and_encrypt)), };
-        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
-                android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mUsage.setAdapter(adapter);
+        //mUsage = (Spinner) findViewById(R.id.usage);
+        //Choice choices[] = {
+        //       new Choice(Id.choice.usage.sign_only, getResources().getString(
+        //                R.string.choice_sign_only)),
+        //       new Choice(Id.choice.usage.encrypt_only, getResources().getString(
+        //                R.string.choice_encrypt_only)),
+        //       new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
+        //                R.string.choice_sign_and_encrypt)), };
+        //ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
+        //        android.R.layout.simple_spinner_item, choices);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //mUsage.setAdapter(adapter);
 
         mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
@@ -139,7 +139,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     public void setCanEdit(boolean bCanEdit) {
         if (!bCanEdit) {
             mDeleteButton.setVisibility(View.INVISIBLE);
-            mUsage.setEnabled(false);
+            //mUsage.setEnabled(false);
             mExpiryDateButton.setEnabled(false);
         }
     }
@@ -161,22 +161,22 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
         boolean isDSAKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.DSA);
         if (!isElGamalKey) {
-            choices.add(new Choice(Id.choice.usage.sign_only, getResources().getString(
-                    R.string.choice_sign_only)));
+            //choices.add(new Choice(Id.choice.usage.sign_only, getResources().getString(
+            //        R.string.choice_sign_only)));
         }
         if (!mIsMasterKey && !isDSAKey) {
-            choices.add(new Choice(Id.choice.usage.encrypt_only, getResources().getString(
-                    R.string.choice_encrypt_only)));
+            //choices.add(new Choice(Id.choice.usage.encrypt_only, getResources().getString(
+            //        R.string.choice_encrypt_only)));
         }
         if (!isElGamalKey && !isDSAKey) {
-            choices.add(new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                    R.string.choice_sign_and_encrypt)));
+            //choices.add(new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
+            //        R.string.choice_sign_and_encrypt)));
         }
 
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mUsage.setAdapter(adapter);
+        //mUsage.setAdapter(adapter);
 
         // Set value in choice dropdown to key
         int selectId = 0;
@@ -198,7 +198,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         for (int i = 0; i < choices.size(); ++i) {
             if (choices.get(i).getId() == selectId) {
-                mUsage.setSelection(i);
+                //mUsage.setSelection(i);
                 break;
             }
         }
@@ -249,7 +249,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        return ((Choice) mUsage.getSelectedItem()).getId();
+        return 1; //((Choice) mUsage.getSelectedItem()).getId();
     }
 
 }
