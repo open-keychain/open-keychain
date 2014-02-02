@@ -32,6 +32,7 @@ import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -76,7 +77,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         Uri dataUri = getArguments().getParcelable(ARG_KEY_URI);
         mFingerprintOnly = getArguments().getBoolean(ARG_FINGERPRINT_ONLY);
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(activity);
+        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 
         alert.setTitle(R.string.share_qr_code_dialog_title);
 

@@ -33,10 +33,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
@@ -57,6 +59,7 @@ public class FileDialogFragment extends DialogFragment {
     private EditText mFilename;
     private BootstrapButton mBrowse;
     private CheckBox mCheckBox;
+    private TextView mMessageTextView;
 
     private static final int REQUEST_CODE = 0x00007004;
 
@@ -96,11 +99,12 @@ public class FileDialogFragment extends DialogFragment {
         LayoutInflater inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
-
         alert.setTitle(title);
-        alert.setMessage(message);
 
         View view = inflater.inflate(R.layout.file_dialog, null);
+
+        mMessageTextView = (TextView) view.findViewById(R.id.message);
+        mMessageTextView.setText(message);
 
         mFilename = (EditText) view.findViewById(R.id.input);
         mFilename.setText(defaultFile);

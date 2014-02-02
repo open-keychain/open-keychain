@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Used in Android < 4 -->
+
+
+    <style name="KeychainTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="android:alertDialogStyle">@style/CustomDialogTheme</item>
+    </style>
+
+    <!-- Ugly fix to make content background of Dialogs on Android < 4 white not black! -->
+    <style name="CustomDialogTheme" parent="@android:style/Theme.Dialog">
+        <item name="android:fullDark">@drawable/popup_full_bright</item>
+        <!--<item name="android:topDark">@android:drawable/popup_full_dark</item>-->
+        <item name="android:centerDark">@drawable/popup_center_bright</item>
+        <!--<item name="android:bottomDark">@android:drawable/popup_bottom_dark</item>-->
+        <!--<item name="fullBright">@android:drawable/popup_full_bright</item>-->
+        <!--<item name="topBright">@android:drawable/popup_top_bright</item>-->
+        <!--<item name="centerBright">@android:drawable/popup_center_bright</item>-->
+        <!--<item name="bottomBright">@android:drawable/popup_bottom_bright</item>-->
+        <!--<item name="bottomMedium">@android:drawable/popup_bottom_medium</item>-->
+        <!--<item name="centerMedium">@android:drawable/popup_center_medium</item>-->
+    </style>
 
     <style name="SectionHeader">
         <item name="android:drawableBottom">@drawable/section_header</item>
         <item name="android:drawablePadding">4dp</item>
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:paddingLeft">4dp</item>
-        <!-- <item name="android:textAllCaps">true</item> -->
         <item name="android:textColor">@color/emphasis</item>
         <item name="android:textSize">14sp</item>
     </style>
+
 
 </resources>
