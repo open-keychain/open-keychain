@@ -41,6 +41,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
     private BootstrapButton mSelectKeyButton;
+    private Boolean mFilterCertify;
 
     private SelectSecretKeyCallback mCallback;
 
@@ -52,6 +53,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
     public void setCallback(SelectSecretKeyCallback callback) {
         mCallback = callback;
+    }
+
+    public void setFilterCertify(Boolean filterCertify) {
+        mFilterCertify = filterCertify;
     }
 
     public void selectKey(long secretKeyId) {
@@ -95,6 +100,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
         mSelectKeyButton = (BootstrapButton) view
                 .findViewById(R.id.select_secret_key_select_key_button);
+        mFilterCertify = false;
         mSelectKeyButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,6 +113,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
     private void startSelectKeyActivity() {
         Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
+        intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_CERTIFY, mFilterCertify);
         startActivityForResult(intent, REQUEST_CODE_SELECT_KEY);
     }
 
