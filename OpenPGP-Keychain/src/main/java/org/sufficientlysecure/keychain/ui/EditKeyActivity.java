@@ -94,6 +94,7 @@ public class EditKeyActivity extends SherlockFragmentActivity {
 
     private String mCurrentPassPhrase = null;
     private String mNewPassPhrase = null;
+    private String mSavedNewPassPhrase = null;
 
     private BootstrapButton mChangePassPhrase;
 
@@ -462,10 +463,11 @@ public class EditKeyActivity extends SherlockFragmentActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // remove passphrase
-                    mNewPassPhrase = null;
-
+                    mSavedNewPassPhrase = mNewPassPhrase;
+                    mNewPassPhrase = "";
                     mChangePassPhrase.setVisibility(View.GONE);
                 } else {
+                    mNewPassPhrase = mSavedNewPassPhrase;
                     mChangePassPhrase.setVisibility(View.VISIBLE);
                 }
             }
