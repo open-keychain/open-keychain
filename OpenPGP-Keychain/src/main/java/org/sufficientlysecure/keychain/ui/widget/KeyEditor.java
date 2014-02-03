@@ -194,6 +194,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
         mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
         mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
+        mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
         // TODO: use usage argument?
 
         for (int i = 0; i < choices.size(); ++i) {

@@ -397,6 +397,36 @@ public class PgpKeyHelper {
         return false;
     }
 
+    public static boolean isAuthenticationKey(PGPSecretKey key) {
+        return isAuthenticationKey(key.getPublicKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isAuthenticationKey(PGPPublicKey key) {
+        if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static boolean isCertificationKey(PGPSecretKey key) {
         return isCertificationKey(key.getPublicKey());
     }
