@@ -23,6 +23,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
@@ -183,12 +184,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             mLabelUsage2.setVisibility(View.INVISIBLE);
         }
 
-        ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
-                android.R.layout.simple_spinner_item, choices);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //mUsage.setAdapter(adapter);
-
-        // Set value in choice dropdown to key
         int selectId = 0;
         if (key.isMasterKey())
             mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
@@ -196,13 +191,6 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
         mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
         // TODO: use usage argument?
-
-        for (int i = 0; i < choices.size(); ++i) {
-            if (choices.get(i).getId() == selectId) {
-                //mUsage.setSelection(i);
-                break;
-            }
-        }
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
@@ -250,7 +238,17 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        return 1; //((Choice) mUsage.getSelectedItem()).getId();
+        int result = 0; // TODO: preserve other flags
+        if (mChkCertify.isChecked())
+            result |= KeyFlags.CERTIFY_OTHER;
+        if (mChkSign.isChecked()) //TODO: fix what happens when we remove sign flag from master - should still be able to certify
+            result |= KeyFlags.SIGN_DATA;
+        if (mChkEncrypt.isChecked())
+            result |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
+        if (mChkAuthenticate.isChecked())
+            result |= KeyFlags.AUTHENTICATION;
+
+        return result;
     }
 
 }

@@ -237,8 +237,8 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_preparing_master_key, 10, 100);
 
         int usageId = keysUsages.get(0);
-        boolean canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
-        boolean canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
+        boolean canSign = (usageId & KeyFlags.SIGN_DATA) > 0;
+        boolean canEncrypt = (usageId & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) > 0;
 
         String mainUserId = userIds.get(0);
 
@@ -287,11 +287,7 @@ public class PgpKeyOperation {
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
-        int keyFlags = KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA;
-        if (canEncrypt) {
-            keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
-        }
-        hashedPacketsGen.setKeyFlags(true, keyFlags);
+        hashedPacketsGen.setKeyFlags(true, usageId);
 
         hashedPacketsGen.setPreferredSymmetricAlgorithms(true, PREFERRED_SYMMETRIC_ALGORITHMS);
         hashedPacketsGen.setPreferredHashAlgorithms(true, PREFERRED_HASH_ALGORITHMS);
@@ -349,14 +345,11 @@ public class PgpKeyOperation {
             hashedPacketsGen = new PGPSignatureSubpacketGenerator();
             unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
 
-            keyFlags = 0;
-
             usageId = keysUsages.get(i);
-            canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
-            canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
+            canSign = (usageId & KeyFlags.SIGN_DATA) > 0; //todo - separate function for this
+            canEncrypt = (usageId & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) > 0;
             if (canSign) {
                 Date todayDate = new Date(); //both sig times the same
-                keyFlags |= KeyFlags.SIGN_DATA;
                 // cross-certify signing keys
                 hashedPacketsGen.setSignatureCreationTime(false, todayDate); //set outer creation time
                 PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -371,10 +364,7 @@ public class PgpKeyOperation {
                         subPublicKey);
                 unhashedPacketsGen.setEmbeddedSignature(false, certification);
             }
-            if (canEncrypt) {
-                keyFlags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
-            }
-            hashedPacketsGen.setKeyFlags(false, keyFlags);
+            hashedPacketsGen.setKeyFlags(false, usageId);
 
             if (keysExpiryDates.get(i) != null) {
                 GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
