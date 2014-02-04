@@ -57,6 +57,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             + "IMPORT_KEY_FROM_QR_CODE";
     public static final String ACTION_IMPORT_KEY_FROM_KEY_SERVER = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER";
+    public static final String ACTION_IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
 
     // Actions for internal use only:
     public static final String ACTION_IMPORT_KEY_FROM_FILE = Constants.INTENT_PREFIX
@@ -125,21 +127,21 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         if (scheme != null && scheme.toLowerCase(Locale.ENGLISH).equals(Constants.FINGERPRINT_SCHEME)) {
             /* Scanning a fingerprint directly with Barcode Scanner */
-            getSupportActionBar().setSelectedNavigationItem(0);
-            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[0]);
             loadFromFingerprintUri(savedInstanceState, dataUri);
         } else if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
+
+            // display file fragment
             getSupportActionBar().setSelectedNavigationItem(1);
             loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
 
             if (dataUri != null) {
-                // directly load data
+                // action: directly load data
                 startListFragment(savedInstanceState, null, dataUri, null);
             } else if (extras.containsKey(EXTRA_KEY_BYTES)) {
                 byte[] importData = intent.getByteArrayExtra(EXTRA_KEY_BYTES);
 
-                // directly load data
+                // action: directly load data
                 startListFragment(savedInstanceState, importData, null, null);
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEY_SERVER.equals(action)) {
@@ -161,28 +163,39 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 return;
             }
 
-            // search directly
+            // display key server fragment with query
             getSupportActionBar().setSelectedNavigationItem(0);
             Bundle args = new Bundle();
             args.putString(ImportKeysServerFragment.ARG_QUERY, query);
             loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
 
+            // action: search immediately
             startListFragment(savedInstanceState, null, null, query);
-        } else {
-            // Other actions
-            startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
 
-            if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
-                getSupportActionBar().setSelectedNavigationItem(1);
-                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
-            } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
-                // also exposed in AndroidManifest
-                getSupportActionBar().setSelectedNavigationItem(2);
-                loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
-            } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
-                getSupportActionBar().setSelectedNavigationItem(3);
-                loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[3]);
-            }
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            getSupportActionBar().setSelectedNavigationItem(1);
+            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_QR_CODE.equals(action)) {
+            // also exposed in AndroidManifest
+
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            getSupportActionBar().setSelectedNavigationItem(2);
+            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
+        } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
+
+            // NOTE: this only displays the appropriate fragment, no actions are taken
+            getSupportActionBar().setSelectedNavigationItem(3);
+            loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[3]);
+
+            // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
         }
     }
 
@@ -261,12 +274,13 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         String query = "0x" + fingerprint;
 
-        // search directly
+        // display key server fragment with query
         getSupportActionBar().setSelectedNavigationItem(0);
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
         loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
 
+        // action: search directly
         startListFragment(savedInstanceState, null, null, query);
     }
 

@@ -127,21 +127,21 @@ public class ImportKeysServerFragment extends Fragment {
         mImportActivity = (ImportKeysActivity) getActivity();
 
         // set displayed values
-        if (getArguments() != null && getArguments().containsKey(ARG_QUERY)) {
-            String query = getArguments().getString(ARG_QUERY);
-            mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
+        if (getArguments() != null) {
+            if (getArguments().containsKey(ARG_QUERY)) {
+                String query = getArguments().getString(ARG_QUERY);
+                mQueryEditText.setText(query, TextView.BufferType.EDITABLE);
 
-            String keyServer = null;
-            if (getArguments().containsKey(ARG_KEY_SERVER)) {
-                keyServer = getArguments().getString(ARG_KEY_SERVER);
-                int keyServerPos = mServerAdapter.getPosition(keyServer);
-                mServerSpinner.setSelection(keyServerPos);
-            } else {
-                keyServer = (String) mServerSpinner.getSelectedItem();
+                Log.d(Constants.TAG, "query: " + query);
             }
 
-            Log.d(Constants.TAG, "query: " + query);
-            Log.d(Constants.TAG, "keyServer: " + keyServer);
+            if (getArguments().containsKey(ARG_KEY_SERVER)) {
+                String keyServer = getArguments().getString(ARG_KEY_SERVER);
+                int keyServerPos = mServerAdapter.getPosition(keyServer);
+                mServerSpinner.setSelection(keyServerPos);
+
+                Log.d(Constants.TAG, "keyServer: " + keyServer);
+            }
         }
     }
 
