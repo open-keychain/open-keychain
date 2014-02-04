@@ -120,13 +120,15 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             mainUserIdRest.setVisibility(View.GONE);
         }
 
-        // TODO: need to set no key?
-        keyId.setText(R.string.no_key);
         keyId.setText(entry.hexKeyId);
-        fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
 
-        // TODO: no need to set algorithm empty...
-        algorithm.setText("");
+        if (entry.fingerPrint != null) {
+            fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
+            fingerprint.setVisibility(View.VISIBLE);
+        } else {
+            fingerprint.setVisibility(View.GONE);
+        }
+
         algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
