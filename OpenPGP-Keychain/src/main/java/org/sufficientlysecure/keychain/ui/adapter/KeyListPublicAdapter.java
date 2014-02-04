@@ -23,10 +23,12 @@ import java.util.Set;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,6 +46,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
     private LayoutInflater mInflater;
     private int mSectionColumnIndex;
     private int mIndexUserId;
+    private int mIndexIsRevoked;
 
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
@@ -66,27 +69,31 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
     /**
      * Get column indexes for performance reasons just once in constructor and swapCursor. For a
      * performance comparison see http://stackoverflow.com/a/17999582
-     * 
+     *
      * @param cursor
      */
     private void initIndex(Cursor cursor) {
         if (cursor != null) {
-            mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+            mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
+            mIndexIsRevoked = cursor.getColumnIndexOrThrow(KeychainContract.Keys.IS_REVOKED);
         }
     }
 
     /**
      * Bind cursor data to the item list view
-     * 
+     * <p/>
      * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
      * no ViewHolder is required here.
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+        TextView revoked = (TextView) view.findViewById(R.id.revoked);
+
+        mainUserId.setText(R.string.user_id_no_name);
         mainUserIdRest.setText("");
+        revoked.setVisibility(View.GONE);
 
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
@@ -96,6 +103,11 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         }
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
+        }
+
+        boolean isRevoked = cursor.getInt(mIndexIsRevoked) > 0;
+        if (isRevoked) {
+            revoked.setVisibility(View.VISIBLE);
         }
     }
 
@@ -107,7 +119,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
     /**
      * Creates a new header view and binds the section headers to it. It uses the ViewHolder
      * pattern. Most functionality is similar to getView() from Android's CursorAdapter.
-     * 
+     * <p/>
      * NOTE: The variables mDataValid and mCursor are available due to the super class
      * CursorAdapter.
      */
@@ -159,8 +171,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         }
 
         // return the first character of the name as ID because this is what
-        // headers private HashMap<Integer, Boolean> mSelection = new HashMap<Integer,
-        // Boolean>();are based upon
+        // headers are based upon
         String userId = mCursor.getString(mSectionColumnIndex);
         if (userId != null && userId.length() > 0) {
             return userId.subSequence(0, 1).charAt(0);
@@ -173,7 +184,9 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         TextView text;
     }
 
-    /** -------------------------- MULTI-SELECTION METHODS -------------- */
+    /**
+     * -------------------------- MULTI-SELECTION METHODS --------------
+     */
     public void setNewSelection(int position, boolean value) {
         mSelection.put(position, value);
         notifyDataSetChanged();

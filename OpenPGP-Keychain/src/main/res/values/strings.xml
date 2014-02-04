@@ -143,6 +143,7 @@
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
     <string name="expired">expired</string>
+    <string name="revoked">revoked</string>
 
     <plurals name="n_key_servers">
         <item quantity="one">%d key server</item>

@@ -129,7 +129,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
-            status.setText("revoked");
+            status.setText(R.string.revoked);
         } else {
             status.setVisibility(View.GONE);
         }
