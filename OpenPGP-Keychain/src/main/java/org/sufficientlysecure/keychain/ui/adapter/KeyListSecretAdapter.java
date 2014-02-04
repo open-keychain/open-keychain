@@ -71,18 +71,20 @@ public class KeyListSecretAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        mainUserIdRest.setText("");
 
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
             mainUserId.setText(userIdSplit[0]);
+        } else {
+            mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
+        } else {
+            mainUserIdRest.setText("");
         }
     }
 

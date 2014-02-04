@@ -103,18 +103,8 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
             mainUserIdRest.setVisibility(View.VISIBLE);
-            // disable centering of main user id field
-            RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) mainUserId.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
-            mainUserId.setLayoutParams(layoutParams);
         } else {
-            mainUserIdRest.setVisibility(View.INVISIBLE);
-            // center main user id field
-            RelativeLayout.LayoutParams layoutParams =
-                    (RelativeLayout.LayoutParams) mainUserId.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-            mainUserId.setLayoutParams(layoutParams);
+            mainUserIdRest.setVisibility(View.GONE);
         }
 
         boolean isRevoked = cursor.getInt(mIndexIsRevoked) > 0;
