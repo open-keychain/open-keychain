@@ -61,7 +61,7 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public void showProgressDialog(FragmentActivity activity) {
-        // TODO: THis is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
+        // TODO: This is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
         Handler handler = new Handler();
         handler.post(new Runnable() {

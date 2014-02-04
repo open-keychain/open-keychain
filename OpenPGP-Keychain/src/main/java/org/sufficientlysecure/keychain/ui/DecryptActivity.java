@@ -271,14 +271,14 @@ public class DecryptActivity extends DrawerActivity {
 
         if (mDecryptImmediately
                 || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                        .length() > 0 || mContentUri != null))) {
+                .length() > 0 || mContentUri != null))) {
             decryptClicked();
         }
     }
 
     /**
      * Handles all actions with this intent
-     * 
+     *
      * @param intent
      */
     private void handleActions(Intent intent) {
@@ -383,21 +383,21 @@ public class DecryptActivity extends DrawerActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-        case R.id.sourceFile: {
-            mSourceLabel.setText(R.string.label_file);
-            mDecryptButton.setText(getString(R.string.btn_decrypt));
-            break;
-        }
+            case R.id.sourceFile: {
+                mSourceLabel.setText(R.string.label_file);
+                mDecryptButton.setText(getString(R.string.btn_decrypt));
+                break;
+            }
 
-        case R.id.sourceMessage: {
-            mSourceLabel.setText(R.string.label_message);
-            mDecryptButton.setText(getString(R.string.btn_decrypt));
-            break;
-        }
+            case R.id.sourceMessage: {
+                mSourceLabel.setText(R.string.label_message);
+                mDecryptButton.setText(getString(R.string.btn_decrypt));
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
     }
 
@@ -535,7 +535,7 @@ public class DecryptActivity extends DrawerActivity {
             try {
                 if (inStream.markSupported()) {
                     inStream.mark(200); // should probably set this to the max size of two pgpF
-                                        // objects, if it even needs to be anything other than 0.
+                    // objects, if it even needs to be anything other than 0.
                 }
                 mSecretKeyId = PgpHelper.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
@@ -567,7 +567,7 @@ public class DecryptActivity extends DrawerActivity {
         data = "\n\n" + data;
         intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
         intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, mSecretKeyId);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[]{mSignatureKeyId});
         startActivity(intent);
     }
 
@@ -665,26 +665,26 @@ public class DecryptActivity extends DrawerActivity {
                     }
 
                     switch (mDecryptTarget) {
-                    case Id.target.message:
-                        String decryptedMessage = returnData
-                                .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-                        mMessage.setText(decryptedMessage);
-                        mMessage.setHorizontallyScrolling(false);
+                        case Id.target.message:
+                            String decryptedMessage = returnData
+                                    .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
+                            mMessage.setText(decryptedMessage);
+                            mMessage.setHorizontallyScrolling(false);
 
-                        break;
+                            break;
 
-                    case Id.target.file:
-                        if (mDeleteAfter.isChecked()) {
-                            // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                        }
-                        break;
+                        case Id.target.file:
+                            if (mDeleteAfter.isChecked()) {
+                                // Create and show dialog to delete original file
+                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                        .newInstance(mInputFilename);
+                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                            }
+                            break;
 
-                    default:
-                        // shouldn't happen
-                        break;
+                        default:
+                            // shouldn't happen
+                            break;
 
                     }
 
@@ -722,7 +722,9 @@ public class DecryptActivity extends DrawerActivity {
                         mSignatureLayout.setVisibility(View.VISIBLE);
                     }
                 }
-            };
+            }
+
+            ;
         };
 
         // Create a new Messenger for the communication back
@@ -739,34 +741,36 @@ public class DecryptActivity extends DrawerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-        case RESULT_CODE_FILE: {
-            if (resultCode == RESULT_OK && data != null) {
-                try {
-                    String path = FileHelper.getPath(this, data.getData());
-                    Log.d(Constants.TAG, "path=" + path);
+            case RESULT_CODE_FILE: {
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        String path = FileHelper.getPath(this, data.getData());
+                        Log.d(Constants.TAG, "path=" + path);
 
-                    mFilename.setText(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                        mFilename.setText(path);
+                    } catch (NullPointerException e) {
+                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                    }
                 }
+                return;
             }
-            return;
-        }
 
-        // this request is returned after LookupUnknownKeyDialogFragment started
-        // ImportKeysActivity and user looked uo key
-        case RESULT_CODE_LOOKUP_KEY: {
-            Log.d(Constants.TAG, "Returning from Lookup Key...");
-            // decrypt again
-            decryptStart();
-            return;
-        }
+            // this request is returned after LookupUnknownKeyDialogFragment started
+            // ImportKeysActivity and user looked uo key
+            case RESULT_CODE_LOOKUP_KEY: {
+                Log.d(Constants.TAG, "Returning from Lookup Key...");
+                if (resultCode == RESULT_OK) {
+                    // decrypt again
+                    decryptStart();
+                }
+                return;
+            }
 
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
 
-            break;
-        }
+                break;
+            }
         }
     }
 
