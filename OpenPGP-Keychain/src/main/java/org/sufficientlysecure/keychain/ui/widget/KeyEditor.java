@@ -66,6 +66,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     CheckBox mChkSign;
     CheckBox mChkEncrypt;
     CheckBox mChkAuthenticate;
+    int mUsage;
 
     private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -189,6 +190,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
         mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
         mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
+        mUsage = PgpKeyHelper.getKeyUsage(key);
         // TODO: use usage argument?
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -237,17 +239,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        int result = 0; // TODO: preserve other flags
-        if (mChkCertify.isChecked())
-            result |= KeyFlags.CERTIFY_OTHER;
-        if (mChkSign.isChecked()) //TODO: fix what happens when we remove sign flag from master - should still be able to certify
-            result |= KeyFlags.SIGN_DATA;
-        if (mChkEncrypt.isChecked())
-            result |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
-        if (mChkAuthenticate.isChecked())
-            result |= KeyFlags.AUTHENTICATION;
+        mUsage  = (mUsage & ~KeyFlags.CERTIFY_OTHER) | (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
+        mUsage  = (mUsage & ~KeyFlags.SIGN_DATA) | (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
+        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_COMMS) | (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
+        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) | (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
+        mUsage  = (mUsage & ~KeyFlags.AUTHENTICATION) | (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
 
-        return result;
+        return mUsage;
     }
 
 }
