@@ -83,9 +83,8 @@
                         android:layout_gravity="left"
                         android:text="Main User Id Rest"
                         android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:layout_alignBottom="@+id/relativeLayout"
-                        android:layout_alignLeft="@+id/mainUserId"
-                        android:layout_alignStart="@+id/mainUserId" />
+                        android:layout_below="@+id/mainUserId"
+                        android:layout_toRightOf="@+id/relativeLayout" />
                 </RelativeLayout>
 
                 <LinearLayout
