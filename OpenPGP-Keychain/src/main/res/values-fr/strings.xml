@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Interroger le serveur de clefs</string>
   <string name="title_send_key">Téléverser vers le serveur de clefs</string>
   <string name="title_unknown_signature_key">Clef de signature inconnue</string>
-  <string name="title_sign_key">Signer la clef</string>
+  <string name="title_certify_key">Signer la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->

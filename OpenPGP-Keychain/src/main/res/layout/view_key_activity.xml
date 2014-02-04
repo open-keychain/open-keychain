@@ -215,6 +215,15 @@
             android:text="@string/key_view_action_encrypt"
             bootstrapbutton:bb_icon_left="fa-lock"
             bootstrapbutton:bb_type="info" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/action_certify"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="4dp"
+            android:text="@string/key_view_action_certify"
+            bootstrapbutton:bb_icon_left="fa-pencil"
+            bootstrapbutton:bb_type="info" />
     </LinearLayout>
 
 </ScrollView>

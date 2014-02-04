@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Запросить сервер ключей</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
-  <string name="title_sign_key">Ключ для подписи</string>
+  <string name="title_certify_key">Ключ для подписи</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->

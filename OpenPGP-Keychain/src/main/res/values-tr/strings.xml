@@ -14,7 +14,7 @@
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
   <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
-  <string name="title_sign_key">Anahtarı İmzala</string>
+  <string name="title_certify_key">Anahtarı İmzala</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->

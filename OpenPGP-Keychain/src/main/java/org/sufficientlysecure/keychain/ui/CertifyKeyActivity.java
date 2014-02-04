@@ -56,7 +56,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 /**
  * Signs the specified public key with the specified secret master key
  */
-public class SignKeyActivity extends ActionBarActivity implements
+public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
     private BootstrapButton mSignButton;
     private CheckBox mUploadKeyCheckbox;
@@ -72,7 +72,7 @@ public class SignKeyActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.sign_key_activity);
+        setContentView(R.layout.certify_key_activity);
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
@@ -196,8 +196,8 @@ public class SignKeyActivity extends ActionBarActivity implements
                 String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
                 if (passphrase == null) {
                     showPassphraseDialog(mMasterKeyId);
-                    return; // bail out; need to wait until the user has entered the passphrase
-                            // before trying again
+                    // bail out; need to wait until the user has entered the passphrase before trying again
+                    return;
                 } else {
                     startSigning();
                 }
@@ -218,13 +218,13 @@ public class SignKeyActivity extends ActionBarActivity implements
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
-        intent.setAction(KeychainIntentService.ACTION_SIGN_KEYRING);
+        intent.setAction(KeychainIntentService.ACTION_CERTIFY_KEYRING);
 
         // fill values for this action
         Bundle data = new Bundle();
 
-        data.putLong(KeychainIntentService.SIGN_KEY_MASTER_KEY_ID, mMasterKeyId);
-        data.putLong(KeychainIntentService.SIGN_KEY_PUB_KEY_ID, mPubKeyId);
+        data.putLong(KeychainIntentService.CERTIFY_KEY_MASTER_KEY_ID, mMasterKeyId);
+        data.putLong(KeychainIntentService.CERTIFY_KEY_PUB_KEY_ID, mPubKeyId);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
@@ -237,14 +237,12 @@ public class SignKeyActivity extends ActionBarActivity implements
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
 
-                    Toast.makeText(SignKeyActivity.this, R.string.key_sign_success,
+                    Toast.makeText(CertifyKeyActivity.this, R.string.key_sign_success,
                             Toast.LENGTH_SHORT).show();
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
-                        /*
-                         * upload the newly signed key to the key server
-                         */
+                        // upload the newly signed key to the key server
                         uploadKey();
                     } else {
                         setResult(RESULT_OK);
@@ -291,7 +289,7 @@ public class SignKeyActivity extends ActionBarActivity implements
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    Toast.makeText(SignKeyActivity.this, R.string.key_send_success,
+                    Toast.makeText(CertifyKeyActivity.this, R.string.key_send_success,
                             Toast.LENGTH_SHORT).show();
 
                     setResult(RESULT_OK);

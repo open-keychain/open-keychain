@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Senecaso
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -127,7 +127,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             /* Scanning a fingerprint directly with Barcode Scanner */
             getSupportActionBar().setSelectedNavigationItem(0);
             loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[0]);
-            loadFromFingerprintUri(dataUri);
+            loadFromFingerprintUri(savedInstanceState, dataUri);
         } else if (ACTION_IMPORT_KEY.equals(action)) {
             /* Keychain's own Actions */
             getSupportActionBar().setSelectedNavigationItem(1);
@@ -248,7 +248,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         ft.commit();
     }
 
-    public void loadFromFingerprintUri(Uri dataUri) {
+    public void loadFromFingerprintUri(Bundle savedInstanceState, Uri dataUri) {
         String fingerprint = dataUri.toString().split(":")[1].toLowerCase(Locale.ENGLISH);
 
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
@@ -267,7 +267,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
         loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
 
-        startListFragment(null, null, null, query);
+        startListFragment(savedInstanceState, null, null, query);
     }
 
     public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {

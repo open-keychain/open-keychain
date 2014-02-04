@@ -26,7 +26,7 @@
     <string name="title_key_server_query">Query Key Server</string>
     <string name="title_send_key">Upload to Key Server</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
-    <string name="title_sign_key">Sign Key</string>
+    <string name="title_certify_key">Certify Key</string>
     <string name="title_key_details">Key Details</string>
     <string name="title_help">Help</string>
 
@@ -39,7 +39,7 @@
     <string name="section_master_key">Master Key</string>
     <string name="section_master_user_id">Master User ID</string>
     <string name="section_actions">Actions</string>
-    <string name="section_signing_key">Your Key used for Signing</string>
+    <string name="section_certification_key">Your Key used for certification</string>
     <string name="section_upload_key">Upload Key</string>
     <string name="section_key_server">Key Server</string>
     <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
@@ -47,6 +47,7 @@
 
     <!-- button -->
     <string name="btn_sign">Sign</string>
+    <string name="btn_certify">Certify</string>
     <string name="btn_decrypt">Decrypt</string>
     <string name="btn_decrypt_verify">Decrypt and Verify</string>
     <string name="btn_select_encrypt_keys">Select Recipients</string>
@@ -126,7 +127,7 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
-    <string name="label_send_key">Upload key to selected key server after signing</string>
+    <string name="label_send_key">Upload key to selected key server after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
 
@@ -406,6 +407,7 @@
 
     <!-- Key view -->
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
+    <string name="key_view_action_certify">Certify User ID of this contact</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_contacts">Contacts</string>

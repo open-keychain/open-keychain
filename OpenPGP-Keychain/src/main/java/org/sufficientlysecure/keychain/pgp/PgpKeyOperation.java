@@ -405,7 +405,7 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    public PGPPublicKeyRing signKey(long masterKeyId, long pubKeyId, String passphrase)
+    public PGPPublicKeyRing certifyKey(long masterKeyId, long pubKeyId, String passphrase)
             throws PgpGeneralException, NoSuchAlgorithmException, NoSuchProviderException,
             PGPException, SignatureException {
         if (passphrase == null) {
@@ -414,14 +414,14 @@ public class PgpKeyOperation {
             PGPPublicKeyRing pubring = ProviderHelper
                     .getPGPPublicKeyRingByKeyId(mContext, pubKeyId);
 
-            PGPSecretKey signingKey = PgpKeyHelper.getCertificationKey(mContext, masterKeyId);
-            if (signingKey == null) {
+            PGPSecretKey certificationKey = PgpKeyHelper.getCertificationKey(mContext, masterKeyId);
+            if (certificationKey == null) {
                 throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
-            PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
+            PGPPrivateKey signaturePrivateKey = certificationKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new PgpGeneralException(
                         mContext.getString(R.string.error_could_not_extract_private_key));
@@ -429,7 +429,7 @@ public class PgpKeyOperation {
 
             // TODO: SHA256 fixed?
             JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                    signingKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
+                    certificationKey.getPublicKey().getAlgorithm(), PGPUtil.SHA256)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
             PGPSignatureGenerator signatureGenerator = new PGPSignatureGenerator(

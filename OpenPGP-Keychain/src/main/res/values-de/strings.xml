@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Schlüssel-Server abfragen</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
-  <string name="title_sign_key">Schlüssel signieren</string>
+  <string name="title_certify_key">Schlüssel signieren</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <!--section-->

@@ -75,6 +75,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private TextView mCreation;
     private TextView mFingerprint;
     private BootstrapButton mActionEncrypt;
+    private BootstrapButton mActionCertify;
 
     private ListView mUserIds;
     private ListView mKeys;
@@ -91,6 +92,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         mExportHelper = new ExportHelper(this);
 
+        // let the actionbar look like Android's contact app
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(android.R.color.transparent);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -105,9 +107,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
         mCreation = (TextView) findViewById(R.id.creation);
         mExpiry = (TextView) findViewById(R.id.expiry);
         mFingerprint = (TextView) findViewById(R.id.fingerprint);
-        mActionEncrypt = (BootstrapButton) findViewById(R.id.action_encrypt);
         mUserIds = (ListView) findViewById(R.id.user_ids);
         mKeys = (ListView) findViewById(R.id.keys);
+        mActionEncrypt = (BootstrapButton) findViewById(R.id.action_encrypt);
+        mActionCertify = (BootstrapButton) findViewById(R.id.action_certify);
 
         loadData(getIntent());
     }
@@ -129,9 +132,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 return true;
             case R.id.menu_key_view_update:
                 updateFromKeyserver(mDataUri);
-                return true;
-            case R.id.menu_key_view_sign:
-                signKey(mDataUri);
                 return true;
             case R.id.menu_key_view_export_keyserver:
                 uploadToKeyserver(mDataUri);
@@ -196,19 +196,18 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
             @Override
             public void onClick(View v) {
-                long keyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
+                encryptToContact(mDataUri);
+            }
+        });
+        mActionCertify.setOnClickListener(new OnClickListener() {
 
-                long[] encryptionKeyIds = new long[]{keyId};
-                Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
-                intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-                intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-                // used instead of startActivity set actionbar based on callingPackage
-                startActivityForResult(intent, 0);
+            @Override
+            public void onClick(View v) {
+                certifyKey(mDataUri);
             }
         });
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0);
-
         mUserIds.setAdapter(mUserIdsAdapter);
         // mUserIds.setEmptyView(findViewById(android.R.id.empty));
         // mUserIds.setClickable(true);
@@ -219,11 +218,10 @@ public class ViewKeyActivity extends ActionBarActivity implements
         // });
 
         mKeysAdapter = new ViewKeyKeysAdapter(this, null, 0);
-
         mKeys.setAdapter(mKeysAdapter);
 
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
+        // Prepare the loaders. Either re-connect with an existing ones,
+        // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
@@ -405,8 +403,19 @@ public class ViewKeyActivity extends ActionBarActivity implements
         startActivityForResult(queryIntent, Id.request.look_up_key_id);
     }
 
-    private void signKey(Uri dataUri) {
-        Intent signIntent = new Intent(this, SignKeyActivity.class);
+    private void encryptToContact(Uri dataUri) {
+        long keyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
+
+        long[] encryptionKeyIds = new long[]{keyId};
+        Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
+        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
+    }
+
+    private void certifyKey(Uri dataUri) {
+        Intent signIntent = new Intent(this, CertifyKeyActivity.class);
         signIntent.setData(dataUri);
         startActivity(signIntent);
     }

@@ -54,7 +54,6 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import android.app.IntentService;
@@ -96,7 +95,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
     public static final String ACTION_DOWNLOAD_AND_IMPORT_KEYS = Constants.INTENT_PREFIX + "QUERY_KEYRING";
 
-    public static final String ACTION_SIGN_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
+    public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
     /* keys for data bundle */
 
@@ -163,8 +162,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String DOWNLOAD_KEY_LIST = "query_key_id";
 
     // sign key
-    public static final String SIGN_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
-    public static final String SIGN_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
+    public static final String CERTIFY_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
+    public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
 
     /*
      * possible data keys as result send over messenger
@@ -777,19 +776,19 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_SIGN_KEYRING.equals(action)) {
+        } else if (ACTION_CERTIFY_KEYRING.equals(action)) {
             try {
 
                 /* Input */
-                long masterKeyId = data.getLong(SIGN_KEY_MASTER_KEY_ID);
-                long pubKeyId = data.getLong(SIGN_KEY_PUB_KEY_ID);
+                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
 
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
                         masterKeyId);
 
                 PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
-                PGPPublicKeyRing signedPubKeyRing = keyOperation.signKey(masterKeyId, pubKeyId,
+                PGPPublicKeyRing signedPubKeyRing = keyOperation.certifyKey(masterKeyId, pubKeyId,
                         signaturePassPhrase);
 
                 // store the signed key in our local cache

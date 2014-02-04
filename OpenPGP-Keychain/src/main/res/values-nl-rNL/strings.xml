@@ -22,7 +22,7 @@
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_key_server_query">Sleutelserver verzoek zenden</string>
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
-  <string name="title_sign_key">Sleutel ondertekenen</string>
+  <string name="title_certify_key">Sleutel ondertekenen</string>
   <string name="title_help">Help</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
