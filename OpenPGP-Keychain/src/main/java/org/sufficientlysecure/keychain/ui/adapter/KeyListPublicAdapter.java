@@ -93,13 +93,11 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
-
         if (userIdSplit[0] != null) {
             mainUserId.setText(userIdSplit[0]);
         } else {
             mainUserId.setText(R.string.user_id_no_name);
         }
-
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
             mainUserIdRest.setVisibility(View.VISIBLE);
