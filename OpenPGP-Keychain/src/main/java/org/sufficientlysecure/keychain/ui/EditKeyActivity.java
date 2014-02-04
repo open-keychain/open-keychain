@@ -256,7 +256,7 @@ public class EditKeyActivity extends ActionBarActivity {
             // get master key id using row id
             long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
 
-            masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
+            masterCanSign = ProviderHelper.getSecretMasterKeyCanCertify(this, keyRingRowId);
             finallyEdit(masterKeyId, masterCanSign);
         }
     }

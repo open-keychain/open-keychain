@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.bcpg.UserAttributePacket;
-import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
@@ -348,7 +346,7 @@ public class ProviderHelper {
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
         values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && has_private));
         values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && has_private));
-        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
+        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key) && has_private);
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
         values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
@@ -441,21 +439,21 @@ public class ProviderHelper {
     /**
      * Get empty status of master key of keyring by its row id
      */
-    public static boolean getSecretMasterKeyCanSign(Context context, long keyRingRowId) {
+    public static boolean getSecretMasterKeyCanCertify(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyCanSign(context, queryUri, keyRingRowId);
+        return getMasterKeyCanCertify(context, queryUri, keyRingRowId);
     }
 
     /**
      * Private helper method to get master key private empty status of keyring by its row id
      */
-    private static boolean getMasterKeyCanSign(Context context, Uri queryUri, long keyRingRowId) {
+    private static boolean getMasterKeyCanCertify(Context context, Uri queryUri, long keyRingRowId) {
         String[] projection = new String[]{
                 KeyRings.MASTER_KEY_ID,
                 "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
                         + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                        + " AND sign_keys." + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY
+                        + " AND sign_keys." + Keys.CAN_CERTIFY + " = '1' AND " + Keys.IS_MASTER_KEY
                         + " = 1) AS sign",};
 
         ContentResolver cr = context.getContentResolver();
