@@ -24,7 +24,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -37,6 +36,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -91,29 +91,43 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
         TextView revoked = (TextView) view.findViewById(R.id.revoked);
 
-        mainUserId.setText(R.string.user_id_no_name);
-        mainUserIdRest.setText("");
-        revoked.setVisibility(View.GONE);
-
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
             mainUserId.setText(userIdSplit[0]);
+        } else {
+            mainUserId.setText(R.string.user_id_no_name);
         }
+
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
+            mainUserIdRest.setVisibility(View.VISIBLE);
+            // disable centering of main user id field
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) mainUserId.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, 0);
+            mainUserId.setLayoutParams(layoutParams);
+        } else {
+            mainUserIdRest.setVisibility(View.INVISIBLE);
+            // center main user id field
+            RelativeLayout.LayoutParams layoutParams =
+                    (RelativeLayout.LayoutParams) mainUserId.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            mainUserId.setLayoutParams(layoutParams);
         }
 
         boolean isRevoked = cursor.getInt(mIndexIsRevoked) > 0;
         if (isRevoked) {
             revoked.setVisibility(View.VISIBLE);
+        } else {
+            revoked.setVisibility(View.GONE);
         }
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.key_list_item, null);
+        return mInflater.inflate(R.layout.key_list_public_item, null);
     }
 
     /**

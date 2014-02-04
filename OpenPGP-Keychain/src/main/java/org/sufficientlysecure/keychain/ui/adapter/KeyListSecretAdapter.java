@@ -88,7 +88,7 @@ public class KeyListSecretAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.key_list_item, null);
+        return mInflater.inflate(R.layout.key_list_secret_item, null);
     }
 
     /** -------------------------- MULTI-SELECTION METHODS -------------- */
