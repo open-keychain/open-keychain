@@ -136,7 +136,7 @@ public class ImportKeysListFragment extends ListFragment implements
             getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
         }
 
-        if (mServerQuery != null) {
+        if (mServerQuery != null && mKeyServer != null) {
             // Start out with a progress indicator.
             setListShown(false);
 
@@ -165,14 +165,19 @@ public class ImportKeysListFragment extends ListFragment implements
         mServerQuery = serverQuery;
         mKeyServer = keyServer;
 
-        // Start out with a progress indicator.
-        setListShown(false);
+        if (mKeyBytes != null || mDataUri != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
 
-        if (mKeyBytes != null || mDataUri != null)
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
+        }
 
-        if (mServerQuery != null && mKeyServer != null)
+        if (mServerQuery != null && mKeyServer != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
+
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
+        }
     }
 
     @Override

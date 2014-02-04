@@ -254,6 +254,7 @@
             android:label="@string/title_certify_key" />
         <activity
             android:name=".ui.ImportKeysActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_import_keys"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden">
