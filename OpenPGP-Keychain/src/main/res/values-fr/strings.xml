@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Interroger le serveur de clefs</string>
   <string name="title_send_key">Téléverser vers le serveur de clefs</string>
   <string name="title_unknown_signature_key">Clef de signature inconnue</string>
-  <string name="title_certify_key">Signer la clef</string>
+  <string name="title_sign_key">Signer la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->
@@ -40,14 +40,12 @@
   <string name="section_signing_key">Votre clef utilisée pour la signature</string>
   <string name="section_upload_key">Téléverser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
+  <string name="section_encrypt_and_or_sign">Chiffrer et/ou signer</string>
+  <string name="section_decrypt_verify">Déchiffrer et vérifier</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Signer (presse-papiers)</string>
-  <string name="btn_encrypt_to_clipboard">Chiffrer vers le presse-papiers</string>
-  <string name="btn_encrypt_and_send">Chiffrer et envoyer...</string>
-  <string name="btn_sign_and_send">Signer et envoyer...</string>
   <string name="btn_sign">Signer</string>
   <string name="btn_decrypt">Déchiffrer</string>
-  <string name="btn_verify">Vérifier</string>
+  <string name="btn_decrypt_verify">Déchiffrer et vérifier</string>
   <string name="btn_select_encrypt_keys">Choisir les destinataires</string>
   <string name="btn_encrypt_file">Chiffrer le fichier</string>
   <string name="btn_save">Enregistrer</string>
@@ -61,6 +59,8 @@
   <string name="btn_export_to_server">Téléverser vers le serveur de clefs</string>
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
+  <string name="btn_clipboard">Presse-papiers</string>
+  <string name="btn_share">Partager avec...</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
@@ -273,7 +273,6 @@
   <string name="progress_building_master_key">assemblage du trousseau maître...</string>
   <string name="progress_adding_sub_keys">ajout des sous-clefs...</string>
   <string name="progress_saving_key_ring">sauvegarde de la clef...</string>
-  <string name="progress_importing_secret_keys">Importation des clefs secrètes...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">exportation de la clef...</item>
     <item quantity="other">exportation des clefs...</item>

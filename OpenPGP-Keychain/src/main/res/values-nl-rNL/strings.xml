@@ -22,7 +22,7 @@
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_key_server_query">Sleutelserver verzoek zenden</string>
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
-  <string name="title_certify_key">Sleutel ondertekenen</string>
+  <string name="title_sign_key">Sleutel ondertekenen</string>
   <string name="title_help">Help</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
@@ -31,13 +31,8 @@
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Ondertekenen (klembord)</string>
-  <string name="btn_encrypt_to_clipboard">Versleutelen naar klembord</string>
-  <string name="btn_encrypt_and_send">Versleutelen en verzenden...</string>
-  <string name="btn_sign_and_send">Ondertekenen en verzenden...</string>
   <string name="btn_sign">Ondertekenen</string>
   <string name="btn_decrypt">Ontsleutelen</string>
-  <string name="btn_verify">Verifiëren</string>
   <string name="btn_select_encrypt_keys">Ontvangers selecteren</string>
   <string name="btn_encrypt_file">Bestand versleutelen</string>
   <string name="btn_save">Opslaan</string>
@@ -195,7 +190,6 @@
   <string name="progress_certifying_master_key">hoofdsleutel certificeren...</string>
   <string name="progress_building_master_key">hoofdsleutelbos maken...</string>
   <string name="progress_adding_sub_keys">sub-sleutels toevoegen...</string>
-  <string name="progress_importing_secret_keys">privésleutels importeren...</string>
   <string name="progress_extracting_signature_key">ondertekeningssleutel uitpakken...</string>
   <string name="progress_extracting_key">sleutel uitpakken...</string>
   <string name="progress_preparing_streams">streams voorbereiden...</string>

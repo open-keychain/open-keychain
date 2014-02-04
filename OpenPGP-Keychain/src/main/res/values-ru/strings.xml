@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Запросить сервер ключей</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
-  <string name="title_certify_key">Ключ для подписи</string>
+  <string name="title_sign_key">Ключ для подписи</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
@@ -40,14 +40,12 @@
   <string name="section_signing_key">Ваш ключ, используемый для подписания</string>
   <string name="section_upload_key">Загрузить ключ</string>
   <string name="section_key_server">Сервер ключей</string>
+  <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
+  <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Подписать (Буфер обмена)</string>
-  <string name="btn_encrypt_to_clipboard">Зашифровать в Буфер обмена</string>
-  <string name="btn_encrypt_and_send">Зашифровать и отправить...</string>
-  <string name="btn_sign_and_send">Подписать и отправить...</string>
   <string name="btn_sign">Подписать</string>
   <string name="btn_decrypt">Расшифровать</string>
-  <string name="btn_verify">Проверить</string>
+  <string name="btn_decrypt_verify">Расшифровать и проверить</string>
   <string name="btn_select_encrypt_keys">Выбрать получателей</string>
   <string name="btn_encrypt_file">Зашифровать файл</string>
   <string name="btn_save">Сохранить</string>
@@ -61,6 +59,8 @@
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_clipboard">Буфер обмена</string>
+  <string name="btn_share">Поделиться...</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
@@ -281,7 +281,6 @@
   <string name="progress_building_master_key">создание основной связки...</string>
   <string name="progress_adding_sub_keys">добавление доп. ключей...</string>
   <string name="progress_saving_key_ring">сохранение ключа...</string>
-  <string name="progress_importing_secret_keys">импорт секретных ключей...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>

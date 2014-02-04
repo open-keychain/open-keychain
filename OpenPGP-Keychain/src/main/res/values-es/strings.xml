@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_select_recipients">Seleccionar clave pública</string>
+  <string name="title_select_secret_key">Seleccionar clave secreta</string>
+  <string name="title_encrypt">Cifrar</string>
+  <string name="title_decrypt">Descifrar</string>
+  <string name="title_authentication">Frase de contraseña</string>
+  <string name="title_create_key">Crear clave</string>
+  <string name="title_edit_key"> Editar clave</string>
+  <string name="title_preferences"> Preferencias</string>
+  <string name="title_api_registered_apps">Aplicaciones registradas</string>
+  <string name="title_key_server_preference">Prioridad de servidor de clave</string>
+  <string name="title_change_pass_phrase">Cambiar frase de contraseña</string>
+  <string name="title_set_passphrase">Establecer frase de contraseña</string>
+  <string name="title_send_email">Enviar email...</string>
+  <string name="title_encrypt_to_file">Cifrar en archivo</string>
+  <string name="title_decrypt_to_file">Descifrar en archivo</string>
+  <string name="title_import_keys">Importar claves</string>
+  <string name="title_export_key">Exportar clave</string>
+  <string name="title_export_keys">Exportar claves</string>
+  <string name="title_key_not_found">Clave no encontrada</string>
+  <string name="title_key_server_query">Consultar servidor de clave</string>
+  <string name="title_unknown_signature_key">Clave de firma desconocida</string>
+  <string name="title_sign_key">Clave de firma</string>
+  <string name="title_help">Ayuda</string>
+  <!--section-->
+  <string name="section_user_ids">IDs de usuario</string>
+  <string name="section_keys">Claves</string>
+  <string name="section_general">General</string>
+  <string name="section_defaults">Predeterminados</string>
+  <string name="section_advanced">Avanzado</string>
+  <!--button-->
+  <string name="btn_sign">Firmar</string>
+  <string name="btn_decrypt">Descifrar</string>
+  <string name="btn_select_encrypt_keys">Seleccionar destinatarios</string>
+  <string name="btn_encrypt_file">Cifrar archivo</string>
+  <string name="btn_save">Guardar</string>
+  <string name="btn_do_not_save">Cancelar</string>
+  <string name="btn_delete">Eliminar</string>
+  <string name="btn_no_date">Ninguno</string>
+  <string name="btn_okay">De acuerdo</string>
+  <string name="btn_change_passphrase">Cambiar frase de contraseña</string>
+  <string name="btn_set_passphrase">Establecer frase de contraseña</string>
+  <string name="btn_search">Buscar</string>
+  <string name="btn_next">Siguiente</string>
+  <string name="btn_back">Volver</string>
+  <!--menu-->
+  <string name="menu_preferences">Ajustes</string>
+  <string name="menu_import_from_file">Importar desde archivo</string>
+  <string name="menu_import_from_qr_code">Importar desde código QR</string>
+  <string name="menu_import_from_nfc">Importar desde NFC</string>
+  <string name="menu_export_keys">Exportar todas las claves</string>
+  <string name="menu_export_key">Exportar en archivo</string>
+  <string name="menu_delete_key">Borrar clave</string>
+  <string name="menu_create_key">Crear clave</string>
+  <string name="menu_create_key_expert">Crear clave (experto)</string>
+  <string name="menu_search">Buscar</string>
+  <string name="menu_key_server">Importar desde servidor de clave</string>
+  <string name="menu_sign_key"> Clave de firma</string>
+  <string name="menu_beam_preferences">Ajustes de destello</string>
+  <!--label-->
+  <string name="label_sign">Firma</string>
+  <string name="label_message">Mensaje</string>
+  <string name="label_file">Archivo</string>
+  <string name="label_no_passphrase">No hay frase de contraseña</string>
+  <string name="label_passphrase">Frase de contraseña</string>
+  <string name="label_passphrase_again">De nuevo</string>
+  <string name="label_algorithm">Algoritmo</string>
+  <string name="label_ascii_armor">Armadura ASCII</string>
+  <string name="label_delete_after_encryption">Borrar después del cifrado</string>
+  <string name="label_delete_after_decryption">Borrar después del descifrado</string>
+  <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
+  <string name="label_hash_algorithm">Algoritmo de Hash</string>
+  <string name="label_asymmetric">Clave pública</string>
+  <string name="label_symmetric">Frase de contraseña</string>
+  <string name="label_passphrase_cache_ttl">Caché de frase de contraseña</string>
+  <string name="label_message_compression">Compresión de mensaje</string>
+  <string name="label_file_compression">Compresión de archivo</string>
+  <string name="label_force_v3_signature">Forzar firmas V3</string>
+  <string name="label_key_servers">Servidores de clave</string>
+  <string name="label_key_id">ID de clave</string>
+  <string name="label_creation">Creación</string>
+  <string name="label_expiry">Caducidad</string>
+  <string name="label_usage">Uso</string>
+  <string name="label_key_size">Tamaño de clave</string>
+  <string name="label_main_user_id">ID del usuario principal</string>
+  <string name="label_name">Nombre</string>
+  <string name="label_comment">Comentario</string>
+  <string name="label_email">Email</string>
+  <string name="none">&lt;ninguno&gt;</string>
+  <string name="no_key">&lt;sin clave&gt;</string>
+  <string name="unknown_status"></string>
+  <string name="can_encrypt">se puede cifrar</string>
+  <string name="can_sign">se puede firmar</string>
+  <string name="expired">caducado</string>
+  <string name="fingerprint">Huella digital:</string>
+  <string name="secret_key">Clave secreta:</string>
+  <!--choice-->
+  <string name="choice_none">Ninguno</string>
+  <string name="choice_sign_only">Solo firmar</string>
+  <string name="choice_encrypt_only">Solo cifrar</string>
+  <string name="choice_sign_and_encrypt">Firmar y cifrar</string>
+  <string name="choice_15secs">15 segs</string>
+  <string name="choice_1min">1 min</string>
+  <string name="choice_3mins">3 mins</string>
+  <string name="choice_5mins">5 mins</string>
+  <string name="choice_10mins">10 mins</string>
+  <string name="choice_20mins">20 mins</string>
+  <string name="choice_40mins">40 mins</string>
+  <string name="choice_1hour">1 hora</string>
+  <string name="choice_2hours">2 horas</string>
+  <string name="choice_4hours">4 horas</string>
+  <string name="choice_8hours">8 horas</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="filemanager_title_open">Abrir...</string>
+  <string name="warning">Advertencia</string>
+  <string name="error">Error</string>
+  <string name="error_message">Error: %s</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">Frase de contraseña incorrecta.</string>
+  <string name="using_clipboard_content">Usando el contenido del portapapeles.</string>
+  <string name="set_a_passphrase">Establece una frase de contraseña antes.</string>
+  <string name="no_filemanager_installed">No hay un gestor de archivos compatible instalado.</string>
+  <string name="passphrases_do_not_match">Las frases de contraseña no coinciden.</string>
+  <string name="passphrase_must_not_be_empty">La frase de contraseña no puede estar vacía.</string>
+  <string name="passphrase_for_symmetric_encryption">Cifrado simétrico.</string>
+  <string name="passphrase_for">Introducir frase de contraseña para \'%s\'</string>
+  <string name="file_delete_confirmation">¿Estas seguro que quieres borrar\n%s?</string>
+  <string name="file_delete_successful">Borrado satisfactoriamente.</string>
+  <string name="no_file_selected">Selecciona un archivo antes.</string>
+  <string name="decryption_successful">Descifrado satisfactoriamente.</string>
+  <string name="encryption_successful">Descifrado satisfactoriamente.</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+</resources>

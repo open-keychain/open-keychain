@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Сервер запиту ключа</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
   <string name="title_unknown_signature_key">Невідомий підпис ключа</string>
-  <string name="title_certify_key">Підписати ключ</string>
+  <string name="title_sign_key">Підписати ключ</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <!--section-->
@@ -40,14 +40,12 @@
   <string name="section_signing_key">Ваш ключ, використаний для підпису</string>
   <string name="section_upload_key">Завантажити ключ</string>
   <string name="section_key_server">Сервер ключів</string>
+  <string name="section_encrypt_and_or_sign">Шифрувати і/або підписати</string>
+  <string name="section_decrypt_verify">Розшифрувати і Перевірити</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Підпис (буфер обміну)</string>
-  <string name="btn_encrypt_to_clipboard">Зашифрувати у буфер обміну</string>
-  <string name="btn_encrypt_and_send">Шифрувати і надіслати…</string>
-  <string name="btn_sign_and_send">Підписати і надіслати…</string>
   <string name="btn_sign">Підписати</string>
   <string name="btn_decrypt">Розшифрувати</string>
-  <string name="btn_verify">Перевірити</string>
+  <string name="btn_decrypt_verify">Розшифрувати і Перевірити</string>
   <string name="btn_select_encrypt_keys">Вибрати одержувачів</string>
   <string name="btn_encrypt_file">Шифрувати файл</string>
   <string name="btn_save">Зберегти</string>
@@ -61,6 +59,8 @@
   <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_clipboard">Буфер обміну</string>
+  <string name="btn_share">Поділитися через…</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
@@ -281,7 +281,6 @@
   <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_adding_sub_keys">додавання підключів…</string>
   <string name="progress_saving_key_ring">зберігається ключ…</string>
-  <string name="progress_importing_secret_keys">імпортуються секретні ключі…</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">експортується ключ…</item>
     <item quantity="few">експортуються ключі…</item>

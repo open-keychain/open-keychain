@@ -22,7 +22,7 @@
   <string name="title_key_not_found">Clave no encontrada</string>
   <string name="title_key_server_query">Solicitar al servidor de claves</string>
   <string name="title_unknown_signature_key">Clave de firma desconocida</string>
-  <string name="title_certify_key">Clave de firma</string>
+  <string name="title_sign_key">Clave de firma</string>
   <string name="title_help">Ayuda</string>
   <!--section-->
   <string name="section_user_ids">IDs de usuario</string>
@@ -31,13 +31,8 @@
   <string name="section_defaults">Por defecto</string>
   <string name="section_advanced">Avanzado</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Firmar (Portapapeles)</string>
-  <string name="btn_encrypt_to_clipboard">Cifrar a portapapeles</string>
-  <string name="btn_encrypt_and_send">Cifrar y enviar</string>
-  <string name="btn_sign_and_send">Firmar y enviar</string>
   <string name="btn_sign">Firmar</string>
   <string name="btn_decrypt">Descifrar</string>
-  <string name="btn_verify">Verificar</string>
   <string name="btn_select_encrypt_keys">Escoger destinatarios</string>
   <string name="btn_encrypt_file">Cifrar archivo</string>
   <string name="btn_save">Guardar</string>

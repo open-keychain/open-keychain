@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Schlüssel-Server abfragen</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
-  <string name="title_certify_key">Schlüssel signieren</string>
+  <string name="title_sign_key">Schlüssel signieren</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <!--section-->
@@ -41,13 +41,8 @@
   <string name="section_upload_key">Schlüssel hochladen</string>
   <string name="section_key_server">Schlüsselserver</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Signieren (Zwischenablage)</string>
-  <string name="btn_encrypt_to_clipboard">In die Zwischenablage verschlüsseln</string>
-  <string name="btn_encrypt_and_send">Verschlüsseln und senden...</string>
-  <string name="btn_sign_and_send">Signieren und senden...</string>
   <string name="btn_sign">Signieren</string>
   <string name="btn_decrypt">Entschlüsseln</string>
-  <string name="btn_verify">Signatur prüfen</string>
   <string name="btn_select_encrypt_keys">Empfänger auswählen</string>
   <string name="btn_encrypt_file">Datei verschlüsseln</string>
   <string name="btn_save">Speichern</string>
@@ -266,7 +261,6 @@
   <string name="progress_building_master_key">erstelle Hauptring...</string>
   <string name="progress_adding_sub_keys">füge Unterschlüssel hinzu...</string>
   <string name="progress_saving_key_ring">Schlüssel wird gespeichert...</string>
-  <string name="progress_importing_secret_keys">importiere private Schlüssel...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">Schlüssel wird exportiert…</item>
     <item quantity="other">Schlüssel werden exportiert…</item>

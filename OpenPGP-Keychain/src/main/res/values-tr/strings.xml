@@ -14,7 +14,7 @@
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
   <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
-  <string name="title_certify_key">Anahtarı İmzala</string>
+  <string name="title_sign_key">Anahtarı İmzala</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
@@ -26,12 +26,7 @@
   <string name="section_upload_key">Anahtar Yükle</string>
   <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">İmzala (Pano)</string>
-  <string name="btn_encrypt_to_clipboard">Panoya Şifrele</string>
-  <string name="btn_encrypt_and_send">Şifrele ve gönder...</string>
-  <string name="btn_sign_and_send">İmzala ve gönder...</string>
   <string name="btn_sign">İmzala</string>
-  <string name="btn_verify">Doğrula</string>
   <string name="btn_select_encrypt_keys">Alıcıları Seç</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
