@@ -80,6 +80,16 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     private Fragment mCurrentFragment;
     private BootstrapButton mImportButton;
 
+    private static final Class[] NAVIGATION_CLASSES = new Class[]{
+            ImportKeysServerFragment.class,
+            ImportKeysFileFragment.class,
+            ImportKeysQrCodeFragment.class,
+            ImportKeysClipboardFragment.class,
+            ImportKeysNFCFragment.class
+    };
+
+    private int mCurrentNavPostition = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +119,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         handleActions(savedInstanceState, getIntent());
     }
 
+
     protected void handleActions(Bundle savedInstanceState, Intent intent) {
         String action = intent.getAction();
         Bundle extras = intent.getExtras();
@@ -132,8 +143,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             /* Keychain's own Actions */
 
             // display file fragment
-            getSupportActionBar().setSelectedNavigationItem(1);
-            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
+            loadNavFragment(1, null);
 
             if (dataUri != null) {
                 // action: directly load data
@@ -164,18 +174,16 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             }
 
             // display key server fragment with query
-            getSupportActionBar().setSelectedNavigationItem(0);
             Bundle args = new Bundle();
             args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-            loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
+            loadNavFragment(0, args);
 
             // action: search immediately
             startListFragment(savedInstanceState, null, null, query);
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            getSupportActionBar().setSelectedNavigationItem(1);
-            loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[1]);
+            loadNavFragment(1, null);
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
@@ -183,71 +191,77 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             // also exposed in AndroidManifest
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            getSupportActionBar().setSelectedNavigationItem(2);
-            loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[2]);
+            loadNavFragment(2, null);
 
             // no immediate actions!
             startListFragment(savedInstanceState, null, null, null);
         } else if (ACTION_IMPORT_KEY_FROM_NFC.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
-            getSupportActionBar().setSelectedNavigationItem(3);
-            loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[3]);
+            loadNavFragment(3, null);
 
             // no immediate actions!
+            startListFragment(savedInstanceState, null, null, null);
+        } else {
             startListFragment(savedInstanceState, null, null, null);
         }
     }
 
     private void startListFragment(Bundle savedInstanceState, byte[] bytes, Uri dataUri, String serverQuery) {
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-        if (findViewById(R.id.import_keys_list_container) != null) {
-
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create an instance of the fragment
-            mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery);
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.import_keys_list_container, mListFragment)
-                    .commitAllowingStateLoss();
-            // do it immediately!
-            getSupportFragmentManager().executePendingTransactions();
+        // However, if we're being restored from a previous state,
+        // then we don't need to do anything and should return or else
+        // we could end up with overlapping fragments.
+        if (savedInstanceState != null) {
+            return;
         }
+
+        // Create an instance of the fragment
+        mListFragment = ImportKeysListFragment.newInstance(bytes, dataUri, serverQuery);
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.import_keys_list_container, mListFragment)
+                .commitAllowingStateLoss();
+        // do it immediately!
+        getSupportFragmentManager().executePendingTransactions();
     }
 
+    /**
+     * "Basically, when using a list navigation, onNavigationItemSelected() is automatically
+     * called when your activity is created/re-created, whether you like it or not. To prevent
+     * your Fragment's onCreateView() from being called twice, this initial automatic call to
+     * onNavigationItemSelected() should check whether the Fragment is already in existence
+     * inside your Activity."
+     * <p/>
+     * from http://stackoverflow.com/questions/10983396/fragment-oncreateview-and-onactivitycreated-called-twice/14295474#14295474
+     *
+     * In our case, if we start ImportKeysActivity with parameters to directly search using a fingerprint,
+     * the fragment would be loaded twice resulting in the query being empty after the second load.
+     *
+     * Our solution:
+     * To prevent that a fragment will be loaded again even if it was already loaded loadNavFragment
+     * checks against mCurrentNavPostition.
+     *
+     * @param itemPosition
+     * @param itemId
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        // Create new fragment from our own Fragment class
-        switch (itemPosition) {
-            case 0:
-                loadFragment(ImportKeysServerFragment.class, null, mNavigationStrings[itemPosition]);
-                break;
-            case 1:
-                loadFragment(ImportKeysFileFragment.class, null, mNavigationStrings[itemPosition]);
-                break;
-            case 2:
-                loadFragment(ImportKeysQrCodeFragment.class, null, mNavigationStrings[itemPosition]);
-                break;
-            case 3:
-                loadFragment(ImportKeysClipboardFragment.class, null, mNavigationStrings[itemPosition]);
-                break;
-            case 4:
-                loadFragment(ImportKeysNFCFragment.class, null, mNavigationStrings[itemPosition]);
-                break;
+        Log.d(Constants.TAG, "onNavigationItemSelected");
 
-            default:
-                break;
-        }
+        loadNavFragment(itemPosition, null);
+
         return true;
+    }
+
+    private void loadNavFragment(int itemPosition, Bundle args) {
+        if (mCurrentNavPostition != itemPosition) {
+            getSupportActionBar().setSelectedNavigationItem(itemPosition);
+            loadFragment(NAVIGATION_CLASSES[itemPosition], args, mNavigationStrings[itemPosition]);
+            mCurrentNavPostition = itemPosition;
+        }
     }
 
     private void loadFragment(Class<?> clss, Bundle args, String tag) {
@@ -275,10 +289,9 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         String query = "0x" + fingerprint;
 
         // display key server fragment with query
-        getSupportActionBar().setSelectedNavigationItem(0);
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-        loadFragment(ImportKeysServerFragment.class, args, mNavigationStrings[0]);
+        loadNavFragment(0, args);
 
         // action: search directly
         startListFragment(savedInstanceState, null, null, query);
