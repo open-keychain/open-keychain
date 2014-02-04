@@ -146,7 +146,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
     }
 
-    public void setValue(PGPSecretKey key, boolean isMasterKey, int usage) {
+    public void setValue(PGPSecretKey key, boolean isMasterKey, int usage, boolean isNewKey) {
         mKey = key;
 
         mIsMasterKey = isMasterKey;
@@ -190,8 +190,10 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
         mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
         mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
-        mUsage = PgpKeyHelper.getKeyUsage(key);
-        // TODO: use usage argument?
+        if (isNewKey)
+            mUsage = usage;
+        else
+            mUsage = PgpKeyHelper.getKeyUsage(key);
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
