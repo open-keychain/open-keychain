@@ -56,8 +56,8 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_no_date">None</string>
     <string name="btn_okay">Okay</string>
-    <string name="btn_change_passphrase">Change Passphrase</string>
-    <string name="btn_set_passphrase">Set Passphrase</string>
+    <string name="btn_change_passphrase">Change New Passphrase</string>
+    <string name="btn_set_passphrase">Set New Passphrase</string>
     <string name="btn_search">Search</string>
     <string name="btn_export_to_server">Upload To Key Server</string>
     <string name="btn_next">Next</string>
