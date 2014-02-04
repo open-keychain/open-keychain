@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
 
 public class KeychainIntentServiceHandler extends Handler {
@@ -60,7 +61,14 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public void showProgressDialog(FragmentActivity activity) {
-        mProgressDialogFragment.show(activity.getSupportFragmentManager(), "progressDialog");
+        // TODO: THis is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
+        final FragmentManager manager = activity.getSupportFragmentManager();
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            public void run() {
+                mProgressDialogFragment.show(manager, "progressDialog");
+            }
+        });
     }
 
     @Override

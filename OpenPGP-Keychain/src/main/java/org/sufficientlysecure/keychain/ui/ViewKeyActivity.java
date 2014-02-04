@@ -86,6 +86,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private ViewKeyUserIdsAdapter mUserIdsAdapter;
     private ViewKeyKeysAdapter mKeysAdapter;
 
+    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -399,8 +401,8 @@ public class ViewKeyActivity extends ActionBarActivity implements
         queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
         queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
 
-        // TODO: lookup??
-        startActivityForResult(queryIntent, Id.request.look_up_key_id);
+        // TODO: lookup with onactivityresult!
+        startActivityForResult(queryIntent, RESULT_CODE_LOOKUP_KEY);
     }
 
     private void encryptToContact(Uri dataUri) {

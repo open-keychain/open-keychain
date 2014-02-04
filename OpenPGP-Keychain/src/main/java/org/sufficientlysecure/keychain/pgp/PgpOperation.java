@@ -789,7 +789,7 @@ public class PgpOperation {
         return returnData;
     }
 
-    public Bundle verifyText(boolean lookupUnknownKey) throws IOException, PgpGeneralException,
+    public Bundle verifyText() throws IOException, PgpGeneralException,
             PGPException, SignatureException {
         Bundle returnData = new Bundle();
 
@@ -836,16 +836,6 @@ public class PgpOperation {
             signatureKey = ProviderHelper.getPGPPublicKeyByKeyId(mContext, signature.getKeyID());
             if (signatureKeyId == 0) {
                 signatureKeyId = signature.getKeyID();
-            }
-            // if key is not known and we want to lookup unknown ones...
-            if (signatureKey == null && lookupUnknownKey) {
-
-                returnData = new Bundle();
-                returnData.putLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID, signatureKeyId);
-                returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_LOOKUP_KEY, true);
-
-                // return directly now, decrypt will be done again after importing unknown key
-                return returnData;
             }
 
             if (signatureKey == null) {

@@ -123,7 +123,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String DECRYPT_RETURN_BYTES = "return_binary";
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
-    public static final String DECRYPT_LOOKUP_UNKNOWN_KEY = "lookup_unknownKey";
 
     // save keyring
     public static final String SAVE_KEYRING_NEW_PASSPHRASE = "new_passphrase";
@@ -188,7 +187,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
     public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
-    public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookup_key";
 
     // import
     public static final String RESULT_IMPORT_ADDED = "added";
@@ -395,8 +393,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 boolean returnBytes = data.getBoolean(DECRYPT_RETURN_BYTES);
                 boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
 
-                boolean lookupUnknownKey = data.getBoolean(DECRYPT_LOOKUP_UNKNOWN_KEY);
-
                 InputStream inStream = null;
                 long inLength = -1;
                 InputData inputData = null;
@@ -472,7 +468,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // verification of signatures
                 PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
                 if (signedOnly) {
-                    resultData = operation.verifyText(lookupUnknownKey);
+                    resultData = operation.verifyText();
                 } else {
                     resultData = operation.decryptAndVerify(
                             PassphraseCacheService.getCachedPassphrase(this, secretKeyId),

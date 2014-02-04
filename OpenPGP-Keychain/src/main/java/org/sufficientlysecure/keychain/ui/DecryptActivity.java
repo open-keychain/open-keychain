@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -62,6 +61,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -78,6 +78,9 @@ public class DecryptActivity extends DrawerActivity {
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
 
+    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+    private static final int RESULT_CODE_FILE = 0x00007003;
+
     private long mSignatureKeyId = 0;
 
     private boolean mReturnResult = false;
@@ -85,7 +88,7 @@ public class DecryptActivity extends DrawerActivity {
     private boolean mAssumeSymmetricEncryption = false;
 
     private EditText mMessage = null;
-    private LinearLayout mSignatureLayout = null;
+    private RelativeLayout mSignatureLayout = null;
     private ImageView mSignatureStatusImage = null;
     private TextView mUserId = null;
     private TextView mUserIdRest = null;
@@ -100,6 +103,7 @@ public class DecryptActivity extends DrawerActivity {
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
     private BootstrapButton mBrowse = null;
+    private BootstrapButton mLookupKey = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -107,13 +111,9 @@ public class DecryptActivity extends DrawerActivity {
     private Uri mContentUri = null;
     private boolean mReturnBinary = false;
 
-    private long mUnknownSignatureKeyId = 0;
-
     private long mSecretKeyId = Id.key.none;
 
     private FileDialogFragment mFileDialog;
-
-    private boolean mLookupUnknownKey = true;
 
     private boolean mDecryptImmediately = false;
 
@@ -154,7 +154,7 @@ public class DecryptActivity extends DrawerActivity {
         mSourceLabel.setOnClickListener(nextSourceClickListener);
 
         mMessage = (EditText) findViewById(R.id.message);
-        mSignatureLayout = (LinearLayout) findViewById(R.id.signature);
+        mSignatureLayout = (RelativeLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -171,7 +171,15 @@ public class DecryptActivity extends DrawerActivity {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
-                        Id.request.filename);
+                        RESULT_CODE_FILE);
+            }
+        });
+
+        mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
+        mLookupKey.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lookupUnknownKey(mSignatureKeyId);
             }
         });
 
@@ -587,28 +595,10 @@ public class DecryptActivity extends DrawerActivity {
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_OKAY) {
-                    // the result is handled by onActivityResult() as LookupUnknownKeyDialogFragment
-                    // starts a new Intent which then returns data
-                } else if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_CANCEL) {
-                    // decrypt again, but don't lookup unknown keys!
-                    mLookupUnknownKey = false;
-                    decryptStart();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        LookupUnknownKeyDialogFragment lookupKeyDialog = LookupUnknownKeyDialogFragment
-                .newInstance(messenger, unknownKeyId);
-
-        lookupKeyDialog.show(getSupportFragmentManager(), "unknownKeyDialog");
+        Intent intent = new Intent(this, ImportKeysActivity.class);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
+        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
+        startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
     private void decryptStart() {
@@ -645,7 +635,6 @@ public class DecryptActivity extends DrawerActivity {
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
 
         data.putBoolean(KeychainIntentService.DECRYPT_SIGNED_ONLY, mSignedOnly);
-        data.putBoolean(KeychainIntentService.DECRYPT_LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
         data.putBoolean(KeychainIntentService.DECRYPT_RETURN_BYTES, mReturnBinary);
         data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 
@@ -661,15 +650,6 @@ public class DecryptActivity extends DrawerActivity {
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                     // get returned data bundle
                     Bundle returnData = message.getData();
-
-                    // if key is unknown show lookup dialog
-                    if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_LOOKUP_KEY)
-                            && mLookupUnknownKey) {
-                        mUnknownSignatureKeyId = returnData
-                                .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
-                        lookupUnknownKey(mUnknownSignatureKeyId);
-                        return;
-                    }
 
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
@@ -727,14 +707,17 @@ public class DecryptActivity extends DrawerActivity {
 
                         if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                            mLookupKey.setVisibility(View.GONE);
                         } else if (returnData
                                 .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                            mLookupKey.setVisibility(View.VISIBLE);
                             Toast.makeText(DecryptActivity.this,
-                                    R.string.unknown_signature_key_touch_to_look_up,
+                                    R.string.unknown_signature,
                                     Toast.LENGTH_LONG).show();
                         } else {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                            mLookupKey.setVisibility(View.GONE);
                         }
                         mSignatureLayout.setVisibility(View.VISIBLE);
                     }
@@ -756,7 +739,7 @@ public class DecryptActivity extends DrawerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-        case Id.request.filename: {
+        case RESULT_CODE_FILE: {
             if (resultCode == RESULT_OK && data != null) {
                 try {
                     String path = FileHelper.getPath(this, data.getData());
@@ -772,20 +755,19 @@ public class DecryptActivity extends DrawerActivity {
 
         // this request is returned after LookupUnknownKeyDialogFragment started
         // ImportKeysActivity and user looked uo key
-        case Id.request.look_up_key_id: {
+        case RESULT_CODE_LOOKUP_KEY: {
             Log.d(Constants.TAG, "Returning from Lookup Key...");
-            // decrypt again without lookup
-            mLookupUnknownKey = false;
+            // decrypt again
             decryptStart();
             return;
         }
 
         default: {
+            super.onActivityResult(requestCode, resultCode, data);
+
             break;
         }
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }

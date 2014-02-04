@@ -420,8 +420,7 @@ public class OpenPgpService extends RemoteService {
             Bundle outputBundle;
             PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
             if (signedOnly) {
-                // TODO: download missing keys from keyserver?
-                outputBundle = operation.verifyText(false);
+                outputBundle = operation.verifyText();
             } else {
                 outputBundle = operation.decryptAndVerify(passphrase, false);
             }

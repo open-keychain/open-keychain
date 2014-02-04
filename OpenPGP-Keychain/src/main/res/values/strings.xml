@@ -65,7 +65,7 @@
     <string name="btn_back">Back</string>
     <string name="btn_clipboard">Clipboard</string>
     <string name="btn_share">Share with…</string>
-
+    <string name="btn_lookup_key">Lookup key</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -233,15 +233,14 @@
         <item quantity="other">Found %d keys.</item>
     </plurals>
 
-    <string name="unknown_signature_key_touch_to_look_up">Unknown signature, touch to look up key.</string>
+    <string name="unknown_signature">Unknown signature, click button to lookup the missing key.</string>
 
     <plurals name="bad_keys_encountered">
         <item quantity="one">%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
         <item quantity="other">%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.</item>
     </plurals>
 
-    <string name="lookup_unknown_key">Unknown key %s, do you want to try finding it on a keyserver?</string>
-    <string name="key_send_success">Successfully sent key to server</string>
+    <string name="key_send_success">Successfully uploaded key to server</string>
     <string name="key_sign_success">Successfully signed key</string>
     <string name="list_empty">This list is empty!</string>
     <string name="nfc_successfull">Successfully sent key with NFC Beam!</string>
