@@ -22,6 +22,8 @@ import java.util.regex.Pattern;
 import org.sufficientlysecure.keychain.R;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -106,6 +108,23 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mIsMainUserId.setOnClickListener(this);
 
         mName = (EditText) findViewById(R.id.name);
+        mName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                if (mEditorListener != null) {
+                    mEditorListener.onEdited();
+                }
+            }
+        });
         mEmail = (EditText) findViewById(R.id.email);
         mComment = (EditText) findViewById(R.id.comment);
 
@@ -189,7 +208,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             boolean wasMainUserId = mIsMainUserId.isChecked();
             parent.removeView(this);
             if (mEditorListener != null) {
-                mEditorListener.onDeleted(this, false);
+                mEditorListener.onDeleted(this, false); //TODO: WAS THIS A NEW ITEM
             }
             if (wasMainUserId && parent.getChildCount() > 0) {
                 UserIdEditor editor = (UserIdEditor) parent.getChildAt(0);
@@ -203,6 +222,9 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
                 } else {
                     editor.setIsMainUserId(false);
                 }
+            }
+            if (mEditorListener != null) {
+                mEditorListener.onEdited();
             }
         }
     }

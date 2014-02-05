@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -68,6 +69,19 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     int mOriginalUsage;
     boolean mIsNewKey;
 
+    private CheckBox.OnCheckedChangeListener mCheckChanged = new CheckBox.OnCheckedChangeListener()
+    {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+        {
+            if (mEditorListener != null) {
+                mEditorListener.onEdited();
+            }
+        }
+
+    }
+
+
     private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -76,6 +90,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 date.set(year, monthOfYear, dayOfMonth);
                 setExpiryDate(date);
+                if (mEditorListener != null) {
+                    mEditorListener.onEdited();
+                }
             }
         }
     };
@@ -101,9 +118,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mDeleteButton = (BootstrapButton) findViewById(R.id.delete);
         mDeleteButton.setOnClickListener(this);
         mChkCertify =  (CheckBox) findViewById(R.id.chkCertify);
+        mChkCertify.setOnCheckedChangeListener(mCheckChanged);
         mChkSign =  (CheckBox) findViewById(R.id.chkSign);
+        mChkSign.setOnCheckedChangeListener(mCheckChanged);
         mChkEncrypt =  (CheckBox) findViewById(R.id.chkEncrypt);
+        mChkEncrypt.setOnCheckedChangeListener(mCheckChanged);
         mChkAuthenticate =  (CheckBox) findViewById(R.id.chkAuthenticate);
+        mChkAuthenticate.setOnCheckedChangeListener(mCheckChanged);
 
         setExpiryDate(null);
 
@@ -126,6 +147,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 // Note: Ignore results after the first one - android sends multiples.
                                 if (mDatePickerResultCount++ == 0) {
                                     setExpiryDate(null);
+                                    if (mEditorListener != null) {
+                                        mEditorListener.onEdited();
+                                    }
                                 }
                             }
                         });
