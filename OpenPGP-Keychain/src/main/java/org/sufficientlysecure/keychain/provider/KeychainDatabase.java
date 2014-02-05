@@ -123,14 +123,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     break;
                 case 4:
                     db.execSQL(CREATE_API_APPS);
+                    break;
                 case 5:
                     // new column: package_signature
                     db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
                     db.execSQL(CREATE_API_APPS);
+                    break;
                 case 6:
                     // new column: fingerprint
                     db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.FINGERPRINT
                             + " BLOB;");
+                    break;
                 default:
                     break;
 
