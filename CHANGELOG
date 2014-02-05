@@ -1,3 +1,6 @@
+2.3.1
+* hotfix for crash when upgrading from old versions
+
 2.3
 * remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
 * fix setting expiry dates on keys (thanks to Ash Hughes)

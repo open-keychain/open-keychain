@@ -110,7 +110,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(Constants.TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
-        // Upgrade from oldVersion through all methods to newest one
+        // Upgrade from oldVersion through all cases to newest one
         for (int version = oldVersion; version < newVersion; ++version) {
             Log.w(Constants.TAG, "Upgrading database to version " + version);
 
