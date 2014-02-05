@@ -15,7 +15,6 @@
   <string name="title_export_key">Esportare Chiave</string>
   <string name="title_export_keys">Esportare Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
-  <string name="title_sign_key">Firma Chiave</string>
   <string name="title_help">Aiuto</string>
   <!--section-->
   <string name="section_user_ids">ID Utente</string>

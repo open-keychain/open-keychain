@@ -14,7 +14,6 @@
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
   <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
   <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
-  <string name="title_sign_key">Anahtarı İmzala</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
@@ -92,7 +91,6 @@
   <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encryption_successful">Başarıyla şifrelendi.</string>
   <string name="key_not_found">Anahtar %08X bulunamadı.</string>
-  <string name="key_send_success">Anahtar sunucuya başarıyla gönderildi</string>
   <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
   <string name="list_empty">Liste boş!</string>
   <!--errors

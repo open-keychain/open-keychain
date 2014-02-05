@@ -25,7 +25,6 @@
   <string name="title_key_server_query">Interroger le serveur de clefs</string>
   <string name="title_send_key">Téléverser vers le serveur de clefs</string>
   <string name="title_unknown_signature_key">Clef de signature inconnue</string>
-  <string name="title_sign_key">Signer la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->
@@ -37,7 +36,6 @@
   <string name="section_master_key">Clef maîtresse</string>
   <string name="section_master_user_id">ID utilisateur maître</string>
   <string name="section_actions">Actions</string>
-  <string name="section_signing_key">Votre clef utilisée pour la signature</string>
   <string name="section_upload_key">Téléverser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
   <string name="section_encrypt_and_or_sign">Chiffrer et/ou signer</string>
@@ -120,7 +118,6 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
-  <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après signature</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="select_keys_button_default">Choisir</string>
   <plurals name="select_keys_button">
@@ -215,13 +212,10 @@
     <item quantity="one">%d clef trouvée.</item>
     <item quantity="other">%d clefs trouvées.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Signature inconnue. Toucher pour rechercher la clef.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d mauvaise clef ignorée. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
     <item quantity="other">%d mauvaises clefs ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
   </plurals>
-  <string name="lookup_unknown_key">Clef %s inconnue, voulez-vous essayer de la trouver sur un serveur de clefs ?</string>
-  <string name="key_send_success">Clef envoyée vers le serveur avec succès</string>
   <string name="key_sign_success">Clef signée avec succès</string>
   <string name="list_empty">Cette liste est vide !</string>
   <string name="nfc_successfull">Clef envoyée par NFC BEAM avec succès !</string>

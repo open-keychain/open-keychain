@@ -22,7 +22,6 @@
   <string name="title_key_not_found">Sleutel niet gevonden</string>
   <string name="title_key_server_query">Sleutelserver verzoek zenden</string>
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
-  <string name="title_sign_key">Sleutel ondertekenen</string>
   <string name="title_help">Help</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
@@ -144,9 +143,6 @@
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen sub-sleutels ondersteunen ElGamal, en voor ElGamal wordt de dichtstbijzijnde sleutelgrootte van 1536, 2048, 4096 of 8192 gebruikt.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="unknown_signature_key_touch_to_look_up">Onbekende handtekening, tik om sleutel op te zoeken.</string>
-  <string name="lookup_unknown_key">Onbekende sleutel %s, wilt u het bij een sleutelserver opvragen?</string>
-  <string name="key_send_success">Sleutel succesvol verzonden naar server</string>
   <string name="key_sign_success">Sleutel succesvol ondertekend</string>
   <string name="list_empty">Lijst is leeg</string>
   <string name="nfc_successfull">Sleutel succesvol verzonden met Beam</string>

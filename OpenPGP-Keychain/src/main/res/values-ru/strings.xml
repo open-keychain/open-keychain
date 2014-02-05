@@ -25,7 +25,6 @@
   <string name="title_key_server_query">Запросить сервер ключей</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
-  <string name="title_sign_key">Ключ для подписи</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
@@ -37,7 +36,6 @@
   <string name="section_master_key">Основной ключ</string>
   <string name="section_master_user_id">Владелец</string>
   <string name="section_actions">Действия</string>
-  <string name="section_signing_key">Ваш ключ, используемый для подписания</string>
   <string name="section_upload_key">Загрузить ключ</string>
   <string name="section_key_server">Сервер ключей</string>
   <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
@@ -120,7 +118,6 @@
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Загрузить подписанный ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="select_keys_button_default">Выбрать</string>
   <plurals name="select_keys_button">
@@ -222,14 +219,11 @@
     <item quantity="few">Найдено %d ключей.</item>
     <item quantity="other">Найдено %d ключей.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Неизвестная подпись. Нажмите для выбора ключа.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
     <item quantity="few">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
     <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
   </plurals>
-  <string name="lookup_unknown_key">Неизвестный ключ %s. Хотите искать на сервере ключей?</string>
-  <string name="key_send_success">Ключ успешно отправлен на сервер</string>
   <string name="key_sign_success">Ключ успешно подписан</string>
   <string name="list_empty">Список пуст!</string>
   <string name="nfc_successfull">Ключ успешно передан через NFC!</string>

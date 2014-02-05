@@ -25,7 +25,6 @@
   <string name="title_key_server_query">Сервер запиту ключа</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
   <string name="title_unknown_signature_key">Невідомий підпис ключа</string>
-  <string name="title_sign_key">Підписати ключ</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <!--section-->
@@ -37,7 +36,6 @@
   <string name="section_master_key">Основний ключ</string>
   <string name="section_master_user_id">ІД основного ключа</string>
   <string name="section_actions">Дії</string>
-  <string name="section_signing_key">Ваш ключ, використаний для підпису</string>
   <string name="section_upload_key">Завантажити ключ</string>
   <string name="section_key_server">Сервер ключів</string>
   <string name="section_encrypt_and_or_sign">Шифрувати і/або підписати</string>
@@ -120,7 +118,6 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
-  <string name="label_send_key">Завантажити ключ на вибраний сервер ключів після підписування</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="select_keys_button_default">Вибрати</string>
   <plurals name="select_keys_button">
@@ -222,14 +219,11 @@
     <item quantity="few">Знайдено %d ключі.</item>
     <item quantity="other">Знайдено %d ключів.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Невідомий підпис, натисніть, щоб шукати ключ.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
     <item quantity="few">%d погані секретні ключі проігноровані. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
     <item quantity="other">%d поганих секретних ключів проігноровано. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
   </plurals>
-  <string name="lookup_unknown_key">Невідомий ключ %s, ви хочете віднайти його на сервері ключів?</string>
-  <string name="key_send_success">Успішно надіслано ключ на сервер</string>
   <string name="key_sign_success">Успішно підписаний ключ</string>
   <string name="list_empty">Цей список - порожній!</string>
   <string name="nfc_successfull">Успішно відправлений ключ з NFC променем!</string>

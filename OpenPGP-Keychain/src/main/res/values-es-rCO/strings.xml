@@ -22,7 +22,6 @@
   <string name="title_key_not_found">Clave no encontrada</string>
   <string name="title_key_server_query">Solicitar al servidor de claves</string>
   <string name="title_unknown_signature_key">Clave de firma desconocida</string>
-  <string name="title_sign_key">Clave de firma</string>
   <string name="title_help">Ayuda</string>
   <!--section-->
   <string name="section_user_ids">IDs de usuario</string>
