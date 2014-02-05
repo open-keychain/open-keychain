@@ -1,3 +1,14 @@
+2.3
+* remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
+* fix setting expiry dates on keys (thanks to Ash Hughes)
+* more internal fixes when editing keys (thanks to Ash Hughes)
+* querying keyservers directly from the import screen
+* fix layout and dialog style on Android 2.2-3.0
+* fix crash on keys with empty user ids
+* fix crash and empty lists when coming back from signing screen
+* Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
+* fix upload of key from signing screen﻿
+
 2.2
 * New design with navigation drawer
 * New public key list design
