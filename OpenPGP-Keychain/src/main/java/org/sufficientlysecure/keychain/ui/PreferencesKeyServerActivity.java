@@ -91,8 +91,13 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         }
     }
 
-    public void onDeleted(Editor editor) {
+    public void onDeleted(Editor editor, boolean wasNewItem) {
         // nothing to do
+    }
+
+    @Override
+    public void onEdited() {
+
     }
 
     public void onClick(View v) {

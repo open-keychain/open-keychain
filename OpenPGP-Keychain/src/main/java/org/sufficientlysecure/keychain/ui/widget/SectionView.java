@@ -50,20 +50,26 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
+public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Editor {
     private LayoutInflater mInflater;
     private BootstrapButton mPlusButton;
     private ViewGroup mEditors;
     private TextView mTitle;
     private int mType = 0;
+    private EditorListener mEditorListener = null;
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
     private boolean canEdit = true;
+    private boolean oldItemDeleted = false;
 
     private ActionBarActivity mActivity;
 
     private ProgressDialogFragment mGeneratingDialog;
+
+    public void setEditorListener(EditorListener listener) {
+        mEditorListener = listener;
+    }
 
     public SectionView(Context context) {
         super(context);
@@ -124,13 +130,32 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     /** {@inheritDoc} */
-    public void onDeleted(Editor editor) {
+    public void onDeleted(Editor editor, boolean wasNewItem) {
+        oldItemDeleted |= !wasNewItem;
         this.updateEditorsVisible();
+    }
+
+    @Override
+    public void onEdited() {
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
     }
 
     protected void updateEditorsVisible() {
         final boolean hasChildren = mEditors.getChildCount() > 0;
         mEditors.setVisibility(hasChildren ? View.VISIBLE : View.GONE);
+    }
+
+    public boolean needsSaving()
+    {
+        //check each view for needs saving, take account of deleted items
+        boolean ret = oldItemDeleted;
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            ret |= editor.needsSaving();
+        }
+        return ret;
     }
 
     /** {@inheritDoc} */

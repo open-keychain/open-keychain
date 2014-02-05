@@ -38,9 +38,11 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.Editor;
 import org.sufficientlysecure.keychain.ui.widget.KeyEditor;
 import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -67,7 +69,7 @@ import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class EditKeyActivity extends ActionBarActivity {
+public class EditKeyActivity extends ActionBarActivity implements EditorListener {
 
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
@@ -105,6 +107,15 @@ public class EditKeyActivity extends ActionBarActivity {
     boolean masterCanSign = true;
 
     ExportHelper mExportHelper;
+
+    public void onDeleted(Editor e, boolean wasNewItem)
+    {
+    }
+
+    public void onEdited()
+    {
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

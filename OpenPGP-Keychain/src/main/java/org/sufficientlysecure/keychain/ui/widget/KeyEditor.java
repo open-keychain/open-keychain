@@ -26,7 +26,6 @@ import java.util.Vector;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Choice;
@@ -39,11 +38,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -62,11 +59,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     TextView mCreationDate;
     BootstrapButton mExpiryDateButton;
     GregorianCalendar mExpiryDate;
+    GregorianCalendar mOriginalExpiryDate = null;
     CheckBox mChkCertify;
     CheckBox mChkSign;
     CheckBox mChkEncrypt;
     CheckBox mChkAuthenticate;
     int mUsage;
+    int mOriginalUsage;
+    boolean mIsNewKey;
 
     private int mDatePickerResultCount = 0;
     private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -190,10 +190,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
         mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
         mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
+        mIsNewKey = isNewKey;
         if (isNewKey)
             mUsage = usage;
-        else
+        else {
             mUsage = PgpKeyHelper.getKeyUsage(key);
+            mOriginalUsage = mUsage;
+        }
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
@@ -205,6 +208,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         } else {
             cal.setTime(PgpKeyHelper.getExpiryDate(key));
             setExpiryDate(cal);
+            mOriginalExpiryDate = cal; // TODO: ensure time doesn't matter when selecting the same date as before
         }
 
     }
@@ -218,7 +222,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         if (v == mDeleteButton) {
             parent.removeView(this);
             if (mEditorListener != null) {
-                mEditorListener.onDeleted(this);
+                mEditorListener.onDeleted(this, mIsNewKey);
             }
         }
     }
@@ -248,6 +252,29 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mUsage  = (mUsage & ~KeyFlags.AUTHENTICATION) | (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
 
         return mUsage;
+    }
+
+    public boolean needsSaving()
+    {
+        if (mIsNewKey)
+            return true;
+
+        boolean retval = (getUsage() != mOriginalUsage);
+
+        boolean dateChanged;
+        boolean mOEDNull = (mOriginalExpiryDate == null);
+        boolean mEDNull = (mExpiryDate == null);
+        if (mOEDNull != mEDNull) {
+            dateChanged = true;
+        } else {
+            if(mOEDNull) //both null, no change
+                dateChanged = false;
+            else
+                dateChanged = ((mExpiryDate.compareTo(mOriginalExpiryDate)) != 0);
+        }
+        retval |= dateChanged;
+
+        return retval;
     }
 
 }

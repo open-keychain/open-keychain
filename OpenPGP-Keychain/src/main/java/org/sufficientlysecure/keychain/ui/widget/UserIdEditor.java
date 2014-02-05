@@ -175,7 +175,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             boolean wasMainUserId = mIsMainUserId.isChecked();
             parent.removeView(this);
             if (mEditorListener != null) {
-                mEditorListener.onDeleted(this);
+                mEditorListener.onDeleted(this, false);
             }
             if (wasMainUserId && parent.getChildCount() > 0) {
                 UserIdEditor editor = (UserIdEditor) parent.getChildAt(0);
@@ -203,5 +203,10 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
 
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
+    }
+
+    @Override
+    public boolean needsSaving() {
+        return false;
     }
 }
