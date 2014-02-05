@@ -407,7 +407,7 @@
 
     <!-- Key view -->
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
-    <string name="key_view_action_certify">Certify User ID of this contact</string>
+    <string name="key_view_action_certify">Certify key of this contact</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_contacts">Contacts</string>
