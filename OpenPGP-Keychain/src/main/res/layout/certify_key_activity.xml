@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
-            android:text="@string/section_signing_key" />
+            android:text="@string/section_certification_key" />
 
         <fragment
             android:id="@+id/sign_key_select_key_fragment"
