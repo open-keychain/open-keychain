@@ -242,7 +242,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                     // check if we need to send the key to the server or not
                     if (mUploadKeyCheckbox.isChecked()) {
-                        // upload the newly signed key to the key server
+                        // upload the newly signed key to the keyserver
                         uploadKey();
                     } else {
                         setResult(RESULT_OK);

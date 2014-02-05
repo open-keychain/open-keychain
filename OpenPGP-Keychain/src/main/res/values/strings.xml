@@ -13,7 +13,7 @@
     <string name="title_edit_key">Edit Key</string>
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Registered Applications</string>
-    <string name="title_key_server_preference">Key Server Preference</string>
+    <string name="title_key_server_preference">Keyserver Preference</string>
     <string name="title_change_pass_phrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_send_email">"Send Mail…"</string>
@@ -23,8 +23,8 @@
     <string name="title_export_key">Export Key</string>
     <string name="title_export_keys">Export Keys</string>
     <string name="title_key_not_found">Key Not Found</string>
-    <string name="title_key_server_query">Query Key Server</string>
-    <string name="title_send_key">Upload to Key Server</string>
+    <string name="title_key_server_query">Query Keyserver</string>
+    <string name="title_send_key">Upload to Keyserver</string>
     <string name="title_unknown_signature_key">Unknown Signature Key</string>
     <string name="title_certify_key">Certify Key</string>
     <string name="title_key_details">Key Details</string>
@@ -41,7 +41,7 @@
     <string name="section_actions">Actions</string>
     <string name="section_certification_key">Your Key used for certification</string>
     <string name="section_upload_key">Upload Key</string>
-    <string name="section_key_server">Key Server</string>
+    <string name="section_key_server">Keyserver</string>
     <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
     <string name="section_decrypt_verify">Decrypt and Verify</string>
 
@@ -60,7 +60,7 @@
     <string name="btn_change_passphrase">Change Passphrase</string>
     <string name="btn_set_passphrase">Set Passphrase</string>
     <string name="btn_search">Search</string>
-    <string name="btn_export_to_server">Upload To Key Server</string>
+    <string name="btn_export_to_server">Upload To Keyserver</string>
     <string name="btn_next">Next</string>
     <string name="btn_back">Back</string>
     <string name="btn_clipboard">Clipboard</string>
@@ -80,8 +80,8 @@
     <string name="menu_create_key">Create key</string>
     <string name="menu_create_key_expert">Create key (expert)</string>
     <string name="menu_search">Search</string>
-    <string name="menu_key_server">Import from key server</string>
-    <string name="menu_update_key">Update from key server</string>
+    <string name="menu_key_server">Import from keyserver</string>
+    <string name="menu_update_key">Update from keyserver</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
     <string name="menu_share">Share</string>
     <string name="menu_share_title_fingerprint">Share fingerprint…</string>
@@ -117,7 +117,7 @@
     <string name="label_message_compression">Message Compression</string>
     <string name="label_file_compression">File Compression</string>
     <string name="label_force_v3_signature">Force V3 Signatures</string>
-    <string name="label_key_servers">Key Servers</string>
+    <string name="label_key_servers">Keyservers</string>
     <string name="label_key_id">Key ID</string>
     <string name="label_creation">Creation</string>
     <string name="label_expiry">Expiry</string>
@@ -127,7 +127,7 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
-    <string name="label_send_key">Upload key to selected key server after certification</string>
+    <string name="label_send_key">Upload key to selected keyserver after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
 
@@ -146,8 +146,8 @@
     <string name="revoked">revoked</string>
 
     <plurals name="n_key_servers">
-        <item quantity="one">%d key server</item>
-        <item quantity="other">%d key servers</item>
+        <item quantity="one">%d keyserver</item>
+        <item quantity="other">%d keyservers</item>
     </plurals>
 
     <string name="fingerprint">Fingerprint:</string>

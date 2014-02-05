@@ -55,9 +55,9 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
     public static final String ACTION_IMPORT_KEY_FROM_QR_CODE = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_QR_CODE";
-    public static final String ACTION_IMPORT_KEY_FROM_KEY_SERVER = Constants.INTENT_PREFIX
-            + "IMPORT_KEY_FROM_KEY_SERVER";
-    public static final String ACTION_IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN = Constants.INTENT_PREFIX
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_KEYSERVER";
+    public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
 
     // Actions for internal use only:
@@ -69,7 +69,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     // only used by ACTION_IMPORT_KEY
     public static final String EXTRA_KEY_BYTES = "key_bytes";
 
-    // only used by ACTION_IMPORT_KEY_FROM_KEY_SERVER
+    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER
     public static final String EXTRA_QUERY = "query";
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_FINGERPRINT = "fingerprint";
@@ -154,7 +154,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 // action: directly load data
                 startListFragment(savedInstanceState, importData, null, null);
             }
-        } else if (ACTION_IMPORT_KEY_FROM_KEY_SERVER.equals(action)) {
+        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
             String query = null;
             if (extras.containsKey(EXTRA_QUERY)) {
                 query = extras.getString(EXTRA_QUERY);
@@ -173,7 +173,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 return;
             }
 
-            // display key server fragment with query
+            // display keyserver fragment with query
             Bundle args = new Bundle();
             args.putString(ImportKeysServerFragment.ARG_QUERY, query);
             loadNavFragment(0, args);
@@ -288,7 +288,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         String query = "0x" + fingerprint;
 
-        // display key server fragment with query
+        // display keyserver fragment with query
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
         loadNavFragment(0, args);

@@ -60,7 +60,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -247,7 +246,7 @@ public class DecryptActivity extends DrawerActivity {
                         DecryptActivity.this, mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, ImportKeysActivity.class);
-                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
+                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
                     intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }
@@ -596,7 +595,7 @@ public class DecryptActivity extends DrawerActivity {
 
     private void lookupUnknownKey(long unknownKeyId) {
         Intent intent = new Intent(this, ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
         intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }

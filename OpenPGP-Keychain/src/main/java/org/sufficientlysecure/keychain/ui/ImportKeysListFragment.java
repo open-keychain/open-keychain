@@ -122,7 +122,7 @@ public class ImportKeysListFragment extends ListFragment implements
         mKeyBytes = getArguments().getByteArray(ARG_BYTES);
         mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
 
-        // TODO: this is used when scanning QR Code. Currently it simply uses key server nr 0
+        // TODO: this is used when scanning QR Code. Currently it simply uses keyserver nr 0
         mKeyServer = Preferences.getPreferences(getActivity())
                 .getKeyServers()[0];
 

@@ -40,7 +40,7 @@ import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 /**
- * Sends the selected public key to a key server
+ * Sends the selected public key to a keyserver
  */
 public class UploadKeyActivity extends ActionBarActivity {
     private BootstrapButton mUploadButton;

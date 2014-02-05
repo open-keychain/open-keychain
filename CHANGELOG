@@ -23,7 +23,7 @@
 * New AIDL API
 
 1.0.8
-* basic key server support (HKP, please report bugs :))
+* basic keyserver support (HKP, please report bugs :))
 * app2sd (untested, let me know if there are problems)
 * more choices for pass phrase cache: 1, 2, 4, 8, hours
 * translations: Norwegian (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
