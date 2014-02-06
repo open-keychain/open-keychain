@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import android.content.Context;
 import android.text.Editable;
@@ -56,14 +57,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
                     "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
                     Pattern.CASE_INSENSITIVE);
 
-    public static class NoNameException extends Exception {
-        static final long serialVersionUID = 0xf812773343L;
-
-        public NoNameException(String message) {
-            super(message);
-        }
-    }
-
     public void setCanEdit(boolean bCanEdit) {
         if (!bCanEdit) {
             mDeleteButton.setVisibility(View.INVISIBLE);
@@ -71,14 +64,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             mIsMainUserId.setEnabled(false);
             mEmail.setEnabled(false);
             mComment.setEnabled(false);
-        }
-    }
-
-    public static class NoEmailException extends Exception {
-        static final long serialVersionUID = 0xf812773344L;
-
-        public NoEmailException(String message) {
-            super(message);
         }
     }
 
@@ -133,40 +118,31 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     }
 
     public void setValue(String userId, boolean isMainID, boolean isNewId) {
+
         mName.setText("");
         mComment.setText("");
         mEmail.setText("");
         mIsNewId = isNewId;
 
-        //TODO: update this file for blank email/name?
-
-        Pattern withComment = Pattern.compile("^(.*) [(](.*)[)] <(.*)>$");
-        Matcher matcher = withComment.matcher(userId);
-        if (matcher.matches()) {
-            mName.setText(matcher.group(1));
-            mOriginalName = matcher.group(1);
-            mComment.setText(matcher.group(2));
-            mOriginalComment = matcher.group(2);
-            mEmail.setText(matcher.group(3));
-            mOriginalEmail = matcher.group(3);
-            return;
+        String[] result = PgpKeyHelper.splitUserId(userId);
+        if (result[0] != null) {
+            mName.setText(result[0]);
+            mOriginalName = result[0];
+        }
+        if (result[1] != null) {
+            mComment.setText(result[1]);
+            mOriginalComment = result[1];
+        }
+        if (result[2] != null) {
+            mEmail.setText(result[2]);
+            mOriginalEmail = result[2];
         }
 
-        Pattern withoutComment = Pattern.compile("^(.*) <(.*)>$");
-        matcher = withoutComment.matcher(userId);
-        if (matcher.matches()) {
-            mName.setText(matcher.group(1));
-            mOriginalName = matcher.group(1);
-            mEmail.setText(matcher.group(2));
-            mOriginalEmail = matcher.group(2);
-            mOriginalComment = "";
-            return;
-        }
         mOriginallyMainUserID = isMainID;
         setIsMainUserId(isMainID);
     }
 
-    public String getValue() throws NoNameException, NoEmailException, InvalidEmailException {
+    public String getValue() throws InvalidEmailException {
         String name = ("" + mName.getText()).trim();
         String email = ("" + mEmail.getText()).trim();
         String comment = ("" + mComment.getText()).trim();
@@ -191,16 +167,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             // ok, empty one...
             return userId;
         }
-
-        // otherwise make sure that name and email exist
-        if (name.equals("")) {
-            throw new NoNameException("need a name");
-        }
-
-        if (email.equals("")) {
-            throw new NoEmailException("need an email");
-        }
-
+        //TODO: check gpg accepts an entirely empty ID packet. specs say this is allowed
         return userId;
     }
 
@@ -210,7 +177,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             boolean wasMainUserId = mIsMainUserId.isChecked();
             parent.removeView(this);
             if (mEditorListener != null) {
-                mEditorListener.onDeleted(this, false); //TODO: WAS THIS A NEW ITEM
+                mEditorListener.onDeleted(this, mIsNewId);
             }
             if (wasMainUserId && parent.getChildCount() > 0) {
                 UserIdEditor editor = (UserIdEditor) parent.getChildAt(0);
