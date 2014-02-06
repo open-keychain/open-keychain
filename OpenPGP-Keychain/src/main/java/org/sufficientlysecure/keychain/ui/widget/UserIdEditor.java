@@ -83,6 +83,24 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         super(context, attrs);
     }
 
+    TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+            if (mEditorListener != null) {
+                mEditorListener.onEdited();
+            }
+        }
+    };
+
     @Override
     protected void onFinishInflate() {
         setDrawingCacheEnabled(true);
@@ -94,25 +112,11 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mIsMainUserId.setOnClickListener(this);
 
         mName = (EditText) findViewById(R.id.name);
-        mName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s)
-            {
-                if (mEditorListener != null) {
-                    mEditorListener.onEdited();
-                }
-            }
-        });
+        mName.addTextChangedListener(mTextWatcher);
         mEmail = (EditText) findViewById(R.id.email);
+        mEmail.addTextChangedListener(mTextWatcher);
         mComment = (EditText) findViewById(R.id.comment);
+        mComment.addTextChangedListener(mTextWatcher);
 
         super.onFinishInflate();
     }
@@ -120,8 +124,11 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     public void setValue(String userId, boolean isMainID, boolean isNewId) {
 
         mName.setText("");
+        mOriginalName = "";
         mComment.setText("");
+        mOriginalComment = "";
         mEmail.setText("");
+        mOriginalEmail = "";
         mIsNewId = isNewId;
 
         String[] result = PgpKeyHelper.splitUserId(userId);
@@ -213,9 +220,9 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     @Override
     public boolean needsSaving() {
         boolean retval = (mOriginallyMainUserID != isMainUserId());
-        retval |= (mOriginalName.equals( ("" + mName.getText()).trim() ) );
-        retval |= (mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
-        retval |= (mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
+        retval |= !(mOriginalName.equals( ("" + mName.getText()).trim() ) );
+        retval |= !(mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
+        retval |= !(mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
         retval |= mIsNewId;
         return retval;
     }
