@@ -168,6 +168,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 view.setEditorListener(this);
                 view.setValue("", mEditors.getChildCount() == 0, true);
                 mEditors.addView(view);
+                if (mEditorListener != null) {
+                    mEditorListener.onEdited();
+                }
                 break;
             }
 
@@ -367,5 +370,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         view.setValue(newKey, newKey.isMasterKey(), -1, true);
         mEditors.addView(view);
         SectionView.this.updateEditorsVisible();
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
     }
 }
