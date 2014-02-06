@@ -564,6 +564,26 @@ public class ProviderHelper {
         return fingerprint;
     }
 
+    public static String getUserId(Context context, Uri queryUri) {
+        String[] projection = new String[]{UserIds.USER_ID};
+        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
+
+        String userId = null;
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int col = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+
+                userId = cursor.getString(col);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return userId;
+    }
+
     public static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,
                                                                long[] masterKeyIds) {
         ArrayList<String> output = new ArrayList<String>();

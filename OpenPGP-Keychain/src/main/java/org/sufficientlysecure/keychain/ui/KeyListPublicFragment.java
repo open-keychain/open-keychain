@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.Id;
@@ -37,6 +38,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -51,6 +55,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
@@ -160,17 +165,15 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
 
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_public_multi_encrypt: {
-                            encrypt(ids);
-
+                            encrypt(mode, ids);
                             break;
                         }
                         case R.id.menu_key_list_public_multi_delete: {
-                            showDeleteKeyDialog(ids);
-
+                            showDeleteKeyDialog(mode, ids);
                             break;
                         }
                     }
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -274,7 +277,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         startActivity(viewIntent);
     }
 
-    public void encrypt(long[] keyRingRowIds) {
+    public void encrypt(ActionMode mode, long[] keyRingRowIds) {
         // get master key ids from row ids
         long[] keyRingIds = new long[keyRingRowIds.length];
         for (int i = 0; i < keyRingRowIds.length; i++) {
@@ -286,6 +289,8 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
+
+        mode.finish();
     }
 
     /**
@@ -293,8 +298,34 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
      *
      * @param keyRingRowIds
      */
-    public void showDeleteKeyDialog(long[] keyRingRowIds) {
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(null,
+    public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    Bundle returnData = message.getData();
+                    if (returnData != null
+                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
+                        ArrayList<String> notDeleted =
+                                returnData.getStringArrayList(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED);
+                        String notDeletedMsg = "";
+                        for (String userId : notDeleted) {
+                            notDeletedMsg += userId + "\n";
+                        }
+                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg),
+                                Toast.LENGTH_LONG).show();
+
+                        mode.finish();
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                 keyRingRowIds, Id.type.public_key);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");

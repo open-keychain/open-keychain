@@ -161,18 +161,7 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 copyToClipboard(mDataUri);
                 return true;
             case R.id.menu_key_view_delete: {
-                // Message is received after key is deleted
-                Handler returnHandler = new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                            setResult(RESULT_CANCELED);
-                            finish();
-                        }
-                    }
-                };
-
-                mExportHelper.deleteKey(mDataUri, Id.type.public_key, returnHandler);
+                deleteKey(mDataUri);
                 return true;
             }
         }
@@ -474,6 +463,29 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private void shareNfc() {
         ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
         dialog.show(getSupportFragmentManager(), "shareNfcDialog");
+    }
+
+    private void deleteKey(Uri dataUri) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    Bundle returnData = message.getData();
+                    if (returnData != null
+                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
+                        // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
+                        Toast.makeText(ViewKeyActivity.this, R.string.error_can_not_delete_contact,
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }
+            }
+        };
+
+        mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
     }
 
 }

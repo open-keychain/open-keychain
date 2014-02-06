@@ -283,6 +283,8 @@
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">Nothing to import!</string>
     <string name="error_expiry_must_come_after_creation">expiry date must come after creation date</string>
+    <string name="error_can_not_delete_contact">you can not delete this contact because it is your own. Please delete it from the \'My Keys\' screen!</string>
+    <string name="error_can_not_delete_contacts">you can not delete the following contacts because they are your own:\n%sPlease delete them from the \'My Keys\' screen!</string>
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">done.</string>

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.Id;
@@ -33,6 +34,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -45,6 +49,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Toast;
 
 public class KeyListSecretFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -103,13 +108,12 @@ public class KeyListSecretFragment extends ListFragment implements
                     }
 
                     switch (item.getItemId()) {
-                    case R.id.menu_key_list_public_multi_delete: {
-                        showDeleteKeyDialog(ids);
-
-                        break;
+                        case R.id.menu_key_list_public_multi_delete: {
+                            showDeleteKeyDialog(mode, ids);
+                            break;
+                        }
                     }
-                    }
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -120,7 +124,7 @@ public class KeyListSecretFragment extends ListFragment implements
 
                 @Override
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                        boolean checked) {
+                                                      boolean checked) {
                     if (checked) {
                         count++;
                         mAdapter.setNewSelection(position, checked);
@@ -153,8 +157,8 @@ public class KeyListSecretFragment extends ListFragment implements
     }
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            UserIds.USER_ID };
+    static final String[] PROJECTION = new String[]{KeyRings._ID, KeyRings.MASTER_KEY_ID,
+            UserIds.USER_ID};
     static final String SORT_ORDER = UserIds.USER_ID + " COLLATE LOCALIZED ASC";
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -202,13 +206,27 @@ public class KeyListSecretFragment extends ListFragment implements
 
     /**
      * Show dialog to delete key
-     * 
+     *
      * @param keyRingRowIds
      */
-    public void showDeleteKeyDialog(long[] keyRingRowIds) {
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(null,
+    public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    mode.finish();
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                 keyRingRowIds, Id.type.secret_key);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
+
 }
