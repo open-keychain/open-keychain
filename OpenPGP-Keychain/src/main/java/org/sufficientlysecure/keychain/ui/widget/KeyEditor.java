@@ -78,8 +78,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 mEditorListener.onEdited();
             }
         }
-
-    }
+    };
 
 
     private int mDatePickerResultCount = 0;

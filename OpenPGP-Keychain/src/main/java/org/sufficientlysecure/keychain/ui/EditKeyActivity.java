@@ -96,6 +96,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private String mNewPassPhrase = null;
     private String mSavedNewPassPhrase = null;
     private boolean mIsPassPhraseSet;
+    private boolean mNeedsSaving;
 
     private BootstrapButton mChangePassPhrase;
 
@@ -114,7 +115,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     public void onEdited()
     {
-
+        mNeedsSaving = mUserIdsView.needsSaving();
+        mNeedsSaving |= mKeysView.needsSaving();
+        Toast.makeText(this, "Needs saving: " + Boolean.toString(mNeedsSaving), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -437,11 +440,13 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         mUserIdsView.setType(Id.type.user_id);
         mUserIdsView.setCanEdit(masterCanSign);
         mUserIdsView.setUserIds(mUserIds);
+        mUserIdsView.setEditorListener(this);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
         mKeysView.setCanEdit(masterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages);
+        mKeysView.setEditorListener(this);
         container.addView(mKeysView);
 
         updatePassPhraseButtonText();
@@ -597,11 +602,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             String userId = null;
             try {
                 userId = editor.getValue();
-            } catch (UserIdEditor.NoNameException e) {
-                throw new PgpGeneralException(this.getString(R.string.error_user_id_needs_a_name));
-            } catch (UserIdEditor.NoEmailException e) {
-                throw new PgpGeneralException(
-                        this.getString(R.string.error_user_id_needs_an_email_address));
             } catch (UserIdEditor.InvalidEmailException e) {
                 throw new PgpGeneralException(e.getMessage());
             }

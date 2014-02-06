@@ -73,6 +73,11 @@ public class KeyServerEditor extends LinearLayout implements Editor, OnClickList
         }
     }
 
+    @Override
+    public boolean needsSaving() {
+        return false;
+    }
+
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
     }
