@@ -137,12 +137,12 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             mOriginalName = result[0];
         }
         if (result[1] != null) {
-            mComment.setText(result[1]);
-            mOriginalComment = result[1];
+            mEmail.setText(result[1]);
+            mOriginalEmail = result[1];
         }
         if (result[2] != null) {
-            mEmail.setText(result[2]);
-            mOriginalEmail = result[2];
+            mComment.setText(result[2]);
+            mOriginalComment = result[2];
         }
 
         mOriginallyMainUserID = isMainID;

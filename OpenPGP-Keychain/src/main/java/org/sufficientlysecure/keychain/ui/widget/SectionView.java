@@ -133,6 +133,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void onDeleted(Editor editor, boolean wasNewItem) {
         oldItemDeleted |= !wasNewItem;
         this.updateEditorsVisible();
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
     }
 
     @Override

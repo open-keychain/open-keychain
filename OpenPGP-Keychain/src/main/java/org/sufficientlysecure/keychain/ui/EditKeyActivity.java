@@ -55,6 +55,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -97,6 +98,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private String mSavedNewPassPhrase = null;
     private boolean mIsPassPhraseSet;
     private boolean mNeedsSaving;
+    private MenuItem mSaveButton;
 
     private BootstrapButton mChangePassPhrase;
 
@@ -109,12 +111,19 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     ExportHelper mExportHelper;
 
-    public void somethingChanged()
+    public boolean needsSaving()
     {
         mNeedsSaving = mUserIdsView.needsSaving();
         mNeedsSaving |= mKeysView.needsSaving();
         mNeedsSaving |= hasPassphraseChanged();
-        Toast.makeText(this, "Needs saving: " + Boolean.toString(mNeedsSaving) + "(" + Boolean.toString(mUserIdsView.needsSaving()) + ", " + Boolean.toString(mKeysView.needsSaving()) + ")", Toast.LENGTH_LONG).show();
+        return mNeedsSaving;
+    }
+
+
+    public void somethingChanged()
+    {
+        ActivityCompat.invalidateOptionsMenu(this);
+        //Toast.makeText(this, "Needs saving: " + Boolean.toString(mNeedsSaving) + "(" + Boolean.toString(mUserIdsView.needsSaving()) + ", " + Boolean.toString(mKeysView.needsSaving()) + ")", Toast.LENGTH_LONG).show();
     }
 
     public void onDeleted(Editor e, boolean wasNewItem)
@@ -132,6 +141,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         super.onCreate(savedInstanceState);
 
         mExportHelper = new ExportHelper(this);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(android.R.color.transparent);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         mUserIds = new Vector<String>();
         mKeys = new Vector<PGPSecretKey>();
@@ -153,20 +166,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        saveClicked();
-                    }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        cancelClicked();
-                    }
-                });
-
         Bundle extras = intent.getExtras();
 
         mCurrentPassPhrase = "";
@@ -255,15 +254,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
      * @param intent
      */
     private void handleActionEditKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_save,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        saveClicked();
-                    }
-                });
-
         mDataUri = intent.getData();
         if (mDataUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
@@ -325,12 +315,17 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_edit, menu);
+        mSaveButton = (MenuItem) menu.findItem(R.id.menu_key_edit_save);
+        mSaveButton.setEnabled(needsSaving());
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        case android.R.id.home:
+            cancelClicked();
+            return true;
         case R.id.menu_key_edit_cancel:
             cancelClicked();
             return true;
@@ -353,6 +348,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
             return true;
         }
+        case R.id.menu_key_edit_save:
+            saveClicked();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -373,8 +371,15 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
             }
             if (masterKey != null) {
+                boolean isSet = false;
                 for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
                     Log.d(Constants.TAG, "Added userId " + userId);
+                    if (!isSet) {
+                        isSet = true;
+                        String[] parts = PgpKeyHelper.splitUserId(userId);
+                        if (parts[0] != null)
+                            setTitle(parts[0]);
+                    }
                     mUserIds.add(userId);
                 }
             }
@@ -465,7 +470,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             }
         });
 
-        // disable passphrase when no passphrase checkobox is checked!
+        // disable passphrase when no passphrase checkbox is checked!
         mNoPassphrase.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override

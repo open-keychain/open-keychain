@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_key_edit_save"
+        android:icon="@drawable/ic_action_done"
+        app:showAsAction="always"
+        android:title="@string/btn_save">
+    </item>
+    <item
         android:id="@+id/menu_key_edit_export_file"
         app:showAsAction="never"
         android:title="@string/menu_export_key" />
