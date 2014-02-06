@@ -46,6 +46,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     private EditText mComment;
     private String mOriginalComment;
     private boolean mOriginallyMainUserID;
+    private boolean mIsNewId;
 
     // see http://www.regular-expressions.info/email.html
     // RFC 2822 if we omit the syntax using double quotes and square brackets
@@ -131,10 +132,11 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         super.onFinishInflate();
     }
 
-    public void setValue(String userId, boolean isMainID) {
+    public void setValue(String userId, boolean isMainID, boolean isNewId) {
         mName.setText("");
         mComment.setText("");
         mEmail.setText("");
+        mIsNewId = isNewId;
 
         //TODO: update this file for blank email/name?
 
@@ -247,6 +249,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         retval |= (mOriginalName.equals( ("" + mName.getText()).trim() ) );
         retval |= (mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
         retval |= (mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
+        retval |= mIsNewId;
         return retval;
     }
 }
