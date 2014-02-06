@@ -88,7 +88,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             if (mDatePickerResultCount++ == 0) {
                 GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 date.set(year, monthOfYear, dayOfMonth);
-                setExpiryDate(date);
+                long numDays = (date.getTimeInMillis() / 86400000) - (mOriginalExpiryDate.getTimeInMillis() / 86400000);
+                if (numDays == 0)
+                    setExpiryDate(mOriginalExpiryDate);
+                else
+                    setExpiryDate(date);
                 if (mEditorListener != null) {
                     mEditorListener.onEdited();
                 }
@@ -231,7 +235,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         } else {
             cal.setTime(PgpKeyHelper.getExpiryDate(key));
             setExpiryDate(cal);
-            mOriginalExpiryDate = cal; // TODO: ensure time doesn't matter when selecting the same date as before
+            mOriginalExpiryDate = cal;
         }
 
     }
