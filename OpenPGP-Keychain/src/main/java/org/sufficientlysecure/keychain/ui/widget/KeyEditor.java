@@ -88,11 +88,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
             if (mDatePickerResultCount++ == 0) {
                 GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 date.set(year, monthOfYear, dayOfMonth);
-                long numDays = (date.getTimeInMillis() / 86400000) - (mOriginalExpiryDate.getTimeInMillis() / 86400000);
-                if (numDays == 0)
-                    setExpiryDate(mOriginalExpiryDate);
-                else
+                if (mOriginalExpiryDate != null) {
+                    long numDays = (date.getTimeInMillis() / 86400000) - (mOriginalExpiryDate.getTimeInMillis() / 86400000);
+                    if (numDays == 0)
+                        setExpiryDate(mOriginalExpiryDate);
+                    else
+                        setExpiryDate(date);
+                } else {
                     setExpiryDate(date);
+                }
                 if (mEditorListener != null) {
                     mEditorListener.onEdited();
                 }
