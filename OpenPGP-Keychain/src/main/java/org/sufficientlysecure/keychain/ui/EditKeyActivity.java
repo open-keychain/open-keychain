@@ -606,7 +606,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
     private void cancelClicked() {
-        if (mNeedsSaving && masterCanSign) { //ask if we want to save
+        if (mNeedsSaving) { //ask if we want to save
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     EditKeyActivity.this);
 
