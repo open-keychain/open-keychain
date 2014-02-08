@@ -12,7 +12,7 @@
   <string name="title_edit_key">Modifier une clef</string>
   <string name="title_preferences">Préférences</string>
   <string name="title_api_registered_apps">Applications enregistrées</string>
-  <string name="title_key_server_preference">Serveurs de clefs préférés</string>
+  <string name="title_key_server_preference">Préférences du serveur de clefs</string>
   <string name="title_change_pass_phrase">Changer la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
   <string name="title_send_email">Envoyer un courriel...</string>
@@ -25,6 +25,7 @@
   <string name="title_key_server_query">Interroger le serveur de clefs</string>
   <string name="title_send_key">Téléverser vers le serveur de clefs</string>
   <string name="title_unknown_signature_key">Clef de signature inconnue</string>
+  <string name="title_certify_key">Certifier la clef</string>
   <string name="title_key_details">Détails sur la clef</string>
   <string name="title_help">Aide</string>
   <!--section-->
@@ -36,12 +37,14 @@
   <string name="section_master_key">Clef maîtresse</string>
   <string name="section_master_user_id">ID utilisateur maître</string>
   <string name="section_actions">Actions</string>
+  <string name="section_certification_key">Votre clef utilisée pour la certification</string>
   <string name="section_upload_key">Téléverser la clef</string>
   <string name="section_key_server">Serveur de clefs</string>
   <string name="section_encrypt_and_or_sign">Chiffrer et/ou signer</string>
   <string name="section_decrypt_verify">Déchiffrer et vérifier</string>
   <!--button-->
   <string name="btn_sign">Signer</string>
+  <string name="btn_certify">Certifier</string>
   <string name="btn_decrypt">Déchiffrer</string>
   <string name="btn_decrypt_verify">Déchiffrer et vérifier</string>
   <string name="btn_select_encrypt_keys">Choisir les destinataires</string>
@@ -59,6 +62,7 @@
   <string name="btn_back">Retour</string>
   <string name="btn_clipboard">Presse-papiers</string>
   <string name="btn_share">Partager avec...</string>
+  <string name="btn_lookup_key">Rechercher la clef</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
@@ -118,6 +122,7 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
+  <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après certification</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="select_keys_button_default">Choisir</string>
   <plurals name="select_keys_button">
@@ -131,9 +136,10 @@
   <string name="can_encrypt">peut chiffrer</string>
   <string name="can_sign">peut signer</string>
   <string name="expired">expiré</string>
+  <string name="revoked">révoquée</string>
   <plurals name="n_key_servers">
-    <item quantity="one">%d serveur de clef</item>
-    <item quantity="other">%d serveurs de clef</item>
+    <item quantity="one">%d serveur de clefs</item>
+    <item quantity="other">%d serveurs de clefs</item>
   </plurals>
   <string name="fingerprint">Empreinte :</string>
   <string name="secret_key">Clef secrète :</string>
@@ -212,10 +218,12 @@
     <item quantity="one">%d clef trouvée.</item>
     <item quantity="other">%d clefs trouvées.</item>
   </plurals>
+  <string name="unknown_signature">Signature inconnue. Cliquer sur le bouton pour rechercher la clef manquante.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d mauvaise clef ignorée. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
     <item quantity="other">%d mauvaises clefs ignorées. Vous avez peut-être exporté avec l\'option\n --export-secret-subkeys\nAssurez-vous d\'exporter plutôt avec\n --export-secret-keys.</item>
   </plurals>
+  <string name="key_send_success">Clef téléversée vers le serveur avec succès</string>
   <string name="key_sign_success">Clef signée avec succès</string>
   <string name="list_empty">Cette liste est vide !</string>
   <string name="nfc_successfull">Clef envoyée par NFC BEAM avec succès !</string>
@@ -228,7 +236,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">échec lors de la suppression de « %s »</string>
   <string name="error_file_not_found">fichier introuvable</string>
-  <string name="error_no_secret_key_found">aucune clé secrète adéquate n\'a été trouvée</string>
+  <string name="error_no_secret_key_found">aucune clefs secrète adéquate n\'a été trouvée</string>
   <string name="error_no_known_encryption_found">aucune sorte de chiffrement connu n\'a été trouvé</string>
   <string name="error_external_storage_not_ready">le stockage externe n\'est pas prêt</string>
   <string name="error_invalid_email">courriel « %s » invalide</string>
@@ -255,6 +263,8 @@
   <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
+  <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre. Veuillez le supprimer depuis l\'écran « Mes Clefs »!</string>
+  <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%sVeuillez les supprimer depuis l\'écran « Mes Clefs »!</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fait.</string>
   <string name="progress_saving">sauvegarde...</string>
@@ -363,6 +373,7 @@
   <string name="key_list_empty_button_import">Importer des clefs.</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Chiffrer vers ce contact</string>
+  <string name="key_view_action_certify">Certifier la clef de ce contact</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Contacts</string>
   <string name="nav_encrypt">Chiffrer</string>

@@ -7,12 +7,10 @@
   <string name="title_create_key">Anahtar oluştur</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>
-  <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
   <string name="title_import_keys">Anahtarları Al</string>
   <string name="title_export_key">Anahtarı Ver</string>
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
-  <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
   <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
@@ -23,7 +21,6 @@
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
   <string name="section_upload_key">Anahtar Yükle</string>
-  <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
   <string name="btn_sign">İmzala</string>
   <string name="btn_select_encrypt_keys">Alıcıları Seç</string>
@@ -32,7 +29,6 @@
   <string name="btn_delete">Sil</string>
   <string name="btn_okay">Tamam</string>
   <string name="btn_search">Ara</string>
-  <string name="btn_export_to_server">Sunucuya Anahtar Yükle</string>
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
   <!--menu-->
@@ -47,7 +43,6 @@
   <string name="menu_create_key">Anahtar oluştur</string>
   <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
   <string name="menu_search">Ara</string>
-  <string name="menu_key_server">Anahtar sunucusundan al</string>
   <string name="menu_copy_to_clipboard">Panoya kopyala</string>
   <string name="menu_sign_key">Anahtarı imzala</string>
   <string name="menu_key_edit_cancel">İptal</string>
@@ -58,7 +53,6 @@
   <string name="label_passphrase_again">Tekrar</string>
   <string name="label_algorithm">Algoritma</string>
   <string name="label_asymmetric">Açık Anahtar</string>
-  <string name="label_key_servers">Anahtar Sunucuları</string>
   <string name="label_creation">Oluşturma</string>
   <string name="label_usage">Kullanım</string>
   <string name="label_key_size">Anahtar Boyutu</string>

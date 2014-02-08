@@ -12,7 +12,6 @@
   <string name="title_edit_key">Изменить ключ</string>
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Связанные приложения</string>
-  <string name="title_key_server_preference">Настройки сервера ключей</string>
   <string name="title_change_pass_phrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
   <string name="title_send_email">Отправить...</string>
@@ -22,9 +21,8 @@
   <string name="title_export_key">Экспортировать ключ</string>
   <string name="title_export_keys">Экспорт ключей</string>
   <string name="title_key_not_found">Ключ не найден</string>
-  <string name="title_key_server_query">Запросить сервер ключей</string>
-  <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
+  <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
@@ -36,12 +34,13 @@
   <string name="section_master_key">Основной ключ</string>
   <string name="section_master_user_id">Владелец</string>
   <string name="section_actions">Действия</string>
+  <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
-  <string name="section_key_server">Сервер ключей</string>
   <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
   <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
   <string name="btn_sign">Подписать</string>
+  <string name="btn_certify">Сертифицировать</string>
   <string name="btn_decrypt">Расшифровать</string>
   <string name="btn_decrypt_verify">Расшифровать и проверить</string>
   <string name="btn_select_encrypt_keys">Выбрать получателей</string>
@@ -54,11 +53,11 @@
   <string name="btn_change_passphrase">Изменить пароль</string>
   <string name="btn_set_passphrase">Задать пароль</string>
   <string name="btn_search">Поиск</string>
-  <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
   <string name="btn_clipboard">Буфер обмена</string>
   <string name="btn_share">Поделиться...</string>
+  <string name="btn_lookup_key">Найти ключ</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
@@ -72,8 +71,6 @@
   <string name="menu_create_key">Создать ключ</string>
   <string name="menu_create_key_expert">Создать ключ (эксперт)</string>
   <string name="menu_search">Поиск</string>
-  <string name="menu_key_server">Импорт с сервера ключей</string>
-  <string name="menu_update_key">Обновить с сервера ключей</string>
   <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
   <string name="menu_share">Отправить...</string>
   <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
@@ -108,7 +105,6 @@
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
   <string name="label_force_v3_signature">Использовать V3 подписи</string>
-  <string name="label_key_servers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
   <string name="label_expiry">Годен до...</string>
@@ -132,11 +128,7 @@
   <string name="can_encrypt">шифрование</string>
   <string name="can_sign">подпись</string>
   <string name="expired">годен до</string>
-  <plurals name="n_key_servers">
-    <item quantity="one">%d сервер ключей</item>
-    <item quantity="few">%d серверов ключей</item>
-    <item quantity="other">%d серверов ключей</item>
-  </plurals>
+  <string name="revoked">отозван</string>
   <string name="fingerprint">Отпечаток:</string>
   <string name="secret_key">Секретный ключ:</string>
   <!--choice-->
@@ -219,11 +211,13 @@
     <item quantity="few">Найдено %d ключей.</item>
     <item quantity="other">Найдено %d ключей.</item>
   </plurals>
+  <string name="unknown_signature">Неизвестная подпись. Нажмите кнопку, что бы найти ключ.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
     <item quantity="few">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
     <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
   </plurals>
+  <string name="key_send_success">Ключ успешно загружен на сервер</string>
   <string name="key_sign_success">Ключ успешно подписан</string>
   <string name="list_empty">Список пуст!</string>
   <string name="nfc_successfull">Ключ успешно передан через NFC!</string>

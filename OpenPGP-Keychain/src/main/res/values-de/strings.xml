@@ -12,7 +12,6 @@
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Registrierte Anwendungen</string>
-  <string name="title_key_server_preference">Einstellung der Schlüsselserver</string>
   <string name="title_change_pass_phrase">Passwort ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_send_email">E-Mail senden...</string>
@@ -22,8 +21,6 @@
   <string name="title_export_key">Schlüssel exportieren</string>
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
-  <string name="title_key_server_query">Schlüssel-Server abfragen</string>
-  <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
   <string name="title_certify_key">Schlüssel beglaubigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
@@ -39,7 +36,6 @@
   <string name="section_actions">Aktionen</string>
   <string name="section_certification_key">Mit diesem Schlüssel beglaubigen</string>
   <string name="section_upload_key">Schlüssel hochladen</string>
-  <string name="section_key_server">Schlüsselserver</string>
   <string name="section_encrypt_and_or_sign">Verschlüsseln und/oder Signieren</string>
   <string name="section_decrypt_verify">Entschlüsseln und Verifizieren</string>
   <!--button-->
@@ -57,7 +53,6 @@
   <string name="btn_change_passphrase">Passwort ändern</string>
   <string name="btn_set_passphrase">Passwort setzen</string>
   <string name="btn_search">Suchen</string>
-  <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
   <string name="btn_clipboard">Zwischenablage</string>
@@ -76,8 +71,6 @@
   <string name="menu_create_key">Schlüssel erstellen</string>
   <string name="menu_create_key_expert">Schlüssel erstellen (Experte)</string>
   <string name="menu_search">Suchen</string>
-  <string name="menu_key_server">Schlüsselserver</string>
-  <string name="menu_update_key">Von einem Schlüsselserver aktualisieren</string>
   <string name="menu_export_key_to_server">Auf Schlüsselserver hochladen</string>
   <string name="menu_share">Teilen</string>
   <string name="menu_share_title_fingerprint">Teile Fingerabdruck…</string>
@@ -112,7 +105,6 @@
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
   <string name="label_force_v3_signature">OpenPGPv3-Signaturen erzwingen</string>
-  <string name="label_key_servers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
   <string name="label_expiry">Ablaufdatum</string>
@@ -122,7 +114,6 @@
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
-  <string name="label_send_key">Schlüssel nach Beglaubigung auf ausgewählten Schlüsselserver hochladen</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="select_keys_button_default">Auswählen</string>
   <plurals name="select_keys_button">
@@ -137,10 +128,6 @@
   <string name="can_sign">kann signieren</string>
   <string name="expired">abgelaufen</string>
   <string name="revoked">zurückgezogen</string>
-  <plurals name="n_key_servers">
-    <item quantity="one">%d Schlüsselserver</item>
-    <item quantity="other">%d Schlüsselserver</item>
-  </plurals>
   <string name="fingerprint">Fingerabdruck:</string>
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
@@ -371,7 +358,6 @@
   <string name="key_list_empty_button_import">existierende Schlüssel importierst.</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Für diesen Kontakt verschlüsseln</string>
-  <string name="key_view_action_certify">Schlüssel dieses Kontakts beglaubigen</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Kontakte</string>
   <string name="nav_encrypt">Verschlüsseln</string>

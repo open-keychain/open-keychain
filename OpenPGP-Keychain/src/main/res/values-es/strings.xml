@@ -15,7 +15,7 @@
   <string name="title_key_server_preference">Prioridad del servidor de claves</string>
   <string name="title_change_pass_phrase">Cambiar la frase de contraseña</string>
   <string name="title_set_passphrase">Establecer frase de contraseña</string>
-  <string name="title_send_email">Enviar correo electrónico...</string>
+  <string name="title_send_email">Enviar email...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -77,7 +77,7 @@
   <string name="menu_create_key_expert">Crear clave (experto)</string>
   <string name="menu_search">Buscar</string>
   <string name="menu_key_server">Importar desde servidor de claves</string>
-  <string name="menu_update_key">Actualizar desde el servidor de claves</string>
+  <string name="menu_update_key">Actualizar desde servidor de claves</string>
   <string name="menu_export_key_to_server">Cargar al servidor de claves</string>
   <string name="menu_share">Compartir</string>
   <string name="menu_share_title_fingerprint">Compartir la huella digital...</string>
@@ -121,8 +121,8 @@
   <string name="label_main_user_id">ID del usuario principal</string>
   <string name="label_name">Nombre</string>
   <string name="label_comment">Comentario</string>
-  <string name="label_email">Correo electrónico</string>
-  <string name="label_send_key">Cargar la clave al servidor de claves seleccionado después de la certificación</string>
+  <string name="label_email">Email</string>
+  <string name="label_send_key">Cargar clave al servidor de claves seleccionado después de la certificación</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="select_keys_button_default">Seleccionar</string>
   <plurals name="select_keys_button">
@@ -239,12 +239,12 @@
   <string name="error_no_secret_key_found">no se ha encontrado una clave secreta adecuada</string>
   <string name="error_no_known_encryption_found">se ha encontrado un tipo de cifrado no conocido</string>
   <string name="error_external_storage_not_ready">el almacenamiento externo no está preparado</string>
-  <string name="error_invalid_email">correo electrónico incorrecto \'%s\'</string>
+  <string name="error_invalid_email">email incorrecto \'%s\'</string>
   <string name="error_key_size_minimum512bit">el tamaño de clave debe ser de al menos 512bit</string>
   <string name="error_master_key_must_not_be_el_gamal">la clave maestra no puede ser una clave ElGamal</string>
   <string name="error_unknown_algorithm_choice">elegido algoritmo desconocido</string>
   <string name="error_user_id_needs_a_name">necesitas determinar un nombre</string>
-  <string name="error_user_id_needs_an_email_address">necesitas determinar una dirección de correo electrónica</string>
+  <string name="error_user_id_needs_an_email_address">tienes que determinar una dirección de email</string>
   <string name="error_key_needs_a_user_id">necesitas al menos una ID de usuario</string>
   <string name="error_main_user_id_must_not_be_empty">la ID del usuario principal no puede estar vacía</string>
   <string name="error_key_needs_master_key">necesitas al menos una clave maestra</string>
@@ -263,6 +263,8 @@
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡Nada que importar!</string>
   <string name="error_expiry_must_come_after_creation">la fecha de caducidad debe ser posterior a la fecha de creación</string>
+  <string name="error_can_not_delete_contact">no puedes eliminar este contacto porque eres tú mismo. ¡Por favor, bórralo desde la ventana \"Mis claves\"!</string>
+  <string name="error_can_not_delete_contacts">no puedes eliminar los siguientes contactos porque son tú mismo:\n%s¡Por favor, bórralos desde la ventana \"Mis claves\"!</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">hecho.</string>
   <string name="progress_saving">guardando...</string>
@@ -296,7 +298,7 @@
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
   <string name="progress_querying">consultando...</string>
   <!--action strings-->
-  <string name="hint_public_keys">Buscar las claves públicas</string>
+  <string name="hint_public_keys">Buscar claves públicas</string>
   <string name="hint_secret_keys">Buscar las claves secretas</string>
   <string name="action_share_key_with">Compartir la clave con...</string>
   <!--key bit length selections-->
@@ -364,14 +366,14 @@
     <item quantity="one">1 clave seleccionada.</item>
     <item quantity="other">%d claves seleccionadas.</item>
   </plurals>
-  <string name="key_list_empty_text1">No hay claves disponibles todavía...</string>
+  <string name="key_list_empty_text1">Aún no hay claves disponibles...</string>
   <string name="key_list_empty_text2">Puedes empezar por</string>
   <string name="key_list_empty_text3">o</string>
-  <string name="key_list_empty_button_create">creando tu propia clave</string>
-  <string name="key_list_empty_button_import">importando claves.</string>
+  <string name="key_list_empty_button_create">crear tu propia clave</string>
+  <string name="key_list_empty_button_import">importar claves</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Cifrar hacia este contacto</string>
-  <string name="key_view_action_certify">Certificar la ID de usuario de este contacto</string>
+  <string name="key_view_action_certify">Certificar la clave de este contacto</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Contactos</string>
   <string name="nav_encrypt">Cifrar</string>

@@ -1,26 +1,165 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_encrypt">加密</string>
+  <string name="title_decrypt">解密</string>
+  <string name="title_key_server_preference">密钥服务器偏好</string>
+  <string name="title_key_server_query">查询密钥服务器</string>
+  <string name="title_send_key">上传到密钥服务器</string>
   <!--section-->
+  <string name="section_master_key">主密钥</string>
+  <string name="section_key_server">密钥服务器</string>
+  <string name="section_decrypt_verify">解密并验证</string>
   <!--button-->
+  <string name="btn_decrypt_verify">解密并验证</string>
+  <string name="btn_clipboard">剪贴板</string>
   <!--menu-->
+  <string name="menu_help">帮助</string>
+  <string name="menu_import">导入</string>
+  <string name="menu_delete_key">删除密钥</string>
+  <string name="menu_create_key">创建密钥</string>
+  <string name="menu_create_key_expert">创建密钥(专家)</string>
+  <string name="menu_search">搜索</string>
+  <string name="menu_share">分享</string>
+  <string name="menu_copy_to_clipboard">复制到剪贴板</string>
+  <string name="menu_sign_key">签署密钥</string>
+  <string name="menu_key_edit_cancel">取消</string>
+  <string name="menu_encrypt_to">加密到...</string>
   <!--label-->
+  <string name="label_sign">签署</string>
+  <string name="label_message">讯息</string>
+  <string name="label_file">文件</string>
+  <string name="label_no_passphrase">没有密语</string>
+  <string name="label_passphrase">密语</string>
+  <string name="label_algorithm">算法</string>
+  <string name="label_select_public_keys">收件人</string>
+  <string name="label_delete_after_encryption">加密后删除</string>
+  <string name="label_delete_after_decryption">解密后删除</string>
+  <string name="label_encryption_algorithm">加密算法</string>
+  <string name="label_hash_algorithm">哈希算法</string>
+  <string name="label_asymmetric">公共密钥</string>
+  <string name="label_symmetric">密语</string>
+  <string name="label_passphrase_cache_ttl">密语缓存</string>
+  <string name="label_comment">注解</string>
+  <string name="label_email">电子邮件</string>
+  <string name="label_fingerprint">指纹</string>
   <string name="unknown_status"></string>
+  <string name="can_encrypt">可以加密</string>
+  <string name="can_sign">可以签署</string>
+  <string name="expired">过期了</string>
   <!--choice-->
+  <string name="choice_none">没有</string>
+  <string name="choice_sign_only">仅签署</string>
+  <string name="choice_encrypt_only">仅加密</string>
+  <string name="choice_sign_and_encrypt">签署并加密</string>
+  <string name="choice_15secs">15秒</string>
+  <string name="choice_1min">1分钟</string>
+  <string name="choice_3mins">3分钟</string>
+  <string name="choice_5mins">5分钟</string>
+  <string name="choice_10mins">10分钟</string>
+  <string name="choice_20mins">20分钟</string>
+  <string name="choice_40mins">40分钟</string>
+  <string name="choice_1hour">1小时</string>
+  <string name="choice_2hours">2小时</string>
+  <string name="choice_4hours">4小时</string>
+  <string name="choice_8hours">8小时</string>
+  <string name="choice_forever">永远</string>
+  <string name="filemanager_title_open">打开...</string>
+  <string name="warning">警告</string>
+  <string name="error">错误</string>
   <!--sentences-->
+  <string name="set_a_passphrase">先设置密钥</string>
+  <string name="no_filemanager_installed">安装了不匹配的文件管理器</string>
+  <string name="passphrases_do_not_match">密钥不匹配</string>
+  <string name="passphrase_must_not_be_empty">不允许空的密钥</string>
+  <string name="passphrase_for_symmetric_encryption">对称加密</string>
+  <string name="file_delete_successful">删除成功</string>
+  <string name="no_file_selected">先选择一个文件</string>
+  <string name="decryption_successful">解密成功</string>
+  <string name="encryption_successful">加密成功</string>
+  <string name="encryption_to_clipboard_successful">成功地加密到了剪贴板</string>
+  <string name="enter_passphrase_twice">输入两次密钥</string>
+  <string name="select_encryption_key">选择至少一个加密密钥</string>
+  <string name="select_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
+  <string name="key_exported">成功地导出了1个密钥</string>
+  <string name="no_keys_exported">没有密钥被导出</string>
+  <string name="key_send_success">成功地上传了密钥到服务器</string>
+  <string name="list_empty">这个列表是空的！</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_not_found">没有找到文件</string>
+  <string name="error_external_storage_not_ready">外置存储没有准备好</string>
+  <string name="error_invalid_email">无效的email \'%s\'</string>
+  <string name="error_key_size_minimum512bit">密钥的大小必须至少512位</string>
+  <string name="error_unknown_algorithm_choice">位置的算法选择</string>
+  <string name="error_user_id_needs_a_name">你需要指定一个名字</string>
+  <string name="error_user_id_needs_an_email_address">你需要指定一个电子邮件地址</string>
+  <string name="error_key_needs_a_user_id">需要至少一个用户id</string>
+  <string name="error_main_user_id_must_not_be_empty">主用户id不能是空的</string>
+  <string name="error_key_needs_master_key">需要至少一个主密钥</string>
+  <string name="error_signature_failed">签名失败</string>
+  <string name="error_no_signature_passphrase">没有提供密语</string>
+  <string name="error_no_signature_key">没有提供密钥</string>
+  <string name="error_invalid_data">不是有效的加密数据</string>
+  <string name="error_corrupt_data">损坏的数据</string>
+  <string name="error_wrong_passphrase">错误的密语</string>
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">完成。</string>
+  <string name="progress_saving">保存...</string>
+  <string name="progress_importing">导入中...</string>
+  <string name="progress_exporting">导出中...</string>
+  <string name="progress_generating">正在生成密钥，这可能需要一会</string>
+  <string name="progress_building_key">建立密钥</string>
+  <string name="progress_preparing_master_key">正在准备主密钥</string>
+  <string name="progress_verifying_signature">正在验证签名...</string>
+  <string name="progress_signing">正在签名...</string>
+  <string name="progress_reading_data">正在读取数据</string>
+  <string name="progress_finding_key">正在查找密钥</string>
+  <string name="progress_querying">正在查询</string>
   <!--action strings-->
   <!--key bit length selections-->
+  <string name="key_size_512">512</string>
+  <string name="key_size_1024">1024</string>
+  <string name="key_size_2048">2048</string>
+  <string name="key_size_4096">4096</string>
   <!--compression-->
+  <string name="compression_fast">快</string>
+  <string name="compression_very_slow">非常慢</string>
   <!--Help-->
+  <string name="help_tab_start">开始</string>
+  <string name="help_tab_changelog">更新日志</string>
+  <string name="help_tab_about">关于</string>
+  <string name="help_about_version">版本:</string>
   <!--Import-->
+  <string name="import_from_clipboard">从剪贴板导入</string>
+  <string name="import_qr_code_finished">二维码扫描完成！</string>
+  <string name="import_nfc_help_button">帮助</string>
   <!--Intent labels-->
+  <string name="intent_decrypt_file">OpenPGP: 解密文件</string>
+  <string name="intent_import_key">OpenPGP: 导入密钥</string>
+  <string name="intent_send_encrypt">OpenPGP: 加密</string>
+  <string name="intent_send_decrypt">OpenPGP: 解密</string>
   <!--Remote API-->
+  <string name="api_settings_show_advanced">显示高级设置</string>
+  <string name="api_settings_hide_advanced">隐藏高级设置</string>
+  <string name="api_settings_select_key">选择密钥</string>
+  <string name="api_settings_save">保存</string>
+  <string name="api_settings_cancel">取消</string>
+  <string name="api_settings_revoke">撤销访问</string>
+  <string name="api_register_allow">允许访问</string>
+  <string name="api_register_disallow">不允许访问</string>
+  <string name="api_register_error_select_key">请选择一个密钥</string>
+  <string name="api_select_pub_keys_text">请重审收件人列表</string>
   <!--Share-->
+  <string name="share_qr_code_dialog_fingerprint_text">指纹:</string>
+  <string name="share_nfc_dialog">使用NFC分享</string>
   <!--Key list-->
+  <string name="key_list_empty_text3">或者</string>
   <!--Key view-->
   <!--Navigation Drawer-->
+  <string name="nav_encrypt">加密</string>
+  <string name="nav_decrypt">解密</string>
+  <string name="nav_import">导入密钥</string>
+  <string name="nav_secret_keys">我的密钥</string>
 </resources>

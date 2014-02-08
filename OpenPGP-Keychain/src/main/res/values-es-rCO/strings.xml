@@ -10,7 +10,6 @@
   <string name="title_edit_key">Editar clave</string>
   <string name="title_preferences">Preferencias</string>
   <string name="title_api_registered_apps">Aplicaciones registradas</string>
-  <string name="title_key_server_preference">Preferencias del servidor de claves</string>
   <string name="title_change_pass_phrase">Cambiar contraseña</string>
   <string name="title_set_passphrase">Establecer contraseña</string>
   <string name="title_send_email">Enviar correo electrónico...</string>
@@ -20,7 +19,6 @@
   <string name="title_export_key">Exportar clave</string>
   <string name="title_export_keys">Exportar claves</string>
   <string name="title_key_not_found">Clave no encontrada</string>
-  <string name="title_key_server_query">Solicitar al servidor de claves</string>
   <string name="title_unknown_signature_key">Clave de firma desconocida</string>
   <string name="title_help">Ayuda</string>
   <!--section-->
@@ -55,7 +53,6 @@
   <string name="menu_create_key">Crear clave</string>
   <string name="menu_create_key_expert">Crear clave (experto)</string>
   <string name="menu_search">Buscar</string>
-  <string name="menu_key_server">Importar desde servidor de claves</string>
   <string name="menu_sign_key">Clave de firma</string>
   <!--label-->
   <string name="label_sign">Firmar</string>
@@ -75,7 +72,6 @@
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
   <string name="label_force_v3_signature">Forzar firmas V3</string>
-  <string name="label_key_servers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_creation">Creación</string>
   <string name="label_expiry">Expiración</string>

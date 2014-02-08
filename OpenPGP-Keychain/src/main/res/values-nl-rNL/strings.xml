@@ -10,7 +10,6 @@
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Geregistreerde apps</string>
-  <string name="title_key_server_preference">Instellingen sleutelserver</string>
   <string name="title_change_pass_phrase">Wachtwoord wijzigen</string>
   <string name="title_set_passphrase">Wachtwoord instellen</string>
   <string name="title_send_email">E-mail verzenden...</string>
@@ -20,7 +19,6 @@
   <string name="title_export_key">Sleutels exporteren</string>
   <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
-  <string name="title_key_server_query">Sleutelserver verzoek zenden</string>
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
   <string name="title_help">Help</string>
   <!--section-->
@@ -55,7 +53,6 @@
   <string name="menu_create_key">Sleutel aanmaken</string>
   <string name="menu_create_key_expert">Sleutel aanmaken (expert)</string>
   <string name="menu_search">Zoeken</string>
-  <string name="menu_key_server">Importeren uit sleutelserver</string>
   <string name="menu_sign_key">Sleutel ondertekenen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
   <!--label-->
@@ -77,7 +74,6 @@
   <string name="label_message_compression">Berichtcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
   <string name="label_force_v3_signature">V3-handtekeningen afdwingen</string>
-  <string name="label_key_servers">Sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_expiry">Verlopen</string>
