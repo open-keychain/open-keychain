@@ -313,7 +313,8 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
                         for (String userId : notDeleted) {
                             notDeletedMsg += userId + "\n";
                         }
-                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg),
+                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
+                                + getResources().getQuantityString(R.plurals.error_can_not_delete_info, notDeleted.size()),
                                 Toast.LENGTH_LONG).show();
 
                         mode.finish();

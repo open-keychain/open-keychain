@@ -475,7 +475,9 @@ public class ViewKeyActivity extends ActionBarActivity implements
                     if (returnData != null
                             && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
                         // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
-                        Toast.makeText(ViewKeyActivity.this, R.string.error_can_not_delete_contact,
+                        Toast.makeText(ViewKeyActivity.this,
+                                getString(R.string.error_can_not_delete_contact)
+                                        + getResources().getQuantityString(R.plurals.error_can_not_delete_info, 1),
                                 Toast.LENGTH_LONG).show();
                     } else {
                         setResult(RESULT_CANCELED);
