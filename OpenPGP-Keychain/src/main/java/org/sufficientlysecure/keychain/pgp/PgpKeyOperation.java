@@ -23,6 +23,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.SignatureException;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
@@ -71,8 +73,8 @@ import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 import android.content.Context;
 
 public class PgpKeyOperation {
-    private Context mContext;
-    private ProgressDialogUpdater mProgress;
+    private final Context mContext;
+    private final ProgressDialogUpdater mProgress;
 
     private static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[] {
             SymmetricKeyAlgorithmTags.AES_256, SymmetricKeyAlgorithmTags.AES_192,
@@ -90,34 +92,18 @@ public class PgpKeyOperation {
         this.mProgress = progress;
     }
 
-    public void updateProgress(int message, int current, int total) {
+    void updateProgress(int message, int current, int total) {
         if (mProgress != null) {
             mProgress.setProgress(message, current, total);
         }
     }
 
-    public void updateProgress(int current, int total) {
+    void updateProgress(int current, int total) {
         if (mProgress != null) {
             mProgress.setProgress(current, total);
         }
     }
 
-    /**
-     * Creates new secret key.
-     * 
-     * @param algorithmChoice
-     * @param keySize
-     * @param passPhrase
-     * @param isMasterKey
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws PGPException
-     * @throws NoSuchProviderException
-     * @throws PgpGeneralException
-     * @throws InvalidAlgorithmParameterException
-     */
-
-    // TODO: key flags?
     public PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase,
        boolean isMasterKey) throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
        PgpGeneralException, InvalidAlgorithmParameterException {
@@ -130,8 +116,8 @@ public class PgpKeyOperation {
             passPhrase = "";
         }
 
-        int algorithm = 0;
-        KeyPairGenerator keyGen = null;
+        int algorithm;
+        KeyPairGenerator keyGen;
 
         switch (algorithmChoice) {
         case Id.choice.algorithm.dsa: {
@@ -183,15 +169,13 @@ public class PgpKeyOperation {
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passPhrase.toCharArray());
 
-        PGPSecretKey secKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
+        return  new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
             sha1Calc, isMasterKey, keyEncryptor);
 
-        return secKey;
     }
 
     public void changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassPhrase,
-            String newPassPhrase) throws IOException, PGPException, PGPException,
-            NoSuchProviderException {
+            String newPassPhrase) throws IOException, PGPException {
 
         updateProgress(R.string.progress_building_key, 0, 100);
         if (oldPassPhrase == null) {
@@ -219,9 +203,8 @@ public class PgpKeyOperation {
 
     public void buildSecretKey(ArrayList<String> userIds, ArrayList<PGPSecretKey> keys,
             ArrayList<Integer> keysUsages, ArrayList<GregorianCalendar> keysExpiryDates,
-            long masterKeyId, String oldPassPhrase,
-            String newPassPhrase) throws PgpGeneralException, NoSuchProviderException,
-            PGPException, NoSuchAlgorithmException, SignatureException, IOException {
+            String oldPassPhrase, String newPassPhrase) throws PgpGeneralException,
+            PGPException, SignatureException, IOException {
 
         Log.d(Constants.TAG, "userIds: " + userIds.toString());
 
@@ -237,17 +220,16 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_preparing_master_key, 10, 100);
 
         int usageId = keysUsages.get(0);
-        boolean canSign = (usageId & KeyFlags.SIGN_DATA) > 0;
-        boolean canEncrypt = (usageId & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) > 0;
-
+        boolean canSign;
         String mainUserId = userIds.get(0);
 
         PGPSecretKey masterKey = keys.get(0);
 
         // this removes all userIds and certifications previously attached to the masterPublicKey
         PGPPublicKey tmpKey = masterKey.getPublicKey();
-        PGPPublicKey masterPublicKey = new PGPPublicKey(tmpKey.getAlgorithm(),
-                tmpKey.getKey(new BouncyCastleProvider()), tmpKey.getCreationTime());
+        PublicKey tmpPuK = new JcaPGPKeyConverter().setProvider(new BouncyCastleProvider()).getPublicKey(tmpKey);
+        PGPPublicKey masterPublicKey = new JcaPGPKeyConverter().getPGPPublicKey(tmpKey.getAlgorithm(),
+                tmpPuK, tmpKey.getCreationTime());
 
         // already done by code above:
         // PGPPublicKey masterPublicKey = masterKey.getPublicKey();
@@ -347,7 +329,6 @@ public class PgpKeyOperation {
 
             usageId = keysUsages.get(i);
             canSign = (usageId & KeyFlags.SIGN_DATA) > 0; //todo - separate function for this
-            canEncrypt = (usageId & (KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE)) > 0;
             if (canSign) {
                 Date todayDate = new Date(); //both sig times the same
                 // cross-certify signing keys
@@ -396,8 +377,7 @@ public class PgpKeyOperation {
     }
 
     public PGPPublicKeyRing signKey(long masterKeyId, long pubKeyId, String passphrase)
-            throws PgpGeneralException, NoSuchAlgorithmException, NoSuchProviderException,
-            PGPException, SignatureException {
+            throws PgpGeneralException, PGPException, SignatureException {
         if (passphrase == null) {
             throw new PgpGeneralException("Unable to obtain passphrase");
         } else {
