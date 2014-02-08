@@ -286,6 +286,7 @@
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">Nothing to import!</string>
     <string name="error_expiry_must_come_after_creation">expiry date must come after creation date</string>
+    <string name="error_save_first">please save the keyring first</string>
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">done.</string>

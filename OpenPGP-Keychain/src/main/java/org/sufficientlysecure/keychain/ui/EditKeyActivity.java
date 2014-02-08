@@ -332,8 +332,12 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             cancelClicked();
             return true;
         case R.id.menu_key_edit_export_file:
-            mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
-                    + "/secexport.asc");
+            if (needsSaving()) {
+                Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
+            } else {
+                mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
+                        + "/secexport.asc");
+            }
             return true;
         case R.id.menu_key_edit_delete: {
             // Message is received after key is deleted
