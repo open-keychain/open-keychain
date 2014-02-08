@@ -100,6 +100,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private String mSavedNewPassPhrase = null;
     private boolean mIsPassPhraseSet;
     private boolean mNeedsSaving;
+    private boolean mIsBrandNewKeyring = false;
     private MenuItem mSaveButton;
 
     private BootstrapButton mChangePassPhrase;
@@ -118,6 +119,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         mNeedsSaving = (mUserIdsView == null) ? false : mUserIdsView.needsSaving();
         mNeedsSaving |= (mKeysView == null) ? false : mKeysView.needsSaving();
         mNeedsSaving |= hasPassphraseChanged();
+        mNeedsSaving |= mIsBrandNewKeyring;
         return mNeedsSaving;
     }
 
@@ -171,6 +173,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         Bundle extras = intent.getExtras();
 
         mCurrentPassPhrase = "";
+        mIsBrandNewKeyring = true;
 
         if (extras != null) {
             // if userId is given, prefill the fields
@@ -616,7 +619,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
     private void cancelClicked() {
-        if (mNeedsSaving) { //ask if we want to save
+        if (needsSaving()) { //ask if we want to save
             AlertDialog.Builder alert = new AlertDialog.Builder(
                     EditKeyActivity.this);
 
