@@ -542,7 +542,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates, masterKeyId,
+                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
                             oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
