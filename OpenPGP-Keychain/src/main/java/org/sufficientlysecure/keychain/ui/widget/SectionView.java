@@ -18,6 +18,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import java.util.Vector;
 
+import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -285,7 +286,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         this.updateEditorsVisible();
     }
 
-    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages) {
+    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages, boolean newKeys) {
         if (mType != Id.type.key) {
             return;
         }
@@ -298,7 +299,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     false);
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
-            view.setValue(list.get(i), isMasterKey, usages.get(i), false);
+            view.setValue(list.get(i), isMasterKey, usages.get(i), newKeys);
             view.setCanEdit(canEdit);
             mEditors.addView(view);
         }
@@ -370,7 +371,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
                 mEditors, false);
         view.setEditorListener(SectionView.this);
-        view.setValue(newKey, newKey.isMasterKey(), -1, true);
+        int usage = 0;
+        if (mEditors.getChildCount() == 0)
+            usage = PGPKeyFlags.CAN_CERTIFY;
+        view.setValue(newKey, newKey.isMasterKey(), usage, true);
         mEditors.addView(view);
         SectionView.this.updateEditorsVisible();
         if (mEditorListener != null) {

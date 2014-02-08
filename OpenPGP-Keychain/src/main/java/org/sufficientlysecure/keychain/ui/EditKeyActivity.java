@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -224,15 +225,17 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                                         .BytesToPGPSecretKey(data
                                                 .getByteArray(KeychainIntentService.RESULT_NEW_KEY2));
 
+                                //We must set the key flags here as they are not set when we make the
+                                //key pair. Because we are not generating hashed packets there...
                                 // add master key
                                 mKeys.add(masterKey);
-                                mKeysUsages.add(Id.choice.usage.sign_only); //TODO: get from key flags
+                                mKeysUsages.add(KeyFlags.CERTIFY_OTHER);
 
                                 // add sub key
                                 mKeys.add(subKey);
-                                mKeysUsages.add(Id.choice.usage.encrypt_only); //TODO: get from key flags
+                                mKeysUsages.add(KeyFlags.ENCRYPT_COMMS + KeyFlags.ENCRYPT_STORAGE);
 
-                                buildLayout();
+                                buildLayout(true);
                             }
                         }
                     };
@@ -248,7 +251,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
             }
         } else {
-            buildLayout();
+            buildLayout(false);
         }
     }
 
@@ -390,7 +393,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
         mCurrentPassPhrase = "";
 
-        buildLayout();
+        buildLayout(false);
         mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
         if (!mIsPassPhraseSet) {
             // check "no passphrase" checkbox and remove button
@@ -440,8 +443,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     /**
      * Build layout based on mUserId, mKeys and mKeysUsages Vectors. It creates Views for every user
      * id and key.
+     * @param newKeys
      */
-    private void buildLayout() {
+    private void buildLayout(boolean newKeys) {
         setContentView(R.layout.edit_key_activity);
 
         // find views
@@ -461,7 +465,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
         mKeysView.setCanEdit(masterCanSign);
-        mKeysView.setKeys(mKeys, mKeysUsages);
+        mKeysView.setKeys(mKeys, mKeysUsages, newKeys);
         mKeysView.setEditorListener(this);
         container.addView(mKeysView);
 
@@ -607,8 +611,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             // start service with intent
             startService(intent);
         } catch (PgpGeneralException e) {
-            //Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-            //        Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
+                   Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -663,10 +667,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 userId = editor.getValue();
             } catch (UserIdEditor.InvalidEmailException e) {
                 throw new PgpGeneralException(e.getMessage());
-            }
-
-            if (userId.equals("")) {
-                continue;
             }
 
             if (editor.isMainUserId()) {

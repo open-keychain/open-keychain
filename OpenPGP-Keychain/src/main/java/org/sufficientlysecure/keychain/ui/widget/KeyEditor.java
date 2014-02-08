@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import org.spongycastle.openpgp.PGPKeyFlags;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.R;
@@ -216,17 +217,22 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         int selectId = 0;
-        if (key.isMasterKey())
-            mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
-        mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
-        mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
-        mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
         mIsNewKey = isNewKey;
-        if (isNewKey)
+        if (isNewKey) {
             mUsage = usage;
-        else {
+            mChkCertify.setChecked((usage &= KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER);
+            mChkSign.setChecked((usage &= KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA);
+            mChkEncrypt.setChecked(((usage &= KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS) ||
+                    ((usage &= KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE));
+            mChkAuthenticate.setChecked((usage &= KeyFlags.AUTHENTICATION) == KeyFlags.AUTHENTICATION);
+        } else {
             mUsage = PgpKeyHelper.getKeyUsage(key);
             mOriginalUsage = mUsage;
+            if (key.isMasterKey())
+                mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
+            mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
+            mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
+            mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
         }
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
