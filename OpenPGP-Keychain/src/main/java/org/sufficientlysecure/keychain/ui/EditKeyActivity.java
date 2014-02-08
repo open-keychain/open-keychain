@@ -307,21 +307,18 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // show menu only on edit
-        if (mDataUri != null) {
-            return super.onPrepareOptionsMenu(menu);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_edit, menu);
         mSaveButton = (MenuItem) menu.findItem(R.id.menu_key_edit_save);
         mSaveButton.setEnabled(needsSaving());
+        //totally get rid of some actions for new keys
+        if (mDataUri == null) {
+            MenuItem mButton = (MenuItem) menu.findItem(R.id.menu_key_edit_export_file);
+            mButton.setVisible(false);
+            mButton = (MenuItem) menu.findItem(R.id.menu_key_edit_delete);
+            mButton.setVisible(false);
+        }
         return true;
     }
 
