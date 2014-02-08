@@ -115,8 +115,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     public boolean needsSaving()
     {
-        mNeedsSaving = mUserIdsView.needsSaving();
-        mNeedsSaving |= mKeysView.needsSaving();
+        mNeedsSaving = (mUserIdsView == null) ? false : mUserIdsView.needsSaving();
+        mNeedsSaving |= (mKeysView == null) ? false : mKeysView.needsSaving();
         mNeedsSaving |= hasPassphraseChanged();
         return mNeedsSaving;
     }
@@ -515,10 +515,14 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     public boolean hasPassphraseChanged()
     {
-        if (mNoPassphrase.isChecked()) {
-            return mIsPassPhraseSet;
-        } else {
-            return (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
+        if (mNoPassphrase != null) {
+            if (mNoPassphrase.isChecked()) {
+                return mIsPassPhraseSet;
+            } else {
+                return (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
+            }
+        }else {
+            return false;
         }
     }
 
