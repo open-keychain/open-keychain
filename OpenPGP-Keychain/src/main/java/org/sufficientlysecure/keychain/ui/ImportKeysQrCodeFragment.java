@@ -98,19 +98,26 @@ public class ImportKeysQrCodeFragment extends Fragment {
             IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
                     resultCode, data);
             if (scanResult != null && scanResult.getFormatName() != null) {
+                String scannedContent = scanResult.getContents();
 
-                Log.d(Constants.TAG, "scanResult content: " + scanResult.getContents());
+                Log.d(Constants.TAG, "scannedContent: " + scannedContent);
 
                 // look if it's fingerprint only
-                if (scanResult.getContents().toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
                     importFingerprint(Uri.parse(scanResult.getContents()));
                     return;
                 }
 
                 // look if it is the whole key
-                String[] parts = scanResult.getContents().split(",");
+                String[] parts = scannedContent.split(",");
                 if (parts.length == 3) {
                     importParts(parts);
+                    return;
+                }
+
+                // is this a full key encoded as qr code?
+                if (scannedContent.startsWith("-----BEGIN PGP")) {
+                    mImportActivity.loadCallback(scannedContent.getBytes(), null, null, null);
                     return;
                 }
 
