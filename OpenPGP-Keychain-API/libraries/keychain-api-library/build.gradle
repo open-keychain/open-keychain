@@ -1,0 +1,21 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.8.0'
+    }
+}
+
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.1'
+    
+    // Do not abort build if lint finds errors
+    lintOptions {
+        abortOnError false
+    }
+}
