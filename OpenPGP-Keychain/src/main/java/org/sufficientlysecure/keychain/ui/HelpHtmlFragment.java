@@ -28,7 +28,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
-public class HelpFragmentHtml extends Fragment {
+public class HelpHtmlFragment extends Fragment {
     private Activity mActivity;
 
     private int htmlFile;
@@ -36,10 +36,10 @@ public class HelpFragmentHtml extends Fragment {
     public static final String ARG_HTML_FILE = "htmlFile";
 
     /**
-     * Create a new instance of HelpFragmentHtml, providing "htmlFile" as an argument.
+     * Create a new instance of HelpHtmlFragment, providing "htmlFile" as an argument.
      */
-    static HelpFragmentHtml newInstance(int htmlFile) {
-        HelpFragmentHtml f = new HelpFragmentHtml();
+    static HelpHtmlFragment newInstance(int htmlFile) {
+        HelpHtmlFragment f = new HelpHtmlFragment();
 
         // Supply html raw file input as an argument.
         Bundle args = new Bundle();
@@ -47,17 +47,6 @@ public class HelpFragmentHtml extends Fragment {
         f.setArguments(args);
 
         return f;
-    }
-
-    /**
-     * Workaround for Android Bug. See
-     * http://stackoverflow.com/questions/8748064/starting-activity-from
-     * -fragment-causes-nullpointerexception
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        setUserVisibleHint(true);
     }
 
     @Override

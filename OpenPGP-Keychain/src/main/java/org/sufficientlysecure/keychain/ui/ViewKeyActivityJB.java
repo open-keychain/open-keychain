@@ -23,7 +23,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 import android.annotation.TargetApi;
-import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
@@ -35,12 +34,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.LoaderManager;
 import android.widget.Toast;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMessageCallback,
-        OnNdefPushCompleteCallback, LoaderManager.LoaderCallbacks<Cursor> {
+        OnNdefPushCompleteCallback {
 
     // NFC
     private NfcAdapter mNfcAdapter;

@@ -30,6 +30,7 @@ import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -211,6 +212,13 @@ public class ProviderHelper {
             operations.add(buildPublicUserIdOperations(context, keyRingRowId, userId, userIdRank));
             ++userIdRank;
         }
+
+        for (PGPSignature certification : new IterableIterator<PGPSignature>(masterKey.getSignaturesOfType(PGPSignature.POSITIVE_CERTIFICATION))) {
+            //TODO: how to do this?? we need to verify the signatures again and again when they are displayed...
+//            if (certification.verify
+//            operations.add(buildPublicKeyOperations(context, keyRingRowId, key, rank));
+        }
+
 
         try {
             context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);

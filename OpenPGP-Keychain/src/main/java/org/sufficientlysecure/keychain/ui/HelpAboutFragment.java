@@ -33,18 +33,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-public class HelpFragmentAbout extends Fragment {
-
-    /**
-     * Workaround for Android Bug. See
-     * http://stackoverflow.com/questions/8748064/starting-activity-from
-     * -fragment-causes-nullpointerexception
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        setUserVisibleHint(true);
-    }
+public class HelpAboutFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
