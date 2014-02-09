@@ -271,8 +271,13 @@
   <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Нема що імпортувати!</string>
   <string name="error_expiry_must_come_after_creation">дата завершення дії має йти після дати створення</string>
-  <string name="error_can_not_delete_contact">ви не можете вилучити цей контакт, тому що він ваш власний:\n Будь ласка, вилучіть його із екрану „Мої ключі“</string>
-  <string name="error_can_not_delete_contacts">ви не можете вилучити наступні контакти, тому що вони - ваші власні:\n%s Будь ласка, вилучте їх із екрану „Мої ключі“</string>
+  <string name="error_can_not_delete_contact">ви не можете вилучити цей контакт, тому що він ваш власний.</string>
+  <string name="error_can_not_delete_contacts">ви не можете вилучити наступні контакти, тому що вони - ваші власні:\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Будь ласка, вилучіть його з екрану „Мої ключі“!</item>
+    <item quantity="few">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
+    <item quantity="other">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">збереження…</string>

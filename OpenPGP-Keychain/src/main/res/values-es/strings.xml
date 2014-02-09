@@ -263,8 +263,12 @@
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡Nada que importar!</string>
   <string name="error_expiry_must_come_after_creation">la fecha de caducidad debe ser posterior a la fecha de creación</string>
-  <string name="error_can_not_delete_contact">no puedes eliminar este contacto porque eres tú mismo. ¡Por favor, bórralo desde la ventana \"Mis claves\"!</string>
-  <string name="error_can_not_delete_contacts">no puedes eliminar los siguientes contactos porque son tú mismo:\n%s¡Por favor, bórralos desde la ventana \"Mis claves\"!</string>
+  <string name="error_can_not_delete_contact">no puedes eliminar este contacto porque eres tú mismo.</string>
+  <string name="error_can_not_delete_contacts">no puedes eliminar los siguientes contactos porque son tú mismo:\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Por favor, bórralo desde la pantalla \'Mis claves\'!</item>
+    <item quantity="other">Por favor, bórralos desde la pantalla \'Mis claves\'!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">hecho.</string>
   <string name="progress_saving">guardando...</string>

@@ -12,6 +12,7 @@
   <string name="title_edit_key">Изменить ключ</string>
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Связанные приложения</string>
+  <string name="title_key_server_preference">Настройки сервера ключей</string>
   <string name="title_change_pass_phrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
   <string name="title_send_email">Отправить...</string>
@@ -21,6 +22,8 @@
   <string name="title_export_key">Экспортировать ключ</string>
   <string name="title_export_keys">Экспорт ключей</string>
   <string name="title_key_not_found">Ключ не найден</string>
+  <string name="title_key_server_query">Запросить сервер ключей</string>
+  <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
   <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
@@ -36,6 +39,7 @@
   <string name="section_actions">Действия</string>
   <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
+  <string name="section_key_server">Сервер ключей</string>
   <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
   <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
@@ -53,6 +57,7 @@
   <string name="btn_change_passphrase">Изменить пароль</string>
   <string name="btn_set_passphrase">Задать пароль</string>
   <string name="btn_search">Поиск</string>
+  <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
   <string name="btn_clipboard">Буфер обмена</string>
@@ -71,6 +76,8 @@
   <string name="menu_create_key">Создать ключ</string>
   <string name="menu_create_key_expert">Создать ключ (эксперт)</string>
   <string name="menu_search">Поиск</string>
+  <string name="menu_key_server">Импорт с сервера ключей</string>
+  <string name="menu_update_key">Обновить с сервера ключей</string>
   <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
   <string name="menu_share">Отправить...</string>
   <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
@@ -105,6 +112,7 @@
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
   <string name="label_force_v3_signature">Использовать V3 подписи</string>
+  <string name="label_key_servers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
   <string name="label_expiry">Годен до...</string>
@@ -114,6 +122,7 @@
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
+  <string name="label_send_key">После сертификации загрузить ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="select_keys_button_default">Выбрать</string>
   <plurals name="select_keys_button">
@@ -129,6 +138,11 @@
   <string name="can_sign">подпись</string>
   <string name="expired">годен до</string>
   <string name="revoked">отозван</string>
+  <plurals name="n_key_servers">
+    <item quantity="one">%d сервер ключей</item>
+    <item quantity="few">%d серверов ключей</item>
+    <item quantity="other">%d серверов ключей</item>
+  </plurals>
   <string name="fingerprint">Отпечаток:</string>
   <string name="secret_key">Секретный ключ:</string>
   <!--choice-->
@@ -257,6 +271,8 @@
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Нет данных для импорта!</string>
   <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
+  <string name="error_can_not_delete_contact">нельзя удалить свой собственный контакт. Пожалуйста, удалите его в разделе \'Мои ключи\'!</string>
+  <string name="error_can_not_delete_contacts">это ваши собственные контакты, их нельзя удалить:\n%s</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">сохранение...</string>
@@ -368,6 +384,7 @@
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифровать для этого получателя</string>
+  <string name="key_view_action_certify">Сертифицировать ключ этого контакта</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакты</string>
   <string name="nav_encrypt">Зашифровать</string>

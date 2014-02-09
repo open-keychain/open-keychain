@@ -263,8 +263,12 @@
   <string name="error_nfc_needed">NFC n\'est pas disponible sur votre appareil !</string>
   <string name="error_nothing_import">Rien à importer !</string>
   <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
-  <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre. Veuillez le supprimer depuis l\'écran « Mes Clefs »!</string>
-  <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%sVeuillez les supprimer depuis l\'écran « Mes Clefs »!</string>
+  <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre.</string>
+  <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Veuillez le supprimer depuis l\'écran « Mes Clefs »!</item>
+    <item quantity="other">Veuillez les supprimer depuis l\'écran « Mes Clefs »!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fait.</string>
   <string name="progress_saving">sauvegarde...</string>
