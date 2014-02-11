@@ -148,7 +148,7 @@ Classes can be found under "libraries/zxing-android-integration/".
 ### ZXing
 
 Classes can be found under "libraries/zxing/".
-ZXing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
+ZXing classes were extracted from the ZXing library (https://github.com/zxing/zxing).
 Only classes related to QR Code generation are utilized.
 
 ### Bouncy Castle
@@ -251,7 +251,7 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   Apache License v2
 
 * ZXing  
-  http://code.google.com/p/zxing/  
+  https://github.com/zxing/zxing  
   Apache License v2
   
 * StickyListHeaders  
