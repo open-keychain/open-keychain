@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
@@ -553,6 +554,15 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
     }
 
+    private boolean[] toPrimitiveArray(final List<Boolean> booleanList) {
+        final boolean[] primitives = new boolean[booleanList.size()];
+        int index = 0;
+        for (Boolean object : booleanList) {
+            primitives[index++] = object;
+        }
+        return primitives;
+    }
+
     private void finallySaveClicked() {
         try {
             // Send all information needed to service to edit key in other thread
@@ -576,6 +586,11 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     getKeysExpiryDates(mKeysView));
             data.putLong(KeychainIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
             data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
+            data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_ORIGINAL_IDS, );
+            data.putBooleanArray(KeychainIntentService.SAVE_KEYRING_ORIGINAL_IDS,
+                    toPrimitiveArray(mUserIdsView.getNeedsSavingArray()));
+            data.putBooleanArray(KeychainIntentService.SAVE_KEYRING_MODDED_KEYS,
+                    toPrimitiveArray(mKeysView.getNeedsSavingArray()));
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

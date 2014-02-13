@@ -16,6 +16,8 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import org.spongycastle.openpgp.PGPKeyFlags;
@@ -160,6 +162,23 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             ret |= editor.needsSaving();
         }
         return ret;
+    }
+
+    public List<Boolean> getNeedsSavingArray()
+    {
+        ArrayList<Boolean> mList = new ArrayList<Boolean>();
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            if (mType == Id.type.user_id) {
+                try {
+                    if (((UserIdEditor)editor).getValue().equals("")) //other code ignores empty user id
+                        continue;
+                } catch (UserIdEditor.InvalidEmailException e) {
+                }
+            }
+            mList.add(editor.needsSaving());
+        }
+        return mList;
     }
 
     /** {@inheritDoc} */

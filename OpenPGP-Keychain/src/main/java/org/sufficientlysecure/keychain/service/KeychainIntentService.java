@@ -54,7 +54,6 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import android.app.IntentService;
@@ -135,6 +134,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String SAVE_KEYRING_KEYS_EXPIRY_DATES = "keys_expiry_dates";
     public static final String SAVE_KEYRING_MASTER_KEY_ID = "master_key_id";
     public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
+    public static final String SAVE_KEYRING_ORIGINAL_IDS = "original_ids";
+    public static final String SAVE_KEYRING_DELETED_IDS = "deleted_ids";
+    public static final String SAVE_KEYRING_MODDED_KEYS = "modified_keys";
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
@@ -532,6 +534,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                         .getByteArray(SAVE_KEYRING_KEYS));
                 ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
                 ArrayList<GregorianCalendar> keysExpiryDates = (ArrayList<GregorianCalendar>) data.getSerializable(SAVE_KEYRING_KEYS_EXPIRY_DATES);
+                ArrayList<String> original_ids = data.getStringArrayList(SAVE_KEYRING_ORIGINAL_IDS);
+                ArrayList<String> deleted_ids = data.getStringArrayList(SAVE_KEYRING_DELETED_IDS);
+                boolean[] modded_keys = data.getBooleanArray(SAVE_KEYRING_MODDED_KEYS);
 
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
@@ -542,8 +547,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
-                            oldPassPhrase, newPassPhrase);
+                    keyOperations.buildSecretKey(userIds, original_ids, deleted_ids, keys, modded_keys,
+                            newPassPhrase, keysExpiryDates, oldPassPhrase, keysUsages);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
