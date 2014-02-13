@@ -136,7 +136,7 @@
   <string name="unknown_status"></string>
   <string name="can_encrypt">шифрование</string>
   <string name="can_sign">подпись</string>
-  <string name="expired">годен до</string>
+  <string name="expired">просрочен</string>
   <string name="revoked">отозван</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключей</item>
@@ -273,6 +273,11 @@
   <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
   <string name="error_can_not_delete_contact">нельзя удалить свой собственный контакт. Пожалуйста, удалите его в разделе \'Мои ключи\'!</string>
   <string name="error_can_not_delete_contacts">это ваши собственные контакты, их нельзя удалить:\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Пожалуйста, удалите его в разделе \'Мои ключи\'!</item>
+    <item quantity="few">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
+    <item quantity="other">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">сохранение...</string>
@@ -385,6 +390,8 @@
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифровать для этого получателя</string>
   <string name="key_view_action_certify">Сертифицировать ключ этого контакта</string>
+  <string name="key_view_tab_main">Информация</string>
+  <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакты</string>
   <string name="nav_encrypt">Зашифровать</string>

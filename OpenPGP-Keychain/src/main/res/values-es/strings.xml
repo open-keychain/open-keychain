@@ -303,7 +303,7 @@
   <string name="progress_querying">consultando...</string>
   <!--action strings-->
   <string name="hint_public_keys">Buscar claves públicas</string>
-  <string name="hint_secret_keys">Buscar las claves secretas</string>
+  <string name="hint_secret_keys">Buscar claves secretas</string>
   <string name="action_share_key_with">Compartir la clave con...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
@@ -378,6 +378,8 @@
   <!--Key view-->
   <string name="key_view_action_encrypt">Cifrar hacia este contacto</string>
   <string name="key_view_action_certify">Certificar la clave de este contacto</string>
+  <string name="key_view_tab_main">Información</string>
+  <string name="key_view_tab_certs">Certificaciones</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Contactos</string>
   <string name="nav_encrypt">Cifrar</string>

@@ -390,6 +390,8 @@
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифрувати у цей контакт</string>
   <string name="key_view_action_certify">Сертифікувати ключ цього контакту</string>
+  <string name="key_view_tab_main">Інформація</string>
+  <string name="key_view_tab_certs">Сертифікати</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакти</string>
   <string name="nav_encrypt">Зашифрувати</string>

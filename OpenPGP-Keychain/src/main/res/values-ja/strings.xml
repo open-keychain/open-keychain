@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_select_recipients">公開鍵の選択</string>
+  <string name="title_select_secret_key">秘密鍵の選択</string>
+  <string name="title_encrypt">暗号化</string>
+  <string name="title_decrypt">復号化</string>
+  <string name="title_authentication">パスフレーズ</string>
+  <string name="title_create_key">鍵の生成</string>
+  <string name="title_edit_key">鍵の編集</string>
+  <string name="title_preferences">設定</string>
+  <string name="title_api_registered_apps">登録済みのアプリケーション</string>
+  <string name="title_change_pass_phrase">パスフレーズの変更</string>
+  <string name="title_set_passphrase">パスフレーズの設定</string>
+  <string name="title_send_email">メールの送信...</string>
+  <string name="title_encrypt_to_file">暗号化してファイルに</string>
+  <string name="title_decrypt_to_file">復号化してファイルに</string>
+  <string name="title_import_keys">鍵のインポート</string>
+  <string name="title_export_key">鍵のエクスポート</string>
+  <string name="title_export_keys">複数鍵のエクスポート</string>
+  <string name="title_key_not_found">鍵が見当りません</string>
+  <string name="title_unknown_signature_key">不明な署名の鍵です</string>
+  <string name="title_help">ヘルプ</string>
+  <!--section-->
+  <string name="section_user_ids">ユーザーID</string>
+  <string name="section_keys">鍵</string>
+  <string name="section_general">一般</string>
+  <string name="section_defaults">デフォルト</string>
+  <string name="section_advanced">拡張</string>
+  <!--button-->
+  <string name="btn_sign">署名</string>
+  <string name="btn_decrypt">復号化</string>
+  <string name="btn_select_encrypt_keys">受信者の選択</string>
+  <string name="btn_encrypt_file">ファイル暗号化</string>
+  <string name="btn_save">保存</string>
+  <string name="btn_do_not_save">キャンセル</string>
+  <string name="btn_delete">削除</string>
+  <string name="btn_no_date">無し</string>
+  <string name="btn_okay">OK</string>
+  <string name="btn_change_passphrase">パスフレーズの変更</string>
+  <string name="btn_set_passphrase">パスフレーズの設定</string>
+  <string name="btn_search">検索</string>
+  <string name="btn_next">次</string>
+  <string name="btn_back">戻る</string>
+  <!--menu-->
+  <string name="menu_preferences">設定</string>
+  <string name="menu_import_from_file">ファイルからインポート</string>
+  <string name="menu_import_from_qr_code">QRコードからインポート</string>
+  <string name="menu_import_from_nfc">NFCからインポート</string>
+  <string name="menu_export_keys">すべての鍵のエクスポート</string>
+  <string name="menu_export_key">ファイルへのエクスポート</string>
+  <string name="menu_delete_key">鍵の削除</string>
+  <string name="menu_create_key">鍵の生成</string>
+  <string name="menu_create_key_expert">鍵の生成(上級)</string>
+  <string name="menu_search">検索</string>
+  <string name="menu_sign_key">鍵を署名</string>
+  <string name="menu_beam_preferences">Beamの設定</string>
+  <!--label-->
+  <string name="label_sign">署名</string>
+  <string name="label_message">メッセージ</string>
+  <string name="label_file">ファイル</string>
+  <string name="label_no_passphrase">パスフレーズなし</string>
+  <string name="label_passphrase">パスフレーズ</string>
+  <string name="label_passphrase_again">もう一度</string>
+  <string name="label_algorithm">アルゴリズム</string>
+  <string name="label_ascii_armor">アスキー形式</string>
+  <string name="label_delete_after_encryption">暗号化後に削除</string>
+  <string name="label_delete_after_decryption">復号化後に削除</string>
+  <string name="label_encryption_algorithm">暗号化アルゴリズム</string>
+  <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
+  <string name="label_asymmetric">公開鍵</string>
+  <string name="label_symmetric">パスフレーズ</string>
+  <string name="label_passphrase_cache_ttl">パスフレーズキャッシュ</string>
+  <string name="label_message_compression">メッセージの圧縮</string>
+  <string name="label_file_compression">ファイルの圧縮</string>
+  <string name="label_force_v3_signature">強制的にV3形式の署名にする</string>
+  <string name="label_key_id">鍵ID</string>
+  <string name="label_creation">生成</string>
+  <string name="label_expiry">満了</string>
+  <string name="label_usage">使い方</string>
+  <string name="label_key_size">鍵サイズ</string>
+  <string name="label_main_user_id">主ユーザーID</string>
+  <string name="label_name">名前</string>
+  <string name="label_comment">コメント</string>
+  <string name="label_email">Eメール</string>
+  <string name="none">&lt;無し&gt;</string>
+  <string name="no_key">&lt;鍵無し&gt;</string>
+  <string name="unknown_status"></string>
+  <string name="can_encrypt">暗号化可能</string>
+  <string name="can_sign">署名可能</string>
+  <string name="expired">期限切れ</string>
+  <string name="fingerprint">指紋</string>
+  <string name="secret_key">秘密鍵:</string>
+  <!--choice-->
+  <string name="choice_none">無し</string>
+  <string name="choice_sign_only">署名のみ</string>
+  <string name="choice_encrypt_only">暗号化のみ</string>
+  <string name="choice_sign_and_encrypt">署名と暗号化</string>
+  <string name="choice_15secs">15秒</string>
+  <string name="choice_1min">1分</string>
+  <string name="choice_3mins">3分</string>
+  <string name="choice_5mins">5分</string>
+  <string name="choice_10mins">10分</string>
+  <string name="choice_20mins">20分</string>
+  <string name="choice_40mins">40分</string>
+  <string name="choice_1hour">1時間</string>
+  <string name="choice_2hours">2時間</string>
+  <string name="choice_4hours">4時間</string>
+  <string name="choice_8hours">8時間</string>
+  <string name="dsa">DSA</string>
+  <string name="elgamal">ElGamal</string>
+  <string name="rsa">RSA</string>
+  <string name="filemanager_title_open">開く...</string>
+  <string name="warning">注意</string>
+  <string name="error">エラー</string>
+  <string name="error_message">エラー: %s</string>
+  <!--sentences-->
+  <string name="wrong_passphrase">良くないパスフレーズ</string>
+  <string name="using_clipboard_content">クリップボードの内容を使う。</string>
+  <string name="set_a_passphrase">最初にパスフレーズを設定してください。</string>
+  <string name="no_filemanager_installed">互換性のないファイルマネージャがインストールされています。</string>
+  <string name="passphrases_do_not_match">パスフレーズが一致しません。</string>
+  <string name="passphrase_must_not_be_empty">空のパスフレーズは受け付けません。</string>
+  <string name="passphrase_for_symmetric_encryption">対称暗号。</string>
+  <string name="passphrase_for">\'%s\' にパスフレーズを入れてください。</string>
+  <string name="file_delete_confirmation">%s を削除してもかまいませんか?</string>
+  <string name="file_delete_successful">削除に成功しました。</string>
+  <string name="no_file_selected">最初にファイルを選択してください。</string>
+  <string name="decryption_successful">復号化に成功しました。</string>
+  <string name="encryption_successful">暗号化に成功しました。</string>
+  <string name="encryption_to_clipboard_successful">クリップボードの中身の暗号化に成功しました。</string>
+  <string name="enter_passphrase_twice">もう一度パスフレーズを入れてください。</string>
+  <string name="select_encryption_key">少なくとも1つの暗号鍵を選択して下さい。</string>
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+</resources>

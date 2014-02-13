@@ -378,6 +378,8 @@
   <!--Key view-->
   <string name="key_view_action_encrypt">Chiffrer vers ce contact</string>
   <string name="key_view_action_certify">Certifier la clef de ce contact</string>
+  <string name="key_view_tab_main">Infos</string>
+  <string name="key_view_tab_certs">Certifications</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Contacts</string>
   <string name="nav_encrypt">Chiffrer</string>

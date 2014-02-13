@@ -373,7 +373,7 @@
     <string name="intent_send_decrypt">OpenPGP: Decrypt</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered applications!</string>
+    <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenPGP Keychain. After granting access, they will be listed here.</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
     <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
@@ -383,7 +383,7 @@
     <string name="api_settings_revoke">Revoke access</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
-    <string name="api_register_text">The following application requests access to OpenPGP Keychain\'s API.\n\nAllow permanent access?</string>
+    <string name="api_register_text">The following application requests access to OpenPGP Keychain.\n\nAllow permanent access?</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
