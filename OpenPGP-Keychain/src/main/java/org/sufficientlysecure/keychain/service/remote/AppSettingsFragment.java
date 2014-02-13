@@ -109,6 +109,15 @@ public class AppSettingsFragment extends Fragment implements
         return view;
     }
 
+    /**
+     * Set error String on key selection
+     *
+     * @param error
+     */
+    public void setErrorOnSelectKeyFragment(String error) {
+        mSelectKeyFragment.setError(error);
+    }
+
     private void initView(View view) {
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getFragmentManager().findFragmentById(
                 R.id.api_app_settings_select_key_fragment);
@@ -182,7 +191,7 @@ public class AppSettingsFragment extends Fragment implements
         // TODO: Better: collapse/expand animation
         // final Animation animation2 = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0.0f,
         // Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, -1.0f,
-        // Animation.RELATIVE_TO_SELF, 0.0f);
+        // Animation.RELATIVE_TO_SELF, 0.0f);u
         // animation2.setDuration(150);
 
         mAdvancedSettingsButton.setOnClickListener(new OnClickListener() {

@@ -125,9 +125,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                             // user needs to select a key!
                             if (mSettingsFragment.getAppSettings().getKeyId() == Id.key.none) {
-                                Toast.makeText(RemoteServiceActivity.this,
-                                        R.string.api_register_error_select_key, Toast.LENGTH_LONG)
-                                        .show();
+                                mSettingsFragment.setErrorOnSelectKeyFragment(
+                                        getString(R.string.api_register_error_select_key));
                             } else {
                                 ProviderHelper.insertApiApp(RemoteServiceActivity.this,
                                         mSettingsFragment.getAppSettings());

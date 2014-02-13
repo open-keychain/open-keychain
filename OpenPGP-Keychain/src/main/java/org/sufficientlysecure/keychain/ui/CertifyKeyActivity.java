@@ -164,8 +164,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            // send message to handler to start encryption directly
+            Log.d(Constants.TAG, "No passphrase for this secret key!");
+            // send message to handler to start certification directly
             returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
         }
     }
