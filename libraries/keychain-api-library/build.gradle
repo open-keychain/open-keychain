@@ -1,5 +1,15 @@
-apply plugin: 'android-library'
+// please leave this here, so this library builds on its own
+buildscript {
+    repositories {
+        mavenCentral()
+    }
 
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.8.0'
+    }
+}
+
+apply plugin: 'android-library'
 
 android {
     compileSdkVersion 19

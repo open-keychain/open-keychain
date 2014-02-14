@@ -162,10 +162,6 @@ public abstract class RemoteService extends Service {
 
     /**
      * Locks current thread and pauses execution of runnables and starts activity for user input
-     * 
-     * @param action
-     * @param messenger
-     * @param extras
      */
     protected void pauseAndStartUserInteraction(String action, BaseCallback callback, Bundle extras) {
         synchronized (userInputLock) {

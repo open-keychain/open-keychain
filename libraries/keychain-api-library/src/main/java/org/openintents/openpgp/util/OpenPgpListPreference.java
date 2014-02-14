@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openintents.openpgp;
+package org.openintents.openpgp.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,13 +70,13 @@ public class OpenPgpListPreference extends DialogPreference {
 
     /**
      * Can be used to add "no selection"
-     * 
+     *
      * @param packageName
      * @param simpleName
      * @param icon
      */
     public void addProvider(int position, String packageName, String simpleName, Drawable icon,
-            int apiVersion) {
+                            int apiVersion) {
         mProviderList.add(position, new OpenPgpProviderEntry(packageName, simpleName, icon,
                 apiVersion));
     }
@@ -100,12 +100,12 @@ public class OpenPgpListPreference extends DialogPreference {
                 tv.setCompoundDrawablePadding(dp10);
 
                 // disable if it has the wrong api_version
-                if (mProviderList.get(position).apiVersion == OpenPgpConstants.REQUIRED_API_VERSION) {
+                if (mProviderList.get(position).apiVersion == OpenPgpConstants.API_VERSION) {
                     tv.setEnabled(true);
                 } else {
                     tv.setEnabled(false);
                     tv.setText(tv.getText() + " (API v" + mProviderList.get(position).apiVersion
-                            + ", needs v" + OpenPgpConstants.REQUIRED_API_VERSION + ")");
+                            + ", needs v" + OpenPgpConstants.API_VERSION + ")");
                 }
 
                 return v;
@@ -186,7 +186,7 @@ public class OpenPgpListPreference extends DialogPreference {
         private int apiVersion;
 
         public OpenPgpProviderEntry(String packageName, String simpleName, Drawable icon,
-                int apiVersion) {
+                                    int apiVersion) {
             this.packageName = packageName;
             this.simpleName = simpleName;
             this.icon = icon;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,35 @@ import org.openintents.openpgp.OpenPgpData;
 import org.openintents.openpgp.IOpenPgpCallback;
 import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
 
-/**
- * All methods are oneway, which means they are asynchronous and non-blocking.
- * Results are returned to the callback, which has to be implemented on client side.
- */
 interface IOpenPgpService {
 
+    /**
+     * Bundle params:
+     * api_version 1,2,3,... (current: 1)
+     * ascii_armor true/false (for output)
+     * key_ids long[] (for encrypt method)
+     *
+     *
+     * Bundle return:
+     * result_code RESULT_ERROR=0 (see error), RESULT_OK=1, RESULT_USER_INTERACTION_REQUIRED=2 (execute intent and do it again with params from intent)
+     * signature_result OpenPgpSignatureResult
+     * error OpenPgpError
+     * intent Intent
+     *
+     */
+
+    Bundle sign(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
+
+    Bundle encrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
+
+    Bundle signAndEncrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
+
+    Bundle decryptAndVerify(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
+
+
+/*
+    ------------------OLD--------------------------
+*/
     /**
      * Sign
      * 
@@ -48,8 +71,9 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void sign(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
-    
+    //oneway void sign(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
+
+
     /**
      * Encrypt
      * 
@@ -74,7 +98,7 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void encrypt(in OpenPgpData input, in OpenPgpData output, in long[] keyIds, in IOpenPgpCallback callback);
+    //oneway void encrypt(in OpenPgpData input, in OpenPgpData output, in long[] keyIds, in IOpenPgpCallback callback);
     
     /**
      * Sign then encrypt
@@ -100,7 +124,7 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void signAndEncrypt(in OpenPgpData input, in OpenPgpData output, in long[] keyIds, in IOpenPgpCallback callback);
+    //oneway void signAndEncrypt(in OpenPgpData input, in OpenPgpData output, in long[] keyIds, in IOpenPgpCallback callback);
     
     /**
      * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
@@ -126,7 +150,7 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results
      */
-    oneway void decryptAndVerify(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
+    //oneway void decryptAndVerify(in OpenPgpData input, in OpenPgpData output, in IOpenPgpCallback callback);
     
     /**
      * Get available key ids based on given user ids
@@ -138,6 +162,6 @@ interface IOpenPgpService {
      * @param callback
      *            Callback where to return results (different type than callback in other functions!)
      */
-    oneway void getKeyIds(in String[] ids, in boolean allowUserInteraction, in IOpenPgpKeyIdsCallback callback);
+    //oneway void getKeyIds(in String[] ids, in boolean allowUserInteraction, in IOpenPgpKeyIdsCallback callback);
     
 }

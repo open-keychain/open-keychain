@@ -12,7 +12,7 @@
     <!-- android:title="AIDL Demo (ACCESS_KEYS permission)" /> -->
     <!-- </PreferenceCategory> -->
     <PreferenceCategory android:title="OpenPGP Provider" >
-        <org.openintents.openpgp.OpenPgpListPreference
+        <org.openintents.openpgp.util.OpenPgpListPreference
             android:key="openpgp_provider_list"
             android:title="Select OpenPGP Provider!" />
         <Preference

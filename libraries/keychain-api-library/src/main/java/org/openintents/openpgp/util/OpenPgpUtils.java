@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.openintents.openpgp;
+package org.openintents.openpgp.util;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
-public class OpenPgpHelper {
+public class OpenPgpUtils {
     private Context context;
 
     public static Pattern PGP_MESSAGE = Pattern.compile(
@@ -34,7 +34,7 @@ public class OpenPgpHelper {
                     ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
                     Pattern.DOTALL);
 
-    public OpenPgpHelper(Context context) {
+    public OpenPgpUtils(Context context) {
         super();
         this.context = context;
     }

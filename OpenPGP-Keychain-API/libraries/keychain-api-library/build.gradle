@@ -1,3 +1,4 @@
+// please leave this here, so this library builds on its own
 buildscript {
     repositories {
         mavenCentral()
