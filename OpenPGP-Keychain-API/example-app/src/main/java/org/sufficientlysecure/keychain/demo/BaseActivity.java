@@ -32,8 +32,6 @@ public class BaseActivity extends PreferenceActivity {
     private Preference mIntentDemo;
     private Preference mContentProviderDemo;
     private Preference mCryptoProvider;
-    private Preference mAidlDemo;
-    private Preference mAidlDemo2;
 
     /**
      * Called when the activity is first created.
@@ -51,8 +49,6 @@ public class BaseActivity extends PreferenceActivity {
         mIntentDemo = (Preference) findPreference("intent_demo");
         mContentProviderDemo = (Preference) findPreference("content_provider_demo");
         mCryptoProvider = (Preference) findPreference("openpgp_provider_demo");
-        mAidlDemo = (Preference) findPreference("aidl_demo");
-        mAidlDemo2 = (Preference) findPreference("aidl_demo2");
 
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -72,15 +68,6 @@ public class BaseActivity extends PreferenceActivity {
                 return false;
             }
         });
-
-        // mAidlDemo2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-        // @Override
-        // public boolean onPreferenceClick(Preference preference) {
-        // startActivity(new Intent(mActivity, AidlDemoActivity2.class));
-        //
-        // return false;
-        // }
-        // });
 
     }
 

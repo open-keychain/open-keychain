@@ -69,7 +69,7 @@ public class OpenPgpProviderActivity extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        setContentView(R.layout.crypto_provider_demo);
+        setContentView(R.layout.openpgp_provider);
 
         mActivity = this;
 
