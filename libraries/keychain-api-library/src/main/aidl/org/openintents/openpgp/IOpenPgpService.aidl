@@ -16,10 +16,6 @@
  
 package org.openintents.openpgp;
 
-import org.openintents.openpgp.OpenPgpData;
-import org.openintents.openpgp.IOpenPgpCallback;
-import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
-
 interface IOpenPgpService {
 
     /**
@@ -29,7 +25,7 @@ interface IOpenPgpService {
      * params:
      * int                      api_version         (current: 1)
      * boolean                  ascii_armor         true/false (for output)
-     *
+     * String                   passphrase (for key, optional)
      *
      * Bundle return:
      * int                      result_code         0,1, or 2 (see OpenPgpConstants)
@@ -41,9 +37,6 @@ interface IOpenPgpService {
 
     /**
      * sign only
-     *
-     * params:
-     * String       passphrase (optional)
      */
     Bundle sign(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 

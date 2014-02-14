@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,106 +17,35 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 
-import org.openintents.openpgp.IOpenPgpCallback;
-import org.openintents.openpgp.IOpenPgpKeyIdsCallback;
 import org.openintents.openpgp.IOpenPgpService;
-import org.openintents.openpgp.OpenPgpData;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpConstants;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpOperation;
-import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.service.exception.NoUserIdsException;
-import org.sufficientlysecure.keychain.service.exception.UserInteractionRequiredException;
-import org.sufficientlysecure.keychain.service.exception.WrongPassphraseException;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.PendingIntent;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.ParcelFileDescriptor;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class OpenPgpService extends RemoteService {
 
-    private String getCachedPassphrase(long keyId, boolean allowUserInteraction)
-            throws UserInteractionRequiredException {
-        String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), keyId);
-
-        if (passphrase == null) {
-            if (!allowUserInteraction) {
-                throw new UserInteractionRequiredException(
-                        "Passphrase not found in cache, please enter your passphrase!");
-            }
-
-            Log.d(Constants.TAG, "No passphrase! Activity required!");
-
-            // start passphrase dialog
-            PassphraseActivityCallback callback = new PassphraseActivityCallback();
-            Bundle extras = new Bundle();
-            extras.putLong(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
-            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE, callback,
-                    extras);
-
-            if (callback.isSuccess()) {
-                Log.d(Constants.TAG, "New passphrase entered!");
-
-                // get again after it was entered
-                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), keyId);
-            } else {
-                Log.d(Constants.TAG, "Passphrase dialog canceled!");
-
-                return null;
-            }
-
-        }
-
-        return passphrase;
-    }
-
-
-    public class PassphraseActivityCallback extends UserInputCallback {
-
-        private boolean success = false;
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        @Override
-        public void handleUserInput(Message msg) {
-            if (msg.arg1 == OKAY) {
-                success = true;
-            } else {
-                success = false;
-            }
-        }
-    }
-
-    ;
 
     /**
      * Search database for key ids based on emails.
@@ -124,8 +53,7 @@ public class OpenPgpService extends RemoteService {
      * @param encryptionUserIds
      * @return
      */
-    private long[] getKeyIdsFromEmails(String[] encryptionUserIds, boolean allowUserInteraction)
-            throws UserInteractionRequiredException {
+    private Bundle getKeyIdsFromEmails(String[] encryptionUserIds) {
         // find key ids to given emails in database
         ArrayList<Long> keyIds = new ArrayList<Long>();
 
@@ -159,98 +87,70 @@ public class OpenPgpService extends RemoteService {
         }
 
         // allow the user to verify pub key selection
-        if (allowUserInteraction && (missingUserIdsCheck || dublicateUserIdsCheck)) {
-            SelectPubKeysActivityCallback callback = new SelectPubKeysActivityCallback();
+        if (missingUserIdsCheck || dublicateUserIdsCheck) {
+            // build PendingIntent for passphrase input
+            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+            intent.setAction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS);
+            intent.putExtra(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
+            intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
+            intent.putExtra(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS, dublicateUserIds);
 
-            Bundle extras = new Bundle();
-            extras.putLongArray(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
-            extras.putStringArrayList(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            extras.putStringArrayList(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS,
-                    dublicateUserIds);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
 
-            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS, callback,
-                    extras);
+            // return PendingIntent to be executed by client
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
 
-            if (callback.isSuccess()) {
-                Log.d(Constants.TAG, "New selection of pub keys!");
-                keyIdsArray = callback.getPubKeyIds();
-            } else {
-                Log.d(Constants.TAG, "Pub key selection canceled!");
-                return null;
-            }
-        }
-
-        // if no user interaction is allow throw exceptions on duplicate or missing pub keys
-        if (!allowUserInteraction) {
-            if (missingUserIdsCheck)
-                throw new UserInteractionRequiredException(
-                        "Pub keys for these user ids are missing:" + missingUserIds.toString());
-            if (dublicateUserIdsCheck)
-                throw new UserInteractionRequiredException(
-                        "More than one pub key with these user ids exist:"
-                                + dublicateUserIds.toString());
+            return result;
         }
 
         if (keyIdsArray.length == 0) {
             return null;
         }
-        return keyIdsArray;
+
+        Bundle result = new Bundle();
+        result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
+        result.putLongArray(OpenPgpConstants.PARAMS_KEY_IDS, keyIdsArray);
+        return result;
     }
 
-    public class SelectPubKeysActivityCallback extends UserInputCallback {
-        public static final String PUB_KEY_IDS = "pub_key_ids";
+    private Bundle getPassphraseBundleIntent(long keyId) {
+        // build PendingIntent for passphrase input
+        Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+        intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
+        intent.putExtra(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
 
-        private boolean success = false;
-        private long[] pubKeyIds;
+        // return PendingIntent to be executed by client
+        Bundle result = new Bundle();
+        result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
 
-        public boolean isSuccess() {
-            return success;
-        }
+        return result;
+    }
 
-        public long[] getPubKeyIds() {
-            return pubKeyIds;
-        }
+    private Bundle encryptAndSignImpl(Bundle params, ParcelFileDescriptor input,
+                                      ParcelFileDescriptor output, AppSettings appSettings,
+                                      boolean sign) {
+        try {
+            boolean asciiArmor = params.getBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, false);
 
-        @Override
-        public void handleUserInput(Message msg) {
-            if (msg.arg1 == OKAY) {
-                success = true;
-                pubKeyIds = msg.getData().getLongArray(PUB_KEY_IDS);
+            long[] keyIds;
+            if (params.containsKey(OpenPgpConstants.PARAMS_KEY_IDS)) {
+                keyIds = params.getLongArray(OpenPgpConstants.PARAMS_KEY_IDS);
             } else {
-                success = false;
-            }
-        }
-    }
+                // get key ids based on given user ids
+                String[] userIds = params.getStringArray(OpenPgpConstants.PARAMS_USER_IDS);
+                Bundle result = getKeyIdsFromEmails(userIds);
+                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
 
-    ;
-
-    private synchronized void getKeyIdsSafe(String[] userIds, boolean allowUserInteraction,
-                                            IOpenPgpKeyIdsCallback callback, AppSettings appSettings) {
-        try {
-            long[] keyIds = getKeyIdsFromEmails(userIds, allowUserInteraction);
-            if (keyIds == null) {
-                throw new NoUserIdsException("No user ids!");
-            }
-
-            callback.onSuccess(keyIds);
-        } catch (UserInteractionRequiredException e) {
-//            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
-        } catch (NoUserIdsException e) {
-            callbackOpenPgpError(callback, OpenPgpError.NO_USER_IDS, e.getMessage());
-        } catch (Exception e) {
-            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
-        }
-    }
-
-    private synchronized void encryptAndSignSafe(OpenPgpData inputData,
-                                                 final OpenPgpData outputData, long[] keyIds, boolean allowUserInteraction,
-                                                 IOpenPgpCallback callback, AppSettings appSettings, boolean sign) {
-        try {
-            // TODO: other options of OpenPgpData!
-            byte[] inputBytes = getInput(inputData);
-            boolean asciiArmor = false;
-            if (outputData.getType() == OpenPgpData.TYPE_STRING) {
-                asciiArmor = true;
+                if (result.getInt(OpenPgpConstants.RESULT_CODE, 0) == OpenPgpConstants.RESULT_CODE_SUCCESS) {
+                    keyIds = result.getLongArray(OpenPgpConstants.PARAMS_KEY_IDS);
+                } else {
+                    // non-unique result, we need user interaction!
+                    return result;
+                }
             }
 
             // add own key for encryption
@@ -258,103 +158,32 @@ public class OpenPgpService extends RemoteService {
             keyIds[keyIds.length - 1] = appSettings.getKeyId();
 
             // build InputData and write into OutputStream
-            InputStream inputStream = new ByteArrayInputStream(inputBytes);
-            long inputLength = inputBytes.length;
-            InputData inputDt = new InputData(inputStream, inputLength);
-
-            OutputStream outputStream = new ByteArrayOutputStream();
-
-            PgpOperation operation = new PgpOperation(getContext(), null, inputDt, outputStream);
-            if (sign) {
-                String passphrase = getCachedPassphrase(appSettings.getKeyId(),
-                        allowUserInteraction);
-                if (passphrase == null) {
-                    throw new WrongPassphraseException("No or wrong passphrase!");
-                }
-
-                operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
-                        appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
-                        appSettings.getHashAlgorithm(), true, passphrase);
-            } else {
-                operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
-                        appSettings.getEncryptionAlgorithm(), Id.key.none,
-                        appSettings.getHashAlgorithm(), true, null);
-            }
-
-            outputStream.close();
-
-            byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
-
-            OpenPgpData output = null;
-            if (asciiArmor) {
-                output = new OpenPgpData(new String(outputBytes));
-            } else {
-                output = new OpenPgpData(outputBytes);
-            }
-
-            // return over handler on client side
-            callback.onSuccess(output, null);
-        } catch (UserInteractionRequiredException e) {
-//            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
-        } catch (WrongPassphraseException e) {
-            callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
-        } catch (Exception e) {
-            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
-        }
-    }
-
-    // TODO: asciiArmor?!
-    private Bundle signImpl(ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
-        try {
-            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-            String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
-            if (passphrase == null) {
-                // TODO: we need to abort and return a passphrase Intent!
-
-                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
-                // TODO: setComponent really needed for security?
-//                intent.setComponent(new ComponentName(Constants.PACKAGE_NAME,
-//                        "org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"));
-//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
-                intent.putExtra(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, appSettings.getKeyId());
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
-
-
-                Bundle result = new Bundle();
-                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
-
-                return result;
-            }
-
-            // INPUT
+            // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            // OUTPUT
             OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
             try {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
-                operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
-                        Preferences.getPreferences(this).getForceV3Signatures());
+                if (sign) {
+                    String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                            appSettings.getKeyId());
+                    if (passphrase == null) {
+                        return getPassphraseBundleIntent(appSettings.getKeyId());
+                    }
 
+                    operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
+                            appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
+                            appSettings.getHashAlgorithm(), true, passphrase);
+                } else {
+                    operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
+                            appSettings.getEncryptionAlgorithm(), Id.key.none,
+                            appSettings.getHashAlgorithm(), true, null);
+                }
+            } finally {
                 is.close();
                 os.close();
-//            } catch (IOException e) {
-//                Log.e(Constants.TAG, "Fail", e);
-            } finally {
-//                try {
-                    is.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-                    os.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
 
             Bundle result = new Bundle();
@@ -369,164 +198,195 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
-    private synchronized void decryptAndVerifySafe(byte[] inputBytes, boolean allowUserInteraction,
-                                                   IOpenPgpCallback callback, AppSettings appSettings) {
+    // TODO: asciiArmor?!
+    private Bundle signImpl(ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
         try {
-            // TODO: this is not really needed
-            // checked if it is text with BEGIN and END tags
-            String message = new String(inputBytes);
-            Log.d(Constants.TAG, "in: " + message);
-            boolean signedOnly = false;
-            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(message);
-            if (matcher.matches()) {
-                Log.d(Constants.TAG, "PGP_MESSAGE matched");
-                message = matcher.group(1);
-                // replace non breakable spaces
-                message = message.replaceAll("\\xa0", " ");
-
-                // overwrite inputBytes
-                inputBytes = message.getBytes();
-            } else {
-                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(message);
-                if (matcher.matches()) {
-                    signedOnly = true;
-                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
-                    message = matcher.group(1);
-                    // replace non breakable spaces
-                    message = message.replaceAll("\\xa0", " ");
-
-                    // overwrite inputBytes
-                    inputBytes = message.getBytes();
-                } else {
-                    Log.d(Constants.TAG, "Nothing matched! Binary?");
-                }
-            }
-            // END TODO
-
-            Log.d(Constants.TAG, "in: " + new String(inputBytes));
-
-            // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
-            // app, Fix this?
-
-            String passphrase = null;
-            if (!signedOnly) {
-                // BEGIN Get key
-                // TODO: this input stream is consumed after PgpMain.getDecryptionKeyId()... do it
-                // better!
-                InputStream inputStream2 = new ByteArrayInputStream(inputBytes);
-
-                // TODO: duplicates functions from DecryptActivity!
-                long secretKeyId;
-                try {
-                    if (inputStream2.markSupported()) {
-                        // should probably set this to the max size of two
-                        // pgpF objects, if it even needs to be anything other
-                        // than 0.
-                        inputStream2.mark(200);
-                    }
-                    secretKeyId = PgpHelper.getDecryptionKeyId(this, inputStream2);
-                    if (secretKeyId == Id.key.none) {
-                        throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
-                    }
-                } catch (NoAsymmetricEncryptionException e) {
-                    if (inputStream2.markSupported()) {
-                        inputStream2.reset();
-                    }
-                    secretKeyId = Id.key.symmetric;
-                    if (!PgpOperation.hasSymmetricEncryption(this, inputStream2)) {
-                        throw new PgpGeneralException(
-                                getString(R.string.error_no_known_encryption_found));
-                    }
-                    // we do not support symmetric decryption from the API!
-                    throw new Exception("Symmetric decryption is not supported!");
-                }
-
-                Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
-
-                passphrase = getCachedPassphrase(secretKeyId, allowUserInteraction);
-                if (passphrase == null) {
-                    throw new WrongPassphraseException("No or wrong passphrase!");
-                }
+            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
+            String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+            if (passphrase == null) {
+                return getPassphraseBundleIntent(appSettings.getKeyId());
             }
 
-            // build InputData and write into OutputStream
-            InputStream inputStream = new ByteArrayInputStream(inputBytes);
-            long inputLength = inputBytes.length;
-            InputData inputData = new InputData(inputStream, inputLength);
+            // Get Input- and OutputStream from ParcelFileDescriptor
+            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            try {
+                long inputLength = is.available();
+                InputData inputData = new InputData(is, inputLength);
 
-            OutputStream outputStream = new ByteArrayOutputStream();
-
-            Bundle outputBundle;
-            PgpOperation operation = new PgpOperation(getContext(), null, inputData, outputStream);
-            if (signedOnly) {
-                outputBundle = operation.verifyText();
-            } else {
-                outputBundle = operation.decryptAndVerify(passphrase, false);
+                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
+                operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
+                        Preferences.getPreferences(this).getForceV3Signatures());
+            } finally {
+                is.close();
+                os.close();
             }
 
-            outputStream.close();
-
-            byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
-
-            // get signature informations from bundle
-            boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE);
-
-            OpenPgpSignatureResult sigResult = null;
-            if (signature) {
-                long signatureKeyId = outputBundle
-                        .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
-                String signatureUserId = outputBundle
-                        .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
-                boolean signatureSuccess = outputBundle
-                        .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
-                boolean signatureUnknown = outputBundle
-                        .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
-
-                int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
-                if (signatureSuccess) {
-                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_TRUSTED;
-                } else if (signatureUnknown) {
-                    signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
-                }
-
-                sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
-                        signedOnly, signatureKeyId);
-            }
-            OpenPgpData output = new OpenPgpData(new String(outputBytes));
-
-            // return over handler on client side
-            callback.onSuccess(output, sigResult);
-        } catch (UserInteractionRequiredException e) {
-//            callbackOpenPgpError(callback, OpenPgpError.USER_INTERACTION_REQUIRED, e.getMessage());
-        } catch (WrongPassphraseException e) {
-            callbackOpenPgpError(callback, OpenPgpError.NO_OR_WRONG_PASSPHRASE, e.getMessage());
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
+            return result;
         } catch (Exception e) {
-            callbackOpenPgpError(callback, OpenPgpError.GENERIC_ERROR, e.getMessage());
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            return result;
         }
     }
 
-    /**
-     * Returns error to IOpenPgpCallback
-     *
-     * @param callback
-     * @param errorId
-     * @param message
-     */
-    private void callbackOpenPgpError(IOpenPgpCallback callback, int errorId, String message) {
+    private Bundle decryptAndVerifyImpl(Bundle params, ParcelFileDescriptor input,
+                                        ParcelFileDescriptor output, AppSettings appSettings) {
         try {
-            callback.onError(new OpenPgpError(0, message));
-        } catch (Exception t) {
-            Log.e(Constants.TAG,
-                    "Exception while returning OpenPgpError to client via callback.onError()", t);
-        }
-    }
+            // Get Input- and OutputStream from ParcelFileDescriptor
+            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            OpenPgpSignatureResult sigResult = null;
+            try {
 
-    private void callbackOpenPgpError(IOpenPgpKeyIdsCallback callback, int errorId, String message) {
-        try {
-            callback.onError(new OpenPgpError(0, message));
-        } catch (Exception t) {
-            Log.e(Constants.TAG,
-                    "Exception while returning OpenPgpError to client via callback.onError()", t);
+
+                // TODOs API 2.0:
+                // implement verify-only!
+                // fix the mess: http://stackoverflow.com/questions/148130/how-do-i-peek-at-the-first-two-bytes-in-an-inputstream
+                // should we allow to decrypt everything under every key id or only the one set?
+                // TODO: instead of trying to get the passphrase before
+                // pause stream when passphrase is missing and then resume
+
+
+                // TODO: this is not really needed
+                // checked if it is text with BEGIN and END tags
+//            String message = new String(inputBytes);
+//            Log.d(Constants.TAG, "in: " + message);
+                boolean signedOnly = false;
+//            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(message);
+//            if (matcher.matches()) {
+//                Log.d(Constants.TAG, "PGP_MESSAGE matched");
+//                message = matcher.group(1);
+//                // replace non breakable spaces
+//                message = message.replaceAll("\\xa0", " ");
+//
+//                // overwrite inputBytes
+//                inputBytes = message.getBytes();
+//            } else {
+//                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(message);
+//                if (matcher.matches()) {
+//                    signedOnly = true;
+//                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
+//                    message = matcher.group(1);
+//                    // replace non breakable spaces
+//                    message = message.replaceAll("\\xa0", " ");
+//
+//                    // overwrite inputBytes
+//                    inputBytes = message.getBytes();
+//                } else {
+//                    Log.d(Constants.TAG, "Nothing matched! Binary?");
+//                }
+//            }
+                // END TODO
+
+//            Log.d(Constants.TAG, "in: " + new String(inputBytes));
+
+                // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
+                // app, Fix this?
+
+//                String passphrase = null;
+//                if (!signedOnly) {
+//                    // BEGIN Get key
+//                    // TODO: this input stream is consumed after PgpMain.getDecryptionKeyId()... do it
+//                    // better!
+//                    InputStream inputStream2 = new ByteArrayInputStream(inputBytes);
+//
+//                    // TODO: duplicates functions from DecryptActivity!
+//                    long secretKeyId;
+//                    try {
+//                        if (inputStream2.markSupported()) {
+//                            // should probably set this to the max size of two
+//                            // pgpF objects, if it even needs to be anything other
+//                            // than 0.
+//                            inputStream2.mark(200);
+//                        }
+//                        secretKeyId = PgpHelper.getDecryptionKeyId(this, inputStream2);
+//                        if (secretKeyId == Id.key.none) {
+//                            throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
+//                        }
+//                    } catch (NoAsymmetricEncryptionException e) {
+//                        if (inputStream2.markSupported()) {
+//                            inputStream2.reset();
+//                        }
+//                        secretKeyId = Id.key.symmetric;
+//                        if (!PgpOperation.hasSymmetricEncryption(this, inputStream2)) {
+//                            throw new PgpGeneralException(
+//                                    getString(R.string.error_no_known_encryption_found));
+//                        }
+//                        // we do not support symmetric decryption from the API!
+//                        throw new Exception("Symmetric decryption is not supported!");
+//                    }
+//
+//                    Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
+
+                    // NOTE: currently this only gets the passphrase for the saved key
+                    String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+                    if (passphrase == null) {
+                        return getPassphraseBundleIntent(appSettings.getKeyId());
+                    }
+//                }
+
+                // build InputData and write into OutputStream
+                long inputLength = is.available();
+                InputData inputData = new InputData(is, inputLength);
+
+
+                Bundle outputBundle;
+                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
+                if (signedOnly) {
+                    outputBundle = operation.verifyText();
+                } else {
+                    // BIG TODO: instead of trying to get the passphrase before
+                    // pause stream when passphrase is missing and then resume
+                    outputBundle = operation.decryptAndVerify(passphrase, false);
+                }
+
+//                outputStream.close();
+
+//                byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
+
+                // get signature informations from bundle
+                boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE);
+
+                if (signature) {
+                    long signatureKeyId = outputBundle
+                            .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                    String signatureUserId = outputBundle
+                            .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
+                    boolean signatureSuccess = outputBundle
+                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
+                    boolean signatureUnknown = outputBundle
+                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
+
+                    int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
+                    if (signatureSuccess) {
+                        signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED;
+                    } else if (signatureUnknown) {
+                        signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
+                    }
+
+                    sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
+                            signedOnly, signatureKeyId);
+                }
+            } finally {
+                is.close();
+                os.close();
+            }
+
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
+            result.putParcelable(OpenPgpConstants.RESULT_SIGNATURE, sigResult);
+            return result;
+        } catch (Exception e) {
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            return result;
         }
     }
 
@@ -536,6 +396,7 @@ public class OpenPgpService extends RemoteService {
      * @param params
      * @return
      */
+
     private Bundle validateParamsAndVersion(Bundle params) {
         if (params == null) {
             Bundle result = new Bundle();
@@ -557,6 +418,7 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
+    // TODO: enqueue in thread pool!!!
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
         @Override
@@ -568,28 +430,31 @@ public class OpenPgpService extends RemoteService {
                 return errorResult;
             }
 
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
             return signImpl(input, output, appSettings);
-//                }
-//            };
-
-//            checkAndEnqueue(r);
-
-//            return null;
         }
 
         @Override
         public Bundle encrypt(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
+            final AppSettings appSettings = getAppSettings();
 
-            return null;
+            Bundle errorResult = validateParamsAndVersion(params);
+            if (errorResult != null) {
+                return errorResult;
+            }
+
+            return encryptAndSignImpl(params, input, output, appSettings, false);
         }
 
         @Override
         public Bundle signAndEncrypt(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
+            final AppSettings appSettings = getAppSettings();
 
-            return null;
+            Bundle errorResult = validateParamsAndVersion(params);
+            if (errorResult != null) {
+                return errorResult;
+            }
+
+            return encryptAndSignImpl(params, input, output, appSettings, true);
         }
 
         @Override
@@ -598,67 +463,6 @@ public class OpenPgpService extends RemoteService {
             return null;
         }
 
-//        @Override
-//        public void encrypt(final OpenPgpData input, final OpenPgpData output, final long[] keyIds,
-//                final IOpenPgpCallback callback) throws RemoteException {
-//            final AppSettings settings = getAppSettings();
-//
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    encryptAndSignSafe(input, output, keyIds, true, callback, settings, false);
-//                }
-//            };
-//
-//            checkAndEnqueue(r);
-//        }
-//
-//        @Override
-//        public void signAndEncrypt(final OpenPgpData input, final OpenPgpData output,
-//                final long[] keyIds, final IOpenPgpCallback callback) throws RemoteException {
-//            final AppSettings settings = getAppSettings();
-//
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    encryptAndSignSafe(input, output, keyIds, true, callback, settings, true);
-//                }
-//            };
-//
-//            checkAndEnqueue(r);
-//        }
-//
-//        @Override
-//        public void sign(final OpenPgpData input, final OpenPgpData output,
-//                final IOpenPgpCallback callback) throws RemoteException {
-//            final AppSettings settings = getAppSettings();
-//
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    signImpl(getInput(input), true, callback, settings);
-//                }
-//            };
-//
-//            checkAndEnqueue(r);
-//        }
-//
-//        @Override
-//        public void decryptAndVerify(final OpenPgpData input, final OpenPgpData output,
-//                final IOpenPgpCallback callback) throws RemoteException {
-//
-//            final AppSettings settings = getAppSettings();
-//
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    decryptAndVerifySafe(getInput(input), true, callback, settings);
-//                }
-//            };
-//
-//            checkAndEnqueue(r);
-//        }
-//
 //        @Override
 //        public void getKeyIds(final String[] userIds, final boolean allowUserInteraction,
 //                final IOpenPgpKeyIdsCallback callback) throws RemoteException {
@@ -676,27 +480,6 @@ public class OpenPgpService extends RemoteService {
 //        }
 
     };
-
-    private static byte[] getInput(OpenPgpData data) {
-        // TODO: support Uri and ParcelFileDescriptor
-
-        byte[] inBytes = null;
-        switch (data.getType()) {
-            case OpenPgpData.TYPE_STRING:
-                inBytes = data.getString().getBytes();
-                break;
-
-            case OpenPgpData.TYPE_BYTE_ARRAY:
-                inBytes = data.getBytes();
-                break;
-
-            default:
-                Log.e(Constants.TAG, "Uri and ParcelFileDescriptor not supported right now!");
-                break;
-        }
-
-        return inBytes;
-    }
 
     @Override
     public IBinder onBind(Intent intent) {

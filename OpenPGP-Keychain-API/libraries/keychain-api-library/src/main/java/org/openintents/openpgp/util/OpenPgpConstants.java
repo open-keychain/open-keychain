@@ -30,6 +30,7 @@ public class OpenPgpConstants {
     // OpenPGP Radix-64, 33 percent overhead compared to binary, see http://tools.ietf.org/html/rfc4880#page-53)
     public static final String PARAMS_REQUEST_ASCII_ARMOR = "ascii_armor";
     // (for encrypt method)
+    public static final String PARAMS_USER_IDS = "user_ids";
     public static final String PARAMS_KEY_IDS = "key_ids";
 
     /* Bundle return */

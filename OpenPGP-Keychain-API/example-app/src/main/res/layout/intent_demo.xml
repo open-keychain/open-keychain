@@ -12,7 +12,7 @@
             android:id="@+id/Button02"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="encryptOnClick"
+            android:onClick="encrypt"
             android:text="Encrypt" />
 
         <Button
@@ -54,7 +54,7 @@
             android:id="@+id/intent_demo_encrypt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="encryptOnClick"
+            android:onClick="encrypt"
             android:text="Encrypt" />
 
         <Button

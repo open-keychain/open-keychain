@@ -54,7 +54,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="encryptOnClick"
             android:text="Encrypt" />
 
         <Button
@@ -62,14 +61,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="signOnClick"
             android:text="Sign" />
 
         <Button
-            android:id="@+id/crypto_provider_demo_encrypt_and_sign"
+            android:id="@+id/crypto_provider_demo_sign_and_encrypt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="signAndEncryptOnClick"
             android:text="Sign and Encrypt" />
     </LinearLayout>
 
@@ -77,7 +74,6 @@
         android:id="@+id/crypto_provider_demo_decrypt_and_verify"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="decryptAndVerifyOnClick"
         android:text="Decrypt and Verify" />
 
 </LinearLayout>

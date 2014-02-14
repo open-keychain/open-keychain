@@ -391,19 +391,19 @@
         </service>
 
         <!-- Extended Remote API -->
-        <service
-            android:name="org.sufficientlysecure.keychain.service.remote.ExtendedApiService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":remote_api">
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />
-            </intent-filter>
+        <!--<service-->
+            <!--android:name="org.sufficientlysecure.keychain.service.remote.ExtendedApiService"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true"-->
+            <!--android:process=":remote_api">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />-->
+            <!--</intent-filter>-->
 
-            <meta-data
-                android:name="api_version"
-                android:value="1" />
-        </service>
+            <!--<meta-data-->
+                <!--android:name="api_version"-->
+                <!--android:value="1" />-->
+        <!--</service>-->
 
         <!-- TODO: authority! Make this API with content provider uris -->
         <!-- <provider -->

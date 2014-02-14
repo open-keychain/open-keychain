@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.service.exception;
+package org.sufficientlysecure.keychain.service.remote;
 
 public class WrongPackageSignatureException extends Exception {
 

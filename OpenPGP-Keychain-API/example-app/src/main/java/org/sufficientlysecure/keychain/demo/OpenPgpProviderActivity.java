@@ -25,11 +25,11 @@ import android.content.IntentSender;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.TextView;
@@ -54,13 +54,17 @@ public class OpenPgpProviderActivity extends Activity {
     EditText mMessage;
     EditText mCiphertext;
     EditText mEncryptUserIds;
+    Button mSign;
+    Button mEncrypt;
+    Button mSignAndEncrypt;
+    Button mDecryptAndVerify;
 
     private OpenPgpServiceConnection mCryptoServiceConnection;
 
     public static final int REQUEST_CODE_SIGN = 9910;
     public static final int REQUEST_CODE_ENCRYPT = 9911;
-    public static final int REQUEST_CODE_SIGN_AND_ENC = 9912;
-    public static final int REQUEST_CODE_DECRYPT = 9913;
+    public static final int REQUEST_CODE_SIGN_AND_ENCRYPT = 9912;
+    public static final int REQUEST_CODE_DECRYPT_AND_VERIFY = 9913;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -73,126 +77,37 @@ public class OpenPgpProviderActivity extends Activity {
         mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
         mEncryptUserIds = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
 
+        mSign = (Button) findViewById(R.id.crypto_provider_demo_sign);
+        mEncrypt = (Button) findViewById(R.id.crypto_provider_demo_encrypt);
+        mSignAndEncrypt = (Button) findViewById(R.id.crypto_provider_demo_sign_and_encrypt);
+        mDecryptAndVerify = (Button) findViewById(R.id.crypto_provider_demo_decrypt_and_verify);
+        mSign.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sign(new Bundle());
+            }
+        });
+        mEncrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encrypt(new Bundle());
+            }
+        });
+        mSignAndEncrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signAndEncrypt(new Bundle());
+            }
+        });
+        mDecryptAndVerify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                decryptAndVerify(new Bundle());
+            }
+        });
+
         selectCryptoProvider();
     }
-
-//    /**
-//     * Callback from remote openpgp service
-//     */
-//    final IOpenPgpKeyIdsCallback.Stub getKeysEncryptCallback = new IOpenPgpKeyIdsCallback.Stub() {
-//
-//        @Override
-//        public void onSuccess(final long[] keyIds) throws RemoteException {
-//            Log.d(Constants.TAG, "getKeysEncryptCallback keyId " + keyIds[0]);
-//            mActivity.runOnUiThread(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    // encrypt after getting key ids
-//                    String inputStr = mMessage.getText().toString();
-//                    OpenPgpData input = new OpenPgpData(inputStr);
-//
-//                    Log.d(Constants.TAG, "getKeysEncryptCallback inputStr " + inputStr);
-//
-//                    try {
-//                        mCryptoServiceConnection.getService().encrypt(input,
-//                                new OpenPgpData(OpenPgpData.TYPE_STRING), keyIds, encryptCallback);
-//                    } catch (RemoteException e) {
-//                        Log.e(Constants.TAG, "CryptoProviderDemo", e);
-//                    }
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public void onError(OpenPgpError error) throws RemoteException {
-//            handleError(error);
-//        }
-//
-//    };
-//
-//    final IOpenPgpKeyIdsCallback.Stub getKeysSignAndEncryptCallback = new IOpenPgpKeyIdsCallback.Stub() {
-//
-//        @Override
-//        public void onSuccess(final long[] keyIds) throws RemoteException {
-//            Log.d(Constants.TAG, "getKeysSignAndEncryptCallback keyId " + keyIds[0]);
-//
-//            mActivity.runOnUiThread(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    // encrypt after getting key ids
-//                    String inputStr = mMessage.getText().toString();
-//                    OpenPgpData input = new OpenPgpData(inputStr);
-//
-//                    try {
-//                        mCryptoServiceConnection.getService().signAndEncrypt(input,
-//                                new OpenPgpData(OpenPgpData.TYPE_STRING), keyIds, encryptCallback);
-//                    } catch (RemoteException e) {
-//                        Log.e(Constants.TAG, "CryptoProviderDemo", e);
-//                    }
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public void onError(OpenPgpError error) throws RemoteException {
-//            handleError(error);
-//        }
-//
-//    };
-//
-//    final IOpenPgpCallback.Stub encryptCallback = new IOpenPgpCallback.Stub() {
-//
-//        @Override
-//        public void onSuccess(final OpenPgpData output, OpenPgpSignatureResult signatureResult)
-//                throws RemoteException {
-//            Log.d(Constants.TAG, "encryptCallback");
-//
-//            runOnUiThread(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    mCiphertext.setText(output.getString());
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public void onError(OpenPgpError error) throws RemoteException {
-//            handleError(error);
-//        }
-//
-//    };
-//
-//    final IOpenPgpCallback.Stub decryptAndVerifyCallback = new IOpenPgpCallback.Stub() {
-//
-//        @Override
-//        public void onSuccess(final OpenPgpData output, final OpenPgpSignatureResult signatureResult)
-//                throws RemoteException {
-//            Log.d(Constants.TAG, "decryptAndVerifyCallback");
-//
-//            runOnUiThread(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    mMessage.setText(output.getString());
-//                    if (signatureResult != null) {
-//                        Toast.makeText(OpenPgpProviderActivity.this,
-//                                "signature result:\n" + signatureResult.toString(),
-//                                Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            });
-//
-//        }
-//
-//        @Override
-//        public void onError(OpenPgpError error) throws RemoteException {
-//            handleError(error);
-//        }
-//
-//    };
 
     private void handleError(final OpenPgpError error) {
         mActivity.runOnUiThread(new Runnable() {
@@ -208,28 +123,30 @@ public class OpenPgpProviderActivity extends Activity {
         });
     }
 
-    public void encryptOnClick(View view) {
-//        try {
-//            mCryptoServiceConnection.getService().getKeyIds(
-//                    mEncryptUserIds.getText().toString().split(","), true, getKeysEncryptCallback);
-//        } catch (RemoteException e) {
-//            Log.e(Constants.TAG, "CryptoProviderDemo", e);
-//        }
-    }
-
-    public void signOnClick(View view) {
+    private InputStream getInputstream(boolean ciphertext) {
         InputStream is = null;
         try {
-            String inputStr = mMessage.getText().toString();
+            String inputStr = null;
+            if (ciphertext) {
+                inputStr = mCiphertext.getText().toString();
+            } else {
+                inputStr = mMessage.getText().toString();
+            }
             is = new ByteArrayInputStream(inputStr.getBytes("UTF-8"));
-
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        return is;
+    }
+
+
+    public void sign(Bundle params) {
+        InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
-        api.sign(new Bundle(), is, os, new OpenPgpApi.IOpenPgpCallback() {
+        api.sign(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
             @Override
             public void onReturn(Bundle result) {
                 switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
@@ -248,52 +165,128 @@ public class OpenPgpProviderActivity extends Activity {
                         PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
                         try {
                             OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_SIGN, null, // or new Intent() (in billing)
+                                    REQUEST_CODE_SIGN, null,
                                     0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
                             e.printStackTrace();
                         }
-//                        try {
-//                            pi.send(OpenPgpProviderActivity.this, 42, null, new PendingIntent.OnFinished() {
-//
-//                                @Override
-//                                public void onSendFinished(PendingIntent pendingIntent, Intent intent, int resultCode, String resultData, Bundle resultExtras) {
-//                                    Log.d(Constants.TAG, "onSendFinished");
-//                                    Log.d(Constants.TAG, "resultCode: " + resultCode);
-//
-//                                }
-//                            }, null);
-//                        } catch (PendingIntent.CanceledException e) {
-//                            e.printStackTrace();
-//                        }
                         break;
                     }
                 }
             }
         });
-
     }
 
-    public void signAndEncryptOnClick(View view) {
-//        try {
-//            mCryptoServiceConnection.getService().getKeyIds(
-//                    mEncryptUserIds.getText().toString().split(","), true,
-//                    getKeysSignAndEncryptCallback);
-//        } catch (RemoteException e) {
-//            Log.e(Constants.TAG, "CryptoProviderDemo", e);
-//        }
+    public void encrypt(Bundle params) {
+        params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+
+        InputStream is = getInputstream(false);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        api.encrypt(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
+            @Override
+            public void onReturn(Bundle result) {
+                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
+                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
+                        try {
+                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
+                                    + " str=" + os.toString("UTF-8"));
+
+                            mCiphertext.setText(os.toString("UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
+                        try {
+                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
+                                    REQUEST_CODE_ENCRYPT, null,
+                                    0, 0, 0);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
     }
 
-    public void decryptAndVerifyOnClick(View view) {
-//        String inputStr = mCiphertext.getText().toString();
-//        OpenPgpData input = new OpenPgpData(inputStr);
-//
-//        try {
-//            mCryptoServiceConnection.getService().decryptAndVerify(input,
-//                    new OpenPgpData(OpenPgpData.TYPE_STRING), decryptAndVerifyCallback);
-//        } catch (RemoteException e) {
-//            Log.e(Constants.TAG, "CryptoProviderDemo", e);
-//        }
+    public void signAndEncrypt(Bundle params) {
+        params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+
+        InputStream is = getInputstream(false);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        api.signAndEncrypt(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
+            @Override
+            public void onReturn(Bundle result) {
+                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
+                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
+                        try {
+                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
+                                    + " str=" + os.toString("UTF-8"));
+
+                            mCiphertext.setText(os.toString("UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
+                        try {
+                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
+                                    REQUEST_CODE_SIGN_AND_ENCRYPT, null,
+                                    0, 0, 0);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    public void decryptAndVerify(Bundle params) {
+        InputStream is = getInputstream(true);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        api.decryptAndVerify(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
+            @Override
+            public void onReturn(Bundle result) {
+                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
+                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
+                        try {
+                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
+                                    + " str=" + os.toString("UTF-8"));
+
+                            mCiphertext.setText(os.toString("UTF-8"));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
+                        try {
+                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
+                                    REQUEST_CODE_DECRYPT_AND_VERIFY, null,
+                                    0, 0, 0);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -304,8 +297,34 @@ public class OpenPgpProviderActivity extends Activity {
             case REQUEST_CODE_SIGN: {
                 Log.d(Constants.TAG, "resultCode: " + resultCode);
 
+                // try to sign again after password caching
                 if (resultCode == RESULT_OK) {
-                    signOnClick(null);
+                    sign(new Bundle());
+                }
+            }
+            case REQUEST_CODE_ENCRYPT: {
+                Log.d(Constants.TAG, "resultCode: " + resultCode);
+
+                // try to sign again after password caching
+                if (resultCode == RESULT_OK) {
+                    // use data extras now as params for call (they now include key ids!
+                    encrypt(data.getExtras());
+                }
+            }
+            case REQUEST_CODE_SIGN_AND_ENCRYPT: {
+                Log.d(Constants.TAG, "resultCode: " + resultCode);
+
+                // try to sign again after password caching
+                if (resultCode == RESULT_OK) {
+                    signAndEncrypt(data.getExtras());
+                }
+            }
+            case REQUEST_CODE_DECRYPT_AND_VERIFY: {
+                Log.d(Constants.TAG, "resultCode: " + resultCode);
+
+                // try to sign again after password caching
+                if (resultCode == RESULT_OK) {
+                    decryptAndVerify(new Bundle());
                 }
             }
         }

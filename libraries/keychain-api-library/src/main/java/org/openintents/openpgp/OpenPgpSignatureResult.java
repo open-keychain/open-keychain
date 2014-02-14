@@ -22,14 +22,14 @@ import android.os.Parcelable;
 public class OpenPgpSignatureResult implements Parcelable {
     // generic error on signature verification
     public static final int SIGNATURE_ERROR = 0;
-    // successfully verified signature, with trusted public key
-    public static final int SIGNATURE_SUCCESS_TRUSTED = 1;
+    // successfully verified signature, with certified public key
+    public static final int SIGNATURE_SUCCESS_CERTIFIED = 1;
     // no public key was found for this signature verification
     // you can retrieve the key with
     // getKeys(new String[] {String.valueOf(signatureResult.getKeyId)}, true, callback)
     public static final int SIGNATURE_UNKNOWN_PUB_KEY = 2;
-    // successfully verified signature, but with untrusted public key
-    public static final int SIGNATURE_SUCCESS_UNTRUSTED = 3;
+    // successfully verified signature, but with certified public key
+    public static final int SIGNATURE_SUCCESS_UNCERTIFIED = 3;
 
     int status;
     boolean signatureOnly;
