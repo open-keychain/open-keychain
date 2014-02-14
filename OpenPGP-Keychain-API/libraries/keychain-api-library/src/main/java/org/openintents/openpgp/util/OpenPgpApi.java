@@ -56,8 +56,11 @@ public class OpenPgpApi {
                         }
                     });
 
+            Bundle params = new Bundle();
+            params.putInt(OpenPgpConstants.PARAMS_API_VERSION, OpenPgpConstants.API_VERSION);
+
             // blocks until result is ready
-            Bundle result = mService.sign(null, input, output);
+            Bundle result = mService.sign(params, input, output);
             // close() is required to halt the TransferThread
             output.close();
 

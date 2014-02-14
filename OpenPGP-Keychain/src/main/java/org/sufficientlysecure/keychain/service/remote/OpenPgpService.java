@@ -522,9 +522,17 @@ public class OpenPgpService extends RemoteService {
         public Bundle sign(Bundle params, final ParcelFileDescriptor input, final ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            Bundle result = new Bundle();
+            if (params == null) {
+                Bundle result = new Bundle();
+                OpenPgpError error = new OpenPgpError(OpenPgpError.GENERIC_ERROR, "params Bundle required!");
+                result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
+                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+                return result;
+            }
+
             if (params.getInt(OpenPgpConstants.PARAMS_API_VERSION) != OpenPgpConstants.API_VERSION) {
                 // not compatible!
+                Bundle result = new Bundle();
                 OpenPgpError error = new OpenPgpError(OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
                 result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
                 result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
