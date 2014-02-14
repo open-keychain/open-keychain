@@ -301,6 +301,7 @@ public class OpenPgpProviderActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     sign(new Bundle());
                 }
+                break;
             }
             case REQUEST_CODE_ENCRYPT: {
                 Log.d(Constants.TAG, "resultCode: " + resultCode);
@@ -310,6 +311,7 @@ public class OpenPgpProviderActivity extends Activity {
                     // use data extras now as params for call (they now include key ids!
                     encrypt(data.getExtras());
                 }
+                break;
             }
             case REQUEST_CODE_SIGN_AND_ENCRYPT: {
                 Log.d(Constants.TAG, "resultCode: " + resultCode);
@@ -318,6 +320,7 @@ public class OpenPgpProviderActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     signAndEncrypt(data.getExtras());
                 }
+                break;
             }
             case REQUEST_CODE_DECRYPT_AND_VERIFY: {
                 Log.d(Constants.TAG, "resultCode: " + resultCode);
@@ -326,6 +329,7 @@ public class OpenPgpProviderActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     decryptAndVerify(new Bundle());
                 }
+                break;
             }
         }
     }
