@@ -142,6 +142,8 @@ public class OpenPgpProviderActivity extends Activity {
 
 
     public void sign(Bundle params) {
+        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
@@ -179,6 +181,7 @@ public class OpenPgpProviderActivity extends Activity {
 
     public void encrypt(Bundle params) {
         params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -217,6 +220,7 @@ public class OpenPgpProviderActivity extends Activity {
 
     public void signAndEncrypt(Bundle params) {
         params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -254,6 +258,8 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     public void decryptAndVerify(Bundle params) {
+        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+
         InputStream is = getInputstream(true);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
@@ -267,7 +273,7 @@ public class OpenPgpProviderActivity extends Activity {
                             Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
                                     + " str=" + os.toString("UTF-8"));
 
-                            mCiphertext.setText(os.toString("UTF-8"));
+                            mMessage.setText(os.toString("UTF-8"));
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
