@@ -586,9 +586,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     getKeysExpiryDates(mKeysView));
             data.putLong(KeychainIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
             data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
-            data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_ORIGINAL_IDS, );
-            data.putBooleanArray(KeychainIntentService.SAVE_KEYRING_ORIGINAL_IDS,
-                    toPrimitiveArray(mUserIdsView.getNeedsSavingArray()));
+            data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_DELETED_IDS,
+                    mUserIdsView.getDeletedIDs());
+            data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_ORIGINAL_IDS,
+                    mUserIdsView.getOriginalIDs());
             data.putBooleanArray(KeychainIntentService.SAVE_KEYRING_MODDED_KEYS,
                     toPrimitiveArray(mKeysView.getNeedsSavingArray()));
 

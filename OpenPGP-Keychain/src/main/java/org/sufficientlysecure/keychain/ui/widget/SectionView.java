@@ -65,6 +65,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private int mNewKeySize;
     private boolean canEdit = true;
     private boolean oldItemDeleted = false;
+    private ArrayList<String> mDeletedIDs = new ArrayList<String>();
 
     private ActionBarActivity mActivity;
 
@@ -135,6 +136,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /** {@inheritDoc} */
     public void onDeleted(Editor editor, boolean wasNewItem) {
         oldItemDeleted |= !wasNewItem;
+        if (oldItemDeleted && mType == Id.type.user_id)
+            mDeletedIDs.add(((UserIdEditor)editor).getOriginalID());
         this.updateEditorsVisible();
         if (mEditorListener != null) {
             mEditorListener.onEdited();
@@ -164,18 +167,30 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return ret;
     }
 
+    public ArrayList<String> getOriginalIDs()
+    {
+        ArrayList<String> orig = new ArrayList<String>();
+        if (mType == Id.type.user_id) {
+            for (int i = 0; i < mEditors.getChildCount(); ++i) {
+                UserIdEditor editor = (UserIdEditor) mEditors.getChildAt(i);
+                orig.add(editor.getOriginalID());
+            }
+            return orig;
+        } else {
+            return null;
+        }
+    }
+
+    public ArrayList<String> getDeletedIDs()
+    {
+        return mDeletedIDs;
+    }
+
     public List<Boolean> getNeedsSavingArray()
     {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
-            if (mType == Id.type.user_id) {
-                try {
-                    if (((UserIdEditor)editor).getValue().equals("")) //other code ignores empty user id
-                        continue;
-                } catch (UserIdEditor.InvalidEmailException e) {
-                }
-            }
             mList.add(editor.needsSaving());
         }
         return mList;

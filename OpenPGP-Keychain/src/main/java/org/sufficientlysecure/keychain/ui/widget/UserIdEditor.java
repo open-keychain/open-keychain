@@ -40,6 +40,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
 
     private BootstrapButton mDeleteButton;
     private RadioButton mIsMainUserId;
+    private String mOriginalID;
     private EditText mName;
     private String mOriginalName;
     private EditText mEmail;
@@ -130,6 +131,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mEmail.setText("");
         mOriginalEmail = "";
         mIsNewId = isNewId;
+        mOriginalID = userId;
 
         String[] result = PgpKeyHelper.splitUserId(userId);
         if (result[0] != null) {
@@ -225,5 +227,10 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         retval |= !(mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
         retval |= mIsNewId;
         return retval;
+    }
+
+    public String getOriginalID()
+    {
+        return mOriginalID;
     }
 }
