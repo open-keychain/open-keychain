@@ -362,10 +362,9 @@
         <activity
             android:name="org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:process=":remote_api"
-            android:taskAffinity=":remote_api" />
+            android:label="@string/app_name" />
+        <!--android:launchMode="singleTop"-->
+        <!--android:process=":remote_api"-->
         <activity
             android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

@@ -50,6 +50,8 @@ import org.sufficientlysecure.keychain.service.exception.WrongPassphraseExceptio
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -308,8 +310,20 @@ public class OpenPgpService extends RemoteService {
             String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
             if (passphrase == null) {
                 // TODO: we need to abort and return a passphrase Intent!
+
+                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+                // TODO: setComponent really needed for security?
+//                intent.setComponent(new ComponentName(Constants.PACKAGE_NAME,
+//                        "org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"));
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
+                intent.putExtra(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, appSettings.getKeyId());
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
+
+
                 Bundle result = new Bundle();
                 result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
 
                 return result;
             }
@@ -328,19 +342,19 @@ public class OpenPgpService extends RemoteService {
 
                 is.close();
                 os.close();
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Fail", e);
+//            } catch (IOException e) {
+//                Log.e(Constants.TAG, "Fail", e);
             } finally {
-                try {
+//                try {
                     is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                try {
                     os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
 
             Bundle result = new Bundle();
@@ -516,27 +530,42 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
+    /**
+     * Checks that params != null and API version fits
+     *
+     * @param params
+     * @return
+     */
+    private Bundle validateParamsAndVersion(Bundle params) {
+        if (params == null) {
+            Bundle result = new Bundle();
+            OpenPgpError error = new OpenPgpError(OpenPgpError.GENERIC_ERROR, "params Bundle required!");
+            result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            return result;
+        }
+
+        if (params.getInt(OpenPgpConstants.PARAMS_API_VERSION) != OpenPgpConstants.API_VERSION) {
+            // not compatible!
+            Bundle result = new Bundle();
+            OpenPgpError error = new OpenPgpError(OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
+            result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            return result;
+        }
+
+        return null;
+    }
+
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
         @Override
         public Bundle sign(Bundle params, final ParcelFileDescriptor input, final ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            if (params == null) {
-                Bundle result = new Bundle();
-                OpenPgpError error = new OpenPgpError(OpenPgpError.GENERIC_ERROR, "params Bundle required!");
-                result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
-                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
-                return result;
-            }
-
-            if (params.getInt(OpenPgpConstants.PARAMS_API_VERSION) != OpenPgpConstants.API_VERSION) {
-                // not compatible!
-                Bundle result = new Bundle();
-                OpenPgpError error = new OpenPgpError(OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
-                result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
-                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
-                return result;
+            Bundle errorResult = validateParamsAndVersion(params);
+            if (errorResult != null) {
+                return errorResult;
             }
 
 //            Runnable r = new Runnable() {

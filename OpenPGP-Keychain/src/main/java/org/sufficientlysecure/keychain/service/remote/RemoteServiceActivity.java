@@ -86,15 +86,15 @@ public class RemoteServiceActivity extends ActionBarActivity {
     protected void onStop() {
         super.onStop();
 
-        if (!finishHandled) {
-            Message msg = Message.obtain();
-            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
-            try {
-                mMessenger.send(msg);
-            } catch (RemoteException e) {
-                Log.e(Constants.TAG, "CryptoServiceActivity", e);
-            }
-        }
+//        if (!finishHandled) {
+//            Message msg = Message.obtain();
+//            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
+//            try {
+//                mMessenger.send(msg);
+//            } catch (RemoteException e) {
+//                Log.e(Constants.TAG, "CryptoServiceActivity", e);
+//            }
+//        }
     }
 
     protected void handleActions(Intent intent, Bundle savedInstanceState) {
@@ -237,7 +237,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                             Message msg = Message.obtain();
                             msg.arg1 = OpenPgpService.SelectPubKeysActivityCallback.CANCEL;
-                            ;
+
                             try {
                                 mMessenger.send(msg);
                             } catch (RemoteException e) {
@@ -313,25 +313,31 @@ public class RemoteServiceActivity extends ActionBarActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    Message msg = Message.obtain();
-                    msg.arg1 = OpenPgpService.PassphraseActivityCallback.OKAY;
-                    try {
-                        mMessenger.send(msg);
-                    } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
-                    }
+//                    Message msg = Message.obtain();
+//                    msg.arg1 = OpenPgpService.PassphraseActivityCallback.OKAY;
+//                    try {
+//                        mMessenger.send(msg);
+//                    } catch (RemoteException e) {
+//                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
+//                    }
+
+                    RemoteServiceActivity.this.setResult(RESULT_OK);
+                    RemoteServiceActivity.this.finish();
                 } else {
-                    Message msg = Message.obtain();
-                    msg.arg1 = OpenPgpService.PassphraseActivityCallback.CANCEL;
-                    try {
-                        mMessenger.send(msg);
-                    } catch (RemoteException e) {
-                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
-                    }
+//                    Message msg = Message.obtain();
+//                    msg.arg1 = OpenPgpService.PassphraseActivityCallback.CANCEL;
+//                    try {
+//                        mMessenger.send(msg);
+//                    } catch (RemoteException e) {
+//                        Log.e(Constants.TAG, "CryptoServiceActivity", e);
+//                    }
+
+                    RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                    RemoteServiceActivity.this.finish();
                 }
 
-                finishHandled = true;
-                finish();
+//                finishHandled = true;
+//                finish();
             }
         };
 
@@ -346,7 +352,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
         } catch (PgpGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+//            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
         }
     }
 }

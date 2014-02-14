@@ -300,7 +300,7 @@ public class DecryptActivity extends DrawerActivity {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text decryption, override action and extras to later
-                    // execute ACTION_DECRYPT in main actions
+                    // executeServiceMethod ACTION_DECRYPT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     action = ACTION_DECRYPT;
                 }

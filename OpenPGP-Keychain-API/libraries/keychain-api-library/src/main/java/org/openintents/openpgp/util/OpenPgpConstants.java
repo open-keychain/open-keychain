@@ -42,7 +42,7 @@ public class OpenPgpConstants {
     public static final int RESULT_CODE_ERROR = 0;
     // success!
     public static final int RESULT_CODE_SUCCESS = 1;
-    // execute intent and do it again with params from intent
+    // executeServiceMethod intent and do it again with params from intent
     public static final int RESULT_CODE_USER_INTERACTION_REQUIRED = 2;
 
 }
