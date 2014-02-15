@@ -21,16 +21,13 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import org.openintents.openpgp.OpenPgpError;
@@ -52,7 +49,7 @@ public class OpenPgpProviderActivity extends Activity {
     Button mSignAndEncrypt;
     Button mDecryptAndVerify;
 
-    OpenPgpServiceConnection mCryptoServiceConnection;
+    OpenPgpServiceConnection mServiceConnection;
 
     public static final int REQUEST_CODE_SIGN = 9910;
     public static final int REQUEST_CODE_ENCRYPT = 9911;
@@ -104,9 +101,9 @@ public class OpenPgpProviderActivity extends Activity {
             finish();
         } else {
             // bind to service
-            mCryptoServiceConnection = new OpenPgpServiceConnection(
+            mServiceConnection = new OpenPgpServiceConnection(
                     OpenPgpProviderActivity.this, providerPackageName);
-            mCryptoServiceConnection.bindToService();
+            mServiceConnection.bindToService();
         }
     }
 
@@ -124,6 +121,12 @@ public class OpenPgpProviderActivity extends Activity {
         });
     }
 
+    /**
+     * Takes input from message or ciphertext EditText and turns it into a ByteArrayInputStream
+     *
+     * @param ciphertext
+     * @return
+     */
     private InputStream getInputstream(boolean ciphertext) {
         InputStream is = null;
         try {
@@ -196,7 +199,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.sign(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
     }
 
@@ -207,7 +210,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.encrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
     }
 
@@ -218,7 +221,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.signAndEncrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
     }
 
@@ -228,7 +231,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(true);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.decryptAndVerify(params, is, os, new MyCallback(true, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
@@ -267,25 +270,8 @@ public class OpenPgpProviderActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
 
-        if (mCryptoServiceConnection != null) {
-            mCryptoServiceConnection.unbindFromService();
-        }
-    }
-
-    private static class OpenPgpProviderElement {
-        private String packageName;
-        private String simpleName;
-        private Drawable icon;
-
-        public OpenPgpProviderElement(String packageName, String simpleName, Drawable icon) {
-            this.packageName = packageName;
-            this.simpleName = simpleName;
-            this.icon = icon;
-        }
-
-        @Override
-        public String toString() {
-            return simpleName;
+        if (mServiceConnection != null) {
+            mServiceConnection.unbindFromService();
         }
     }
 
