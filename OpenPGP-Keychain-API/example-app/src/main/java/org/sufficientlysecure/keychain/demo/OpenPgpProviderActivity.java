@@ -44,6 +44,7 @@ import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +141,54 @@ public class OpenPgpProviderActivity extends Activity {
         return is;
     }
 
+    private class MyCallback implements OpenPgpApi.IOpenPgpCallback {
+        boolean returnToCiphertextField;
+        ByteArrayOutputStream os;
+        int requestCode;
+
+        private MyCallback(boolean returnToCiphertextField, ByteArrayOutputStream os, int requestCode) {
+            this.returnToCiphertextField = returnToCiphertextField;
+            this.os = os;
+            this.requestCode = requestCode;
+        }
+
+        @Override
+        public void onReturn(Bundle result) {
+            switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
+                case OpenPgpConstants.RESULT_CODE_SUCCESS: {
+                    try {
+                        Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
+                                + " str=" + os.toString("UTF-8"));
+
+                        if (returnToCiphertextField) {
+                            mCiphertext.setText(os.toString("UTF-8"));
+                        } else {
+                            mMessage.setText(os.toString("UTF-8"));
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        Log.e(Constants.TAG, "UnsupportedEncodingException", e);
+                    }
+                    break;
+                }
+                case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                    PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
+                    try {
+                        OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
+                                requestCode, null, 0, 0, 0);
+                    } catch (IntentSender.SendIntentException e) {
+                        Log.e(Constants.TAG, "SendIntentException", e);
+                    }
+                    break;
+                }
+                case OpenPgpConstants.RESULT_CODE_ERROR: {
+                    OpenPgpError error = result.getParcelable(OpenPgpConstants.RESULT_ERRORS);
+                    handleError(error);
+                    break;
+                }
+            }
+        }
+    }
+
 
     public void sign(Bundle params) {
         params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
@@ -148,34 +197,7 @@ public class OpenPgpProviderActivity extends Activity {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
-        api.sign(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
-            @Override
-            public void onReturn(Bundle result) {
-                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
-                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
-                        try {
-                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
-                                    + " str=" + os.toString("UTF-8"));
-
-                            mCiphertext.setText(os.toString("UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
-                        }
-                        break;
-                    }
-                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
-                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
-                        try {
-                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_SIGN, null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.e(Constants.TAG, "SendIntentException", e);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
+        api.sign(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
     }
 
     public void encrypt(Bundle params) {
@@ -186,34 +208,7 @@ public class OpenPgpProviderActivity extends Activity {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
-        api.encrypt(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
-            @Override
-            public void onReturn(Bundle result) {
-                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
-                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
-                        try {
-                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
-                                    + " str=" + os.toString("UTF-8"));
-
-                            mCiphertext.setText(os.toString("UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
-                        }
-                        break;
-                    }
-                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
-                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
-                        try {
-                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_ENCRYPT, null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.e(Constants.TAG, "SendIntentException", e);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
+        api.encrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
     }
 
     public void signAndEncrypt(Bundle params) {
@@ -224,34 +219,7 @@ public class OpenPgpProviderActivity extends Activity {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
-        api.signAndEncrypt(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
-            @Override
-            public void onReturn(Bundle result) {
-                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
-                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
-                        try {
-                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
-                                    + " str=" + os.toString("UTF-8"));
-
-                            mCiphertext.setText(os.toString("UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
-                        }
-                        break;
-                    }
-                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
-                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
-                        try {
-                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_SIGN_AND_ENCRYPT, null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.e(Constants.TAG, "SendIntentException", e);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
+        api.signAndEncrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
     }
 
     public void decryptAndVerify(Bundle params) {
@@ -261,34 +229,7 @@ public class OpenPgpProviderActivity extends Activity {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
-        api.decryptAndVerify(params, is, os, new OpenPgpApi.IOpenPgpCallback() {
-            @Override
-            public void onReturn(Bundle result) {
-                switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
-                    case OpenPgpConstants.RESULT_CODE_SUCCESS: {
-                        try {
-                            Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
-                                    + " str=" + os.toString("UTF-8"));
-
-                            mMessage.setText(os.toString("UTF-8"));
-                        } catch (UnsupportedEncodingException e) {
-                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
-                        }
-                        break;
-                    }
-                    case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
-                        PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
-                        try {
-                            OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_DECRYPT_AND_VERIFY, null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.e(Constants.TAG, "SendIntentException", e);
-                        }
-                        break;
-                    }
-                }
-            }
-        });
+        api.decryptAndVerify(params, is, os, new MyCallback(true, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
     @Override

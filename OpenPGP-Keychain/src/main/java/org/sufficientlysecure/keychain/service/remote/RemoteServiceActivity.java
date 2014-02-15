@@ -181,6 +181,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             ArrayList<String> dublicateUserIds = intent
                     .getStringArrayListExtra(EXTRA_DUBLICATE_USER_IDS);
 
+            // TODO: do this with spannable instead of HTML to prevent parsing failures with weird user ids
             String text = new String();
             text += "<b>" + getString(R.string.api_select_pub_keys_text) + "</b>";
             text += "<br/><br/>";
@@ -209,7 +210,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // sdd key ids to params Bundle for new request
+                            // add key ids to params Bundle for new request
                             Bundle params = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
                             params.putLongArray(OpenPgpConstants.PARAMS_KEY_IDS,
                                     mSelectFragment.getSelectedMasterKeyIds());
@@ -297,12 +298,12 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     // return given params again, for calling the service method again
                     Intent finishIntent = new Intent();
                     finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-                    RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                    setResult(RESULT_OK, finishIntent);
                 } else {
-                    RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                    setResult(RESULT_CANCELED);
                 }
 
-                RemoteServiceActivity.this.finish();
+                finish();
             }
         };
 
@@ -318,7 +319,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
             // return given params again, for calling the service method again
             Intent finishIntent = new Intent();
-            finishIntent.putExtras(params);
+            finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
             setResult(RESULT_OK, finishIntent);
             finish();
         }
