@@ -16,6 +16,7 @@
 
 package org.openintents.openpgp.util;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -30,6 +31,7 @@ import java.io.OutputStream;
 public class OpenPgpApi {
 
     IOpenPgpService mService;
+    Context mContext;
 
     private static final int OPERATION_SIGN = 0;
     private static final int OPERATION_ENCRYPT = 1;
@@ -37,7 +39,8 @@ public class OpenPgpApi {
     private static final int OPERATION_DECRYPT_VERIFY = 3;
     private static final int OPERATION_GET_KEY_IDS = 4;
 
-    public OpenPgpApi(IOpenPgpService service) {
+    public OpenPgpApi(Context context, IOpenPgpService service) {
+        this.mContext = context;
         this.mService = service;
     }
 
@@ -131,7 +134,7 @@ public class OpenPgpApi {
         try {
             params.putInt(OpenPgpConstants.PARAMS_API_VERSION, OpenPgpConstants.API_VERSION);
 
-            Bundle result = new Bundle();
+            Bundle result = null;
 
             if (operationId == OPERATION_GET_KEY_IDS) {
                 result = mService.getKeyIds(params);
@@ -173,6 +176,11 @@ public class OpenPgpApi {
                 }
                 // close() is required to halt the TransferThread
                 output.close();
+
+                // set class loader to current context to allow unparcelling
+                // of OpenPgpError and OpenPgpSignatureResult
+                // http://stackoverflow.com/a/3806769
+                result.setClassLoader(mContext.getClassLoader());
 
                 return result;
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,7 +195,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
         api.sign(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
     }
 
@@ -207,7 +206,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
         api.encrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
     }
 
@@ -218,7 +217,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
         api.signAndEncrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
     }
 
@@ -228,7 +227,7 @@ public class OpenPgpProviderActivity extends Activity {
         InputStream is = getInputstream(true);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-        OpenPgpApi api = new OpenPgpApi(mCryptoServiceConnection.getService());
+        OpenPgpApi api = new OpenPgpApi(this, mCryptoServiceConnection.getService());
         api.decryptAndVerify(params, is, os, new MyCallback(true, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
