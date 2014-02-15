@@ -141,7 +141,12 @@ public class OpenPgpService extends RemoteService {
     private Bundle signImpl(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
         try {
             // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-            String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+            String passphrase;
+            if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
+                passphrase = params.getString(OpenPgpConstants.PARAMS_PASSPHRASE);
+            } else {
+                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+            }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client
                 Bundle passphraseBundle = getPassphraseBundleIntent(params, appSettings.getKeyId());
@@ -212,8 +217,13 @@ public class OpenPgpService extends RemoteService {
 
                 PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
                 if (sign) {
-                    String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                            appSettings.getKeyId());
+                    String passphrase;
+                    if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
+                        passphrase = params.getString(OpenPgpConstants.PARAMS_PASSPHRASE);
+                    } else {
+                        passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
+                                appSettings.getKeyId());
+                    }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
                         Bundle passphraseBundle = getPassphraseBundleIntent(params, appSettings.getKeyId());
@@ -335,7 +345,12 @@ public class OpenPgpService extends RemoteService {
 //                    Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
                 // NOTE: currently this only gets the passphrase for the saved key
-                String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+                String passphrase;
+                if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
+                    passphrase = params.getString(OpenPgpConstants.PARAMS_PASSPHRASE);
+                } else {
+                    passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+                }
                 if (passphrase == null) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
                     Bundle passphraseBundle = getPassphraseBundleIntent(params, appSettings.getKeyId());
