@@ -295,7 +295,7 @@
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
-    <string name="progress_generating">generating key, this can take a while…</string>
+    <string name="progress_generating">generating key, this can take up to 3 minutes…</string>
     <string name="progress_building_key">building key…</string>
     <string name="progress_preparing_master_key">preparing master key…</string>
     <string name="progress_certifying_master_key">certifying master key…</string>
