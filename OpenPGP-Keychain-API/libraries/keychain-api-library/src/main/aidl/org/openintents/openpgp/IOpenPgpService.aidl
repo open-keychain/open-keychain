@@ -22,38 +22,42 @@ interface IOpenPgpService {
      * General extras
      * --------------
      * 
-     * params:
-     * int                      api_version         (current: 1)
-     * boolean                  ascii_armor         true/false (for output)
-     * String                   passphrase (for key, optional)
+     * Bundle params:
+     * int          api_version (required)
+     * boolean      ascii_armor (request ascii armor for ouput)
      *
-     * Bundle return:
-     * int                      result_code         0,1, or 2 (see OpenPgpConstants)
-     * OpenPgpSignatureResult   signature_result
-     * OpenPgpError             error
-     * Intent                   intent
+     * returned Bundle:
+     * int          result_code (0, 1, or 2 (see OpenPgpConstants))
+     * OpenPgpError error       (if result_code == 0)
+     * Intent       intent      (if result_code == 2)
      *
      */
 
     /**
-     * sign only
+     * Sign only
+     *
+     * optional params:
+     * String       passphrase  (for key passphrase)
      */
     Bundle sign(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 
     /**
-     * encrypt
+     * Encrypt
      *
-     * params:
+     * Bundle params:
      * long[]       key_ids
      * or
-     * String[]     user_ids (= emails of recipients) (if more than one key has this user_id, an Intent is returned)
+     * String[]     user_ids    (= emails of recipients) (if more than one key has this user_id, a PendingIntent is returned)
+     *
+     * optional params:
+     * String       passphrase  (for key passphrase)
      */
     Bundle encrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 
     /**
-     * sign and encrypt
+     * Sign and encrypt
      *
-     * params:
+     * Bundle params:
      * same as in encrypt()
      */
     Bundle signAndEncrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
@@ -61,16 +65,19 @@ interface IOpenPgpService {
     /**
      * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
      * and also signed-only input.
+     *
+     * returned Bundle:
+     * OpenPgpSignatureResult   signature_result
      */
     Bundle decryptAndVerify(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 
     /**
      * Retrieves key ids based on given user ids (=emails)
      *
-     * params:
+     * Bundle params:
      * String[]     user_ids
      *
-     * result:
+     * returned Bundle:
      * long[]       key_ids
      */
     Bundle getKeyIds(in Bundle params);
