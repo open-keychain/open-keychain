@@ -33,6 +33,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sufficientlysecure.keychain.api.R;
+
 public class OpenPgpListPreference extends DialogPreference {
     ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
     private String mSelectedPackage;
@@ -55,6 +57,10 @@ public class OpenPgpListPreference extends DialogPreference {
                 mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
             }
         }
+
+        // add "none"
+        mProviderList.add(0, new OpenPgpProviderEntry("", context.getString(R.string.openpgp_list_preference_none),
+                context.getResources().getDrawable(R.drawable.ic_action_cancel_launchersize)));
     }
 
     public OpenPgpListPreference(Context context) {
