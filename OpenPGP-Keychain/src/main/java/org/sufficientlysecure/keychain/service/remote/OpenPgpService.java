@@ -46,6 +46,9 @@ import java.util.ArrayList;
 
 public class OpenPgpService extends RemoteService {
 
+    private static final int PRIVATE_REQUEST_CODE_PASSPHRASE = 551;
+    private static final int PRIVATE_REQUEST_CODE_USER_IDS = 552;
+
 
     /**
      * Search database for key ids based on emails.
@@ -95,7 +98,7 @@ public class OpenPgpService extends RemoteService {
             intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
             intent.putExtra(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS, dublicateUserIds);
 
-            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_USER_IDS, intent, 0);
 
             // return PendingIntent to be executed by client
             Bundle result = new Bundle();
@@ -120,7 +123,7 @@ public class OpenPgpService extends RemoteService {
         Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
         intent.setAction(RemoteServiceActivity.ACTION_CACHE_PASSPHRASE);
         intent.putExtra(RemoteServiceActivity.EXTRA_SECRET_KEY_ID, keyId);
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 42, intent, 0);
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_PASSPHRASE, intent, 0);
 
         // return PendingIntent to be executed by client
         Bundle result = new Bundle();
@@ -128,6 +131,46 @@ public class OpenPgpService extends RemoteService {
         result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
 
         return result;
+    }
+
+
+    // TODO: asciiArmor?!
+    private Bundle signImpl(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
+        try {
+            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
+            String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+            if (passphrase == null) {
+                // get PendingIntent for passphrase input, add it to given params and return to client
+                Bundle passphraseBundle = getPassphraseBundleIntent(appSettings.getKeyId());
+                params.putAll(passphraseBundle);
+                return params;
+            }
+
+            // Get Input- and OutputStream from ParcelFileDescriptor
+            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
+            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
+            try {
+                long inputLength = is.available();
+                InputData inputData = new InputData(is, inputLength);
+
+                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
+                operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
+                        Preferences.getPreferences(this).getForceV3Signatures());
+            } finally {
+                is.close();
+                os.close();
+            }
+
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
+            return result;
+        } catch (Exception e) {
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            return result;
+        }
     }
 
     private Bundle encryptAndSignImpl(Bundle params, ParcelFileDescriptor input,
@@ -143,13 +186,14 @@ public class OpenPgpService extends RemoteService {
                 // get key ids based on given user ids
                 String[] userIds = params.getStringArray(OpenPgpConstants.PARAMS_USER_IDS);
                 Bundle result = getKeyIdsFromEmails(userIds);
-                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
 
                 if (result.getInt(OpenPgpConstants.RESULT_CODE, 0) == OpenPgpConstants.RESULT_CODE_SUCCESS) {
                     keyIds = result.getLongArray(OpenPgpConstants.PARAMS_KEY_IDS);
                 } else {
-                    // non-unique result, we need user interaction!
-                    return result;
+                    // if not success -> result contains a PendingIntent for user interaction
+                    // return all old params with the new PendingIntent to client!
+                    params.putAll(result);
+                    return params;
                 }
             }
 
@@ -170,7 +214,10 @@ public class OpenPgpService extends RemoteService {
                     String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
                             appSettings.getKeyId());
                     if (passphrase == null) {
-                        return getPassphraseBundleIntent(appSettings.getKeyId());
+                        // get PendingIntent for passphrase input, add it to given params and return to client
+                        Bundle passphraseBundle = getPassphraseBundleIntent(appSettings.getKeyId());
+                        params.putAll(passphraseBundle);
+                        return params;
                     }
 
                     operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
@@ -181,42 +228,6 @@ public class OpenPgpService extends RemoteService {
                             appSettings.getEncryptionAlgorithm(), Id.key.none,
                             appSettings.getHashAlgorithm(), true, null);
                 }
-            } finally {
-                is.close();
-                os.close();
-            }
-
-            Bundle result = new Bundle();
-            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
-            return result;
-        } catch (Exception e) {
-            Bundle result = new Bundle();
-            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
-            result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-            return result;
-        }
-    }
-
-    // TODO: asciiArmor?!
-    private Bundle signImpl(ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
-        try {
-            // get passphrase from cache, if key has "no" passphrase, this returns an empty String
-            String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
-            if (passphrase == null) {
-                return getPassphraseBundleIntent(appSettings.getKeyId());
-            }
-
-            // Get Input- and OutputStream from ParcelFileDescriptor
-            InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
-            OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
-            try {
-                long inputLength = is.available();
-                InputData inputData = new InputData(is, inputLength);
-
-                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
-                operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
-                        Preferences.getPreferences(this).getForceV3Signatures());
             } finally {
                 is.close();
                 os.close();
@@ -323,11 +334,14 @@ public class OpenPgpService extends RemoteService {
 //
 //                    Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
-                    // NOTE: currently this only gets the passphrase for the saved key
-                    String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
-                    if (passphrase == null) {
-                        return getPassphraseBundleIntent(appSettings.getKeyId());
-                    }
+                // NOTE: currently this only gets the passphrase for the saved key
+                String passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+                if (passphrase == null) {
+                    // get PendingIntent for passphrase input, add it to given params and return to client
+                    Bundle passphraseBundle = getPassphraseBundleIntent(appSettings.getKeyId());
+                    params.putAll(passphraseBundle);
+                    return params;
+                }
 //                }
 
                 // build InputData and write into OutputStream
@@ -390,6 +404,15 @@ public class OpenPgpService extends RemoteService {
         }
     }
 
+    private Bundle getKeyIdsImpl(Bundle params) {
+        // get key ids based on given user ids
+        String[] userIds = params.getStringArray(OpenPgpConstants.PARAMS_USER_IDS);
+        Bundle result = getKeyIdsFromEmails(userIds);
+
+        params.putAll(result);
+        return params;
+    }
+
     /**
      * Checks that params != null and API version fits
      *
@@ -430,7 +453,7 @@ public class OpenPgpService extends RemoteService {
                 return errorResult;
             }
 
-            return signImpl(input, output, appSettings);
+            return signImpl(params, input, output, appSettings);
         }
 
         @Override
@@ -459,10 +482,27 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public Bundle decryptAndVerify(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
+            final AppSettings appSettings = getAppSettings();
 
-            return null;
+            Bundle errorResult = validateParamsAndVersion(params);
+            if (errorResult != null) {
+                return errorResult;
+            }
+
+            return decryptAndVerifyImpl(params, input, output, appSettings);
         }
 
+        @Override
+        public Bundle getKeyIds(Bundle params) {
+            Bundle errorResult = validateParamsAndVersion(params);
+            if (errorResult != null) {
+                return errorResult;
+            }
+
+            return getKeyIdsImpl(params);
+        }
+
+        // TODO: old example for checkAndEnqueue!
 //        @Override
 //        public void getKeyIds(final String[] userIds, final boolean allowUserInteraction,
 //                final IOpenPgpKeyIdsCallback callback) throws RemoteException {

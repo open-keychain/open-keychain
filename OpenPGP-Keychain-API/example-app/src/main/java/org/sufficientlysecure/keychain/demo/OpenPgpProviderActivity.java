@@ -159,7 +159,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                             mCiphertext.setText(os.toString("UTF-8"));
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                         }
                         break;
                     }
@@ -170,7 +170,7 @@ public class OpenPgpProviderActivity extends Activity {
                                     REQUEST_CODE_SIGN, null,
                                     0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "SendIntentException", e);
                         }
                         break;
                     }
@@ -198,7 +198,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                             mCiphertext.setText(os.toString("UTF-8"));
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                         }
                         break;
                     }
@@ -209,7 +209,7 @@ public class OpenPgpProviderActivity extends Activity {
                                     REQUEST_CODE_ENCRYPT, null,
                                     0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "SendIntentException", e);
                         }
                         break;
                     }
@@ -237,7 +237,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                             mCiphertext.setText(os.toString("UTF-8"));
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                         }
                         break;
                     }
@@ -248,7 +248,7 @@ public class OpenPgpProviderActivity extends Activity {
                                     REQUEST_CODE_SIGN_AND_ENCRYPT, null,
                                     0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "SendIntentException", e);
                         }
                         break;
                     }
@@ -275,7 +275,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                             mMessage.setText(os.toString("UTF-8"));
                         } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                         }
                         break;
                     }
@@ -286,7 +286,7 @@ public class OpenPgpProviderActivity extends Activity {
                                     REQUEST_CODE_DECRYPT_AND_VERIFY, null,
                                     0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
+                            Log.e(Constants.TAG, "SendIntentException", e);
                         }
                         break;
                     }
@@ -297,7 +297,8 @@ public class OpenPgpProviderActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+
         Log.d(Constants.TAG, "onActivityResult");
         switch (requestCode) {
             case REQUEST_CODE_SIGN: {
@@ -305,7 +306,7 @@ public class OpenPgpProviderActivity extends Activity {
 
                 // try to sign again after password caching
                 if (resultCode == RESULT_OK) {
-                    sign(new Bundle());
+                    sign(data.getExtras());
                 }
                 break;
             }

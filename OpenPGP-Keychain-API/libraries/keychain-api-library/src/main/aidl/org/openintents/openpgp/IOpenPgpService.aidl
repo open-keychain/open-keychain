@@ -64,4 +64,15 @@ interface IOpenPgpService {
      */
     Bundle decryptAndVerify(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 
+    /**
+     * Retrieves key ids based on given user ids (=emails)
+     *
+     * params:
+     * String[]     user_ids
+     *
+     * result:
+     * long[]       key_ids
+     */
+    Bundle getKeyIds(in Bundle params);
+
 }

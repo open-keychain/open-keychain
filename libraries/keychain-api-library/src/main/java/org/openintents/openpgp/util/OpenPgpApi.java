@@ -35,6 +35,7 @@ public class OpenPgpApi {
     private static final int OPERATION_ENCRYPT = 1;
     private static final int OPERATION_SIGN_ENCRYPT = 2;
     private static final int OPERATION_DECRYPT_VERIFY = 3;
+    private static final int OPERATION_GET_KEY_IDS = 4;
 
     public OpenPgpApi(IOpenPgpService service) {
         this.mService = service;
@@ -88,6 +89,10 @@ public class OpenPgpApi {
         executeApiAsync(OPERATION_DECRYPT_VERIFY, params, is, os, callback);
     }
 
+    public Bundle getKeyIds(Bundle params) {
+        return executeApi(OPERATION_GET_KEY_IDS, params, null, null);
+    }
+
     public interface IOpenPgpCallback {
         void onReturn(final Bundle result);
     }
@@ -124,24 +129,6 @@ public class OpenPgpApi {
 
     private Bundle executeApi(int operationId, Bundle params, InputStream is, OutputStream os) {
         try {
-            // send the input and output pfds
-            ParcelFileDescriptor input = ParcelFileDescriptorUtil.pipeFrom(is,
-                    new ParcelFileDescriptorUtil.IThreadListener() {
-
-                        @Override
-                        public void onThreadFinished(Thread thread) {
-                            Log.d(OpenPgpConstants.TAG, "Copy to service finished");
-                        }
-                    });
-            ParcelFileDescriptor output = ParcelFileDescriptorUtil.pipeTo(os,
-                    new ParcelFileDescriptorUtil.IThreadListener() {
-
-                        @Override
-                        public void onThreadFinished(Thread thread) {
-                            Log.d(OpenPgpConstants.TAG, "Service finished writing!");
-                        }
-                    });
-
             params.putInt(OpenPgpConstants.PARAMS_API_VERSION, OpenPgpConstants.API_VERSION);
 
             // default result is error
@@ -150,25 +137,49 @@ public class OpenPgpApi {
             result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, "This should never happen!"));
 
-            // blocks until result is ready
-            switch (operationId) {
-                case OPERATION_SIGN:
-                    result = mService.sign(params, input, output);
-                    break;
-                case OPERATION_ENCRYPT:
-                    result = mService.encrypt(params, input, output);
-                    break;
-                case OPERATION_SIGN_ENCRYPT:
-                    result = mService.signAndEncrypt(params, input, output);
-                    break;
-                case OPERATION_DECRYPT_VERIFY:
-                    result = mService.decryptAndVerify(params, input, output);
-                    break;
-            }
-            // close() is required to halt the TransferThread
-            output.close();
+            if (operationId == OPERATION_GET_KEY_IDS) {
+                result = mService.getKeyIds(params);
+                return result;
+            } else {
+                // send the input and output pfds
+                ParcelFileDescriptor input = ParcelFileDescriptorUtil.pipeFrom(is,
+                        new ParcelFileDescriptorUtil.IThreadListener() {
 
-            return result;
+                            @Override
+                            public void onThreadFinished(Thread thread) {
+                                Log.d(OpenPgpConstants.TAG, "Copy to service finished");
+                            }
+                        });
+                ParcelFileDescriptor output = ParcelFileDescriptorUtil.pipeTo(os,
+                        new ParcelFileDescriptorUtil.IThreadListener() {
+
+                            @Override
+                            public void onThreadFinished(Thread thread) {
+                                Log.d(OpenPgpConstants.TAG, "Service finished writing!");
+                            }
+                        });
+
+
+                // blocks until result is ready
+                switch (operationId) {
+                    case OPERATION_SIGN:
+                        result = mService.sign(params, input, output);
+                        break;
+                    case OPERATION_ENCRYPT:
+                        result = mService.encrypt(params, input, output);
+                        break;
+                    case OPERATION_SIGN_ENCRYPT:
+                        result = mService.signAndEncrypt(params, input, output);
+                        break;
+                    case OPERATION_DECRYPT_VERIFY:
+                        result = mService.decryptAndVerify(params, input, output);
+                        break;
+                }
+                // close() is required to halt the TransferThread
+                output.close();
+
+                return result;
+            }
         } catch (Exception e) {
             Log.e(OpenPgpConstants.TAG, "Exception", e);
             Bundle result = new Bundle();

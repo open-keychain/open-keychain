@@ -87,12 +87,12 @@ public class ParcelFileDescriptorUtil {
                 try {
                     mIn.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
                 }
                 try {
                     mOut.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
                 }
             }
             if (mListener != null) {
