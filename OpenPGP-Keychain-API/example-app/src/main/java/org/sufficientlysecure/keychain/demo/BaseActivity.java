@@ -16,9 +16,6 @@
 
 package org.sufficientlysecure.keychain.demo;
 
-import org.sufficientlysecure.keychain.demo.R;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -27,10 +24,7 @@ import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
 public class BaseActivity extends PreferenceActivity {
-    private Activity mActivity;
-
     private Preference mIntentDemo;
-    private Preference mContentProviderDemo;
     private Preference mCryptoProvider;
 
     /**
@@ -40,14 +34,11 @@ public class BaseActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mActivity = this;
-
         // load preferences from xml
         addPreferencesFromResource(R.xml.base_preference);
 
         // find preferences
         mIntentDemo = (Preference) findPreference("intent_demo");
-        mContentProviderDemo = (Preference) findPreference("content_provider_demo");
         mCryptoProvider = (Preference) findPreference("openpgp_provider_demo");
 
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -63,12 +54,11 @@ public class BaseActivity extends PreferenceActivity {
         mCryptoProvider.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(mActivity, OpenPgpProviderActivity.class));
+                startActivity(new Intent(BaseActivity.this, OpenPgpProviderActivity.class));
 
                 return false;
             }
         });
-
     }
 
 }

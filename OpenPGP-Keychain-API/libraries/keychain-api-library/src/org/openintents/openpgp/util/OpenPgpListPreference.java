@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
@@ -159,6 +160,16 @@ public class OpenPgpListPreference extends DialogPreference {
 
     public String getEntry() {
         return getEntryByValue(mSelectedPackage);
+    }
+
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        return a.getString(index);
+    }
+
+    @Override
+    protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
+        setValue(restoreValue ? getPersistedString(mSelectedPackage) : (String) defaultValue);
     }
 
     public String getEntryByValue(String packageName) {

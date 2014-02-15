@@ -35,7 +35,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpConstants;
@@ -49,8 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OpenPgpProviderActivity extends Activity {
-    Activity mActivity;
-
     EditText mMessage;
     EditText mCiphertext;
     EditText mEncryptUserIds;
@@ -59,7 +56,7 @@ public class OpenPgpProviderActivity extends Activity {
     Button mSignAndEncrypt;
     Button mDecryptAndVerify;
 
-    private OpenPgpServiceConnection mCryptoServiceConnection;
+    OpenPgpServiceConnection mCryptoServiceConnection;
 
     public static final int REQUEST_CODE_SIGN = 9910;
     public static final int REQUEST_CODE_ENCRYPT = 9911;
@@ -71,16 +68,14 @@ public class OpenPgpProviderActivity extends Activity {
         super.onCreate(icicle);
         setContentView(R.layout.openpgp_provider);
 
-        mActivity = this;
-
         mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
         mCiphertext = (EditText) findViewById(R.id.crypto_provider_demo_ciphertext);
         mEncryptUserIds = (EditText) findViewById(R.id.crypto_provider_demo_encrypt_user_id);
-
         mSign = (Button) findViewById(R.id.crypto_provider_demo_sign);
         mEncrypt = (Button) findViewById(R.id.crypto_provider_demo_encrypt);
         mSignAndEncrypt = (Button) findViewById(R.id.crypto_provider_demo_sign_and_encrypt);
         mDecryptAndVerify = (Button) findViewById(R.id.crypto_provider_demo_decrypt_and_verify);
+
         mSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,11 +105,11 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     private void handleError(final OpenPgpError error) {
-        mActivity.runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                Toast.makeText(mActivity,
+                Toast.makeText(OpenPgpProviderActivity.this,
                         "onError id:" + error.getErrorId() + "\n\n" + error.getMessage(),
                         Toast.LENGTH_LONG).show();
                 Log.e(Constants.TAG, "onError getErrorId:" + error.getErrorId());
