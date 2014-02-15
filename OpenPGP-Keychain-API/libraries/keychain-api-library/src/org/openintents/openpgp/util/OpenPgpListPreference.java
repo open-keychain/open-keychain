@@ -36,31 +36,11 @@ import java.util.List;
 import org.sufficientlysecure.keychain.api.R;
 
 public class OpenPgpListPreference extends DialogPreference {
-    ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
+    private ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
     private String mSelectedPackage;
 
     public OpenPgpListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
-        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(intent, 0);
-        if (!resInfo.isEmpty()) {
-            for (ResolveInfo resolveInfo : resInfo) {
-                if (resolveInfo.serviceInfo == null)
-                    continue;
-
-                String packageName = resolveInfo.serviceInfo.packageName;
-                String simpleName = String.valueOf(resolveInfo.serviceInfo.loadLabel(context
-                        .getPackageManager()));
-                Drawable icon = resolveInfo.serviceInfo.loadIcon(context.getPackageManager());
-
-                mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
-            }
-        }
-
-        // add "none"
-        mProviderList.add(0, new OpenPgpProviderEntry("", context.getString(R.string.openpgp_list_preference_none),
-                context.getResources().getDrawable(R.drawable.ic_action_cancel_launchersize)));
     }
 
     public OpenPgpListPreference(Context context) {
@@ -68,7 +48,7 @@ public class OpenPgpListPreference extends DialogPreference {
     }
 
     /**
-     * Can be used to add "no selection"
+     * Public method to add new entries for legacy applications
      *
      * @param packageName
      * @param simpleName
@@ -80,6 +60,30 @@ public class OpenPgpListPreference extends DialogPreference {
 
     @Override
     protected void onPrepareDialogBuilder(Builder builder) {
+
+        // get providers
+        mProviderList.clear();
+        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
+        List<ResolveInfo> resInfo = getContext().getPackageManager().queryIntentServices(intent, 0);
+        if (!resInfo.isEmpty()) {
+            for (ResolveInfo resolveInfo : resInfo) {
+                if (resolveInfo.serviceInfo == null)
+                    continue;
+
+                String packageName = resolveInfo.serviceInfo.packageName;
+                String simpleName = String.valueOf(resolveInfo.serviceInfo.loadLabel(getContext()
+                        .getPackageManager()));
+                Drawable icon = resolveInfo.serviceInfo.loadIcon(getContext().getPackageManager());
+
+                mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
+            }
+        }
+
+        // add "none"-entry
+        mProviderList.add(0, new OpenPgpProviderEntry("",
+                getContext().getString(R.string.openpgp_list_preference_none),
+                getContext().getResources().getDrawable(R.drawable.ic_action_cancel_launchersize)));
+
         // Init ArrayAdapter with OpenPGP Providers
         ListAdapter adapter = new ArrayAdapter<OpenPgpProviderEntry>(getContext(),
                 android.R.layout.select_dialog_singlechoice, android.R.id.text1, mProviderList) {
