@@ -57,6 +57,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             + "IMPORT_KEY_FROM_QR_CODE";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEYSERVER";
+    // TODO: implement:
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
 

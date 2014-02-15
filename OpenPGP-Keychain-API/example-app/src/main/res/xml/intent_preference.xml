@@ -22,7 +22,7 @@
             android:title="IMPORT_KEY_FROM_QR_CODE" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Special Intents">
-        <org.openintents.openpgp.util.OpenPgpListPreference
+        <Preference
             android:key="openpgp4fpr"
             android:title="VIEW openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282" />
     </PreferenceCategory>
