@@ -298,12 +298,12 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     // return given params again, for calling the service method again
                     Intent finishIntent = new Intent();
                     finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-                    setResult(RESULT_OK, finishIntent);
+                    RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
                 } else {
-                    setResult(RESULT_CANCELED);
+                    RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                 }
 
-                finish();
+                RemoteServiceActivity.this.finish();
             }
         };
 
@@ -316,7 +316,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            Log.d(Constants.TAG, "No passphrase for this secret key, do pgp operation directly!");
             // return given params again, for calling the service method again
             Intent finishIntent = new Intent();
             finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
