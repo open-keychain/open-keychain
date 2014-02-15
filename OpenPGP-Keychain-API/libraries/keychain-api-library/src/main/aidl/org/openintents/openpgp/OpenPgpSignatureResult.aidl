@@ -16,5 +16,7 @@
  
 package org.openintents.openpgp;
 
+import org.openintents.openpgp.OpenPgpSignatureResult;
+
 // Declare OpenPgpSignatureResult so AIDL can find it and knows that it implements the parcelable protocol.
 parcelable OpenPgpSignatureResult;

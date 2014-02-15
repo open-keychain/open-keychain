@@ -16,16 +16,11 @@
 
 package org.openintents.openpgp.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
@@ -35,6 +30,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OpenPgpListPreference extends DialogPreference {
     ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
     private String mSelectedPackage;
@@ -42,8 +40,8 @@ public class OpenPgpListPreference extends DialogPreference {
     public OpenPgpListPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(
-                new Intent(OpenPgpConstants.SERVICE_INTENT), PackageManager.GET_META_DATA);
+        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
+        List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {
             for (ResolveInfo resolveInfo : resInfo) {
                 if (resolveInfo.serviceInfo == null)
@@ -54,12 +52,7 @@ public class OpenPgpListPreference extends DialogPreference {
                         .getPackageManager()));
                 Drawable icon = resolveInfo.serviceInfo.loadIcon(context.getPackageManager());
 
-                // get api version
-                ServiceInfo si = resolveInfo.serviceInfo;
-                int apiVersion = si.metaData.getInt("api_version");
-
-                mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon,
-                        apiVersion));
+                mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
             }
         }
     }
@@ -75,10 +68,8 @@ public class OpenPgpListPreference extends DialogPreference {
      * @param simpleName
      * @param icon
      */
-    public void addProvider(int position, String packageName, String simpleName, Drawable icon,
-                            int apiVersion) {
-        mProviderList.add(position, new OpenPgpProviderEntry(packageName, simpleName, icon,
-                apiVersion));
+    public void addProvider(int position, String packageName, String simpleName, Drawable icon) {
+        mProviderList.add(position, new OpenPgpProviderEntry(packageName, simpleName, icon));
     }
 
     @Override
@@ -98,15 +89,6 @@ public class OpenPgpListPreference extends DialogPreference {
                 // Add margin between image and text (support various screen densities)
                 int dp10 = (int) (10 * getContext().getResources().getDisplayMetrics().density + 0.5f);
                 tv.setCompoundDrawablePadding(dp10);
-
-                // disable if it has the wrong api_version
-                if (mProviderList.get(position).apiVersion == OpenPgpConstants.API_VERSION) {
-                    tv.setEnabled(true);
-                } else {
-                    tv.setEnabled(false);
-                    tv.setText(tv.getText() + " (API v" + mProviderList.get(position).apiVersion
-                            + ", needs v" + OpenPgpConstants.API_VERSION + ")");
-                }
 
                 return v;
             }
@@ -183,14 +165,11 @@ public class OpenPgpListPreference extends DialogPreference {
         private String packageName;
         private String simpleName;
         private Drawable icon;
-        private int apiVersion;
 
-        public OpenPgpProviderEntry(String packageName, String simpleName, Drawable icon,
-                                    int apiVersion) {
+        public OpenPgpProviderEntry(String packageName, String simpleName, Drawable icon) {
             this.packageName = packageName;
             this.simpleName = simpleName;
             this.icon = icon;
-            this.apiVersion = apiVersion;
         }
 
         @Override

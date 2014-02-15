@@ -138,7 +138,8 @@ public class OpenPgpService extends RemoteService {
 
 
     // TODO: asciiArmor?!
-    private Bundle signImpl(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output, AppSettings appSettings) {
+    private Bundle signImpl(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output,
+                            AppSettings appSettings) {
         try {
             // get passphrase from cache, if key has "no" passphrase, this returns an empty String
             String passphrase;

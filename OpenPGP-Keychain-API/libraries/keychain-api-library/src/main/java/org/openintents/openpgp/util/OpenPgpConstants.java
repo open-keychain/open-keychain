@@ -32,6 +32,8 @@ public class OpenPgpConstants {
     // (for encrypt method)
     public static final String PARAMS_USER_IDS = "user_ids";
     public static final String PARAMS_KEY_IDS = "key_ids";
+    // optional parameter:
+    public static final String PARAMS_PASSPHRASE = "passphrase";
 
     /* Service Bundle returns */
     public static final String RESULT_CODE = "result_code";

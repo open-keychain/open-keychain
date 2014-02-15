@@ -61,11 +61,12 @@ public class OpenPgpServiceConnection {
 
     /**
      * If not already bound, bind!
-     * 
+     *
      * @return
      */
     public boolean bindToService() {
-        if (mService == null && !mBound) { // if not already connected
+        // if not already connected
+        if (mService == null && !mBound) {
             try {
                 Log.d(OpenPgpConstants.TAG, "not bound yet");
 

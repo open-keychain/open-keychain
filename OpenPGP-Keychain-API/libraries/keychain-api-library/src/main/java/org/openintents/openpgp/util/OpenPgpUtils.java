@@ -17,6 +17,7 @@
 package org.openintents.openpgp.util;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
@@ -24,22 +25,33 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
 public class OpenPgpUtils {
-    private Context context;
 
-    public static Pattern PGP_MESSAGE = Pattern.compile(
-            ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);
+    public static final Pattern PGP_MESSAGE = Pattern.compile(
+            ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*",
+            Pattern.DOTALL);
 
-    public static Pattern PGP_SIGNED_MESSAGE = Pattern
-            .compile(
-                    ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
-                    Pattern.DOTALL);
+    public static final Pattern PGP_SIGNED_MESSAGE = Pattern.compile(
+            ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+            Pattern.DOTALL);
 
-    public OpenPgpUtils(Context context) {
-        super();
-        this.context = context;
+    public static final int PARSE_RESULT_NO_PGP = -1;
+    public static final int PARSE_RESULT_MESSAGE = 0;
+    public static final int PARSE_RESULT_SIGNED_MESSAGE = 1;
+
+    public static int parseMessage(String message) {
+        Matcher matcherSigned = PGP_SIGNED_MESSAGE.matcher(message);
+        Matcher matcherMessage = PGP_MESSAGE.matcher(message);
+
+        if (matcherMessage.matches()) {
+            return PARSE_RESULT_MESSAGE;
+        } else if (matcherSigned.matches()) {
+            return PARSE_RESULT_SIGNED_MESSAGE;
+        } else {
+            return PARSE_RESULT_NO_PGP;
+        }
     }
 
-    public boolean isAvailable() {
+    public static boolean isAvailable(Context context) {
         Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
         List<ResolveInfo> resInfo = context.getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {

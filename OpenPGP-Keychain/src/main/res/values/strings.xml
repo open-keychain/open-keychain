@@ -383,7 +383,7 @@
     <string name="api_settings_revoke">Revoke access</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
-    <string name="api_register_text">The following application requests access to OpenPGP Keychain.\n\nAllow access (you can revoke it later)?</string>
+    <string name="api_register_text">The displayed application requests access to OpenPGP Keychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>

@@ -16,5 +16,7 @@
  
 package org.openintents.openpgp;
 
+import org.openintents.openpgp.OpenPgpError;
+
 // Declare OpenPgpError so AIDL can find it and knows that it implements the parcelable protocol.
 parcelable OpenPgpError;
