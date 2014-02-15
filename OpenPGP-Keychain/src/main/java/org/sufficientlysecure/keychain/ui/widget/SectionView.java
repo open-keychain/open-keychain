@@ -66,6 +66,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private boolean canEdit = true;
     private boolean oldItemDeleted = false;
     private ArrayList<String> mDeletedIDs = new ArrayList<String>();
+    private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
 
     private ActionBarActivity mActivity;
 
@@ -136,8 +137,13 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /** {@inheritDoc} */
     public void onDeleted(Editor editor, boolean wasNewItem) {
         oldItemDeleted |= !wasNewItem;
-        if (oldItemDeleted && mType == Id.type.user_id)
-            mDeletedIDs.add(((UserIdEditor)editor).getOriginalID());
+        if (oldItemDeleted) {
+            if (mType == Id.type.user_id)
+                mDeletedIDs.add(((UserIdEditor)editor).getOriginalID());
+            else if (mType == Id.type.key)
+                mDeletedKeys.add(((KeyEditor)editor).getValue());
+
+        }
         this.updateEditorsVisible();
         if (mEditorListener != null) {
             mEditorListener.onEdited();
@@ -184,6 +190,11 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public ArrayList<String> getDeletedIDs()
     {
         return mDeletedIDs;
+    }
+
+    public ArrayList<PGPSecretKey> getDeletedKeys()
+    {
+        return mDeletedKeys;
     }
 
     public List<Boolean> getNeedsSavingArray()

@@ -137,6 +137,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String SAVE_KEYRING_ORIGINAL_IDS = "original_ids";
     public static final String SAVE_KEYRING_DELETED_IDS = "deleted_ids";
     public static final String SAVE_KEYRING_MODDED_KEYS = "modified_keys";
+    public static final String SAVE_KEYRING_DELETED_KEYS = "deleted_keys";
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
@@ -537,6 +538,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 ArrayList<String> original_ids = data.getStringArrayList(SAVE_KEYRING_ORIGINAL_IDS);
                 ArrayList<String> deleted_ids = data.getStringArrayList(SAVE_KEYRING_DELETED_IDS);
                 boolean[] modded_keys = data.getBooleanArray(SAVE_KEYRING_MODDED_KEYS);
+                ArrayList<PGPSecretKey> deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(data
+                        .getByteArray(SAVE_KEYRING_DELETED_KEYS));
 
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
@@ -548,7 +551,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             oldPassPhrase, newPassPhrase);
                 } else {
                     keyOperations.buildSecretKey(userIds, original_ids, deleted_ids, keys, modded_keys,
-                            newPassPhrase, keysExpiryDates, oldPassPhrase, keysUsages);
+                            deletedKeys, keysExpiryDates, keysUsages, newPassPhrase, oldPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 

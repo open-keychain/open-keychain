@@ -198,7 +198,7 @@ public class PgpKeyOperation {
 
     }
 
-    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, ArrayList<PGPSecretKey> keys, boolean[] modded_keys, String newPassPhrase, ArrayList<GregorianCalendar> keysExpiryDates, String oldPassPhrase, ArrayList<Integer> keysUsages) throws PgpGeneralException,
+    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, ArrayList<PGPSecretKey> keys, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase) throws PgpGeneralException,
             PGPException, SignatureException, IOException {
 
         Log.d(Constants.TAG, "userIds: " + userIds.toString());

@@ -580,6 +580,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             ArrayList<PGPSecretKey> keys = getKeys(mKeysView);
             data.putByteArray(KeychainIntentService.SAVE_KEYRING_KEYS,
                     PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
+            ArrayList<PGPSecretKey> dKeys = mKeysView.getDeletedKeys();
+            data.putByteArray(KeychainIntentService.SAVE_KEYRING_DELETED_KEYS,
+                    PgpConversionHelper.PGPSecretKeyArrayListToBytes(dKeys));
             data.putIntegerArrayList(KeychainIntentService.SAVE_KEYRING_KEYS_USAGES,
                     getKeysUsages(mKeysView));
             data.putSerializable(KeychainIntentService.SAVE_KEYRING_KEYS_EXPIRY_DATES,
