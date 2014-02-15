@@ -131,11 +131,7 @@ public class OpenPgpApi {
         try {
             params.putInt(OpenPgpConstants.PARAMS_API_VERSION, OpenPgpConstants.API_VERSION);
 
-            // default result is error
             Bundle result = new Bundle();
-            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
-            result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
-                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, "This should never happen!"));
 
             if (operationId == OPERATION_GET_KEY_IDS) {
                 result = mService.getKeyIds(params);

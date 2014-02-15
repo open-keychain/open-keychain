@@ -167,8 +167,7 @@ public class OpenPgpProviderActivity extends Activity {
                         PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
                         try {
                             OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_SIGN, null,
-                                    0, 0, 0);
+                                    REQUEST_CODE_SIGN, null, 0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(Constants.TAG, "SendIntentException", e);
                         }
@@ -206,8 +205,7 @@ public class OpenPgpProviderActivity extends Activity {
                         PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
                         try {
                             OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_ENCRYPT, null,
-                                    0, 0, 0);
+                                    REQUEST_CODE_ENCRYPT, null, 0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(Constants.TAG, "SendIntentException", e);
                         }
@@ -245,8 +243,7 @@ public class OpenPgpProviderActivity extends Activity {
                         PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
                         try {
                             OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_SIGN_AND_ENCRYPT, null,
-                                    0, 0, 0);
+                                    REQUEST_CODE_SIGN_AND_ENCRYPT, null, 0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(Constants.TAG, "SendIntentException", e);
                         }
@@ -283,8 +280,7 @@ public class OpenPgpProviderActivity extends Activity {
                         PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
                         try {
                             OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
-                                    REQUEST_CODE_DECRYPT_AND_VERIFY, null,
-                                    0, 0, 0);
+                                    REQUEST_CODE_DECRYPT_AND_VERIFY, null, 0, 0, 0);
                         } catch (IntentSender.SendIntentException e) {
                             Log.e(Constants.TAG, "SendIntentException", e);
                         }
@@ -299,44 +295,29 @@ public class OpenPgpProviderActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(Constants.TAG, "onActivityResult");
-        switch (requestCode) {
-            case REQUEST_CODE_SIGN: {
-                Log.d(Constants.TAG, "resultCode: " + resultCode);
+        Log.d(Constants.TAG, "onActivityResult resultCode: " + resultCode);
 
-                // try to sign again after password caching
-                if (resultCode == RESULT_OK) {
-                    sign(data.getExtras());
-                }
-                break;
-            }
-            case REQUEST_CODE_ENCRYPT: {
-                Log.d(Constants.TAG, "resultCode: " + resultCode);
+        // try again after user interaction
+        if (resultCode == RESULT_OK) {
+            Bundle params = data.getBundleExtra(OpenPgpConstants.PI_RESULT_PARAMS);
 
-                // try to sign again after password caching
-                if (resultCode == RESULT_OK) {
-                    // use data extras now as params for call (they now include key ids!
-                    encrypt(data.getExtras());
+            switch (requestCode) {
+                case REQUEST_CODE_SIGN: {
+                    sign(params);
+                    break;
                 }
-                break;
-            }
-            case REQUEST_CODE_SIGN_AND_ENCRYPT: {
-                Log.d(Constants.TAG, "resultCode: " + resultCode);
-
-                // try to sign again after password caching
-                if (resultCode == RESULT_OK) {
-                    signAndEncrypt(data.getExtras());
+                case REQUEST_CODE_ENCRYPT: {
+                    encrypt(params);
+                    break;
                 }
-                break;
-            }
-            case REQUEST_CODE_DECRYPT_AND_VERIFY: {
-                Log.d(Constants.TAG, "resultCode: " + resultCode);
-
-                // try to sign again after password caching
-                if (resultCode == RESULT_OK) {
-                    decryptAndVerify(new Bundle());
+                case REQUEST_CODE_SIGN_AND_ENCRYPT: {
+                    signAndEncrypt(params);
+                    break;
                 }
-                break;
+                case REQUEST_CODE_DECRYPT_AND_VERIFY: {
+                    decryptAndVerify(params);
+                    break;
+                }
             }
         }
     }

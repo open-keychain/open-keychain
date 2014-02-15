@@ -33,7 +33,7 @@ public class OpenPgpConstants {
     public static final String PARAMS_USER_IDS = "user_ids";
     public static final String PARAMS_KEY_IDS = "key_ids";
 
-    /* Bundle return */
+    /* Service Bundle returns */
     public static final String RESULT_CODE = "result_code";
     public static final String RESULT_SIGNATURE = "signature";
     public static final String RESULT_ERRORS = "error";
@@ -45,5 +45,8 @@ public class OpenPgpConstants {
     public static final int RESULT_CODE_SUCCESS = 1;
     // executeServiceMethod intent and do it again with params from intent
     public static final int RESULT_CODE_USER_INTERACTION_REQUIRED = 2;
+
+    /* PendingIntent returns */
+    public static final String PI_RESULT_PARAMS = "params";
 
 }

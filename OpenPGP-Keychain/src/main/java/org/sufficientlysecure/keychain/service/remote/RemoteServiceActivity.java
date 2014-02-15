@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,14 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.util.ArrayList;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 
 import org.openintents.openpgp.util.OpenPgpConstants;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -31,15 +38,7 @@ import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.support.v7.app.ActionBarActivity;
-import android.view.View;
-import android.widget.Toast;
+import java.util.ArrayList;
 
 public class RemoteServiceActivity extends ActionBarActivity {
 
@@ -102,11 +101,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
         finishHandled = false;
 
         String action = intent.getAction();
-        Bundle extras = intent.getExtras();
-
-        if (extras == null) {
-            extras = new Bundle();
-        }
+        final Bundle extras = intent.getExtras();
 
         mMessenger = extras.getParcelable(EXTRA_MESSENGER);
 
@@ -176,8 +171,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
             mSettingsFragment.setAppSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
+            Bundle oldParams = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
 
-            showPassphraseDialog(secretKeyId);
+            showPassphraseDialog(oldParams, secretKeyId);
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
             ArrayList<String> missingUserIds = intent
@@ -213,10 +209,13 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // return key ids to requesting activity
-                            Intent finishIntent = new Intent();
-                            finishIntent.putExtra(OpenPgpConstants.PARAMS_KEY_IDS,
+                            // sdd key ids to params Bundle for new request
+                            Bundle params = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
+                            params.putLongArray(OpenPgpConstants.PARAMS_KEY_IDS,
                                     mSelectFragment.getSelectedMasterKeyIds());
+
+                            Intent finishIntent = new Intent();
+                            finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
                             setResult(RESULT_OK, finishIntent);
                             finish();
                         }
@@ -289,13 +288,16 @@ public class RemoteServiceActivity extends ActionBarActivity {
      * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
      * for a symmetric passphrase
      */
-    private void showPassphraseDialog(long secretKeyId) {
+    private void showPassphraseDialog(final Bundle params, long secretKeyId) {
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    RemoteServiceActivity.this.setResult(RESULT_OK);
+                    // return given params again, for calling the service method again
+                    Intent finishIntent = new Intent();
+                    finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
+                    RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
                 } else {
                     RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                 }
@@ -314,8 +316,11 @@ public class RemoteServiceActivity extends ActionBarActivity {
             passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
         } catch (PgpGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            RemoteServiceActivity.this.setResult(RESULT_OK);
-            RemoteServiceActivity.this.finish();
+            // return given params again, for calling the service method again
+            Intent finishIntent = new Intent();
+            finishIntent.putExtras(params);
+            setResult(RESULT_OK, finishIntent);
+            finish();
         }
     }
 }
