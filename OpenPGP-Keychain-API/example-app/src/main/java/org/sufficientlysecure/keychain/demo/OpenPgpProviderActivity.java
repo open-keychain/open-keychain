@@ -22,9 +22,12 @@ import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +104,17 @@ public class OpenPgpProviderActivity extends Activity {
             }
         });
 
-        selectCryptoProvider();
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String providerPackageName = settings.getString("openpgp_provider_list", "");
+        if (TextUtils.isEmpty(providerPackageName)) {
+            Toast.makeText(this, "No OpenPGP Provider selected!", Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            // bind to service
+            mCryptoServiceConnection = new OpenPgpServiceConnection(
+                    OpenPgpProviderActivity.this, providerPackageName);
+            mCryptoServiceConnection.bindToService();
+        }
     }
 
     private void handleError(final OpenPgpError error) {
@@ -283,85 +296,4 @@ public class OpenPgpProviderActivity extends Activity {
         }
     }
 
-    private void selectCryptoProvider() {
-        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
-
-        final ArrayList<OpenPgpProviderElement> providerList = new ArrayList<OpenPgpProviderElement>();
-
-        List<ResolveInfo> resInfo = getPackageManager().queryIntentServices(intent, 0);
-        if (!resInfo.isEmpty()) {
-            for (ResolveInfo resolveInfo : resInfo) {
-                if (resolveInfo.serviceInfo == null)
-                    continue;
-
-                String packageName = resolveInfo.serviceInfo.packageName;
-                String simpleName = String.valueOf(resolveInfo.serviceInfo
-                        .loadLabel(getPackageManager()));
-                Drawable icon = resolveInfo.serviceInfo.loadIcon(getPackageManager());
-                providerList.add(new OpenPgpProviderElement(packageName, simpleName, icon));
-            }
-        }
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Select OpenPGP Provider!");
-        alert.setCancelable(false);
-
-        if (!providerList.isEmpty()) {
-            // add "disable OpenPGP provider"
-            providerList.add(0, new OpenPgpProviderElement(null, "Disable OpenPGP Provider",
-                    getResources().getDrawable(android.R.drawable.ic_menu_close_clear_cancel)));
-
-            // Init ArrayAdapter with OpenPGP Providers
-            ListAdapter adapter = new ArrayAdapter<OpenPgpProviderElement>(this,
-                    android.R.layout.select_dialog_item, android.R.id.text1, providerList) {
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    // User super class to create the View
-                    View v = super.getView(position, convertView, parent);
-                    TextView tv = (TextView) v.findViewById(android.R.id.text1);
-
-                    // Put the image on the TextView
-                    tv.setCompoundDrawablesWithIntrinsicBounds(providerList.get(position).icon,
-                            null, null, null);
-
-                    // Add margin between image and text (support various screen densities)
-                    int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
-                    tv.setCompoundDrawablePadding(dp5);
-
-                    return v;
-                }
-            };
-
-            alert.setSingleChoiceItems(adapter, -1, new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int position) {
-                    String packageName = providerList.get(position).packageName;
-
-                    if (packageName == null) {
-                        dialog.cancel();
-                        finish();
-                    }
-
-                    // bind to service
-                    mCryptoServiceConnection = new OpenPgpServiceConnection(
-                            OpenPgpProviderActivity.this, packageName);
-                    mCryptoServiceConnection.bindToService();
-
-                    dialog.dismiss();
-                }
-            });
-        } else {
-            alert.setMessage("No OpenPGP Provider installed!");
-        }
-
-        alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-                finish();
-            }
-        });
-
-        AlertDialog ad = alert.create();
-        ad.show();
-    }
 }

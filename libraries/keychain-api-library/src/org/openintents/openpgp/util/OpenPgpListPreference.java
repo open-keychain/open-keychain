@@ -36,6 +36,10 @@ import java.util.List;
 
 import org.sufficientlysecure.keychain.api.R;
 
+/**
+ * Does not extend ListPreference, but is very similar to it!
+ * http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.4_r1/android/preference/ListPreference.java/?v=source
+ */
 public class OpenPgpListPreference extends DialogPreference {
     private ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
     private String mSelectedPackage;
