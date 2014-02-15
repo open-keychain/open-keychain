@@ -23,7 +23,6 @@ public class OpenPgpConstants {
     public static final int API_VERSION = 1;
     public static final String SERVICE_INTENT = "org.openintents.openpgp.IOpenPgpService";
 
-
     /* Bundle params */
     public static final String PARAMS_API_VERSION = "api_version";
     // request ASCII Armor for output

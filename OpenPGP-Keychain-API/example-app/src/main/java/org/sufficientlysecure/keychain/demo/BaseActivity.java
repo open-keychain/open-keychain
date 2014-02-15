@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class BaseActivity extends PreferenceActivity {
         mIntentDemo.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                // startActivity(new Intent(mActivity, IntentDemoActivity.class));
-                Toast.makeText(BaseActivity.this, "Not implemented!", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(BaseActivity.this, IntentActivity.class));
 
                 return false;
             }

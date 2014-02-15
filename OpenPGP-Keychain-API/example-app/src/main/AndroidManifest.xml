@@ -25,6 +25,9 @@
             android:name=".OpenPgpProviderActivity"
             android:label="OpenPGP Provider"
             android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".IntentActivity"
+            android:label="Intents" />
     </application>
 
 </manifest>
