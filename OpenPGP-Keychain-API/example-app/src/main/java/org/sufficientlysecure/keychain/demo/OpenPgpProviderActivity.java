@@ -289,7 +289,7 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     private void selectCryptoProvider() {
-        Intent intent = new Intent(IOpenPgpService.class.getName());
+        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
 
         final ArrayList<OpenPgpProviderElement> providerList = new ArrayList<OpenPgpProviderElement>();
 

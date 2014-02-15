@@ -182,8 +182,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     .getStringArrayListExtra(EXTRA_DUBLICATE_USER_IDS);
 
             // TODO: do this with spannable instead of HTML to prevent parsing failures with weird user ids
-            String text = new String();
-            text += "<b>" + getString(R.string.api_select_pub_keys_text) + "</b>";
+            String text = "<b>" + getString(R.string.api_select_pub_keys_text) + "</b>";
             text += "<br/><br/>";
             if (missingUserIds != null && missingUserIds.size() > 0) {
                 text += getString(R.string.api_select_pub_keys_missing_text);
@@ -258,8 +257,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
         } else if (ACTION_ERROR_MESSAGE.equals(action)) {
             String errorMessage = intent.getStringExtra(EXTRA_ERROR_MESSAGE);
 
-            String text = new String();
-            text += "<font color=\"red\">" + errorMessage + "</font>";
+            String text = "<font color=\"red\">" + errorMessage + "</font>";
 
             // Inflate a "Done" custom action bar view
             ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_okay,
