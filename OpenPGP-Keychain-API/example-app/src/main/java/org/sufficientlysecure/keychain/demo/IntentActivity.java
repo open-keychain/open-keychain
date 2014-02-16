@@ -28,7 +28,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.api.KeychainIntents;
+import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 
 import java.io.UnsupportedEncodingException;
 
@@ -68,8 +68,8 @@ public class IntentActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Intent intent = new Intent(KeychainIntents.ENCRYPT);
-                    intent.putExtra(KeychainIntents.ENCRYPT_EXTRA_TEXT, "Hello world!");
+                    Intent intent = new Intent(OpenKeychainIntents.ENCRYPT);
+                    intent.putExtra(OpenKeychainIntents.ENCRYPT_EXTRA_TEXT, "Hello world!");
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -94,8 +94,8 @@ public class IntentActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Intent intent = new Intent(KeychainIntents.DECRYPT);
-                    intent.putExtra(KeychainIntents.DECRYPT_EXTRA_TEXT, TEST_SIGNED_MESSAGE);
+                    Intent intent = new Intent(OpenKeychainIntents.DECRYPT);
+                    intent.putExtra(OpenKeychainIntents.DECRYPT_EXTRA_TEXT, TEST_SIGNED_MESSAGE);
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -109,14 +109,14 @@ public class IntentActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Intent intent = new Intent(KeychainIntents.IMPORT_KEY);
+                    Intent intent = new Intent(OpenKeychainIntents.IMPORT_KEY);
                     byte[] pubkey = null;
                     try {
                         pubkey = TEST_PUBKEY.getBytes("UTF-8");
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
-                    intent.putExtra(KeychainIntents.IMPORT_KEY_EXTRA_KEY_BYTES, pubkey);
+                    intent.putExtra(OpenKeychainIntents.IMPORT_KEY_EXTRA_KEY_BYTES, pubkey);
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -130,8 +130,8 @@ public class IntentActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Intent intent = new Intent(KeychainIntents.IMPORT_KEY_FROM_KEYSERVER);
-                    intent.putExtra(KeychainIntents.IMPORT_KEY_FROM_KEYSERVER_QUERY, "Richard Stallman");
+                    Intent intent = new Intent(OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER);
+                    intent.putExtra(OpenKeychainIntents.IMPORT_KEY_FROM_KEYSERVER_QUERY, "Richard Stallman");
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -145,7 +145,7 @@ public class IntentActivity extends PreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    Intent intent = new Intent(KeychainIntents.IMPORT_KEY_FROM_QR_CODE);
+                    Intent intent = new Intent(OpenKeychainIntents.IMPORT_KEY_FROM_QR_CODE);
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -195,7 +195,7 @@ public class IntentActivity extends PreferenceActivity {
                     Log.d(Constants.TAG, "filePath: " + filePath);
 
                     try {
-                        Intent intent = new Intent(KeychainIntents.ENCRYPT);
+                        Intent intent = new Intent(OpenKeychainIntents.ENCRYPT);
                         Uri dataUri = Uri.parse("file://" + filePath);
                         Log.d(Constants.TAG, "Uri: " + dataUri);
                         intent.setData(dataUri);

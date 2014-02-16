@@ -304,6 +304,14 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
+            <!-- IMPORT_KEY with mimeType 'application/pgp-keys' -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
             <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />

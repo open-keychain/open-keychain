@@ -16,21 +16,21 @@
 
 package org.sufficientlysecure.keychain.api;
 
-public class KeychainIntents {
+public class OpenKeychainIntents {
 
     public static final String ENCRYPT = "org.sufficientlysecure.keychain.action.ENCRYPT";
-    public static final String ENCRYPT_EXTRA_TEXT = "text";
-    public static final String ENCRYPT_ASCII_ARMOR = "ascii_armor";
+    public static final String ENCRYPT_EXTRA_TEXT = "text"; // String
+    public static final String ENCRYPT_ASCII_ARMOR = "ascii_armor"; // boolean
 
     public static final String DECRYPT = "org.sufficientlysecure.keychain.action.DECRYPT";
-    public static final String DECRYPT_EXTRA_TEXT = "text";
+    public static final String DECRYPT_EXTRA_TEXT = "text"; // String
 
     public static final String IMPORT_KEY = "org.sufficientlysecure.keychain.action.IMPORT_KEY";
-    public static final String IMPORT_KEY_EXTRA_KEY_BYTES = "key_bytes";
+    public static final String IMPORT_KEY_EXTRA_KEY_BYTES = "key_bytes"; // byte[]
 
     public static final String IMPORT_KEY_FROM_KEYSERVER = "org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER";
-    public static final String IMPORT_KEY_FROM_KEYSERVER_QUERY = "query";
-    public static final String IMPORT_KEY_FROM_KEYSERVER_FINGERPRINT = "fingerprint";
+    public static final String IMPORT_KEY_FROM_KEYSERVER_QUERY = "query"; // String
+    public static final String IMPORT_KEY_FROM_KEYSERVER_FINGERPRINT = "fingerprint"; // String
 
     public static final String IMPORT_KEY_FROM_QR_CODE = "org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE";
 
