@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.util.OpenPgpConstants;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -29,6 +31,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PausableThreadPoolExecutor;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -56,28 +59,9 @@ public abstract class RemoteService extends Service {
 
     private final Object userInputLock = new Object();
 
-    /**
-     * Override handleUserInput() to handle OKAY (1) and CANCEL (0). After handling the waiting
-     * threads will be notified and the queue resumed
-     */
-    protected class UserInputCallback extends BaseCallback {
+    private static final int PRIVATE_REQUEST_CODE_REGISTER = 651;
+    private static final int PRIVATE_REQUEST_CODE_ERROR = 652;
 
-        public void handleUserInput(Message msg) {
-        }
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            handleUserInput(msg);
-
-            // resume
-            synchronized (userInputLock) {
-                userInputLock.notifyAll();
-            }
-            mThreadPool.resume();
-            return true;
-        }
-
-    }
 
     /**
      * Extends Handler.Callback with OKAY (1), CANCEL (0) variables
@@ -97,18 +81,13 @@ public abstract class RemoteService extends Service {
         return mContext;
     }
 
-    /**
-     * Should be used from Stub implementations of AIDL interfaces to enqueue a runnable for
-     * execution
-     * 
-     * @param r
-     */
-    protected void checkAndEnqueue(Runnable r) {
+    protected Bundle isAllowed(Bundle params) {
         try {
             if (isCallerAllowed(false)) {
-                mThreadPool.execute(r);
+//                mThreadPool.execute(r);
 
-                Log.d(Constants.TAG, "Enqueued runnable…");
+                return null;
+//                Log.d(Constants.TAG, "Enqueued runnable…");
             } else {
                 String[] callingPackages = getPackageManager().getPackagesForUid(
                         Binder.getCallingUid());
@@ -120,32 +99,59 @@ public abstract class RemoteService extends Service {
                     packageSignature = getPackageSignature(packageName);
                 } catch (NameNotFoundException e) {
                     Log.e(Constants.TAG, "Should not happen, returning!", e);
-                    return;
+                    // return error
+                    Bundle result = new Bundle();
+                    result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+                    result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                            new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+                    return result;
                 }
-                Log.e(Constants.TAG,
-                        "Not allowed to use service! Starting activity for registration!");
-                Bundle extras = new Bundle();
-                extras.putString(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
-                extras.putByteArray(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
-                RegisterActivityCallback callback = new RegisterActivityCallback();
+                Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
 
-                pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_REGISTER, callback,
-                        extras);
+                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+                intent.setAction(RemoteServiceActivity.ACTION_REGISTER);
+                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
+                intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
+                intent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
 
-                if (callback.isAllowed()) {
-                    mThreadPool.execute(r);
-                    Log.d(Constants.TAG, "Enqueued runnable…");
-                } else {
-                    Log.d(Constants.TAG, "User disallowed app!");
-                }
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
+
+                // return PendingIntent to be executed by client
+                Bundle result = new Bundle();
+                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
+
+//                pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_REGISTER, callback,
+//                        extras);
+                return result;
+//                if (callback.isAllowed()) {
+//                    mThreadPool.execute(r);
+//                    Log.d(Constants.TAG, "Enqueued runnable…");
+//                } else {
+//                    Log.d(Constants.TAG, "User disallowed app!");
+//                }
             }
         } catch (WrongPackageSignatureException e) {
-            Log.e(Constants.TAG, e.getMessage());
+            Log.e(Constants.TAG, "wrong signature!", e);
 
-            Bundle extras = new Bundle();
-            extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
-                    getString(R.string.api_error_wrong_signature));
-            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null, extras);
+            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+            intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
+            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, getString(R.string.api_error_wrong_signature));
+            intent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
+
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_ERROR, intent, 0);
+
+            // return PendingIntent to be executed by client
+            Bundle result = new Bundle();
+            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
+
+            return result;
+
+//            Bundle extras = new Bundle();
+//            extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+//                    getString(R.string.api_error_wrong_signature));
+//            pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null, extras);
         }
     }
 
@@ -189,7 +195,7 @@ public abstract class RemoteService extends Service {
 
     /**
      * Retrieves AppSettings from database for the application calling this remote service
-     * 
+     *
      * @return
      */
     protected AppSettings getAppSettings() {
@@ -267,9 +273,8 @@ public abstract class RemoteService extends Service {
     /**
      * Checks if process that binds to this service (i.e. the package name corresponding to the
      * process) is in the list of allowed package names.
-     * 
-     * @param allowOnlySelf
-     *            allow only Keychain app itself
+     *
+     * @param allowOnlySelf allow only Keychain app itself
      * @return true if process is allowed to use this service
      * @throws WrongPackageSignatureException
      */
@@ -303,7 +308,7 @@ public abstract class RemoteService extends Service {
 
     /**
      * Checks if packageName is a registered app for the API. Does not return true for own package!
-     * 
+     *
      * @param packageName
      * @return
      * @throws WrongPackageSignatureException

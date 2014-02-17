@@ -432,8 +432,8 @@ public class OpenPgpService extends RemoteService {
      * @param params
      * @return
      */
-
-    private Bundle validateParamsAndVersion(Bundle params) {
+    private Bundle checkRequirements(Bundle params) {
+        // params Bundle is required!
         if (params == null) {
             Bundle result = new Bundle();
             OpenPgpError error = new OpenPgpError(OpenPgpError.GENERIC_ERROR, "params Bundle required!");
@@ -442,12 +442,18 @@ public class OpenPgpService extends RemoteService {
             return result;
         }
 
+        // version code is required and needs to correspond to version code of service!
         if (params.getInt(OpenPgpConstants.PARAMS_API_VERSION) != OpenPgpConstants.API_VERSION) {
-            // not compatible!
             Bundle result = new Bundle();
             OpenPgpError error = new OpenPgpError(OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
             result.putParcelable(OpenPgpConstants.RESULT_ERRORS, error);
             result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+            return result;
+        }
+
+        // check if caller is allowed to access openpgp keychain
+        Bundle result = isAllowed(params);
+        if (result != null) {
             return result;
         }
 
@@ -461,7 +467,7 @@ public class OpenPgpService extends RemoteService {
         public Bundle sign(Bundle params, final ParcelFileDescriptor input, final ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            Bundle errorResult = validateParamsAndVersion(params);
+            Bundle errorResult = checkRequirements(params);
             if (errorResult != null) {
                 return errorResult;
             }
@@ -473,7 +479,7 @@ public class OpenPgpService extends RemoteService {
         public Bundle encrypt(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            Bundle errorResult = validateParamsAndVersion(params);
+            Bundle errorResult = checkRequirements(params);
             if (errorResult != null) {
                 return errorResult;
             }
@@ -485,7 +491,7 @@ public class OpenPgpService extends RemoteService {
         public Bundle signAndEncrypt(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            Bundle errorResult = validateParamsAndVersion(params);
+            Bundle errorResult = checkRequirements(params);
             if (errorResult != null) {
                 return errorResult;
             }
@@ -497,7 +503,7 @@ public class OpenPgpService extends RemoteService {
         public Bundle decryptAndVerify(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output) {
             final AppSettings appSettings = getAppSettings();
 
-            Bundle errorResult = validateParamsAndVersion(params);
+            Bundle errorResult = checkRequirements(params);
             if (errorResult != null) {
                 return errorResult;
             }
@@ -507,7 +513,7 @@ public class OpenPgpService extends RemoteService {
 
         @Override
         public Bundle getKeyIds(Bundle params) {
-            Bundle errorResult = validateParamsAndVersion(params);
+            Bundle errorResult = checkRequirements(params);
             if (errorResult != null) {
                 return errorResult;
             }
