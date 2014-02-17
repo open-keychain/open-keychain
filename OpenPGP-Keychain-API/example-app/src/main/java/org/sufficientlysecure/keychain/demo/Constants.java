@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,5 @@
 package org.sufficientlysecure.keychain.demo;
 
 public final class Constants {
-
-    public static final boolean DEBUG = BuildConfig.DEBUG;
-
     public static final String TAG = "Keychain";
-
 }

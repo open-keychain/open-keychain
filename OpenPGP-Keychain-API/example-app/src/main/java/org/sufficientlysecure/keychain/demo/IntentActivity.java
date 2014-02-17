@@ -33,8 +33,15 @@ import org.sufficientlysecure.keychain.api.OpenKeychainIntents;
 import java.io.UnsupportedEncodingException;
 
 public class IntentActivity extends PreferenceActivity {
+    private Preference mEncrypt;
+    private Preference mEncryptUri;
+    private Preference mDecrypt;
+    private Preference mImportKey;
+    private Preference mImportKeyFromKeyserver;
+    private Preference mImportKeyFromQrCode;
+    private Preference mOpenpgp4fpr;
 
-    private static final int SELECT_PHOTO = 100;
+    private static final int REQUEST_CODE_SELECT_PHOTO = 100;
 
     /**
      * Called when the activity is first created.
@@ -47,24 +54,16 @@ public class IntentActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.intent_preference);
 
         // find preferences
-        Preference encrypt = (Preference) findPreference("ENCRYPT");
-        Preference encryptUri = (Preference) findPreference("ENCRYPT_URI");
-        Preference decrypt = (Preference) findPreference("DECRYPT");
-        Preference import_key = (Preference) findPreference("IMPORT_KEY");
-        Preference import_key_from_keyserver = (Preference) findPreference("IMPORT_KEY_FROM_KEYSERVER");
-        Preference import_key_from_qr_code = (Preference) findPreference("IMPORT_KEY_FROM_QR_CODE");
-        Preference openpgp4fpr = (Preference) findPreference("openpgp4fpr");
+        mEncrypt = (Preference) findPreference("ENCRYPT");
+        mEncryptUri = (Preference) findPreference("ENCRYPT_URI");
+        mDecrypt = (Preference) findPreference("DECRYPT");
+        mImportKey = (Preference) findPreference("IMPORT_KEY");
+        mImportKeyFromKeyserver = (Preference) findPreference("IMPORT_KEY_FROM_KEYSERVER");
+        mImportKeyFromQrCode = (Preference) findPreference("IMPORT_KEY_FROM_QR_CODE");
+        mOpenpgp4fpr = (Preference) findPreference("mOpenpgp4fpr");
 
-        // To prevent Android Studio from complaining...
-        assert encrypt != null;
-        assert encryptUri != null;
-        assert decrypt != null;
-        assert import_key != null;
-        assert import_key_from_keyserver != null;
-        assert import_key_from_qr_code != null;
-        assert openpgp4fpr != null;
 
-        encrypt.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mEncrypt.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
@@ -79,18 +78,18 @@ public class IntentActivity extends PreferenceActivity {
             }
         });
 
-        encryptUri.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mEncryptUri.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+                startActivityForResult(photoPickerIntent, REQUEST_CODE_SELECT_PHOTO);
 
                 return false;
             }
         });
 
-        decrypt.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mDecrypt.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
@@ -105,7 +104,7 @@ public class IntentActivity extends PreferenceActivity {
             }
         });
 
-        import_key.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mImportKey.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
@@ -126,7 +125,7 @@ public class IntentActivity extends PreferenceActivity {
             }
         });
 
-        import_key_from_keyserver.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mImportKeyFromKeyserver.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
@@ -141,7 +140,7 @@ public class IntentActivity extends PreferenceActivity {
             }
         });
 
-        import_key_from_qr_code.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mImportKeyFromQrCode.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
@@ -155,12 +154,12 @@ public class IntentActivity extends PreferenceActivity {
             }
         });
 
-        openpgp4fpr.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+        mOpenpgp4fpr.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282"));
+                    intent.setData(Uri.parse("mOpenpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282"));
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
@@ -177,7 +176,7 @@ public class IntentActivity extends PreferenceActivity {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
         switch (requestCode) {
-            case SELECT_PHOTO:
+            case REQUEST_CODE_SELECT_PHOTO:
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = imageReturnedIntent.getData();
 

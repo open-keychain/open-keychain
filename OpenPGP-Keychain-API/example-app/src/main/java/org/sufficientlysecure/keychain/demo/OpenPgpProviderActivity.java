@@ -41,15 +41,15 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 public class OpenPgpProviderActivity extends Activity {
-    EditText mMessage;
-    EditText mCiphertext;
-    EditText mEncryptUserIds;
-    Button mSign;
-    Button mEncrypt;
-    Button mSignAndEncrypt;
-    Button mDecryptAndVerify;
+    private EditText mMessage;
+    private EditText mCiphertext;
+    private EditText mEncryptUserIds;
+    private Button mSign;
+    private Button mEncrypt;
+    private Button mSignAndEncrypt;
+    private Button mDecryptAndVerify;
 
-    OpenPgpServiceConnection mServiceConnection;
+    private OpenPgpServiceConnection mServiceConnection;
 
     public static final int REQUEST_CODE_SIGN = 9910;
     public static final int REQUEST_CODE_ENCRYPT = 9911;
@@ -138,7 +138,7 @@ public class OpenPgpProviderActivity extends Activity {
             }
             is = new ByteArrayInputStream(inputStr.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
         }
 
         return is;
@@ -237,11 +237,17 @@ public class OpenPgpProviderActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         Log.d(Constants.TAG, "onActivityResult resultCode: " + resultCode);
 
         // try again after user interaction
         if (resultCode == RESULT_OK) {
+            /*
+             * The params originally given to the pgp method are are again
+             * returned here to be used when calling again after user interaction.
+             *
+             * They also contain results from the user interaction which happened,
+             * for example selected key ids.
+             */
             Bundle params = data.getBundleExtra(OpenPgpConstants.PI_RESULT_PARAMS);
 
             switch (requestCode) {
