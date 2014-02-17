@@ -173,7 +173,7 @@ public class EncryptActivity extends DrawerActivity {
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text encryption, override action and extras to later
-                    // execute ACTION_ENCRYPT in main actions
+                    // executeServiceMethod ACTION_ENCRYPT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     extras.putBoolean(EXTRA_ASCII_ARMOR, true);
                     action = ACTION_ENCRYPT;

@@ -87,8 +87,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
 
 ### OpenPGP Remote API
-To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.
-The API Demo contains all required AIDL files and a demo activity.
+To do fast encryption/decryption/sign/verify operations without user interaction bind to the OpenPGP remote service.
 
 #### Try out the API
 Keychain: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain  
@@ -99,43 +98,23 @@ All apps wanting to use this generic API
 just need to include the AIDL files and connect to the service. Other
 OpenPGP apps can implement a service based on this AIDL definition.
 
-The API is designed to be as easy as possible to use by apps like
-K-9 Mail. The service definition defines
-sign/encrypt/signAndEncrypt/decryptAndVerify [1].
+The API is designed to be as easy as possible to use by apps like K-9 Mail.
+The service definition defines sign, encrypt, signAndEncrypt, decryptAndVerify, and getKeyIds.
 
-As can be seen the apps themselves never need handle key ids directly.
-Only user ids (emails) are used to define recipients. If more than one
-pub key exists for an email, OpenPGP Keychain will handle the problem by
-showing a selection screen.
+As can be seen in the API Demo, the apps themselves never need to handle key ids directly.
+You can use user ids (emails) to define recipients.
+If more than one public key exists for an email, OpenPGP Keychain will handle the problem by showing a selection screen. Additionally, it is also possible to use key ids.
 
-Also app devs never need to fiddle with private keys. On first
-operation, OpenPGP Keychain shows an activity to allow or disallow
-access, while also allowing to choose the private key used for this app.
-Please try the Demo app out to see how it works [4].
+Also app devs never need to fiddle with private keys.
+On first operation, OpenPGP Keychain shows an activity to allow or disallow access, while also allowing to choose the private key used for this app.
+Please try the Demo app out to see how it works.
 
 #### Integration
-The API is defined as AIDL interfaces in org.openintents.openpgp packge
-[2]. All files from [2] needs to be included in the project.
+Copy the api library from "libraries/keychain-api-library" to your project and add it as an dependency to your gradle build.
+Inspect the ode found in "OpenPGP-Keychain-API" to understand how to use the API.
 
-Using the OpenPgpServiceConnection.java [3] you can choose to which
-OpenPGP provider you want to connect (other pgp apps can implement the
-interfaces). They can be queried as shown in the demo app (see [3] how
-to query). If other OpenPGP apps implement the service, no additional
-code is required in k9mail per provider. See [3] for a complete example
-for integration.
-
-[1] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl  
-[2] https://github.com/openpgp-keychain/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
-[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
-[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
-[4] https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
-
-## Extended Remote API
-
-TODO
 
 ## Libraries
-
 
 
 ### ZXing Barcode Scanner Android Integration

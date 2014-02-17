@@ -30,7 +30,7 @@
     -->
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="9"
         android:targetSdkVersion="19" />
 
     <uses-feature
@@ -153,12 +153,19 @@
             android:windowSoftInputMode="stateHidden">
 
             <!-- Keychain's own Actions -->
+            <!-- ENCRYPT with text as extra -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- ENCRYPT with data Uri -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.ENCRYPT" />
 
-                <data android:mimeType="*/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- TODO: accept other schemes! -->
+                <data android:scheme="file" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_encrypt">
@@ -176,12 +183,19 @@
             android:windowSoftInputMode="stateHidden">
 
             <!-- Keychain's own Actions -->
+            <!-- DECRYPT with text as extra -->
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <!-- DECRYPT with data Uri -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.DECRYPT" />
 
-                <data android:mimeType="*/*" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- TODO: accept other schemes! -->
+                <data android:scheme="file" />
             </intent-filter>
             <!-- Android's Send Action -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -282,6 +296,7 @@
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
             <!-- Keychain's own Actions -->
+            <!-- IMPORT_KEY with files TODO: does this work? -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
 
@@ -289,11 +304,19 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
-            <!-- IMPORT again without mimeType to also allow data only without filename -->
+            <!-- IMPORT_KEY with mimeType 'application/pgp-keys' -->
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
+            <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE" />
-		<action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEY_SERVER" />
+                <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -362,10 +385,9 @@
         <activity
             android:name="org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"
             android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTop"
-            android:process=":remote_api"
-            android:taskAffinity=":remote_api" />
+            android:label="@string/app_name" />
+        <!--android:launchMode="singleTop"-->
+        <!--android:process=":remote_api"-->
         <activity
             android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -392,19 +414,19 @@
         </service>
 
         <!-- Extended Remote API -->
-        <service
-            android:name="org.sufficientlysecure.keychain.service.remote.ExtendedApiService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":remote_api">
-            <intent-filter>
-                <action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />
-            </intent-filter>
+        <!--<service-->
+        <!--android:name="org.sufficientlysecure.keychain.service.remote.ExtendedApiService"-->
+        <!--android:enabled="true"-->
+        <!--android:exported="true"-->
+        <!--android:process=":remote_api">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />-->
+        <!--</intent-filter>-->
 
-            <meta-data
-                android:name="api_version"
-                android:value="1" />
-        </service>
+        <!--<meta-data-->
+        <!--android:name="api_version"-->
+        <!--android:value="1" />-->
+        <!--</service>-->
 
         <!-- TODO: authority! Make this API with content provider uris -->
         <!-- <provider -->

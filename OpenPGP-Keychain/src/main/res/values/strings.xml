@@ -295,7 +295,7 @@
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
-    <string name="progress_generating">generating key, this can take a while…</string>
+    <string name="progress_generating">generating key, this can take up to 3 minutes…</string>
     <string name="progress_building_key">building key…</string>
     <string name="progress_preparing_master_key">preparing master key…</string>
     <string name="progress_certifying_master_key">certifying master key…</string>
@@ -383,7 +383,7 @@
     <string name="api_settings_revoke">Revoke access</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
-    <string name="api_register_text">The following application requests access to OpenPGP Keychain.\n\nAllow permanent access?</string>
+    <string name="api_register_text">The displayed application requests access to OpenPGP Keychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>

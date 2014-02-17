@@ -235,7 +235,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
         String action = intent.getAction();
 
-        // execute action from extra bundle
+        // executeServiceMethod action from extra bundle
         if (ACTION_ENCRYPT_SIGN.equals(action)) {
             try {
                 /* Input */
