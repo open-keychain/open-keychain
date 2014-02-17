@@ -427,10 +427,13 @@ public class OpenPgpService extends RemoteService {
     }
 
     /**
-     * Checks that params != null and API version fits
+     * Check requirements:
+     * - params != null
+     * - has supported API version
+     * - is allowed to call the service (access has been granted)
      *
      * @param params
-     * @return
+     * @return null if everything is okay, or a Bundle with an error/PendingIntent
      */
     private Bundle checkRequirements(Bundle params) {
         // params Bundle is required!
