@@ -460,7 +460,7 @@ public class OpenPgpService extends RemoteService {
         return null;
     }
 
-    // TODO: enqueue in thread pool!!!
+    // TODO: multi-threading
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
 
         @Override
@@ -520,23 +520,6 @@ public class OpenPgpService extends RemoteService {
 
             return getKeyIdsImpl(params);
         }
-
-        // TODO: old example for checkAndEnqueue!
-//        @Override
-//        public void getKeyIds(final String[] userIds, final boolean allowUserInteraction,
-//                final IOpenPgpKeyIdsCallback callback) throws RemoteException {
-//
-//            final AppSettings settings = getAppSettings();
-//
-//            Runnable r = new Runnable() {
-//                @Override
-//                public void run() {
-//                    getKeyIdsSafe(userIds, allowUserInteraction, callback, settings);
-//                }
-//            };
-//
-//            checkAndEnqueue(r);
-//        }
 
     };
 
