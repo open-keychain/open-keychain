@@ -3,9 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- focusable and related properties to workaround http://stackoverflow.com/q/16182331-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:descendantFocusability="beforeDescendants"
         android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
@@ -75,23 +79,6 @@
                     android:text="" />
             </TableRow>
         </TableLayout>
-
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginTop="14dp"
-            android:text="@string/section_actions" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/action_encrypt"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:text="@string/key_view_action_encrypt"
-            bootstrapbutton:bb_icon_left="fa-lock"
-            bootstrapbutton:bb_type="info" />
 
         <TextView
             style="@style/SectionHeader"
@@ -216,6 +203,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="14dp" />
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/section_actions" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/action_encrypt"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="4dp"
+            android:text="@string/key_view_action_encrypt"
+            bootstrapbutton:bb_icon_left="fa-lock"
+            bootstrapbutton:bb_type="info" />
 
     </LinearLayout>
 
