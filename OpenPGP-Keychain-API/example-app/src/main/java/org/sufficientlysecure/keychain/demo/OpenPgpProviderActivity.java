@@ -231,7 +231,7 @@ public class OpenPgpProviderActivity extends Activity {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-        api.decryptAndVerify(params, is, os, new MyCallback(true, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
+        api.decryptAndVerify(params, is, os, new MyCallback(false, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
     @Override
