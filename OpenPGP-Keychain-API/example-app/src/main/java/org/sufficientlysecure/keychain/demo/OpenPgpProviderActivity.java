@@ -192,7 +192,6 @@ public class OpenPgpProviderActivity extends Activity {
         }
     }
 
-
     public void sign(Bundle params) {
         params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
 

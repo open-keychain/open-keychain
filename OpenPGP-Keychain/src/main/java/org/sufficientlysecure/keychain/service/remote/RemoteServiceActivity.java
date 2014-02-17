@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.RemoteException;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
@@ -64,16 +63,10 @@ public class RemoteServiceActivity extends ActionBarActivity {
     // error message
     public static final String EXTRA_ERROR_MESSAGE = "error_message";
 
-    private Messenger mMessenger;
-
     // register view
     private AppSettingsFragment mSettingsFragment;
     // select pub keys view
     private SelectPublicKeyFragment mSelectFragment;
-
-    // has the user clicked one of the buttons
-    // or do we need to handle the callback in onStop()
-    private boolean finishHandled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,32 +75,12 @@ public class RemoteServiceActivity extends ActionBarActivity {
         handleActions(getIntent(), savedInstanceState);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        if (!finishHandled && mMessenger != null) {
-            Message msg = Message.obtain();
-            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
-            try {
-                mMessenger.send(msg);
-            } catch (RemoteException e) {
-                Log.e(Constants.TAG, "CryptoServiceActivity", e);
-            }
-        }
-    }
-
     protected void handleActions(Intent intent, Bundle savedInstanceState) {
-        finishHandled = false;
 
         String action = intent.getAction();
         final Bundle extras = intent.getExtras();
 
-        mMessenger = extras.getParcelable(EXTRA_MESSENGER);
 
-        /**
-         * com.android.crypto actions
-         */
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
             final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
@@ -127,37 +100,21 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 ProviderHelper.insertApiApp(RemoteServiceActivity.this,
                                         mSettingsFragment.getAppSettings());
 
-                                Message msg = Message.obtain();
-                                msg.arg1 = RemoteService.RegisterActivityCallback.OKAY;
-                                Bundle data = new Bundle();
-                                data.putString(RemoteService.RegisterActivityCallback.PACKAGE_NAME,
-                                        packageName);
-                                msg.setData(data);
-                                try {
-                                    mMessenger.send(msg);
-                                } catch (RemoteException e) {
-                                    Log.e(Constants.TAG, "CryptoServiceActivity", e);
-                                }
+                                // give params through for new service call
+                                Bundle oldParams = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
 
-                                finishHandled = true;
-                                finish();
+                                Intent finishIntent = new Intent();
+                                finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, oldParams);
+                                RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                                RemoteServiceActivity.this.finish();
                             }
                         }
                     }, R.string.api_register_disallow, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // Disallow
-
-                            Message msg = Message.obtain();
-                            msg.arg1 = RemoteService.RegisterActivityCallback.CANCEL;
-                            try {
-                                mMessenger.send(msg);
-                            } catch (RemoteException e) {
-                                Log.e(Constants.TAG, "CryptoServiceActivity", e);
-                            }
-
-                            finishHandled = true;
-                            finish();
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                            RemoteServiceActivity.this.finish();
                         }
                     }
             );
@@ -216,15 +173,15 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                             Intent finishIntent = new Intent();
                             finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-                            setResult(RESULT_OK, finishIntent);
-                            finish();
+                            RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                            RemoteServiceActivity.this.finish();
                         }
                     }, R.string.btn_do_not_save, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // cancel
-                            setResult(RESULT_CANCELED);
-                            finish();
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                            RemoteServiceActivity.this.finish();
                         }
                     }
             );
@@ -265,8 +222,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                         @Override
                         public void onClick(View v) {
-                            setResult(RESULT_OK);
-                            finish();
+                            RemoteServiceActivity.this.setResult(RESULT_OK);
+                            RemoteServiceActivity.this.finish();
                         }
                     });
 
@@ -276,7 +233,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_app_error_message_text);
             textView.setHtmlFromString(text);
         } else {
-            Log.e(Constants.TAG, "Wrong action!");
+            Log.e(Constants.TAG, "Action does not exist!");
             setResult(RESULT_CANCELED);
             finish();
         }

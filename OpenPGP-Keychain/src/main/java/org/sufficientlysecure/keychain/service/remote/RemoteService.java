@@ -168,30 +168,30 @@ public abstract class RemoteService extends Service {
     /**
      * Locks current thread and pauses execution of runnables and starts activity for user input
      */
-    protected void pauseAndStartUserInteraction(String action, BaseCallback callback, Bundle extras) {
-        synchronized (userInputLock) {
-            mThreadPool.pause();
-
-            Log.d(Constants.TAG, "starting activity...");
-            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setAction(action);
-
-            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
-
-            extras.putParcelable(RemoteServiceActivity.EXTRA_MESSENGER, messenger);
-            intent.putExtras(extras);
-
-            startActivity(intent);
-
-            // lock current thread for user input
-            try {
-                userInputLock.wait();
-            } catch (InterruptedException e) {
-                Log.e(Constants.TAG, "CryptoService", e);
-            }
-        }
-    }
+//    protected void pauseAndStartUserInteraction(String action, BaseCallback callback, Bundle extras) {
+//        synchronized (userInputLock) {
+//            mThreadPool.pause();
+//
+//            Log.d(Constants.TAG, "starting activity...");
+//            Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.setAction(action);
+//
+//            Messenger messenger = new Messenger(new Handler(getMainLooper(), callback));
+//
+//            extras.putParcelable(RemoteServiceActivity.EXTRA_MESSENGER, messenger);
+//            intent.putExtras(extras);
+//
+//            startActivity(intent);
+//
+//            // lock current thread for user input
+//            try {
+//                userInputLock.wait();
+//            } catch (InterruptedException e) {
+//                Log.e(Constants.TAG, "CryptoService", e);
+//            }
+//        }
+//    }
 
     /**
      * Retrieves AppSettings from database for the application calling this remote service
@@ -216,59 +216,59 @@ public abstract class RemoteService extends Service {
         return null;
     }
 
-    class RegisterActivityCallback extends BaseCallback {
-        public static final String PACKAGE_NAME = "package_name";
-
-        private boolean allowed = false;
-        private String packageName;
-
-        public boolean isAllowed() {
-            return allowed;
-        }
-
-        public String getPackageName() {
-            return packageName;
-        }
-
-        @Override
-        public boolean handleMessage(Message msg) {
-            if (msg.arg1 == OKAY) {
-                allowed = true;
-                packageName = msg.getData().getString(PACKAGE_NAME);
-
-                // resume threads
-                try {
-                    if (isPackageAllowed(packageName)) {
-                        synchronized (userInputLock) {
-                            userInputLock.notifyAll();
-                        }
-                        mThreadPool.resume();
-                    } else {
-                        // Should not happen!
-                        Log.e(Constants.TAG, "Should not happen! Emergency shutdown!");
-                        mThreadPool.shutdownNow();
-                    }
-                } catch (WrongPackageSignatureException e) {
-                    Log.e(Constants.TAG, e.getMessage());
-
-                    Bundle extras = new Bundle();
-                    extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
-                            getString(R.string.api_error_wrong_signature));
-                    pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null,
-                            extras);
-                }
-            } else {
-                allowed = false;
-
-                synchronized (userInputLock) {
-                    userInputLock.notifyAll();
-                }
-                mThreadPool.resume();
-            }
-            return true;
-        }
-
-    }
+//    class RegisterActivityCallback extends BaseCallback {
+//        public static final String PACKAGE_NAME = "package_name";
+//
+//        private boolean allowed = false;
+//        private String packageName;
+//
+//        public boolean isAllowed() {
+//            return allowed;
+//        }
+//
+//        public String getPackageName() {
+//            return packageName;
+//        }
+//
+//        @Override
+//        public boolean handleMessage(Message msg) {
+//            if (msg.arg1 == OKAY) {
+//                allowed = true;
+//                packageName = msg.getData().getString(PACKAGE_NAME);
+//
+//                // resume threads
+//                try {
+//                    if (isPackageAllowed(packageName)) {
+//                        synchronized (userInputLock) {
+//                            userInputLock.notifyAll();
+//                        }
+//                        mThreadPool.resume();
+//                    } else {
+//                        // Should not happen!
+//                        Log.e(Constants.TAG, "Should not happen! Emergency shutdown!");
+//                        mThreadPool.shutdownNow();
+//                    }
+//                } catch (WrongPackageSignatureException e) {
+//                    Log.e(Constants.TAG, e.getMessage());
+//
+//                    Bundle extras = new Bundle();
+//                    extras.putString(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+//                            getString(R.string.api_error_wrong_signature));
+//                    pauseAndStartUserInteraction(RemoteServiceActivity.ACTION_ERROR_MESSAGE, null,
+//                            extras);
+//                }
+//            } else {
+//                allowed = false;
+//
+//                synchronized (userInputLock) {
+//                    userInputLock.notifyAll();
+//                }
+//                mThreadPool.resume();
+//            }
+//            return true;
+//        }
+//
+//    }
 
     /**
      * Checks if process that binds to this service (i.e. the package name corresponding to the
