@@ -46,7 +46,8 @@ import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.PgpOperationIncoming;
+import org.sufficientlysecure.keychain.pgp.PgpOperationOutgoing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -316,27 +317,41 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
-                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
+                PgpOperationOutgoing.Builder builder =
+                        new PgpOperationOutgoing.Builder(this, inputData, outStream);
+                builder.progress(this);
+
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
-                    operation.generateSignature(useAsciiArmor, false, secretKeyId,
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                            .getPreferences(this).getForceV3Signatures());
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().generateSignature();
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
-                    operation.signText(secretKeyId, PassphraseCacheService.getCachedPassphrase(
-                            this, secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures());
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().signAndEncrypt();
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    operation.signAndEncrypt(useAsciiArmor, compressionId, encryptionKeyIds,
-                            encryptionPassphrase, Preferences.getPreferences(this)
-                            .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
-                            .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                            .getPreferences(this).getForceV3Signatures(),
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .compressionId(compressionId)
+                            .symmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .encryptionKeyIds(encryptionKeyIds)
+                            .encryptionPassphrase(encryptionPassphrase)
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().signAndEncrypt();
                 }
 
                 outStream.close();
@@ -466,7 +481,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
-                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
+                PgpOperationIncoming operation = new PgpOperationIncoming(this, this, inputData, outStream);
                 if (signedOnly) {
                     resultData = operation.verifyText();
                 } else {

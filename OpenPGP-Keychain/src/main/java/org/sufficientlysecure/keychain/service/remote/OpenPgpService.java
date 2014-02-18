@@ -29,12 +29,11 @@ import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpConstants;
-import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.PgpOperationOutgoing;
+import org.sufficientlysecure.keychain.pgp.PgpOperationIncoming;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -162,9 +161,14 @@ public class OpenPgpService extends RemoteService {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
-                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
-                operation.signText(appSettings.getKeyId(), passphrase, appSettings.getHashAlgorithm(),
-                        Preferences.getPreferences(this).getForceV3Signatures());
+                // sign-only
+                PgpOperationOutgoing.Builder builder = new PgpOperationOutgoing.Builder(getContext(), inputData, os);
+                builder.enableAsciiArmorOutput(true)
+                        .signatureHashAlgorithm(appSettings.getHashAlgorithm())
+                        .signatureForceV3(false)
+                        .signatureKeyId(appSettings.getKeyId())
+                        .signaturePassphrase(passphrase);
+                builder.build().signAndEncrypt();
             } finally {
                 is.close();
                 os.close();
@@ -223,7 +227,14 @@ public class OpenPgpService extends RemoteService {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
-                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
+                PgpOperationOutgoing.Builder builder = new PgpOperationOutgoing.Builder(getContext(), inputData, os);
+                builder.enableAsciiArmorOutput(asciiArmor)
+                        .compressionId(appSettings.getCompression())
+                        .symmetricEncryptionAlgorithm(appSettings.getEncryptionAlgorithm())
+                        .signatureHashAlgorithm(appSettings.getHashAlgorithm())
+                        .signatureForceV3(false)
+                        .encryptionKeyIds(keyIds);
+
                 if (sign) {
                     String passphrase;
                     if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
@@ -239,15 +250,14 @@ public class OpenPgpService extends RemoteService {
                     }
 
                     // sign and encrypt
-                    operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
-                            appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
-                            appSettings.getHashAlgorithm(), true, passphrase);
+                    builder.signatureKeyId(appSettings.getKeyId())
+                            .signaturePassphrase(passphrase);
                 } else {
                     // encrypt only
-                    operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
-                            appSettings.getEncryptionAlgorithm(), Id.key.none,
-                            appSettings.getHashAlgorithm(), true, null);
+                    builder.signatureKeyId(Id.key.none);
                 }
+                // execute PGP operation!
+                builder.build().signAndEncrypt();
             } finally {
                 is.close();
                 os.close();
@@ -344,7 +354,7 @@ public class OpenPgpService extends RemoteService {
 //                            inputStream2.reset();
 //                        }
 //                        secretKeyId = Id.key.symmetric;
-//                        if (!PgpOperation.hasSymmetricEncryption(this, inputStream2)) {
+//                        if (!PgpOperationIncoming.hasSymmetricEncryption(this, inputStream2)) {
 //                            throw new PgpGeneralException(
 //                                    getString(R.string.error_no_known_encryption_found));
 //                        }
@@ -374,7 +384,7 @@ public class OpenPgpService extends RemoteService {
 
 
                 Bundle outputBundle;
-                PgpOperation operation = new PgpOperation(getContext(), null, inputData, os);
+                PgpOperationIncoming operation = new PgpOperationIncoming(getContext(), null, inputData, os);
                 if (signedOnly) {
                     outputBundle = operation.verifyText();
                 } else {

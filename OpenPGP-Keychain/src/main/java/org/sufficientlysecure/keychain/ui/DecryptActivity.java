@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.PgpOperationIncoming;
 import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -546,7 +546,7 @@ public class DecryptActivity extends DrawerActivity {
                     inStream.reset();
                 }
                 mSecretKeyId = Id.key.symmetric;
-                if (!PgpOperation.hasSymmetricEncryption(this, inStream)) {
+                if (!PgpOperationIncoming.hasSymmetricEncryption(this, inStream)) {
                     throw new PgpGeneralException(
                             getString(R.string.error_no_known_encryption_found));
                 }
