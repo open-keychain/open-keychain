@@ -190,7 +190,7 @@ public class OpenPgpService extends RemoteService {
             long[] keyIds;
             if (params.containsKey(OpenPgpConstants.PARAMS_KEY_IDS)) {
                 keyIds = params.getLongArray(OpenPgpConstants.PARAMS_KEY_IDS);
-            } else {
+            } else if (params.containsKey(OpenPgpConstants.PARAMS_USER_IDS)) {
                 // get key ids based on given user ids
                 String[] userIds = params.getStringArray(OpenPgpConstants.PARAMS_USER_IDS);
                 // give params through to activity...
@@ -202,6 +202,12 @@ public class OpenPgpService extends RemoteService {
                     // if not success -> result contains a PendingIntent for user interaction
                     return result;
                 }
+            } else {
+                Bundle result = new Bundle();
+                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
+                result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                        new OpenPgpError(OpenPgpError.GENERIC_ERROR, "Missing parameter user_ids or key_ids!"));
+                return result;
             }
 
             // add own key for encryption
