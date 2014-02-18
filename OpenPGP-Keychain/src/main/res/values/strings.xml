@@ -116,7 +116,7 @@
     <string name="label_passphrase_cache_ttl">Passphrase Cache</string>
     <string name="label_message_compression">Message Compression</string>
     <string name="label_file_compression">File Compression</string>
-    <string name="label_force_v3_signature">Force V3 Signatures</string>
+    <string name="label_force_v3_signature">Force old OpenPGPv3 Signatures</string>
     <string name="label_key_servers">Keyservers</string>
     <string name="label_key_id">Key ID</string>
     <string name="label_creation">Creation</string>

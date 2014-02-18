@@ -29,6 +29,7 @@ import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpConstants;
+import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -237,10 +238,12 @@ public class OpenPgpService extends RemoteService {
                         return passphraseBundle;
                     }
 
+                    // sign and encrypt
                     operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
                             appSettings.getEncryptionAlgorithm(), appSettings.getKeyId(),
                             appSettings.getHashAlgorithm(), true, passphrase);
                 } else {
+                    // encrypt only
                     operation.signAndEncrypt(asciiArmor, appSettings.getCompression(), keyIds, null,
                             appSettings.getEncryptionAlgorithm(), Id.key.none,
                             appSettings.getHashAlgorithm(), true, null);
@@ -271,7 +274,7 @@ public class OpenPgpService extends RemoteService {
             OpenPgpSignatureResult sigResult = null;
             try {
 
-
+//                PGPUtil.getDecoderStream(is)
                 // TODOs API 2.0:
                 // implement verify-only!
                 // fix the mess: http://stackoverflow.com/questions/148130/how-do-i-peek-at-the-first-two-bytes-in-an-inputstream
@@ -351,7 +354,7 @@ public class OpenPgpService extends RemoteService {
 //
 //                    Log.d(Constants.TAG, "secretKeyId " + secretKeyId);
 
-                // NOTE: currently this only gets the passphrase for the saved key
+                // NOTE: currently this only gets the passphrase for the key set for this client
                 String passphrase;
                 if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
                     passphrase = params.getString(OpenPgpConstants.PARAMS_PASSPHRASE);
@@ -375,8 +378,10 @@ public class OpenPgpService extends RemoteService {
                 if (signedOnly) {
                     outputBundle = operation.verifyText();
                 } else {
-                    // BIG TODO: instead of trying to get the passphrase before
-                    // pause stream when passphrase is missing and then resume
+                    // Do we want to do this: instead of trying to get the passphrase before
+                    // pause stream when passphrase is missing and then resume???
+
+                    // TODO: this also decrypts with other secret keys without passphrase!!!
                     outputBundle = operation.decryptAndVerify(passphrase, false);
                 }
 
