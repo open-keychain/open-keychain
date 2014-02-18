@@ -118,7 +118,7 @@ public class PgpOperation {
         }
     }
 
-    public void signAndEncrypt(boolean enableAsciiArmor, int compressionId, long[] encryptionKeyIds,
+    public void signAndEncrypt(boolean enableAsciiArmorOutput, int compressionId, long[] encryptionKeyIds,
                                String encryptionPassphrase, int symmetricEncryptionAlgorithm,
                                long signatureKeyId, int signatureHashAlgorithm,
                                boolean signatureForceV3, String signaturePassphrase)
@@ -135,7 +135,7 @@ public class PgpOperation {
 
         int signatureType;
         // TODO: disable when encrypting???
-        if (enableAsciiArmor && enableSignature && !enableEncryption) {
+        if (enableAsciiArmorOutput && enableSignature && !enableEncryption) {
             signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
         } else {
             signatureType = PGPSignature.BINARY_DOCUMENT;
@@ -144,7 +144,7 @@ public class PgpOperation {
         ArmoredOutputStream armorOut = null;
         OutputStream out;
         OutputStream encryptionOut = null;
-        if (enableAsciiArmor) {
+        if (enableAsciiArmorOutput) {
             armorOut = new ArmoredOutputStream(mOutStream);
             armorOut.setHeader("Version", PgpHelper.getFullVersion(mContext));
             out = armorOut;
@@ -182,9 +182,11 @@ public class PgpOperation {
 
         // encrypt and compress input file content
         if (enableEncryption) {
-            JcePGPDataEncryptorBuilder encryptorBuilder = new JcePGPDataEncryptorBuilder(
-                    symmetricEncryptionAlgorithm).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
-                    .setWithIntegrityPacket(true);
+            // has Integrity packet enabled!
+            JcePGPDataEncryptorBuilder encryptorBuilder =
+                    new JcePGPDataEncryptorBuilder(symmetricEncryptionAlgorithm)
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
+                            .setWithIntegrityPacket(true);
 
             PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
@@ -192,8 +194,8 @@ public class PgpOperation {
                 // Symmetric encryption
                 Log.d(Constants.TAG, "encryptionKeyIds length is 0 -> symmetric encryption");
 
-                JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator = new JcePBEKeyEncryptionMethodGenerator(
-                        encryptionPassphrase.toCharArray());
+                JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
+                        new JcePBEKeyEncryptionMethodGenerator(encryptionPassphrase.toCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
                 // Asymmetric encryption
@@ -201,8 +203,8 @@ public class PgpOperation {
                     PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(mContext, id);
                     if (key != null) {
 
-                        JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator = new JcePublicKeyKeyEncryptionMethodGenerator(
-                                key);
+                        JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
+                                new JcePublicKeyKeyEncryptionMethodGenerator(key);
                         cPk.addMethod(pubKeyEncryptionGenerator);
                     }
                 }
@@ -227,8 +229,7 @@ public class PgpOperation {
                 signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
                 signatureGenerator.init(signatureType, signaturePrivateKey);
 
-                String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper
-                        .getMasterKey(signingKeyRing));
+                String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signingKeyRing));
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
                 spGen.setSignerUserID(false, userId);
                 signatureGenerator.setHashedSubpackets(spGen.generate());
@@ -283,7 +284,7 @@ public class PgpOperation {
             }
 
             literalGen.close();
-        } else if (enableAsciiArmor && enableSignature && !enableEncryption && !enableCompression) {
+        } else if (enableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
             /* sign-only of ascii text */
 
             updateProgress(R.string.progress_signing, 40, 100);
@@ -346,7 +347,7 @@ public class PgpOperation {
                 compressGen.close();
             }
         }
-        if (enableAsciiArmor) {
+        if (enableAsciiArmorOutput) {
             armorOut.close();
         }
 
@@ -365,6 +366,7 @@ public class PgpOperation {
         }
     }
 
+    // TODO: merge this into signAndEncrypt method!
     public void generateSignature(boolean armored, boolean binary, long signatureKeyId,
                                   String signaturePassPhrase, int hashAlgorithm, boolean forceV3Signature)
             throws PgpGeneralException, PGPException, IOException, NoSuchAlgorithmException,
@@ -732,7 +734,7 @@ public class PgpOperation {
             }
         }
 
-        // TODO: add integrity somewhere
+        // TODO: test if this integrity really check works!
         if (encryptedData.isIntegrityProtected()) {
             updateProgress(R.string.progress_verifying_integrity, 95, 100);
 
@@ -740,9 +742,11 @@ public class PgpOperation {
                 // passed
             } else {
                 // failed
+                throw new PgpGeneralException(mContext.getString(R.string.error_integrity_check_failed));
             }
         } else {
             // no integrity check
+            Log.e(Constants.TAG, "No integrity check!");
         }
 
         updateProgress(R.string.progress_done, 100, 100);

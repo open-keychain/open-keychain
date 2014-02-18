@@ -274,6 +274,7 @@
     <string name="error_no_signature_key">no signature key given</string>
     <string name="error_invalid_data">not valid encryption data</string>
     <string name="error_corrupt_data">corrupt data</string>
+    <string name="error_integrity_check_failed">integrity check failed! Data has been modified!</string>
     <string name="error_no_symmetric_encryption_packet">couldn\'t find a packet with symmetric encryption</string>
     <string name="error_wrong_passphrase">wrong passphrase</string>
     <string name="error_saving_keys">error saving some keys</string>
