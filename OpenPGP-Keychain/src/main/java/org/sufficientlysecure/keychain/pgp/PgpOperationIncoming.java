@@ -528,7 +528,7 @@ public class PgpOperationIncoming {
         return returnData;
     }
 
-    private boolean verifyKeyBinding(Context mContext, PGPSignature signature, PGPPublicKey signatureKey) {
+    private static boolean verifyKeyBinding(Context mContext, PGPSignature signature, PGPPublicKey signatureKey) {
         long signatureKeyId = signature.getKeyID();
         boolean keyBinding_isok = false;
         String userId = null;
@@ -546,7 +546,7 @@ public class PgpOperationIncoming {
         return keyBinding_isok;
     }
 
-    private boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+    private static boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
         boolean subkeyBinding_isok = false;
         boolean tmp_subkeyBinding_isok = false;
         boolean primkeyBinding_isok = false;
@@ -589,7 +589,7 @@ public class PgpOperationIncoming {
         return (subkeyBinding_isok & primkeyBinding_isok);
     }
 
-    private boolean verifyPrimaryBinding(PGPSignatureSubpacketVector Pkts, PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+    private static boolean verifyPrimaryBinding(PGPSignatureSubpacketVector Pkts, PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
         boolean primkeyBinding_isok = false;
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
@@ -621,7 +621,6 @@ public class PgpOperationIncoming {
         }
         return primkeyBinding_isok;
     }
-
 
     // taken from ClearSignedFileProcessor in BC
     private static void processLine(PGPSignature sig, byte[] line)
