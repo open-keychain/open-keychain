@@ -33,6 +33,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
@@ -195,8 +196,14 @@ public class PgpOperationOutgoing {
         boolean enableEncryption = (encryptionKeyIds.length != 0 || encryptionPassphrase != null);
         boolean enableCompression = (enableEncryption && compressionId != Id.choice.compression.none);
 
+        Log.d(Constants.TAG, "enableSignature:" + enableSignature
+                + "\nenableEncryption:" + enableEncryption
+                + "\nenableCompression:" + enableCompression
+                + "\nenableAsciiArmorOutput:" + enableAsciiArmorOutput);
+
         int signatureType;
         if (enableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
+            // for sign-only ascii text
             signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
         } else {
             signatureType = PGPSignature.BINARY_DOCUMENT;
@@ -299,10 +306,10 @@ public class PgpOperationOutgoing {
         PGPCompressedDataGenerator compressGen = null;
         OutputStream pOut;
         OutputStream encryptionOut = null;
+        BCPGOutputStream bcpgOut;
         if (enableEncryption) {
             encryptionOut = cPk.open(out, new byte[1 << 16]);
 
-            BCPGOutputStream bcpgOut;
             if (enableCompression) {
                 compressGen = new PGPCompressedDataGenerator(compressionId);
                 bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
@@ -402,17 +409,22 @@ public class PgpOperationOutgoing {
             }
         }
 
-        // closing outputs...
+        // closing outputs
+        // NOTE: closing need to be done in the correct order!
+        // TODO: closing bcpgOut and pOut???
         if (enableEncryption) {
-            encryptionOut.close();
-
             if (enableCompression) {
                 compressGen.close();
             }
+
+            encryptionOut.close();
         }
         if (enableAsciiArmorOutput) {
             armorOut.close();
         }
+
+        out.close();
+        outStream.close();
 
         updateProgress(R.string.progress_done, 100, 100);
     }
