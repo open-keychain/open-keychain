@@ -539,7 +539,8 @@ public class PgpOperationOutgoing {
 
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
-                                    final PGPSignatureGenerator pSignatureGenerator) throws IOException, SignatureException {
+                                    final PGPSignatureGenerator pSignatureGenerator)
+            throws IOException, SignatureException {
 
         if (pLine == null) {
             return;
@@ -564,8 +565,8 @@ public class PgpOperationOutgoing {
     }
 
     private static void processLine(final String pLine, final ArmoredOutputStream pArmoredOutput,
-                                    final PGPV3SignatureGenerator pSignatureGenerator) throws IOException,
-            SignatureException {
+                                    final PGPV3SignatureGenerator pSignatureGenerator)
+            throws IOException, SignatureException {
 
         if (pLine == null) {
             return;
@@ -587,10 +588,6 @@ public class PgpOperationOutgoing {
             pArmoredOutput.write(data);
         }
         pSignatureGenerator.update(data);
-    }
-
-    private static boolean isWhiteSpace(byte b) {
-        return b == '\r' || b == '\n' || b == '\t' || b == ' ';
     }
 
 }

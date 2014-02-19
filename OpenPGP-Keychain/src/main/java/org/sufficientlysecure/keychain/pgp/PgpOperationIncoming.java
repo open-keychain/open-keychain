@@ -624,8 +624,8 @@ public class PgpOperationIncoming {
 
 
     // taken from ClearSignedFileProcessor in BC
-    private static void processLine(PGPSignature sig, byte[] line) throws SignatureException,
-            IOException {
+    private static void processLine(PGPSignature sig, byte[] line)
+            throws SignatureException, IOException {
         int length = getLengthWithoutWhiteSpace(line);
         if (length > 0) {
             sig.update(line, 0, length);
