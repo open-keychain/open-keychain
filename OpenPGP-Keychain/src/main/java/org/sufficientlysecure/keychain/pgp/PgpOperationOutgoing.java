@@ -191,13 +191,9 @@ public class PgpOperationOutgoing {
             throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
 
-        if (encryptionKeyIds == null) {
-            encryptionKeyIds = new long[0];
-        }
-
         boolean enableSignature = signatureKeyId != Id.key.none;
-        boolean enableCompression = compressionId != Id.choice.compression.none;
-        boolean enableEncryption = encryptionKeyIds.length != 0 || encryptionPassphrase != null;
+        boolean enableEncryption = (encryptionKeyIds.length != 0 || encryptionPassphrase != null);
+        boolean enableCompression = (enableEncryption && compressionId != Id.choice.compression.none);
 
         int signatureType;
         if (enableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
@@ -208,7 +204,6 @@ public class PgpOperationOutgoing {
 
         ArmoredOutputStream armorOut = null;
         OutputStream out;
-        OutputStream encryptionOut = null;
         if (enableAsciiArmorOutput) {
             armorOut = new ArmoredOutputStream(outStream);
             armorOut.setHeader("Version", PgpHelper.getFullVersion(context));
@@ -217,7 +212,7 @@ public class PgpOperationOutgoing {
             out = outStream;
         }
 
-
+        /* Get keys for signature generation for later usage */
         PGPSecretKey signingKey = null;
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
@@ -245,7 +240,8 @@ public class PgpOperationOutgoing {
         }
         updateProgress(R.string.progress_preparing_streams, 5, 100);
 
-        // encrypt and compress input file content
+        /* Initialize PGPEncryptedDataGenerator for later usage */
+        PGPEncryptedDataGenerator cPk = null;
         if (enableEncryption) {
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =
@@ -253,7 +249,7 @@ public class PgpOperationOutgoing {
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
                             .setWithIntegrityPacket(true);
 
-            PGPEncryptedDataGenerator cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
+            cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
             if (encryptionKeyIds.length == 0) {
                 // Symmetric encryption
@@ -267,16 +263,15 @@ public class PgpOperationOutgoing {
                 for (long id : encryptionKeyIds) {
                     PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(context, id);
                     if (key != null) {
-
                         JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
                                 new JcePublicKeyKeyEncryptionMethodGenerator(key);
                         cPk.addMethod(pubKeyEncryptionGenerator);
                     }
                 }
             }
-            encryptionOut = cPk.open(out, new byte[1 << 16]);
         }
 
+        /* Initialize signature generator object for later usage */
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
         if (enableSignature) {
@@ -303,7 +298,10 @@ public class PgpOperationOutgoing {
 
         PGPCompressedDataGenerator compressGen = null;
         OutputStream pOut;
+        OutputStream encryptionOut = null;
         if (enableEncryption) {
+            encryptionOut = cPk.open(out, new byte[1 << 16]);
+
             BCPGOutputStream bcpgOut;
             if (enableCompression) {
                 compressGen = new PGPCompressedDataGenerator(compressionId);

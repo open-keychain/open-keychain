@@ -136,11 +136,11 @@ public class OpenPgpService extends RemoteService {
         return result;
     }
 
-
-    // TODO: asciiArmor?!
     private Bundle signImpl(Bundle params, ParcelFileDescriptor input, ParcelFileDescriptor output,
                             AppSettings appSettings) {
         try {
+            boolean asciiArmor = params.getBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+
             // get passphrase from cache, if key has "no" passphrase, this returns an empty String
             String passphrase;
             if (params.containsKey(OpenPgpConstants.PARAMS_PASSPHRASE)) {
@@ -163,7 +163,7 @@ public class OpenPgpService extends RemoteService {
 
                 // sign-only
                 PgpOperationOutgoing.Builder builder = new PgpOperationOutgoing.Builder(getContext(), inputData, os);
-                builder.enableAsciiArmorOutput(true)
+                builder.enableAsciiArmorOutput(asciiArmor)
                         .signatureHashAlgorithm(appSettings.getHashAlgorithm())
                         .signatureForceV3(false)
                         .signatureKeyId(appSettings.getKeyId())
@@ -190,7 +190,7 @@ public class OpenPgpService extends RemoteService {
                                       ParcelFileDescriptor output, AppSettings appSettings,
                                       boolean sign) {
         try {
-            boolean asciiArmor = params.getBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, false);
+            boolean asciiArmor = params.getBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
 
             long[] keyIds;
             if (params.containsKey(OpenPgpConstants.PARAMS_KEY_IDS)) {
@@ -231,8 +231,6 @@ public class OpenPgpService extends RemoteService {
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .compressionId(appSettings.getCompression())
                         .symmetricEncryptionAlgorithm(appSettings.getEncryptionAlgorithm())
-                        .signatureHashAlgorithm(appSettings.getHashAlgorithm())
-                        .signatureForceV3(false)
                         .encryptionKeyIds(keyIds);
 
                 if (sign) {
@@ -250,7 +248,9 @@ public class OpenPgpService extends RemoteService {
                     }
 
                     // sign and encrypt
-                    builder.signatureKeyId(appSettings.getKeyId())
+                    builder.signatureHashAlgorithm(appSettings.getHashAlgorithm())
+                            .signatureForceV3(false)
+                            .signatureKeyId(appSettings.getKeyId())
                             .signaturePassphrase(passphrase);
                 } else {
                     // encrypt only
