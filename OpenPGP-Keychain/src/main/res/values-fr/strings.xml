@@ -111,7 +111,6 @@
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
-  <string name="label_force_v3_signature">Forcer les signatures V3</string>
   <string name="label_key_servers">Serveurs de clefs</string>
   <string name="label_key_id">ID de le clef</string>
   <string name="label_creation">Création</string>
@@ -274,7 +273,7 @@
   <string name="progress_saving">sauvegarde...</string>
   <string name="progress_importing">importation...</string>
   <string name="progress_exporting">exportation...</string>
-  <string name="progress_generating">génération de la clef, ceci peut prendre un moment...</string>
+  <string name="progress_generating">génération de la clef, ceci peut prendre jusqu\'à 3 minutes...</string>
   <string name="progress_building_key">assemblage de la clef...</string>
   <string name="progress_preparing_master_key">préparation de la clef maîtresse...</string>
   <string name="progress_certifying_master_key">certification de la clef maîtresse...</string>
@@ -341,7 +340,7 @@
   <string name="intent_send_encrypt">OpenPGP : chiffrer</string>
   <string name="intent_send_decrypt">OpenPGP : déchiffrer</string>
   <!--Remote API-->
-  <string name="api_no_apps">Aucune application enregistrée !</string>
+  <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès au Porte-clefs OpenPGP. Après avoir autoriser l\'accès, elles seront listées ici.</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
   <string name="api_settings_hide_advanced">Masquer les paramètres avancés</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
@@ -351,7 +350,7 @@
   <string name="api_settings_revoke">Révoquer l\'accès</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
-  <string name="api_register_text">L\'application suivante demande l\'accès à l\'API du Porte-clefs OpenPGP.\n\nPermettre l\'accès permanent ?</string>
+  <string name="api_register_text">L\'application affichée demande l\'accès au Porte-clefs OpenPGP.\nPermettre l\'accès ?\n\nAvertissement : si vous ne savez pas pourquoi cet écran est apparu, refusé l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applications enregistrées ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>

@@ -111,7 +111,6 @@
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
-  <string name="label_force_v3_signature">Использовать V3 подписи</string>
   <string name="label_key_servers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
@@ -283,7 +282,7 @@
   <string name="progress_saving">сохранение...</string>
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>
-  <string name="progress_generating">создание ключа... на это нужно время...</string>
+  <string name="progress_generating">создание ключа. это может занять до 3 минут...</string>
   <string name="progress_building_key">создание ключа...</string>
   <string name="progress_preparing_master_key">подготовка основного ключа...</string>
   <string name="progress_certifying_master_key">сертификация основного ключа...</string>
@@ -352,7 +351,7 @@
   <string name="intent_send_encrypt">OpenPGP: Зашифровать</string>
   <string name="intent_send_decrypt">OpenPGP: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нет связанных приложений!</string>
+  <string name="api_no_apps">Нет связанных программ!\n\nСторонние программы могут запросить доступ к OpenPGP Keychain, после чего они будут отражаться здесь.</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
   <string name="api_settings_hide_advanced">Скрыть расширенные настройки</string>
   <string name="api_settings_no_key">Ключ не выбран</string>
@@ -362,7 +361,7 @@
   <string name="api_settings_revoke">Отозвать доступ</string>
   <string name="api_settings_package_name">Наименование пакета</string>
   <string name="api_settings_package_signature">SHA-256 подписи пакета</string>
-  <string name="api_register_text">Приложение запрашивает доступ к OpenPGP Keychain API.\nРазрешить доступ?</string>
+  <string name="api_register_text">Данное приложение запрашивает доступ к OpenPGP Keychain.\nРазрешить доступ?\n\nВНИМАНИЕ: Если вы не знаете почему возник этот запрос, откажите в доступе!\nПозже вы можете отозвать право доступа в разделе \"Зарегистрированные программы\".</string>
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>

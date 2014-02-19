@@ -111,7 +111,7 @@
   <string name="label_passphrase_cache_ttl">Caché de frase de contraseña</string>
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
-  <string name="label_force_v3_signature">Forzar firmas V3</string>
+  <string name="label_force_v3_signature">Forzar firmas OpenPGPv3 antiguas</string>
   <string name="label_key_servers">Servidores de claves</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_creation">Creación</string>
@@ -254,6 +254,7 @@
   <string name="error_no_signature_key">no has proporcionado una clave de firma</string>
   <string name="error_invalid_data">cifrado de datos no válido</string>
   <string name="error_corrupt_data">datos corrompidos</string>
+  <string name="error_integrity_check_failed">¡ha fallado la comprobación de integridad! ¡Los datos han sido modificados!</string>
   <string name="error_no_symmetric_encryption_packet">no se ha podido encontrar un paquete con cifrado simétrico</string>
   <string name="error_wrong_passphrase">frase de contraseña incorrecta</string>
   <string name="error_saving_keys">error al guardar algunas claves</string>
@@ -274,7 +275,7 @@
   <string name="progress_saving">guardando...</string>
   <string name="progress_importing">importando...</string>
   <string name="progress_exporting">exportando...</string>
-  <string name="progress_generating">generando la clave, esto puede tardar un rato...</string>
+  <string name="progress_generating">generando la clave, esto puede tardar más de 3 minutos...</string>
   <string name="progress_building_key">construyendo la clave...</string>
   <string name="progress_preparing_master_key">preparando la clave maestra...</string>
   <string name="progress_certifying_master_key">certificando la clave maestra...</string>
@@ -341,7 +342,7 @@
   <string name="intent_send_encrypt">OpenPGP: Cifrar</string>
   <string name="intent_send_decrypt">OpenPGP: Descifrar</string>
   <!--Remote API-->
-  <string name="api_no_apps">¡No hay aplicaciones registradas!</string>
+  <string name="api_no_apps">¡No hay aplicaciones registradas¡\n\nLas aplicaciones de terceros pueden pedir acceso a OpenPGP Keychain. Después de recibir permiso, se mostrarán aquí.</string>
   <string name="api_settings_show_advanced">Mostrar la configuración avanzada</string>
   <string name="api_settings_hide_advanced">Ocultar la configuración avanzada</string>
   <string name="api_settings_no_key">No se ha seleccionado ninguna clave</string>
@@ -351,7 +352,7 @@
   <string name="api_settings_revoke">Revocar acceso</string>
   <string name="api_settings_package_name">Nombre de paquete</string>
   <string name="api_settings_package_signature">SHA-256 de firma de paquete</string>
-  <string name="api_register_text">La siguiente aplicación solicita acceso a la API de OpenPGP Keychain.\n\n¿Permitir el acceso permanentemente?</string>
+  <string name="api_register_text">La aplicación mostrada pide acceso a OpenPGP Keychain.\n¿Permitir acceso?\n\nAVISO: Si no sabes por qué ha aparecido esta pantalla, ¡deniega el acceso! Puedes revocar el acceso más tarde usando la ventana \'Aplicaciones Registradas\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
   <string name="api_register_error_select_key">¡Por favor, selecciona una clave!</string>

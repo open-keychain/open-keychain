@@ -99,7 +99,6 @@
   <string name="progress_saving">kaydediliyor...</string>
   <string name="progress_importing">alıyor...</string>
   <string name="progress_exporting">veriyor...</string>
-  <string name="progress_generating">anahtar üretiliyor, bu biraz süre alabilir...</string>
   <string name="progress_building_key">anahtar oluşturuluyor...</string>
   <string name="progress_preparing_signature">imza hazırlanıyor...</string>
   <string name="progress_generating_signature">imza oluşturuluyor...</string>

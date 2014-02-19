@@ -73,7 +73,6 @@
   <string name="label_passphrase_cache_ttl">Wachtwoordcache</string>
   <string name="label_message_compression">Berichtcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
-  <string name="label_force_v3_signature">V3-handtekeningen afdwingen</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_expiry">Verlopen</string>
@@ -176,7 +175,6 @@
   <string name="progress_saving">opslaan...</string>
   <string name="progress_importing">importeren...</string>
   <string name="progress_exporting">exporteren...</string>
-  <string name="progress_generating">sleutel genereren, een ogenblik geduld...</string>
   <string name="progress_building_key">sleutel maken...</string>
   <string name="progress_preparing_master_key">hoofdsleutel voorbereiden...</string>
   <string name="progress_certifying_master_key">hoofdsleutel certificeren...</string>
@@ -227,13 +225,11 @@
   <string name="intent_send_encrypt">OpenPGP: versleutelen</string>
   <string name="intent_send_decrypt">OpenPGP: ontsleutelen</string>
   <!--Remote API-->
-  <string name="api_no_apps">Geen geregistreerde apps</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
   <string name="api_settings_save">Opslaan</string>
   <string name="api_settings_cancel">Annuleren</string>
   <string name="api_settings_revoke">Toegang herroepen</string>
-  <string name="api_register_text">De volgende app vraagt toegang to de KeyChain-API van OpenPGP\n\nAltijd toestaan?</string>
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>

@@ -111,7 +111,7 @@
   <string name="label_passphrase_cache_ttl">Кеш парольної фрази</string>
   <string name="label_message_compression">Стиснення повідомлення</string>
   <string name="label_file_compression">Стиснення файлу</string>
-  <string name="label_force_v3_signature">Примусові підписи V3</string>
+  <string name="label_force_v3_signature">Примусово старі підписи OpenPGPv3</string>
   <string name="label_key_servers">Сервери ключів</string>
   <string name="label_key_id">ІД ключа</string>
   <string name="label_creation">Створення</string>
@@ -262,6 +262,7 @@
   <string name="error_no_signature_key">не подано ключ підпису</string>
   <string name="error_invalid_data">недійсні дані шифрування</string>
   <string name="error_corrupt_data">пошкодити дані</string>
+  <string name="error_integrity_check_failed">Невдала перевірка цілісності! Дані вже змінено!</string>
   <string name="error_no_symmetric_encryption_packet">не знайдено пакунок з симетричним шифруванням</string>
   <string name="error_wrong_passphrase">помилкова парольна фраза</string>
   <string name="error_saving_keys">помилка збереження деяких ключів</string>
@@ -283,7 +284,7 @@
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
-  <string name="progress_generating">генерується ключ, зачекайте…</string>
+  <string name="progress_generating">генерується ключ, вона може тривати до 3 хвилин…</string>
   <string name="progress_building_key">будується ключ…</string>
   <string name="progress_preparing_master_key">підготовка основного ключа…</string>
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
@@ -352,7 +353,7 @@
   <string name="intent_send_encrypt">OpenPGP: зашифрувати</string>
   <string name="intent_send_decrypt">OpenPGP: розшифрувати</string>
   <!--Remote API-->
-  <string name="api_no_apps">Немає зареєстрованих програм!</string>
+  <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
   <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
@@ -362,7 +363,7 @@
   <string name="api_settings_revoke">Відкликати доступ</string>
   <string name="api_settings_package_name">Назва пакунку</string>
   <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
-  <string name="api_register_text">Наступна програм запитала доступ до OpenPGP Keychain API.\n\nДозволити постійний доступ?</string>
+  <string name="api_register_text">Показана програма запитує доступ до OpenPGP Keychain.\nДозволити доступ?\n\nУВАГА: якщо ви не знаєте, чому цей екран появився, не дозволяйте доступ! Ви можете відкликати доступ пізніше, використовуючи екран \'Зареєстровані програми\'.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>

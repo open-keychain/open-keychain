@@ -109,7 +109,6 @@
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">导入中...</string>
   <string name="progress_exporting">导出中...</string>
-  <string name="progress_generating">正在生成密钥，这可能需要一会</string>
   <string name="progress_building_key">建立密钥</string>
   <string name="progress_preparing_master_key">正在准备主密钥</string>
   <string name="progress_verifying_signature">正在验证签名...</string>

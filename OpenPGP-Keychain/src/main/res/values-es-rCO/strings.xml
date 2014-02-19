@@ -71,7 +71,6 @@
   <string name="label_symmetric">Contraseña</string>
   <string name="label_message_compression">Compresión de mensaje</string>
   <string name="label_file_compression">Compresión de archivo</string>
-  <string name="label_force_v3_signature">Forzar firmas V3</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_creation">Creación</string>
   <string name="label_expiry">Expiración</string>
