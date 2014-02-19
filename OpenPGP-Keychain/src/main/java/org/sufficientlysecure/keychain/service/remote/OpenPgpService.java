@@ -384,15 +384,19 @@ public class OpenPgpService extends RemoteService {
 
 
                 Bundle outputBundle;
-                PgpOperationIncoming operation = new PgpOperationIncoming(getContext(), null, inputData, os);
+                PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, os);
+
                 if (signedOnly) {
-                    outputBundle = operation.verifyText();
+                    outputBundle = builder.build().verifyText();
                 } else {
+                    builder.assumeSymmetric(false)
+                            .passphrase(passphrase);
+
                     // Do we want to do this: instead of trying to get the passphrase before
                     // pause stream when passphrase is missing and then resume???
 
                     // TODO: this also decrypts with other secret keys without passphrase!!!
-                    outputBundle = operation.decryptAndVerify(passphrase, false);
+                    outputBundle = builder.build().decryptAndVerify();
                 }
 
 //                outputStream.close();

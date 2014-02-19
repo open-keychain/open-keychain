@@ -481,13 +481,16 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
-                PgpOperationIncoming operation = new PgpOperationIncoming(this, this, inputData, outStream);
+                PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, outStream);
+                builder.progress(this);
+
                 if (signedOnly) {
-                    resultData = operation.verifyText();
+                    resultData = builder.build().verifyText();
                 } else {
-                    resultData = operation.decryptAndVerify(
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
-                            assumeSymmetricEncryption);
+                    builder.assumeSymmetric(assumeSymmetricEncryption)
+                            .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    resultData = builder.build().decryptAndVerify();
                 }
 
                 outStream.close();
