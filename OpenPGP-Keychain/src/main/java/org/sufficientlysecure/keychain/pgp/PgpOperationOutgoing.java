@@ -33,7 +33,6 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureGenerator;
 import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.PGPV3SignatureGenerator;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
@@ -308,6 +307,8 @@ public class PgpOperationOutgoing {
         OutputStream encryptionOut = null;
         BCPGOutputStream bcpgOut;
         if (enableEncryption) {
+            /* actual encryption */
+
             encryptionOut = cPk.open(out, new byte[1 << 16]);
 
             if (enableCompression) {
@@ -410,7 +411,7 @@ public class PgpOperationOutgoing {
         }
 
         // closing outputs
-        // NOTE: closing need to be done in the correct order!
+        // NOTE: closing needs to be done in the correct order!
         // TODO: closing bcpgOut and pOut???
         if (enableEncryption) {
             if (enableCompression) {
@@ -430,6 +431,7 @@ public class PgpOperationOutgoing {
     }
 
     // TODO: merge this into signAndEncrypt method!
+    // TODO: allow binary input for this class
     public void generateSignature()
             throws PgpGeneralException, PGPException, IOException, NoSuchAlgorithmException,
             SignatureException {
