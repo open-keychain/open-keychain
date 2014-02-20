@@ -1,6 +1,6 @@
-# OpenPGP Keychain (for Android)
+# OpenKeychain (for Android)
 
-OpenPGP Keychain is an OpenPGP implementation for Android.
+OpenKeychain is an OpenPGP implementation for Android.
 The development began as a fork of Android Privacy Guard (APG).
 
 see http://sufficientlysecure.org/keychain
@@ -17,10 +17,10 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 2. Lookout for interesting issues on our issue page at Github: https://github.com/openpgp-keychain/openpgp-keychain/issues
 3. Tell us about your plans on the mailinglist
 4. Read this README, especially the notes about coding style
-5. Fork OpenPGP Keychain and contribute code (the best part ;) )
+5. Fork OpenKeychain and contribute code (the best part ;) )
 6. Open a pull request on Github. I will help with occuring problems and merge your changes back into the main project.
 
-I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain!
+I am happy about every code contribution and appreciate your effort to help us developing OpenKeychain!
 
 ## Development
 
@@ -64,7 +64,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 
-#### OpenPGP Keychain Intent actions:
+#### OpenKeychain Intent actions:
 
 * ``org.sufficientlysecure.keychain.action.ENCRYPT``
   * To encrypt or sign text, use extra ``text`` (type: ``String``)
@@ -82,7 +82,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras, starts Barcode Scanner to get QR Code
   
-#### OpenPGP Keychain special registered Intents:
+#### OpenKeychain special registered Intents:
 * ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
 * NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
 
@@ -103,10 +103,10 @@ The service definition defines sign, encrypt, signAndEncrypt, decryptAndVerify, 
 
 As can be seen in the API Demo, the apps themselves never need to handle key ids directly.
 You can use user ids (emails) to define recipients.
-If more than one public key exists for an email, OpenPGP Keychain will handle the problem by showing a selection screen. Additionally, it is also possible to use key ids.
+If more than one public key exists for an email, OpenKeychain will handle the problem by showing a selection screen. Additionally, it is also possible to use key ids.
 
 Also app devs never need to fiddle with private keys.
-On first operation, OpenPGP Keychain shows an activity to allow or disallow access, while also allowing to choose the private key used for this app.
+On first operation, OpenKeychain shows an activity to allow or disallow access, while also allowing to choose the private key used for this app.
 Please try the Demo app out to see how it works.
 
 #### Integration
@@ -134,7 +134,7 @@ Only classes related to QR Code generation are utilized.
 
 #### Spongy Castle
 
-Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP Keychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
 * Fork: https://github.com/openpgp-keychain/spongycastle
@@ -156,11 +156,10 @@ see
 
 ### Gradle Build System
 
-We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
-This is also a key requirement to be part of F-Droid.
+We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 When changing build files or dependencies, respect the following requirements:
 - No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder
-- No dependencies from Maven
+- No dependencies from Maven (also a soft requirement for inclusion in F-Droid)
 - Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+``
 - Commit the corresponding gradle wrapper version to the repository
 
