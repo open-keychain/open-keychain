@@ -47,9 +47,9 @@ import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
 
 public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
@@ -282,8 +282,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
 
         if (fingerprint.length() < 16) {
-            Toast.makeText(this, R.string.import_qr_code_too_short_fingerprint,
-                    Toast.LENGTH_LONG).show();
+            AppMsg.makeText(this, R.string.import_qr_code_too_short_fingerprint,
+                    AppMsg.STYLE_ALERT).show();
             return;
         }
 
@@ -392,7 +392,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 } else {
                     toastMessage = getString(R.string.no_keys_added_or_updated);
                 }
-                Toast.makeText(ImportKeysActivity.this, toastMessage, Toast.LENGTH_SHORT)
+                AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
                         .show();
                 if (bad > 0) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(
@@ -474,7 +474,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             // start service with intent
             startService(intent);
         } else {
-            Toast.makeText(this, R.string.error_nothing_import, Toast.LENGTH_LONG).show();
+            AppMsg.makeText(this, R.string.error_nothing_import, AppMsg.STYLE_ALERT).show();
         }
     }
 

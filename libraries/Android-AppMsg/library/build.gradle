@@ -1,0 +1,22 @@
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.1'
+
+    defaultConfig {
+        minSdkVersion 4
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            res.srcDirs = ['res']
+        }
+    }
+}
+
+if (project.hasProperty('nexusUsername')) {
+    // Used to push in maven
+    apply from: '../maven_push.gradle'
+}
