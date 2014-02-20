@@ -158,10 +158,10 @@ see
 
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 When changing build files or dependencies, respect the following requirements:
-- No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder
-- No dependencies from Maven (also a soft requirement for inclusion in F-Droid)
-- Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+``
-- Commit the corresponding gradle wrapper version to the repository
+* No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder (you never know what pre-compiled jar files really contain! The library files are currently directly commited, because git submodules/git subtree are too much of a hassle for new contributors. This could change in the future!)
+* No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
+* Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
+* Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
 
 ### Translations
 
