@@ -13,6 +13,7 @@ dependencies {
     compile project(':libraries:spongycastle:pg')
     compile project(':libraries:spongycastle:pkix')
     compile project(':libraries:spongycastle:prov')
+    compile 'com.github.johnkil.android-appmsg:appmsg:1.2.0'
 }
 
 android {
