@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.devspark</groupId>
+    <artifactId>appmsg</artifactId>
+    <version>1.0.1</version>
+    <packaging>apklib</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>android</artifactId>
+            <version>4.1.1.4</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <linkXref>true</linkXref>
+                    <sourceEncoding>utf-8</sourceEncoding>
+                    <minimumTokens>100</minimumTokens>
+                    <targetJdk>1.6</targetJdk>
+                    <excludes>
+                        <exclude>**/*Bean.java</exclude>
+                        <exclude>**/generated/*.java</exclude>
+                    </excludes>
+                    <excludeRoots>
+                        <excludeRoot>target/generated-sources/stubs</excludeRoot>
+                    </excludeRoots>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+                <artifactId>android-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <androidManifestFile>${project.basedir}/AndroidManifest.xml</androidManifestFile>
+                    <assetsDirectory>${project.basedir}/assets</assetsDirectory>
+                    <resourceDirectory>${project.basedir}/res</resourceDirectory>
+                    <nativeLibrariesDirectory>${project.basedir}/src/main/native</nativeLibrariesDirectory>
+                    <sdk>
+                        <platform>16</platform>
+                    </sdk>
+                    <undeployBeforeDeploy>true</undeployBeforeDeploy>
+                </configuration>
+                <extensions>true</extensions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
