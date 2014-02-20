@@ -241,6 +241,9 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   https://github.com/Bearded-Hen/Android-Bootstrap  
   MIT License
 
+* Andoird AppMsg
+  https://github.com/johnkil/Android-AppMsg
+  Apache License v2
 
 ### Images
 * icon.svg  
