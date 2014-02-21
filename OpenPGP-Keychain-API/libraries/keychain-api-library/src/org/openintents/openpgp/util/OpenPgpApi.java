@@ -18,7 +18,6 @@ package org.openintents.openpgp.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
@@ -128,15 +127,7 @@ public class OpenPgpApi {
     }
 
     private void executeApiAsync(int operationId, Bundle params, InputStream is, OutputStream os, IOpenPgpCallback callback) {
-        OpenPgpAsyncTask task = new OpenPgpAsyncTask(operationId, params, is, os, callback);
-
-        // don't serialize async tasks!
-        // http://commonsware.com/blog/2012/04/20/asynctask-threading-regression-confirmed.html
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
-        } else {
-            task.execute((Void[]) null);
-        }
+        new OpenPgpAsyncTask(operationId, params, is, os, callback).execute((Void[]) null);
     }
 
     private Bundle executeApi(int operationId, Bundle params, InputStream is, OutputStream os) {

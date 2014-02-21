@@ -18,7 +18,6 @@
 package org.openintents.openpgp.util;
 
 import android.os.ParcelFileDescriptor;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,21 +81,21 @@ public class ParcelFileDescriptorUtil {
                 }
                 mOut.flush(); // just to be safe
             } catch (IOException e) {
-                Log.e(OpenPgpConstants.TAG, "TransferThread" + getId() + ": writing failed", e);
+                //Log.e(OpenPgpConstants.TAG, "TransferThread" + getId() + ": writing failed", e);
             } finally {
                 try {
                     mIn.close();
                 } catch (IOException e) {
-                    Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
+                    //Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
                 }
                 try {
                     mOut.close();
                 } catch (IOException e) {
-                    Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
+                    //Log.e(OpenPgpConstants.TAG, "TransferThread" + getId(), e);
                 }
             }
             if (mListener != null) {
-                Log.d(OpenPgpConstants.TAG, "TransferThread " + getId() + " finished!");
+                //Log.d(OpenPgpConstants.TAG, "TransferThread " + getId() + " finished!");
                 mListener.onThreadFinished(this);
             }
         }
