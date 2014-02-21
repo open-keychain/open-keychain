@@ -297,7 +297,7 @@ public class DecryptActivity extends DrawerActivity {
          * Android's Action
          */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to Keychain Encrypt via share menu
+            // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
                 // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);

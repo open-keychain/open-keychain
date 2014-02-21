@@ -182,6 +182,26 @@
             android:label="@string/title_decrypt"
             android:windowSoftInputMode="stateHidden">
 
+            <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
+            <!--<intent-filter android:label="@string/intent_import_key">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+
+                <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
+                <!--<data android:mimeType="application/pgp-signature" />-->
+            <!--</intent-filter>-->
+            <!--&lt;!&ndash; VIEW with mimeType: TODO (from email app)  &ndash;&gt;-->
+            <!--<intent-filter android:label="@string/intent_import_key">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+
+                <!--&lt;!&ndash; mime type as defined in http://tools.ietf.org/html/rfc3156 &ndash;&gt;-->
+                <!--<data android:mimeType="application/pgp-encrypted" />-->
+            <!--</intent-filter>-->
             <!-- Keychain's own Actions -->
             <!-- DECRYPT with text as extra -->
             <intent-filter>
@@ -295,7 +315,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
             <!-- NFC: Handle NFC tags detected from outside our application -->
@@ -303,7 +323,7 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156, section 7 -->
+                <!-- mime type as defined in http://tools.ietf.org/html/rfc3156 -->
                 <data android:mimeType="application/pgp-keys" />
             </intent-filter>
             <!-- VIEW with file endings: *.gpg (e.g. to import from OI File Manager) -->
