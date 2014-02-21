@@ -32,8 +32,8 @@ import org.openintents.openpgp.util.OpenPgpConstants;
 import org.spongycastle.util.Arrays;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.pgp.PgpOperationOutgoing;
-import org.sufficientlysecure.keychain.pgp.PgpOperationIncoming;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -162,13 +162,13 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 // sign-only
-                PgpOperationOutgoing.Builder builder = new PgpOperationOutgoing.Builder(getContext(), inputData, os);
+                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .signatureHashAlgorithm(appSettings.getHashAlgorithm())
                         .signatureForceV3(false)
                         .signatureKeyId(appSettings.getKeyId())
                         .signaturePassphrase(passphrase);
-                builder.build().signEncrypt();
+                builder.build().execute();
             } finally {
                 is.close();
                 os.close();
@@ -227,7 +227,7 @@ public class OpenPgpService extends RemoteService {
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
 
-                PgpOperationOutgoing.Builder builder = new PgpOperationOutgoing.Builder(getContext(), inputData, os);
+                PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
                         .compressionId(appSettings.getCompression())
                         .symmetricEncryptionAlgorithm(appSettings.getEncryptionAlgorithm())
@@ -257,7 +257,7 @@ public class OpenPgpService extends RemoteService {
                     builder.signatureKeyId(Id.key.none);
                 }
                 // execute PGP operation!
-                builder.build().signEncrypt();
+                builder.build().execute();
             } finally {
                 is.close();
                 os.close();
@@ -354,7 +354,7 @@ public class OpenPgpService extends RemoteService {
 //                            inputStream2.reset();
 //                        }
 //                        secretKeyId = Id.key.symmetric;
-//                        if (!PgpOperationIncoming.hasSymmetricEncryption(this, inputStream2)) {
+//                        if (!PgpDecryptVerify.hasSymmetricEncryption(this, inputStream2)) {
 //                            throw new PgpGeneralException(
 //                                    getString(R.string.error_no_known_encryption_found));
 //                        }
@@ -384,7 +384,7 @@ public class OpenPgpService extends RemoteService {
 
 
                 Bundle outputBundle;
-                PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, os);
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
 
 //                if (signedOnly) {
 //                    outputBundle = builder.build().verifyText();
@@ -396,7 +396,7 @@ public class OpenPgpService extends RemoteService {
                 // pause stream when passphrase is missing and then resume???
 
                 // TODO: this also decrypts with other secret keys without passphrase!!!
-                outputBundle = builder.build().decryptVerify();
+                outputBundle = builder.build().execute();
 //                }
 
 //                outputStream.close();
@@ -425,7 +425,6 @@ public class OpenPgpService extends RemoteService {
                         signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                     }
 
-                    // TODO: signed only?!?!?!
                     sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
                             signatureOnly, signatureKeyId);
                 }

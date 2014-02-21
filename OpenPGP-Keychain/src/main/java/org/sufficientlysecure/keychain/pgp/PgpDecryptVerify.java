@@ -70,7 +70,7 @@ import java.util.Iterator;
 /**
  * This class uses a Builder pattern!
  */
-public class PgpOperationIncoming {
+public class PgpDecryptVerify {
     private Context context;
     private InputData data;
     private OutputStream outStream;
@@ -79,7 +79,7 @@ public class PgpOperationIncoming {
     boolean assumeSymmetric;
     String passphrase;
 
-    private PgpOperationIncoming(Builder builder) {
+    private PgpDecryptVerify(Builder builder) {
         // private Constructor can only be called from Builder
         this.context = builder.context;
         this.data = builder.data;
@@ -122,8 +122,8 @@ public class PgpOperationIncoming {
             return this;
         }
 
-        public PgpOperationIncoming build() {
-            return new PgpOperationIncoming(this);
+        public PgpDecryptVerify build() {
+            return new PgpDecryptVerify(this);
         }
     }
 
@@ -177,9 +177,8 @@ public class PgpOperationIncoming {
      * @throws PGPException
      * @throws SignatureException
      */
-    public Bundle decryptVerify()
+    public Bundle execute()
             throws IOException, PgpGeneralException, PGPException, SignatureException {
-        Bundle returnData = new Bundle();
 
         // automatically works with ascii armor input and binary
         InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
@@ -191,14 +190,30 @@ public class PgpOperationIncoming {
             if (aIn.isClearText()) {
                 // a cleartext signature, verify it with the other method
                 return verifyCleartextSignature(aIn);
-            } else {
-                // go on...
             }
+            // else: ascii armored encryption! go on...
         }
+
+        return decryptVerify(in);
+    }
+
+    /**
+     * Decrypt and/or verifies binary or ascii armored pgp
+     *
+     * @param in
+     * @return
+     * @throws IOException
+     * @throws PgpGeneralException
+     * @throws PGPException
+     * @throws SignatureException
+     */
+    private Bundle decryptVerify(InputStream in)
+            throws IOException, PgpGeneralException, PGPException, SignatureException {
+        Bundle returnData = new Bundle();
+
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
-        Log.d(Constants.TAG, "o: " + o.getClass().getName());
 
         int currentProgress = 0;
         updateProgress(R.string.progress_reading_data, currentProgress, 100);

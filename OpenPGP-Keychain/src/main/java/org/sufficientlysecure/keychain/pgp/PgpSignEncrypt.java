@@ -62,7 +62,7 @@ import java.util.Date;
 /**
  * This class uses a Builder pattern!
  */
-public class PgpOperationOutgoing {
+public class PgpSignEncrypt {
     private Context context;
     private InputData data;
     private OutputStream outStream;
@@ -78,7 +78,7 @@ public class PgpOperationOutgoing {
     private boolean signatureForceV3;
     private String signaturePassphrase;
 
-    private PgpOperationOutgoing(Builder builder) {
+    private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
         this.context = builder.context;
         this.data = builder.data;
@@ -170,8 +170,8 @@ public class PgpOperationOutgoing {
             return this;
         }
 
-        public PgpOperationOutgoing build() {
-            return new PgpOperationOutgoing(this);
+        public PgpSignEncrypt build() {
+            return new PgpSignEncrypt(this);
         }
     }
 
@@ -197,7 +197,7 @@ public class PgpOperationOutgoing {
      * @throws NoSuchAlgorithmException
      * @throws SignatureException
      */
-    public void signEncrypt()
+    public void execute()
             throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
 
@@ -442,7 +442,7 @@ public class PgpOperationOutgoing {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    // TODO: merge this into signEncrypt method!
+    // TODO: merge this into execute method!
     // TODO: allow binary input for this class
     public void generateSignature()
             throws PgpGeneralException, PGPException, IOException, NoSuchAlgorithmException,

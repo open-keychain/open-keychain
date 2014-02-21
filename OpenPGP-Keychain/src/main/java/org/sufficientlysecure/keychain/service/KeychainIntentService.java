@@ -43,11 +43,11 @@ import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpOperationIncoming;
-import org.sufficientlysecure.keychain.pgp.PgpOperationOutgoing;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -317,8 +317,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
-                PgpOperationOutgoing.Builder builder =
-                        new PgpOperationOutgoing.Builder(this, inputData, outStream);
+                PgpSignEncrypt.Builder builder =
+                        new PgpSignEncrypt.Builder(this, inputData, outStream);
                 builder.progress(this);
 
                 if (generateSignature) {
@@ -338,7 +338,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                             .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                    builder.build().signEncrypt();
+                    builder.build().execute();
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     builder.enableAsciiArmorOutput(useAsciiArmor)
@@ -351,7 +351,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                             .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                    builder.build().signEncrypt();
+                    builder.build().execute();
                 }
 
                 outStream.close();
@@ -480,13 +480,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
-                PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, outStream);
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
                 builder.progress(this);
 
                 builder.assumeSymmetric(assumeSymmetricEncryption)
                         .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                resultData = builder.build().decryptVerify();
+                resultData = builder.build().execute();
 
                 outStream.close();
 
