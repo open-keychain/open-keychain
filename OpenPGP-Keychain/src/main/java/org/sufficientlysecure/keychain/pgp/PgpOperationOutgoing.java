@@ -187,7 +187,17 @@ public class PgpOperationOutgoing {
         }
     }
 
-    public void signAndEncrypt()
+    /**
+     * Signs and/or encrypts data based on parameters of class
+     *
+     * @throws IOException
+     * @throws PgpGeneralException
+     * @throws PGPException
+     * @throws NoSuchProviderException
+     * @throws NoSuchAlgorithmException
+     * @throws SignatureException
+     */
+    public void signEncrypt()
             throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
 
@@ -383,6 +393,8 @@ public class PgpOperationOutgoing {
                 }
 
                 armorOut.write(newline);
+
+                // update signature buffer with input line
                 if (signatureForceV3) {
                     signatureV3Generator.update(newline);
                     processLine(line, armorOut, signatureV3Generator);
@@ -430,7 +442,7 @@ public class PgpOperationOutgoing {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    // TODO: merge this into signAndEncrypt method!
+    // TODO: merge this into signEncrypt method!
     // TODO: allow binary input for this class
     public void generateSignature()
             throws PgpGeneralException, PGPException, IOException, NoSuchAlgorithmException,

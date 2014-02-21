@@ -31,6 +31,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpConstants;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
@@ -121,6 +122,18 @@ public class OpenPgpProviderActivity extends Activity {
         });
     }
 
+    private void handleSignature(final OpenPgpSignatureResult sigResult) {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Toast.makeText(OpenPgpProviderActivity.this,
+                        sigResult.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     /**
      * Takes input from message or ciphertext EditText and turns it into a ByteArrayInputStream
      *
@@ -170,6 +183,12 @@ public class OpenPgpProviderActivity extends Activity {
                         }
                     } catch (UnsupportedEncodingException e) {
                         Log.e(Constants.TAG, "UnsupportedEncodingException", e);
+                    }
+
+                    if (result.containsKey(OpenPgpConstants.RESULT_SIGNATURE)) {
+                        OpenPgpSignatureResult sigResult
+                                = result.getParcelable(OpenPgpConstants.RESULT_SIGNATURE);
+                        handleSignature(sigResult);
                     }
                     break;
                 }

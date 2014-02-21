@@ -168,7 +168,7 @@ public class OpenPgpService extends RemoteService {
                         .signatureForceV3(false)
                         .signatureKeyId(appSettings.getKeyId())
                         .signaturePassphrase(passphrase);
-                builder.build().signAndEncrypt();
+                builder.build().signEncrypt();
             } finally {
                 is.close();
                 os.close();
@@ -257,7 +257,7 @@ public class OpenPgpService extends RemoteService {
                     builder.signatureKeyId(Id.key.none);
                 }
                 // execute PGP operation!
-                builder.build().signAndEncrypt();
+                builder.build().signEncrypt();
             } finally {
                 is.close();
                 os.close();
@@ -297,7 +297,7 @@ public class OpenPgpService extends RemoteService {
                 // checked if it is text with BEGIN and END tags
 //            String message = new String(inputBytes);
 //            Log.d(Constants.TAG, "in: " + message);
-                boolean signedOnly = false;
+//                boolean signedOnly = false;
 //            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(message);
 //            if (matcher.matches()) {
 //                Log.d(Constants.TAG, "PGP_MESSAGE matched");
@@ -386,35 +386,37 @@ public class OpenPgpService extends RemoteService {
                 Bundle outputBundle;
                 PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, os);
 
-                if (signedOnly) {
-                    outputBundle = builder.build().verifyText();
-                } else {
-                    builder.assumeSymmetric(false)
-                            .passphrase(passphrase);
+//                if (signedOnly) {
+//                    outputBundle = builder.build().verifyText();
+//                } else {
+                builder.assumeSymmetric(false)
+                        .passphrase(passphrase);
 
-                    // Do we want to do this: instead of trying to get the passphrase before
-                    // pause stream when passphrase is missing and then resume???
+                // Do we want to do this: instead of trying to get the passphrase before
+                // pause stream when passphrase is missing and then resume???
 
-                    // TODO: this also decrypts with other secret keys without passphrase!!!
-                    outputBundle = builder.build().decryptAndVerify();
-                }
+                // TODO: this also decrypts with other secret keys without passphrase!!!
+                outputBundle = builder.build().decryptVerify();
+//                }
 
 //                outputStream.close();
 
 //                byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
 
                 // get signature informations from bundle
-                boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE);
+                boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE, false);
 
                 if (signature) {
                     long signatureKeyId = outputBundle
-                            .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                            .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID, 0);
                     String signatureUserId = outputBundle
                             .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
                     boolean signatureSuccess = outputBundle
-                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS);
+                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, false);
                     boolean signatureUnknown = outputBundle
-                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN);
+                            .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN, false);
+                    boolean signatureOnly = outputBundle
+                            .getBoolean(KeychainIntentService.RESULT_CLEARTEXT_SIGNATURE_ONLY, false);
 
                     int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
                     if (signatureSuccess) {
@@ -423,8 +425,9 @@ public class OpenPgpService extends RemoteService {
                         signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                     }
 
+                    // TODO: signed only?!?!?!
                     sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
-                            signedOnly, signatureKeyId);
+                            signatureOnly, signatureKeyId);
                 }
             } finally {
                 is.close();

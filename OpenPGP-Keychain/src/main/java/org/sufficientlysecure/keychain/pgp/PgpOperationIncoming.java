@@ -168,15 +168,37 @@ public class PgpOperationIncoming {
         return false;
     }
 
-    public Bundle decryptAndVerify()
+    /**
+     * Decrypts and/or verifies data based on parameters of class
+     *
+     * @return
+     * @throws IOException
+     * @throws PgpGeneralException
+     * @throws PGPException
+     * @throws SignatureException
+     */
+    public Bundle decryptVerify()
             throws IOException, PgpGeneralException, PGPException, SignatureException {
-
         Bundle returnData = new Bundle();
+
         // automatically works with ascii armor input and binary
         InputStream in = PGPUtil.getDecoderStream(data.getInputStream());
+        if (in instanceof ArmoredInputStream) {
+            ArmoredInputStream aIn = (ArmoredInputStream) in;
+            // it is ascii armored
+            Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
+
+            if (aIn.isClearText()) {
+                // a cleartext signature, verify it with the other method
+                return verifyCleartextSignature(aIn);
+            } else {
+                // go on...
+            }
+        }
         PGPObjectFactory pgpF = new PGPObjectFactory(in);
         PGPEncryptedDataList enc;
         Object o = pgpF.nextObject();
+        Log.d(Constants.TAG, "o: " + o.getClass().getName());
 
         int currentProgress = 0;
         updateProgress(R.string.progress_reading_data, currentProgress, 100);
@@ -345,7 +367,6 @@ public class PgpOperationIncoming {
             updateProgress(R.string.progress_decrypting, currentProgress, 100);
 
             PGPLiteralData literalData = (PGPLiteralData) dataChunk;
-            OutputStream out = outStream;
 
             byte[] buffer = new byte[1 << 16];
             InputStream dataIn = literalData.getInputStream();
@@ -359,10 +380,11 @@ public class PgpOperationIncoming {
             }
 
             int n;
+            // TODO: progress calculation is broken here! Try to rework it based on commented code!
 //            int progress = 0;
             long startPos = data.getStreamPosition();
             while ((n = dataIn.read(buffer)) > 0) {
-                out.write(buffer, 0, n);
+                outStream.write(buffer, 0, n);
 //                progress += n;
                 if (signature != null) {
                     try {
@@ -392,9 +414,13 @@ public class PgpOperationIncoming {
                 PGPSignatureList signatureList = (PGPSignatureList) plainFact.nextObject();
                 PGPSignature messageSignature = signatureList.get(signatureIndex);
 
+                // these are not cleartext signatures!
+                returnData.putBoolean(KeychainIntentService.RESULT_CLEARTEXT_SIGNATURE_ONLY, false);
+
                 //Now check binding signatures
                 boolean keyBinding_isok = verifyKeyBinding(context, messageSignature, signatureKey);
                 boolean sig_isok = signature.verify(messageSignature);
+
                 returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS, keyBinding_isok & sig_isok);
             }
         }
@@ -420,17 +446,29 @@ public class PgpOperationIncoming {
         return returnData;
     }
 
-    // TODO: merge into decryptAndVerify by checking what the input is
-    public Bundle verifyText() throws IOException, PgpGeneralException,
-            PGPException, SignatureException {
+    /**
+     * This method verifies cleartext signatures
+     * as defined in http://tools.ietf.org/html/rfc4880#section-7
+     * <p/>
+     * The method is heavily based on
+     * pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
+     *
+     * @return
+     * @throws IOException
+     * @throws PgpGeneralException
+     * @throws PGPException
+     * @throws SignatureException
+     */
+    private Bundle verifyCleartextSignature(ArmoredInputStream aIn)
+            throws IOException, PgpGeneralException, PGPException, SignatureException {
         Bundle returnData = new Bundle();
+        // cleartext signatures are never encrypted ;)
+        returnData.putBoolean(KeychainIntentService.RESULT_CLEARTEXT_SIGNATURE_ONLY, true);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ArmoredInputStream aIn = new ArmoredInputStream(data.getInputStream());
 
         updateProgress(R.string.progress_done, 0, 100);
 
-        // mostly taken from pg/src/main/java/org/spongycastle/openpgp/examples/ClearSignedFileProcessor.java
         ByteArrayOutputStream lineOut = new ByteArrayOutputStream();
         int lookAhead = readInputLine(lineOut, aIn);
         byte[] lineSep = getLineSeparator();
@@ -489,13 +527,13 @@ public class PgpOperationIncoming {
 
         if (signature == null) {
             returnData.putBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN, true);
-            if (progress != null)
-                progress.setProgress(R.string.progress_done, 100, 100);
+            updateProgress(R.string.progress_done, 100, 100);
             return returnData;
         }
 
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                new JcaPGPContentVerifierBuilderProvider()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
         signature.init(contentVerifierBuilderProvider, signatureKey);
 
@@ -527,11 +565,11 @@ public class PgpOperationIncoming {
         return returnData;
     }
 
-    private static boolean verifyKeyBinding(Context mContext, PGPSignature signature, PGPPublicKey signatureKey) {
+    private static boolean verifyKeyBinding(Context context, PGPSignature signature, PGPPublicKey signatureKey) {
         long signatureKeyId = signature.getKeyID();
         boolean keyBinding_isok = false;
         String userId = null;
-        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
+        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(context,
                 signatureKeyId);
         PGPPublicKey mKey = null;
         if (signKeyRing != null) {
@@ -621,7 +659,14 @@ public class PgpOperationIncoming {
         return primkeyBinding_isok;
     }
 
-    // taken from ClearSignedFileProcessor in BC
+    /**
+     * Mostly taken from ClearSignedFileProcessor in Bouncy Castle
+     *
+     * @param sig
+     * @param line
+     * @throws SignatureException
+     * @throws IOException
+     */
     private static void processLine(PGPSignature sig, byte[] line)
             throws SignatureException, IOException {
         int length = getLengthWithoutWhiteSpace(line);

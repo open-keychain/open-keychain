@@ -83,6 +83,9 @@ public class DecryptActivity extends DrawerActivity {
     private long mSignatureKeyId = 0;
 
     private boolean mReturnResult = false;
+
+    // TODO: replace signed only checks with something more intelligent
+    // PgpOperationIncoming should handle all automatically!!!
     private boolean mSignedOnly = false;
     private boolean mAssumeSymmetricEncryption = false;
 
@@ -456,7 +459,7 @@ public class DecryptActivity extends DrawerActivity {
         } else {
             if (mDecryptTarget == Id.target.file) {
                 askForOutputFilename();
-            } else {
+            } else { // mDecryptTarget == Id.target.message
                 decryptStart();
             }
         }
@@ -633,7 +636,6 @@ public class DecryptActivity extends DrawerActivity {
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
 
-        data.putBoolean(KeychainIntentService.DECRYPT_SIGNED_ONLY, mSignedOnly);
         data.putBoolean(KeychainIntentService.DECRYPT_RETURN_BYTES, mReturnBinary);
         data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 

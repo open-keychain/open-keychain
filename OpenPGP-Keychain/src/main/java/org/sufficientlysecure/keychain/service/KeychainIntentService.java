@@ -120,7 +120,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ENCRYPT_PROVIDER_URI = "provider_uri";
 
     // decrypt/verify
-    public static final String DECRYPT_SIGNED_ONLY = "signed_only";
     public static final String DECRYPT_RETURN_BYTES = "return_binary";
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
@@ -185,6 +184,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String RESULT_SIGNATURE = "signature";
     public static final String RESULT_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String RESULT_SIGNATURE_USER_ID = "signature_user_id";
+    public static final String RESULT_CLEARTEXT_SIGNATURE_ONLY = "signature_only";
 
     public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
     public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
@@ -338,7 +338,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                             .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                    builder.build().signAndEncrypt();
+                    builder.build().signEncrypt();
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     builder.enableAsciiArmorOutput(useAsciiArmor)
@@ -351,7 +351,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                             .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
                             .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                    builder.build().signAndEncrypt();
+                    builder.build().signEncrypt();
                 }
 
                 outStream.close();
@@ -404,7 +404,6 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
                 byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
-                boolean signedOnly = data.getBoolean(DECRYPT_SIGNED_ONLY);
                 boolean returnBytes = data.getBoolean(DECRYPT_RETURN_BYTES);
                 boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
 
@@ -484,14 +483,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 PgpOperationIncoming.Builder builder = new PgpOperationIncoming.Builder(this, inputData, outStream);
                 builder.progress(this);
 
-                if (signedOnly) {
-                    resultData = builder.build().verifyText();
-                } else {
-                    builder.assumeSymmetric(assumeSymmetricEncryption)
-                            .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                builder.assumeSymmetric(assumeSymmetricEncryption)
+                        .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                    resultData = builder.build().decryptAndVerify();
-                }
+                resultData = builder.build().decryptVerify();
 
                 outStream.close();
 
