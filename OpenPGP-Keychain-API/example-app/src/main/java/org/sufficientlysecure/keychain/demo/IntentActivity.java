@@ -159,7 +159,7 @@ public class IntentActivity extends PreferenceActivity {
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("mOpenpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282"));
+                    intent.setData(Uri.parse("openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282"));
                     startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
