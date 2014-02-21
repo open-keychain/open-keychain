@@ -368,13 +368,13 @@
     <string name="import_clipboard_button">Get key from clipboard</string>
 
     <!-- Intent labels -->
-    <string name="intent_decrypt_file">OpenPGP: Decrypt File</string>
-    <string name="intent_import_key">OpenPGP: Import Key</string>
-    <string name="intent_send_encrypt">OpenPGP: Encrypt</string>
-    <string name="intent_send_decrypt">OpenPGP: Decrypt</string>
+    <string name="intent_decrypt_file">OpenKeychain: Decrypt File</string>
+    <string name="intent_import_key">OpenKeychain: Import Key</string>
+    <string name="intent_send_encrypt">OpenKeychain: Encrypt</string>
+    <string name="intent_send_decrypt">OpenKeychain: Decrypt</string>
 
     <!-- Remote API -->
-    <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenPGP Keychain. After granting access, they will be listed here.</string>
+    <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
     <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
@@ -384,14 +384,14 @@
     <string name="api_settings_revoke">Revoke access</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
-    <string name="api_register_text">The displayed application requests access to OpenPGP Keychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
+    <string name="api_register_text">The displayed application requests access to OpenKeychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
     <string name="api_register_error_select_key">Please select a key!</string>
     <string name="api_select_pub_keys_missing_text">No public keys were found for these user ids:</string>
     <string name="api_select_pub_keys_dublicates_text">More than one public key exist for these user ids:</string>
     <string name="api_select_pub_keys_text">Please review the list of recipients!</string>
-    <string name="api_error_wrong_signature">Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app\'s registration in OpenPGP Keychain and then register the app again.</string>
+    <string name="api_error_wrong_signature">Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app\'s registration in OpenKeychain and then register the app again.</string>
 
     <!-- Share -->
     <string name="share_qr_code_dialog_title">Share with QR Code</string>

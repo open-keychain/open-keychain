@@ -11,10 +11,10 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="OpenPGP Keychain API Demo">
+        android:label="OpenKeychain API Demo">
         <activity
             android:name=".BaseActivity"
-            android:label="OpenPGP Keychain API Demo">
+            android:label="OpenKeychain API Demo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
