@@ -185,7 +185,7 @@ public class OpenPgpProviderActivity extends Activity {
                         Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                     }
 
-                    if (result.containsKey(OpenPgpConstants.RESULT_SIGNATURE)) {
+                    if (result.getBoolean(OpenPgpConstants.RESULT_SIGNATURE, false)) {
                         OpenPgpSignatureResult sigResult
                                 = result.getParcelable(OpenPgpConstants.RESULT_SIGNATURE);
                         handleSignature(sigResult);
