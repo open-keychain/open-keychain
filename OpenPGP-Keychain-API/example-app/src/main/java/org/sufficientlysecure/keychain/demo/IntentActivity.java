@@ -60,7 +60,7 @@ public class IntentActivity extends PreferenceActivity {
         mImportKey = (Preference) findPreference("IMPORT_KEY");
         mImportKeyFromKeyserver = (Preference) findPreference("IMPORT_KEY_FROM_KEYSERVER");
         mImportKeyFromQrCode = (Preference) findPreference("IMPORT_KEY_FROM_QR_CODE");
-        mOpenpgp4fpr = (Preference) findPreference("mOpenpgp4fpr");
+        mOpenpgp4fpr = (Preference) findPreference("openpgp4fpr");
 
 
         mEncrypt.setOnPreferenceClickListener(new OnPreferenceClickListener() {
