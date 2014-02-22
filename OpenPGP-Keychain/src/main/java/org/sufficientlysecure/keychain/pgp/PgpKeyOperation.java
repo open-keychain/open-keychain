@@ -345,7 +345,7 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, boolean primaryIDChanged, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase, ArrayList<PGPSecretKey> keys) throws PgpGeneralException,
+    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, boolean primaryIDChanged, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase, boolean[] new_keys, ArrayList<PGPSecretKey> keys) throws PgpGeneralException,
             PGPException, SignatureException, IOException {
 
         updateProgress(R.string.progress_building_key, 0, 100);
@@ -490,6 +490,11 @@ public class PgpKeyOperation {
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
                 unhashedPacketsGen.generate(), certificationSignerBuilder, keyEncryptor);
 
+        //updating master is slightly different to updating the others
+        if (modded_keys[0]) {
+
+        }
+
         updateProgress(R.string.progress_adding_sub_keys, 40, 100);
 
         for (int i = 1; i < keys.size(); ++i) {
@@ -549,7 +554,7 @@ public class PgpKeyOperation {
 
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
-
+//must copy with new passphrase... new keys will have an empty passphrase... pass in boolean array to mark new key?
         updateProgress(R.string.progress_saving_key_ring, 90, 100);
 
         ProviderHelper.saveKeyRing(mContext, secretKeyRing);
