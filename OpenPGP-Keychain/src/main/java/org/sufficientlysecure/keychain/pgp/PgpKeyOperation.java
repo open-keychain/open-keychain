@@ -378,6 +378,10 @@ public class PgpKeyOperation {
                 do we need to remove and add in?
          */
 
+        for (PGPSecretKey dKey : deleted_keys) {
+            mKR = PGPSecretKeyRing.removeSecretKey(mKR, dKey);
+        }
+
         masterKey = mKR.getSecretKey();
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
