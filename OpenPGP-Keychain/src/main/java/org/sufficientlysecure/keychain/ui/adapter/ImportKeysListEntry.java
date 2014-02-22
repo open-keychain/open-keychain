@@ -48,7 +48,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     private boolean selected;
 
-    private byte[] bytes = new byte[] {};
+    private byte[] bytes = new byte[]{};
 
     public ImportKeysListEntry(ImportKeysListEntry b) {
         this.userIds = b.userIds;
@@ -167,7 +167,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.revoked = pgpKeyRing.getPublicKey().isRevoked();
         this.fingerPrint = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
                 .getFingerprint(), true);
-        this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
+        this.hexKeyId = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
         int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
         if (algorithm == PGPPublicKey.RSA_ENCRYPT || algorithm == PGPPublicKey.RSA_GENERAL

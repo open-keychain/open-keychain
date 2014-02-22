@@ -18,8 +18,17 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.Date;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -27,63 +36,27 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareNfcDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareQrCodeDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
-import android.text.format.DateFormat;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.ArrayList;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
-
-public class ViewKeyActivity extends ActionBarActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class ViewKeyActivity extends ActionBarActivity {
 
     ExportHelper mExportHelper;
 
     protected Uri mDataUri;
 
-    private TextView mName;
-    private TextView mEmail;
-    private TextView mComment;
-    private TextView mAlgorithm;
-    private TextView mKeyId;
-    private TextView mExpiry;
-    private TextView mCreation;
-    private TextView mFingerprint;
-    private BootstrapButton mActionEncrypt;
+    public static final String EXTRA_SELECTED_TAB = "selectedTab";
 
-    private ListView mUserIds;
-    private ListView mKeys;
+    ViewPager mViewPager;
+    TabsAdapter mTabsAdapter;
 
-    private static final int LOADER_ID_KEYRING = 0;
-    private static final int LOADER_ID_USER_IDS = 1;
-    private static final int LOADER_ID_KEYS = 2;
-    private ViewKeyUserIdsAdapter mUserIdsAdapter;
-    private ViewKeyKeysAdapter mKeysAdapter;
+    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,25 +64,36 @@ public class ViewKeyActivity extends ActionBarActivity implements
 
         mExportHelper = new ExportHelper(this);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(android.R.color.transparent);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        // let the actionbar look like Android's contact app
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setIcon(android.R.color.transparent);
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         setContentView(R.layout.view_key_activity);
 
-        mName = (TextView) findViewById(R.id.name);
-        mEmail = (TextView) findViewById(R.id.email);
-        mComment = (TextView) findViewById(R.id.comment);
-        mKeyId = (TextView) findViewById(R.id.key_id);
-        mAlgorithm = (TextView) findViewById(R.id.algorithm);
-        mCreation = (TextView) findViewById(R.id.creation);
-        mExpiry = (TextView) findViewById(R.id.expiry);
-        mFingerprint = (TextView) findViewById(R.id.fingerprint);
-        mActionEncrypt = (BootstrapButton) findViewById(R.id.action_encrypt);
-        mUserIds = (ListView) findViewById(R.id.user_ids);
-        mKeys = (ListView) findViewById(R.id.keys);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
 
-        loadData(getIntent());
+        mTabsAdapter = new TabsAdapter(this, mViewPager);
+
+        int selectedTab = 0;
+        Intent intent = getIntent();
+        if (intent.getExtras() != null && intent.getExtras().containsKey(EXTRA_SELECTED_TAB)) {
+            selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
+        }
+
+        mDataUri = getIntent().getData();
+
+        Bundle mainBundle = new Bundle();
+        mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_main)),
+                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0 ? true : false));
+
+        Bundle certBundle = new Bundle();
+        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
+                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1 ? true : false));
     }
 
     @Override
@@ -129,9 +113,6 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 return true;
             case R.id.menu_key_view_update:
                 updateFromKeyserver(mDataUri);
-                return true;
-            case R.id.menu_key_view_sign:
-                signKey(mDataUri);
                 return true;
             case R.id.menu_key_view_export_keyserver:
                 uploadToKeyserver(mDataUri);
@@ -159,228 +140,11 @@ public class ViewKeyActivity extends ActionBarActivity implements
                 copyToClipboard(mDataUri);
                 return true;
             case R.id.menu_key_view_delete: {
-                // Message is received after key is deleted
-                Handler returnHandler = new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                            setResult(RESULT_CANCELED);
-                            finish();
-                        }
-                    }
-                };
-
-                mExportHelper.deleteKey(mDataUri, Id.type.public_key, returnHandler);
+                deleteKey(mDataUri);
                 return true;
             }
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void loadData(Intent intent) {
-        if (intent.getData().equals(mDataUri)) {
-            Log.d(Constants.TAG, "Same URI, no need to load the data again!");
-            return;
-        }
-
-        mDataUri = intent.getData();
-        if (mDataUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
-            finish();
-            return;
-        }
-
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
-
-        mActionEncrypt.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                long keyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
-
-                long[] encryptionKeyIds = new long[]{keyId};
-                Intent intent = new Intent(ViewKeyActivity.this, EncryptActivity.class);
-                intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-                intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-                // used instead of startActivity set actionbar based on callingPackage
-                startActivityForResult(intent, 0);
-            }
-        });
-
-        mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0);
-
-        mUserIds.setAdapter(mUserIdsAdapter);
-        // mUserIds.setEmptyView(findViewById(android.R.id.empty));
-        // mUserIds.setClickable(true);
-        // mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-        // @Override
-        // public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-        // }
-        // });
-
-        mKeysAdapter = new ViewKeyKeysAdapter(this, null, 0);
-
-        mKeys.setAdapter(mKeysAdapter);
-
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
-        getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-        getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
-    }
-
-    static final String[] KEYRING_PROJECTION = new String[]{KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            UserIds.USER_ID};
-    static final int KEYRING_INDEX_ID = 0;
-    static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
-    static final int KEYRING_INDEX_USER_ID = 2;
-
-    static final String[] USER_IDS_PROJECTION = new String[]{UserIds._ID, UserIds.USER_ID,
-            UserIds.RANK,};
-    // not the main user id
-    static final String USER_IDS_SELECTION = UserIds.RANK + " > 0 ";
-    static final String USER_IDS_SORT_ORDER = UserIds.USER_ID + " COLLATE LOCALIZED ASC";
-
-    static final String[] KEYS_PROJECTION = new String[]{Keys._ID, Keys.KEY_ID,
-            Keys.IS_MASTER_KEY, Keys.ALGORITHM, Keys.KEY_SIZE, Keys.CAN_CERTIFY, Keys.CAN_SIGN,
-            Keys.CAN_ENCRYPT, Keys.CREATION, Keys.EXPIRY, Keys.FINGERPRINT};
-    static final String KEYS_SORT_ORDER = Keys.RANK + " ASC";
-    static final int KEYS_INDEX_ID = 0;
-    static final int KEYS_INDEX_KEY_ID = 1;
-    static final int KEYS_INDEX_IS_MASTER_KEY = 2;
-    static final int KEYS_INDEX_ALGORITHM = 3;
-    static final int KEYS_INDEX_KEY_SIZE = 4;
-    static final int KEYS_INDEX_CAN_CERTIFY = 5;
-    static final int KEYS_INDEX_CAN_SIGN = 6;
-    static final int KEYS_INDEX_CAN_ENCRYPT = 7;
-    static final int KEYS_INDEX_CREATION = 8;
-    static final int KEYS_INDEX_EXPIRY = 9;
-    static final int KEYS_INDEX_FINGERPRINT = 10;
-
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_KEYRING: {
-                Uri baseUri = mDataUri;
-
-                // Now create and return a CursorLoader that will take care of
-                // creating a Cursor for the data being displayed.
-                return new CursorLoader(this, baseUri, KEYRING_PROJECTION, null, null, null);
-            }
-            case LOADER_ID_USER_IDS: {
-                Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
-
-                // Now create and return a CursorLoader that will take care of
-                // creating a Cursor for the data being displayed.
-                return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
-                        USER_IDS_SORT_ORDER);
-            }
-            case LOADER_ID_KEYS: {
-                Uri baseUri = Keys.buildKeysUri(mDataUri);
-
-                // Now create and return a CursorLoader that will take care of
-                // creating a Cursor for the data being displayed.
-                return new CursorLoader(this, baseUri, KEYS_PROJECTION, null, null, KEYS_SORT_ORDER);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_KEYRING:
-                if (data.moveToFirst()) {
-                    // get name, email, and comment from USER_ID
-                    String[] mainUserId = PgpKeyHelper.splitUserId(data
-                            .getString(KEYRING_INDEX_USER_ID));
-                    if (mainUserId[0] != null) {
-                        setTitle(mainUserId[0]);
-                        mName.setText(mainUserId[0]);
-                    } else {
-                        setTitle(R.string.user_id_no_name);
-                        mName.setText(R.string.user_id_no_name);
-                    }
-                    mEmail.setText(mainUserId[1]);
-                    mComment.setText(mainUserId[2]);
-                }
-
-                break;
-            case LOADER_ID_USER_IDS:
-                mUserIdsAdapter.swapCursor(data);
-                break;
-            case LOADER_ID_KEYS:
-                // the first key here is our master key
-                if (data.moveToFirst()) {
-                    // get key id from MASTER_KEY_ID
-                    long keyId = data.getLong(KEYS_INDEX_KEY_ID);
-
-                    String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
-                    mKeyId.setText(keyIdStr);
-
-                    // get creation date from CREATION
-                    if (data.isNull(KEYS_INDEX_CREATION)) {
-                        mCreation.setText(R.string.none);
-                    } else {
-                        Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
-
-                        mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                                creationDate));
-                    }
-
-                    // get expiry date from EXPIRY
-                    if (data.isNull(KEYS_INDEX_EXPIRY)) {
-                        mExpiry.setText(R.string.none);
-                    } else {
-                        Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
-
-                        mExpiry.setText(DateFormat.getDateFormat(getApplicationContext()).format(
-                                expiryDate));
-                    }
-
-                    String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
-                            data.getInt(KEYS_INDEX_ALGORITHM), data.getInt(KEYS_INDEX_KEY_SIZE));
-                    mAlgorithm.setText(algorithmStr);
-
-                    byte[] fingerprintBlob = data.getBlob(KEYS_INDEX_FINGERPRINT);
-                    if (fingerprintBlob == null) {
-                        // FALLBACK for old database entries
-                        fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
-                    }
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
-                    fingerprint = fingerprint.replace("  ", "\n");
-
-                    mFingerprint.setText(fingerprint);
-                }
-
-                mKeysAdapter.swapCursor(data);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-        switch (loader.getId()) {
-            case LOADER_ID_KEYRING:
-                // No resources need to be freed for this ID
-                break;
-            case LOADER_ID_USER_IDS:
-                mUserIdsAdapter.swapCursor(null);
-                break;
-            case LOADER_ID_KEYS:
-                mKeysAdapter.swapCursor(null);
-                break;
-            default:
-                break;
-        }
     }
 
     private void uploadToKeyserver(Uri dataUri) {
@@ -398,21 +162,15 @@ public class ViewKeyActivity extends ActionBarActivity implements
         }
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
-        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
+        queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
         queryIntent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, updateKeyId);
 
-        // TODO: lookup??
-        startActivityForResult(queryIntent, Id.request.look_up_key_id);
-    }
-
-    private void signKey(Uri dataUri) {
-        Intent signIntent = new Intent(this, SignKeyActivity.class);
-        signIntent.setData(dataUri);
-        startActivity(signIntent);
+        // TODO: lookup with onactivityresult!
+        startActivityForResult(queryIntent, RESULT_CODE_LOOKUP_KEY);
     }
 
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
-        String content = null;
+        String content;
         if (fingerprintOnly) {
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
             String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
@@ -463,6 +221,31 @@ public class ViewKeyActivity extends ActionBarActivity implements
     private void shareNfc() {
         ShareNfcDialogFragment dialog = ShareNfcDialogFragment.newInstance();
         dialog.show(getSupportFragmentManager(), "shareNfcDialog");
+    }
+
+    private void deleteKey(Uri dataUri) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    Bundle returnData = message.getData();
+                    if (returnData != null
+                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
+                        // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
+                        Toast.makeText(ViewKeyActivity.this,
+                                getString(R.string.error_can_not_delete_contact)
+                                        + getResources().getQuantityString(R.plurals.error_can_not_delete_info, 1),
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        setResult(RESULT_CANCELED);
+                        finish();
+                    }
+                }
+            }
+        };
+
+        mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
     }
 
 }

@@ -22,10 +22,10 @@
   <string name="title_export_key">Експортувати ключ</string>
   <string name="title_export_keys">Експортувати ключі</string>
   <string name="title_key_not_found">Ключ не знайдено</string>
-  <string name="title_key_server_query">Сервер запиту ключа</string>
+  <string name="title_key_server_query">Сервер ключа запиту</string>
   <string name="title_send_key">Завантажити на сервер ключів</string>
   <string name="title_unknown_signature_key">Невідомий підпис ключа</string>
-  <string name="title_sign_key">Підписати ключ</string>
+  <string name="title_certify_key">Сертифікувати ключ</string>
   <string name="title_key_details">Подробиці про ключ</string>
   <string name="title_help">Довідка</string>
   <!--section-->
@@ -37,17 +37,16 @@
   <string name="section_master_key">Основний ключ</string>
   <string name="section_master_user_id">ІД основного ключа</string>
   <string name="section_actions">Дії</string>
-  <string name="section_signing_key">Ваш ключ, використаний для підпису</string>
+  <string name="section_certification_key">Ваш ключ використаний для сертифікації</string>
   <string name="section_upload_key">Завантажити ключ</string>
   <string name="section_key_server">Сервер ключів</string>
+  <string name="section_encrypt_and_or_sign">Шифрувати і/або підписати</string>
+  <string name="section_decrypt_verify">Розшифрувати і Перевірити</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Підпис (буфер обміну)</string>
-  <string name="btn_encrypt_to_clipboard">Зашифрувати у буфер обміну</string>
-  <string name="btn_encrypt_and_send">Шифрувати і надіслати…</string>
-  <string name="btn_sign_and_send">Підписати і надіслати…</string>
   <string name="btn_sign">Підписати</string>
+  <string name="btn_certify">Сертифікувати</string>
   <string name="btn_decrypt">Розшифрувати</string>
-  <string name="btn_verify">Перевірити</string>
+  <string name="btn_decrypt_verify">Розшифрувати і Перевірити</string>
   <string name="btn_select_encrypt_keys">Вибрати одержувачів</string>
   <string name="btn_encrypt_file">Шифрувати файл</string>
   <string name="btn_save">Зберегти</string>
@@ -61,6 +60,9 @@
   <string name="btn_export_to_server">Завантажити на сервер ключів</string>
   <string name="btn_next">Далі</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_clipboard">Буфер обміну</string>
+  <string name="btn_share">Поділитися через…</string>
+  <string name="btn_lookup_key">Шукати ключ</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
@@ -109,7 +111,7 @@
   <string name="label_passphrase_cache_ttl">Кеш парольної фрази</string>
   <string name="label_message_compression">Стиснення повідомлення</string>
   <string name="label_file_compression">Стиснення файлу</string>
-  <string name="label_force_v3_signature">Примусові підписи V3</string>
+  <string name="label_force_v3_signature">Примусово старі підписи OpenPGPv3</string>
   <string name="label_key_servers">Сервери ключів</string>
   <string name="label_key_id">ІД ключа</string>
   <string name="label_creation">Створення</string>
@@ -120,7 +122,7 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
-  <string name="label_send_key">Завантажити ключ на вибраний сервер ключів після підписування</string>
+  <string name="label_send_key">Завантажити ключ до вибраного сервера ключів після сертифікації</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="select_keys_button_default">Вибрати</string>
   <plurals name="select_keys_button">
@@ -135,6 +137,7 @@
   <string name="can_encrypt">можна зашифрувати</string>
   <string name="can_sign">можна підписати</string>
   <string name="expired">закінчився</string>
+  <string name="revoked">скасовано</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключів</item>
     <item quantity="few">%d сервери ключів</item>
@@ -222,14 +225,13 @@
     <item quantity="few">Знайдено %d ключі.</item>
     <item quantity="other">Знайдено %d ключів.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Невідомий підпис, натисніть, щоб шукати ключ.</string>
+  <string name="unknown_signature">Невідомий підпис, натисніть кнопку для пошуку втраченого ключа.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
     <item quantity="few">%d погані секретні ключі проігноровані. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
     <item quantity="other">%d поганих секретних ключів проігноровано. Можливо ви експортували з параметром\n --export-secret-subkeys\nЗробіть ваш експорт з \n --export-secret-keys\nнатомість.</item>
   </plurals>
-  <string name="lookup_unknown_key">Невідомий ключ %s, ви хочете віднайти його на сервері ключів?</string>
-  <string name="key_send_success">Успішно надіслано ключ на сервер</string>
+  <string name="key_send_success">Успішно завантажено ключ на сервер</string>
   <string name="key_sign_success">Успішно підписаний ключ</string>
   <string name="list_empty">Цей список - порожній!</string>
   <string name="nfc_successfull">Успішно відправлений ключ з NFC променем!</string>
@@ -260,6 +262,7 @@
   <string name="error_no_signature_key">не подано ключ підпису</string>
   <string name="error_invalid_data">недійсні дані шифрування</string>
   <string name="error_corrupt_data">пошкодити дані</string>
+  <string name="error_integrity_check_failed">Невдала перевірка цілісності! Дані вже змінено!</string>
   <string name="error_no_symmetric_encryption_packet">не знайдено пакунок з симетричним шифруванням</string>
   <string name="error_wrong_passphrase">помилкова парольна фраза</string>
   <string name="error_saving_keys">помилка збереження деяких ключів</string>
@@ -269,19 +272,25 @@
   <string name="error_nfc_needed">NFC недоступний на вашому пристрої!</string>
   <string name="error_nothing_import">Нема що імпортувати!</string>
   <string name="error_expiry_must_come_after_creation">дата завершення дії має йти після дати створення</string>
+  <string name="error_can_not_delete_contact">ви не можете вилучити цей контакт, тому що він ваш власний.</string>
+  <string name="error_can_not_delete_contacts">ви не можете вилучити наступні контакти, тому що вони - ваші власні:\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Будь ласка, вилучіть його з екрану „Мої ключі“!</item>
+    <item quantity="few">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
+    <item quantity="other">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
-  <string name="progress_generating">генерується ключ, зачекайте…</string>
+  <string name="progress_generating">генерується ключ, вона може тривати до 3 хвилин…</string>
   <string name="progress_building_key">будується ключ…</string>
   <string name="progress_preparing_master_key">підготовка основного ключа…</string>
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
   <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_adding_sub_keys">додавання підключів…</string>
   <string name="progress_saving_key_ring">зберігається ключ…</string>
-  <string name="progress_importing_secret_keys">імпортуються секретні ключі…</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">експортується ключ…</item>
     <item quantity="few">експортуються ключі…</item>
@@ -344,7 +353,7 @@
   <string name="intent_send_encrypt">OpenPGP: зашифрувати</string>
   <string name="intent_send_decrypt">OpenPGP: розшифрувати</string>
   <!--Remote API-->
-  <string name="api_no_apps">Немає зареєстрованих програм!</string>
+  <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
   <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
@@ -354,7 +363,7 @@
   <string name="api_settings_revoke">Відкликати доступ</string>
   <string name="api_settings_package_name">Назва пакунку</string>
   <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
-  <string name="api_register_text">Наступна програм запитала доступ до OpenPGP Keychain API.\n\nДозволити постійний доступ?</string>
+  <string name="api_register_text">Показана програма запитує доступ до OpenPGP Keychain.\nДозволити доступ?\n\nУВАГА: якщо ви не знаєте, чому цей екран появився, не дозволяйте доступ! Ви можете відкликати доступ пізніше, використовуючи екран \'Зареєстровані програми\'.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>
@@ -381,6 +390,9 @@
   <string name="key_list_empty_button_import">імпортуюся ключі.</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифрувати у цей контакт</string>
+  <string name="key_view_action_certify">Сертифікувати ключ цього контакту</string>
+  <string name="key_view_tab_main">Інформація</string>
+  <string name="key_view_tab_certs">Сертифікати</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакти</string>
   <string name="nav_encrypt">Зашифрувати</string>

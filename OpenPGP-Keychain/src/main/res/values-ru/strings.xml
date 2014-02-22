@@ -25,7 +25,7 @@
   <string name="title_key_server_query">Запросить сервер ключей</string>
   <string name="title_send_key">Загрузить на сервер ключей</string>
   <string name="title_unknown_signature_key">Неизвестная подпись</string>
-  <string name="title_sign_key">Ключ для подписи</string>
+  <string name="title_certify_key">Сертифицировать ключ</string>
   <string name="title_key_details">Сведения о ключе</string>
   <string name="title_help">Помощь</string>
   <!--section-->
@@ -37,17 +37,16 @@
   <string name="section_master_key">Основной ключ</string>
   <string name="section_master_user_id">Владелец</string>
   <string name="section_actions">Действия</string>
-  <string name="section_signing_key">Ваш ключ, используемый для подписания</string>
+  <string name="section_certification_key">Ваш ключ для сертификации</string>
   <string name="section_upload_key">Загрузить ключ</string>
   <string name="section_key_server">Сервер ключей</string>
+  <string name="section_encrypt_and_or_sign">Зашифровать и/или Подписать</string>
+  <string name="section_decrypt_verify">Расшифровать и проверить</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Подписать (Буфер обмена)</string>
-  <string name="btn_encrypt_to_clipboard">Зашифровать в Буфер обмена</string>
-  <string name="btn_encrypt_and_send">Зашифровать и отправить...</string>
-  <string name="btn_sign_and_send">Подписать и отправить...</string>
   <string name="btn_sign">Подписать</string>
+  <string name="btn_certify">Сертифицировать</string>
   <string name="btn_decrypt">Расшифровать</string>
-  <string name="btn_verify">Проверить</string>
+  <string name="btn_decrypt_verify">Расшифровать и проверить</string>
   <string name="btn_select_encrypt_keys">Выбрать получателей</string>
   <string name="btn_encrypt_file">Зашифровать файл</string>
   <string name="btn_save">Сохранить</string>
@@ -61,6 +60,9 @@
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
+  <string name="btn_clipboard">Буфер обмена</string>
+  <string name="btn_share">Поделиться...</string>
+  <string name="btn_lookup_key">Найти ключ</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
@@ -109,7 +111,6 @@
   <string name="label_passphrase_cache_ttl">Помнить пароль</string>
   <string name="label_message_compression">Сжатие сообщения</string>
   <string name="label_file_compression">Сжатие файла</string>
-  <string name="label_force_v3_signature">Использовать V3 подписи</string>
   <string name="label_key_servers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
@@ -120,7 +121,7 @@
   <string name="label_name">Имя</string>
   <string name="label_comment">Комментарий</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Загрузить подписанный ключ на сервер</string>
+  <string name="label_send_key">После сертификации загрузить ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="select_keys_button_default">Выбрать</string>
   <plurals name="select_keys_button">
@@ -134,7 +135,8 @@
   <string name="unknown_status"></string>
   <string name="can_encrypt">шифрование</string>
   <string name="can_sign">подпись</string>
-  <string name="expired">годен до</string>
+  <string name="expired">просрочен</string>
+  <string name="revoked">отозван</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключей</item>
     <item quantity="few">%d серверов ключей</item>
@@ -222,14 +224,13 @@
     <item quantity="few">Найдено %d ключей.</item>
     <item quantity="other">Найдено %d ключей.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Неизвестная подпись. Нажмите для выбора ключа.</string>
+  <string name="unknown_signature">Неизвестная подпись. Нажмите кнопку, что бы найти ключ.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys</item>
     <item quantity="few">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
     <item quantity="other">%d плохих секретных ключей проигнорировано. Возможно, вы экспортируете с параметром\n--export-secret-subkeys\nВместо этого используйте\n--export-secret-keys\n</item>
   </plurals>
-  <string name="lookup_unknown_key">Неизвестный ключ %s. Хотите искать на сервере ключей?</string>
-  <string name="key_send_success">Ключ успешно отправлен на сервер</string>
+  <string name="key_send_success">Ключ успешно загружен на сервер</string>
   <string name="key_sign_success">Ключ успешно подписан</string>
   <string name="list_empty">Список пуст!</string>
   <string name="nfc_successfull">Ключ успешно передан через NFC!</string>
@@ -269,19 +270,25 @@
   <string name="error_nfc_needed">Ваше устройство не поддерживает NFC!</string>
   <string name="error_nothing_import">Нет данных для импорта!</string>
   <string name="error_expiry_must_come_after_creation">срок годности не может быть раньше даты создания</string>
+  <string name="error_can_not_delete_contact">нельзя удалить свой собственный контакт. Пожалуйста, удалите его в разделе \'Мои ключи\'!</string>
+  <string name="error_can_not_delete_contacts">это ваши собственные контакты, их нельзя удалить:\n%s</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Пожалуйста, удалите его в разделе \'Мои ключи\'!</item>
+    <item quantity="few">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
+    <item quantity="other">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
   <string name="progress_saving">сохранение...</string>
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>
-  <string name="progress_generating">создание ключа... на это нужно время...</string>
+  <string name="progress_generating">создание ключа. это может занять до 3 минут...</string>
   <string name="progress_building_key">создание ключа...</string>
   <string name="progress_preparing_master_key">подготовка основного ключа...</string>
   <string name="progress_certifying_master_key">сертификация основного ключа...</string>
   <string name="progress_building_master_key">создание основной связки...</string>
   <string name="progress_adding_sub_keys">добавление доп. ключей...</string>
   <string name="progress_saving_key_ring">сохранение ключа...</string>
-  <string name="progress_importing_secret_keys">импорт секретных ключей...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>
@@ -344,7 +351,7 @@
   <string name="intent_send_encrypt">OpenPGP: Зашифровать</string>
   <string name="intent_send_decrypt">OpenPGP: Расшифровать</string>
   <!--Remote API-->
-  <string name="api_no_apps">Нет связанных приложений!</string>
+  <string name="api_no_apps">Нет связанных программ!\n\nСторонние программы могут запросить доступ к OpenPGP Keychain, после чего они будут отражаться здесь.</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
   <string name="api_settings_hide_advanced">Скрыть расширенные настройки</string>
   <string name="api_settings_no_key">Ключ не выбран</string>
@@ -354,7 +361,7 @@
   <string name="api_settings_revoke">Отозвать доступ</string>
   <string name="api_settings_package_name">Наименование пакета</string>
   <string name="api_settings_package_signature">SHA-256 подписи пакета</string>
-  <string name="api_register_text">Приложение запрашивает доступ к OpenPGP Keychain API.\nРазрешить доступ?</string>
+  <string name="api_register_text">Данное приложение запрашивает доступ к OpenPGP Keychain.\nРазрешить доступ?\n\nВНИМАНИЕ: Если вы не знаете почему возник этот запрос, откажите в доступе!\nПозже вы можете отозвать право доступа в разделе \"Зарегистрированные программы\".</string>
   <string name="api_register_allow">Разрешить доступ</string>
   <string name="api_register_disallow">Запретить доступ</string>
   <string name="api_register_error_select_key">Пожалуйста, выберите ключ!</string>
@@ -381,6 +388,9 @@
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Зашифровать для этого получателя</string>
+  <string name="key_view_action_certify">Сертифицировать ключ этого контакта</string>
+  <string name="key_view_tab_main">Информация</string>
+  <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Контакты</string>
   <string name="nav_encrypt">Зашифровать</string>

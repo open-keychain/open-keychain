@@ -50,6 +50,13 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
 import android.text.Html;
 
+/**
+ * TODO:
+ * rewrite to use machine readable output.
+ * <p/>
+ * see http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5
+ * https://github.com/openpgp-keychain/openpgp-keychain/issues/259
+ */
 public class HkpKeyServer extends KeyServer {
     private static class HttpError extends Exception {
         private static final long serialVersionUID = 1718783705229428893L;
@@ -181,8 +188,8 @@ public class HkpKeyServer extends KeyServer {
             ImportKeysListEntry info = new ImportKeysListEntry();
             info.bitStrength = Integer.parseInt(matcher.group(1));
             info.algorithm = matcher.group(2);
+            info.hexKeyId = "0x" + matcher.group(3);
             info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(3));
-            info.fingerPrint = PgpKeyHelper.convertKeyIdToHex(info.keyId);
             String chunks[] = matcher.group(4).split("-");
 
             GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));

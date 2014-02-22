@@ -15,7 +15,6 @@
   <string name="title_export_key">Esportare Chiave</string>
   <string name="title_export_keys">Esportare Chiavi</string>
   <string name="title_key_not_found">Chiave Non Trovata</string>
-  <string name="title_sign_key">Firma Chiave</string>
   <string name="title_help">Aiuto</string>
   <!--section-->
   <string name="section_user_ids">ID Utente</string>
@@ -23,10 +22,8 @@
   <string name="section_general">Generale</string>
   <string name="section_advanced">Avanzato</string>
   <!--button-->
-  <string name="btn_sign_and_send">Firmare ed inviare...</string>
   <string name="btn_sign">Firmare</string>
   <string name="btn_decrypt">Decifrare</string>
-  <string name="btn_verify">Verificare</string>
   <string name="btn_encrypt_file">Cifrare File</string>
   <string name="btn_save">Salva</string>
   <string name="btn_do_not_save">Cancella</string>

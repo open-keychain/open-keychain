@@ -7,14 +7,11 @@
   <string name="title_create_key">Anahtar oluştur</string>
   <string name="title_edit_key">Anahtarı düzenle</string>
   <string name="title_preferences">Seçenekler</string>
-  <string name="title_key_server_preference">Anahtar Sunucusu Seçenekleri</string>
   <string name="title_import_keys">Anahtarları Al</string>
   <string name="title_export_key">Anahtarı Ver</string>
   <string name="title_export_keys">Anahtarları Ver</string>
   <string name="title_key_not_found">Anahtar Bulunamadı</string>
-  <string name="title_key_server_query">Anahtar Sunucusunu Sorgula</string>
   <string name="title_unknown_signature_key">Bilinmeyen İmza Anahtarı</string>
-  <string name="title_sign_key">Anahtarı İmzala</string>
   <string name="title_key_details">Anahtar Detayları</string>
   <string name="title_help">Yardım</string>
   <!--section-->
@@ -24,21 +21,14 @@
   <string name="section_defaults">Varsayılanlar</string>
   <string name="section_advanced">Gelişmiş</string>
   <string name="section_upload_key">Anahtar Yükle</string>
-  <string name="section_key_server">Anahtar Sunucusu</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">İmzala (Pano)</string>
-  <string name="btn_encrypt_to_clipboard">Panoya Şifrele</string>
-  <string name="btn_encrypt_and_send">Şifrele ve gönder...</string>
-  <string name="btn_sign_and_send">İmzala ve gönder...</string>
   <string name="btn_sign">İmzala</string>
-  <string name="btn_verify">Doğrula</string>
   <string name="btn_select_encrypt_keys">Alıcıları Seç</string>
   <string name="btn_save">Kaydet</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
   <string name="btn_okay">Tamam</string>
   <string name="btn_search">Ara</string>
-  <string name="btn_export_to_server">Sunucuya Anahtar Yükle</string>
   <string name="btn_next">İleri</string>
   <string name="btn_back">Geri</string>
   <!--menu-->
@@ -53,7 +43,6 @@
   <string name="menu_create_key">Anahtar oluştur</string>
   <string name="menu_create_key_expert">Anahtar oluştur (uzman)</string>
   <string name="menu_search">Ara</string>
-  <string name="menu_key_server">Anahtar sunucusundan al</string>
   <string name="menu_copy_to_clipboard">Panoya kopyala</string>
   <string name="menu_sign_key">Anahtarı imzala</string>
   <string name="menu_key_edit_cancel">İptal</string>
@@ -64,7 +53,6 @@
   <string name="label_passphrase_again">Tekrar</string>
   <string name="label_algorithm">Algoritma</string>
   <string name="label_asymmetric">Açık Anahtar</string>
-  <string name="label_key_servers">Anahtar Sunucuları</string>
   <string name="label_creation">Oluşturma</string>
   <string name="label_usage">Kullanım</string>
   <string name="label_key_size">Anahtar Boyutu</string>
@@ -97,7 +85,6 @@
   <string name="no_file_selected">Önce bir dosya seçin.</string>
   <string name="encryption_successful">Başarıyla şifrelendi.</string>
   <string name="key_not_found">Anahtar %08X bulunamadı.</string>
-  <string name="key_send_success">Anahtar sunucuya başarıyla gönderildi</string>
   <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
   <string name="list_empty">Liste boş!</string>
   <!--errors
@@ -112,7 +99,6 @@
   <string name="progress_saving">kaydediliyor...</string>
   <string name="progress_importing">alıyor...</string>
   <string name="progress_exporting">veriyor...</string>
-  <string name="progress_generating">anahtar üretiliyor, bu biraz süre alabilir...</string>
   <string name="progress_building_key">anahtar oluşturuluyor...</string>
   <string name="progress_preparing_signature">imza hazırlanıyor...</string>
   <string name="progress_generating_signature">imza oluşturuluyor...</string>

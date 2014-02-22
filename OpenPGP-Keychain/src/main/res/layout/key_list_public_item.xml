@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:layout_marginRight="?android:attr/scrollbarSize"
+    android:gravity="center_vertical"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:singleLine="true">
+
+    <TextView
+        android:id="@+id/mainUserId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Main User ID"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/mainUserIdRest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="&lt;user@example.com>"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/mainUserId"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/revoked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/revoked"
+        android:textColor="#e00"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>

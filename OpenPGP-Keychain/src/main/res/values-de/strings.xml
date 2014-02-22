@@ -12,7 +12,7 @@
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Registrierte Anwendungen</string>
-  <string name="title_key_server_preference">Einstellung der Schlüsselserver</string>
+  <string name="title_key_server_preference">Schlüsselserver</string>
   <string name="title_change_pass_phrase">Passwort ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_send_email">E-Mail senden...</string>
@@ -22,10 +22,10 @@
   <string name="title_export_key">Schlüssel exportieren</string>
   <string name="title_export_keys">Schlüssel exportieren</string>
   <string name="title_key_not_found">Schlüssel nicht gefunden</string>
-  <string name="title_key_server_query">Schlüssel-Server abfragen</string>
+  <string name="title_key_server_query">Schlüsselserver abfragen</string>
   <string name="title_send_key">Auf Schlüsselserver hochladen</string>
   <string name="title_unknown_signature_key">Unbekannter Signaturschlüssel</string>
-  <string name="title_sign_key">Schlüssel signieren</string>
+  <string name="title_certify_key">Schlüssel beglaubigen</string>
   <string name="title_key_details">Schlüsseldetails</string>
   <string name="title_help">Hilfe</string>
   <!--section-->
@@ -37,17 +37,16 @@
   <string name="section_master_key">Hauptschlüssel</string>
   <string name="section_master_user_id">Hauptbenutzer-ID</string>
   <string name="section_actions">Aktionen</string>
-  <string name="section_signing_key">Dein Signaturschlüssel</string>
+  <string name="section_certification_key">Mit diesem Schlüssel beglaubigen</string>
   <string name="section_upload_key">Schlüssel hochladen</string>
   <string name="section_key_server">Schlüsselserver</string>
+  <string name="section_encrypt_and_or_sign">Verschlüsseln und/oder Signieren</string>
+  <string name="section_decrypt_verify">Entschlüsseln und Verifizieren</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Signieren (Zwischenablage)</string>
-  <string name="btn_encrypt_to_clipboard">In die Zwischenablage verschlüsseln</string>
-  <string name="btn_encrypt_and_send">Verschlüsseln und senden...</string>
-  <string name="btn_sign_and_send">Signieren und senden...</string>
   <string name="btn_sign">Signieren</string>
+  <string name="btn_certify">Beglaubigen</string>
   <string name="btn_decrypt">Entschlüsseln</string>
-  <string name="btn_verify">Signatur prüfen</string>
+  <string name="btn_decrypt_verify">Entschlüsseln und Verifizieren</string>
   <string name="btn_select_encrypt_keys">Empfänger auswählen</string>
   <string name="btn_encrypt_file">Datei verschlüsseln</string>
   <string name="btn_save">Speichern</string>
@@ -61,6 +60,9 @@
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
   <string name="btn_back">Zurück</string>
+  <string name="btn_clipboard">Zwischenablage</string>
+  <string name="btn_share">Teilen mit…</string>
+  <string name="btn_lookup_key">Schlüssel nachschlagen</string>
   <!--menu-->
   <string name="menu_preferences">Einstellungen</string>
   <string name="menu_help">Hilfe</string>
@@ -99,6 +101,7 @@
   <string name="label_passphrase_again">Wiederholen</string>
   <string name="label_algorithm">Algorithmus</string>
   <string name="label_ascii_armor">ASCII-Armor</string>
+  <string name="label_select_public_keys">Empfänger</string>
   <string name="label_delete_after_encryption">Nach Verschlüsselung löschen</string>
   <string name="label_delete_after_decryption">Nach Entschlüsselung löschen</string>
   <string name="label_encryption_algorithm">Verschlüsselungsalgorithmus</string>
@@ -108,7 +111,6 @@
   <string name="label_passphrase_cache_ttl">Passwort-Cache</string>
   <string name="label_message_compression">Nachrichten-Komprimierung</string>
   <string name="label_file_compression">Datei-Komprimierung</string>
-  <string name="label_force_v3_signature">OpenPGPv3-Signaturen erzwingen</string>
   <string name="label_key_servers">Schlüsselserver</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_creation">Erstellungsdatum</string>
@@ -119,19 +121,21 @@
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
-  <string name="label_send_key">Lade Schlüssel nach dem Signieren auf den ausgewählten Schlüsselserver hoch</string>
+  <string name="label_send_key">Schlüssel nach Beglaubigung auf ausgewählten Schlüsselserver hochladen</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="select_keys_button_default">Auswählen</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d ausgewählt</item>
     <item quantity="other">%d ausgewählt</item>
   </plurals>
+  <string name="user_id_no_name">&lt;kein Name&gt;</string>
   <string name="none">&lt;keine&gt;</string>
   <string name="no_key">&lt;kein Schlüssel&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">kann verschlüsseln</string>
   <string name="can_sign">kann signieren</string>
   <string name="expired">abgelaufen</string>
+  <string name="revoked">zurückgezogen</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d Schlüsselserver</item>
     <item quantity="other">%d Schlüsselserver</item>
@@ -213,9 +217,12 @@
     <item quantity="one">%d Schlüssel gefunden.</item>
     <item quantity="other">%d Schlüssel gefunden.</item>
   </plurals>
-  <string name="unknown_signature_key_touch_to_look_up">Unbekannte Unterschrift, zum Suchen berühren. </string>
-  <string name="lookup_unknown_key">Unbekannter Schlüssel %s, soll dieser auf einem Schlüsselserver gesucht werden?</string>
-  <string name="key_send_success">Schlüssel erfolgreich zum Server geschickt.</string>
+  <string name="unknown_signature">Unbekannte Signatur. Benutze den Button um den fehlenden Schlüssel nachzuschlagen.</string>
+  <plurals name="bad_keys_encountered">
+    <item quantity="one">%d schlechter privater Schlüssel ignoriert. Evtl. wurde er mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
+    <item quantity="other">%d schlechte private Schlüssel ignoriert. Evtl. wurden sie mit folgender Option exportiert:\n --export-secret-subkeys\nUnbedingt mit der Option \n --export-secret-keys\nexportieren.</item>
+  </plurals>
+  <string name="key_send_success">Schlüssel wurde erfolgreich hochgeladen.</string>
   <string name="key_sign_success">Schlüssel erfolgreich signiert</string>
   <string name="list_empty">Diese Liste ist leer!</string>
   <string name="nfc_successfull">Schlüssel erfolgreich mit NFC Beam gesendet!</string>
@@ -254,19 +261,22 @@
   <string name="error_jelly_bean_needed">Android 4.1 alias Jelly Bean wird benötigt um Androids NFC-Beam nutzen zu können!</string>
   <string name="error_nfc_needed">NFC steht auf diesem Gerät nicht zur Verfügung!</string>
   <string name="error_nothing_import">Nichts zu importieren!</string>
+  <string name="error_expiry_must_come_after_creation">Ablaufdatum muss später sein als das Erstellungsdatum</string>
+  <plurals name="error_can_not_delete_info">
+    <item quantity="one">Bitte lösche ihn unter \'Meine Schlüssel\'!</item>
+    <item quantity="other">Bitte lösche sie unter \'Meine Schlüssel\'!</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fertig.</string>
   <string name="progress_saving">speichern...</string>
   <string name="progress_importing">importieren...</string>
   <string name="progress_exporting">exportieren...</string>
-  <string name="progress_generating">erstelle Schlüssel, dies kann eine Weile dauern...</string>
   <string name="progress_building_key">erstelle Schlüssel...</string>
   <string name="progress_preparing_master_key">Hauptschlüssel wird vorbereitet...</string>
   <string name="progress_certifying_master_key">Hauptschlüssel wird beglaubigt...</string>
   <string name="progress_building_master_key">erstelle Hauptring...</string>
   <string name="progress_adding_sub_keys">füge Unterschlüssel hinzu...</string>
   <string name="progress_saving_key_ring">Schlüssel wird gespeichert...</string>
-  <string name="progress_importing_secret_keys">importiere private Schlüssel...</string>
   <plurals name="progress_exporting_key">
     <item quantity="one">Schlüssel wird exportiert…</item>
     <item quantity="other">Schlüssel werden exportiert…</item>
@@ -327,17 +337,15 @@
   <string name="intent_send_encrypt">OpenPGP: Verschlüsseln</string>
   <string name="intent_send_decrypt">OpenPGP: Entschlüsseln</string>
   <!--Remote API-->
-  <string name="api_no_apps">Keine registrierten Anwendungen vorhanden!</string>
   <string name="api_settings_show_advanced">Erweiterte Einstellungen anzeigen</string>
   <string name="api_settings_hide_advanced">Erweiterte Einstellungen ausblenden</string>
   <string name="api_settings_no_key">Kein Schlüssel ausgewählt</string>
   <string name="api_settings_select_key">Schlüssel auswählen</string>
   <string name="api_settings_save">Speichern</string>
   <string name="api_settings_cancel">Abbrechen</string>
-  <string name="api_settings_revoke">Zugang widerufen</string>
+  <string name="api_settings_revoke">Zugriff widerufen</string>
   <string name="api_settings_package_name">Paketname</string>
   <string name="api_settings_package_signature">SHA-256 der Paketsignatur</string>
-  <string name="api_register_text">Folgende Anwendung beantragt Zugriff zur API von OpenPGP Keychain.\n\nZugriff dauerhaft erlauben?</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
@@ -363,6 +371,7 @@
   <string name="key_list_empty_button_import">existierende Schlüssel importierst.</string>
   <!--Key view-->
   <string name="key_view_action_encrypt">Für diesen Kontakt verschlüsseln</string>
+  <string name="key_view_action_certify">Schlüssel dieses Kontakts beglaubigen</string>
   <!--Navigation Drawer-->
   <string name="nav_contacts">Kontakte</string>
   <string name="nav_encrypt">Verschlüsseln</string>

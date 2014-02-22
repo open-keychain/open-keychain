@@ -76,38 +76,39 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        TextView keyId = (TextView) view.findViewById(R.id.keyId);
+        TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
+        ImageView masterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
+        ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
+        ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
+        ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
+
         String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(cursor.getInt(mIndexAlgorithm),
                 cursor.getInt(mIndexKeySize));
 
-        TextView keyId = (TextView) view.findViewById(R.id.keyId);
         keyId.setText(keyIdStr);
 
-        TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
         keyDetails.setText("(" + algorithmStr + ")");
 
-        ImageView masterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
         if (cursor.getInt(mIndexIsMasterKey) != 1) {
             masterKeyIcon.setVisibility(View.INVISIBLE);
         } else {
             masterKeyIcon.setVisibility(View.VISIBLE);
         }
 
-        ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
         if (cursor.getInt(mIndexCanCertify) != 1) {
             certifyIcon.setVisibility(View.GONE);
         } else {
             certifyIcon.setVisibility(View.VISIBLE);
         }
 
-        ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
         if (cursor.getInt(mIndexCanEncrypt) != 1) {
             encryptIcon.setVisibility(View.GONE);
         } else {
             encryptIcon.setVisibility(View.VISIBLE);
         }
 
-        ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
         if (cursor.getInt(mIndexCanSign) != 1) {
             signIcon.setVisibility(View.GONE);
         } else {

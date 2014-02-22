@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.LookupUnknownKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -61,7 +60,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -78,14 +77,20 @@ public class DecryptActivity extends DrawerActivity {
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
 
+    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
+    private static final int RESULT_CODE_FILE = 0x00007003;
+
     private long mSignatureKeyId = 0;
 
     private boolean mReturnResult = false;
+
+    // TODO: replace signed only checks with something more intelligent
+    // PgpDecryptVerify should handle all automatically!!!
     private boolean mSignedOnly = false;
     private boolean mAssumeSymmetricEncryption = false;
 
     private EditText mMessage = null;
-    private LinearLayout mSignatureLayout = null;
+    private RelativeLayout mSignatureLayout = null;
     private ImageView mSignatureStatusImage = null;
     private TextView mUserId = null;
     private TextView mUserIdRest = null;
@@ -100,6 +105,7 @@ public class DecryptActivity extends DrawerActivity {
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
     private BootstrapButton mBrowse = null;
+    private BootstrapButton mLookupKey = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
@@ -107,13 +113,9 @@ public class DecryptActivity extends DrawerActivity {
     private Uri mContentUri = null;
     private boolean mReturnBinary = false;
 
-    private long mUnknownSignatureKeyId = 0;
-
     private long mSecretKeyId = Id.key.none;
 
     private FileDialogFragment mFileDialog;
-
-    private boolean mLookupUnknownKey = true;
 
     private boolean mDecryptImmediately = false;
 
@@ -154,7 +156,7 @@ public class DecryptActivity extends DrawerActivity {
         mSourceLabel.setOnClickListener(nextSourceClickListener);
 
         mMessage = (EditText) findViewById(R.id.message);
-        mSignatureLayout = (LinearLayout) findViewById(R.id.signature);
+        mSignatureLayout = (RelativeLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
@@ -171,7 +173,15 @@ public class DecryptActivity extends DrawerActivity {
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
-                        Id.request.filename);
+                        RESULT_CODE_FILE);
+            }
+        });
+
+        mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
+        mLookupKey.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lookupUnknownKey(mSignatureKeyId);
             }
         });
 
@@ -239,7 +249,7 @@ public class DecryptActivity extends DrawerActivity {
                         DecryptActivity.this, mSignatureKeyId);
                 if (key != null) {
                     Intent intent = new Intent(DecryptActivity.this, ImportKeysActivity.class);
-                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEY_SERVER);
+                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
                     intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, mSignatureKeyId);
                     startActivity(intent);
                 }
@@ -263,14 +273,14 @@ public class DecryptActivity extends DrawerActivity {
 
         if (mDecryptImmediately
                 || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                        .length() > 0 || mContentUri != null))) {
+                .length() > 0 || mContentUri != null))) {
             decryptClicked();
         }
     }
 
     /**
      * Handles all actions with this intent
-     * 
+     *
      * @param intent
      */
     private void handleActions(Intent intent) {
@@ -287,13 +297,13 @@ public class DecryptActivity extends DrawerActivity {
          * Android's Action
          */
         if (Intent.ACTION_SEND.equals(action) && type != null) {
-            // When sending to Keychain Encrypt via share menu
+            // When sending to Keychain Decrypt via share menu
             if ("text/plain".equals(type)) {
                 // Plain text
                 String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
                 if (sharedText != null) {
                     // handle like normal text decryption, override action and extras to later
-                    // execute ACTION_DECRYPT in main actions
+                    // executeServiceMethod ACTION_DECRYPT in main actions
                     extras.putString(EXTRA_TEXT, sharedText);
                     action = ACTION_DECRYPT;
                 }
@@ -375,21 +385,21 @@ public class DecryptActivity extends DrawerActivity {
 
     private void updateSource() {
         switch (mSource.getCurrentView().getId()) {
-        case R.id.sourceFile: {
-            mSourceLabel.setText(R.string.label_file);
-            mDecryptButton.setText(getString(R.string.btn_decrypt));
-            break;
-        }
+            case R.id.sourceFile: {
+                mSourceLabel.setText(R.string.label_file);
+                mDecryptButton.setText(getString(R.string.btn_decrypt));
+                break;
+            }
 
-        case R.id.sourceMessage: {
-            mSourceLabel.setText(R.string.label_message);
-            mDecryptButton.setText(getString(R.string.btn_decrypt));
-            break;
-        }
+            case R.id.sourceMessage: {
+                mSourceLabel.setText(R.string.label_message);
+                mDecryptButton.setText(getString(R.string.btn_decrypt));
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
     }
 
@@ -449,7 +459,7 @@ public class DecryptActivity extends DrawerActivity {
         } else {
             if (mDecryptTarget == Id.target.file) {
                 askForOutputFilename();
-            } else {
+            } else { // mDecryptTarget == Id.target.message
                 decryptStart();
             }
         }
@@ -527,7 +537,7 @@ public class DecryptActivity extends DrawerActivity {
             try {
                 if (inStream.markSupported()) {
                     inStream.mark(200); // should probably set this to the max size of two pgpF
-                                        // objects, if it even needs to be anything other than 0.
+                    // objects, if it even needs to be anything other than 0.
                 }
                 mSecretKeyId = PgpHelper.getDecryptionKeyId(this, inStream);
                 if (mSecretKeyId == Id.key.none) {
@@ -539,7 +549,7 @@ public class DecryptActivity extends DrawerActivity {
                     inStream.reset();
                 }
                 mSecretKeyId = Id.key.symmetric;
-                if (!PgpOperation.hasSymmetricEncryption(this, inStream)) {
+                if (!PgpDecryptVerify.hasSymmetricEncryption(this, inStream)) {
                     throw new PgpGeneralException(
                             getString(R.string.error_no_known_encryption_found));
                 }
@@ -559,7 +569,7 @@ public class DecryptActivity extends DrawerActivity {
         data = "\n\n" + data;
         intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
         intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, mSecretKeyId);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[] { mSignatureKeyId });
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[]{mSignatureKeyId});
         startActivity(intent);
     }
 
@@ -587,28 +597,10 @@ public class DecryptActivity extends DrawerActivity {
     }
 
     private void lookupUnknownKey(long unknownKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_OKAY) {
-                    // the result is handled by onActivityResult() as LookupUnknownKeyDialogFragment
-                    // starts a new Intent which then returns data
-                } else if (message.what == LookupUnknownKeyDialogFragment.MESSAGE_CANCEL) {
-                    // decrypt again, but don't lookup unknown keys!
-                    mLookupUnknownKey = false;
-                    decryptStart();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        LookupUnknownKeyDialogFragment lookupKeyDialog = LookupUnknownKeyDialogFragment
-                .newInstance(messenger, unknownKeyId);
-
-        lookupKeyDialog.show(getSupportFragmentManager(), "unknownKeyDialog");
+        Intent intent = new Intent(this, ImportKeysActivity.class);
+        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
+        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
+        startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
     private void decryptStart() {
@@ -644,8 +636,6 @@ public class DecryptActivity extends DrawerActivity {
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
 
-        data.putBoolean(KeychainIntentService.DECRYPT_SIGNED_ONLY, mSignedOnly);
-        data.putBoolean(KeychainIntentService.DECRYPT_LOOKUP_UNKNOWN_KEY, mLookupUnknownKey);
         data.putBoolean(KeychainIntentService.DECRYPT_RETURN_BYTES, mReturnBinary);
         data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
 
@@ -662,15 +652,6 @@ public class DecryptActivity extends DrawerActivity {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-                    // if key is unknown show lookup dialog
-                    if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_LOOKUP_KEY)
-                            && mLookupUnknownKey) {
-                        mUnknownSignatureKeyId = returnData
-                                .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
-                        lookupUnknownKey(mUnknownSignatureKeyId);
-                        return;
-                    }
-
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
 
@@ -685,26 +666,26 @@ public class DecryptActivity extends DrawerActivity {
                     }
 
                     switch (mDecryptTarget) {
-                    case Id.target.message:
-                        String decryptedMessage = returnData
-                                .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-                        mMessage.setText(decryptedMessage);
-                        mMessage.setHorizontallyScrolling(false);
+                        case Id.target.message:
+                            String decryptedMessage = returnData
+                                    .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
+                            mMessage.setText(decryptedMessage);
+                            mMessage.setHorizontallyScrolling(false);
 
-                        break;
+                            break;
 
-                    case Id.target.file:
-                        if (mDeleteAfter.isChecked()) {
-                            // Create and show dialog to delete original file
-                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-                                    .newInstance(mInputFilename);
-                            deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-                        }
-                        break;
+                        case Id.target.file:
+                            if (mDeleteAfter.isChecked()) {
+                                // Create and show dialog to delete original file
+                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                        .newInstance(mInputFilename);
+                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
+                            }
+                            break;
 
-                    default:
-                        // shouldn't happen
-                        break;
+                        default:
+                            // shouldn't happen
+                            break;
 
                     }
 
@@ -727,19 +708,24 @@ public class DecryptActivity extends DrawerActivity {
 
                         if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                            mLookupKey.setVisibility(View.GONE);
                         } else if (returnData
                                 .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                            mLookupKey.setVisibility(View.VISIBLE);
                             Toast.makeText(DecryptActivity.this,
-                                    R.string.unknown_signature_key_touch_to_look_up,
+                                    R.string.unknown_signature,
                                     Toast.LENGTH_LONG).show();
                         } else {
                             mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                            mLookupKey.setVisibility(View.GONE);
                         }
                         mSignatureLayout.setVisibility(View.VISIBLE);
                     }
                 }
-            };
+            }
+
+            ;
         };
 
         // Create a new Messenger for the communication back
@@ -756,36 +742,37 @@ public class DecryptActivity extends DrawerActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-        case Id.request.filename: {
-            if (resultCode == RESULT_OK && data != null) {
-                try {
-                    String path = FileHelper.getPath(this, data.getData());
-                    Log.d(Constants.TAG, "path=" + path);
+            case RESULT_CODE_FILE: {
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        String path = FileHelper.getPath(this, data.getData());
+                        Log.d(Constants.TAG, "path=" + path);
 
-                    mFilename.setText(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                        mFilename.setText(path);
+                    } catch (NullPointerException e) {
+                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                    }
                 }
+                return;
             }
-            return;
-        }
 
-        // this request is returned after LookupUnknownKeyDialogFragment started
-        // ImportKeysActivity and user looked uo key
-        case Id.request.look_up_key_id: {
-            Log.d(Constants.TAG, "Returning from Lookup Key...");
-            // decrypt again without lookup
-            mLookupUnknownKey = false;
-            decryptStart();
-            return;
-        }
+            // this request is returned after LookupUnknownKeyDialogFragment started
+            // ImportKeysActivity and user looked uo key
+            case RESULT_CODE_LOOKUP_KEY: {
+                Log.d(Constants.TAG, "Returning from Lookup Key...");
+                if (resultCode == RESULT_OK) {
+                    // decrypt again
+                    decryptStart();
+                }
+                return;
+            }
 
-        default: {
-            break;
-        }
-        }
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
 
-        super.onActivityResult(requestCode, resultCode, data);
+                break;
+            }
+        }
     }
 
 }

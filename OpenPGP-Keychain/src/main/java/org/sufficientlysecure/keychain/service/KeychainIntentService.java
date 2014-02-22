@@ -43,10 +43,11 @@ import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpOperation;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -95,7 +96,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ACTION_UPLOAD_KEYRING = Constants.INTENT_PREFIX + "UPLOAD_KEYRING";
     public static final String ACTION_DOWNLOAD_AND_IMPORT_KEYS = Constants.INTENT_PREFIX + "QUERY_KEYRING";
 
-    public static final String ACTION_SIGN_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
+    public static final String ACTION_CERTIFY_KEYRING = Constants.INTENT_PREFIX + "SIGN_KEYRING";
 
     /* keys for data bundle */
 
@@ -119,11 +120,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String ENCRYPT_PROVIDER_URI = "provider_uri";
 
     // decrypt/verify
-    public static final String DECRYPT_SIGNED_ONLY = "signed_only";
     public static final String DECRYPT_RETURN_BYTES = "return_binary";
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
-    public static final String DECRYPT_LOOKUP_UNKNOWN_KEY = "lookup_unknownKey";
 
     // save keyring
     public static final String SAVE_KEYRING_NEW_PASSPHRASE = "new_passphrase";
@@ -166,8 +165,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String DOWNLOAD_KEY_LIST = "query_key_id";
 
     // sign key
-    public static final String SIGN_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
-    public static final String SIGN_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
+    public static final String CERTIFY_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
+    public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
 
     /*
      * possible data keys as result send over messenger
@@ -189,10 +188,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String RESULT_SIGNATURE = "signature";
     public static final String RESULT_SIGNATURE_KEY_ID = "signature_key_id";
     public static final String RESULT_SIGNATURE_USER_ID = "signature_user_id";
+    public static final String RESULT_CLEARTEXT_SIGNATURE_ONLY = "signature_only";
 
     public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
     public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
-    public static final String RESULT_SIGNATURE_LOOKUP_KEY = "lookup_key";
 
     // import
     public static final String RESULT_IMPORT_ADDED = "added";
@@ -241,7 +240,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
         String action = intent.getAction();
 
-        // execute action from extra bundle
+        // executeServiceMethod action from extra bundle
         if (ACTION_ENCRYPT_SIGN.equals(action)) {
             try {
                 /* Input */
@@ -322,27 +321,41 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 }
 
                 /* Operation */
-                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
+                PgpSignEncrypt.Builder builder =
+                        new PgpSignEncrypt.Builder(this, inputData, outStream);
+                builder.progress(this);
+
                 if (generateSignature) {
                     Log.d(Constants.TAG, "generating signature...");
-                    operation.generateSignature(useAsciiArmor, false, secretKeyId,
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
-                            Preferences.getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                            .getPreferences(this).getForceV3Signatures());
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().generateSignature();
                 } else if (signOnly) {
                     Log.d(Constants.TAG, "sign only...");
-                    operation.signText(secretKeyId, PassphraseCacheService.getCachedPassphrase(
-                            this, secretKeyId), Preferences.getPreferences(this)
-                            .getDefaultHashAlgorithm(), Preferences.getPreferences(this)
-                            .getForceV3Signatures());
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().execute();
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
-                    operation.signAndEncrypt(useAsciiArmor, compressionId, encryptionKeyIds,
-                            encryptionPassphrase, Preferences.getPreferences(this)
-                            .getDefaultEncryptionAlgorithm(), secretKeyId, Preferences
-                            .getPreferences(this).getDefaultHashAlgorithm(), Preferences
-                            .getPreferences(this).getForceV3Signatures(),
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                    builder.enableAsciiArmorOutput(useAsciiArmor)
+                            .compressionId(compressionId)
+                            .symmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
+                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                            .encryptionKeyIds(encryptionKeyIds)
+                            .encryptionPassphrase(encryptionPassphrase)
+                            .signatureKeyId(secretKeyId)
+                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                    builder.build().execute();
                 }
 
                 outStream.close();
@@ -395,11 +408,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
                 byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
-                boolean signedOnly = data.getBoolean(DECRYPT_SIGNED_ONLY);
                 boolean returnBytes = data.getBoolean(DECRYPT_RETURN_BYTES);
                 boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
-
-                boolean lookupUnknownKey = data.getBoolean(DECRYPT_LOOKUP_UNKNOWN_KEY);
 
                 InputStream inStream = null;
                 long inLength = -1;
@@ -474,14 +484,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
-                PgpOperation operation = new PgpOperation(this, this, inputData, outStream);
-                if (signedOnly) {
-                    resultData = operation.verifyText(lookupUnknownKey);
-                } else {
-                    resultData = operation.decryptAndVerify(
-                            PassphraseCacheService.getCachedPassphrase(this, secretKeyId),
-                            assumeSymmetricEncryption);
-                }
+                PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
+                builder.progress(this);
+
+                builder.assumeSymmetric(assumeSymmetricEncryption)
+                        .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+
+                resultData = builder.build().execute();
 
                 outStream.close();
 
@@ -785,19 +794,19 @@ public class KeychainIntentService extends IntentService implements ProgressDial
             } catch (Exception e) {
                 sendErrorToHandler(e);
             }
-        } else if (ACTION_SIGN_KEYRING.equals(action)) {
+        } else if (ACTION_CERTIFY_KEYRING.equals(action)) {
             try {
 
                 /* Input */
-                long masterKeyId = data.getLong(SIGN_KEY_MASTER_KEY_ID);
-                long pubKeyId = data.getLong(SIGN_KEY_PUB_KEY_ID);
+                long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
+                long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
 
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
                         masterKeyId);
 
                 PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
-                PGPPublicKeyRing signedPubKeyRing = keyOperation.signKey(masterKeyId, pubKeyId,
+                PGPPublicKeyRing signedPubKeyRing = keyOperation.certifyKey(masterKeyId, pubKeyId,
                         signaturePassPhrase);
 
                 // store the signed key in our local cache

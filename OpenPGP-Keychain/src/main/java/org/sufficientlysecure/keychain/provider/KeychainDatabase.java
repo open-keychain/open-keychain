@@ -110,7 +110,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(Constants.TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
 
-        // Upgrade from oldVersion through all methods to newest one
+        // Upgrade from oldVersion through all cases to newest one
         for (int version = oldVersion; version < newVersion; ++version) {
             Log.w(Constants.TAG, "Upgrading database to version " + version);
 
@@ -123,14 +123,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     break;
                 case 4:
                     db.execSQL(CREATE_API_APPS);
+                    break;
                 case 5:
                     // new column: package_signature
                     db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
                     db.execSQL(CREATE_API_APPS);
+                    break;
                 case 6:
                     // new column: fingerprint
                     db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.FINGERPRINT
                             + " BLOB;");
+                    break;
                 default:
                     break;
 

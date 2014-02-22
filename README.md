@@ -1,6 +1,6 @@
-# OpenPGP Keychain (for Android)
+# OpenKeychain (for Android)
 
-OpenPGP Keychain is an OpenPGP implementation for Android.
+OpenKeychain is an OpenPGP implementation for Android.
 The development began as a fork of Android Privacy Guard (APG).
 
 see http://sufficientlysecure.org/keychain
@@ -17,10 +17,10 @@ Translations are managed at Transifex, please contribute there at https://www.tr
 2. Lookout for interesting issues on our issue page at Github: https://github.com/openpgp-keychain/openpgp-keychain/issues
 3. Tell us about your plans on the mailinglist
 4. Read this README, especially the notes about coding style
-5. Fork OpenPGP Keychain and contribute code (the best part ;) )
+5. Fork OpenKeychain and contribute code (the best part ;) )
 6. Open a pull request on Github. I will help with occuring problems and merge your changes back into the main project.
 
-I am happy about every code contribution and appreciate your effort to help us developing OpenPGP Keychain!
+I am happy about every code contribution and appreciate your effort to help us developing OpenKeychain!
 
 ## Development
 
@@ -40,7 +40,7 @@ Select everything for the newest SDK
 ### Build API Demo with Gradle
 
 1. Follow 1-3 from above
-2. Change to API Demo directory ``cd OpenPGP-Keychain-API-Demo``
+2. Change to API Demo directory ``cd OpenPGP-Keychain-API``
 3. Execute ``./gradlew build``
 
 ### Development with Android Studio
@@ -48,7 +48,9 @@ Select everything for the newest SDK
 I am using the newest [Android Studio](http://developer.android.com/sdk/installing/studio.html) for development. Development with Eclipse is currently not possible because I am using the new [project structure](http://developer.android.com/sdk/installing/studio-tips.html).
 
 1. Clone the project from github
-2. From Android Studio: File -> Import Project -> Select the cloned top folder
+2. From Android Studio: File -> Import Project ->  ...
+  * Select the cloned top folder if you want to develop on the main project
+  * Select the "OpenPGP-Keychain-API" folder if you want to develop on the API example
 3. Import project from external model -> choose Gradle
 
 ## Keychain API
@@ -62,7 +64,7 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
 * ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
 
-#### OpenPGP Keychain Intent actions:
+#### OpenKeychain Intent actions:
 
 * ``org.sufficientlysecure.keychain.action.ENCRYPT``
   * To encrypt or sign text, use extra ``text`` (type: ``String``)
@@ -74,19 +76,18 @@ To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
   * Extras: ``key_bytes`` (type: ``byte[]``)
   * or set data ``Uri`` (``intent.setData()``) pointing to a file
-* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEY_SERVER``
+* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER``
   * Extras: ``query`` (type: ``String``)
   * or ``fingerprint`` (type: ``String``)
 * ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
   * without extras, starts Barcode Scanner to get QR Code
   
-#### OpenPGP Keychain special registered Intents:
-* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
+#### OpenKeychain special registered Intents:
+* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
 * NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
 
 ### OpenPGP Remote API
-To do asyncronous fast encryption/decryption/sign/verify operations bind to the OpenPGP remote service.
-The API Demo contains all required AIDL files and a demo activity.
+To do fast encryption/decryption/sign/verify operations without user interaction bind to the OpenPGP remote service.
 
 #### Try out the API
 Keychain: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain  
@@ -97,43 +98,23 @@ All apps wanting to use this generic API
 just need to include the AIDL files and connect to the service. Other
 OpenPGP apps can implement a service based on this AIDL definition.
 
-The API is designed to be as easy as possible to use by apps like
-K-9 Mail. The service definition defines
-sign/encrypt/signAndEncrypt/decryptAndVerify [1].
+The API is designed to be as easy as possible to use by apps like K-9 Mail.
+The service definition defines sign, encrypt, signAndEncrypt, decryptAndVerify, and getKeyIds.
 
-As can be seen the apps themselves never need handle key ids directly.
-Only user ids (emails) are used to define recipients. If more than one
-pub key exists for an email, OpenPGP Keychain will handle the problem by
-showing a selection screen.
+As can be seen in the API Demo, the apps themselves never need to handle key ids directly.
+You can use user ids (emails) to define recipients.
+If more than one public key exists for an email, OpenKeychain will handle the problem by showing a selection screen. Additionally, it is also possible to use key ids.
 
-Also app devs never need to fiddle with private keys. On first
-operation, OpenPGP Keychain shows an activity to allow or disallow
-access, while also allowing to choose the private key used for this app.
-Please try the Demo app out to see how it works [4].
+Also app devs never need to fiddle with private keys.
+On first operation, OpenKeychain shows an activity to allow or disallow access, while also allowing to choose the private key used for this app.
+Please try the Demo app out to see how it works.
 
 #### Integration
-The API is defined as AIDL interfaces in org.openintents.openpgp packge
-[2]. All files from [2] needs to be included in the project.
+Copy the api library from "libraries/keychain-api-library" to your project and add it as an dependency to your gradle build.
+Inspect the ode found in "OpenPGP-Keychain-API" to understand how to use the API.
 
-Using the OpenPgpServiceConnection.java [3] you can choose to which
-OpenPGP provider you want to connect (other pgp apps can implement the
-interfaces). They can be queried as shown in the demo app (see [3] how
-to query). If other OpenPGP apps implement the service, no additional
-code is required in k9mail per provider. See [3] for a complete example
-for integration.
-
-[1] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/IOpenPgpService.aidl  
-[2] https://github.com/openpgp-keychain/openpgp-keychain/tree/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp  
-[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/openintents/openpgp/OpenPgpServiceConnection.java  
-[3] https://github.com/openpgp-keychain/openpgp-keychain/blob/master/OpenPGP-Keychain-API-Demo/src/org/sufficientlysecure/keychain/demo/OpenPgpProviderActivity.java  
-[4] https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
-
-## Extended Remote API
-
-TODO
 
 ## Libraries
-
 
 
 ### ZXing Barcode Scanner Android Integration
@@ -146,14 +127,14 @@ Classes can be found under "libraries/zxing-android-integration/".
 ### ZXing
 
 Classes can be found under "libraries/zxing/".
-ZXing classes were extracted from the ZXing library (http://code.google.com/p/zxing/).
+ZXing classes were extracted from the ZXing library (https://github.com/zxing/zxing).
 Only classes related to QR Code generation are utilized.
 
 ### Bouncy Castle
 
 #### Spongy Castle
 
-Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenPGP Keychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android. OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle, and Spongy Castle will be used again when they have filtered down.
 
 see
 * Fork: https://github.com/openpgp-keychain/spongycastle
@@ -167,6 +148,7 @@ see
 #### Documentation
 * Documentation project at http://www.cryptoworkshop.com/guide/
 * Tests in https://github.com/bcgit/bc-java/tree/master/pg/src/test/java/org/bouncycastle/openpgp/test
+* Examples in https://github.com/bcgit/bc-java/tree/master/pg/src/main/java/org/bouncycastle/openpgp/examples
 * Mailinglist Archive at http://bouncy-castle.1462172.n4.nabble.com/Bouncy-Castle-Dev-f1462173.html
 
 
@@ -174,13 +156,12 @@ see
 
 ### Gradle Build System
 
-We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
-This is also a key requirement to be part of F-Droid.
+We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 When changing build files or dependencies, respect the following requirements:
-- No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder
-- No dependencies from Maven
-- Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+``
-- Commit the corresponding gradle wrapper version to the repository
+* No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder (you never know what pre-compiled jar files really contain! The library files are currently directly commited, because git submodules/git subtree are too much of a hassle for new contributors. This could change in the future!)
+* No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
+* Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
+* Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
 
 ### Translations
 
@@ -248,7 +229,7 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   Apache License v2
 
 * ZXing  
-  http://code.google.com/p/zxing/  
+  https://github.com/zxing/zxing  
   Apache License v2
   
 * StickyListHeaders  
@@ -259,6 +240,9 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
   https://github.com/Bearded-Hen/Android-Bootstrap  
   MIT License
 
+* Android AppMsg  
+  https://github.com/johnkil/Android-AppMsg  
+  Apache License v2
 
 ### Images
 * icon.svg  

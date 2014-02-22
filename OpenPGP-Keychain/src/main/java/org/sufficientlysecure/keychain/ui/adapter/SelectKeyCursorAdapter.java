@@ -96,27 +96,31 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         boolean valid = cursor.getInt(mIndexProjectionValid) > 0;
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        keyId.setText(R.string.no_key);
         TextView status = (TextView) view.findViewById(R.id.status);
-        status.setText(R.string.unknown_status);
 
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
             mainUserId.setText(userIdSplit[0]);
+        } else {
+            mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
             mainUserIdRest.setText(userIdSplit[1]);
+        } else {
+            mainUserIdRest.setText("");
         }
 
+        // TODO: needed to key id to no?
+        keyId.setText(R.string.no_key);
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
         keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
 
+        // TODO: needed to set unknown_status?
+        status.setText(R.string.unknown_status);
         if (valid) {
             if (mKeyType == Id.type.public_key) {
                 status.setText(R.string.can_encrypt);

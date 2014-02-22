@@ -122,7 +122,7 @@ public class ImportKeysListFragment extends ListFragment implements
         mKeyBytes = getArguments().getByteArray(ARG_BYTES);
         mServerQuery = getArguments().getString(ARG_SERVER_QUERY);
 
-        // TODO: this is used when scanning QR Code. Currently it simply uses key server nr 0
+        // TODO: this is used when scanning QR Code. Currently it simply uses keyserver nr 0
         mKeyServer = Preferences.getPreferences(getActivity())
                 .getKeyServers()[0];
 
@@ -136,7 +136,7 @@ public class ImportKeysListFragment extends ListFragment implements
             getLoaderManager().initLoader(LOADER_ID_BYTES, null, this);
         }
 
-        if (mServerQuery != null) {
+        if (mServerQuery != null && mKeyServer != null) {
             // Start out with a progress indicator.
             setListShown(false);
 
@@ -165,14 +165,19 @@ public class ImportKeysListFragment extends ListFragment implements
         mServerQuery = serverQuery;
         mKeyServer = keyServer;
 
-        // Start out with a progress indicator.
-        setListShown(false);
+        if (mKeyBytes != null || mDataUri != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
 
-        if (mKeyBytes != null || mDataUri != null)
             getLoaderManager().restartLoader(LOADER_ID_BYTES, null, this);
+        }
 
-        if (mServerQuery != null && mKeyServer != null)
+        if (mServerQuery != null && mKeyServer != null) {
+            // Start out with a progress indicator.
+            setListShown(false);
+
             getLoaderManager().restartLoader(LOADER_ID_SERVER_QUERY, null, this);
+        }
     }
 
     @Override

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.Id;
@@ -30,12 +31,16 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -50,6 +55,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
@@ -63,7 +69,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     private KeyListPublicAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
-    // empty layout
+    // empty list layout
     private BootstrapButton mButtonEmptyCreate;
     private BootstrapButton mButtonEmptyImport;
 
@@ -92,9 +98,9 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
 
             @Override
             public void onClick(View v) {
-                Intent intentImportFromFile = new Intent(getActivity(), ImportKeysActivity.class);
-                intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-                startActivityForResult(intentImportFromFile, 0);
+                Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -109,7 +115,6 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // mKeyListPublicActivity = (KeyListPublicActivity) getActivity();
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
         mStickyList.setOnItemClickListener(this);
@@ -159,18 +164,16 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
                     }
 
                     switch (item.getItemId()) {
-                    case R.id.menu_key_list_public_multi_encrypt: {
-                        encrypt(ids);
-
-                        break;
+                        case R.id.menu_key_list_public_multi_encrypt: {
+                            encrypt(mode, ids);
+                            break;
+                        }
+                        case R.id.menu_key_list_public_multi_delete: {
+                            showDeleteKeyDialog(mode, ids);
+                            break;
+                        }
                     }
-                    case R.id.menu_key_list_public_multi_delete: {
-                        showDeleteKeyDialog(ids);
-
-                        break;
-                    }
-                    }
-                    return false;
+                    return true;
                 }
 
                 @Override
@@ -181,7 +184,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
 
                 @Override
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
-                        boolean checked) {
+                                                      boolean checked) {
                     if (checked) {
                         count++;
                         mAdapter.setNewSelection(position, checked);
@@ -212,8 +215,12 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     }
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[] { KeyRings._ID, KeyRings.MASTER_KEY_ID,
-            UserIds.USER_ID };
+    static final String[] PROJECTION = new String[]{
+            KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.UserIds.USER_ID,
+            KeychainContract.Keys.IS_REVOKED
+    };
 
     static final int USER_ID_INDEX = 2;
 
@@ -270,7 +277,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         startActivity(viewIntent);
     }
 
-    public void encrypt(long[] keyRingRowIds) {
+    public void encrypt(ActionMode mode, long[] keyRingRowIds) {
         // get master key ids from row ids
         long[] keyRingIds = new long[keyRingRowIds.length];
         for (int i = 0; i < keyRingRowIds.length; i++) {
@@ -282,15 +289,44 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
+
+        mode.finish();
     }
 
     /**
      * Show dialog to delete key
-     * 
+     *
      * @param keyRingRowIds
      */
-    public void showDeleteKeyDialog(long[] keyRingRowIds) {
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(null,
+    public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
+        // Message is received after key is deleted
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                    Bundle returnData = message.getData();
+                    if (returnData != null
+                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
+                        ArrayList<String> notDeleted =
+                                returnData.getStringArrayList(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED);
+                        String notDeletedMsg = "";
+                        for (String userId : notDeleted) {
+                            notDeletedMsg += userId + "\n";
+                        }
+                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
+                                + getResources().getQuantityString(R.plurals.error_can_not_delete_info, notDeleted.size()),
+                                Toast.LENGTH_LONG).show();
+
+                        mode.finish();
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
                 keyRingRowIds, Id.type.public_key);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");

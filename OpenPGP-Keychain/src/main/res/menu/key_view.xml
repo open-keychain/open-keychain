@@ -65,10 +65,6 @@
         </menu>
     </item>
     <item
-        android:id="@+id/menu_key_view_sign"
-        app:showAsAction="ifRoom"
-        android:title="@string/menu_sign_key" />
-    <item
         android:id="@+id/menu_key_view_export_file"
         app:showAsAction="never"
         android:title="@string/menu_export_key" />

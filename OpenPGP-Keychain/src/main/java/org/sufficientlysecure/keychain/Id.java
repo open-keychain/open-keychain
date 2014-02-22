@@ -78,7 +78,7 @@ public final class Id {
         public static final int filename = 0x00007003;
 //        public static final int output_filename = 0x00007004;
         public static final int key_server_preference = 0x00007005;
-        public static final int look_up_key_id = 0x00007006;
+//        public static final int look_up_key_id = 0x00007006;
         public static final int export_to_server = 0x00007007;
         public static final int import_from_qr_code = 0x00007008;
         public static final int sign_key = 0x00007009;

@@ -79,7 +79,7 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<List<ImportKeysL
     }
 
     /**
-     * Query key server
+     * Query keyserver
      */
     private void queryServer(String query, String keyServer) {
         HkpKeyServer server = new HkpKeyServer(keyServer);

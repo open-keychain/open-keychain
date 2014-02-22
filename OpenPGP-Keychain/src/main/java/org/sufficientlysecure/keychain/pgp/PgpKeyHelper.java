@@ -42,6 +42,8 @@ import android.content.Context;
 
 public class PgpKeyHelper {
 
+    private static final Pattern USER_ID_PATTERN = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
+
     public static Date getCreationDate(PGPPublicKey key) {
         return key.getCreationTime();
     }
@@ -591,8 +593,7 @@ public class PgpKeyHelper {
          * "Max Mustermann (this is a comment)"
          * "Max Mustermann [this is nothing]"
          */
-        Pattern withComment = Pattern.compile("^(.*?)(?: \\((.*)\\))?(?: <(.*)>)?$");
-        Matcher matcher = withComment.matcher(userId);
+        Matcher matcher = USER_ID_PATTERN.matcher(userId);
         if (matcher.matches()) {
             result[0] = matcher.group(1);
             result[1] = matcher.group(3);

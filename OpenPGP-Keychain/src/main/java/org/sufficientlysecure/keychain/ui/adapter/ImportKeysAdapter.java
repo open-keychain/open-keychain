@@ -90,16 +90,11 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         View view = mInflater.inflate(R.layout.import_keys_list_entry, null);
 
         TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        mainUserId.setText(R.string.user_id_no_name);
         TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        mainUserIdRest.setText("");
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        keyId.setText(R.string.no_key);
         TextView fingerprint = (TextView) view.findViewById(R.id.fingerprint);
         TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
-        algorithm.setText("");
         TextView status = (TextView) view.findViewById(R.id.status);
-        status.setText("");
 
         // main user id
         String userId = entry.userIds.get(0);
@@ -113,6 +108,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
                 mainUserId.setTextColor(Color.RED);
             }
             mainUserId.setText(userIdSplit[0]);
+        } else {
+            mainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
@@ -124,12 +121,18 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         keyId.setText(entry.hexKeyId);
-        fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
+
+        if (entry.fingerPrint != null) {
+            fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
+            fingerprint.setVisibility(View.VISIBLE);
+        } else {
+            fingerprint.setVisibility(View.GONE);
+        }
 
         algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
-            status.setText("revoked");
+            status.setText(R.string.revoked);
         } else {
             status.setVisibility(View.GONE);
         }

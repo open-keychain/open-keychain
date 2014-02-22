@@ -10,7 +10,6 @@
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Geregistreerde apps</string>
-  <string name="title_key_server_preference">Instellingen sleutelserver</string>
   <string name="title_change_pass_phrase">Wachtwoord wijzigen</string>
   <string name="title_set_passphrase">Wachtwoord instellen</string>
   <string name="title_send_email">E-mail verzenden...</string>
@@ -20,9 +19,7 @@
   <string name="title_export_key">Sleutels exporteren</string>
   <string name="title_export_keys">Sleutels exporteren</string>
   <string name="title_key_not_found">Sleutel niet gevonden</string>
-  <string name="title_key_server_query">Sleutelserver verzoek zenden</string>
   <string name="title_unknown_signature_key">Onbekende handtekeningssleutel</string>
-  <string name="title_sign_key">Sleutel ondertekenen</string>
   <string name="title_help">Help</string>
   <!--section-->
   <string name="section_user_ids">Gebruikers-id\'s</string>
@@ -31,13 +28,8 @@
   <string name="section_defaults">Standaard</string>
   <string name="section_advanced">Geavanceerd</string>
   <!--button-->
-  <string name="btn_sign_to_clipboard">Ondertekenen (klembord)</string>
-  <string name="btn_encrypt_to_clipboard">Versleutelen naar klembord</string>
-  <string name="btn_encrypt_and_send">Versleutelen en verzenden...</string>
-  <string name="btn_sign_and_send">Ondertekenen en verzenden...</string>
   <string name="btn_sign">Ondertekenen</string>
   <string name="btn_decrypt">Ontsleutelen</string>
-  <string name="btn_verify">Verifiëren</string>
   <string name="btn_select_encrypt_keys">Ontvangers selecteren</string>
   <string name="btn_encrypt_file">Bestand versleutelen</string>
   <string name="btn_save">Opslaan</string>
@@ -61,7 +53,6 @@
   <string name="menu_create_key">Sleutel aanmaken</string>
   <string name="menu_create_key_expert">Sleutel aanmaken (expert)</string>
   <string name="menu_search">Zoeken</string>
-  <string name="menu_key_server">Importeren uit sleutelserver</string>
   <string name="menu_sign_key">Sleutel ondertekenen</string>
   <string name="menu_beam_preferences">Beam-instellingen</string>
   <!--label-->
@@ -82,8 +73,6 @@
   <string name="label_passphrase_cache_ttl">Wachtwoordcache</string>
   <string name="label_message_compression">Berichtcompressie</string>
   <string name="label_file_compression">Bestandscompressie</string>
-  <string name="label_force_v3_signature">V3-handtekeningen afdwingen</string>
-  <string name="label_key_servers">Sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_expiry">Verlopen</string>
@@ -149,9 +138,6 @@
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen sub-sleutels ondersteunen ElGamal, en voor ElGamal wordt de dichtstbijzijnde sleutelgrootte van 1536, 2048, 4096 of 8192 gebruikt.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
-  <string name="unknown_signature_key_touch_to_look_up">Onbekende handtekening, tik om sleutel op te zoeken.</string>
-  <string name="lookup_unknown_key">Onbekende sleutel %s, wilt u het bij een sleutelserver opvragen?</string>
-  <string name="key_send_success">Sleutel succesvol verzonden naar server</string>
   <string name="key_sign_success">Sleutel succesvol ondertekend</string>
   <string name="list_empty">Lijst is leeg</string>
   <string name="nfc_successfull">Sleutel succesvol verzonden met Beam</string>
@@ -189,13 +175,11 @@
   <string name="progress_saving">opslaan...</string>
   <string name="progress_importing">importeren...</string>
   <string name="progress_exporting">exporteren...</string>
-  <string name="progress_generating">sleutel genereren, een ogenblik geduld...</string>
   <string name="progress_building_key">sleutel maken...</string>
   <string name="progress_preparing_master_key">hoofdsleutel voorbereiden...</string>
   <string name="progress_certifying_master_key">hoofdsleutel certificeren...</string>
   <string name="progress_building_master_key">hoofdsleutelbos maken...</string>
   <string name="progress_adding_sub_keys">sub-sleutels toevoegen...</string>
-  <string name="progress_importing_secret_keys">privésleutels importeren...</string>
   <string name="progress_extracting_signature_key">ondertekeningssleutel uitpakken...</string>
   <string name="progress_extracting_key">sleutel uitpakken...</string>
   <string name="progress_preparing_streams">streams voorbereiden...</string>
@@ -241,13 +225,11 @@
   <string name="intent_send_encrypt">OpenPGP: versleutelen</string>
   <string name="intent_send_decrypt">OpenPGP: ontsleutelen</string>
   <!--Remote API-->
-  <string name="api_no_apps">Geen geregistreerde apps</string>
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
   <string name="api_settings_save">Opslaan</string>
   <string name="api_settings_cancel">Annuleren</string>
   <string name="api_settings_revoke">Toegang herroepen</string>
-  <string name="api_register_text">De volgende app vraagt toegang to de KeyChain-API van OpenPGP\n\nAltijd toestaan?</string>
   <string name="api_register_allow">Toegang toestaan</string>
   <string name="api_register_disallow">Toegang weigeren</string>
   <string name="api_register_error_select_key">Selecteert u a.u.b. een sleutel</string>
