@@ -343,7 +343,7 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, ArrayList<PGPSecretKey> keys, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase) throws PgpGeneralException,
+    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, boolean primaryIDChanged, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase, ArrayList<PGPSecretKey> keys) throws PgpGeneralException,
             PGPException, SignatureException, IOException {
 
         updateProgress(R.string.progress_building_key, 0, 100);
@@ -386,7 +386,7 @@ public class PgpKeyOperation {
 
                 PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
 
-                masterPublicKey = PGPPublicKey.removeCertification();
+                //masterPublicKey = PGPPublicKey.removeCertification();
                 masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, certification);
             }
             user_id_index++;

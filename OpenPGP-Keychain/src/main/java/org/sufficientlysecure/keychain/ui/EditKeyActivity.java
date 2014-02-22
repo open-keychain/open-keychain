@@ -595,6 +595,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     mUserIdsView.getOriginalIDs());
             data.putBooleanArray(KeychainIntentService.SAVE_KEYRING_MODDED_KEYS,
                     toPrimitiveArray(mKeysView.getNeedsSavingArray()));
+            data.putBoolean(KeychainIntentService.SAVE_KEYRING_PRIMARY_ID_CHANGED,
+                    mUserIdsView.primaryChanged());
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
