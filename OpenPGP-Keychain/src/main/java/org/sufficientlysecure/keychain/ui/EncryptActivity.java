@@ -63,7 +63,6 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.devspark.appmsg.AppMsg;
 
 public class EncryptActivity extends DrawerActivity {
 
@@ -216,8 +215,7 @@ public class EncryptActivity extends DrawerActivity {
             // encrypt file based on Uri
 
             // get file path from uri
-            //String path = FileHelper.getPath(this, uri);
-            String path = null;
+            String path = FileHelper.getPath(this, uri);
 
             if (path != null) {
                 mInputFilename = path;
@@ -417,17 +415,17 @@ public class EncryptActivity extends DrawerActivity {
             mOutputFilename = guessOutputFilename(mInputFilename);
 
             if (mInputFilename.equals("")) {
-                AppMsg.makeText(this, R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
+                Toast.makeText(this, R.string.no_file_selected, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!mInputFilename.startsWith("content")) {
                 File file = new File(mInputFilename);
                 if (!file.exists() || !file.isFile()) {
-                    AppMsg.makeText(
+                    Toast.makeText(
                             this,
                             getString(R.string.error_message,
-                                    getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
+                                    getString(R.string.error_file_not_found)), Toast.LENGTH_SHORT)
                             .show();
                     return;
                 }
@@ -440,13 +438,13 @@ public class EncryptActivity extends DrawerActivity {
             String passPhrase = mPassPhrase.getText().toString();
             String passPhraseAgain = mPassPhraseAgain.getText().toString();
             if (!passPhrase.equals(passPhraseAgain)) {
-                AppMsg.makeText(this, R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                Toast.makeText(this, R.string.passphrases_do_not_match, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             gotPassPhrase = (passPhrase.length() != 0);
             if (!gotPassPhrase) {
-                AppMsg.makeText(this, R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
+                Toast.makeText(this, R.string.passphrase_must_not_be_empty, Toast.LENGTH_SHORT)
                         .show();
                 return;
             }
@@ -454,13 +452,13 @@ public class EncryptActivity extends DrawerActivity {
             boolean encryptIt = (mEncryptionKeyIds != null && mEncryptionKeyIds.length > 0);
             // for now require at least one form of encryption for files
             if (!encryptIt && mEncryptTarget == Id.target.file) {
-                AppMsg.makeText(this, R.string.select_encryption_key, AppMsg.STYLE_ALERT).show();
+                Toast.makeText(this, R.string.select_encryption_key, Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!encryptIt && mSecretKeyId == 0) {
-                AppMsg.makeText(this, R.string.select_encryption_or_signature_key,
-                        AppMsg.STYLE_ALERT).show();
+                Toast.makeText(this, R.string.select_encryption_or_signature_key,
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -620,8 +618,8 @@ public class EncryptActivity extends DrawerActivity {
                             output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
                             Log.d(Constants.TAG, "output: " + output);
                             ClipboardReflection.copyToClipboard(EncryptActivity.this, output);
-                            AppMsg.makeText(EncryptActivity.this,
-                                    R.string.encryption_to_clipboard_successful, AppMsg.STYLE_INFO)
+                            Toast.makeText(EncryptActivity.this,
+                                    R.string.encryption_to_clipboard_successful, Toast.LENGTH_SHORT)
                                     .show();
                             break;
 
@@ -642,8 +640,8 @@ public class EncryptActivity extends DrawerActivity {
                             break;
 
                         case Id.target.file:
-                            AppMsg.makeText(EncryptActivity.this, R.string.encryption_successful,
-                                    AppMsg.STYLE_INFO).show();
+                            Toast.makeText(EncryptActivity.this, R.string.encryption_successful,
+                                    Toast.LENGTH_SHORT).show();
 
                             if (mDeleteAfter.isChecked()) {
                                 // Create and show dialog to delete original file
