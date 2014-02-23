@@ -216,8 +216,7 @@ public class EncryptActivity extends DrawerActivity {
             // encrypt file based on Uri
 
             // get file path from uri
-            //String path = FileHelper.getPath(this, uri);
-            String path = null;
+            String path = FileHelper.getPath(this, uri);
 
             if (path != null) {
                 mInputFilename = path;
