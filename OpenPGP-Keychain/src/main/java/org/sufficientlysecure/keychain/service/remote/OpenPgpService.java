@@ -285,51 +285,16 @@ public class OpenPgpService extends RemoteService {
             Bundle result = new Bundle();
             try {
 
-//                PGPUtil.getDecoderStream(is)
-                // TODOs API 2.0:
-                // implement verify-only!
+                // TODO:
                 // fix the mess: http://stackoverflow.com/questions/148130/how-do-i-peek-at-the-first-two-bytes-in-an-inputstream
                 // should we allow to decrypt everything under every key id or only the one set?
                 // TODO: instead of trying to get the passphrase before
                 // pause stream when passphrase is missing and then resume
 
-
-                // TODO: this is not really needed
-                // checked if it is text with BEGIN and END tags
-//            String message = new String(inputBytes);
-//            Log.d(Constants.TAG, "in: " + message);
-//                boolean signedOnly = false;
-//            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(message);
-//            if (matcher.matches()) {
-//                Log.d(Constants.TAG, "PGP_MESSAGE matched");
-//                message = matcher.group(1);
-//                // replace non breakable spaces
-//                message = message.replaceAll("\\xa0", " ");
-//
-//                // overwrite inputBytes
-//                inputBytes = message.getBytes();
-//            } else {
-//                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(message);
-//                if (matcher.matches()) {
-//                    signedOnly = true;
-//                    Log.d(Constants.TAG, "PGP_SIGNED_MESSAGE matched");
-//                    message = matcher.group(1);
-//                    // replace non breakable spaces
-//                    message = message.replaceAll("\\xa0", " ");
-//
-//                    // overwrite inputBytes
-//                    inputBytes = message.getBytes();
-//                } else {
-//                    Log.d(Constants.TAG, "Nothing matched! Binary?");
-//                }
-//            }
-                // END TODO
-
-//            Log.d(Constants.TAG, "in: " + new String(inputBytes));
+                // TODO: put this code into PgpDecryptVerify class
 
                 // TODO: This allows to decrypt messages with ALL secret keys, not only the one for the
                 // app, Fix this?
-
 //                String passphrase = null;
 //                if (!signedOnly) {
 //                    // BEGIN Get key
@@ -377,36 +342,21 @@ public class OpenPgpService extends RemoteService {
                     Bundle passphraseBundle = getPassphraseBundleIntent(params, appSettings.getKeyId());
                     return passphraseBundle;
                 }
-//                }
 
-                // build InputData and write into OutputStream
                 long inputLength = is.available();
                 InputData inputData = new InputData(is, inputLength);
-
 
                 Bundle outputBundle;
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
 
-//                if (signedOnly) {
-//                    outputBundle = builder.build().verifyText();
-//                } else {
                 builder.assumeSymmetric(false)
                         .passphrase(passphrase);
 
-                // Do we want to do this: instead of trying to get the passphrase before
-                // pause stream when passphrase is missing and then resume???
-
-                // TODO: this also decrypts with other secret keys without passphrase!!!
+                // TODO: this also decrypts with other secret keys that have no passphrase!!!
                 outputBundle = builder.build().execute();
-//                }
 
-//                outputStream.close();
-
-//                byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
-
-
-
-                // get signature informations from bundle
+                //TODO: instead of using all these wrapping use OpenPgpSignatureResult directly
+                // in DecryptVerify class and then in DecryptActivity
                 boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE, false);
                 if (signature) {
                     long signatureKeyId = outputBundle
@@ -427,8 +377,8 @@ public class OpenPgpService extends RemoteService {
                         signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                     }
 
-                    OpenPgpSignatureResult sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
-                            signatureOnly, signatureKeyId);
+                    OpenPgpSignatureResult sigResult = new OpenPgpSignatureResult(signatureStatus,
+                            signatureUserId, signatureOnly, signatureKeyId);
                     result.putParcelable(OpenPgpConstants.RESULT_SIGNATURE, sigResult);
                 }
             } finally {
