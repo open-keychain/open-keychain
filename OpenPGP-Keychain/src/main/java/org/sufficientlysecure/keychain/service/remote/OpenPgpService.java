@@ -281,7 +281,8 @@ public class OpenPgpService extends RemoteService {
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
             OutputStream os = new ParcelFileDescriptor.AutoCloseOutputStream(output);
-            OpenPgpSignatureResult sigResult = null;
+
+            Bundle result = new Bundle();
             try {
 
 //                PGPUtil.getDecoderStream(is)
@@ -403,9 +404,10 @@ public class OpenPgpService extends RemoteService {
 
 //                byte[] outputBytes = ((ByteArrayOutputStream) outputStream).toByteArray();
 
+
+
                 // get signature informations from bundle
                 boolean signature = outputBundle.getBoolean(KeychainIntentService.RESULT_SIGNATURE, false);
-
                 if (signature) {
                     long signatureKeyId = outputBundle
                             .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID, 0);
@@ -425,17 +427,16 @@ public class OpenPgpService extends RemoteService {
                         signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
                     }
 
-                    sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
+                    OpenPgpSignatureResult sigResult = new OpenPgpSignatureResult(signatureStatus, signatureUserId,
                             signatureOnly, signatureKeyId);
+                    result.putParcelable(OpenPgpConstants.RESULT_SIGNATURE, sigResult);
                 }
             } finally {
                 is.close();
                 os.close();
             }
 
-            Bundle result = new Bundle();
             result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_SUCCESS);
-            result.putParcelable(OpenPgpConstants.RESULT_SIGNATURE, sigResult);
             return result;
         } catch (Exception e) {
             Bundle result = new Bundle();
