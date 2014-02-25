@@ -62,7 +62,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
 
-        alert.setIconAttribute(android.R.attr.alertDialogIcon);
+        alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
         alert.setTitle(R.string.warning);
         alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFile));
 
