@@ -100,7 +100,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             builder.setMessage(R.string.key_deletion_confirmation_multi);
         }
 
-        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setIconAttribute(android.R.attr.alertDialogIcon);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
             @Override
