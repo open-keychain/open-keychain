@@ -16,23 +16,8 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.Vector;
-
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
-import org.sufficientlysecure.keychain.util.Choice;
-
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -43,12 +28,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.CreateKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
+import org.sufficientlysecure.keychain.util.Choice;
+
+import java.util.Vector;
 
 public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
     private LayoutInflater mInflater;
@@ -149,84 +146,16 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             }
 
             case Id.type.key: {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-
-                View view = mInflater.inflate(R.layout.create_key_dialog, null);
-                dialog.setView(view);
-                dialog.setTitle(R.string.title_create_key);
-
-                boolean wouldBeMasterKey = (mEditors.getChildCount() == 0);
-
-                final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
-                Vector<Choice> choices = new Vector<Choice>();
-                choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(
-                        R.string.dsa)));
-                if (!wouldBeMasterKey) {
-                    choices.add(new Choice(Id.choice.algorithm.elgamal, getResources().getString(
-                            R.string.elgamal)));
-                }
-
-                choices.add(new Choice(Id.choice.algorithm.rsa, getResources().getString(
-                        R.string.rsa)));
-
-                ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
-                        android.R.layout.simple_spinner_item, choices);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                algorithm.setAdapter(adapter);
-                // make RSA the default
-                for (int i = 0; i < choices.size(); ++i) {
-                    if (choices.get(i).getId() == Id.choice.algorithm.rsa) {
-                        algorithm.setSelection(i);
-                        break;
+                CreateKeyDialogFragment mCreateKeyDialogFragment = CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
+                mCreateKeyDialogFragment.setOnAlgorithmSelectedListener(new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
+                    @Override
+                    public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
+                        mNewKeyAlgorithmChoice = algorithmChoice;
+                        mNewKeySize = keySize;
+                        createKey();
                     }
-                }
-
-                final Spinner keySize = (Spinner) view.findViewById(R.id.create_key_size);
-                ArrayAdapter<CharSequence> keySizeAdapter = ArrayAdapter.createFromResource(
-                        getContext(), R.array.key_size_spinner_values,
-                        android.R.layout.simple_spinner_item);
-                keySizeAdapter
-                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                keySize.setAdapter(keySizeAdapter);
-                keySize.setSelection(3); // Default to 4096 for the key length
-                dialog.setPositiveButton(android.R.string.ok,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface di, int id) {
-                                di.dismiss();
-                                try {
-                                    int nKeyIndex = keySize.getSelectedItemPosition();
-                                    switch (nKeyIndex) {
-                                    case 0:
-                                        mNewKeySize = 512;
-                                        break;
-                                    case 1:
-                                        mNewKeySize = 1024;
-                                        break;
-                                    case 2:
-                                        mNewKeySize = 2048;
-                                        break;
-                                    case 3:
-                                        mNewKeySize = 4096;
-                                        break;
-                                    }
-                                } catch (NumberFormatException e) {
-                                    mNewKeySize = 0;
-                                }
-
-                                mNewKeyAlgorithmChoice = (Choice) algorithm.getSelectedItem();
-                                createKey();
-                            }
-                        });
-
-                dialog.setCancelable(true);
-                dialog.setNegativeButton(android.R.string.cancel,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface di, int id) {
-                                di.dismiss();
-                            }
-                        });
-
-                dialog.create().show();
+                });
+                mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
                 break;
             }
 
