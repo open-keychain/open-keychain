@@ -27,6 +27,7 @@ import java.util.List;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
@@ -45,7 +46,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class ImportKeysListFragment extends ListFragment implements
-        LoaderManager.LoaderCallbacks<List<ImportKeysListEntry>> {
+        LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     private static final String ARG_DATA_URI = "uri";
     private static final String ARG_BYTES = "bytes";
     private static final String ARG_SERVER_QUERY = "query";
@@ -181,12 +182,13 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     @Override
-    public Loader<List<ImportKeysListEntry>> onCreateLoader(int id, Bundle args) {
+    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
                 InputData inputData = getInputData(mKeyBytes, mDataUri);
 
-                return new ImportKeysListLoader(mActivity, inputData);
+                //TODO Rewrite ImportKeysListLoader
+                //return new ImportKeysListLoader(mActivity, inputData);
             }
             case LOADER_ID_SERVER_QUERY: {
                 return new ImportKeysListServerLoader(getActivity(), mServerQuery, mKeyServer);
@@ -198,15 +200,15 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     @Override
-    public void onLoadFinished(Loader<List<ImportKeysListEntry>> loader,
-                               List<ImportKeysListEntry> data) {
+    public void onLoadFinished(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader,
+                               AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
 
-        Log.d(Constants.TAG, "data: " + data);
+        Log.d(Constants.TAG, "data: " + data.getResult());
 
         // swap in the real data!
-        mAdapter.setData(data);
+        mAdapter.setData(data.getResult());
         mAdapter.notifyDataSetChanged();
 
         setListAdapter(mAdapter);
@@ -222,11 +224,16 @@ public class ImportKeysListFragment extends ListFragment implements
                 break;
 
             case LOADER_ID_SERVER_QUERY:
-                Toast.makeText(
-                        getActivity(), getResources().getQuantityString(R.plurals.keys_found,
-                        mAdapter.getCount(), mAdapter.getCount()),
-                        Toast.LENGTH_SHORT
-                ).show();
+
+                if(data.getError() == null){
+                    Toast.makeText(
+                            getActivity(), getResources().getQuantityString(R.plurals.keys_found,
+                            mAdapter.getCount(), mAdapter.getCount()),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                } else {
+                    Toast.makeText(getActivity(), "Server connection timed out!", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             default:
@@ -235,7 +242,7 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     @Override
-    public void onLoaderReset(Loader<List<ImportKeysListEntry>> loader) {
+    public void onLoaderReset(Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> loader) {
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
                 // Clear the data in the adapter.
