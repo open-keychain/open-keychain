@@ -33,12 +33,13 @@ import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-public class ImportKeysListLoader extends AsyncTaskLoader<List<ImportKeysListEntry>> {
+public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
 
     InputData mInputData;
 
     ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
+    AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
         super(context);
@@ -47,15 +48,18 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<ImportKeysListEnt
     }
 
     @Override
-    public List<ImportKeysListEntry> loadInBackground() {
+    public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
+
+        entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(data, null);
+
         if (mInputData == null) {
             Log.e(Constants.TAG, "Input data is null!");
-            return data;
+            return entryListWrapper;
         }
 
         generateListOfKeyrings(mInputData);
 
-        return data;
+        return entryListWrapper;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<List<ImportKeysListEnt
     }
 
     @Override
-    public void deliverResult(List<ImportKeysListEntry> data) {
+    public void deliverResult(AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
         super.deliverResult(data);
     }
 

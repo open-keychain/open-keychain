@@ -186,9 +186,7 @@ public class ImportKeysListFragment extends ListFragment implements
         switch (id) {
             case LOADER_ID_BYTES: {
                 InputData inputData = getInputData(mKeyBytes, mDataUri);
-
-                //TODO Rewrite ImportKeysListLoader
-                //return new ImportKeysListLoader(mActivity, inputData);
+                return new ImportKeysListLoader(mActivity, inputData);
             }
             case LOADER_ID_SERVER_QUERY: {
                 return new ImportKeysListServerLoader(getActivity(), mServerQuery, mKeyServer);

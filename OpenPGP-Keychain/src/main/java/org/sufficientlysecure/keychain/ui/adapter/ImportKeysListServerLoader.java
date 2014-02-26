@@ -47,9 +47,11 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultW
 
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
+
+        entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
+
         if (mServerQuery == null) {
             Log.e(Constants.TAG, "mServerQuery is null!");
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
             return entryListWrapper;
         }
 
