@@ -94,18 +94,16 @@ public class OpenPgpListPreference extends DialogPreference {
         if (mProviderList.isEmpty()) {
             resInfo = getContext().getPackageManager().queryIntentActivities
                     (MARKET_INTENT, 0);
-            if (!resInfo.isEmpty()) {
-                for (ResolveInfo resolveInfo : resInfo) {
-                    Intent marketIntent = new Intent(MARKET_INTENT);
-                    intent.setPackage(resolveInfo.activityInfo.packageName);
-                    Drawable icon = resolveInfo.activityInfo.loadIcon(getContext().getPackageManager());
-                    String marketName = String.valueOf(resolveInfo.activityInfo.applicationInfo
-                            .loadLabel(getContext().getPackageManager()));
-                    String simpleName = String.format(getContext().getString(R.string
-                            .install_via), marketName);
-                    mProviderList.add(new OpenPgpProviderEntry(OPENKEYCHAIN_PACKAGE, simpleName,
-                            icon, marketIntent));
-                }
+            for (ResolveInfo resolveInfo : resInfo) {
+                Intent marketIntent = new Intent(MARKET_INTENT);
+                intent.setPackage(resolveInfo.activityInfo.packageName);
+                Drawable icon = resolveInfo.activityInfo.loadIcon(getContext().getPackageManager());
+                String marketName = String.valueOf(resolveInfo.activityInfo.applicationInfo
+                        .loadLabel(getContext().getPackageManager()));
+                String simpleName = String.format(getContext().getString(R.string
+                        .openpgp_install_openkeychain_via), marketName);
+                mProviderList.add(new OpenPgpProviderEntry(OPENKEYCHAIN_PACKAGE, simpleName,
+                        icon, marketIntent));
             }
         }
 
