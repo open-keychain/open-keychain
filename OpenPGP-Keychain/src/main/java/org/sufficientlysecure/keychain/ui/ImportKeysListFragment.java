@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
@@ -43,7 +44,8 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.devspark.appmsg.AppMsg;
 
 public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -223,14 +225,23 @@ public class ImportKeysListFragment extends ListFragment implements
 
             case LOADER_ID_SERVER_QUERY:
 
-                if(data.getError() == null){
-                    Toast.makeText(
+                Exception error = data.getError();
+
+                if(error == null){
+                    AppMsg.makeText(
                             getActivity(), getResources().getQuantityString(R.plurals.keys_found,
                             mAdapter.getCount(), mAdapter.getCount()),
-                            Toast.LENGTH_SHORT
+                            AppMsg.STYLE_INFO
                     ).show();
-                } else {
-                    Toast.makeText(getActivity(), "Server connection timed out!", Toast.LENGTH_SHORT).show();
+                } else if(error instanceof KeyServer.InsufficientQuery){
+                    AppMsg.makeText(getActivity(), R.string.error_keyserver_insufficient_query,
+                            AppMsg.STYLE_ALERT).show();
+                }else if(error instanceof  KeyServer.QueryException){
+                    AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
+                            AppMsg.STYLE_ALERT).show();
+                }else if(error instanceof KeyServer.TooManyResponses){
+                    AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
+                            AppMsg.STYLE_ALERT).show();
                 }
                 break;
 
