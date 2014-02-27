@@ -1,5 +1,3 @@
-package org.sufficientlysecure.keychain.ui.dialog;
-
 /*
  * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
  *
@@ -16,6 +14,8 @@ package org.sufficientlysecure.keychain.ui.dialog;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -59,12 +59,10 @@ public class CreateKeyDialogFragment extends DialogFragment {
         frag.setArguments(args);
 
         return frag;
-
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         final FragmentActivity context = getActivity();
         final LayoutInflater mInflater;
 
@@ -149,8 +147,6 @@ public class CreateKeyDialogFragment extends DialogFragment {
                 });
 
         return dialog.create();
-
-
     }
 
 }
