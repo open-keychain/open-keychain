@@ -96,7 +96,7 @@ public class OpenPgpListPreference extends DialogPreference {
                     (MARKET_INTENT, 0);
             for (ResolveInfo resolveInfo : resInfo) {
                 Intent marketIntent = new Intent(MARKET_INTENT);
-                intent.setPackage(resolveInfo.activityInfo.packageName);
+                marketIntent.setPackage(resolveInfo.activityInfo.packageName);
                 Drawable icon = resolveInfo.activityInfo.loadIcon(getContext().getPackageManager());
                 String marketName = String.valueOf(resolveInfo.activityInfo.applicationInfo
                         .loadLabel(getContext().getPackageManager()));
