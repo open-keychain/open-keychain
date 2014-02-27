@@ -17,22 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -50,6 +37,18 @@ import android.widget.ArrayAdapter;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.ui.dialog.BadImportKeyDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNavigationListener {
     public static final String ACTION_IMPORT_KEY = Constants.INTENT_PREFIX + "IMPORT_KEY";
@@ -236,10 +235,10 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
      * inside your Activity."
      * <p/>
      * from http://stackoverflow.com/questions/10983396/fragment-oncreateview-and-onactivitycreated-called-twice/14295474#14295474
-     *
+     * <p/>
      * In our case, if we start ImportKeysActivity with parameters to directly search using a fingerprint,
      * the fragment would be loaded twice resulting in the query being empty after the second load.
-     *
+     * <p/>
      * Our solution:
      * To prevent that a fragment will be loaded again even if it was already loaded loadNavFragment
      * checks against mCurrentNavPostition.
@@ -395,23 +394,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
                         .show();
                 if (bad > 0) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(
-                            ImportKeysActivity.this);
-
-                    alert.setIcon(android.R.drawable.ic_dialog_alert);
-                    alert.setTitle(R.string.warning);
-
-                    alert.setMessage(ImportKeysActivity.this.getResources()
-                            .getQuantityString(R.plurals.bad_keys_encountered, bad, bad));
-
-                    alert.setPositiveButton(android.R.string.ok,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    alert.setCancelable(true);
-                    alert.create().show();
+                    BadImportKeyDialogFragment badImportKeyDialogFragment = BadImportKeyDialogFragment.newInstance(bad);
+                    badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
                 }
             }
         }
