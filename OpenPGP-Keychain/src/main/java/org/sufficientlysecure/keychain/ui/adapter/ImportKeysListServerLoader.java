@@ -26,7 +26,6 @@ import org.sufficientlysecure.keychain.util.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
@@ -34,9 +33,8 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultW
     String mServerQuery;
     String mKeyServer;
 
-    //ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
-    ArrayList<ImportKeysListEntry> entryList = new ArrayList<ImportKeysListEntry>();
-    AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
+    private ArrayList<ImportKeysListEntry> entryList = new ArrayList<ImportKeysListEntry>();
+    private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
 
     public ImportKeysListServerLoader(Context context, String serverQuery, String keyServer) {
         super(context);
