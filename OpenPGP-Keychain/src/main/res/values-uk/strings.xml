@@ -274,6 +274,9 @@
   <string name="error_expiry_must_come_after_creation">дата завершення дії має йти після дати створення</string>
   <string name="error_can_not_delete_contact">ви не можете вилучити цей контакт, тому що він ваш власний.</string>
   <string name="error_can_not_delete_contacts">ви не можете вилучити наступні контакти, тому що вони - ваші власні:\n%s</string>
+  <string name="error_keyserver_insufficient_query">Запит обмеженого сервера</string>
+  <string name="error_keyserver_query">Збій сервера ключа запиту</string>
+  <string name="error_keyserver_too_many_responses">Забагато відповідей</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Будь ласка, вилучіть його з екрану „Мої ключі“!</item>
     <item quantity="few">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
@@ -370,7 +373,7 @@
   <string name="api_select_pub_keys_missing_text">Не знайдено публічних ключів для цих ІД  користувачів:</string>
   <string name="api_select_pub_keys_dublicates_text">Більше ніж один публічний ключ існує для цих ІД користувачів:</string>
   <string name="api_select_pub_keys_text">Будь ласка, перевірте список одержувачів!</string>
-  <string name="api_error_wrong_signature">Перевірка підпису пакета не вдалася! Якщо ви встановили програму з іншого джерела, відкличте або поновіть право доступу.</string>
+  <string name="api_error_wrong_signature">Перевірка підпису пакету не вдалася! Може ви встановили програму з іншого джерела? Якщо ви впевнені, що це не атака, то відкличте реєстрацію програми у OpenKeychain та знову зареєструйте її.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Відправити як штрих-код</string>
   <string name="share_qr_code_dialog_start">Пройдіть через усі штрих-коди за допомогою \"Далі\", а також проскануйте їх по одному.</string>
