@@ -3,7 +3,7 @@
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
     android:versionCode="23101"
-    android:versionName="2.3.1">
+    android:versionName="2.3.1 beta1">
 
     <!--
         General remarks
