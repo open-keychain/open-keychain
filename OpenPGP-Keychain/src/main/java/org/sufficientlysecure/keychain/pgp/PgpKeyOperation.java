@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -490,11 +491,14 @@ public class PgpKeyOperation {
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
                 unhashedPacketsGen.generate(), certificationSignerBuilder, keyEncryptor);
 
-        //updating master is slightly different to updating the others
-        if (modded_keys[0]) {
+        for (int i = 0; i < keys.size(); ++i) {
+            updateProgress(40 + 50 * (i - 1) / (keys.size() - 1), 100);
+            if (new_keys[i]) {
 
+            } else {
+
+            }
         }
-
         updateProgress(R.string.progress_adding_sub_keys, 40, 100);
 
         for (int i = 1; i < keys.size(); ++i) {
