@@ -25,10 +25,8 @@ public class OpenPgpSignatureResult implements Parcelable {
     // successfully verified signature, with certified public key
     public static final int SIGNATURE_SUCCESS_CERTIFIED = 1;
     // no public key was found for this signature verification
-    // you can retrieve the key with
-    // getKeys(new String[] {String.valueOf(signatureResult.getKeyId)}, true, callback)
     public static final int SIGNATURE_UNKNOWN_PUB_KEY = 2;
-    // successfully verified signature, but with certified public key
+    // successfully verified signature, but with uncertified public key
     public static final int SIGNATURE_SUCCESS_UNCERTIFIED = 3;
 
     int status;

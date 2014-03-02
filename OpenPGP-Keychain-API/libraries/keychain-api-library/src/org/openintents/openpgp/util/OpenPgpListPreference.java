@@ -73,7 +73,7 @@ public class OpenPgpListPreference extends DialogPreference {
 
         // get providers
         mProviderList.clear();
-        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
+        Intent intent = new Intent(OpenPgpApi.SERVICE_INTENT);
         List<ResolveInfo> resInfo = getContext().getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {
             for (ResolveInfo resolveInfo : resInfo) {
@@ -88,7 +88,6 @@ public class OpenPgpListPreference extends DialogPreference {
                 mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
             }
         }
-
 
         // add install links if empty
         if (mProviderList.isEmpty()) {
