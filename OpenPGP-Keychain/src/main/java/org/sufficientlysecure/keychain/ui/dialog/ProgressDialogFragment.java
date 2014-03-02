@@ -26,21 +26,28 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 
+import org.sufficientlysecure.keychain.R;
+
 public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
+    private static final String ARG_CANCELABLE = "cancelable";
 
     /**
      * Creates new instance of this fragment
      *
-     * @param id
+     * @param messageId
+     * @param style
+     * @param cancelable
      * @return
      */
-    public static ProgressDialogFragment newInstance(int messageId, int style) {
+    public static ProgressDialogFragment newInstance(int messageId, int style,
+                                                     boolean cancelable) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE_ID, messageId);
         args.putInt(ARG_STYLE, style);
+        args.putBoolean(ARG_CANCELABLE, cancelable);
 
         frag.setArguments(args);
         return frag;
@@ -60,7 +67,6 @@ public class ProgressDialogFragment extends DialogFragment {
     /**
      * Updates progress of dialog
      *
-     * @param messageId
      * @param progress
      * @param max
      */
@@ -74,7 +80,7 @@ public class ProgressDialogFragment extends DialogFragment {
     /**
      * Updates progress of dialog
      *
-     * @param messageId
+     * @param message
      * @param progress
      * @param max
      */
@@ -91,7 +97,7 @@ public class ProgressDialogFragment extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
 
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -100,9 +106,23 @@ public class ProgressDialogFragment extends DialogFragment {
 
         int messageId = getArguments().getInt(ARG_MESSAGE_ID);
         int style = getArguments().getInt(ARG_STYLE);
+        boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
 
         dialog.setMessage(getString(messageId));
         dialog.setProgressStyle(style);
+
+        if (cancelable) {
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
+                    activity.getString(R.string.progress_cancel),
+                    new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    activity.setResult(Activity.RESULT_CANCELED);
+                    activity.finish();
+                }
+            });
+        }
 
         // Disable the back button
         OnKeyListener keyListener = new OnKeyListener() {
