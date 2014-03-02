@@ -32,6 +32,7 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
+    private static final String ARG_FINISH_ON_CANCEL = "finish_activity_on_cancel";
 
     /**
      * Creates new instance of this fragment
@@ -41,13 +42,14 @@ public class ProgressDialogFragment extends DialogFragment {
      * @param cancelable
      * @return
      */
-    public static ProgressDialogFragment newInstance(int messageId, int style,
-                                                     boolean cancelable) {
+    public static ProgressDialogFragment newInstance(int messageId, int style, boolean cancelable,
+                                                     boolean finishActivityOnCancel) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE_ID, messageId);
         args.putInt(ARG_STYLE, style);
         args.putBoolean(ARG_CANCELABLE, cancelable);
+        args.putBoolean(ARG_FINISH_ON_CANCEL, finishActivityOnCancel);
 
         frag.setArguments(args);
         return frag;
@@ -118,8 +120,12 @@ public class ProgressDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    activity.setResult(Activity.RESULT_CANCELED);
-                    activity.finish();
+
+                    boolean finishActivity = getArguments().getBoolean(ARG_FINISH_ON_CANCEL);
+                    if (finishActivity) {
+                        activity.setResult(Activity.RESULT_CANCELED);
+                        activity.finish();
+                    }
                 }
             });
         }

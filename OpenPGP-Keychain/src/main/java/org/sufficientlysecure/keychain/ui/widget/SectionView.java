@@ -238,7 +238,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // show progress dialog
         mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
-                ProgressDialog.STYLE_SPINNER, true);
+                ProgressDialog.STYLE_SPINNER, true, false);
 
         // Message is received after generating is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
