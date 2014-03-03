@@ -21,6 +21,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -32,7 +33,8 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE_ID = "message_id";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
-    private static final String ARG_FINISH_ON_CANCEL = "finish_activity_on_cancel";
+
+    private OnCancelListener mOnCancelListener;
 
     /**
      * Creates new instance of this fragment
@@ -43,15 +45,16 @@ public class ProgressDialogFragment extends DialogFragment {
      * @return
      */
     public static ProgressDialogFragment newInstance(int messageId, int style, boolean cancelable,
-                                                     boolean finishActivityOnCancel) {
+                                                     OnCancelListener onCancelListener) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_MESSAGE_ID, messageId);
         args.putInt(ARG_STYLE, style);
         args.putBoolean(ARG_CANCELABLE, cancelable);
-        args.putBoolean(ARG_FINISH_ON_CANCEL, finishActivityOnCancel);
 
         frag.setArguments(args);
+        frag.mOnCancelListener = onCancelListener;
+
         return frag;
     }
 
@@ -94,6 +97,14 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setMax(max);
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+
+        if (this.mOnCancelListener != null)
+            this.mOnCancelListener.onCancel(dialog);
+    }
+
     /**
      * Creates dialog
      */
@@ -120,12 +131,6 @@ public class ProgressDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-
-                    boolean finishActivity = getArguments().getBoolean(ARG_FINISH_ON_CANCEL);
-                    if (finishActivity) {
-                        activity.setResult(Activity.RESULT_CANCELED);
-                        activity.finish();
-                    }
                 }
             });
         }

@@ -44,8 +44,10 @@ import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -173,7 +175,7 @@ public class EditKeyActivity extends ActionBarActivity {
                 if (generateDefaultKeys) {
 
                     // Send all information needed to service generate keys in other thread
-                    Intent serviceIntent = new Intent(this, KeychainIntentService.class);
+                    final Intent serviceIntent = new Intent(this, KeychainIntentService.class);
                     serviceIntent.setAction(KeychainIntentService.ACTION_GENERATE_DEFAULT_RSA_KEYS);
 
                     // fill values for this action
@@ -185,7 +187,17 @@ public class EditKeyActivity extends ActionBarActivity {
 
                     // Message is received after generating is done in ApgService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER, true, true) {
+                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER, true,
+
+                            new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    // Stop key generation on cancel
+                                    stopService(serviceIntent);
+                                    EditKeyActivity.this.setResult(Activity.RESULT_CANCELED);
+                                    EditKeyActivity.this.finish();
+                                }
+                            }) {
 
                         @Override
                         public void handleMessage(Message message) {
