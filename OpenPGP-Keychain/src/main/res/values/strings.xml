@@ -289,6 +289,7 @@
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
     <string name="error_keyserver_query">Querying keyserver failed</string>
     <string name="error_keyserver_too_many_responses">Too many responses</string>
+    <string name="error_import_file_no_content">File has no content</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>
