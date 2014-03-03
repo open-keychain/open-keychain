@@ -228,6 +228,15 @@ public class ImportKeysListFragment extends ListFragment implements
                 if(error instanceof ImportKeysListLoader.FileHasNoContent) {
                     AppMsg.makeText(getActivity(), R.string.error_import_file_no_content,
                             AppMsg.STYLE_ALERT).show();
+                } else if(error instanceof ImportKeysListLoader.NonPGPPart) {
+                    AppMsg.makeText(getActivity(),
+                            ((ImportKeysListLoader.NonPGPPart) error).getCount() + " " + getResources().
+                            getQuantityString(R.plurals.error_import_non_pgp_part,
+                                    ((ImportKeysListLoader.NonPGPPart) error).getCount()),
+                            new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.confirm)).show();
+                } else {
+                    AppMsg.makeText(getActivity(), R.string.error_generic_report_bug,
+                            new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.alert)).show();
                 }
                 break;
 
