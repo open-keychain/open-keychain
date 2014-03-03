@@ -3,6 +3,10 @@
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to http://www.openkeychain.org .
 
+### Travis CI Build Status
+
+[![Build Status](https://travis-ci.org/openpgp-keychain/openpgp-keychain.png?branch=master)](https://travis-ci.org/openpgp-keychain/openpgp-keychain)
+
 ## How to help the project?
 
 ### Translate the application
@@ -123,11 +127,6 @@ Translations are hosted on Transifex, which is configured by ".tx/config".
 4. execute ``tx pull`` (``tx pull -a`` to get all languages)
 
 see http://help.transifex.net/features/client/index.html#user-client
-
-### Travis CI
-I am in the progress of adding Travis CI, please be patient.
-
-[![Build Status](https://travis-ci.org/openpgp-keychain/openpgp-keychain.png?branch=master)](https://travis-ci.org/openpgp-keychain/openpgp-keychain)
 
 ## Coding Style
 
