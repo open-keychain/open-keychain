@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Locale
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -172,11 +173,11 @@ public class HkpKeyServer extends KeyServer {
             if (e.getCode() == 404) {
                 return results;
             } else {
-                if (e.getData().toLowerCase().contains("no keys found")) {
+                if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
                     return results;
-                } else if (e.getData().toLowerCase().contains("too many")) {
+                } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
                     throw new TooManyResponses();
-                } else if (e.getData().toLowerCase().contains("insufficient")) {
+                } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
                     throw new InsufficientQuery();
                 }
             }
