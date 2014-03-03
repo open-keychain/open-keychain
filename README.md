@@ -177,6 +177,8 @@ see http://help.transifex.net/features/client/index.html#user-client
 ### Travis CI
 I am in the progress of adding Travis CI, please be patient.
 
+[![Build Status](https://travis-ci.org/openpgp-keychain/openpgp-keychain.png?branch=master)](https://travis-ci.org/openpgp-keychain/openpgp-keychain)
+
 ## Coding Style
 
 ### Code
