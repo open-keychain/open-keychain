@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyListSecretAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -209,6 +210,7 @@ public class KeyListSecretFragment extends ListFragment implements
      *
      * @param keyRingRowIds
      */
+    @TargetApi(11)
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
