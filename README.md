@@ -174,6 +174,9 @@ Translations are hosted on Transifex, which is configured by ".tx/config".
 
 see http://help.transifex.net/features/client/index.html#user-client
 
+### Travis CI
+I am in the progress of adding travis ci, please be patient.
+
 ## Coding Style
 
 ### Code
