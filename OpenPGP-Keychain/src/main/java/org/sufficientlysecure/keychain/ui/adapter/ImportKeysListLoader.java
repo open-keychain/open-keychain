@@ -131,7 +131,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
                 }
             }
         } catch (Exception e) {
-
+            Log.e(Constants.TAG, "Exception on parsing key file!", e);
         }
 
         if(isEmpty) {
