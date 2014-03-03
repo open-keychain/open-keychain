@@ -33,6 +33,7 @@ import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -276,7 +277,8 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(viewIntent);
     }
-
+    
+    @TargetApi(11)
     public void encrypt(ActionMode mode, long[] keyRingRowIds) {
         // get master key ids from row ids
         long[] keyRingIds = new long[keyRingRowIds.length];
@@ -298,6 +300,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
      *
      * @param keyRingRowIds
      */
+    @TargetApi(11)
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
