@@ -203,8 +203,16 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     Messenger mMessenger;
 
+    private boolean mIsCanceled;
+
     public KeychainIntentService() {
         super("ApgService");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.mIsCanceled = true;
     }
 
     /**
@@ -815,6 +823,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     }
 
     private void sendErrorToHandler(Exception e) {
+        // Service was canceled. Do not send error to handler.
+        if (this.mIsCanceled)
+            return;
+
         Log.e(Constants.TAG, "ApgService Exception: ", e);
         e.printStackTrace();
 
@@ -824,6 +836,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     }
 
     private void sendMessageToHandler(Integer arg1, Integer arg2, Bundle data) {
+        // Service was canceled. Do not send message to handler.
+        if (this.mIsCanceled)
+            return;
+
         Message msg = Message.obtain();
         msg.arg1 = arg1;
         if (arg2 != null) {
