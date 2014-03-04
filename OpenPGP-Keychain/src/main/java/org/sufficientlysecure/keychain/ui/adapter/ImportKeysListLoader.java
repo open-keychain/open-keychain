@@ -38,9 +38,9 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
     }
 
-    public static class NonPGPPart extends Exception {
+    public static class NonPgpPart extends Exception {
         private int count;
-        public NonPGPPart(int count) {
+        public NonPgpPart(int count) {
             this.count = count;
         }
         public int getCount() {
@@ -108,7 +108,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
     private void generateListOfKeyrings(InputData inputData) {
 
         boolean isEmpty = true;
-        int nonPGPcounter = 0;
+        int nonPgpCounter = 0;
 
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
@@ -135,14 +135,14 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
                         addToData(newKeyring);
                     } else {
                         Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
-                        nonPGPcounter++;
+                        nonPgpCounter++;
                     }
                 }
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
             entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(data, e);
-            nonPGPcounter = 0;
+            nonPgpCounter = 0;
         }
 
         if(isEmpty) {
@@ -151,9 +151,9 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
                     (data, new FileHasNoContent());
         }
 
-        if(nonPGPcounter > 0) {
+        if(nonPgpCounter > 0) {
             entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (data, new NonPGPPart(nonPGPcounter));
+                    (data, new NonPgpPart(nonPgpCounter));
         }
     }
 
