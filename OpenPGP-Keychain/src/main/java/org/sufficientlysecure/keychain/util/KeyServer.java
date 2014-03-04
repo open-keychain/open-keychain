@@ -16,13 +16,7 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
