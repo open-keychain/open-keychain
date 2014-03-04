@@ -225,14 +225,16 @@ public class ImportKeysListFragment extends ListFragment implements
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
 
-                if(error instanceof ImportKeysListLoader.FileHasNoContent) {
+                if(error == null){
+                    // No error
+                } else if(error instanceof ImportKeysListLoader.FileHasNoContent) {
                     AppMsg.makeText(getActivity(), R.string.error_import_file_no_content,
                             AppMsg.STYLE_ALERT).show();
-                } else if(error instanceof ImportKeysListLoader.NonPGPPart) {
+                } else if(error instanceof ImportKeysListLoader.NonPgpPart) {
                     AppMsg.makeText(getActivity(),
-                            ((ImportKeysListLoader.NonPGPPart) error).getCount() + " " + getResources().
+                            ((ImportKeysListLoader.NonPgpPart) error).getCount() + " " + getResources().
                             getQuantityString(R.plurals.error_import_non_pgp_part,
-                                    ((ImportKeysListLoader.NonPGPPart) error).getCount()),
+                                    ((ImportKeysListLoader.NonPgpPart) error).getCount()),
                             new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.confirm)).show();
                 } else {
                     AppMsg.makeText(getActivity(), R.string.error_generic_report_bug,
