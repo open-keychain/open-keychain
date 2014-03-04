@@ -114,7 +114,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                     date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
 
-                DatePickerDialog dialog = new DatePickerDialog(getContext(),
+                DatePickerDialog dialog = new ExpiryDatePickerDialog(getContext(),
                         mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
                 mDatePickerResultCount = 0;
@@ -252,4 +252,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         return ((Choice) mUsage.getSelectedItem()).getId();
     }
 
+}
+
+class ExpiryDatePickerDialog extends DatePickerDialog {
+
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+        super(context, callBack, year, monthOfYear, dayOfMonth);
+    }
+
+    public void setTitle(CharSequence title) {
+        super.setTitle("Set date");
+    }
 }
