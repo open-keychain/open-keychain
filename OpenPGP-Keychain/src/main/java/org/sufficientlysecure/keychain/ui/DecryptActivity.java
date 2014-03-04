@@ -752,7 +752,7 @@ public class DecryptActivity extends DrawerActivity {
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-        // show progressDialogUpdater dialog
+        // show progress dialog
         saveHandler.showProgressDialog(this);
 
         // start service with intent
