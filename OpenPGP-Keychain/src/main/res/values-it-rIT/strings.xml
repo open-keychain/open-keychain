@@ -340,10 +340,10 @@
   <string name="import_nfc_help_button">Aiuto</string>
   <string name="import_clipboard_button">Ottieni chiave dagli appunti</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeyChain: Decodifica File</string>
-  <string name="intent_import_key">OpenKeyChain: Importa Chiave</string>
-  <string name="intent_send_encrypt">OpenKeychain: Codifica</string>
-  <string name="intent_send_decrypt">OpenKeychain: Decodifica</string>
+  <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
+  <string name="intent_import_key">Importa Chiave con OpenKeychain</string>
+  <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
+  <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Nessuna app registrata!\n\nApp di terza parti possono richiedere accesso a OpenKeychain. Dopo aver concesso l\'accesso, saranno elencate qui.</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>

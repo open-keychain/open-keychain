@@ -329,10 +329,10 @@
   <string name="import_nfc_help_button">ヘルプ</string>
   <string name="import_clipboard_button">クリップボードから鍵を取得</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeychain: ファイル復号化</string>
-  <string name="intent_import_key">OpenKeychain: 鍵のインポート</string>
-  <string name="intent_send_encrypt">OpenKeychain: 暗号化</string>
-  <string name="intent_send_decrypt">OpenKeychain: 復号化</string>
+  <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
+  <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
+  <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
+  <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
   <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>

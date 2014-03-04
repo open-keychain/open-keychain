@@ -340,10 +340,10 @@
   <string name="import_nfc_help_button">Aide</string>
   <string name="import_clipboard_button">Obtenir la clef depuis le presse-papiers</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeychain : déchiffrer le ficher</string>
-  <string name="intent_import_key">OpenKeychain : importer la clef</string>
-  <string name="intent_send_encrypt">OpenKeychain : chiffrer</string>
-  <string name="intent_send_decrypt">OpenKeychain : déchiffrer</string>
+  <string name="intent_decrypt_file">Déchiffrer le fichier avec OpenKeychain</string>
+  <string name="intent_import_key">Importer la clef avec OpenKeychain</string>
+  <string name="intent_send_encrypt">Chiffrer avec OpenKeychain</string>
+  <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès à OpenKeychain. Après avoir autorisé l\'accès, elles seront listées ici.</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>

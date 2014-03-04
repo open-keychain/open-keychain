@@ -351,10 +351,10 @@
   <string name="import_nfc_help_button">Довідка</string>
   <string name="import_clipboard_button">Отримати ключ з буфера обміну</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenPGP: розшифрувати файл</string>
-  <string name="intent_import_key">OpenPGP: імпортувати ключ</string>
-  <string name="intent_send_encrypt">OpenPGP: зашифрувати</string>
-  <string name="intent_send_decrypt">OpenPGP: розшифрувати</string>
+  <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
+  <string name="intent_import_key">Імпортувати ключ з OpenKeychain</string>
+  <string name="intent_send_encrypt">Зашифрувати з OpenKeychain</string>
+  <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
