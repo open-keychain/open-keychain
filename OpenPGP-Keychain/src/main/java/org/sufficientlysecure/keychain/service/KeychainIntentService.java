@@ -201,7 +201,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     private boolean mIsCanceled;
 
     public KeychainIntentService() {
-        super("ApgService");
+        super("KeychainIntentService");
     }
 
     @Override
