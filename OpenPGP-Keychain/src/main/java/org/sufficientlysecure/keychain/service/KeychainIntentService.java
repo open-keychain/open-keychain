@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
@@ -181,13 +182,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     // decrypt/verify
     public static final String RESULT_DECRYPTED_STRING = "decrypted_message";
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
-    public static final String RESULT_SIGNATURE = "signature";
-    public static final String RESULT_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String RESULT_SIGNATURE_USER_ID = "signature_user_id";
-    public static final String RESULT_CLEARTEXT_SIGNATURE_ONLY = "signature_only";
-
-    public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
-    public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
+    public static final String RESULT_DECRYPT_VERIFY_RESULT = "signature";
 
     // import
     public static final String RESULT_IMPORT_ADDED = "added";
@@ -489,14 +484,16 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
-                builder.progress(this);
+                builder.progressDialogUpdater(this);
 
                 builder.assumeSymmetric(assumeSymmetricEncryption)
                         .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                resultData = builder.build().execute();
+                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
                 outStream.close();
+
+                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
 
                 /* Output */
 
@@ -867,10 +864,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     }
 
     /**
-     * Set progress of ProgressDialog by sending message to handler on UI thread
+     * Set progressDialogUpdater of ProgressDialog by sending message to handler on UI thread
      */
     public void setProgress(String message, int progress, int max) {
-        Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
+        Log.d(Constants.TAG, "Send message by setProgress with progressDialogUpdater=" + progress + ", max="
                 + max);
 
         Bundle data = new Bundle();

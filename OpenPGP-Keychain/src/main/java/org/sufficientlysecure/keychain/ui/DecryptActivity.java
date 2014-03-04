@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -32,6 +33,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -690,11 +692,15 @@ public class DecryptActivity extends DrawerActivity {
 
                     }
 
-                    if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE)) {
-                        String userId = returnData
-                                .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
-                        mSignatureKeyId = returnData
-                                .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                    PgpDecryptVerifyResult decryptVerifyResult =
+                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+
+                    OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+
+                    if (signatureResult != null) {
+
+                        String userId = signatureResult.getUserId();
+                        mSignatureKeyId = signatureResult.getKeyId();
                         mUserIdRest.setText("id: "
                                 + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
                         if (userId == null) {
@@ -707,19 +713,32 @@ public class DecryptActivity extends DrawerActivity {
                         }
                         mUserId.setText(userId);
 
-                        if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS)) {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                            mLookupKey.setVisibility(View.GONE);
-                        } else if (returnData
-                                .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                            mLookupKey.setVisibility(View.VISIBLE);
-                            AppMsg.makeText(DecryptActivity.this,
-                                    R.string.unknown_signature,
-                                    AppMsg.STYLE_ALERT).show();
-                        } else {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                            mLookupKey.setVisibility(View.GONE);
+                        switch (signatureResult.getStatus()) {
+                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                                mLookupKey.setVisibility(View.GONE);
+                                break;
+                            }
+
+                            // TODO!
+//                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
+//                                break;
+//                            }
+
+                            case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                mLookupKey.setVisibility(View.VISIBLE);
+                                AppMsg.makeText(DecryptActivity.this,
+                                        R.string.unknown_signature,
+                                        AppMsg.STYLE_ALERT).show();
+                                break;
+                            }
+
+                            default: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                mLookupKey.setVisibility(View.GONE);
+                                break;
+                            }
                         }
                         mSignatureLayout.setVisibility(View.VISIBLE);
                     }
@@ -733,7 +752,7 @@ public class DecryptActivity extends DrawerActivity {
         Messenger messenger = new Messenger(saveHandler);
         intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
 
-        // show progress dialog
+        // show progressDialogUpdater dialog
         saveHandler.showProgressDialog(this);
 
         // start service with intent
