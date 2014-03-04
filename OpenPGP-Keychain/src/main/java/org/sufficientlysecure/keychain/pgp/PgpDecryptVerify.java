@@ -440,12 +440,12 @@ public class PgpDecryptVerify {
             }
 
             int n;
-            // TODO: progressDialogUpdater calculation is broken here! Try to rework it based on commented code!
-//            int progressDialogUpdater = 0;
+            // TODO: progress calculation is broken here! Try to rework it based on commented code!
+//            int progress = 0;
             long startPos = data.getStreamPosition();
             while ((n = dataIn.read(buffer)) > 0) {
                 outStream.write(buffer, 0, n);
-//                progressDialogUpdater += n;
+//                progress += n;
                 if (signature != null) {
                     try {
                         signature.update(buffer, 0, n);
@@ -455,9 +455,9 @@ public class PgpDecryptVerify {
                     }
                 }
                 // TODO: dead code?!
-                // unknown size, but try to at least have a moving, slowing down progressDialogUpdater bar
-//                currentProgress = startProgress + (endProgress - startProgress) * progressDialogUpdater
-//                        / (progressDialogUpdater + 100000);
+                // unknown size, but try to at least have a moving, slowing down progress bar
+//                currentProgress = startProgress + (endProgress - startProgress) * progress
+//                        / (progress + 100000);
                 if (data.getSize() - startPos == 0) {
                     currentProgress = endProgress;
                 } else {
@@ -478,11 +478,11 @@ public class PgpDecryptVerify {
                 signatureResult.setSignatureOnly(false);
 
                 //Now check binding signatures
-                boolean keyBinding_isok = verifyKeyBinding(context, messageSignature, signatureKey);
-                boolean sig_isok = signature.verify(messageSignature);
+                boolean validKeyBinding = verifyKeyBinding(context, messageSignature, signatureKey);
+                boolean validSignature = signature.verify(messageSignature);
 
                 // TODO: implement CERTIFIED!
-                if (keyBinding_isok & sig_isok) {
+                if (validKeyBinding & validSignature) {
                     signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
                 }
             }
@@ -618,12 +618,11 @@ public class PgpDecryptVerify {
             } while (lookAhead != -1);
         }
 
-        boolean sig_isok = signature.verify();
-
         //Now check binding signatures
-        boolean keyBinding_isok = verifyKeyBinding(context, signature, signatureKey);
+        boolean validKeyBinding = verifyKeyBinding(context, signature, signatureKey);
+        boolean validSignature = signature.verify();
 
-        if (sig_isok & keyBinding_isok) {
+        if (validSignature & validKeyBinding) {
             signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED);
         }
 
@@ -637,34 +636,34 @@ public class PgpDecryptVerify {
 
     private static boolean verifyKeyBinding(Context context, PGPSignature signature, PGPPublicKey signatureKey) {
         long signatureKeyId = signature.getKeyID();
-        boolean keyBinding_isok = false;
-        String userId = null;
+        boolean validKeyBinding = false;
+
         PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(context,
                 signatureKeyId);
         PGPPublicKey mKey = null;
         if (signKeyRing != null) {
             mKey = PgpKeyHelper.getMasterKey(signKeyRing);
         }
+        
         if (signature.getKeyID() != mKey.getKeyID()) {
-            keyBinding_isok = verifyKeyBinding(mKey, signatureKey);
+            validKeyBinding = verifyKeyBinding(mKey, signatureKey);
         } else { //if the key used to make the signature was the master key, no need to check binding sigs
-            keyBinding_isok = true;
+            validKeyBinding = true;
         }
-        return keyBinding_isok;
+        return validKeyBinding;
     }
 
     private static boolean verifyKeyBinding(PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
-        boolean subkeyBinding_isok = false;
-        boolean tmp_subkeyBinding_isok = false;
-        boolean primkeyBinding_isok = false;
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        boolean validSubkeyBinding = false;
+        boolean validTempSubkeyBinding = false;
+        boolean validPrimaryKeyBinding = false;
+
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                new JcaPGPContentVerifierBuilderProvider()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
         Iterator<PGPSignature> itr = signingPublicKey.getSignatures();
 
-        subkeyBinding_isok = false;
-        tmp_subkeyBinding_isok = false;
-        primkeyBinding_isok = false;
         while (itr.hasNext()) { //what does gpg do if the subkey binding is wrong?
             //gpg has an invalid subkey binding error on key import I think, but doesn't shout
             //about keys without subkey signing. Can't get it to import a slightly broken one
@@ -674,32 +673,36 @@ public class PgpDecryptVerify {
                 //check and if ok, check primary key binding.
                 try {
                     sig.init(contentVerifierBuilderProvider, masterPublicKey);
-                    tmp_subkeyBinding_isok = sig.verifyCertification(masterPublicKey, signingPublicKey);
+                    validTempSubkeyBinding = sig.verifyCertification(masterPublicKey, signingPublicKey);
                 } catch (PGPException e) {
                     continue;
                 } catch (SignatureException e) {
                     continue;
                 }
 
-                if (tmp_subkeyBinding_isok)
-                    subkeyBinding_isok = true;
-                if (tmp_subkeyBinding_isok) {
-                    primkeyBinding_isok = verifyPrimaryBinding(sig.getUnhashedSubPackets(), masterPublicKey, signingPublicKey);
-                    if (primkeyBinding_isok)
+                if (validTempSubkeyBinding)
+                    validSubkeyBinding = true;
+                if (validTempSubkeyBinding) {
+                    validPrimaryKeyBinding = verifyPrimaryKeyBinding(sig.getUnhashedSubPackets(),
+                            masterPublicKey, signingPublicKey);
+                    if (validPrimaryKeyBinding)
                         break;
-                    primkeyBinding_isok = verifyPrimaryBinding(sig.getHashedSubPackets(), masterPublicKey, signingPublicKey);
-                    if (primkeyBinding_isok)
+                    validPrimaryKeyBinding = verifyPrimaryKeyBinding(sig.getHashedSubPackets(),
+                            masterPublicKey, signingPublicKey);
+                    if (validPrimaryKeyBinding)
                         break;
                 }
             }
         }
-        return (subkeyBinding_isok & primkeyBinding_isok);
+        return (validSubkeyBinding & validPrimaryKeyBinding);
     }
 
-    private static boolean verifyPrimaryBinding(PGPSignatureSubpacketVector Pkts, PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
-        boolean primkeyBinding_isok = false;
-        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+    private static boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector Pkts,
+                                                   PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+        boolean validPrimaryKeyBinding = false;
+        JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                new JcaPGPContentVerifierBuilderProvider()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         PGPSignatureList eSigList;
 
         if (Pkts.hasSubpacket(SignatureSubpacketTags.EMBEDDED_SIGNATURE)) {
@@ -715,8 +718,8 @@ public class PgpDecryptVerify {
                 if (emSig.getSignatureType() == PGPSignature.PRIMARYKEY_BINDING) {
                     try {
                         emSig.init(contentVerifierBuilderProvider, signingPublicKey);
-                        primkeyBinding_isok = emSig.verifyCertification(masterPublicKey, signingPublicKey);
-                        if (primkeyBinding_isok)
+                        validPrimaryKeyBinding = emSig.verifyCertification(masterPublicKey, signingPublicKey);
+                        if (validPrimaryKeyBinding)
                             break;
                     } catch (PGPException e) {
                         continue;
@@ -726,7 +729,8 @@ public class PgpDecryptVerify {
                 }
             }
         }
-        return primkeyBinding_isok;
+
+        return validPrimaryKeyBinding;
     }
 
     /**
