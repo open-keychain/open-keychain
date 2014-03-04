@@ -18,6 +18,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -211,7 +212,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private void createKey() {
         // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(mActivity, KeychainIntentService.class);
+        final Intent intent = new Intent(mActivity, KeychainIntentService.class);
 
         intent.setAction(KeychainIntentService.ACTION_GENERATE_KEY);
 
@@ -238,7 +239,12 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
         // show progress dialog
         mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
-                ProgressDialog.STYLE_SPINNER);
+                ProgressDialog.STYLE_SPINNER, true, new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                mActivity.stopService(intent);
+            }
+        });
 
         // Message is received after generating is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
