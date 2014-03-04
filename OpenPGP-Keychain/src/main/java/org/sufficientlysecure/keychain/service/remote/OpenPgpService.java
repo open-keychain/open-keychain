@@ -369,9 +369,10 @@ public class OpenPgpService extends RemoteService {
                     boolean signatureOnly = outputBundle
                             .getBoolean(KeychainIntentService.RESULT_CLEARTEXT_SIGNATURE_ONLY, false);
 
+                    // TODO: SIGNATURE_SUCCESS_CERTIFIED is currently not implemented
                     int signatureStatus = OpenPgpSignatureResult.SIGNATURE_ERROR;
                     if (signatureSuccess) {
-                        signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED;
+                        signatureStatus = OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED;
                     } else if (signatureUnknown) {
                         signatureStatus = OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY;
 
