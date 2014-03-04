@@ -129,6 +129,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
+                //setCalendarViewShown() is supported from API 11 onwards.
+                if (android.os.Build.VERSION.SDK_INT >= 11)
+                    dialog.getDatePicker().setCalendarViewShown(false);
                 dialog.show();
             }
         });
