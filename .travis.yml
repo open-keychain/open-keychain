@@ -10,7 +10,7 @@ before_install:
     - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
 
     # Install required Android components.
-    - echo "y" | android update sdk -a --filter build-tools-19.0.1,android-19,platform-tools,extra-android-support,extra-android-m2repository,android-17 --no-ui --force
+    - echo "y" | android update sdk -a --filter build-tools-19.0.3,android-19,platform-tools,extra-android-support,extra-android-m2repository,android-17 --no-ui --force
 install: echo "Installation done"
 script: gradle assemble -S -q
 

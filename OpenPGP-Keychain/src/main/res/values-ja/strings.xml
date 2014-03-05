@@ -15,7 +15,7 @@
   <string name="title_key_server_preference">鍵サーバ設定</string>
   <string name="title_change_pass_phrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
-  <string name="title_send_email">メールの送信...</string>
+  <string name="title_send_email">メールの送信…</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
@@ -61,7 +61,7 @@
   <string name="btn_next">次</string>
   <string name="btn_back">戻る</string>
   <string name="btn_clipboard">クリップボード</string>
-  <string name="btn_share">共有...</string>
+  <string name="btn_share">共有…</string>
   <string name="btn_lookup_key">鍵検出</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
@@ -80,10 +80,10 @@
   <string name="menu_update_key">鍵サーバからの更新</string>
   <string name="menu_export_key_to_server">鍵サーバへのアップロード</string>
   <string name="menu_share">共有</string>
-  <string name="menu_share_title_fingerprint">指紋の共有...</string>
-  <string name="menu_share_title">すべての鍵の共有...</string>
-  <string name="menu_share_default_fingerprint">...(指紋)</string>
-  <string name="menu_share_default">...(鍵)</string>
+  <string name="menu_share_title_fingerprint">指紋の共有…</string>
+  <string name="menu_share_title">すべての鍵の共有…</string>
+  <string name="menu_share_default_fingerprint">…(指紋)</string>
+  <string name="menu_share_default">…(鍵)</string>
   <string name="menu_share_qr_code">QRコードで共有(鍵)</string>
   <string name="menu_share_qr_code_fingerprint">QRコードで共有(指紋)</string>
   <string name="menu_share_nfc">NFCで共有</string>
@@ -91,7 +91,7 @@
   <string name="menu_sign_key">鍵を署名</string>
   <string name="menu_beam_preferences">Beamの設定</string>
   <string name="menu_key_edit_cancel">キャンセル</string>
-  <string name="menu_encrypt_to">暗号化...</string>
+  <string name="menu_encrypt_to">暗号化…</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -161,7 +161,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">開く...</string>
+  <string name="filemanager_title_open">開く…</string>
   <string name="warning">注意</string>
   <string name="error">エラー</string>
   <string name="error_message">エラー: %s</string>
@@ -266,39 +266,39 @@
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完了。</string>
-  <string name="progress_saving">保存...</string>
-  <string name="progress_importing">インポート...</string>
-  <string name="progress_exporting">エクスポート...</string>
-  <string name="progress_generating">鍵の生成、3分ほどかかります...</string>
-  <string name="progress_building_key">鍵の構築中...</string>
-  <string name="progress_preparing_master_key">主鍵の準備中...</string>
-  <string name="progress_certifying_master_key">主鍵の検証中...</string>
-  <string name="progress_building_master_key">主鍵輪の構築中...</string>
-  <string name="progress_adding_sub_keys">副鍵の追加中...</string>
-  <string name="progress_saving_key_ring">鍵の保存...</string>
+  <string name="progress_saving">保存…</string>
+  <string name="progress_importing">インポート…</string>
+  <string name="progress_exporting">エクスポート…</string>
+  <string name="progress_generating">鍵の生成、3分ほどかかります…</string>
+  <string name="progress_building_key">鍵の構築中…</string>
+  <string name="progress_preparing_master_key">主鍵の準備中…</string>
+  <string name="progress_certifying_master_key">主鍵の検証中…</string>
+  <string name="progress_building_master_key">主鍵輪の構築中…</string>
+  <string name="progress_adding_sub_keys">副鍵の追加中…</string>
+  <string name="progress_saving_key_ring">鍵の保存…</string>
   <plurals name="progress_exporting_key">
-    <item quantity="other">鍵のエクスポート...</item>
+    <item quantity="other">鍵のエクスポート…</item>
   </plurals>
-  <string name="progress_extracting_signature_key">署名鍵の取り出し中...</string>
-  <string name="progress_extracting_key">鍵の取り出し中...</string>
-  <string name="progress_preparing_streams">ストリームの準備中...</string>
-  <string name="progress_encrypting">データの暗号化中...</string>
-  <string name="progress_decrypting">データの復号化中...</string>
-  <string name="progress_preparing_signature">署名の準備中...</string>
-  <string name="progress_generating_signature">署名の生成中...</string>
-  <string name="progress_processing_signature">署名処理中...</string>
-  <string name="progress_verifying_signature">署名の検証中...</string>
-  <string name="progress_signing">署名中...</string>
-  <string name="progress_reading_data">データ読み込み中...</string>
-  <string name="progress_finding_key">鍵検索中...</string>
-  <string name="progress_decompressing_data">データの展開中...</string>
-  <string name="progress_verifying_integrity">完全性の検証中...</string>
+  <string name="progress_extracting_signature_key">署名鍵の取り出し中…</string>
+  <string name="progress_extracting_key">鍵の取り出し中…</string>
+  <string name="progress_preparing_streams">ストリームの準備中…</string>
+  <string name="progress_encrypting">データの暗号化中…</string>
+  <string name="progress_decrypting">データの復号化中…</string>
+  <string name="progress_preparing_signature">署名の準備中…</string>
+  <string name="progress_generating_signature">署名の生成中…</string>
+  <string name="progress_processing_signature">署名処理中…</string>
+  <string name="progress_verifying_signature">署名の検証中…</string>
+  <string name="progress_signing">署名中…</string>
+  <string name="progress_reading_data">データ読み込み中…</string>
+  <string name="progress_finding_key">鍵検索中…</string>
+  <string name="progress_decompressing_data">データの展開中…</string>
+  <string name="progress_verifying_integrity">完全性の検証中…</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
-  <string name="progress_querying">要求中...</string>
+  <string name="progress_querying">要求中…</string>
   <!--action strings-->
   <string name="hint_public_keys">公開鍵の検索</string>
   <string name="hint_secret_keys">秘密鍵の検索</string>
-  <string name="action_share_key_with">鍵の共有...</string>
+  <string name="action_share_key_with">鍵の共有…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -329,10 +329,10 @@
   <string name="import_nfc_help_button">ヘルプ</string>
   <string name="import_clipboard_button">クリップボードから鍵を取得</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeychain: ファイル復号化</string>
-  <string name="intent_import_key">OpenKeychain: 鍵のインポート</string>
-  <string name="intent_send_encrypt">OpenKeychain: 暗号化</string>
-  <string name="intent_send_decrypt">OpenKeychain: 復号化</string>
+  <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
+  <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
+  <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
+  <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
   <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
@@ -362,7 +362,7 @@
   <plurals name="key_list_selected_keys">
     <item quantity="other">%d の鍵を選択。</item>
   </plurals>
-  <string name="key_list_empty_text1">すでにその鍵は存在しません...</string>
+  <string name="key_list_empty_text1">すでにその鍵は存在しません…</string>
   <string name="key_list_empty_text2">で始める</string>
   <string name="key_list_empty_text3">もしくは</string>
   <string name="key_list_empty_button_create">あなた所有の鍵を作る</string>

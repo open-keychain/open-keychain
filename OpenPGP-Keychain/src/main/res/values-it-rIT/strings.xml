@@ -15,7 +15,7 @@
   <string name="title_key_server_preference">Preferenze Server delle Chiavi</string>
   <string name="title_change_pass_phrase">Cambia Frase di Accesso</string>
   <string name="title_set_passphrase">Imposta Frase di Accesso</string>
-  <string name="title_send_email">Invia Mail...</string>
+  <string name="title_send_email">Invia Mail…</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
   <string name="title_import_keys">Importa Chiavi</string>
@@ -61,7 +61,7 @@
   <string name="btn_next">Prossimo</string>
   <string name="btn_back">Precedente</string>
   <string name="btn_clipboard">Appunti</string>
-  <string name="btn_share">Condividi con...</string>
+  <string name="btn_share">Condividi con…</string>
   <string name="btn_lookup_key">Chiave di ricerca</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
@@ -80,10 +80,10 @@
   <string name="menu_update_key">Aggiorna dal server delle chiavi</string>
   <string name="menu_export_key_to_server">Carica chiave nel server</string>
   <string name="menu_share">Condividi</string>
-  <string name="menu_share_title_fingerprint">Condivi impronta...</string>
-  <string name="menu_share_title">Condividi intera chiave...</string>
+  <string name="menu_share_title_fingerprint">Condivi impronta…</string>
+  <string name="menu_share_title">Condividi intera chiave…</string>
   <string name="menu_share_default_fingerprint">con..</string>
-  <string name="menu_share_default">con...</string>
+  <string name="menu_share_default">con…</string>
   <string name="menu_share_qr_code">con Codice QR</string>
   <string name="menu_share_qr_code_fingerprint">con Codice QR</string>
   <string name="menu_share_nfc">con NFC</string>
@@ -91,7 +91,7 @@
   <string name="menu_sign_key">Firma chiave</string>
   <string name="menu_beam_preferences">Impostazioni Beam</string>
   <string name="menu_key_edit_cancel">Annulla</string>
-  <string name="menu_encrypt_to">Codifica su...</string>
+  <string name="menu_encrypt_to">Codifica su…</string>
   <!--label-->
   <string name="label_sign">Firma</string>
   <string name="label_message">Messaggio</string>
@@ -163,7 +163,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Apri...</string>
+  <string name="filemanager_title_open">Apri…</string>
   <string name="warning">Attenzione</string>
   <string name="error">Errore</string>
   <string name="error_message">Errore: %s</string>
@@ -275,40 +275,40 @@
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fatto.</string>
-  <string name="progress_saving">salvataggio...</string>
-  <string name="progress_importing">importazione...</string>
-  <string name="progress_exporting">esportazione...</string>
-  <string name="progress_generating">generazione chiave, richiede fino a 3 minuti...</string>
-  <string name="progress_building_key">fabbricazione chiave...</string>
-  <string name="progress_preparing_master_key">preparazione chiave principale...</string>
-  <string name="progress_certifying_master_key">certificazione chiave principale...</string>
-  <string name="progress_building_master_key">fabbricazione portachiavi principale...</string>
-  <string name="progress_adding_sub_keys">aggiunta sottochiavi...</string>
-  <string name="progress_saving_key_ring">salvataggio chiavi...</string>
+  <string name="progress_saving">salvataggio…</string>
+  <string name="progress_importing">importazione…</string>
+  <string name="progress_exporting">esportazione…</string>
+  <string name="progress_generating">generazione chiave, richiede fino a 3 minuti…</string>
+  <string name="progress_building_key">fabbricazione chiave…</string>
+  <string name="progress_preparing_master_key">preparazione chiave principale…</string>
+  <string name="progress_certifying_master_key">certificazione chiave principale…</string>
+  <string name="progress_building_master_key">fabbricazione portachiavi principale…</string>
+  <string name="progress_adding_sub_keys">aggiunta sottochiavi…</string>
+  <string name="progress_saving_key_ring">salvataggio chiavi…</string>
   <plurals name="progress_exporting_key">
-    <item quantity="one">esportazione chiave...</item>
-    <item quantity="other">esportazione chiavi...</item>
+    <item quantity="one">esportazione chiave…</item>
+    <item quantity="other">esportazione chiavi…</item>
   </plurals>
-  <string name="progress_extracting_signature_key">estrazione chiavi di firma...</string>
-  <string name="progress_extracting_key">estrazione chiave...</string>
-  <string name="progress_preparing_streams">preparazione flussi...</string>
-  <string name="progress_encrypting">codifica dati...</string>
-  <string name="progress_decrypting">decodifica dati...</string>
-  <string name="progress_preparing_signature">preparazione firma...</string>
-  <string name="progress_generating_signature">generazione firma...</string>
-  <string name="progress_processing_signature">elaborazione firma...</string>
-  <string name="progress_verifying_signature">verifica firma...</string>
-  <string name="progress_signing">firma...</string>
-  <string name="progress_reading_data">lettura dati...</string>
-  <string name="progress_finding_key">ricerca chiave...</string>
-  <string name="progress_decompressing_data">decompressione dati...</string>
-  <string name="progress_verifying_integrity">verifica integrita\'...</string>
-  <string name="progress_deleting_securely">eliminazione sicura di \'%s\'...</string>
-  <string name="progress_querying">interrogazione...</string>
+  <string name="progress_extracting_signature_key">estrazione chiavi di firma…</string>
+  <string name="progress_extracting_key">estrazione chiave…</string>
+  <string name="progress_preparing_streams">preparazione flussi…</string>
+  <string name="progress_encrypting">codifica dati…</string>
+  <string name="progress_decrypting">decodifica dati…</string>
+  <string name="progress_preparing_signature">preparazione firma…</string>
+  <string name="progress_generating_signature">generazione firma…</string>
+  <string name="progress_processing_signature">elaborazione firma…</string>
+  <string name="progress_verifying_signature">verifica firma…</string>
+  <string name="progress_signing">firma…</string>
+  <string name="progress_reading_data">lettura dati…</string>
+  <string name="progress_finding_key">ricerca chiave…</string>
+  <string name="progress_decompressing_data">decompressione dati…</string>
+  <string name="progress_verifying_integrity">verifica integrita\'…</string>
+  <string name="progress_deleting_securely">eliminazione sicura di \'%s\'…</string>
+  <string name="progress_querying">interrogazione…</string>
   <!--action strings-->
   <string name="hint_public_keys">Ricerca Chiavi Pubbliche</string>
   <string name="hint_secret_keys">Cerca Chiave Privata</string>
-  <string name="action_share_key_with">Condividi chiave con...</string>
+  <string name="action_share_key_with">Condividi chiave con…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -340,10 +340,10 @@
   <string name="import_nfc_help_button">Aiuto</string>
   <string name="import_clipboard_button">Ottieni chiave dagli appunti</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeyChain: Decodifica File</string>
-  <string name="intent_import_key">OpenKeyChain: Importa Chiave</string>
-  <string name="intent_send_encrypt">OpenKeychain: Codifica</string>
-  <string name="intent_send_decrypt">OpenKeychain: Decodifica</string>
+  <string name="intent_decrypt_file">Decodifica File con OpenKeychain</string>
+  <string name="intent_import_key">Importa Chiave con OpenKeychain</string>
+  <string name="intent_send_encrypt">Codifica con OpenKeychain</string>
+  <string name="intent_send_decrypt">Decodifica con OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Nessuna app registrata!\n\nApp di terza parti possono richiedere accesso a OpenKeychain. Dopo aver concesso l\'accesso, saranno elencate qui.</string>
   <string name="api_settings_show_advanced">Mostra impostazioni avanzate</string>
@@ -374,7 +374,7 @@
     <item quantity="one">1 chiave selezionata.</item>
     <item quantity="other">%d chiavi selezionate.</item>
   </plurals>
-  <string name="key_list_empty_text1">Nessuna chiave disponibile...</string>
+  <string name="key_list_empty_text1">Nessuna chiave disponibile…</string>
   <string name="key_list_empty_text2">Puoi iniziare da</string>
   <string name="key_list_empty_text3">o</string>
   <string name="key_list_empty_button_create">creazione della tua chiave</string>
