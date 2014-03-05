@@ -34,6 +34,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,6 +59,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     Spinner mUsage;
     TextView mCreationDate;
     BootstrapButton mExpiryDateButton;
+    GregorianCalendar mCreatedDate;
     GregorianCalendar mExpiryDate;
 
     private int mDatePickerResultCount = 0;
@@ -106,8 +108,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mDeleteButton.setOnClickListener(this);
 
         setExpiryDate(null);
-        String creationDate = mCreationDate.getText().toString();
-        Date date = DateFormat.getDateInstance().parse(creationDate);
+
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
@@ -130,7 +131,18 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
-                dialog.getDatePicker().setMinDate(date.getTime());
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    if ( dialog != null && mCreatedDate != null ) {
+                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                        android.util.Log.w("Date picker", "Date min set");
+                    } else {
+                        //When created date isn't available
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                        android.util.Log.w("Date picker", "Date min set using current time");
+                    }
+                } else {
+                    android.util.Log.w("Date picker", "API Level < 11 so not restricting date range...");
+                }
                 dialog.show();
             }
         });
@@ -207,7 +219,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
-        mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
+        setCreatedDate(cal);
         cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate == null) {
@@ -235,6 +247,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
+    }
+
+    private void setCreatedDate(GregorianCalendar date) {
+        mCreatedDate = date;
+        if (date == null) {
+            mCreationDate.setText(getContext().getString(R.string.none));
+        } else {
+            mCreationDate.setText(DateFormat.getDateInstance().format(date.getTime()));
+        }
     }
 
     private void setExpiryDate(GregorianCalendar date) {
