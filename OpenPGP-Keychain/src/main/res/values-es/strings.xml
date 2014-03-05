@@ -15,7 +15,7 @@
   <string name="title_key_server_preference">Prioridad del servidor de claves</string>
   <string name="title_change_pass_phrase">Cambiar la frase de contraseña</string>
   <string name="title_set_passphrase">Establecer frase de contraseña</string>
-  <string name="title_send_email">Enviar email...</string>
+  <string name="title_send_email">Enviar email…</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -61,7 +61,7 @@
   <string name="btn_next">Siguiente</string>
   <string name="btn_back">Volver</string>
   <string name="btn_clipboard">Portapapeles</string>
-  <string name="btn_share">Compartir con...</string>
+  <string name="btn_share">Compartir con…</string>
   <string name="btn_lookup_key">Buscar clave</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
@@ -80,10 +80,10 @@
   <string name="menu_update_key">Actualizar desde servidor de claves</string>
   <string name="menu_export_key_to_server">Cargar al servidor de claves</string>
   <string name="menu_share">Compartir</string>
-  <string name="menu_share_title_fingerprint">Compartir la huella digital...</string>
-  <string name="menu_share_title">Compartir la clave completa...</string>
-  <string name="menu_share_default_fingerprint">con...</string>
-  <string name="menu_share_default">con...</string>
+  <string name="menu_share_title_fingerprint">Compartir la huella digital…</string>
+  <string name="menu_share_title">Compartir la clave completa…</string>
+  <string name="menu_share_default_fingerprint">con…</string>
+  <string name="menu_share_default">con…</string>
   <string name="menu_share_qr_code">con código QR</string>
   <string name="menu_share_qr_code_fingerprint">con código QR</string>
   <string name="menu_share_nfc">con NFC</string>
@@ -91,7 +91,7 @@
   <string name="menu_sign_key"> Clave de firma</string>
   <string name="menu_beam_preferences">Ajustes de Beam</string>
   <string name="menu_key_edit_cancel">Cancelar</string>
-  <string name="menu_encrypt_to">Cifrar hacia...</string>
+  <string name="menu_encrypt_to">Cifrar hacia…</string>
   <!--label-->
   <string name="label_sign">Firmar</string>
   <string name="label_message">Mensaje</string>
@@ -163,7 +163,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Abrir...</string>
+  <string name="filemanager_title_open">Abrir…</string>
   <string name="warning">Advertencia</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
@@ -275,40 +275,40 @@
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">hecho.</string>
-  <string name="progress_saving">guardando...</string>
-  <string name="progress_importing">importando...</string>
-  <string name="progress_exporting">exportando...</string>
-  <string name="progress_generating">generando la clave, esto puede tardar más de 3 minutos...</string>
-  <string name="progress_building_key">construyendo la clave...</string>
-  <string name="progress_preparing_master_key">preparando la clave maestra...</string>
-  <string name="progress_certifying_master_key">certificando la clave maestra...</string>
-  <string name="progress_building_master_key">construyendo el anillo maestro...</string>
-  <string name="progress_adding_sub_keys">añadiendo las subclaves...</string>
-  <string name="progress_saving_key_ring">guardando claves...</string>
+  <string name="progress_saving">guardando…</string>
+  <string name="progress_importing">importando…</string>
+  <string name="progress_exporting">exportando…</string>
+  <string name="progress_generating">generando la clave, esto puede tardar más de 3 minutos…</string>
+  <string name="progress_building_key">construyendo la clave…</string>
+  <string name="progress_preparing_master_key">preparando la clave maestra…</string>
+  <string name="progress_certifying_master_key">certificando la clave maestra…</string>
+  <string name="progress_building_master_key">construyendo el anillo maestro…</string>
+  <string name="progress_adding_sub_keys">añadiendo las subclaves…</string>
+  <string name="progress_saving_key_ring">guardando claves…</string>
   <plurals name="progress_exporting_key">
-    <item quantity="one">exportando clave...</item>
-    <item quantity="other">exportando claves...</item>
+    <item quantity="one">exportando clave…</item>
+    <item quantity="other">exportando claves…</item>
   </plurals>
-  <string name="progress_extracting_signature_key">extrayendo la clave de firma...</string>
-  <string name="progress_extracting_key">extrayendo la clave...</string>
-  <string name="progress_preparing_streams">preparando las transmisiones...</string>
-  <string name="progress_encrypting">cifrando los datos...</string>
-  <string name="progress_decrypting">descifrando los datos...</string>
-  <string name="progress_preparing_signature">preparando la firma...</string>
-  <string name="progress_generating_signature">generando la firma...</string>
-  <string name="progress_processing_signature">procesando la firma...</string>
-  <string name="progress_verifying_signature">verificando la firma...</string>
-  <string name="progress_signing">firmando...</string>
-  <string name="progress_reading_data">leyendo los datos...</string>
-  <string name="progress_finding_key">localizando la clave...</string>
-  <string name="progress_decompressing_data">descomprimiendo los datos...</string>
-  <string name="progress_verifying_integrity">verificando la integridad...</string>
+  <string name="progress_extracting_signature_key">extrayendo la clave de firma…</string>
+  <string name="progress_extracting_key">extrayendo la clave…</string>
+  <string name="progress_preparing_streams">preparando las transmisiones…</string>
+  <string name="progress_encrypting">cifrando los datos…</string>
+  <string name="progress_decrypting">descifrando los datos…</string>
+  <string name="progress_preparing_signature">preparando la firma…</string>
+  <string name="progress_generating_signature">generando la firma…</string>
+  <string name="progress_processing_signature">procesando la firma…</string>
+  <string name="progress_verifying_signature">verificando la firma…</string>
+  <string name="progress_signing">firmando…</string>
+  <string name="progress_reading_data">leyendo los datos…</string>
+  <string name="progress_finding_key">localizando la clave…</string>
+  <string name="progress_decompressing_data">descomprimiendo los datos…</string>
+  <string name="progress_verifying_integrity">verificando la integridad…</string>
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
-  <string name="progress_querying">consultando...</string>
+  <string name="progress_querying">consultando…</string>
   <!--action strings-->
   <string name="hint_public_keys">Buscar claves públicas</string>
   <string name="hint_secret_keys">Buscar claves secretas</string>
-  <string name="action_share_key_with">Compartir la clave con...</string>
+  <string name="action_share_key_with">Compartir la clave con…</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -374,7 +374,7 @@
     <item quantity="one">1 clave seleccionada.</item>
     <item quantity="other">%d claves seleccionadas.</item>
   </plurals>
-  <string name="key_list_empty_text1">Aún no hay claves disponibles...</string>
+  <string name="key_list_empty_text1">Aún no hay claves disponibles…</string>
   <string name="key_list_empty_text2">Puedes empezar por</string>
   <string name="key_list_empty_text3">o</string>
   <string name="key_list_empty_button_create">crear tu propia clave</string>
