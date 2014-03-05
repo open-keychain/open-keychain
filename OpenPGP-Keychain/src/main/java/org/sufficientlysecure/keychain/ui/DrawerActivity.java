@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
 import android.content.Context;
@@ -52,6 +53,7 @@ public class DrawerActivity extends ActionBarActivity {
     private static Class[] mItemsClass = new Class[] { KeyListPublicActivity.class,
             EncryptActivity.class, DecryptActivity.class, ImportKeysActivity.class,
             KeyListSecretActivity.class, RegisteredAppsListActivity.class };
+    private Class mSelectedItem;
 
     private static final int MENU_ID_PREFERENCE = 222;
     private static final int MENU_ID_HELP = 223;
@@ -94,6 +96,17 @@ public class DrawerActivity extends ActionBarActivity {
                 getSupportActionBar().setTitle(mTitle);
                 // creates call to onPrepareOptionsMenu()
                 supportInvalidateOptionsMenu();
+
+                // call intent activity if selected
+                if(mSelectedItem != null) {
+                    finish();
+                    overridePendingTransition(0, 0);
+
+                    Intent intent = new Intent(DrawerActivity.this, mSelectedItem);
+                    startActivity(intent);
+                    // disable animation of activity start
+                    overridePendingTransition(0, 0);
+                }
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -182,14 +195,8 @@ public class DrawerActivity extends ActionBarActivity {
         mDrawerList.setItemChecked(position, true);
         // setTitle(mDrawerTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
-
-        finish();
-        overridePendingTransition(0, 0);
-
-        Intent intent = new Intent(this, mItemsClass[position]);
-        startActivity(intent);
-        // disable animation of activity start
-        overridePendingTransition(0, 0);
+        // set selected class
+        mSelectedItem = mItemsClass[position];
     }
 
     /**

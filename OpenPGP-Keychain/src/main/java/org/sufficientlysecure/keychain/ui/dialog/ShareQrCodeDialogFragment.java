@@ -17,27 +17,25 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import java.util.ArrayList;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.QrCodeUtils;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.QrCodeUtils;
+
+import java.util.ArrayList;
 
 public class ShareQrCodeDialogFragment extends DialogFragment {
     private static final String ARG_KEY_URI = "uri";

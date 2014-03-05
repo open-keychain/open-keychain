@@ -2,5 +2,6 @@
 <resources>
 
     <string name="openpgp_list_preference_none">None</string>
+    <string name="openpgp_install_openkeychain_via">Install OpenKeychain via %s</string>
 
 </resources>

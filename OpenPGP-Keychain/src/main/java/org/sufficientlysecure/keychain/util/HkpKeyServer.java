@@ -1,6 +1,8 @@
 /*
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2011 Thialfihar <thi@thialfihar.org>
  * Copyright (C) 2011 Senecaso
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,6 +34,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -172,11 +175,11 @@ public class HkpKeyServer extends KeyServer {
             if (e.getCode() == 404) {
                 return results;
             } else {
-                if (e.getData().toLowerCase().contains("no keys found")) {
+                if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
                     return results;
-                } else if (e.getData().toLowerCase().contains("too many")) {
+                } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
                     throw new TooManyResponses();
-                } else if (e.getData().toLowerCase().contains("insufficient")) {
+                } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
                     throw new InsufficientQuery();
                 }
             }

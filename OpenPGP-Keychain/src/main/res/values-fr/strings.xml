@@ -111,6 +111,7 @@
   <string name="label_passphrase_cache_ttl">Cache de la phrase de passe</string>
   <string name="label_message_compression">Compression des messages</string>
   <string name="label_file_compression">Compression des fichiers</string>
+  <string name="label_force_v3_signature">Forcer les anciennes signatures OpenPGP v3</string>
   <string name="label_key_servers">Serveurs de clefs</string>
   <string name="label_key_id">ID de le clef</string>
   <string name="label_creation">Création</string>
@@ -253,6 +254,7 @@
   <string name="error_no_signature_key">aucune clef de signature n\'a été donnée</string>
   <string name="error_invalid_data">aucune donnée de chiffrement valide</string>
   <string name="error_corrupt_data">données corrompues</string>
+  <string name="error_integrity_check_failed">la vérification de l\'intégrité a échoué ! Les données ont été modifiées !</string>
   <string name="error_no_symmetric_encryption_packet">paquet avec chiffrement symétrique introuvable</string>
   <string name="error_wrong_passphrase">phrase de passe erronnée</string>
   <string name="error_saving_keys">erreur lors de la sauvegarde de certaines clefs</string>
@@ -264,6 +266,9 @@
   <string name="error_expiry_must_come_after_creation">la date d\'expiration doit venir après la date de création</string>
   <string name="error_can_not_delete_contact">vous ne pouvez pas supprimer ce contact car c\'est le vôtre.</string>
   <string name="error_can_not_delete_contacts">vous ne pouvez pas supprimer les contacts suivants car c\'est les vôtres.\n%s</string>
+  <string name="error_keyserver_insufficient_query">Requête serveur insuffisante</string>
+  <string name="error_keyserver_query">Échec lors de l\'interrogation du serveur de clefs</string>
+  <string name="error_keyserver_too_many_responses">Trop de réponses</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Veuillez le supprimer depuis l\'écran « Mes Clefs »!</item>
     <item quantity="other">Veuillez les supprimer depuis l\'écran « Mes Clefs »!</item>
@@ -335,12 +340,12 @@
   <string name="import_nfc_help_button">Aide</string>
   <string name="import_clipboard_button">Obtenir la clef depuis le presse-papiers</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenPGP : déchiffrer le ficher</string>
-  <string name="intent_import_key">OpenPGP : importer la clef</string>
-  <string name="intent_send_encrypt">OpenPGP : chiffrer</string>
-  <string name="intent_send_decrypt">OpenPGP : déchiffrer</string>
+  <string name="intent_decrypt_file">Déchiffrer le fichier avec OpenKeychain</string>
+  <string name="intent_import_key">Importer la clef avec OpenKeychain</string>
+  <string name="intent_send_encrypt">Chiffrer avec OpenKeychain</string>
+  <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès au Porte-clefs OpenPGP. Après avoir autoriser l\'accès, elles seront listées ici.</string>
+  <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès à OpenKeychain. Après avoir autorisé l\'accès, elles seront listées ici.</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
   <string name="api_settings_hide_advanced">Masquer les paramètres avancés</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
@@ -350,14 +355,14 @@
   <string name="api_settings_revoke">Révoquer l\'accès</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
-  <string name="api_register_text">L\'application affichée demande l\'accès au Porte-clefs OpenPGP.\nPermettre l\'accès ?\n\nAvertissement : si vous ne savez pas pourquoi cet écran est apparu, refusé l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applications enregistrées ».</string>
+  <string name="api_register_text">L\'application affichée demande l\'accès à OpenKeychain.\nPermettre l\'accès ?\n\nAvertissement : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applications enregistrées ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clef !</string>
   <string name="api_select_pub_keys_missing_text">Aucune clef publique n\'a été trouvée pour ces IDs utilisateur :</string>
   <string name="api_select_pub_keys_dublicates_text">Plus d\'une clef publique existe pour ces IDs utilisateur</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires !</string>
-  <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquer l\'enregistrement de cette appli dans le Porte-clefs OpenPGP et l\'enregistrer à nouveau.</string>
+  <string name="api_error_wrong_signature">La vérification de la signature a échoué ! Avez-vous installé cette appli à partir d\'une source différente ? Si vous êtes sûr que ce n\'est pas une attaque, révoquez l\'enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Partager par un code QR</string>
   <string name="share_qr_code_dialog_start">Balayer tous les codes QR un par un en utilisant « Suivant ».</string>

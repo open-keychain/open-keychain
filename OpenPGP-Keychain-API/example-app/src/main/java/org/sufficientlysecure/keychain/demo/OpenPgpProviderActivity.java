@@ -33,7 +33,6 @@ import android.widget.Toast;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpConstants;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 
 import java.io.ByteArrayInputStream;
@@ -73,25 +72,25 @@ public class OpenPgpProviderActivity extends Activity {
         mSign.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sign(new Bundle());
+                sign(new Intent());
             }
         });
         mEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encrypt(new Bundle());
+                encrypt(new Intent());
             }
         });
         mSignAndEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signAndEncrypt(new Bundle());
+                signAndEncrypt(new Intent());
             }
         });
         mDecryptAndVerify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                decryptAndVerify(new Bundle());
+                decryptAndVerify(new Intent());
             }
         });
 
@@ -169,11 +168,11 @@ public class OpenPgpProviderActivity extends Activity {
         }
 
         @Override
-        public void onReturn(Bundle result) {
-            switch (result.getInt(OpenPgpConstants.RESULT_CODE)) {
-                case OpenPgpConstants.RESULT_CODE_SUCCESS: {
+        public void onReturn(Intent result) {
+            switch (result.getIntExtra(OpenPgpApi.RESULT_CODE, 0)) {
+                case OpenPgpApi.RESULT_CODE_SUCCESS: {
                     try {
-                        Log.d(OpenPgpConstants.TAG, "result: " + os.toByteArray().length
+                        Log.d(OpenPgpApi.TAG, "result: " + os.toByteArray().length
                                 + " str=" + os.toString("UTF-8"));
 
                         if (returnToCiphertextField) {
@@ -185,15 +184,15 @@ public class OpenPgpProviderActivity extends Activity {
                         Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                     }
 
-                    if (result.containsKey(OpenPgpConstants.RESULT_SIGNATURE)) {
+                    if (result.hasExtra(OpenPgpApi.RESULT_SIGNATURE)) {
                         OpenPgpSignatureResult sigResult
-                                = result.getParcelable(OpenPgpConstants.RESULT_SIGNATURE);
+                                = result.getParcelableExtra(OpenPgpApi.RESULT_SIGNATURE);
                         handleSignature(sigResult);
                     }
                     break;
                 }
-                case OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED: {
-                    PendingIntent pi = result.getParcelable(OpenPgpConstants.RESULT_INTENT);
+                case OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED: {
+                    PendingIntent pi = result.getParcelableExtra(OpenPgpApi.RESULT_INTENT);
                     try {
                         OpenPgpProviderActivity.this.startIntentSenderForResult(pi.getIntentSender(),
                                 requestCode, null, 0, 0, 0);
@@ -202,8 +201,8 @@ public class OpenPgpProviderActivity extends Activity {
                     }
                     break;
                 }
-                case OpenPgpConstants.RESULT_CODE_ERROR: {
-                    OpenPgpError error = result.getParcelable(OpenPgpConstants.RESULT_ERRORS);
+                case OpenPgpApi.RESULT_CODE_ERROR: {
+                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERRORS);
                     handleError(error);
                     break;
                 }
@@ -211,46 +210,50 @@ public class OpenPgpProviderActivity extends Activity {
         }
     }
 
-    public void sign(Bundle params) {
-        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+    public void sign(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_SIGN);
+        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-        api.sign(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
+        api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
     }
 
-    public void encrypt(Bundle params) {
-        params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
-        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+    public void encrypt(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_ENCRYPT);
+        data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-        api.encrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
+        api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
     }
 
-    public void signAndEncrypt(Bundle params) {
-        params.putStringArray(OpenPgpConstants.PARAMS_USER_IDS, mEncryptUserIds.getText().toString().split(","));
-        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+    public void signAndEncrypt(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCTYPT);
+        data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
+        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-        api.signAndEncrypt(params, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
+        api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
     }
 
-    public void decryptAndVerify(Bundle params) {
-        params.putBoolean(OpenPgpConstants.PARAMS_REQUEST_ASCII_ARMOR, true);
+    public void decryptAndVerify(Intent data) {
+        data.setAction(OpenPgpApi.ACTION_DECRYPT_VERIFY);
+        data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
         InputStream is = getInputstream(true);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
-        api.decryptAndVerify(params, is, os, new MyCallback(false, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
+        api.executeApiAsync(data, is, os, new MyCallback(false, os, REQUEST_CODE_DECRYPT_AND_VERIFY));
     }
 
     @Override
@@ -261,29 +264,28 @@ public class OpenPgpProviderActivity extends Activity {
         // try again after user interaction
         if (resultCode == RESULT_OK) {
             /*
-             * The params originally given to the pgp method are are again
+             * The data originally given to the pgp method are are again
              * returned here to be used when calling again after user interaction.
              *
              * They also contain results from the user interaction which happened,
              * for example selected key ids.
              */
-            Bundle params = data.getBundleExtra(OpenPgpConstants.PI_RESULT_PARAMS);
 
             switch (requestCode) {
                 case REQUEST_CODE_SIGN: {
-                    sign(params);
+                    sign(data);
                     break;
                 }
                 case REQUEST_CODE_ENCRYPT: {
-                    encrypt(params);
+                    encrypt(data);
                     break;
                 }
                 case REQUEST_CODE_SIGN_AND_ENCRYPT: {
-                    signAndEncrypt(params);
+                    signAndEncrypt(data);
                     break;
                 }
                 case REQUEST_CODE_DECRYPT_AND_VERIFY: {
-                    decryptAndVerify(params);
+                    decryptAndVerify(data);
                     break;
                 }
             }

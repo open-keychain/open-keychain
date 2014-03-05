@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,18 +31,24 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.api.R;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.sufficientlysecure.keychain.api.R;
 
 /**
  * Does not extend ListPreference, but is very similar to it!
  * http://grepcode.com/file_/repository.grepcode.com/java/ext/com.google.android/android/4.4_r1/android/preference/ListPreference.java/?v=source
  */
 public class OpenPgpListPreference extends DialogPreference {
-    private ArrayList<OpenPgpProviderEntry> mProviderList = new ArrayList<OpenPgpProviderEntry>();
+    private static final String OPENKEYCHAIN_PACKAGE = "org.sufficientlysecure.keychain";
+    private static final String MARKET_INTENT_URI_BASE = "market://details?id=%s";
+    private static final Intent MARKET_INTENT = new Intent(Intent.ACTION_VIEW, Uri.parse(
+            String.format(MARKET_INTENT_URI_BASE, OPENKEYCHAIN_PACKAGE)));
+
+    private ArrayList<OpenPgpProviderEntry> mLegacyList = new ArrayList<OpenPgpProviderEntry>();
+    private ArrayList<OpenPgpProviderEntry> mList = new ArrayList<OpenPgpProviderEntry>();
+
     private String mSelectedPackage;
 
     public OpenPgpListPreference(Context context, AttributeSet attrs) {
@@ -59,16 +66,25 @@ public class OpenPgpListPreference extends DialogPreference {
      * @param simpleName
      * @param icon
      */
-    public void addProvider(int position, String packageName, String simpleName, Drawable icon) {
-        mProviderList.add(position, new OpenPgpProviderEntry(packageName, simpleName, icon));
+    public void addLegacyProvider(int position, String packageName, String simpleName, Drawable icon) {
+        mLegacyList.add(position, new OpenPgpProviderEntry(packageName, simpleName, icon));
     }
 
     @Override
     protected void onPrepareDialogBuilder(Builder builder) {
-
-        // get providers
-        mProviderList.clear();
-        Intent intent = new Intent(OpenPgpConstants.SERVICE_INTENT);
+        mList.clear();
+        
+        // add "none"-entry
+        mList.add(0, new OpenPgpProviderEntry("",
+                getContext().getString(R.string.openpgp_list_preference_none),
+                getContext().getResources().getDrawable(R.drawable.ic_action_cancel_launchersize)));
+        
+        // add all additional (legacy) providers
+        mList.addAll(mLegacyList);
+        
+        // search for OpenPGP providers...
+        ArrayList<OpenPgpProviderEntry> providerList = new ArrayList<OpenPgpProviderEntry>();
+        Intent intent = new Intent(OpenPgpApi.SERVICE_INTENT);
         List<ResolveInfo> resInfo = getContext().getPackageManager().queryIntentServices(intent, 0);
         if (!resInfo.isEmpty()) {
             for (ResolveInfo resolveInfo : resInfo) {
@@ -80,25 +96,40 @@ public class OpenPgpListPreference extends DialogPreference {
                         .getPackageManager()));
                 Drawable icon = resolveInfo.serviceInfo.loadIcon(getContext().getPackageManager());
 
-                mProviderList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
+                providerList.add(new OpenPgpProviderEntry(packageName, simpleName, icon));
             }
         }
 
-        // add "none"-entry
-        mProviderList.add(0, new OpenPgpProviderEntry("",
-                getContext().getString(R.string.openpgp_list_preference_none),
-                getContext().getResources().getDrawable(R.drawable.ic_action_cancel_launchersize)));
+        if (providerList.isEmpty()) {
+            // add install links if provider list is empty
+            resInfo = getContext().getPackageManager().queryIntentActivities
+                    (MARKET_INTENT, 0);
+            for (ResolveInfo resolveInfo : resInfo) {
+                Intent marketIntent = new Intent(MARKET_INTENT);
+                marketIntent.setPackage(resolveInfo.activityInfo.packageName);
+                Drawable icon = resolveInfo.activityInfo.loadIcon(getContext().getPackageManager());
+                String marketName = String.valueOf(resolveInfo.activityInfo.applicationInfo
+                        .loadLabel(getContext().getPackageManager()));
+                String simpleName = String.format(getContext().getString(R.string
+                        .openpgp_install_openkeychain_via), marketName);
+                mList.add(new OpenPgpProviderEntry(OPENKEYCHAIN_PACKAGE, simpleName,
+                        icon, marketIntent));
+            }
+        } else {
+            // add provider
+            mList.addAll(providerList);
+        }
 
         // Init ArrayAdapter with OpenPGP Providers
         ListAdapter adapter = new ArrayAdapter<OpenPgpProviderEntry>(getContext(),
-                android.R.layout.select_dialog_singlechoice, android.R.id.text1, mProviderList) {
+                android.R.layout.select_dialog_singlechoice, android.R.id.text1, mList) {
             public View getView(int position, View convertView, ViewGroup parent) {
                 // User super class to create the View
                 View v = super.getView(position, convertView, parent);
                 TextView tv = (TextView) v.findViewById(android.R.id.text1);
 
                 // Put the image on the TextView
-                tv.setCompoundDrawablesWithIntrinsicBounds(mProviderList.get(position).icon, null,
+                tv.setCompoundDrawablesWithIntrinsicBounds(mList.get(position).icon, null,
                         null, null);
 
                 // Add margin between image and text (support various screen densities)
@@ -114,7 +145,22 @@ public class OpenPgpListPreference extends DialogPreference {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mSelectedPackage = mProviderList.get(which).packageName;
+                        OpenPgpProviderEntry entry = mList.get(which);
+
+                        if (entry.intent != null) {
+                            /*
+                             * Intents are called as activity
+                             *
+                             * Current approach is to assume the user installed the app.
+                             * If he does not, the selected package is not valid.
+                             *
+                             * However  applications should always consider this could happen,
+                             * as the user might remove the currently used OpenPGP app.
+                             */
+                            getContext().startActivity(entry.intent);
+                        }
+
+                        mSelectedPackage = entry.packageName;
 
                         /*
                          * Clicking on an item simulates the positive button click, and dismisses
@@ -144,9 +190,9 @@ public class OpenPgpListPreference extends DialogPreference {
     }
 
     private int getIndexOfProviderList(String packageName) {
-        for (OpenPgpProviderEntry app : mProviderList) {
+        for (OpenPgpProviderEntry app : mList) {
             if (app.packageName.equals(packageName)) {
-                return mProviderList.indexOf(app);
+                return mList.indexOf(app);
             }
         }
 
@@ -177,7 +223,7 @@ public class OpenPgpListPreference extends DialogPreference {
     }
 
     public String getEntryByValue(String packageName) {
-        for (OpenPgpProviderEntry app : mProviderList) {
+        for (OpenPgpProviderEntry app : mList) {
             if (app.packageName.equals(packageName)) {
                 return app.simpleName;
             }
@@ -190,11 +236,17 @@ public class OpenPgpListPreference extends DialogPreference {
         private String packageName;
         private String simpleName;
         private Drawable icon;
+        private Intent intent;
 
         public OpenPgpProviderEntry(String packageName, String simpleName, Drawable icon) {
             this.packageName = packageName;
             this.simpleName = simpleName;
             this.icon = icon;
+        }
+
+        public OpenPgpProviderEntry(String packageName, String simpleName, Drawable icon, Intent intent) {
+            this(packageName, simpleName, icon);
+            this.intent = intent;
         }
 
         @Override

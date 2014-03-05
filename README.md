@@ -1,9 +1,11 @@
 # OpenKeychain (for Android)
 
-OpenKeychain is an OpenPGP implementation for Android.
-The development began as a fork of Android Privacy Guard (APG).
+OpenKeychain is an OpenPGP implementation for Android.  
+For a more detailed description and installation instructions go to http://www.openkeychain.org .
 
-see http://sufficientlysecure.org/keychain
+### Travis CI Build Status
+
+[![Build Status](https://travis-ci.org/openpgp-keychain/openpgp-keychain.png?branch=master)](https://travis-ci.org/openpgp-keychain/openpgp-keychain)
 
 ## How to help the project?
 
@@ -53,65 +55,17 @@ I am using the newest [Android Studio](http://developer.android.com/sdk/installi
   * Select the "OpenPGP-Keychain-API" folder if you want to develop on the API example
 3. Import project from external model -> choose Gradle
 
-## Keychain API
+## OpenKeychain's API
 
-### Intent API
-All Intents require user interaction, e.g. to finally encrypt the user needs to press the "Encrypt" button.
-To do automatic encryption/decryption/sign/verify use the OpenPGP Remote API.
+OpenKeychain provides two APIs, namely the Intent API and the Remote OpenPGP API.
+The Intent API can be used without permissions to start OpenKeychain's activities for cryptographic operations, import of keys, etc.
+However, it always requires user input, so that no malicious application can use this API without user intervention.  
+The Remote OpenPGP API is more sophisticated and allows to to operations without user interaction in the background.
+When utilizing this API, OpenKeychain asks the user on first use to grant access for the calling client application.
 
-#### Android Intent actions:
-
-* ``android.intent.action.VIEW`` connected to .gpg and .asc files: Import Key and Decrypt
-* ``android.intent.action.SEND`` connected to all mime types (text/plain and every binary data like files and images): Encrypt and Decrypt
-
-#### OpenKeychain Intent actions:
-
-* ``org.sufficientlysecure.keychain.action.ENCRYPT``
-  * To encrypt or sign text, use extra ``text`` (type: ``String``)
-  * or set data ``Uri`` (``intent.setData()``) pointing to a file
-  * Enable ASCII Armor for file encryption (encoding to Radix-64, 33% overhead) by adding the extra ``ascii_armor`` with value ``true``
-* ``org.sufficientlysecure.keychain.action.DECRYPT``
-  * To decrypt or verify text, use extra ``text`` (type: ``String``)
-  * or set data ``Uri`` (``intent.setData()``) pointing to a file
-* ``org.sufficientlysecure.keychain.action.IMPORT_KEY``
-  * Extras: ``key_bytes`` (type: ``byte[]``)
-  * or set data ``Uri`` (``intent.setData()``) pointing to a file
-* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_KEYSERVER``
-  * Extras: ``query`` (type: ``String``)
-  * or ``fingerprint`` (type: ``String``)
-* ``org.sufficientlysecure.keychain.action.IMPORT_KEY_FROM_QR_CODE``
-  * without extras, starts Barcode Scanner to get QR Code
-  
-#### OpenKeychain special registered Intents:
-* ``android.intent.action.VIEW`` with URIs following the ``openpgp4fpr`` schema. For example: ``openpgp4fpr:73EE2314F65FA92EC2390D3A718C070100012282``. This is used in QR Codes, but could also be embedded into your website. (compatible with Monkeysphere's and Guardian Project's QR Codes)
-* NFC (``android.nfc.action.NDEF_DISCOVERED``) on mime type ``application/pgp-keys`` (as specified in http://tools.ietf.org/html/rfc3156, section 7)
-
-### OpenPGP Remote API
-To do fast encryption/decryption/sign/verify operations without user interaction bind to the OpenPGP remote service.
-
-#### Try out the API
-Keychain: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain  
-API Demo: https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain.demo
-
-#### Design
-All apps wanting to use this generic API
-just need to include the AIDL files and connect to the service. Other
-OpenPGP apps can implement a service based on this AIDL definition.
-
-The API is designed to be as easy as possible to use by apps like K-9 Mail.
-The service definition defines sign, encrypt, signAndEncrypt, decryptAndVerify, and getKeyIds.
-
-As can be seen in the API Demo, the apps themselves never need to handle key ids directly.
-You can use user ids (emails) to define recipients.
-If more than one public key exists for an email, OpenKeychain will handle the problem by showing a selection screen. Additionally, it is also possible to use key ids.
-
-Also app devs never need to fiddle with private keys.
-On first operation, OpenKeychain shows an activity to allow or disallow access, while also allowing to choose the private key used for this app.
-Please try the Demo app out to see how it works.
-
-#### Integration
-Copy the api library from "libraries/keychain-api-library" to your project and add it as an dependency to your gradle build.
-Inspect the ode found in "OpenPGP-Keychain-API" to understand how to use the API.
+More technical information and examples about these APIs can be found in the project's wiki:  
+* [Intent API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/Intent-API)
+* [Remote OpenPGP API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/OpenPGP-API)
 
 
 ## Libraries

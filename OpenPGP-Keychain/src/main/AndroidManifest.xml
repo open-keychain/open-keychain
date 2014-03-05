@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="23100"
-    android:versionName="2.3.1">
+    android:versionCode="23102"
+    android:versionName="2.3.1 beta2">
 
     <!--
         General remarks
@@ -22,7 +22,8 @@
         Remarks about the ugly android:pathPattern:
         - We are matching all files with a specific file ending.
         This is done in an ugly way because of Android limitations.
-        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 
+        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
+        and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
         for more information.
         - Do _not_ set mimeType for gpg!
         Cyanogenmod's file manager will only show Keychain for gpg files if no mimeType is set!

@@ -220,10 +220,6 @@
   <string name="import_qr_code_wrong">QR-code ongeldig. Probeer het opnieuw</string>
   <string name="import_qr_code_finished">QR-code gescand</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenPGP: bestand ontsleutelen</string>
-  <string name="intent_import_key">OpenPGP: sleutel importeren</string>
-  <string name="intent_send_encrypt">OpenPGP: versleutelen</string>
-  <string name="intent_send_decrypt">OpenPGP: ontsleutelen</string>
   <!--Remote API-->
   <string name="api_settings_no_key">Geen sleutel geselecteerd</string>
   <string name="api_settings_select_key">Sleutel selecteren</string>
