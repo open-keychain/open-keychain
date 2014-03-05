@@ -46,9 +46,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,15 +68,17 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListPublicFragment extends Fragment implements AdapterView.OnItemClickListener,
+public class KeyListPublicFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListPublicAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
-
+    private String mCurQuery;
+    private SearchView mSearchView;
     // empty list layout
     private BootstrapButton mButtonEmptyCreate;
     private BootstrapButton mButtonEmptyImport;
+
 
     /**
      * Load custom layout with StickyListView from library
@@ -80,7 +86,7 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
-
+        setHasOptionsMenu(true);
         mButtonEmptyCreate = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
 
@@ -232,10 +238,13 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        String where = null;
+        if(mCurQuery != null)
+            where = KeychainContract.UserIds.USER_ID + " LIKE \"" + mCurQuery + "%\"";
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null, SORT_ORDER);
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, null, SORT_ORDER);
     }
 
     @Override
@@ -335,4 +344,34 @@ public class KeyListPublicFragment extends Fragment implements AdapterView.OnIte
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
 
+
+    @Override
+    public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
+
+        // Get the searchview
+        MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        // Execute this when searching
+        mSearchView.setOnQueryTextListener(this);
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        // Called when the action bar search text has changed.  Update
+        // the search filter, and restart the loader to do a new query
+        // with this filter.
+        String newQuery = !TextUtils.isEmpty(s) ? s : null;
+        mCurQuery = newQuery;
+        getLoaderManager().restartLoader(0, null, this);
+        return true;
+    }
 }
