@@ -34,6 +34,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,6 +59,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     Spinner mUsage;
     TextView mCreationDate;
     BootstrapButton mExpiryDateButton;
+    GregorianCalendar mCreatedDate;
     GregorianCalendar mExpiryDate;
 
     private int mDatePickerResultCount = 0;
@@ -129,6 +131,14 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    if ( dialog != null && mCreatedDate != null ) {
+                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    } else {
+                        //When created date isn't available
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    }
+                }
                 dialog.show();
             }
         });
@@ -205,7 +215,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
-        mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
+        setCreatedDate(cal);
         cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate == null) {
@@ -233,6 +243,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
+    }
+
+    private void setCreatedDate(GregorianCalendar date) {
+        mCreatedDate = date;
+        if (date == null) {
+            mCreationDate.setText(getContext().getString(R.string.none));
+        } else {
+            mCreationDate.setText(DateFormat.getDateInstance().format(date.getTime()));
+        }
     }
 
     private void setExpiryDate(GregorianCalendar date) {
