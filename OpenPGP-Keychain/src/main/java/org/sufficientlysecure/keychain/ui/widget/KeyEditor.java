@@ -113,7 +113,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 if (date == null) {
                     date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
-
+                /*
+                 * Using custom DatePickerDialog which overrides the setTitle because 
+                 * the DatePickerDialog title is buggy (unix warparound bug).
+                 * See: https://code.google.com/p/android/issues/detail?id=49066
+                 */
                 DatePickerDialog dialog = new ExpiryDatePickerDialog(getContext(),
                         mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
@@ -129,8 +133,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
-                //setCalendarViewShown() is supported from API 11 onwards.
+                // setCalendarViewShown() is supported from API 11 onwards.
                 if (android.os.Build.VERSION.SDK_INT >= 11)
+                    // Hide calendarView in tablets because of the unix warparound bug.
                     dialog.getDatePicker().setCalendarViewShown(false);
                 dialog.show();
             }
@@ -262,7 +267,7 @@ class ExpiryDatePickerDialog extends DatePickerDialog {
     public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
-
+    //Set permanent title.
     public void setTitle(CharSequence title) {
         super.setTitle("Set date");
     }
