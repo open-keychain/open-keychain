@@ -106,7 +106,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mDeleteButton.setOnClickListener(this);
 
         setExpiryDate(null);
-
+        String creationDate = mCreationDate.getText().toString();
+        Date date = DateFormat.getDateInstance().parse(creationDate);
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
@@ -129,6 +130,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
+                dialog.getDatePicker().setMinDate(date.getTime());
                 dialog.show();
             }
         });
