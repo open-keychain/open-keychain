@@ -269,6 +269,6 @@ class ExpiryDatePickerDialog extends DatePickerDialog {
     }
     //Set permanent title.
     public void setTitle(CharSequence title) {
-        super.setTitle("Set date");
+        super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));
     }
 }
