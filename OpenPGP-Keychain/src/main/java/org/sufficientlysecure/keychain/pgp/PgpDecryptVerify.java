@@ -310,16 +310,18 @@ public class PgpDecryptVerify {
 
                         pbe = encData;
 
-                        // passphrase handling...
+                        // if no passphrase was explicitly set try to get it from the cache service
                         if (passphrase == null) {
-                            // try to get cached passphrase
+                            // returns "" if key has no passphrase
                             passphrase = PassphraseCacheService.getCachedPassphrase(context, encData.getKeyID());
+
+                            // if passphrase was not cached, return here indicating that a passphrase is missing!
+                            if (passphrase == null) {
+                                returnData.setKeyPassphraseNeeded(true);
+                                return returnData;
+                            }
                         }
-                        // if passphrase was not cached, return here!
-                        if (passphrase == null) {
-                            returnData.setKeyPassphraseNeeded(true);
-                            return returnData;
-                        }
+
                         break;
                     }
 
@@ -644,7 +646,7 @@ public class PgpDecryptVerify {
         if (signKeyRing != null) {
             mKey = PgpKeyHelper.getMasterKey(signKeyRing);
         }
-        
+
         if (signature.getKeyID() != mKey.getKeyID()) {
             validKeyBinding = verifyKeyBinding(mKey, signatureKey);
         } else { //if the key used to make the signature was the master key, no need to check binding sigs
