@@ -277,7 +277,16 @@
         <activity
             android:name=".ui.PreferencesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_preferences" />
+            android:label="@string/title_preferences" >
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.ui.PREFS_GEN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.ui.PREFS_ADV" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"

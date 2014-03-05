@@ -15,21 +15,7 @@
      limitations under the License.
 -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <PreferenceCategory android:title="@string/section_general" >
-        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
-            android:entries="@array/pass_phrase_cache_ttl_entries"
-            android:entryValues="@array/pass_phrase_cache_ttl_values"
-            android:key="passPhraseCacheTtl"
-            android:persistent="false"
-            android:title="@string/label_passphrase_cache_ttl" />
-
-        <PreferenceScreen
-            android:key="keyServers"
-            android:persistent="false"
-            android:title="@string/label_key_servers" />
-    </PreferenceCategory>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/section_defaults" >
         <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
             android:key="defaultEncryptionAlgorithm"
@@ -59,5 +45,4 @@
             android:persistent="false"
             android:title="@string/label_force_v3_signature" />
     </PreferenceCategory>
-
 </PreferenceScreen>
