@@ -115,8 +115,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 if (date == null) {
                     date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
-
-                DatePickerDialog dialog = new DatePickerDialog(getContext(),
+                /*
+                 * Using custom DatePickerDialog which overrides the setTitle because 
+                 * the DatePickerDialog title is buggy (unix warparound bug).
+                 * See: https://code.google.com/p/android/issues/detail?id=49066
+                 */
+                DatePickerDialog dialog = new ExpiryDatePickerDialog(getContext(),
                         mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
                 mDatePickerResultCount = 0;
@@ -131,6 +135,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
+
+                // setCalendarViewShown() is supported from API 11 onwards.
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+                    // Hide calendarView in tablets because of the unix warparound bug.
+                    dialog.getDatePicker().setCalendarViewShown(false);
+
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     if ( dialog != null && mCreatedDate != null ) {
                         dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
@@ -139,6 +149,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
                     }
                 }
+
                 dialog.show();
             }
         });
@@ -271,4 +282,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         return ((Choice) mUsage.getSelectedItem()).getId();
     }
 
+}
+
+class ExpiryDatePickerDialog extends DatePickerDialog {
+
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+        super(context, callBack, year, monthOfYear, dayOfMonth);
+    }
+    //Set permanent title.
+    public void setTitle(CharSequence title) {
+        super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));
+    }
 }
