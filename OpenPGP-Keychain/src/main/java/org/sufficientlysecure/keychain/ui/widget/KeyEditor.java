@@ -134,14 +134,10 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     if ( dialog != null && mCreatedDate != null ) {
                         dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
-                        android.util.Log.w("Date picker", "Date min set");
                     } else {
                         //When created date isn't available
                         dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
-                        android.util.Log.w("Date picker", "Date min set using current time");
                     }
-                } else {
-                    android.util.Log.w("Date picker", "API Level < 11 so not restricting date range...");
                 }
                 dialog.show();
             }
