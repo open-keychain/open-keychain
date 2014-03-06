@@ -255,14 +255,14 @@ public class PreferencesActivity extends PreferenceActivity {
                 || super.isValidFragment(fragmentName);
     }
 
-    private static void initializePassPassPhraceCacheTtl(final IntegerListPreference mPassPhraseCacheTtl) {
-        mPassPhraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
-        mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
-        mPassPhraseCacheTtl
+    private static void initializePassPassPhraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
+        mPassphraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
+        mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
+        mPassphraseCacheTtl
                 .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        mPassPhraseCacheTtl.setValue(newValue.toString());
-                        mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
+                        mPassphraseCacheTtl.setValue(newValue.toString());
+                        mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
                         mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
                         return false;
                     }

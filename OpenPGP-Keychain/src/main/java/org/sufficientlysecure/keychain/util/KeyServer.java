@@ -48,5 +48,5 @@ public abstract class KeyServer {
 
     abstract String get(long keyId) throws QueryException;
 
-    abstract void add(String armouredText) throws AddKeyException;
+    abstract void add(String armoredText) throws AddKeyException;
 }

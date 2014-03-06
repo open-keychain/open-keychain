@@ -13,7 +13,7 @@
   <string name="title_preferences">Préférences</string>
   <string name="title_api_registered_apps">Applications enregistrées</string>
   <string name="title_key_server_preference">Préférences du serveur de clefs</string>
-  <string name="title_change_pass_phrase">Changer la phrase de passe</string>
+  <string name="title_change_passphrase">Changer la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
   <string name="title_send_email">Envoyer un courriel…</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>

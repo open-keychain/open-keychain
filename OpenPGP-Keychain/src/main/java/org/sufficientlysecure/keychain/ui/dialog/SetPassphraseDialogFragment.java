@@ -101,9 +101,9 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
 
-                String passPhrase1 = mPassphraseEditText.getText().toString();
-                String passPhrase2 = mPassphraseAgainEditText.getText().toString();
-                if (!passPhrase1.equals(passPhrase2)) {
+                String passphrase1 = mPassphraseEditText.getText().toString();
+                String passphrase2 = mPassphraseAgainEditText.getText().toString();
+                if (!passphrase1.equals(passphrase2)) {
                     Toast.makeText(
                             activity,
                             getString(R.string.error_message,
@@ -112,7 +112,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
                     return;
                 }
 
-                if (passPhrase1.equals("")) {
+                if (passphrase1.equals("")) {
                     Toast.makeText(
                             activity,
                             getString(R.string.error_message,
@@ -123,7 +123,7 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
 
                 // return resulting data back to activity
                 Bundle data = new Bundle();
-                data.putString(MESSAGE_NEW_PASSPHRASE, passPhrase1);
+                data.putString(MESSAGE_NEW_PASSPHRASE, passphrase1);
 
                 sendMessageToHandler(MESSAGE_OKAY, data);
             }

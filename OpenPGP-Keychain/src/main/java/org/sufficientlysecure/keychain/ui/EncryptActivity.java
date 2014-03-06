@@ -101,8 +101,8 @@ public class EncryptActivity extends DrawerActivity {
 
     private int mEncryptTarget;
 
-    private EditText mPassPhrase = null;
-    private EditText mPassPhraseAgain = null;
+    private EditText mPassphrase = null;
+    private EditText mPassphraseAgain = null;
     private CheckBox mAsciiArmor = null;
     private Spinner mFileCompression = null;
 
@@ -436,14 +436,14 @@ public class EncryptActivity extends DrawerActivity {
         // symmetric encryption
         if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             boolean gotPassPhrase = false;
-            String passPhrase = mPassPhrase.getText().toString();
-            String passPhraseAgain = mPassPhraseAgain.getText().toString();
-            if (!passPhrase.equals(passPhraseAgain)) {
+            String passphrase = mPassphrase.getText().toString();
+            String passphraseAgain = mPassphraseAgain.getText().toString();
+            if (!passphrase.equals(passphraseAgain)) {
                 AppMsg.makeText(this, R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
                 return;
             }
 
-            gotPassPhrase = (passPhrase.length() != 0);
+            gotPassPhrase = (passphrase.length() != 0);
             if (!gotPassPhrase) {
                 AppMsg.makeText(this, R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
@@ -550,11 +550,11 @@ public class EncryptActivity extends DrawerActivity {
 
         if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passPhrase = mPassPhrase.getText().toString();
-            if (passPhrase.length() == 0) {
-                passPhrase = null;
+            String passphrase = mPassphrase.getText().toString();
+            if (passphrase.length() == 0) {
+                passphrase = null;
             }
-            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
+            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
             mSecretKeyIdToPass = mSecretKeyId;
             encryptionKeyIds = mEncryptionKeyIds;
@@ -766,8 +766,8 @@ public class EncryptActivity extends DrawerActivity {
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
 
-        mPassPhrase = (EditText) findViewById(R.id.passPhrase);
-        mPassPhraseAgain = (EditText) findViewById(R.id.passPhraseAgain);
+        mPassphrase = (EditText) findViewById(R.id.passphrase);
+        mPassphraseAgain = (EditText) findViewById(R.id.passphraseAgain);
 
         // measure the height of the source_file view and set the message view's min height to that,
         // so it fills mSource fully... bit of a hack.

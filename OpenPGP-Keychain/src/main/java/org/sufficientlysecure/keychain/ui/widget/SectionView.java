@@ -220,18 +220,18 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         Bundle data = new Bundle();
         Boolean isMasterKey;
 
-        String passPhrase;
+        String passphrase;
         if (mEditors.getChildCount() > 0) {
             PGPSecretKey masterKey = ((KeyEditor) mEditors.getChildAt(0)).getValue();
-            passPhrase = PassphraseCacheService
+            passphrase = PassphraseCacheService
                     .getCachedPassphrase(mActivity, masterKey.getKeyID());
             isMasterKey = false;
         } else {
-            passPhrase = "";
+            passphrase = "";
             isMasterKey = true;
         }
         data.putBoolean(KeychainIntentService.GENERATE_KEY_MASTER_KEY, isMasterKey);
-        data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
+        data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
         data.putInt(KeychainIntentService.GENERATE_KEY_ALGORITHM, mNewKeyAlgorithmChoice.getId());
         data.putInt(KeychainIntentService.GENERATE_KEY_KEY_SIZE, mNewKeySize);
 

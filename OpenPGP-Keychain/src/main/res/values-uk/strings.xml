@@ -13,7 +13,7 @@
   <string name="title_preferences">Налаштування</string>
   <string name="title_api_registered_apps">Зареєстровані програми</string>
   <string name="title_key_server_preference">Налаштування сервера ключів</string>
-  <string name="title_change_pass_phrase">Змінити парольну фразу</string>
+  <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_set_passphrase">Задати парольну фразу</string>
   <string name="title_send_email">Надіслати листа…</string>
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>

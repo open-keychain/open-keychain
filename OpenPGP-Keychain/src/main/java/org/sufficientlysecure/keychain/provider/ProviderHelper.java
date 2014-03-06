@@ -628,7 +628,7 @@ public class ProviderHelper {
 
                             String armoredKey = bos.toString("UTF-8");
 
-                            Log.d(Constants.TAG, "armouredKey:" + armoredKey);
+                            Log.d(Constants.TAG, "armoredKey:" + armoredKey);
 
                             output.add(armoredKey);
                         } catch (IOException e) {

@@ -107,7 +107,7 @@ public class PgpKeyOperation {
      * 
      * @param algorithmChoice
      * @param keySize
-     * @param passPhrase
+     * @param passphrase
      * @param isMasterKey
      * @return
      * @throws NoSuchAlgorithmException
@@ -118,7 +118,7 @@ public class PgpKeyOperation {
      */
 
     // TODO: key flags?
-    public PGPSecretKey createKey(int algorithmChoice, int keySize, String passPhrase,
+    public PGPSecretKey createKey(int algorithmChoice, int keySize, String passphrase,
        boolean isMasterKey) throws NoSuchAlgorithmException, PGPException, NoSuchProviderException,
        PgpGeneralException, InvalidAlgorithmParameterException {
 
@@ -126,8 +126,8 @@ public class PgpKeyOperation {
             throw new PgpGeneralException(mContext.getString(R.string.error_key_size_minimum512bit));
         }
 
-        if (passPhrase == null) {
-            passPhrase = "";
+        if (passphrase == null) {
+            passphrase = "";
         }
 
         int algorithm = 0;
@@ -181,7 +181,7 @@ public class PgpKeyOperation {
         // Build key encrypter and decrypter based on passphrase
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
-                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passPhrase.toCharArray());
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.toCharArray());
 
         PGPSecretKey secKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
             sha1Calc, isMasterKey, keyEncryptor);
