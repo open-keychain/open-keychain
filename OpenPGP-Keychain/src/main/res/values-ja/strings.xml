@@ -13,7 +13,7 @@
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">登録済みのアプリケーション</string>
   <string name="title_key_server_preference">鍵サーバ設定</string>
-  <string name="title_change_pass_phrase">パスフレーズの変更</string>
+  <string name="title_change_passphrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
   <string name="title_send_email">メールの送信…</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>

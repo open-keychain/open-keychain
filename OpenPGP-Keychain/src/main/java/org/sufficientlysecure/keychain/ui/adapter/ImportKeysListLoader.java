@@ -97,7 +97,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
         // need to have access to the bufferedInput, so we can reuse it for the possible
         // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
-        // armour blocks
+        // armor blocks
         BufferedInputStream bufferedInput = new BufferedInputStream(progressIn);
         try {
 

@@ -90,8 +90,8 @@ public class PgpImportExport {
             aos.write(keyring.getEncoded());
             aos.close();
 
-            String armouredKey = bos.toString("UTF-8");
-            server.add(armouredKey);
+            String armoredKey = bos.toString("UTF-8");
+            server.add(armoredKey);
 
             return true;
         } catch (IOException e) {

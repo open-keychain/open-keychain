@@ -30,7 +30,7 @@ public final class Id {
     public static final class menu {
 
         public static final class option {
-            public static final int new_pass_phrase = 0x21070001;
+            public static final int new_passphrase = 0x21070001;
             public static final int create = 0x21070002;
             public static final int about = 0x21070003;
             public static final int manage_public_keys = 0x21070004;
@@ -85,12 +85,12 @@ public final class Id {
     }
 
     public static final class dialog {
-        public static final int pass_phrase = 0x21070001;
+        public static final int passphrase = 0x21070001;
         public static final int encrypting = 0x21070002;
         public static final int decrypting = 0x21070003;
-        public static final int new_pass_phrase = 0x21070004;
-        public static final int pass_phrases_do_not_match = 0x21070005;
-        public static final int no_pass_phrase = 0x21070006;
+        public static final int new_passphrase = 0x21070004;
+        public static final int passphrases_do_not_match = 0x21070005;
+        public static final int no_passphrase = 0x21070006;
         public static final int saving = 0x21070007;
         public static final int delete_key = 0x21070008;
         public static final int import_keys = 0x21070009;

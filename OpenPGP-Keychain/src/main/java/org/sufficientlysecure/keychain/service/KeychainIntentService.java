@@ -748,7 +748,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                      */
                     // need to have access to the bufferedInput, so we can reuse it for the possible
                     // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
-                    // armour blocks
+                    // armor blocks
                     BufferedInputStream bufferedInput = new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
                     try {
 

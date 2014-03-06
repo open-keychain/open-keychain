@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="pass_phrase_cache_ttl_entries" translatable="false">
+    <string-array name="passphrase_cache_ttl_entries" translatable="false">
         <item>@string/choice_15secs</item>
         <item>@string/choice_1min</item>
         <item>@string/choice_3mins</item>
@@ -15,7 +15,7 @@
         <item>@string/choice_8hours</item>
         <item>@string/choice_forever</item>
     </string-array>
-    <string-array name="pass_phrase_cache_ttl_values" translatable="false">
+    <string-array name="passphrase_cache_ttl_values" translatable="false">
         <item>15</item>
         <item>60</item>
         <item>180</item>

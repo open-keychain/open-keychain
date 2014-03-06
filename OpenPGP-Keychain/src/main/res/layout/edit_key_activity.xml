@@ -27,7 +27,7 @@
             android:text="@string/label_no_passphrase" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/edit_key_btn_change_pass_phrase"
+            android:id="@+id/edit_key_btn_change_passphrase"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:padding="4dp"

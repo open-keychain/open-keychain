@@ -13,7 +13,7 @@
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Связанные приложения</string>
   <string name="title_key_server_preference">Настройки сервера ключей</string>
-  <string name="title_change_pass_phrase">Изменить пароль</string>
+  <string name="title_change_passphrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
   <string name="title_send_email">Отправить…</string>
   <string name="title_encrypt_to_file">Зашифровать в файл</string>

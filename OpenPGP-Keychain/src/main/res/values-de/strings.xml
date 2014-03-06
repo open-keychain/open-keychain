@@ -13,7 +13,7 @@
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Registrierte Anwendungen</string>
   <string name="title_key_server_preference">Schlüsselserver</string>
-  <string name="title_change_pass_phrase">Passwort ändern</string>
+  <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_set_passphrase">Passwort setzen</string>
   <string name="title_send_email">E-Mail senden…</string>
   <string name="title_encrypt_to_file">In eine Datei verschlüsseln</string>
