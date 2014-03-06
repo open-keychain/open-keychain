@@ -223,7 +223,7 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
          */
         // default color
         v.setBackgroundColor(Color.TRANSPARENT);
-        if (mSelection.get(position) != null) {
+        if (mSelection.get(position) != null && mSelection.get(position).booleanValue()) {
             // this is a selected position, change color!
             v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
         }
