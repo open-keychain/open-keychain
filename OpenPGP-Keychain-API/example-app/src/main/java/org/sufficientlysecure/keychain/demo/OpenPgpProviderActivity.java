@@ -202,7 +202,7 @@ public class OpenPgpProviderActivity extends Activity {
                     break;
                 }
                 case OpenPgpApi.RESULT_CODE_ERROR: {
-                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERRORS);
+                    OpenPgpError error = result.getParcelableExtra(OpenPgpApi.RESULT_ERROR);
                     handleError(error);
                     break;
                 }
@@ -234,7 +234,7 @@ public class OpenPgpProviderActivity extends Activity {
     }
 
     public void signAndEncrypt(Intent data) {
-        data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCTYPT);
+        data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
         data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 

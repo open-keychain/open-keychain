@@ -180,7 +180,7 @@ public class OpenPgpService extends RemoteService {
         } catch (Exception e) {
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            result.putExtra(OpenPgpApi.RESULT_ERRORS,
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             return result;
         }
@@ -209,7 +209,7 @@ public class OpenPgpService extends RemoteService {
             } else {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                result.putExtra(OpenPgpApi.RESULT_ERRORS,
+                result.putExtra(OpenPgpApi.RESULT_ERROR,
                         new OpenPgpError(OpenPgpError.GENERIC_ERROR, "Missing parameter user_ids or key_ids!"));
                 return result;
             }
@@ -268,7 +268,7 @@ public class OpenPgpService extends RemoteService {
         } catch (Exception e) {
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            result.putExtra(OpenPgpApi.RESULT_ERRORS,
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             return result;
         }
@@ -334,7 +334,7 @@ public class OpenPgpService extends RemoteService {
         } catch (Exception e) {
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            result.putExtra(OpenPgpApi.RESULT_ERRORS,
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
             return result;
         }
@@ -361,7 +361,7 @@ public class OpenPgpService extends RemoteService {
         if (data == null) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError(OpenPgpError.GENERIC_ERROR, "params Bundle required!");
-            result.putExtra(OpenPgpApi.RESULT_ERRORS, error);
+            result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
@@ -370,7 +370,7 @@ public class OpenPgpService extends RemoteService {
         if (data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) != OpenPgpApi.API_VERSION) {
             Intent result = new Intent();
             OpenPgpError error = new OpenPgpError(OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!");
-            result.putExtra(OpenPgpApi.RESULT_ERRORS, error);
+            result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
@@ -401,7 +401,7 @@ public class OpenPgpService extends RemoteService {
                 return signImpl(data, input, output, appSettings);
             } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
                 return encryptAndSignImpl(data, input, output, appSettings, false);
-            } else if (OpenPgpApi.ACTION_SIGN_AND_ENCTYPT.equals(action)) {
+            } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
                 return encryptAndSignImpl(data, input, output, appSettings, true);
             } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
                 return decryptAndVerifyImpl(data, input, output, appSettings);
