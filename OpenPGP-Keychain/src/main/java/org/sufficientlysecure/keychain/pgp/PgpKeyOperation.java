@@ -65,6 +65,7 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
@@ -346,23 +347,24 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_done, 100, 100);
     }
 
-    public void buildSecretKey(ArrayList<String> userIds, ArrayList<String> OriginalIDs, ArrayList<String> deletedIDs, boolean primaryIDChanged, boolean[] modded_keys, ArrayList<PGPSecretKey> deleted_keys, ArrayList<GregorianCalendar> keysExpiryDates, ArrayList<Integer> keysUsages, String newPassPhrase, String oldPassPhrase, boolean[] new_keys, ArrayList<PGPSecretKey> keys) throws PgpGeneralException,
+    public void buildSecretKey(SaveKeyringParcel saveParcel) throws PgpGeneralException,
             PGPException, SignatureException, IOException {
 
         updateProgress(R.string.progress_building_key, 0, 100);
-        PGPSecretKey masterKey = keys.get(0);
+        PGPSecretKey masterKey = saveParcel.keys.get(0);
 
         PGPSecretKeyRing mKR = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, masterKey.getKeyID());
 
-        if (oldPassPhrase == null) {
-            oldPassPhrase = "";
+        if (saveParcel.oldPassPhrase == null) {
+            saveParcel.oldPassPhrase = "";
         }
-        if (newPassPhrase == null) {
-            newPassPhrase = "";
+        if (saveParcel.newPassPhrase == null) {
+            saveParcel.newPassPhrase = "";
         }
 
         if (mKR == null) {
-            buildNewSecretKey(userIds, keys, keysExpiryDates, keysUsages, newPassPhrase, oldPassPhrase); //new Keyring
+            buildNewSecretKey(saveParcel.userIDs, saveParcel.keys, saveParcel.keysExpiryDates,
+                    saveParcel.keysUsages, saveParcel.newPassPhrase, saveParcel.oldPassPhrase); //new Keyring
             return;
         }
 
@@ -381,6 +383,7 @@ public class PgpKeyOperation {
                 do we need to remove and add in?
          */
 
+        /*
         for (PGPSecretKey dKey : deleted_keys) {
             mKR = PGPSecretKeyRing.removeSecretKey(mKR, dKey);
         }
@@ -567,6 +570,7 @@ public class PgpKeyOperation {
         ProviderHelper.saveKeyRing(mContext, publicKeyRing);
 
         updateProgress(R.string.progress_done, 100, 100);
+        */
     }
 
     public PGPPublicKeyRing certifyKey(long masterKeyId, long pubKeyId, String passphrase)
