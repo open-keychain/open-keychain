@@ -10,25 +10,25 @@ import org.spongycastle.openpgp.PGPException;
 public abstract class PBEKeyEncryptionMethodGenerator
     extends PGPKeyEncryptionMethodGenerator
 {
-    private char[] passPhrase;
+    private char[] passphrase;
     private PGPDigestCalculator s2kDigestCalculator;
     private S2K s2k;
     private SecureRandom random;
     private int s2kCount;
 
     protected PBEKeyEncryptionMethodGenerator(
-        char[] passPhrase,
+        char[] passphrase,
         PGPDigestCalculator s2kDigestCalculator)
     {
-        this(passPhrase, s2kDigestCalculator, 0x60);
+        this(passphrase, s2kDigestCalculator, 0x60);
     }
 
     protected PBEKeyEncryptionMethodGenerator(
-        char[] passPhrase,
+        char[] passphrase,
         PGPDigestCalculator s2kDigestCalculator,
         int s2kCount)
     {
-        this.passPhrase = passPhrase;
+        this.passphrase = passphrase;
         this.s2kDigestCalculator = s2kDigestCalculator;
 
         if (s2kCount < 0 || s2kCount > 0xff)
@@ -63,7 +63,7 @@ public abstract class PBEKeyEncryptionMethodGenerator
             s2k = new S2K(s2kDigestCalculator.getAlgorithm(), iv, s2kCount);
         }
 
-        return PGPUtil.makeKeyFromPassPhrase(s2kDigestCalculator, encAlgorithm, s2k, passPhrase);
+        return PGPUtil.makeKeyFromPassPhrase(s2kDigestCalculator, encAlgorithm, s2k, passphrase);
     }
 
     public ContainedPacket generate(int encAlgorithm, byte[] sessionInfo)

@@ -557,10 +557,10 @@ public class BcPGPDSATest
         //
         // reading test extra data - key with edge condition for DSA key password.
         //
-        char []   passPhrase = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        char []   passphrase = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         sKey = new PGPSecretKeyRing(testPrivKey2, new BcKeyFingerprintCalculator());
-        pgpPrivKey = sKey.getSecretKey().extractPrivateKey(new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider()).build(passPhrase));
+        pgpPrivKey = sKey.getSecretKey().extractPrivateKey(new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider()).build(passphrase));
 
         AsymmetricKeyParameter bytes = new BcPGPKeyConverter().getPrivateKey(pgpPrivKey);
         

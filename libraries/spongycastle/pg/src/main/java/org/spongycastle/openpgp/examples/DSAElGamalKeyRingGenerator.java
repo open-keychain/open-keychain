@@ -32,7 +32,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
  * A simple utility class that generates a public/secret keyring containing a DSA signing
  * key and an El Gamal key for encryption.
  * <p>
- * usage: DSAElGamalKeyRingGenerator [-a] identity passPhrase
+ * usage: DSAElGamalKeyRingGenerator [-a] identity passphrase
  * <p>
  * Where identity is the name to be associated with the public key. The keys are placed 
  * in the files pub.[asc|bpg] and secret.[asc|bpg].
@@ -49,7 +49,7 @@ public class DSAElGamalKeyRingGenerator
         KeyPair         dsaKp,
         KeyPair         elgKp,
         String          identity,
-        char[]          passPhrase,
+        char[]          passphrase,
         boolean         armor)
         throws IOException, InvalidKeyException, NoSuchProviderException, SignatureException, PGPException
     {
@@ -62,7 +62,7 @@ public class DSAElGamalKeyRingGenerator
         PGPKeyPair        elgKeyPair = new JcaPGPKeyPair(PGPPublicKey.ELGAMAL_ENCRYPT, elgKp, new Date());
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1);
         PGPKeyRingGenerator    keyRingGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION, dsaKeyPair,
-                 identity, sha1Calc, null, null, new JcaPGPContentSignerBuilder(dsaKeyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256, sha1Calc).setProvider("SC").build(passPhrase));
+                 identity, sha1Calc, null, null, new JcaPGPContentSignerBuilder(dsaKeyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256, sha1Calc).setProvider("SC").build(passphrase));
         
         keyRingGen.addSubKey(elgKeyPair);
         
@@ -88,7 +88,7 @@ public class DSAElGamalKeyRingGenerator
 
         if (args.length < 2)
         {
-            System.out.println("DSAElGamalKeyRingGenerator [-a] identity passPhrase");
+            System.out.println("DSAElGamalKeyRingGenerator [-a] identity passphrase");
             System.exit(0);
         }
         
@@ -119,7 +119,7 @@ public class DSAElGamalKeyRingGenerator
         {
             if (args.length < 3)
             {
-                System.out.println("DSAElGamalKeyRingGenerator [-a] identity passPhrase");
+                System.out.println("DSAElGamalKeyRingGenerator [-a] identity passphrase");
                 System.exit(0);
             }
             

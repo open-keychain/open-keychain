@@ -152,14 +152,14 @@ public class PGPSecretKey
         PGPKeyPair                  keyPair,
         String                      id,
         int                         encAlgorithm,
-        char[]                      passPhrase,
+        char[]                      passphrase,
         PGPSignatureSubpacketVector hashedPcks,
         PGPSignatureSubpacketVector unhashedPcks,
         SecureRandom                rand,
         String                      provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, keyPair, id, encAlgorithm, passPhrase, false, hashedPcks, unhashedPcks, rand, provider);
+        this(certificationLevel, keyPair, id, encAlgorithm, passphrase, false, hashedPcks, unhashedPcks, rand, provider);
     }
 
    /**
@@ -170,7 +170,7 @@ public class PGPSecretKey
         PGPKeyPair                  keyPair,
         String                      id,
         int                         encAlgorithm,
-        char[]                      passPhrase,
+        char[]                      passphrase,
         boolean                     useSHA1,
         PGPSignatureSubpacketVector hashedPcks,
         PGPSignatureSubpacketVector unhashedPcks,
@@ -178,7 +178,7 @@ public class PGPSecretKey
         String                      provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, keyPair, id, encAlgorithm, passPhrase, useSHA1, hashedPcks, unhashedPcks, rand, PGPUtil.getProvider(provider));
+        this(certificationLevel, keyPair, id, encAlgorithm, passphrase, useSHA1, hashedPcks, unhashedPcks, rand, PGPUtil.getProvider(provider));
     }
 
     public PGPSecretKey(
@@ -202,7 +202,7 @@ public class PGPSecretKey
         PGPKeyPair                  keyPair,
         String                      id,
         int                         encAlgorithm,
-        char[]                      passPhrase,
+        char[]                      passphrase,
         boolean                     useSHA1,
         PGPSignatureSubpacketVector hashedPcks,
         PGPSignatureSubpacketVector unhashedPcks,
@@ -210,7 +210,7 @@ public class PGPSecretKey
         Provider                    provider)
         throws PGPException
     {
-        this(keyPair.getPrivateKey(), certifiedPublicKey(certificationLevel, keyPair, id, hashedPcks, unhashedPcks, new JcaPGPContentSignerBuilder(keyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1).setProvider(provider)), convertSHA1Flag(useSHA1), true, new JcePBESecretKeyEncryptorBuilder(encAlgorithm, new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1)).setProvider(provider).setSecureRandom(rand).build(passPhrase));
+        this(keyPair.getPrivateKey(), certifiedPublicKey(certificationLevel, keyPair, id, hashedPcks, unhashedPcks, new JcaPGPContentSignerBuilder(keyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1).setProvider(provider)), convertSHA1Flag(useSHA1), true, new JcePBESecretKeyEncryptorBuilder(encAlgorithm, new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1)).setProvider(provider).setSecureRandom(rand).build(passphrase));
     }
 
     private static PGPDigestCalculator convertSHA1Flag(boolean useSHA1)
@@ -284,14 +284,14 @@ public class PGPSecretKey
         Date                        time,
         String                      id,
         int                         encAlgorithm,
-        char[]                      passPhrase,
+        char[]                      passphrase,
         PGPSignatureSubpacketVector hashedPcks,
         PGPSignatureSubpacketVector unhashedPcks,
         SecureRandom                rand,
         String                      provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, new PGPKeyPair(algorithm,pubKey, privKey, time), id, encAlgorithm, passPhrase, hashedPcks, unhashedPcks, rand, provider);
+        this(certificationLevel, new PGPKeyPair(algorithm,pubKey, privKey, time), id, encAlgorithm, passphrase, hashedPcks, unhashedPcks, rand, provider);
     }
 
       /**
@@ -305,7 +305,7 @@ public class PGPSecretKey
         Date                        time,
         String                      id,
         int                         encAlgorithm,
-        char[]                      passPhrase,
+        char[]                      passphrase,
         boolean                     useSHA1,
         PGPSignatureSubpacketVector hashedPcks,
         PGPSignatureSubpacketVector unhashedPcks,
@@ -313,7 +313,7 @@ public class PGPSecretKey
         String                      provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, new PGPKeyPair(algorithm, pubKey, privKey, time), id, encAlgorithm, passPhrase, useSHA1, hashedPcks, unhashedPcks, rand, provider);
+        this(certificationLevel, new PGPKeyPair(algorithm, pubKey, privKey, time), id, encAlgorithm, passphrase, useSHA1, hashedPcks, unhashedPcks, rand, provider);
     }
 
     /**
@@ -545,7 +545,7 @@ public class PGPSecretKey
     /**
      * Extract a PGPPrivate key from the SecretKey's encrypted contents.
      * 
-     * @param passPhrase
+     * @param passphrase
      * @param provider
      * @return PGPPrivateKey
      * @throws PGPException
@@ -553,28 +553,28 @@ public class PGPSecretKey
      * @deprecated use method that takes a PBESecretKeyDecryptor
      */
     public  PGPPrivateKey extractPrivateKey(
-        char[]                passPhrase,
+        char[]                passphrase,
         String                provider)
         throws PGPException, NoSuchProviderException
     {
-        return extractPrivateKey(passPhrase, PGPUtil.getProvider(provider));
+        return extractPrivateKey(passphrase, PGPUtil.getProvider(provider));
     }
 
     /**
      * Extract a PGPPrivate key from the SecretKey's encrypted contents.
      *
-     * @param passPhrase
+     * @param passphrase
      * @param provider
      * @return PGPPrivateKey
      * @throws PGPException
      * @deprecated use method that takes a PBESecretKeyDecryptor
      */
     public  PGPPrivateKey extractPrivateKey(
-        char[]   passPhrase,
+        char[]   passphrase,
         Provider provider)
         throws PGPException
     {
-        return extractPrivateKey(new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider(provider).build()).setProvider(provider).build(passPhrase));
+        return extractPrivateKey(new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider(provider).build()).setProvider(provider).build(passphrase));
     }
 
     /**

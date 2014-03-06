@@ -57,7 +57,7 @@ public class JcePBESecretKeyDecryptorBuilder
         return this;
     }
 
-    public PBESecretKeyDecryptor build(char[] passPhrase)
+    public PBESecretKeyDecryptor build(char[] passphrase)
         throws PGPException
     {
         if (calculatorProvider == null)
@@ -65,7 +65,7 @@ public class JcePBESecretKeyDecryptorBuilder
             calculatorProvider = calculatorProviderBuilder.build();
         }
 
-        return new PBESecretKeyDecryptor(passPhrase, calculatorProvider)
+        return new PBESecretKeyDecryptor(passphrase, calculatorProvider)
         {
             public byte[] recoverKeyData(int encAlgorithm, byte[] key, byte[] iv, byte[] keyData, int keyOff, int keyLen)
                 throws PGPException

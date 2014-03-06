@@ -45,7 +45,7 @@ public class ByteArrayHandler
      * decrypt the passed in message stream
      * 
      * @param encrypted  The message to be decrypted.
-     * @param passPhrase Pass phrase (key)
+     * @param passphrase Pass phrase (key)
      * 
      * @return Clear text as a byte array.  I18N considerations are
      *         not handled by this routine
@@ -55,7 +55,7 @@ public class ByteArrayHandler
      */
     public static byte[] decrypt(
         byte[] encrypted,
-        char[] passPhrase)
+        char[] passphrase)
         throws IOException, PGPException, NoSuchProviderException
     {
         InputStream in = new ByteArrayInputStream(encrypted);
@@ -80,7 +80,7 @@ public class ByteArrayHandler
 
         PGPPBEEncryptedData pbe = (PGPPBEEncryptedData)enc.get(0);
 
-        InputStream clear = pbe.getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("SC").build()).setProvider("SC").build(passPhrase));
+        InputStream clear = pbe.getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("SC").build()).setProvider("SC").build(passphrase));
 
         PGPObjectFactory        pgpFact = new PGPObjectFactory(clear);
 
@@ -97,7 +97,7 @@ public class ByteArrayHandler
      * Simple PGP encryptor between byte[].
      * 
      * @param clearData  The test to be encrypted
-     * @param passPhrase The pass phrase (key).  This method assumes that the
+     * @param passphrase The pass phrase (key).  This method assumes that the
      *                   key is a simple pass phrase, and does not yet support
      *                   RSA or more sophisiticated keying.
      * @param fileName   File name. This is used in the Literal Data Packet (tag 11)
@@ -118,7 +118,7 @@ public class ByteArrayHandler
      */
     public static byte[] encrypt(
         byte[]  clearData,
-        char[]  passPhrase,
+        char[]  passphrase,
         String  fileName,
         int     algorithm,
         boolean armor)
@@ -140,7 +140,7 @@ public class ByteArrayHandler
         }
 
         PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(new JcePGPDataEncryptorBuilder(algorithm).setSecureRandom(new SecureRandom()).setProvider("SC"));
-        encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase).setProvider("SC"));
+        encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passphrase).setProvider("SC"));
 
         OutputStream encOut = encGen.open(out, compressedData.length);
 
@@ -184,8 +184,8 @@ public class ByteArrayHandler
     {
         Security.addProvider(new BouncyCastleProvider());
         
-        String passPhrase = "Dick Beck";
-        char[] passArray = passPhrase.toCharArray();
+        String passphrase = "Dick Beck";
+        char[] passArray = passphrase.toCharArray();
 
         byte[] original = "Hello world".getBytes();
         System.out.println("Starting PGP test");

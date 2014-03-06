@@ -101,14 +101,14 @@ public class JcePBESecretKeyEncryptorBuilder
         return this;
     }
 
-    public PBESecretKeyEncryptor build(char[] passPhrase)
+    public PBESecretKeyEncryptor build(char[] passphrase)
     {
         if (random == null)
         {
             random = new SecureRandom();
         }
 
-        return new PBESecretKeyEncryptor(encAlgorithm, s2kDigestCalculator, s2kCount, random, passPhrase)
+        return new PBESecretKeyEncryptor(encAlgorithm, s2kDigestCalculator, s2kCount, random, passphrase)
         {
             private Cipher c;
             private byte[] iv;

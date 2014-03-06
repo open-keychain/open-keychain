@@ -202,29 +202,29 @@ public class PGPEncryptedDataGenerator
     /**
      * Add a PBE encryption method to the encrypted object using the default algorithm (S2K_SHA1).
      * 
-     * @param passPhrase
+     * @param passphrase
      * @throws NoSuchProviderException
      * @throws PGPException
      * @deprecated  use addMethod that takes  PGPKeyEncryptionMethodGenerator
      */
     public void addMethod(
-        char[]    passPhrase) 
+        char[]    passphrase)
         throws NoSuchProviderException, PGPException
     {
-        addMethod(passPhrase, HashAlgorithmTags.SHA1);
+        addMethod(passphrase, HashAlgorithmTags.SHA1);
     }
 
     /**
      * Add a PBE encryption method to the encrypted object.
      *
-     * @param passPhrase passphrase to use to generate key.
+     * @param passphrase passphrase to use to generate key.
      * @param s2kDigest digest algorithm to use for S2K calculation
      * @throws NoSuchProviderException
      * @throws PGPException
      * @deprecated  use addMethod that takes  PGPKeyEncryptionMethodGenerator
      */
     public void addMethod(
-        char[]    passPhrase,
+        char[]    passphrase,
         int       s2kDigest)
         throws NoSuchProviderException, PGPException
     {
@@ -233,7 +233,7 @@ public class PGPEncryptedDataGenerator
             defProvider = new BouncyCastleProvider();
         }
 
-        addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase, new JcaPGPDigestCalculatorProviderBuilder().setProvider(defProvider).build().get(s2kDigest)).setProvider(defProvider).setSecureRandom(rand));
+        addMethod(new JcePBEKeyEncryptionMethodGenerator(passphrase, new JcaPGPDigestCalculatorProviderBuilder().setProvider(defProvider).build().get(s2kDigest)).setProvider(defProvider).setSecureRandom(rand));
     }
 
     /**

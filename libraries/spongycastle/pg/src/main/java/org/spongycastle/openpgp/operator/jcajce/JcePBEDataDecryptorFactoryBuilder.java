@@ -55,9 +55,9 @@ public class JcePBEDataDecryptorFactoryBuilder
         return this;
     }
 
-    public PBEDataDecryptorFactory build(char[] passPhrase)
+    public PBEDataDecryptorFactory build(char[] passphrase)
     {
-         return new PBEDataDecryptorFactory(passPhrase, calculatorProvider)
+         return new PBEDataDecryptorFactory(passphrase, calculatorProvider)
          {
              public byte[] recoverSessionData(int keyAlgorithm, byte[] key, byte[] secKeyData)
                  throws PGPException

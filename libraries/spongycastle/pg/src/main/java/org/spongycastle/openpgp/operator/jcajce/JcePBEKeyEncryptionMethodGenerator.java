@@ -30,46 +30,46 @@ public class JcePBEKeyEncryptionMethodGenerator
     /**
      *  Create a PBE encryption method generator using the provided calculator for key calculation.
      *
-     * @param passPhrase  the passphrase to use as the primary source of key material.
+     * @param passphrase  the passphrase to use as the primary source of key material.
      * @param s2kDigestCalculator  the digest calculator to use for key calculation.
      */
-    public JcePBEKeyEncryptionMethodGenerator(char[] passPhrase, PGPDigestCalculator s2kDigestCalculator)
+    public JcePBEKeyEncryptionMethodGenerator(char[] passphrase, PGPDigestCalculator s2kDigestCalculator)
     {
-        super(passPhrase, s2kDigestCalculator);
+        super(passphrase, s2kDigestCalculator);
     }
 
     /**
      * Create a PBE encryption method generator using the default SHA-1 digest calculator for key calculation.
      *
-     * @param passPhrase  the passphrase to use as the primary source of key material.
+     * @param passphrase  the passphrase to use as the primary source of key material.
      */
-    public JcePBEKeyEncryptionMethodGenerator(char[] passPhrase)
+    public JcePBEKeyEncryptionMethodGenerator(char[] passphrase)
     {
-        this(passPhrase, new SHA1PGPDigestCalculator());
+        this(passphrase, new SHA1PGPDigestCalculator());
     }
 
     /**
      *  Create a PBE encryption method generator using the provided calculator and S2K count for key calculation.
      *
-     * @param passPhrase  the passphrase to use as the primary source of key material.
+     * @param passphrase  the passphrase to use as the primary source of key material.
      * @param s2kDigestCalculator  the digest calculator to use for key calculation.
      * @param s2kCount the S2K count to use.
      */
-    public JcePBEKeyEncryptionMethodGenerator(char[] passPhrase, PGPDigestCalculator s2kDigestCalculator, int s2kCount)
+    public JcePBEKeyEncryptionMethodGenerator(char[] passphrase, PGPDigestCalculator s2kDigestCalculator, int s2kCount)
     {
-        super(passPhrase, s2kDigestCalculator, s2kCount);
+        super(passphrase, s2kDigestCalculator, s2kCount);
     }
 
     /**
      * Create a PBE encryption method generator using the default SHA-1 digest calculator and
      * a S2K count other than the default of 0x60  for key calculation
      *
-     * @param passPhrase the passphrase to use as the primary source of key material.
+     * @param passphrase the passphrase to use as the primary source of key material.
      * @param s2kCount the S2K count to use.
      */
-    public JcePBEKeyEncryptionMethodGenerator(char[] passPhrase, int s2kCount)
+    public JcePBEKeyEncryptionMethodGenerator(char[] passphrase, int s2kCount)
     {
-        super(passPhrase, new SHA1PGPDigestCalculator(), s2kCount);
+        super(passphrase, new SHA1PGPDigestCalculator(), s2kCount);
     }
 
     public JcePBEKeyEncryptionMethodGenerator setProvider(Provider provider)

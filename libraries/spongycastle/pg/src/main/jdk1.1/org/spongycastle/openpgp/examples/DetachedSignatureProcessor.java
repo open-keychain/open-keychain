@@ -32,7 +32,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 /**
  * A simple utility class that creates seperate signatures for files and verifies them.
  * <p>
- * To sign a file: DetachedSignatureProcessor -s [-a] fileName secretKey passPhrase.<br>
+ * To sign a file: DetachedSignatureProcessor -s [-a] fileName secretKey passphrase.<br>
  * If -a is specified the output file will be "ascii-armored".
  * <p>
  * To decrypt: DetachedSignatureProcessor -v  fileName signatureFile publicKeyFile.
@@ -193,7 +193,7 @@ public class DetachedSignatureProcessor
         }
         else
         {
-            System.err.println("usage: DetachedSignatureProcessor [-s [-a] file keyfile passPhrase]|[-v file sigFile keyFile]");
+            System.err.println("usage: DetachedSignatureProcessor [-s [-a] file keyfile passphrase]|[-v file sigFile keyFile]");
         }
     }
 }

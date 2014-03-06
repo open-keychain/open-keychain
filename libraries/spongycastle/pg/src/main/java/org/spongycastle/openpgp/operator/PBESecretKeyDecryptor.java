@@ -5,12 +5,12 @@ import org.spongycastle.openpgp.PGPException;
 
 public abstract class PBESecretKeyDecryptor
 {
-    private char[] passPhrase;
+    private char[] passphrase;
     private PGPDigestCalculatorProvider calculatorProvider;
 
-    protected PBESecretKeyDecryptor(char[] passPhrase, PGPDigestCalculatorProvider calculatorProvider)
+    protected PBESecretKeyDecryptor(char[] passphrase, PGPDigestCalculatorProvider calculatorProvider)
     {
-        this.passPhrase = passPhrase;
+        this.passphrase = passphrase;
         this.calculatorProvider = calculatorProvider;
     }
 
@@ -23,7 +23,7 @@ public abstract class PBESecretKeyDecryptor
     public byte[] makeKeyFromPassPhrase(int keyAlgorithm, S2K s2k)
         throws PGPException
     {
-        return PGPUtil.makeKeyFromPassPhrase(calculatorProvider, keyAlgorithm, s2k, passPhrase);
+        return PGPUtil.makeKeyFromPassPhrase(calculatorProvider, keyAlgorithm, s2k, passphrase);
     }
 
     public abstract byte[] recoverKeyData(int encAlgorithm, byte[] key, byte[] iv, byte[] keyData, int keyOff, int keyLen)

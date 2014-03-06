@@ -574,10 +574,10 @@ public class PGPDSATest
         //
         // reading test extra data - key with edge condition for DSA key password.
         //
-        char []   passPhrase = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        char []   passphrase = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
         sKey = new PGPSecretKeyRing(testPrivKey2);
-        pgpPrivKey = sKey.getSecretKey().extractPrivateKey(passPhrase, "SC");
+        pgpPrivKey = sKey.getSecretKey().extractPrivateKey(passphrase, "SC");
 
         byte[]    bytes = pgpPrivKey.getKey().getEncoded();
         

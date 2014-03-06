@@ -8,22 +8,22 @@ import org.spongycastle.openpgp.PGPException;
 public abstract class PBESecretKeyEncryptor
 {
     protected int encAlgorithm;
-    protected char[] passPhrase;
+    protected char[] passphrase;
     protected PGPDigestCalculator s2kDigestCalculator;
     protected int s2kCount;
     protected S2K s2k;
 
     protected SecureRandom random;
 
-    protected PBESecretKeyEncryptor(int encAlgorithm, PGPDigestCalculator s2kDigestCalculator, SecureRandom random, char[] passPhrase)
+    protected PBESecretKeyEncryptor(int encAlgorithm, PGPDigestCalculator s2kDigestCalculator, SecureRandom random, char[] passphrase)
     {
-        this(encAlgorithm, s2kDigestCalculator, 0x60, random, passPhrase);
+        this(encAlgorithm, s2kDigestCalculator, 0x60, random, passphrase);
     }
 
-    protected PBESecretKeyEncryptor(int encAlgorithm, PGPDigestCalculator s2kDigestCalculator, int s2kCount, SecureRandom random, char[] passPhrase)
+    protected PBESecretKeyEncryptor(int encAlgorithm, PGPDigestCalculator s2kDigestCalculator, int s2kCount, SecureRandom random, char[] passphrase)
     {
         this.encAlgorithm = encAlgorithm;
-        this.passPhrase = passPhrase;
+        this.passphrase = passphrase;
         this.random = random;
         this.s2kDigestCalculator = s2kDigestCalculator;
 
@@ -53,7 +53,7 @@ public abstract class PBESecretKeyEncryptor
     public byte[] getKey()
         throws PGPException
     {
-        return PGPUtil.makeKeyFromPassPhrase(s2kDigestCalculator, encAlgorithm, s2k, passPhrase);
+        return PGPUtil.makeKeyFromPassPhrase(s2kDigestCalculator, encAlgorithm, s2k, passphrase);
     }
 
     public S2K getS2K()

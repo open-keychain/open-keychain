@@ -30,7 +30,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
 /**
  * A simple utility class that generates a RSA PGPPublicKey/PGPSecretKey pair.
  * <p>
- * usage: RSAKeyPairGenerator [-a] identity passPhrase
+ * usage: RSAKeyPairGenerator [-a] identity passphrase
  * <p>
  * Where identity is the name to be associated with the public key. The keys are placed 
  * in the files pub.[asc|bpg] and secret.[asc|bpg].
@@ -43,7 +43,7 @@ public class RSAKeyPairGenerator
         PublicKey       publicKey,
         PrivateKey      privateKey,
         String          identity,
-        char[]          passPhrase,
+        char[]          passphrase,
         boolean         armor)
         throws IOException, InvalidKeyException, NoSuchProviderException, SignatureException, PGPException
     {    
@@ -54,7 +54,7 @@ public class RSAKeyPairGenerator
 
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1);
         PGPKeyPair          keyPair = new PGPKeyPair(PGPPublicKey.RSA_GENERAL, publicKey, privateKey, new Date());
-        PGPSecretKey        secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, keyPair, identity, sha1Calc, null, null, new JcaPGPContentSignerBuilder(keyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.CAST5, sha1Calc).setProvider("SC").build(passPhrase));
+        PGPSecretKey        secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, keyPair, identity, sha1Calc, null, null, new JcaPGPContentSignerBuilder(keyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.CAST5, sha1Calc).setProvider("SC").build(passphrase));
         
         secretKey.encode(secretOut);
         
@@ -86,7 +86,7 @@ public class RSAKeyPairGenerator
         
         if (args.length < 2)
         {
-            System.out.println("RSAKeyPairGenerator [-a] identity passPhrase");
+            System.out.println("RSAKeyPairGenerator [-a] identity passphrase");
             System.exit(0);
         }
         
@@ -94,7 +94,7 @@ public class RSAKeyPairGenerator
         {
             if (args.length < 3)
             {
-                System.out.println("RSAKeyPairGenerator [-a] identity passPhrase");
+                System.out.println("RSAKeyPairGenerator [-a] identity passphrase");
                 System.exit(0);
             }
             
