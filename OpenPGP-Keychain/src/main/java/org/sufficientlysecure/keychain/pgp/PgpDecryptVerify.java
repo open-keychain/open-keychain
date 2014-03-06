@@ -335,7 +335,7 @@ public class PgpDecryptVerify {
 
             currentProgress += 5;
             updateProgress(R.string.progress_extracting_key, currentProgress, 100);
-            PGPPrivateKey privateKey = null;
+            PGPPrivateKey privateKey;
             try {
                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
@@ -593,6 +593,8 @@ public class PgpDecryptVerify {
 
         if (signature == null) {
             signatureResult.setStatus(OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY);
+            returnData.setSignatureResult(signatureResult);
+
             updateProgress(R.string.progress_done, 100, 100);
             return returnData;
         }
@@ -630,9 +632,9 @@ public class PgpDecryptVerify {
 
         // TODO: what about SIGNATURE_SUCCESS_CERTIFIED and SIGNATURE_ERROR????
 
-        updateProgress(R.string.progress_done, 100, 100);
-
         returnData.setSignatureResult(signatureResult);
+
+        updateProgress(R.string.progress_done, 100, 100);
         return returnData;
     }
 
