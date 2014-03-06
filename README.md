@@ -116,6 +116,15 @@ When changing build files or dependencies, respect the following requirements:
 * No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
 * Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
 * Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
+* In order to update the build system to a newer gradle Version you need to:
+  * Update every build.gradle file with the new gradle version and/or gradle plugin version
+    * build.gradle
+    * OpenPGP-Keychain/build.gradle
+    * OpenPGP-Keychain-API/build.gradle
+    * OpenPGP-Keychain-Api/libraries/build.gradle
+    * OpenPGP-Keychain/example-app/build.gradle
+  * run ./gradlew wrapper twice to update gradle and download the new jar file
+  * commit the new jar and property files
 
 ### Translations
 
