@@ -53,12 +53,16 @@ public class SaveKeyringParcel implements Parcelable {
         deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(source.createByteArray());
         keysExpiryDates = (ArrayList<GregorianCalendar>)source.readSerializable();
         keysUsages = source.readArrayList(Integer.class.getClassLoader());
+        newPassPhrase = source.readString();
+        oldPassPhrase = source.readString();
+        source.readBooleanArray(newKeys);
+        keys = PgpConversionHelper.BytesToPGPSecretKeyList(source.createByteArray());
     }
 
     @Override
     public void writeToParcel(Parcel destination, int flags)
     {
-        destination.writeSerializable(userIDs);
+        destination.writeSerializable(userIDs); //might not be the best method to store.
         destination.writeSerializable(originalIDs);
         destination.writeSerializable(deletedIDs);
         destination.writeByte((byte) (primaryIDChanged ? 1 : 0));
@@ -69,7 +73,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeString(newPassPhrase);
         destination.writeString(oldPassPhrase);
         destination.writeBooleanArray(newKeys);
-        destination.writeByteArray();
+        destination.writeByteArray(PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
