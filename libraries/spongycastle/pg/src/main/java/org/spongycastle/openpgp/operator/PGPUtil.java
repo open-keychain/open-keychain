@@ -19,7 +19,7 @@ class PGPUtil
         PGPDigestCalculator digestCalculator,
         int     algorithm,
         S2K     s2k,
-        char[]  passPhrase)
+        char[]  passphrase)
         throws PGPException
     {
         String    algName = null;
@@ -71,7 +71,7 @@ class PGPUtil
             throw new PGPException("unknown symmetric algorithm: " + algorithm);
         }
 
-        byte[]    pBytes = Strings.toUTF8ByteArray(passPhrase);
+        byte[]    pBytes = Strings.toUTF8ByteArray(passphrase);
         byte[]    keyBytes = new byte[(keySize + 7) / 8];
 
         int    generatedBytes = 0;
@@ -197,7 +197,7 @@ class PGPUtil
         PGPDigestCalculatorProvider digCalcProvider,
         int     algorithm,
         S2K     s2k,
-        char[]  passPhrase)
+        char[]  passphrase)
         throws PGPException
     {
         PGPDigestCalculator digestCalculator;
@@ -211,6 +211,6 @@ class PGPUtil
             digestCalculator = digCalcProvider.get(HashAlgorithmTags.MD5);
         }
 
-        return makeKeyFromPassPhrase(digestCalculator, algorithm, s2k, passPhrase);
+        return makeKeyFromPassPhrase(digestCalculator, algorithm, s2k, passphrase);
     }
 }

@@ -36,7 +36,7 @@ import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 /**
  * A simple utility class that creates clear signed files and verifies them.
  * <p>
- * To sign a file: ClearSignedFileProcessor -s fileName secretKey passPhrase.<br>
+ * To sign a file: ClearSignedFileProcessor -s fileName secretKey passphrase.<br>
  * <p>
  * To decrypt: ClearSignedFileProcessor -v fileName signatureFile publicKeyFile.
  */
@@ -384,7 +384,7 @@ public class ClearSignedFileProcessor
         }
         else
         {
-            System.err.println("usage: ClearSignedFileProcessor [-s file keyfile passPhrase]|[-v sigFile keyFile]");
+            System.err.println("usage: ClearSignedFileProcessor [-s file keyfile passphrase]|[-v sigFile keyFile]");
         }
     }
 }

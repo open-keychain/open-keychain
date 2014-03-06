@@ -618,7 +618,7 @@ public class PGPRSATest
     private void sigsubpacketTest()
         throws Exception
     {
-        char[] passPhrase = "test".toCharArray();
+        char[] passphrase = "test".toCharArray();
         String identity = "TEST <test@test.org>";
         Date date = new Date();
         Security.addProvider(new BouncyCastleProvider());
@@ -653,7 +653,7 @@ public class PGPRSATest
         PGPSignatureSubpacketVector hashedPcks = svg.generate();
 
         PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
-            sgnKeyPair, identity, PGPEncryptedData.AES_256, passPhrase,
+            sgnKeyPair, identity, PGPEncryptedData.AES_256, passphrase,
             true, hashedPcks, unhashedPcks, new SecureRandom(), "SC");
 
         svg = new PGPSignatureSubpacketGenerator();
@@ -733,7 +733,7 @@ public class PGPRSATest
     private void multipleExpiryTest()
         throws Exception
     {
-        char[] passPhrase = "test".toCharArray();
+        char[] passphrase = "test".toCharArray();
         String identity = "TEST <test@test.org>";
         Date date = new Date();
         Security.addProvider(new BouncyCastleProvider());
@@ -771,7 +771,7 @@ public class PGPRSATest
         PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder().build().get(HashAlgorithmTags.SHA1);
         PGPKeyRingGenerator keyRingGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
             sgnKeyPair, identity,
-            sha1Calc, hashedPcks, unhashedPcks, new JcaPGPContentSignerBuilder(sgnKeyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256).setProvider("SC").build(passPhrase));
+            sha1Calc, hashedPcks, unhashedPcks, new JcaPGPContentSignerBuilder(sgnKeyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1), new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256).setProvider("SC").build(passphrase));
 
         svg = new PGPSignatureSubpacketGenerator();
         svg.setKeyExpirationTime(true, 86400L * 366 * 2);
@@ -1122,7 +1122,7 @@ public class PGPRSATest
         //
         // key pair generation - CAST5 encryption
         //
-        char[]                    passPhrase = "hello".toCharArray();
+        char[]                    passphrase = "hello".toCharArray();
         
         KeyPairGenerator    kpg = KeyPairGenerator.getInstance("RSA", "SC");
     
@@ -1130,7 +1130,7 @@ public class PGPRSATest
     
         KeyPair                    kp = kpg.generateKeyPair();
 
-        PGPSecretKey    secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, PublicKeyAlgorithmTags.RSA_GENERAL, kp.getPublic(), kp.getPrivate(), new Date(), "fred", SymmetricKeyAlgorithmTags.CAST5, passPhrase, null, null, new SecureRandom(), "SC");
+        PGPSecretKey    secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, PublicKeyAlgorithmTags.RSA_GENERAL, kp.getPublic(), kp.getPrivate(), new Date(), "fred", SymmetricKeyAlgorithmTags.CAST5, passphrase, null, null, new SecureRandom(), "SC");
     
         PGPPublicKey    key = secretKey.getPublicKey();
 
@@ -1149,7 +1149,7 @@ public class PGPRSATest
             fail("failed to verify certification");
         }
 
-        pgpPrivKey = secretKey.extractPrivateKey(passPhrase, "SC");
+        pgpPrivKey = secretKey.extractPrivateKey(passphrase, "SC");
         
         key = PGPPublicKey.removeCertification(key, uid, sig);
         
@@ -1166,7 +1166,7 @@ public class PGPRSATest
 
         PGPSignatureGenerator sGen = new PGPSignatureGenerator(PublicKeyAlgorithmTags.RSA_GENERAL, HashAlgorithmTags.SHA1, "SC");
         
-        sGen.initSign(PGPSignature.KEY_REVOCATION, secretKey.extractPrivateKey(passPhrase, "SC"));
+        sGen.initSign(PGPSignature.KEY_REVOCATION, secretKey.extractPrivateKey(passphrase, "SC"));
 
         sig = sGen.generateCertification(key);
 
@@ -1207,9 +1207,9 @@ public class PGPRSATest
         //
         kp = kpg.generateKeyPair();
 
-        secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, PublicKeyAlgorithmTags.RSA_GENERAL, kp.getPublic(), kp.getPrivate(), new Date(), "fred", SymmetricKeyAlgorithmTags.AES_256, passPhrase, null, null, new SecureRandom(), "SC");
+        secretKey = new PGPSecretKey(PGPSignature.DEFAULT_CERTIFICATION, PublicKeyAlgorithmTags.RSA_GENERAL, kp.getPublic(), kp.getPrivate(), new Date(), "fred", SymmetricKeyAlgorithmTags.AES_256, passphrase, null, null, new SecureRandom(), "SC");
     
-        secretKey.extractPrivateKey(passPhrase, "SC");
+        secretKey.extractPrivateKey(passphrase, "SC");
         
         secretKey.encode(new ByteArrayOutputStream());
         
@@ -1218,7 +1218,7 @@ public class PGPRSATest
         //
         String  newPass = "newPass";
         
-        secretKey = PGPSecretKey.copyWithNewPassword(secretKey, passPhrase, newPass.toCharArray(), secretKey.getKeyEncryptionAlgorithm(), new SecureRandom(), "SC");
+        secretKey = PGPSecretKey.copyWithNewPassword(secretKey, passphrase, newPass.toCharArray(), secretKey.getKeyEncryptionAlgorithm(), new SecureRandom(), "SC");
         
         secretKey.extractPrivateKey(newPass.toCharArray(), "SC");
         

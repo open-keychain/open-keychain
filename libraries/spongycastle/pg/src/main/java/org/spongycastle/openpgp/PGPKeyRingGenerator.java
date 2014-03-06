@@ -39,7 +39,7 @@ public class PGPKeyRingGenerator
      * @param masterKey the master key pair.
      * @param id the id to be associated with the ring.
      * @param encAlgorithm the algorithm to be used to protect secret keys.
-     * @param passPhrase the passPhrase to be used to protect secret keys.
+     * @param passphrase the passphrase to be used to protect secret keys.
      * @param hashedPcks packets to be included in the certification hash.
      * @param unhashedPcks packets to be attached unhashed to the certification.
      * @param rand input secured random
@@ -54,14 +54,14 @@ public class PGPKeyRingGenerator
         PGPKeyPair                     masterKey,
         String                         id,
         int                            encAlgorithm,
-        char[]                         passPhrase,
+        char[]                         passphrase,
         PGPSignatureSubpacketVector    hashedPcks,
         PGPSignatureSubpacketVector    unhashedPcks,
         SecureRandom                   rand,
         String                         provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, masterKey, id, encAlgorithm, passPhrase, false, hashedPcks, unhashedPcks, rand, provider);
+        this(certificationLevel, masterKey, id, encAlgorithm, passphrase, false, hashedPcks, unhashedPcks, rand, provider);
     }
 
     /**
@@ -71,7 +71,7 @@ public class PGPKeyRingGenerator
      * @param masterKey the master key pair.
      * @param id the id to be associated with the ring.
      * @param encAlgorithm the algorithm to be used to protect secret keys.
-     * @param passPhrase the passPhrase to be used to protect secret keys.
+     * @param passphrase the passphrase to be used to protect secret keys.
      * @param useSHA1 checksum the secret keys with SHA1 rather than the older 16 bit checksum.
      * @param hashedPcks packets to be included in the certification hash.
      * @param unhashedPcks packets to be attached unhashed to the certification.
@@ -87,7 +87,7 @@ public class PGPKeyRingGenerator
         PGPKeyPair                     masterKey,
         String                         id,
         int                            encAlgorithm,
-        char[]                         passPhrase,
+        char[]                         passphrase,
         boolean                        useSHA1,
         PGPSignatureSubpacketVector    hashedPcks,
         PGPSignatureSubpacketVector    unhashedPcks,
@@ -95,7 +95,7 @@ public class PGPKeyRingGenerator
         String                         provider)
         throws PGPException, NoSuchProviderException
     {
-        this(certificationLevel, masterKey, id, encAlgorithm, passPhrase, useSHA1, hashedPcks, unhashedPcks, rand, PGPUtil.getProvider(provider));
+        this(certificationLevel, masterKey, id, encAlgorithm, passphrase, useSHA1, hashedPcks, unhashedPcks, rand, PGPUtil.getProvider(provider));
     }
 
     /**
@@ -105,7 +105,7 @@ public class PGPKeyRingGenerator
      * @param masterKey the master key pair.
      * @param id the id to be associated with the ring.
      * @param encAlgorithm the algorithm to be used to protect secret keys.
-     * @param passPhrase the passPhrase to be used to protect secret keys.
+     * @param passphrase the passphrase to be used to protect secret keys.
      * @param useSHA1 checksum the secret keys with SHA1 rather than the older 16 bit checksum.
      * @param hashedPcks packets to be included in the certification hash.
      * @param unhashedPcks packets to be attached unhashed to the certification.
@@ -121,7 +121,7 @@ public class PGPKeyRingGenerator
         PGPKeyPair                     masterKey,
         String                         id,
         int                            encAlgorithm,
-        char[]                         passPhrase,
+        char[]                         passphrase,
         boolean                        useSHA1,
         PGPSignatureSubpacketVector    hashedPcks,
         PGPSignatureSubpacketVector    unhashedPcks,
@@ -132,7 +132,7 @@ public class PGPKeyRingGenerator
         this.masterKey = masterKey;
         this.hashedPcks = hashedPcks;
         this.unhashedPcks = unhashedPcks;
-        this.keyEncryptor = new JcePBESecretKeyEncryptorBuilder(encAlgorithm).setProvider(provider).setSecureRandom(rand).build(passPhrase);
+        this.keyEncryptor = new JcePBESecretKeyEncryptorBuilder(encAlgorithm).setProvider(provider).setSecureRandom(rand).build(passphrase);
         this.checksumCalculator = convertSHA1Flag(useSHA1);
         this.keySignerBuilder = new JcaPGPContentSignerBuilder(masterKey.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
 

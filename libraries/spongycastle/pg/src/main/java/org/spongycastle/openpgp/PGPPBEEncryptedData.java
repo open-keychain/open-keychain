@@ -43,9 +43,9 @@ public class PGPPBEEncryptedData
     }
 
     /**
-     * Return the decrypted input stream, using the passed in passPhrase.
+     * Return the decrypted input stream, using the passed in passphrase.
      *
-     * @param passPhrase
+     * @param passphrase
      * @param provider
      * @return InputStream
      * @throws PGPException
@@ -53,28 +53,28 @@ public class PGPPBEEncryptedData
      *  @deprecated use PBEDataDecryptorFactory method
      */
     public InputStream getDataStream(
-        char[]                passPhrase,
+        char[]                passphrase,
         String                provider)
         throws PGPException, NoSuchProviderException
     {
-        return getDataStream(passPhrase, PGPUtil.getProvider(provider));
+        return getDataStream(passphrase, PGPUtil.getProvider(provider));
     }
 
     /**
-     * Return the decrypted input stream, using the passed in passPhrase.
+     * Return the decrypted input stream, using the passed in passphrase.
      * 
-     * @param passPhrase
+     * @param passphrase
      * @param provider
      * @return InputStream
      * @throws PGPException
      * @deprecated use PBEDataDecryptorFactory method
      */
     public InputStream getDataStream(
-        char[]                passPhrase,
+        char[]                passphrase,
         Provider              provider)
         throws PGPException
     {
-        return getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider(provider).build()).setProvider(provider).build(passPhrase));
+        return getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider(provider).build()).setProvider(provider).build(passphrase));
     }
 
    /**

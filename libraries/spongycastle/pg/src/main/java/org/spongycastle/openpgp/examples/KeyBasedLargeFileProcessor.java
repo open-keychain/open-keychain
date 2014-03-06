@@ -42,7 +42,7 @@ import org.spongycastle.util.io.Streams;
  * If -a is specified the output file will be "ascii-armored".
  * If -i is specified the output file will be have integrity checking added.
  * <p>
- * To decrypt: KeyBasedLargeFileProcessor -d fileName secretKeyFile passPhrase.
+ * To decrypt: KeyBasedLargeFileProcessor -d fileName secretKeyFile passphrase.
  * <p>
  * Note 1: this example will silently overwrite files, nor does it pay any attention to
  * the specification of "_CONSOLE" in the filename. It also expects that a single pass phrase
@@ -252,7 +252,7 @@ public class KeyBasedLargeFileProcessor
 
         if (args.length == 0)
         {
-            System.err.println("usage: KeyBasedLargeFileProcessor -e|-d [-a|ai] file [secretKeyFile passPhrase|pubKeyFile]");
+            System.err.println("usage: KeyBasedLargeFileProcessor -e|-d [-a|ai] file [secretKeyFile passphrase|pubKeyFile]");
             return;
         }
         
@@ -277,7 +277,7 @@ public class KeyBasedLargeFileProcessor
         }
         else
         {
-            System.err.println("usage: KeyBasedLargeFileProcessor -d|-e [-a|ai] file [secretKeyFile passPhrase|pubKeyFile]");
+            System.err.println("usage: KeyBasedLargeFileProcessor -d|-e [-a|ai] file [secretKeyFile passphrase|pubKeyFile]");
         }
     }
 }

@@ -78,14 +78,14 @@ public class BcPBESecretKeyEncryptorBuilder
         return this;
     }
 
-    public PBESecretKeyEncryptor build(char[] passPhrase)
+    public PBESecretKeyEncryptor build(char[] passphrase)
     {
         if (this.random == null)
         {
             this.random = new SecureRandom();
         }
 
-        return new PBESecretKeyEncryptor(encAlgorithm, s2kDigestCalculator, s2kCount, this.random, passPhrase)
+        return new PBESecretKeyEncryptor(encAlgorithm, s2kDigestCalculator, s2kCount, this.random, passphrase)
         {
             private byte[] iv;
 

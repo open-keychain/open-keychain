@@ -33,11 +33,11 @@ import org.spongycastle.util.io.Streams;
  * A simple utility class that encrypts/decrypts password based
  * encryption files.
  * <p>
- * To encrypt a file: PBEFileProcessor -e [-ai] fileName passPhrase.<br>
+ * To encrypt a file: PBEFileProcessor -e [-ai] fileName passphrase.<br>
  * If -a is specified the output file will be "ascii-armored".<br>
  * If -i is specified the output file will be "integrity protected".
  * <p>
- * To decrypt: PBEFileProcessor -d fileName passPhrase.
+ * To decrypt: PBEFileProcessor -d fileName passphrase.
  * <p>
  * Note: this example will silently overwrite files, nor does it pay any attention to
  * the specification of "_CONSOLE" in the filename. It also expects that a single pass phrase
@@ -45,11 +45,11 @@ import org.spongycastle.util.io.Streams;
  */
 public class PBEFileProcessor
 {
-    private static void decryptFile(String inputFileName, char[] passPhrase)
+    private static void decryptFile(String inputFileName, char[] passphrase)
         throws IOException, NoSuchProviderException, PGPException
     {
         InputStream in = new BufferedInputStream(new FileInputStream(inputFileName));
-        decryptFile(in, passPhrase);
+        decryptFile(in, passphrase);
         in.close();
     }
 
@@ -58,7 +58,7 @@ public class PBEFileProcessor
      */
     private static void decryptFile(
         InputStream    in,
-        char[]         passPhrase)
+        char[]         passphrase)
         throws IOException, NoSuchProviderException, PGPException
     {
         in = PGPUtil.getDecoderStream(in);
@@ -81,7 +81,7 @@ public class PBEFileProcessor
 
         PGPPBEEncryptedData     pbe = (PGPPBEEncryptedData)enc.get(0);
 
-        InputStream clear = pbe.getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("SC").build()).setProvider("SC").build(passPhrase));
+        InputStream clear = pbe.getDataStream(new JcePBEDataDecryptorFactoryBuilder(new JcaPGPDigestCalculatorProviderBuilder().setProvider("SC").build()).setProvider("SC").build(passphrase));
         
         PGPObjectFactory        pgpFact = new PGPObjectFactory(clear);
 
@@ -129,20 +129,20 @@ public class PBEFileProcessor
     private static void encryptFile(
         String          outputFileName,
         String          inputFileName,
-        char[]          passPhrase,
+        char[]          passphrase,
         boolean         armor,
         boolean         withIntegrityCheck)
         throws IOException, NoSuchProviderException
     {
         OutputStream out = new BufferedOutputStream(new FileOutputStream(outputFileName));
-        encryptFile(out, inputFileName, passPhrase, armor, withIntegrityCheck);
+        encryptFile(out, inputFileName, passphrase, armor, withIntegrityCheck);
         out.close();
     }
 
     private static void encryptFile(
         OutputStream    out,
         String          fileName,
-        char[]          passPhrase,
+        char[]          passphrase,
         boolean         armor,
         boolean         withIntegrityCheck)
         throws IOException, NoSuchProviderException
@@ -159,7 +159,7 @@ public class PBEFileProcessor
             PGPEncryptedDataGenerator encGen = new PGPEncryptedDataGenerator(new JcePGPDataEncryptorBuilder(PGPEncryptedData.CAST5)
                 .setWithIntegrityPacket(withIntegrityCheck).setSecureRandom(new SecureRandom()).setProvider("SC"));
 
-            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passPhrase).setProvider("SC"));
+            encGen.addMethod(new JcePBEKeyEncryptionMethodGenerator(passphrase).setProvider("SC"));
 
             OutputStream encOut = encGen.open(out, compressedData.length);
 
@@ -208,7 +208,7 @@ public class PBEFileProcessor
         }
         else
         {
-            System.err.println("usage: PBEFileProcessor -e [-ai]|-d file passPhrase");
+            System.err.println("usage: PBEFileProcessor -e [-ai]|-d file passphrase");
         }
     }
 }
