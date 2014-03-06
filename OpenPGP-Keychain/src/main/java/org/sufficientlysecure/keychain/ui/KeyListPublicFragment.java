@@ -144,8 +144,6 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
             mStickyList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             mStickyList.getWrappedList().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-                private int count = 0;
-
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     android.view.MenuInflater inflater = getActivity().getMenuInflater();
@@ -179,13 +177,20 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
+                        case R.id.menu_key_list_public_multi_select_all: {
+                            //Select all
+                            int localCount = mStickyList.getCount();
+                            for(int k = 0; k < localCount; k++) {
+                                mStickyList.setItemChecked(k, true);
+                            }
+                            break;
+                        }
                     }
                     return true;
                 }
 
                 @Override
                 public void onDestroyActionMode(ActionMode mode) {
-                    count = 0;
                     mAdapter.clearSelection();
                 }
 
@@ -193,13 +198,11 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                                                       boolean checked) {
                     if (checked) {
-                        count++;
                         mAdapter.setNewSelection(position, checked);
                     } else {
-                        count--;
                         mAdapter.removeSelection(position);
                     }
-
+                    int count = mAdapter.getCurrentCheckedPosition().size();
                     String keysSelected = getResources().getQuantityString(
                             R.plurals.key_list_selected_keys, count, count);
                     mode.setTitle(keysSelected);

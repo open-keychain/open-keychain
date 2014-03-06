@@ -96,6 +96,7 @@
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
     <string name="menu_encrypt_to">Encrypt to…</string>
+    <string name="menu_select_all">Select all</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
