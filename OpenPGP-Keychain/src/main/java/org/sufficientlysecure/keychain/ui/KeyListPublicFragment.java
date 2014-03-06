@@ -239,12 +239,14 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // sample only has one Loader, so we don't care about the ID.
         Uri baseUri = KeyRings.buildPublicKeyRingsUri();
         String where = null;
-        if(mCurQuery != null)
-            where = KeychainContract.UserIds.USER_ID + " LIKE \"" + mCurQuery + "%\"";
-
+        String whereArgs[] = null;
+        if(mCurQuery != null){
+            where = KeychainContract.UserIds.USER_ID + " LIKE ?";
+            whereArgs = new String[]{mCurQuery+"%"};
+        }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, null, SORT_ORDER);
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, SORT_ORDER);
     }
 
     @Override

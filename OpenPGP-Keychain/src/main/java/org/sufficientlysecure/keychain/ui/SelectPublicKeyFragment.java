@@ -226,13 +226,15 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
             orderBy = inMasterKeyList + " DESC, " + orderBy;
         }
         String where = null;
-        if(mCurQuery != null)
-            where = UserIds.USER_ID + " LIKE \"" + mCurQuery + "%\"";
-
+        String whereArgs[] = null;
+        if(mCurQuery != null){
+            where = UserIds.USER_ID + " LIKE ?";
+            whereArgs = new String[]{mCurQuery+"%"};
+        }
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, where, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, where, whereArgs, orderBy);
     }
 
     @Override
