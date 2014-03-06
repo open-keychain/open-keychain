@@ -550,8 +550,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 ArrayList<String> deleted_ids = data.getStringArrayList(SAVE_KEYRING_DELETED_IDS);
                 boolean[] modded_keys = data.getBooleanArray(SAVE_KEYRING_MODDED_KEYS);
                 boolean[] new_keys = data.getBooleanArray(SAVE_KEYRING_NEW_KEYS);
-                ArrayList<PGPSecretKey> deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(data
+                byte[] tmp = data.getByteArray(SAVE_KEYRING_DELETED_KEYS);
+                ArrayList<PGPSecretKey> deletedKeys;
+                if (tmp != null)
+                deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(data
                         .getByteArray(SAVE_KEYRING_DELETED_KEYS));
+                else
+                deletedKeys = new ArrayList<PGPSecretKey>();
                 boolean primaryChanged = data.getBoolean(SAVE_KEYRING_PRIMARY_ID_CHANGED);
 
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);

@@ -361,8 +361,10 @@ public class PgpKeyOperation {
             newPassPhrase = "";
         }
 
-        if (mKR == null)
+        if (mKR == null) {
             buildNewSecretKey(userIds, keys, keysExpiryDates, keysUsages, newPassPhrase, oldPassPhrase); //new Keyring
+            return;
+        }
 
         /*
         IDs -
