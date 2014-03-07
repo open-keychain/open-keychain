@@ -261,7 +261,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
                     addGeneratedKeyToView(newKey);
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back

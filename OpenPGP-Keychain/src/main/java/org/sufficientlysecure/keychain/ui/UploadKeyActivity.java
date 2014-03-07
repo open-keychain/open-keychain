@@ -113,7 +113,7 @@ public class UploadKeyActivity extends ActionBarActivity {
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back

@@ -95,7 +95,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                             Toast.makeText(activity, R.string.file_delete_successful,
                                     Toast.LENGTH_SHORT).show();
                         }
-                    };
+                    }
                 };
 
                 // Create a new Messenger for the communication back

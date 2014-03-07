@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.bcpg.UserAttributePacket;
-import org.spongycastle.bcpg.UserAttributeSubpacket;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;

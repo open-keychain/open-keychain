@@ -25,7 +25,6 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,7 +56,6 @@ public class PreferencesActivity extends PreferenceActivity {
 //        actionBar.setDisplayHomeAsUpEnabled(false);
 //        actionBar.setHomeButtonEnabled(false);
 
-        //addPreferencesFromResource(R.xml.preferences);
         String action = getIntent().getAction();
 
         if (action != null && action.equals(ACTION_PREFS_GEN)) {

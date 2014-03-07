@@ -10,7 +10,7 @@
         android:id="@+id/userId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="User ID"
+        android:text="@string/user_id"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </LinearLayout>

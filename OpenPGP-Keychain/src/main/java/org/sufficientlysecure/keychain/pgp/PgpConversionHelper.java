@@ -76,7 +76,7 @@ public class PgpConversionHelper {
      * 
      * Singles keys are encoded as keyRings with one single key in it by Bouncy Castle
      * 
-     * @param keysBytes
+     * @param keyBytes
      * @return
      */
     public static PGPSecretKey BytesToPGPSecretKey(byte[] keyBytes) {
@@ -125,7 +125,7 @@ public class PgpConversionHelper {
     /**
      * Convert from PGPSecretKey to byte[]
      * 
-     * @param keysBytes
+     * @param key
      * @return
      */
     public static byte[] PGPSecretKeyToBytes(PGPSecretKey key) {
@@ -141,7 +141,7 @@ public class PgpConversionHelper {
     /**
      * Convert from PGPSecretKeyRing to byte[]
      * 
-     * @param keysBytes
+     * @param keyRing
      * @return
      */
     public static byte[] PGPSecretKeyRingToBytes(PGPSecretKeyRing keyRing) {
