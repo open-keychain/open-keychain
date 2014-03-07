@@ -88,12 +88,12 @@ public class ViewKeyActivity extends ActionBarActivity {
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_main)),
-                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0 ? true : false));
+                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0));
 
         Bundle certBundle = new Bundle();
         certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
-                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1 ? true : false));
+                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1));
     }
 
     @Override

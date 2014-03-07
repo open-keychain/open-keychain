@@ -59,7 +59,6 @@ public class ClipboardReflection {
      * Wrapper around ClipboardManager based on Android version using Reflection API
      * 
      * @param context
-     * @param text
      */
     public static CharSequence getClipboardText(Context context) {
         Object clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE);

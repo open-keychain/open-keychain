@@ -158,7 +158,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 PGPSecretKey clickSecretKey = secretKey;
 
                 if (clickSecretKey != null) {
-                    while (keyOK == true) {
+                    while (keyOK) {
                         if (clickSecretKey != null) { // check again for loop
                             try {
                                 PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder()
@@ -207,7 +207,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
                 PassphraseCacheService.addCachedPassphrase(activity, keyId, passphrase);
-                if (keyOK == false && clickSecretKey.getKeyID() != keyId) {
+                if ( !keyOK && clickSecretKey.getKeyID() != keyId) {
                     PassphraseCacheService.addCachedPassphrase(activity, clickSecretKey.getKeyID(),
                             passphrase);
                 }
