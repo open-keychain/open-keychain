@@ -180,7 +180,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                         case R.id.menu_key_list_public_multi_select_all: {
                             //Select all
                             int localCount = mStickyList.getCount();
-                            for(int k = 0; k < localCount; k++) {
+                            for (int k = 0; k < localCount; k++) {
                                 mStickyList.setItemChecked(k, true);
                             }
                             break;
@@ -243,9 +243,9 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         Uri baseUri = KeyRings.buildPublicKeyRingsUri();
         String where = null;
         String whereArgs[] = null;
-        if(mCurQuery != null){
+        if (mCurQuery != null) {
             where = KeychainContract.UserIds.USER_ID + " LIKE ?";
-            whereArgs = new String[]{mCurQuery+"%"};
+            whereArgs = new String[]{"%" + mCurQuery + "%"};
         }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -291,7 +291,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
         startActivity(viewIntent);
     }
-    
+
     @TargetApi(11)
     public void encrypt(ActionMode mode, long[] keyRingRowIds) {
         // get master key ids from row ids
@@ -352,7 +352,6 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
 
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
-
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -361,7 +360,6 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         mSearchView.setOnQueryTextListener(this);
 
         super.onCreateOptionsMenu(menu, inflater);
-
     }
 
     @Override
@@ -374,8 +372,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Called when the action bar search text has changed.  Update
         // the search filter, and restart the loader to do a new query
         // with this filter.
-        String newQuery = !TextUtils.isEmpty(s) ? s : null;
-        mCurQuery = newQuery;
+        mCurQuery = !TextUtils.isEmpty(s) ? s : null;
         getLoaderManager().restartLoader(0, null, this);
         return true;
     }
