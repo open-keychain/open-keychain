@@ -38,7 +38,7 @@ public class OpenPgpApi {
     /**
      * Sign only
      *
-     * optional params:
+     * optional extras:
      * String       EXTRA_PASSPHRASE  (for key passphrase)
      */
     public static final String ACTION_SIGN = "org.openintents.openpgp.action.SIGN";
@@ -47,7 +47,7 @@ public class OpenPgpApi {
      * General extras
      * --------------
      *
-     * Intent extras:
+     * required extras:
      * int          EXTRA_API_VERSION           (required)
      * boolean      EXTRA_REQUEST_ASCII_ARMOR   (request ascii armor for ouput)
      *
@@ -60,10 +60,10 @@ public class OpenPgpApi {
     /**
      * Encrypt
      *
-     * extras:
-     * long[]       EXTRA_KEY_IDS
-     * or
+     * required extras:
      * String[]     EXTRA_USER_IDS    (= emails of recipients) (if more than one key has this user_id, a PendingIntent is returned)
+     * or
+     * long[]       EXTRA_KEY_IDS
      *
      * optional extras:
      * String       EXTRA_PASSPHRASE  (for key passphrase)
@@ -73,10 +73,10 @@ public class OpenPgpApi {
     /**
      * Sign and encrypt
      *
-     * extras:
-     * long[]       EXTRA_KEY_IDS
-     * or
+     * required extras:
      * String[]     EXTRA_USER_IDS    (= emails of recipients) (if more than one key has this user_id, a PendingIntent is returned)
+     * or
+     * long[]       EXTRA_KEY_IDS
      *
      * optional extras:
      * String       EXTRA_PASSPHRASE  (for key passphrase)
@@ -84,7 +84,7 @@ public class OpenPgpApi {
     public static final String ACTION_SIGN_AND_ENCRYPT = "org.openintents.openpgp.action.SIGN_AND_ENCRYPT";
 
     /**
-     * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
+     * Decrypts and verifies given input stream. This methods handles encrypted-only, signed-and-encrypted,
      * and also signed-only input.
      *
      * returned extras:
@@ -95,19 +95,19 @@ public class OpenPgpApi {
     /**
      * Get key ids based on given user ids (=emails)
      *
-     * Intent extras:
-     * String[]     EXTRA_KEY_IDS
+     * required extras:
+     * String[]     EXTRA_USER_IDS
      *
      * returned extras:
-     * long[]       EXTRA_USER_IDS
+     * long[]       EXTRA_KEY_IDS
      */
     public static final String ACTION_GET_KEY_IDS = "org.openintents.openpgp.action.GET_KEY_IDS";
 
     /**
      * Download keys from keyserver
      *
-     * Intent extras:
-     * String[]     EXTRA_KEY_IDS
+     * required extras:
+     * long[]     EXTRA_KEY_IDS
      */
     public static final String ACTION_DOWNLOAD_KEYS = "org.openintents.openpgp.action.DOWNLOAD_KEYS";
 
