@@ -302,8 +302,8 @@
     </plurals>
 
     <!-- progress dialogs, usually ending in '…' -->
-    <string name="progress_done">done.</string>
-    <string name="progress_cancel">cancel</string>
+    <string name="progress_done">Done.</string>
+    <string name="progress_cancel">Cancel</string>
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
