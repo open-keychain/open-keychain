@@ -21,6 +21,8 @@ import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.R;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -55,9 +57,15 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId, int progressDialogStyle) {
+        this(activity, progressDialogMessageId, progressDialogStyle, false, null);
+    }
+
+    public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId,
+                                        int progressDialogStyle, boolean cancelable,
+                                        OnCancelListener onCancelListener) {
         this.mActivity = activity;
         this.mProgressDialogFragment = ProgressDialogFragment.newInstance(progressDialogMessageId,
-                progressDialogStyle);
+                progressDialogStyle, cancelable, onCancelListener);
     }
 
     public void showProgressDialog(FragmentActivity activity) {

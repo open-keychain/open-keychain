@@ -61,7 +61,8 @@ public class DeleteFileDialogFragment extends DialogFragment {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(activity);
 
-        alert.setIcon(android.R.drawable.ic_dialog_alert);
+
+        alert.setIcon(R.drawable.ic_dialog_alert_holo_light);
         alert.setTitle(R.string.warning);
         alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFile));
 
@@ -82,7 +83,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                 ProgressDialogFragment deletingDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_deleting_securely, ProgressDialog.STYLE_HORIZONTAL);
+                        R.string.progress_deleting_securely, ProgressDialog.STYLE_HORIZONTAL, false, null);
 
                 // Message is received after deleting is done in ApgService
                 KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(activity, deletingDialog) {

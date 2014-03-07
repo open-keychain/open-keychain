@@ -24,7 +24,7 @@
   <string name="menu_copy_to_clipboard">复制到剪贴板</string>
   <string name="menu_sign_key">签署密钥</string>
   <string name="menu_key_edit_cancel">取消</string>
-  <string name="menu_encrypt_to">加密到...</string>
+  <string name="menu_encrypt_to">加密到…</string>
   <!--label-->
   <string name="label_sign">签署</string>
   <string name="label_message">讯息</string>
@@ -64,7 +64,7 @@
   <string name="choice_4hours">4小时</string>
   <string name="choice_8hours">8小时</string>
   <string name="choice_forever">永远</string>
-  <string name="filemanager_title_open">打开...</string>
+  <string name="filemanager_title_open">打开…</string>
   <string name="warning">警告</string>
   <string name="error">错误</string>
   <!--sentences-->
@@ -106,13 +106,13 @@
   <string name="error_wrong_passphrase">错误的密语</string>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完成。</string>
-  <string name="progress_saving">保存...</string>
-  <string name="progress_importing">导入中...</string>
-  <string name="progress_exporting">导出中...</string>
+  <string name="progress_saving">保存…</string>
+  <string name="progress_importing">导入中…</string>
+  <string name="progress_exporting">导出中…</string>
   <string name="progress_building_key">建立密钥</string>
   <string name="progress_preparing_master_key">正在准备主密钥</string>
-  <string name="progress_verifying_signature">正在验证签名...</string>
-  <string name="progress_signing">正在签名...</string>
+  <string name="progress_verifying_signature">正在验证签名…</string>
+  <string name="progress_signing">正在签名…</string>
   <string name="progress_reading_data">正在读取数据</string>
   <string name="progress_finding_key">正在查找密钥</string>
   <string name="progress_querying">正在查询</string>
@@ -135,10 +135,6 @@
   <string name="import_qr_code_finished">二维码扫描完成！</string>
   <string name="import_nfc_help_button">帮助</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenPGP: 解密文件</string>
-  <string name="intent_import_key">OpenPGP: 导入密钥</string>
-  <string name="intent_send_encrypt">OpenPGP: 加密</string>
-  <string name="intent_send_decrypt">OpenPGP: 解密</string>
   <!--Remote API-->
   <string name="api_settings_show_advanced">显示高级设置</string>
   <string name="api_settings_hide_advanced">隐藏高级设置</string>

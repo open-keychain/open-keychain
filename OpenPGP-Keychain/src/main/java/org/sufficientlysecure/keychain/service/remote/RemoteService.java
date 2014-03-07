@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.util.OpenPgpConstants;
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -38,10 +38,6 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 
 /**
  * Abstract service class for remote APIs that handle app registration and user input.
@@ -57,7 +53,7 @@ public abstract class RemoteService extends Service {
         return mContext;
     }
 
-    protected Bundle isAllowed(Bundle params) {
+    protected Intent isAllowed(Intent data) {
         try {
             if (isCallerAllowed(false)) {
 
@@ -74,9 +70,9 @@ public abstract class RemoteService extends Service {
                 } catch (NameNotFoundException e) {
                     Log.e(Constants.TAG, "Should not happen, returning!", e);
                     // return error
-                    Bundle result = new Bundle();
-                    result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_ERROR);
-                    result.putParcelable(OpenPgpConstants.RESULT_ERRORS,
+                    Intent result = new Intent();
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                    result.putExtra(OpenPgpApi.RESULT_ERROR,
                             new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
                     return result;
                 }
@@ -86,14 +82,14 @@ public abstract class RemoteService extends Service {
                 intent.setAction(RemoteServiceActivity.ACTION_REGISTER);
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_NAME, packageName);
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
-                intent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
+                intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
                 PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
 
                 // return PendingIntent to be executed by client
-                Bundle result = new Bundle();
-                result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
 
                 return result;
             }
@@ -103,14 +99,14 @@ public abstract class RemoteService extends Service {
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
             intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, getString(R.string.api_error_wrong_signature));
-            intent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
+            intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_ERROR, intent, 0);
 
             // return PendingIntent to be executed by client
-            Bundle result = new Bundle();
-            result.putInt(OpenPgpConstants.RESULT_CODE, OpenPgpConstants.RESULT_CODE_USER_INTERACTION_REQUIRED);
-            result.putParcelable(OpenPgpConstants.RESULT_INTENT, pi);
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
 
             return result;
         }

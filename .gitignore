@@ -28,3 +28,6 @@ pom.xml.*
 #IntelliJ IDEA
 .idea
 *.iml
+
+#OS Specific
+[Tt]humbs.db

@@ -135,7 +135,7 @@
                     <TableRow>
 
                         <TextView
-                            android:id="@+id/label_passPhrase"
+                            android:id="@+id/label_passphrase"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -144,7 +144,7 @@
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <EditText
-                            android:id="@+id/passPhrase"
+                            android:id="@+id/passphrase"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword" />
@@ -153,7 +153,7 @@
                     <TableRow>
 
                         <TextView
-                            android:id="@+id/label_passPhraseAgain"
+                            android:id="@+id/label_passphraseAgain"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
@@ -162,7 +162,7 @@
                             android:textAppearance="?android:attr/textAppearanceMedium" />
 
                         <EditText
-                            android:id="@+id/passPhraseAgain"
+                            android:id="@+id/passphraseAgain"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPassword" />

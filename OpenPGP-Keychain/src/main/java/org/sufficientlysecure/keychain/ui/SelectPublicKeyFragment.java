@@ -38,17 +38,22 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.ListView;
 
-public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
+public class SelectPublicKeyFragment extends ListFragmentWorkaround implements TextWatcher,
         LoaderManager.LoaderCallbacks<Cursor> {
     public static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
     private Activity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
-
+    private EditText mSearchView;
     private long mSelectedMasterKeyIds[];
+    private String mCurQuery;
 
     /**
      * Creates new instance of this fragment
@@ -67,7 +72,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mSearchView = (EditText)getActivity().findViewById(R.id.select_public_key_search);
+        mSearchView.addTextChangedListener(this);
         mSelectedMasterKeyIds = getArguments().getLongArray(ARG_PRESELECTED_KEY_IDS);
     }
 
@@ -82,7 +88,6 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         mListView = getListView();
 
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
@@ -220,10 +225,16 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
             // sort by selected master keys
             orderBy = inMasterKeyList + " DESC, " + orderBy;
         }
+        String where = null;
+        String whereArgs[] = null;
+        if(mCurQuery != null){
+            where = UserIds.USER_ID + " LIKE ?";
+            whereArgs = new String[]{mCurQuery+"%"};
+        }
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, null, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, where, whereArgs, orderBy);
     }
 
     @Override
@@ -249,5 +260,22 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements
         // above is about to be closed. We need to make sure we are no
         // longer using it.
         mAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        String newQuery = !TextUtils.isEmpty(editable.toString()) ? editable.toString() : null;
+        mCurQuery = newQuery;
+        getLoaderManager().restartLoader(0, null, this);
     }
 }

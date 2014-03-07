@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -32,6 +33,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
@@ -66,6 +68,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
 
 @SuppressLint("NewApi")
 public class DecryptActivity extends DrawerActivity {
@@ -233,7 +236,7 @@ public class DecryptActivity extends DrawerActivity {
                 if (matcher.matches()) {
                     data = matcher.group(1);
                     mMessage.setText(data);
-                    Toast.makeText(this, R.string.using_clipboard_content, Toast.LENGTH_SHORT)
+                    AppMsg.makeText(this, R.string.using_clipboard_content, AppMsg.STYLE_INFO)
                             .show();
                 }
             }
@@ -420,17 +423,17 @@ public class DecryptActivity extends DrawerActivity {
             }
 
             if (mInputFilename.equals("")) {
-                Toast.makeText(this, R.string.no_file_selected, Toast.LENGTH_SHORT).show();
+                AppMsg.makeText(this, R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
                 return;
             }
 
             if (mInputFilename.startsWith("file")) {
                 File file = new File(mInputFilename);
                 if (!file.exists() || !file.isFile()) {
-                    Toast.makeText(
+                    AppMsg.makeText(
                             this,
                             getString(R.string.error_message,
-                                    getString(R.string.error_file_not_found)), Toast.LENGTH_SHORT)
+                                    getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
                             .show();
                     return;
                 }
@@ -510,14 +513,14 @@ public class DecryptActivity extends DrawerActivity {
                 inStream = getContentResolver().openInputStream(mContentUri);
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "File not found!", e);
-                Toast.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
-                        Toast.LENGTH_SHORT).show();
+                AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
+                        AppMsg.STYLE_ALERT).show();
             }
         } else if (mDecryptTarget == Id.target.file) {
             // check if storage is ready
             if (!FileHelper.isStorageMounted(mInputFilename)) {
-                Toast.makeText(this, getString(R.string.error_external_storage_not_ready),
-                        Toast.LENGTH_SHORT).show();
+                AppMsg.makeText(this, getString(R.string.error_external_storage_not_ready),
+                        AppMsg.STYLE_ALERT).show();
                 return;
             }
 
@@ -525,8 +528,8 @@ public class DecryptActivity extends DrawerActivity {
                 inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
             } catch (FileNotFoundException e) {
                 Log.e(Constants.TAG, "File not found!", e);
-                Toast.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
-                        Toast.LENGTH_SHORT).show();
+                AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
+                        AppMsg.STYLE_ALERT).show();
             }
         } else {
             inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
@@ -556,8 +559,8 @@ public class DecryptActivity extends DrawerActivity {
                 mAssumeSymmetricEncryption = true;
             }
         } catch (Exception e) {
-            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                    Toast.LENGTH_SHORT).show();
+            AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
+                    AppMsg.STYLE_ALERT).show();
         }
     }
 
@@ -655,8 +658,8 @@ public class DecryptActivity extends DrawerActivity {
                     mSignatureKeyId = 0;
                     mSignatureLayout.setVisibility(View.GONE);
 
-                    Toast.makeText(DecryptActivity.this, R.string.decryption_successful,
-                            Toast.LENGTH_SHORT).show();
+                    AppMsg.makeText(DecryptActivity.this, R.string.decryption_successful,
+                            AppMsg.STYLE_INFO).show();
                     if (mReturnResult) {
                         Intent intent = new Intent();
                         intent.putExtras(returnData);
@@ -689,11 +692,15 @@ public class DecryptActivity extends DrawerActivity {
 
                     }
 
-                    if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE)) {
-                        String userId = returnData
-                                .getString(KeychainIntentService.RESULT_SIGNATURE_USER_ID);
-                        mSignatureKeyId = returnData
-                                .getLong(KeychainIntentService.RESULT_SIGNATURE_KEY_ID);
+                    PgpDecryptVerifyResult decryptVerifyResult =
+                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+
+                    OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+
+                    if (signatureResult != null) {
+
+                        String userId = signatureResult.getUserId();
+                        mSignatureKeyId = signatureResult.getKeyId();
                         mUserIdRest.setText("id: "
                                 + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
                         if (userId == null) {
@@ -706,19 +713,32 @@ public class DecryptActivity extends DrawerActivity {
                         }
                         mUserId.setText(userId);
 
-                        if (returnData.getBoolean(KeychainIntentService.RESULT_SIGNATURE_SUCCESS)) {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                            mLookupKey.setVisibility(View.GONE);
-                        } else if (returnData
-                                .getBoolean(KeychainIntentService.RESULT_SIGNATURE_UNKNOWN)) {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                            mLookupKey.setVisibility(View.VISIBLE);
-                            Toast.makeText(DecryptActivity.this,
-                                    R.string.unknown_signature,
-                                    Toast.LENGTH_LONG).show();
-                        } else {
-                            mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                            mLookupKey.setVisibility(View.GONE);
+                        switch (signatureResult.getStatus()) {
+                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                                mLookupKey.setVisibility(View.GONE);
+                                break;
+                            }
+
+                            // TODO!
+//                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
+//                                break;
+//                            }
+
+                            case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                mLookupKey.setVisibility(View.VISIBLE);
+                                AppMsg.makeText(DecryptActivity.this,
+                                        R.string.unknown_signature,
+                                        AppMsg.STYLE_ALERT).show();
+                                break;
+                            }
+
+                            default: {
+                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                mLookupKey.setVisibility(View.GONE);
+                                break;
+                            }
                         }
                         mSignatureLayout.setVisibility(View.VISIBLE);
                     }

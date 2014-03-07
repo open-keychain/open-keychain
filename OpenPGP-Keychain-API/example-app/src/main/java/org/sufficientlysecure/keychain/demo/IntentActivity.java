@@ -112,11 +112,11 @@ public class IntentActivity extends PreferenceActivity {
                     byte[] pubkey = null;
                     try {
                         pubkey = TEST_PUBKEY.getBytes("UTF-8");
+                        intent.putExtra(OpenKeychainIntents.IMPORT_KEY_EXTRA_KEY_BYTES, pubkey);
+                        startActivity(intent);
                     } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
+                        Log.e(Constants.TAG, "UnsupportedEncodingException", e);
                     }
-                    intent.putExtra(OpenKeychainIntents.IMPORT_KEY_EXTRA_KEY_BYTES, pubkey);
-                    startActivity(intent);
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(IntentActivity.this, "Activity not found!", Toast.LENGTH_LONG).show();
                 }

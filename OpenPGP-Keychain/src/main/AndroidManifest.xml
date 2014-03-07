@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="23100"
-    android:versionName="2.3.1">
+    android:versionCode="23103"
+    android:versionName="2.3.1 beta3">
 
     <!--
         General remarks
@@ -22,7 +22,8 @@
         Remarks about the ugly android:pathPattern:
         - We are matching all files with a specific file ending.
         This is done in an ugly way because of Android limitations.
-        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921 
+        Read http://stackoverflow.com/questions/1733195/android-intent-filter-for-a-particular-file-extension
+        and http://stackoverflow.com/questions/3400072/pathpattern-to-match-file-extension-does-not-work-if-a-period-exists-elsewhere-i/8599921
         for more information.
         - Do _not_ set mimeType for gpg!
         Cyanogenmod's file manager will only show Keychain for gpg files if no mimeType is set!
@@ -68,30 +69,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.SEARCH" /> -->
-            <!-- </intent-filter> -->
-
-
-            <!-- <meta-data -->
-            <!-- android:name="android.app.searchable" -->
-            <!-- android:resource="@xml/searchable_public_keys" /> -->
         </activity>
         <activity
             android:name=".ui.KeyListSecretActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_manage_secret_keys"
             android:launchMode="singleTop">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.SEARCH" /> -->
-            <!-- </intent-filter> -->
-
-
-            <!-- <meta-data -->
-            <!-- android:name="android.app.searchable" -->
-            <!-- android:resource="@xml/searchable_secret_keys" /> -->
         </activity>
         <activity
             android:name=".ui.EditKeyActivity"
@@ -121,30 +104,12 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_recipients"
             android:launchMode="singleTop">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.SEARCH" /> -->
-            <!-- </intent-filter> -->
-
-
-            <!-- <meta-data -->
-            <!-- android:name="android.app.searchable" -->
-            <!-- android:resource="@xml/searchable_public_keys" /> -->
         </activity>
         <activity
             android:name=".ui.SelectSecretKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_select_secret_key"
             android:launchMode="singleTop">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.SEARCH" /> -->
-            <!-- </intent-filter> -->
-
-
-            <!-- <meta-data -->
-            <!-- android:name="android.app.searchable" -->
-            <!-- android:resource="@xml/searchable_secret_keys" /> -->
         </activity>
         <activity
             android:name=".ui.EncryptActivity"
@@ -276,7 +241,16 @@
         <activity
             android:name=".ui.PreferencesActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_preferences" />
+            android:label="@string/title_preferences" >
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.ui.PREFS_GEN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.ui.PREFS_ADV" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.PreferencesKeyServerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
@@ -454,10 +428,6 @@
         <!--<intent-filter>-->
         <!--<action android:name="org.sufficientlysecure.keychain.service.remote.IExtendedApiService" />-->
         <!--</intent-filter>-->
-
-        <!--<meta-data-->
-        <!--android:name="api_version"-->
-        <!--android:value="1" />-->
         <!--</service>-->
 
         <!-- TODO: authority! Make this API with content provider uris -->

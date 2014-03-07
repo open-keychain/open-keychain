@@ -24,24 +24,28 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.ActionBarActivity;
 
+import java.util.List;
+
+@SuppressLint("NewApi")
 public class PreferencesActivity extends PreferenceActivity {
-    private IntegerListPreference mPassPhraseCacheTtl = null;
-    private IntegerListPreference mEncryptionAlgorithm = null;
-    private IntegerListPreference mHashAlgorithm = null;
-    private IntegerListPreference mMessageCompression = null;
-    private IntegerListPreference mFileCompression = null;
-    private CheckBoxPreference mAsciiArmour = null;
-    private CheckBoxPreference mForceV3Signatures = null;
+
+    public final static String ACTION_PREFS_GEN = "org.sufficientlysecure.keychain.ui.PREFS_GEN";
+    public final static String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
+
     private PreferenceScreen mKeyServerPreference = null;
-    private Preferences mPreferences;
+    private static Preferences mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,22 +57,219 @@ public class PreferencesActivity extends PreferenceActivity {
 //        actionBar.setDisplayHomeAsUpEnabled(false);
 //        actionBar.setHomeButtonEnabled(false);
 
-        addPreferencesFromResource(R.xml.preferences);
+        //addPreferencesFromResource(R.xml.preferences);
+        String action = getIntent().getAction();
 
-        mPassPhraseCacheTtl = (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL);
-        mPassPhraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
-        mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
-        mPassPhraseCacheTtl
+        if (action != null && action.equals(ACTION_PREFS_GEN)) {
+            addPreferencesFromResource(R.xml.gen_preferences);
+
+            initializePassPassPhraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL));
+
+            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
+            String servers[] = mPreferences.getKeyServers();
+            mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
+                    servers.length, servers.length));
+            mKeyServerPreference
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(PreferencesActivity.this,
+                                    PreferencesKeyServerActivity.class);
+                            intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
+                                    mPreferences.getKeyServers());
+                            startActivityForResult(intent, Id.request.key_server_preference);
+                            return false;
+                        }
+                    });
+
+        } else if (action != null && action.equals(ACTION_PREFS_ADV)) {
+            addPreferencesFromResource(R.xml.adv_preferences);
+
+            initializeEncryptionAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
+
+            int[] valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
+            String[] entries = new String[] {
+                    getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
+                    "ZIP (" + getString(R.string.compression_fast) + ")",
+                    "ZLIB (" + getString(R.string.compression_fast) + ")",
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+            String[] values = new String[valueIds.length];
+            for (int i = 0; i < values.length; ++i) {
+                values[i] = "" + valueIds[i];
+            }
+
+            initializeHashAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
+                                            valueIds, entries, values);
+
+            initializeMessageCompression(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
+                                            valueIds, entries, values);
+
+            initializeFileCompression(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
+                                            entries, values);
+
+            initializeAsciiArmour((CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+
+            initializeForceV3Signatures((CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            // Load the legacy preferences headers
+            addPreferencesFromResource(R.xml.preference_headers_legacy);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Id.request.key_server_preference: {
+                if (resultCode == RESULT_CANCELED || data == null) {
+                    return;
+                }
+                String servers[] = data
+                        .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
+                mPreferences.setKeyServers(servers);
+                mKeyServerPreference.setSummary(getResources().getQuantityString(
+                        R.plurals.n_key_servers, servers.length, servers.length));
+                break;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+            }
+        }
+    }
+
+    /* Called only on Honeycomb and later */
+    @Override
+    public void onBuildHeaders(List<Header> target) {
+        super.onBuildHeaders(target);
+        loadHeadersFromResource(R.xml.preference_headers, target);
+    }
+
+    /** This fragment shows the general preferences in android 3.0+ */
+    public static class GeneralPrefsFragment extends PreferenceFragment {
+
+        private PreferenceScreen mKeyServerPreference = null;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.gen_preferences);
+
+            initializePassPassPhraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL));
+
+            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
+            String servers[] = mPreferences.getKeyServers();
+            mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
+                    servers.length, servers.length));
+            mKeyServerPreference
+                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                        public boolean onPreferenceClick(Preference preference) {
+                            Intent intent = new Intent(getActivity(),
+                                    PreferencesKeyServerActivity.class);
+                            intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
+                                    mPreferences.getKeyServers());
+                            startActivityForResult(intent, Id.request.key_server_preference);
+                            return false;
+                        }
+                    });
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            switch (requestCode) {
+                case Id.request.key_server_preference: {
+                    if (resultCode == RESULT_CANCELED || data == null) {
+                        return;
+                    }
+                    String servers[] = data
+                            .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
+                    mPreferences.setKeyServers(servers);
+                    mKeyServerPreference.setSummary(getResources().getQuantityString(
+                            R.plurals.n_key_servers, servers.length, servers.length));
+                    break;
+                }
+
+                default: {
+                    super.onActivityResult(requestCode, resultCode, data);
+                    break;
+                }
+            }
+        }
+    }
+
+    /** This fragment shows the advanced preferences in android 3.0+ */
+    public static class AdvancedPrefsFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            // Load the preferences from an XML resource
+            addPreferencesFromResource(R.xml.adv_preferences);
+
+            initializeEncryptionAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
+
+            int[] valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
+            String[] entries = new String[] {
+                    getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
+                    "ZIP (" + getString(R.string.compression_fast) + ")",
+                    "ZLIB (" + getString(R.string.compression_fast) + ")",
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+            String[] values = new String[valueIds.length];
+            for (int i = 0; i < values.length; ++i) {
+                values[i] = "" + valueIds[i];
+            }
+
+            initializeHashAlgorithm(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
+                                                                    valueIds, entries, values);
+
+            initializeMessageCompression(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
+                                                                valueIds, entries, values);
+
+            initializeFileCompression(
+                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
+                    entries, values);
+
+            initializeAsciiArmour((CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+
+            initializeForceV3Signatures((CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+        }
+    }
+
+    protected boolean isValidFragment (String fragmentName) {
+        return AdvancedPrefsFragment.class.getName().equals(fragmentName)
+                || GeneralPrefsFragment.class.getName().equals(fragmentName)
+                || super.isValidFragment(fragmentName);
+    }
+
+    private static void initializePassPassPhraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
+        mPassphraseCacheTtl.setValue("" + mPreferences.getPassPhraseCacheTtl());
+        mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
+        mPassphraseCacheTtl
                 .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        mPassPhraseCacheTtl.setValue(newValue.toString());
-                        mPassPhraseCacheTtl.setSummary(mPassPhraseCacheTtl.getEntry());
+                        mPassphraseCacheTtl.setValue(newValue.toString());
+                        mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
                         mPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
                         return false;
                     }
                 });
+    }
 
-        mEncryptionAlgorithm = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM);
+    private static void initializeEncryptionAlgorithm(final IntegerListPreference mEncryptionAlgorithm) {
         int valueIds[] = { PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
                 PGPEncryptedData.AES_256, PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH,
                 PGPEncryptedData.CAST5, PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES,
@@ -93,8 +294,10 @@ public class PreferencesActivity extends PreferenceActivity {
                         return false;
                     }
                 });
+    }
 
-        mHashAlgorithm = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM);
+    private static void initializeHashAlgorithm
+            (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
         valueIds = new int[] { HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
                 HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512, };
@@ -116,19 +319,10 @@ public class PreferencesActivity extends PreferenceActivity {
                 return false;
             }
         });
+    }
 
-        mMessageCompression = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION);
-        valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
-                Id.choice.compression.zlib, Id.choice.compression.bzip2, };
-        entries = new String[] {
-                getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
-                "ZIP (" + getString(R.string.compression_fast) + ")",
-                "ZLIB (" + getString(R.string.compression_fast) + ")",
-                "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
-        values = new String[valueIds.length];
-        for (int i = 0; i < values.length; ++i) {
-            values[i] = "" + valueIds[i];
-        }
+    private static void initializeMessageCompression
+            (final IntegerListPreference mMessageCompression, int[] valueIds, String[] entries, String[] values) {
         mMessageCompression.setEntries(entries);
         mMessageCompression.setEntryValues(values);
         mMessageCompression.setValue("" + mPreferences.getDefaultMessageCompression());
@@ -143,8 +337,10 @@ public class PreferencesActivity extends PreferenceActivity {
                         return false;
                     }
                 });
+    }
 
-        mFileCompression = (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION);
+    private static void initializeFileCompression
+            (final IntegerListPreference mFileCompression, String[] entries, String[] values) {
         mFileCompression.setEntries(entries);
         mFileCompression.setEntryValues(values);
         mFileCompression.setValue("" + mPreferences.getDefaultFileCompression());
@@ -157,8 +353,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 return false;
             }
         });
+    }
 
-        mAsciiArmour = (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR);
+    private static void initializeAsciiArmour(final CheckBoxPreference mAsciiArmour) {
         mAsciiArmour.setChecked(mPreferences.getDefaultAsciiArmour());
         mAsciiArmour.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -167,8 +364,9 @@ public class PreferencesActivity extends PreferenceActivity {
                 return false;
             }
         });
+    }
 
-        mForceV3Signatures = (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES);
+    private static void initializeForceV3Signatures(final CheckBoxPreference mForceV3Signatures) {
         mForceV3Signatures.setChecked(mPreferences.getForceV3Signatures());
         mForceV3Signatures
                 .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -178,43 +376,5 @@ public class PreferencesActivity extends PreferenceActivity {
                         return false;
                     }
                 });
-
-        mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
-        String servers[] = mPreferences.getKeyServers();
-        mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
-                servers.length, servers.length));
-        mKeyServerPreference
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    public boolean onPreferenceClick(Preference preference) {
-                        Intent intent = new Intent(PreferencesActivity.this,
-                                PreferencesKeyServerActivity.class);
-                        intent.putExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS,
-                                mPreferences.getKeyServers());
-                        startActivityForResult(intent, Id.request.key_server_preference);
-                        return false;
-                    }
-                });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-        case Id.request.key_server_preference: {
-            if (resultCode == RESULT_CANCELED || data == null) {
-                return;
-            }
-            String servers[] = data
-                    .getStringArrayExtra(PreferencesKeyServerActivity.EXTRA_KEY_SERVERS);
-            mPreferences.setKeyServers(servers);
-            mKeyServerPreference.setSummary(getResources().getQuantityString(
-                    R.plurals.n_key_servers, servers.length, servers.length));
-            break;
-        }
-
-        default: {
-            super.onActivityResult(requestCode, resultCode, data);
-            break;
-        }
-        }
     }
 }

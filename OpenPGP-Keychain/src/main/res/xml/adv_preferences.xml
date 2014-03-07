@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/section_defaults" >
+        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+            android:key="defaultEncryptionAlgorithm"
+            android:persistent="false"
+            android:title="@string/label_encryption_algorithm" />
+        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+            android:key="defaultHashAlgorithm"
+            android:persistent="false"
+            android:title="@string/label_hash_algorithm" />
+        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+            android:key="defaultMessageCompression"
+            android:persistent="false"
+            android:title="@string/label_message_compression" />
+        <org.sufficientlysecure.keychain.ui.widget.IntegerListPreference
+            android:key="defaultFileCompression"
+            android:persistent="false"
+            android:title="@string/label_file_compression" />
+
+        <CheckBoxPreference
+            android:key="defaultAsciiArmour"
+            android:persistent="false"
+            android:title="@string/label_ascii_armor" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/section_advanced" >
+        <CheckBoxPreference
+            android:key="forceV3Signatures"
+            android:persistent="false"
+            android:title="@string/label_force_v3_signature" />
+    </PreferenceCategory>
+</PreferenceScreen>

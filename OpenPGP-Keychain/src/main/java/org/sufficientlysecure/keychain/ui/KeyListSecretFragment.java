@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyListSecretAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -81,8 +82,6 @@ public class KeyListSecretFragment extends ListFragment implements
             getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
             getListView().setMultiChoiceModeListener(new MultiChoiceModeListener() {
 
-                private int count = 0;
-
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     android.view.MenuInflater inflater = getActivity().getMenuInflater();
@@ -112,13 +111,20 @@ public class KeyListSecretFragment extends ListFragment implements
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
+                        case R.id.menu_key_list_public_multi_select_all: {
+                            //Select all
+                            int localCount = getListView().getCount();
+                            for(int k = 0; k < localCount; k++) {
+                                getListView().setItemChecked(k, true);
+                            }
+                            break;
+                        }
                     }
                     return true;
                 }
 
                 @Override
                 public void onDestroyActionMode(ActionMode mode) {
-                    count = 0;
                     mAdapter.clearSelection();
                 }
 
@@ -126,13 +132,12 @@ public class KeyListSecretFragment extends ListFragment implements
                 public void onItemCheckedStateChanged(ActionMode mode, int position, long id,
                                                       boolean checked) {
                     if (checked) {
-                        count++;
                         mAdapter.setNewSelection(position, checked);
                     } else {
-                        count--;
                         mAdapter.removeSelection(position);
                     }
 
+                    int count = getListView().getCheckedItemCount();
                     String keysSelected = getResources().getQuantityString(
                             R.plurals.key_list_selected_keys, count, count);
                     mode.setTitle(keysSelected);
@@ -209,6 +214,7 @@ public class KeyListSecretFragment extends ListFragment implements
      *
      * @param keyRingRowIds
      */
+    @TargetApi(11)
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {

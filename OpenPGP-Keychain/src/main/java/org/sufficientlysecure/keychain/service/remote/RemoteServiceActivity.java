@@ -25,7 +25,7 @@ import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
-import org.openintents.openpgp.util.OpenPgpConstants;
+import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -50,6 +50,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
             + "API_ACTIVITY_ERROR_MESSAGE";
 
     public static final String EXTRA_MESSENGER = "messenger";
+
+    public static final String EXTRA_DATA = "data";
 
     // passphrase action
     public static final String EXTRA_SECRET_KEY_ID = "secret_key_id";
@@ -100,12 +102,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 ProviderHelper.insertApiApp(RemoteServiceActivity.this,
                                         mSettingsFragment.getAppSettings());
 
-                                // give params through for new service call
-                                Bundle oldParams = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
-
-                                Intent finishIntent = new Intent();
-                                finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, oldParams);
-                                RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                                // give data through for new service call
+                                Intent resultData = extras.getParcelable(EXTRA_DATA);
+                                RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                                 RemoteServiceActivity.this.finish();
                             }
                         }
@@ -128,9 +127,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
             mSettingsFragment.setAppSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
-            Bundle oldParams = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
+            Intent resultData = extras.getParcelable(EXTRA_DATA);
 
-            showPassphraseDialog(oldParams, secretKeyId);
+            showPassphraseDialog(resultData, secretKeyId);
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
             ArrayList<String> missingUserIds = intent
@@ -167,13 +166,11 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         @Override
                         public void onClick(View v) {
                             // add key ids to params Bundle for new request
-                            Bundle params = extras.getBundle(OpenPgpConstants.PI_RESULT_PARAMS);
-                            params.putLongArray(OpenPgpConstants.PARAMS_KEY_IDS,
+                            Intent resultData = extras.getParcelable(EXTRA_DATA);
+                            resultData.putExtra(OpenPgpApi.EXTRA_KEY_IDS,
                                     mSelectFragment.getSelectedMasterKeyIds());
 
-                            Intent finishIntent = new Intent();
-                            finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-                            RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                             RemoteServiceActivity.this.finish();
                         }
                     }, R.string.btn_do_not_save, new View.OnClickListener() {
@@ -222,7 +219,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
                         @Override
                         public void onClick(View v) {
-                            RemoteServiceActivity.this.setResult(RESULT_OK);
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                             RemoteServiceActivity.this.finish();
                         }
                     });
@@ -244,16 +241,14 @@ public class RemoteServiceActivity extends ActionBarActivity {
      * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
      * for a symmetric passphrase
      */
-    private void showPassphraseDialog(final Bundle params, long secretKeyId) {
+    private void showPassphraseDialog(final Intent data, long secretKeyId) {
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     // return given params again, for calling the service method again
-                    Intent finishIntent = new Intent();
-                    finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-                    RemoteServiceActivity.this.setResult(RESULT_OK, finishIntent);
+                    RemoteServiceActivity.this.setResult(RESULT_OK, data);
                 } else {
                     RemoteServiceActivity.this.setResult(RESULT_CANCELED);
                 }
@@ -273,9 +268,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
         } catch (PgpGeneralException e) {
             Log.d(Constants.TAG, "No passphrase for this secret key, do pgp operation directly!");
             // return given params again, for calling the service method again
-            Intent finishIntent = new Intent();
-            finishIntent.putExtra(OpenPgpConstants.PI_RESULT_PARAMS, params);
-            setResult(RESULT_OK, finishIntent);
+            setResult(RESULT_OK, data);
             finish();
         }
     }

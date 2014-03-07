@@ -18,68 +18,7 @@ package org.openintents.openpgp;
 
 interface IOpenPgpService {
 
-    /**
-     * General extras
-     * --------------
-     * 
-     * Bundle params:
-     * int          api_version (required)
-     * boolean      ascii_armor (request ascii armor for ouput)
-     *
-     * returned Bundle:
-     * int          result_code (0, 1, or 2 (see OpenPgpConstants))
-     * OpenPgpError error       (if result_code == 0)
-     * Intent       intent      (if result_code == 2)
-     *
-     */
-
-    /**
-     * Sign only
-     *
-     * optional params:
-     * String       passphrase  (for key passphrase)
-     */
-    Bundle sign(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
-
-    /**
-     * Encrypt
-     *
-     * Bundle params:
-     * long[]       key_ids
-     * or
-     * String[]     user_ids    (= emails of recipients) (if more than one key has this user_id, a PendingIntent is returned)
-     *
-     * optional params:
-     * String       passphrase  (for key passphrase)
-     */
-    Bundle encrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
-
-    /**
-     * Sign and encrypt
-     *
-     * Bundle params:
-     * same as in encrypt()
-     */
-    Bundle signAndEncrypt(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
-
-    /**
-     * Decrypts and verifies given input bytes. This methods handles encrypted-only, signed-and-encrypted,
-     * and also signed-only input.
-     *
-     * returned Bundle:
-     * OpenPgpSignatureResult   signature_result
-     */
-    Bundle decryptAndVerify(in Bundle params, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
-
-    /**
-     * Retrieves key ids based on given user ids (=emails)
-     *
-     * Bundle params:
-     * String[]     user_ids
-     *
-     * returned Bundle:
-     * long[]       key_ids
-     */
-    Bundle getKeyIds(in Bundle params);
+    // see OpenPgpApi for documentation
+    Intent execute(in Intent data, in ParcelFileDescriptor input, in ParcelFileDescriptor output);
 
 }

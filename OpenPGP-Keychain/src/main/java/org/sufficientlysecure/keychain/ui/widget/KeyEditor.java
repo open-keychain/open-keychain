@@ -35,6 +35,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -60,6 +61,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     TextView mKeyId;
     TextView mCreationDate;
     BootstrapButton mExpiryDateButton;
+    GregorianCalendar mCreatedDate;
     GregorianCalendar mExpiryDate;
     GregorianCalendar mOriginalExpiryDate = null;
     CheckBox mChkCertify;
@@ -142,8 +144,12 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 if (date == null) {
                     date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
-
-                DatePickerDialog dialog = new DatePickerDialog(getContext(),
+                /*
+                 * Using custom DatePickerDialog which overrides the setTitle because 
+                 * the DatePickerDialog title is buggy (unix warparound bug).
+                 * See: https://code.google.com/p/android/issues/detail?id=49066
+                 */
+                DatePickerDialog dialog = new ExpiryDatePickerDialog(getContext(),
                         mExpiryDateSetListener, date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
                 mDatePickerResultCount = 0;
@@ -161,6 +167,21 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                                 }
                             }
                         });
+
+                // setCalendarViewShown() is supported from API 11 onwards.
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+                    // Hide calendarView in tablets because of the unix warparound bug.
+                    dialog.getDatePicker().setCalendarViewShown(false);
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                    if ( dialog != null && mCreatedDate != null ) {
+                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    } else {
+                        //When created date isn't available
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    }
+                }
+
                 dialog.show();
             }
         });
@@ -237,7 +258,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime(PgpKeyHelper.getCreationDate(key));
-        mCreationDate.setText(DateFormat.getDateInstance().format(cal.getTime()));
+        setCreatedDate(cal);
         cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
         if (expiryDate == null) {
@@ -266,6 +287,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
+    }
+
+    private void setCreatedDate(GregorianCalendar date) {
+        mCreatedDate = date;
+        if (date == null) {
+            mCreationDate.setText(getContext().getString(R.string.none));
+        } else {
+            mCreationDate.setText(DateFormat.getDateInstance().format(date.getTime()));
+        }
     }
 
     private void setExpiryDate(GregorianCalendar date) {
@@ -319,4 +349,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         return mIsNewKey;
     }
 
+}
+
+class ExpiryDatePickerDialog extends DatePickerDialog {
+
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+        super(context, callBack, year, monthOfYear, dayOfMonth);
+    }
+    //Set permanent title.
+    public void setTitle(CharSequence title) {
+        super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));
+    }
 }

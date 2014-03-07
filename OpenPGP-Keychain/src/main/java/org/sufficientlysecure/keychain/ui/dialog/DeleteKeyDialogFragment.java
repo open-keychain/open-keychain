@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -39,6 +28,14 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
@@ -100,7 +97,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             builder.setMessage(R.string.key_deletion_confirmation_multi);
         }
 
-        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
 
             @Override

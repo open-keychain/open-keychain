@@ -3,7 +3,7 @@ apply plugin: 'android'
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
     compile 'com.android.support:appcompat-v7:19.0.1'
-    compile project(':libraries:keychain-api-library')
+    compile project(':OpenPGP-Keychain-API:libraries:keychain-api-library')
     compile project(':libraries:HtmlTextView')
     compile project(':libraries:StickyListHeaders:library')
     compile project(':libraries:AndroidBootstrap')
@@ -18,7 +18,7 @@ dependencies {
 
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.1"
+    buildToolsVersion "19.0.3"
 
     defaultConfig {
         minSdkVersion 9

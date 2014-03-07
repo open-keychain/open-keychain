@@ -26,15 +26,15 @@ import org.sufficientlysecure.keychain.util.KeyServer;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ImportKeysListServerLoader extends AsyncTaskLoader<List<ImportKeysListEntry>> {
+public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
 
     String mServerQuery;
     String mKeyServer;
 
-    ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
+    private ArrayList<ImportKeysListEntry> entryList = new ArrayList<ImportKeysListEntry>();
+    private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
 
     public ImportKeysListServerLoader(Context context, String serverQuery, String keyServer) {
         super(context);
@@ -44,15 +44,18 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<List<ImportKeysL
     }
 
     @Override
-    public List<ImportKeysListEntry> loadInBackground() {
+    public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
+
+        entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
+
         if (mServerQuery == null) {
             Log.e(Constants.TAG, "mServerQuery is null!");
-            return data;
+            return entryListWrapper;
         }
 
         queryServer(mServerQuery, mKeyServer);
 
-        return data;
+        return entryListWrapper;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<List<ImportKeysL
     }
 
     @Override
-    public void deliverResult(List<ImportKeysListEntry> data) {
+    public void deliverResult(AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> data) {
         super.deliverResult(data);
     }
 
@@ -87,13 +90,17 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<List<ImportKeysL
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
             // add result to data
-            data.addAll(searchResult);
+            entryList.addAll(searchResult);
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
         } catch (KeyServer.InsufficientQuery e) {
             Log.e(Constants.TAG, "InsufficientQuery", e);
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
         } catch (KeyServer.QueryException e) {
             Log.e(Constants.TAG, "QueryException", e);
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
         } catch (KeyServer.TooManyResponses e) {
             Log.e(Constants.TAG, "TooManyResponses", e);
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
         }
     }
 

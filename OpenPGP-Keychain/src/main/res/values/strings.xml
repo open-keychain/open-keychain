@@ -14,7 +14,7 @@
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Registered Applications</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
-    <string name="title_change_pass_phrase">Change Passphrase</string>
+    <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_send_email">"Send Mail…"</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
@@ -96,6 +96,7 @@
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
     <string name="menu_encrypt_to">Encrypt to…</string>
+    <string name="menu_select_all">Select all</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -130,6 +131,7 @@
     <string name="label_send_key">Upload key to selected keyserver after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
+    <string name="expiry_date_dialog_title">Set expiry date</string>
 
     <plurals name="select_keys_button">
         <item quantity="one">%d selected</item>
@@ -291,6 +293,9 @@
     <string name="error_save_first">please save the keyring first</string>
     <string name="error_can_not_delete_contact">you can not delete this contact because it is your own.</string>
     <string name="error_can_not_delete_contacts">you can not delete the following contacts because they are your own:\n%s</string>
+    <string name="error_keyserver_insufficient_query">Insufficient server query</string>
+    <string name="error_keyserver_query">Querying keyserver failed</string>
+    <string name="error_keyserver_too_many_responses">Too many responses</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>
@@ -298,6 +303,7 @@
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">done.</string>
+    <string name="progress_cancel">cancel</string>
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
@@ -373,10 +379,10 @@
     <string name="import_clipboard_button">Get key from clipboard</string>
 
     <!-- Intent labels -->
-    <string name="intent_decrypt_file">OpenKeychain: Decrypt File</string>
-    <string name="intent_import_key">OpenKeychain: Import Key</string>
-    <string name="intent_send_encrypt">OpenKeychain: Encrypt</string>
-    <string name="intent_send_decrypt">OpenKeychain: Decrypt</string>
+    <string name="intent_decrypt_file">Decrypt File with OpenKeychain</string>
+    <string name="intent_import_key">Import Key with OpenKeychain</string>
+    <string name="intent_send_encrypt">Encrypt with OpenKeychain</string>
+    <string name="intent_send_decrypt">Decrypt with OpenKeychain</string>
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
