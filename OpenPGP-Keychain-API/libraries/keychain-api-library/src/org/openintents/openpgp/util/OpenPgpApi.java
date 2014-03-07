@@ -112,12 +112,16 @@ public class OpenPgpApi {
     public static final String ACTION_GET_KEY_IDS = "org.openintents.openpgp.action.GET_KEY_IDS";
 
     /**
-     * Download keys from keyserver
+     * This action returns RESULT_CODE_SUCCESS if the OpenPGP Provider already has the key
+     * corresponding to the given key id in its database.
+     *
+     * It returns RESULT_CODE_USER_INTERACTION_REQUIRED if the Provider does not have the key.
+     * The PendingIntent from RESULT_INTENT can be used to retrieve those from a keyserver.
      *
      * required extras:
-     * long[]        EXTRA_KEY_IDS
+     * long        EXTRA_KEY_ID
      */
-    public static final String ACTION_DOWNLOAD_KEYS = "org.openintents.openpgp.action.DOWNLOAD_KEYS";
+    public static final String ACTION_GET_KEY = "org.openintents.openpgp.action.GET_KEY";
 
     /* Intent extras */
     public static final String EXTRA_API_VERSION = "api_version";
@@ -132,6 +136,9 @@ public class OpenPgpApi {
     public static final String EXTRA_KEY_IDS = "key_ids";
     // optional extras:
     public static final String EXTRA_PASSPHRASE = "passphrase";
+
+    // GET_KEY
+    public static final String EXTRA_KEY_ID = "key_id";
 
     /* Service Intent returns */
     public static final String RESULT_CODE = "result_code";

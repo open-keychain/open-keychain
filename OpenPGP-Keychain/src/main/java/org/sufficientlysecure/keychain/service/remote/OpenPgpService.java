@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
@@ -103,9 +104,8 @@ public class OpenPgpService extends RemoteService {
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
             return result;
         }
 
@@ -114,8 +114,8 @@ public class OpenPgpService extends RemoteService {
         }
 
         Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
         result.putExtra(OpenPgpApi.EXTRA_KEY_IDS, keyIdsArray);
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
         return result;
     }
 
@@ -130,9 +130,8 @@ public class OpenPgpService extends RemoteService {
 
         // return PendingIntent to be executed by client
         Intent result = new Intent();
-        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
         result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
+        result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
         return result;
     }
 
@@ -179,9 +178,9 @@ public class OpenPgpService extends RemoteService {
             return result;
         } catch (Exception e) {
             Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
     }
@@ -208,9 +207,9 @@ public class OpenPgpService extends RemoteService {
                 }
             } else {
                 Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
                 result.putExtra(OpenPgpApi.RESULT_ERROR,
                         new OpenPgpError(OpenPgpError.GENERIC_ERROR, "Missing parameter user_ids or key_ids!"));
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
                 return result;
             }
 
@@ -267,9 +266,9 @@ public class OpenPgpService extends RemoteService {
             return result;
         } catch (Exception e) {
             Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
     }
@@ -307,7 +306,7 @@ public class OpenPgpService extends RemoteService {
                 OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
                 if (signatureResult != null) {
                     if (signatureResult.getStatus() == OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY) {
-                        // If signature is unknown we return an additional PendingIntent
+                        // If signature is unknown we return an _additional_ PendingIntent
                         // to retrieve the missing key
                         // TODO!!!
                         Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
@@ -333,9 +332,44 @@ public class OpenPgpService extends RemoteService {
             return result;
         } catch (Exception e) {
             Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             result.putExtra(OpenPgpApi.RESULT_ERROR,
                     new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+            return result;
+        }
+    }
+
+    private Intent getKeyImpl(Intent data) {
+        try {
+            long keyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
+
+            if (ProviderHelper.getPGPPublicKeyByKeyId(this, keyId) == null) {
+                Intent result = new Intent();
+
+                // If keys are not in db we return an additional PendingIntent
+                // to retrieve the missing key
+                // TODO!!!
+                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
+                intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
+                intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, "todo");
+                intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
+                        PRIVATE_REQUEST_CODE_GET_KEYS, intent, 0);
+
+                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                return result;
+            } else {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                return result;
+            }
+        } catch (Exception e) {
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_ERROR,
+                    new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
         }
     }
@@ -405,9 +439,8 @@ public class OpenPgpService extends RemoteService {
                 return encryptAndSignImpl(data, input, output, appSettings, true);
             } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
                 return decryptAndVerifyImpl(data, input, output, appSettings);
-            } else if (OpenPgpApi.ACTION_DOWNLOAD_KEYS.equals(action)) {
-                // TODO!
-                return null;
+            } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
+                return getKeyImpl(data);
             } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {
                 return getKeyIdsImpl(data);
             } else {
