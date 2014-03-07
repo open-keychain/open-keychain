@@ -86,7 +86,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.key_list_public_fragment, container, false);
-        setHasOptionsMenu(true);
+
         mButtonEmptyCreate = (BootstrapButton) view.findViewById(R.id.key_list_empty_button_create);
         mButtonEmptyCreate.setOnClickListener(new OnClickListener() {
 
@@ -121,6 +121,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        setHasOptionsMenu(true);
 
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
