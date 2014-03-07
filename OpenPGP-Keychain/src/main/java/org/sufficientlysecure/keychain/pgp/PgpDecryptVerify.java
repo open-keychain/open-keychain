@@ -743,10 +743,9 @@ public class PgpDecryptVerify {
      * @param sig
      * @param line
      * @throws SignatureException
-     * @throws IOException
      */
     private static void processLine(PGPSignature sig, byte[] line)
-            throws SignatureException, IOException {
+            throws SignatureException {
         int length = getLengthWithoutWhiteSpace(line);
         if (length > 0) {
             sig.update(line, 0, length);

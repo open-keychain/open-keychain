@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
@@ -88,7 +87,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
     /**
      * Reads all PGPKeyRing objects from input
      * 
-     * @param keyringBytes
+     * @param inputData
      * @return
      */
     private void generateListOfKeyrings(InputData inputData) {
