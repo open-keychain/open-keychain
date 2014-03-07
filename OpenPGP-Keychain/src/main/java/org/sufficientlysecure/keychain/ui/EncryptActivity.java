@@ -108,6 +108,7 @@ public class EncryptActivity extends DrawerActivity {
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
+    private CheckBox mShareAfter = null;
     private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
@@ -650,6 +651,15 @@ public class EncryptActivity extends DrawerActivity {
                                         .newInstance(mInputFilename);
                                 deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                             }
+
+                            if (mShareAfter.isChecked()) {
+                                // Share encrypted file
+                                Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
+                                sendFileIntent.setType("*/*");
+                                sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
+                                startActivity(Intent.createChooser(sendFileIntent,
+                                        getString(R.string.title_send_file)));
+                            }
                             break;
 
                         default:
@@ -809,6 +819,7 @@ public class EncryptActivity extends DrawerActivity {
         }
 
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
+        mShareAfter = (CheckBox) findViewById(R.id.shareAfterEncryption);
 
         mAsciiArmor = (CheckBox) findViewById(R.id.asciiArmour);
         mAsciiArmor.setChecked(Preferences.getPreferences(this).getDefaultAsciiArmour());

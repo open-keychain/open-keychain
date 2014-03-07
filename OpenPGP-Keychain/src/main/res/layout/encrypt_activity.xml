@@ -291,6 +291,19 @@
                         android:orientation="horizontal">
 
                         <CheckBox
+                            android:id="@+id/shareAfterEncryption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/label_share_after_encryption" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <CheckBox
                             android:id="@+id/asciiArmour"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
