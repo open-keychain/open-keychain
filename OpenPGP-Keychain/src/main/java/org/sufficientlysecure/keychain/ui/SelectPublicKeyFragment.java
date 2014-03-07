@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 
-import android.app.Activity;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -41,6 +40,7 @@ import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -48,9 +48,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         LoaderManager.LoaderCallbacks<Cursor> {
     public static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
-    private Activity mActivity;
     private SelectKeyCursorAdapter mAdapter;
-    private ListView mListView;
     private EditText mSearchView;
     private long mSelectedMasterKeyIds[];
     private String mCurQuery;
@@ -72,8 +70,6 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSearchView = (EditText) getActivity().findViewById(R.id.select_public_key_search);
-        mSearchView.addTextChangedListener(this);
         mSelectedMasterKeyIds = getArguments().getLongArray(ARG_PRESELECTED_KEY_IDS);
     }
 
@@ -84,15 +80,20 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mActivity = getActivity();
-        mListView = getListView();
-
-        mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        mAdapter = new SelectKeyCursorAdapter(mActivity, null, 0, mListView, Id.type.public_key);
+        // add header with search field
+        View headerView = getLayoutInflater(savedInstanceState)
+                .inflate(R.layout.select_public_key_fragment_header, null);
+        getListView().addHeaderView(headerView);
+
+        mSearchView = (EditText) getActivity().findViewById(R.id.select_public_key_search);
+        mSearchView.addTextChangedListener(this);
+
+        mAdapter = new SelectKeyCursorAdapter(getActivity(), null, 0, getListView(), Id.type.public_key);
 
         setListAdapter(mAdapter);
 
@@ -111,11 +112,11 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
      */
     private void preselectMasterKeyIds(long[] masterKeyIds) {
         if (masterKeyIds != null) {
-            for (int i = 0; i < mListView.getCount(); ++i) {
+            for (int i = 0; i < getListView().getCount(); ++i) {
                 long keyId = mAdapter.getMasterKeyId(i);
                 for (int j = 0; j < masterKeyIds.length; ++j) {
                     if (keyId == masterKeyIds[j]) {
-                        mListView.setItemChecked(i, true);
+                        getListView().setItemChecked(i, true);
                         break;
                     }
                 }
@@ -132,8 +133,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         // mListView.getCheckedItemIds() would give the row ids of the KeyRings not the master key
         // ids!
         Vector<Long> vector = new Vector<Long>();
-        for (int i = 0; i < mListView.getCount(); ++i) {
-            if (mListView.isItemChecked(i)) {
+        for (int i = 0; i < getListView().getCount(); ++i) {
+            if (getListView().isItemChecked(i)) {
                 vector.add(mAdapter.getMasterKeyId(i));
             }
         }
@@ -154,8 +155,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
      */
     public String[] getSelectedUserIds() {
         Vector<String> userIds = new Vector<String>();
-        for (int i = 0; i < mListView.getCount(); ++i) {
-            if (mListView.isItemChecked(i)) {
+        for (int i = 0; i < getListView().getCount(); ++i) {
+            if (getListView().isItemChecked(i)) {
                 userIds.add((String) mAdapter.getUserId(i));
             }
         }
