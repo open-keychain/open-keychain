@@ -17,6 +17,7 @@
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_send_email">"Send Mail…"</string>
+    <string name="title_send_file">"Send File…"</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
     <string name="title_import_keys">Import Keys</string>
@@ -110,6 +111,7 @@
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
+    <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
