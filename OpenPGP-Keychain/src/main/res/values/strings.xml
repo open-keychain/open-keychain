@@ -130,6 +130,8 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
+    <string name="label_sign_user_id">Sign User Id</string>
+    <string name="label_sign_email">Sign email</string>
     <string name="label_send_key">Upload key to selected keyserver after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
@@ -148,6 +150,7 @@
     <string name="can_sign">can sign</string>
     <string name="expired">expired</string>
     <string name="revoked">revoked</string>
+    <string name="user_id">User ID</string>
 
     <plurals name="n_key_servers">
         <item quantity="one">%d keyserver</item>

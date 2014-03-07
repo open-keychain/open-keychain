@@ -71,7 +71,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="left"
-                        android:text="Main User Id"
+                        android:text="@string/label_main_user_id"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:layout_alignTop="@+id/linearLayout"
                         android:layout_toRightOf="@+id/relativeLayout" />

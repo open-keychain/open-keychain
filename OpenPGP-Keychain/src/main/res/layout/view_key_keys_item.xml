@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="5dip"
-        android:text="Key ID"
+        android:text="@string/label_key_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:typeface="monospace" />
 

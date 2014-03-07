@@ -82,7 +82,7 @@
                                 android:layout_gravity="right"
                                 android:ellipsize="end"
                                 android:singleLine="true"
-                                android:text="Sign User Id"
+                                android:text="@string/label_sign_user_id"
                                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
                             <TextView
@@ -92,7 +92,7 @@
                                 android:layout_gravity="right"
                                 android:ellipsize="end"
                                 android:singleLine="true"
-                                android:text="Sign email"
+                                android:text="@string/label_sign_email"
                                 android:textAppearance="?android:attr/textAppearanceSmall" />
                         </LinearLayout>
                     </LinearLayout>
