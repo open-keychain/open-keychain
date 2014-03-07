@@ -1,2 +1,3 @@
 include ':example-app'
-include ':libraries:keychain-api-library'
+include ':libraries:openpgp-api-library'
+include ':libraries:openkeychain-api-library'
