@@ -3,75 +3,106 @@
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:drawSelectorOnTop="true"
-        android:fastScrollEnabled="true"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="32dp"
-        android:scrollbarStyle="outsideOverlay" />
-
+    <!--rebuild functionality of ListFragment -->
     <LinearLayout
-        android:id="@+id/empty"
+        android:id="@+id/key_list_public_progress_container"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/key_list_empty_text1"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text=""
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:paddingTop="4dip"
+            android:singleLine="true" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:gravity="center"
-            android:text="@string/key_list_empty_text2"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/key_list_empty_button_create"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:text="@string/key_list_empty_button_create"
-            bootstrapbutton:bb_icon_left="fa-plus"
-            bootstrapbutton:bb_type="default" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:gravity="center"
-            android:text="@string/key_list_empty_text3"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/key_list_empty_button_import"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            android:text="@string/key_list_empty_button_import"
-            bootstrapbutton:bb_icon_left="fa-download"
-            bootstrapbutton:bb_type="default" />
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/key_list_public_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+            android:id="@+id/key_list_public_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:drawSelectorOnTop="true"
+            android:fastScrollEnabled="true"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="32dp"
+            android:scrollbarStyle="outsideOverlay" />
+
+        <LinearLayout
+            android:id="@+id/key_list_public_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/key_list_empty_text1"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=""
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:text="@string/key_list_empty_text2"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/key_list_empty_button_create"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/key_list_empty_button_create"
+                bootstrapbutton:bb_icon_left="fa-plus"
+                bootstrapbutton:bb_type="default" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:text="@string/key_list_empty_text3"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/key_list_empty_button_import"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/key_list_empty_button_import"
+                bootstrapbutton:bb_icon_left="fa-download"
+                bootstrapbutton:bb_type="default" />
+        </LinearLayout>
+
+    </FrameLayout>
+
 
 </FrameLayout>

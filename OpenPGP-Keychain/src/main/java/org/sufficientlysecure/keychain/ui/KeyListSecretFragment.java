@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.sufficientlysecure.keychain.Id;
@@ -50,12 +49,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
 public class KeyListSecretFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
 
-    private KeyListSecretActivity mKeyListSecretActivity;
     private KeyListSecretAdapter mAdapter;
 
     /**
@@ -65,8 +62,6 @@ public class KeyListSecretFragment extends ListFragment implements
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mKeyListSecretActivity = (KeyListSecretActivity) getActivity();
 
         getListView().setOnItemClickListener(this);
 
@@ -114,7 +109,7 @@ public class KeyListSecretFragment extends ListFragment implements
                         case R.id.menu_key_list_public_multi_select_all: {
                             //Select all
                             int localCount = getListView().getCount();
-                            for(int k = 0; k < localCount; k++) {
+                            for (int k = 0; k < localCount; k++) {
                                 getListView().setItemChecked(k, true);
                             }
                             break;
@@ -153,7 +148,7 @@ public class KeyListSecretFragment extends ListFragment implements
         setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListSecretAdapter(mKeyListSecretActivity, null, 0);
+        mAdapter = new KeyListSecretAdapter(getActivity(), null, 0);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -203,7 +198,7 @@ public class KeyListSecretFragment extends ListFragment implements
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent editIntent = new Intent(mKeyListSecretActivity, EditKeyActivity.class);
+        Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
         editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(id)));
         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
         startActivityForResult(editIntent, 0);
