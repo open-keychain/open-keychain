@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -40,9 +41,16 @@ import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements TextWatcher,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -52,6 +60,13 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     private EditText mSearchView;
     private long mSelectedMasterKeyIds[];
     private String mCurQuery;
+
+    // copied from ListFragment
+    static final int INTERNAL_EMPTY_ID = 0x00ff0001;
+    static final int INTERNAL_PROGRESS_CONTAINER_ID = 0x00ff0002;
+    static final int INTERNAL_LIST_CONTAINER_ID = 0x00ff0003;
+    // added for search view
+    static final int SEARCH_ID = 0x00ff0004;
 
     /**
      * Creates new instance of this fragment
@@ -74,6 +89,81 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     }
 
     /**
+     * Copied from ListFragment and added EditText for search on top of list.
+     * We do not use a custom layout here, because this breaks the progress bar functionality
+     * of ListFragment.
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final Context context = getActivity();
+
+        FrameLayout root = new FrameLayout(context);
+
+        // ------------------------------------------------------------------
+
+        LinearLayout pframe = new LinearLayout(context);
+        pframe.setId(INTERNAL_PROGRESS_CONTAINER_ID);
+        pframe.setOrientation(LinearLayout.VERTICAL);
+        pframe.setVisibility(View.GONE);
+        pframe.setGravity(Gravity.CENTER);
+
+        ProgressBar progress = new ProgressBar(context, null,
+                android.R.attr.progressBarStyleLarge);
+        pframe.addView(progress, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        root.addView(pframe, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        // ------------------------------------------------------------------
+
+        FrameLayout lframe = new FrameLayout(context);
+        lframe.setId(INTERNAL_LIST_CONTAINER_ID);
+
+        TextView tv = new TextView(getActivity());
+        tv.setId(INTERNAL_EMPTY_ID);
+        tv.setGravity(Gravity.CENTER);
+        lframe.addView(tv, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        // Added for search view: linearLayout, mSearchView
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        mSearchView = new EditText(context);
+        mSearchView.setId(SEARCH_ID);
+        mSearchView.setHint(R.string.menu_search);
+        mSearchView.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
+
+        linearLayout.addView(mSearchView, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        ListView lv = new ListView(getActivity());
+        lv.setId(android.R.id.list);
+        lv.setDrawSelectorOnTop(false);
+        linearLayout.addView(lv, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        lframe.addView(linearLayout, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        root.addView(lframe, new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        // ------------------------------------------------------------------
+
+        root.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
+
+        return root;
+    }
+
+    /**
      * Define Adapter and Loader on create of Activity
      */
     @Override
@@ -81,16 +171,11 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         super.onActivityCreated(savedInstanceState);
 
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        // add header with search field
-        View headerView = getLayoutInflater(savedInstanceState)
-                .inflate(R.layout.select_public_key_fragment_header, null);
-        getListView().addHeaderView(headerView);
-
-        mSearchView = (EditText) getActivity().findViewById(R.id.select_public_key_search);
         mSearchView.addTextChangedListener(this);
 
         mAdapter = new SelectKeyCursorAdapter(getActivity(), null, 0, getListView(), Id.type.public_key);

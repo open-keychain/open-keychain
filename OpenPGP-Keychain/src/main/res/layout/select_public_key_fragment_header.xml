@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/select_public_key_search"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:hint="@string/menu_search"
-    android:drawableLeft="@drawable/ic_action_search" />
