@@ -66,6 +66,9 @@ public class KeyListSecretFragment extends ListFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // We have a menu item to show in action bar.
+        setHasOptionsMenu(true);
+
         mKeyListSecretActivity = (KeyListSecretActivity) getActivity();
 
         getListView().setOnItemClickListener(this);
@@ -146,8 +149,7 @@ public class KeyListSecretFragment extends ListFragment implements
             });
         }
 
-        // We have a menu item to show in action bar.
-        setHasOptionsMenu(true);
+
 
         // Start out with a progress indicator.
         setListShown(false);
