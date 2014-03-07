@@ -370,6 +370,9 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         // Get the searchview
         MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
+        MenuItem addContactItem = menu.findItem(R.id.menu_key_list_public_import);
+
+        addContactItem.setVisible(false);//Hide Add Contacts Icon
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
