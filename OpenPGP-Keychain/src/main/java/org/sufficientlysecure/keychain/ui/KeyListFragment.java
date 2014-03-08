@@ -164,22 +164,18 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
 
                     // get IDs for checked positions as long array
-                    long[] ids = new long[positions.size()];
-                    int i = 0;
-                    for (int pos : positions) {
-                        ids[i] = mAdapter.getItemId(pos);
-                        i++;
-                    }
+                    long[] ids;
 
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_multi_encrypt: {
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             encrypt(mode, ids);
                             break;
                         }
                         case R.id.menu_key_list_multi_delete: {
+                            ids = mAdapter.getCurrentSelectedItemIds();
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
@@ -290,16 +286,10 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
     }
 
     @TargetApi(11)
-    public void encrypt(ActionMode mode, long[] keyRingRowIds) {
-        // get master key ids from row ids
-        long[] keyRingIds = new long[keyRingRowIds.length];
-        for (int i = 0; i < keyRingRowIds.length; i++) {
-            keyRingIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), keyRingRowIds[i]);
-        }
-
+    protected void encrypt(ActionMode mode, long[] keyRingMasterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingIds);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingMasterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
 
@@ -312,6 +302,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
      * @param keyRingRowIds
      */
     @TargetApi(11)
+    // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
@@ -557,8 +548,22 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
             return result == null ? false : result;
         }
 
-        public Set<Integer> getCurrentCheckedPosition() {
-            return mSelection.keySet();
+        public long[] getCurrentSelectedItemIds() {
+            long[] ids = new long[mSelection.size()];
+            int i = 0;
+            // get master key ids
+            for (int pos : mSelection.keySet())
+                ids[i++] = mAdapter.getItemId(pos);
+            return ids;
+        }
+
+        public long[] getCurrentSelectedMasterKeyIds() {
+            long[] ids = new long[mSelection.size()];
+            int i = 0;
+            // get master key ids
+            for (int pos : mSelection.keySet())
+                ids[i++] = mAdapter.getMasterKeyId(pos);
+            return ids;
         }
 
         public void removeSelection(int position) {
