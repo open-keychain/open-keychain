@@ -237,7 +237,7 @@
             android:padding="4dp"
             android:layout_marginBottom="10dp"
             android:text="@string/key_view_action_edit"
-            bootstrapbutton:bb_icon_left="fa-lock"
+            bootstrapbutton:bb_icon_left="fa-key"
             bootstrapbutton:bb_type="info"
             android:visibility="gone" />
 
