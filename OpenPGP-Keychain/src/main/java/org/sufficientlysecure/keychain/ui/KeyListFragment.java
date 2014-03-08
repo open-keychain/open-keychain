@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -473,6 +472,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                 holder = new HeaderViewHolder();
                 convertView = mInflater.inflate(R.layout.key_list_header, parent, false);
                 holder.text = (TextView) convertView.findViewById(R.id.stickylist_header_text);
+                holder.count = (TextView) convertView.findViewById(R.id.contacts_num);
                 convertView.setTag(holder);
             } else {
                 holder = (HeaderViewHolder) convertView.getTag();
@@ -489,6 +489,13 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
             }
 
             if(mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                { // set contact count
+                    int num = mCursor.getCount();
+                    String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
+                    holder.count.setText(contactsTotal);
+                    holder.count.setVisibility(View.VISIBLE);
+                }
+
                 holder.text.setText(convertView.getResources().getString(R.string.my_keys));
                 return convertView;
             }
@@ -500,6 +507,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                 headerText = "" + mCursor.getString(KeyListFragment.INDEX_UID).subSequence(0, 1).charAt(0);
             }
             holder.text.setText(headerText);
+            holder.count.setVisibility(View.GONE);
             return convertView;
         }
 
@@ -533,6 +541,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
 
         class HeaderViewHolder {
             TextView text;
+            TextView count;
         }
 
         /**

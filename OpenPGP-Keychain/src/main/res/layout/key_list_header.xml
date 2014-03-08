@@ -11,6 +11,20 @@
         android:padding="8dp"
         android:textColor="@color/emphasis"
         android:textSize="17sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:text="header text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="contact count"
+        android:id="@+id/contacts_num"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="10px"
+        android:visibility="visible"
+        android:textColor="@android:color/darker_gray" />
 
 </RelativeLayout>
