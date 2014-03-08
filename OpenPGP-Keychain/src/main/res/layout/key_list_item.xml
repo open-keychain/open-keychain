@@ -8,7 +8,8 @@
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
     android:singleLine="true"
-    android:descendantFocusability="blocksDescendants">
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false">
 
     <TextView
         android:id="@+id/mainUserId"
@@ -36,13 +37,27 @@
         android:layout_height="wrap_content"
         android:text="Edit"
         android:id="@+id/edit"
-        android:enabled="false"
         android:focusable="false"
         android:layout_alignTop="@+id/mainUserId"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="false"
         android:layout_alignParentTop="false"
-        android:layout_alignBottom="@+id/mainUserIdRest" />
+        android:layout_alignBottom="@+id/mainUserIdRest"
+        android:visibility="visible"
+        android:enabled="true"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/revoked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/revoked"
+        android:textColor="#e00"
+        android:visibility="visible"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

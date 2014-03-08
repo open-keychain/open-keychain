@@ -17,25 +17,32 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.KeyListAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
 
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +53,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,7 +63,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -207,7 +217,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
         // setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListAdapter(getActivity(), null, Id.type.public_key, USER_ID_INDEX);
+        mAdapter = new KeyListAdapter(getActivity(), null, Id.type.public_key);
         mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -218,20 +228,21 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.TYPE,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.UserIds.USER_ID,
             KeychainContract.Keys.IS_REVOKED
     };
 
-    static final int USER_ID_INDEX = 2;
-
+    static final int INDEX_TYPE = 1;
+    static final int INDEX_UID = 3;
     static final String SORT_ORDER = UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -274,10 +285,14 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
         } else {
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
-        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
+        if(mAdapter.getKeyType(position) == KeyTypes.SECRET) {
+            viewIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
+        } else {
+            viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
+        }
         startActivity(viewIntent);
     }
-    
+
     @TargetApi(11)
     public void encrypt(ActionMode mode, long[] keyRingRowIds) {
         // get master key ids from row ids
@@ -333,6 +348,252 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                 keyRingRowIds, Id.type.public_key);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
+    }
+
+    /**
+     * Implements StickyListHeadersAdapter from library
+     */
+    private class KeyListAdapter extends CursorAdapter implements StickyListHeadersAdapter {
+        private LayoutInflater mInflater;
+        private int mIndexUserId;
+        private int mIndexIsRevoked;
+        private int mMasterKeyId;
+
+        @SuppressLint("UseSparseArrays")
+        private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
+
+        public KeyListAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+
+            mInflater = LayoutInflater.from(context);
+            initIndex(c);
+        }
+
+        @Override
+        public Cursor swapCursor(Cursor newCursor) {
+            initIndex(newCursor);
+
+            return super.swapCursor(newCursor);
+        }
+
+        /**
+         * Get column indexes for performance reasons just once in constructor and swapCursor. For a
+         * performance comparison see http://stackoverflow.com/a/17999582
+         *
+         * @param cursor
+         */
+        private void initIndex(Cursor cursor) {
+            if (cursor != null) {
+                mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
+                mIndexIsRevoked = cursor.getColumnIndexOrThrow(KeychainContract.Keys.IS_REVOKED);
+                mMasterKeyId = cursor.getColumnIndexOrThrow(KeychainContract.KeyRings.MASTER_KEY_ID);
+            }
+        }
+
+        /**
+         * Bind cursor data to the item list view
+         * <p/>
+         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
+         * no ViewHolder is required here.
+         */
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+            { // set name and stuff, common to both key types
+                TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+                TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+
+                String userId = cursor.getString(mIndexUserId);
+                String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+                if (userIdSplit[0] != null) {
+                    mainUserId.setText(userIdSplit[0]);
+                } else {
+                    mainUserId.setText(R.string.user_id_no_name);
+                }
+                if (userIdSplit[1] != null) {
+                    mainUserIdRest.setText(userIdSplit[1]);
+                    mainUserIdRest.setVisibility(View.VISIBLE);
+                } else {
+                    mainUserIdRest.setVisibility(View.GONE);
+                }
+            }
+
+            { // set edit button and revoked info, specific by key type
+                Button button = (Button) view.findViewById(R.id.edit);
+                TextView revoked = (TextView) view.findViewById(R.id.revoked);
+
+                if(cursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                    // this is a secret key - show the edit button
+                    revoked.setVisibility(View.GONE);
+                    button.setVisibility(View.VISIBLE);
+
+                    final long id = cursor.getLong(mMasterKeyId);
+                    button.setOnClickListener(new OnClickListener() {
+                        public void onClick(View view) {
+                            Log.d(Constants.TAG, "swag");
+                            Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
+                            // editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(1)));
+                            editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
+                            editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+                            startActivityForResult(editIntent, 0);
+                        }
+                    });
+                } else {
+                    // this is a public key - hide the edit button, show if it's revoked
+                    button.setVisibility(View.GONE);
+
+                    boolean isRevoked = cursor.getInt(mIndexIsRevoked) > 0;
+                    revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                }
+            }
+
+        }
+
+        public long getMasterKeyId(int id) {
+
+            if (!mCursor.moveToPosition(id)) {
+                throw new IllegalStateException("couldn't move cursor to position " + id);
+            }
+
+            return mCursor.getLong(mMasterKeyId);
+
+        }
+
+        public int getKeyType(int position) {
+
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            return mCursor.getInt(KeyListFragment.INDEX_TYPE);
+
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.key_list_item, parent, false);
+        }
+
+        /**
+         * Creates a new header view and binds the section headers to it. It uses the ViewHolder
+         * pattern. Most functionality is similar to getView() from Android's CursorAdapter.
+         * <p/>
+         * NOTE: The variables mDataValid and mCursor are available due to the super class
+         * CursorAdapter.
+         */
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup parent) {
+            HeaderViewHolder holder;
+            if (convertView == null) {
+                holder = new HeaderViewHolder();
+                convertView = mInflater.inflate(R.layout.key_list_header, parent, false);
+                holder.text = (TextView) convertView.findViewById(R.id.stickylist_header_text);
+                convertView.setTag(holder);
+            } else {
+                holder = (HeaderViewHolder) convertView.getTag();
+            }
+
+            if (!mDataValid) {
+                // no data available at this point
+                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
+                return convertView;
+            }
+
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            if(mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                holder.text.setText("My Keys");
+                return convertView;
+            }
+
+            // set header text as first char in user id
+            String userId = mCursor.getString(KeyListFragment.INDEX_UID);
+            String headerText = convertView.getResources().getString(R.string.user_id_no_name);
+            if (userId != null && userId.length() > 0) {
+                headerText = "" + mCursor.getString(KeyListFragment.INDEX_UID).subSequence(0, 1).charAt(0);
+            }
+            holder.text.setText(headerText);
+            return convertView;
+        }
+
+        /**
+         * Header IDs should be static, position=1 should always return the same Id that is.
+         */
+        @Override
+        public long getHeaderId(int position) {
+            if (!mDataValid) {
+                // no data available at this point
+                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
+                return -1;
+            }
+
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            // early breakout: all secret keys are assigned id 0
+            if(mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET)
+                return 1L;
+
+            // otherwise, return the first character of the name as ID
+            String userId = mCursor.getString(KeyListFragment.INDEX_UID);
+            if (userId != null && userId.length() > 0) {
+                return userId.charAt(0);
+            } else {
+                return Long.MAX_VALUE;
+            }
+        }
+
+        class HeaderViewHolder {
+            TextView text;
+        }
+
+        /**
+         * -------------------------- MULTI-SELECTION METHODS --------------
+         */
+        public void setNewSelection(int position, boolean value) {
+            mSelection.put(position, value);
+            notifyDataSetChanged();
+        }
+
+        public boolean isPositionChecked(int position) {
+            Boolean result = mSelection.get(position);
+            return result == null ? false : result;
+        }
+
+        public Set<Integer> getCurrentCheckedPosition() {
+            return mSelection.keySet();
+        }
+
+        public void removeSelection(int position) {
+            mSelection.remove(position);
+            notifyDataSetChanged();
+        }
+
+        public void clearSelection() {
+            mSelection.clear();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // let the adapter handle setting up the row views
+            View v = super.getView(position, convertView, parent);
+
+            /**
+             * Change color for multi-selection
+             */
+            // default color
+            v.setBackgroundColor(Color.TRANSPARENT);
+            if (mSelection.get(position) != null) {
+                // this is a selected position, change color!
+                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+            }
+            return v;
+        }
+
     }
 
 }
