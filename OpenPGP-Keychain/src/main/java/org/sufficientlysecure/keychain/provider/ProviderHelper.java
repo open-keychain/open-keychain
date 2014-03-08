@@ -514,6 +514,26 @@ public class ProviderHelper {
         return masterKeyId;
     }
 
+    public static long getRowId(Context context, Uri queryUri) {
+        String[] projection = new String[]{KeyRings._ID};
+        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
+
+        long rowId = 0;
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int idCol = cursor.getColumnIndexOrThrow(KeyRings._ID);
+
+                rowId = cursor.getLong(idCol);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return rowId;
+    }
+
     /**
      * Get fingerprint of key
      */

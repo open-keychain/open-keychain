@@ -285,11 +285,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
         } else {
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
-        if(mAdapter.getKeyType(position) == KeyTypes.SECRET) {
-            viewIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
-        } else {
-            viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
-        }
+        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
 
