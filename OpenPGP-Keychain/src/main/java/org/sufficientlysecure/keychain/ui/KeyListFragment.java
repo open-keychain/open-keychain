@@ -427,7 +427,6 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            // editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(1)));
                             editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);

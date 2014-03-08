@@ -483,6 +483,12 @@ public class ProviderHelper {
         return (masterKeyId > 0);
     }
 
+    public static boolean hasSecretKeyByMasterKeyId(Context context, long masterKeyId) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(masterKeyId));
+        // see if we can get our master key id back from the uri
+        return getMasterKeyId(context, queryUri) == masterKeyId;
+    }
+
     /**
      * Get master key id of keyring by its row id
      */

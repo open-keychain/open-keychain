@@ -160,7 +160,10 @@
                     android:layout_height="wrap_content" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/tableRow">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -171,6 +174,22 @@
 
                 <TextView
                     android:id="@+id/fingerprint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:typeface="monospace" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingRight="10dip"
+                    android:text="@string/label_secret_key" />
+
+                <TextView
+                    android:id="@+id/secret_key"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:typeface="monospace" />
@@ -210,6 +229,17 @@
             android:layout_marginBottom="4dp"
             android:layout_marginTop="14dp"
             android:text="@string/section_actions" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/action_edit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="4dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/key_view_action_edit"
+            bootstrapbutton:bb_icon_left="fa-lock"
+            bootstrapbutton:bb_type="info"
+            android:visibility="gone" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
             android:id="@+id/action_encrypt"

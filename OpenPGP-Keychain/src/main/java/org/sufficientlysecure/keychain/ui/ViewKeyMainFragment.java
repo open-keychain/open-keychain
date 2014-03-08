@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -59,6 +60,8 @@ public class ViewKeyMainFragment extends Fragment  implements
     private TextView mExpiry;
     private TextView mCreation;
     private TextView mFingerprint;
+    private TextView mSecretKey;
+    private BootstrapButton mActionEdit;
     private BootstrapButton mActionEncrypt;
 
     private ListView mUserIds;
@@ -85,8 +88,10 @@ public class ViewKeyMainFragment extends Fragment  implements
         mCreation = (TextView) view.findViewById(R.id.creation);
         mExpiry = (TextView) view.findViewById(R.id.expiry);
         mFingerprint = (TextView) view.findViewById(R.id.fingerprint);
+        mSecretKey = (TextView) view.findViewById(R.id.secret_key);
         mUserIds = (ListView) view.findViewById(R.id.user_ids);
         mKeys = (ListView) view.findViewById(R.id.keys);
+        mActionEdit = (BootstrapButton) view.findViewById(R.id.action_edit);
         mActionEncrypt = (BootstrapButton) view.findViewById(R.id.action_encrypt);
 
         return view;
@@ -115,6 +120,31 @@ public class ViewKeyMainFragment extends Fragment  implements
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
+        { // label whether secret key is available, and edit button if it is
+            final long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), mDataUri);
+            if(ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
+                // set this attribute. this is a LITTLE unclean, but we have the info available
+                // right here, so why not.
+                mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
+                mSecretKey.setText(R.string.secret_key_yes);
+
+                // edit button
+                mActionEdit.setVisibility(View.VISIBLE);
+                mActionEdit.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
+                        editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(masterKeyId)));
+                        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+                        startActivityForResult(editIntent, 0);
+                    }
+                });
+            } else {
+                mSecretKey.setTextColor(Color.BLACK);
+                mSecretKey.setText(getResources().getString(R.string.secret_key_no));
+                mActionEdit.setVisibility(View.GONE);
+            }
+        }
 
         mActionEncrypt.setOnClickListener(new View.OnClickListener() {
 
