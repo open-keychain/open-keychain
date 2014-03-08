@@ -353,22 +353,12 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         // Get the searchview
-        final MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
-
+        MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
-        //Collapse the SearchView if it does not have focus
-        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    MenuItemCompat.collapseActionView(searchItem);
-                }
-            }
-        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
