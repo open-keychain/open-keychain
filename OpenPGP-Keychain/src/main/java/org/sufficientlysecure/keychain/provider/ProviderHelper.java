@@ -451,13 +451,13 @@ public class ProviderHelper {
      */
     public static boolean getSecretMasterKeyCanSign(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyCanSign(context, queryUri, keyRingRowId);
+        return getMasterKeyCanSign(context, queryUri);
     }
 
     /**
      * Private helper method to get master key private empty status of keyring by its row id
      */
-    private static boolean getMasterKeyCanSign(Context context, Uri queryUri, long keyRingRowId) {
+    public static boolean getMasterKeyCanSign(Context context, Uri queryUri) {
         String[] projection = new String[]{
                 KeyRings.MASTER_KEY_ID,
                 "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS

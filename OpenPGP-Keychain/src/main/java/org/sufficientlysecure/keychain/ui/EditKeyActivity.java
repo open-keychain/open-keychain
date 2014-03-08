@@ -265,12 +265,10 @@ public class EditKeyActivity extends ActionBarActivity {
         } else {
             Log.d(Constants.TAG, "uri: " + mDataUri);
 
-            long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
             // get master key id using row id
-            long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
+            long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
 
-            masterCanSign = ProviderHelper.getSecretMasterKeyCanSign(this, keyRingRowId);
+            masterCanSign = ProviderHelper.getMasterKeyCanSign(this, mDataUri);
             finallyEdit(masterKeyId, masterCanSign);
         }
     }
