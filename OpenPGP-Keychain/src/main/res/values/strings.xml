@@ -431,5 +431,7 @@
     <string name="nav_apps">Registered Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="edit">Edit</string>
+    <string name="my_keys">My Keys</string>
 
 </resources>

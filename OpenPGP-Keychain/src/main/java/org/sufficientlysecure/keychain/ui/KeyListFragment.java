@@ -426,7 +426,6 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                     final long id = cursor.getLong(mMasterKeyId);
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
-                            Log.d(Constants.TAG, "swag");
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
                             // editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(1)));
                             editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
@@ -500,7 +499,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
             }
 
             if(mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
-                holder.text.setText("My Keys");
+                holder.text.setText(convertView.getResources().getString(R.string.my_keys));
                 return convertView;
             }
 

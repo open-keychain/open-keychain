@@ -35,7 +35,6 @@
         style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit"
         android:id="@+id/edit"
         android:focusable="false"
         android:layout_alignTop="@+id/mainUserId"
@@ -46,7 +45,8 @@
         android:layout_alignBottom="@+id/mainUserIdRest"
         android:visibility="visible"
         android:enabled="true"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:text="@string/edit" />
 
     <TextView
         android:id="@+id/revoked"
