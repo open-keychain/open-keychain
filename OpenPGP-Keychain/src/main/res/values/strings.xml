@@ -67,6 +67,8 @@
     <string name="btn_clipboard">Clipboard</string>
     <string name="btn_share">Share with…</string>
     <string name="btn_lookup_key">Lookup key</string>
+    <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
+    <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
