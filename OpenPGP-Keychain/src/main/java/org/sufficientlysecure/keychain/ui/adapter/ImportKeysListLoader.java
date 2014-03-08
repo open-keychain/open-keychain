@@ -33,6 +33,21 @@ import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
 public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
+
+    public static class FileHasNoContent extends Exception {
+
+    }
+
+    public static class NonPgpPart extends Exception {
+        private int count;
+        public NonPgpPart(int count) {
+            this.count = count;
+        }
+        public int getCount() {
+            return count;
+        }
+    }
+
     Context mContext;
 
     InputData mInputData;
@@ -91,6 +106,10 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
      * @return
      */
     private void generateListOfKeyrings(InputData inputData) {
+
+        boolean isEmpty = true;
+        int nonPgpCounter = 0;
+
         PositionAwareInputStream progressIn = new PositionAwareInputStream(
                 inputData.getInputStream());
 
@@ -102,6 +121,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
             // read all available blocks... (asc files can contain many blocks with BEGIN END)
             while (bufferedInput.available() > 0) {
+                isEmpty = false;
                 InputStream in = PGPUtil.getDecoderStream(bufferedInput);
                 PGPObjectFactory objectFactory = new PGPObjectFactory(in);
 
@@ -115,11 +135,25 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
                         addToData(newKeyring);
                     } else {
                         Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
+                        nonPgpCounter++;
                     }
                 }
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(data, e);
+            nonPgpCounter = 0;
+        }
+
+        if(isEmpty) {
+            Log.e(Constants.TAG, "File has no content!", new FileHasNoContent());
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+                    (data, new FileHasNoContent());
+        }
+
+        if(nonPgpCounter > 0) {
+            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+                    (data, new NonPgpPart(nonPgpCounter));
         }
     }
 

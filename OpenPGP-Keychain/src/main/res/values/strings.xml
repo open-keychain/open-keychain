@@ -296,9 +296,15 @@
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
     <string name="error_keyserver_query">Querying keyserver failed</string>
     <string name="error_keyserver_too_many_responses">Too many responses</string>
+    <string name="error_import_file_no_content">File has no content</string>
+    <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>
+    </plurals>
+    <plurals name="error_import_non_pgp_part">
+        <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
+        <item quantity="other">parts of the loaded file are valid OpenPGP objects but not OpenPGP keys</item>
     </plurals>
 
     <!-- progress dialogs, usually ending in '…' -->
