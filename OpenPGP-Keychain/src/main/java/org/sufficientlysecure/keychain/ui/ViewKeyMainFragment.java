@@ -225,7 +225,7 @@ public class ViewKeyMainFragment extends Fragment  implements
                     // get key id from MASTER_KEY_ID
                     long keyId = data.getLong(KEYS_INDEX_KEY_ID);
 
-                    String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
                     mKeyId.setText(keyIdStr);
 
                     // get creation date from CREATION
