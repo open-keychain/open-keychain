@@ -341,10 +341,10 @@ public class ProviderHelper {
                                                                      long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
 
-        boolean has_private = true;
+        boolean hasPrivate = true;
         if (key.isMasterKey()) {
-            if (PgpKeyHelper.isSecretKeyPrivateEmpty(key)) {
-                has_private = false;
+            if (key.isPrivateKeyEmpty()) {
+                hasPrivate = false;
             }
         }
 
@@ -352,8 +352,8 @@ public class ProviderHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
-        values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && has_private));
-        values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && has_private));
+        values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && hasPrivate));
+        values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && hasPrivate));
         values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
         values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);

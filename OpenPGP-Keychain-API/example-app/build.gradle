@@ -13,7 +13,8 @@ apply plugin: 'android'
 
 dependencies {
     compile 'com.android.support:support-v4:19.0.1'
-    compile project(':libraries:keychain-api-library')
+    compile project(':libraries:openpgp-api-library')
+    compile project(':libraries:openkeychain-api-library')
 }
 
 android {

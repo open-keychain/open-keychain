@@ -161,7 +161,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             } else if (extras.containsKey(EXTRA_KEY_ID)) {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
                 if (keyId != 0) {
-                    query = "0x" + PgpKeyHelper.convertKeyToHex(keyId);
+                    query = PgpKeyHelper.convertKeyIdToHex(keyId);
                 }
             } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
                 String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);

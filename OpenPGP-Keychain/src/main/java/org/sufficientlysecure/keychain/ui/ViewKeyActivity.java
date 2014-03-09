@@ -154,7 +154,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
+        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
 
         if (updateKeyId == 0) {
             Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");

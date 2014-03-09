@@ -174,9 +174,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(key));
-        String keyId1Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
-        String keyId2Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID() >> 32);
-        mKeyId.setText(keyId1Str + " " + keyId2Str);
+        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
+        mKeyId.setText(keyIdStr);
 
         Vector<Choice> choices = new Vector<Choice>();
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);

@@ -375,6 +375,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
