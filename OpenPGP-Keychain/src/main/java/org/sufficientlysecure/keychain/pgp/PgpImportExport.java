@@ -228,7 +228,7 @@ public class PgpImportExport {
                 for (PGPSecretKey testSecretKey : new IterableIterator<PGPSecretKey>(
                         secretKeyRing.getSecretKeys())) {
                     if (!testSecretKey.isMasterKey()) {
-                        if (PgpKeyHelper.isSecretKeyPrivateEmpty(testSecretKey)) {
+                        if (testSecretKey.isPrivateKeyEmpty()) {
                             // this is bad, something is very wrong...
                             save = false;
                             status = Id.return_value.bad;
