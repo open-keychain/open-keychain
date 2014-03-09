@@ -598,7 +598,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Operation */
                 int keysTotal = 2;
                 int keysCreated =0;
-                this.setProgress(keysCreated, keysTotal);
+                setProgress(getApplicationContext().getResources().getQuantityString(R.plurals.progress_generating,keysTotal),
+                        keysCreated, keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
