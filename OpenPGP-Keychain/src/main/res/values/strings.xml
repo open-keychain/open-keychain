@@ -328,6 +328,11 @@
         <item quantity="other">exporting keys…</item>
     </plurals>
 
+    <plurals name="progress_generating">
+        <item quantity="one">generating key, this can take up to 3 minutes…</item>
+        <item quantity="other">generating keys, this can take up to 3 minutes…</item>
+    </plurals>
+
     <string name="progress_extracting_signature_key">extracting signature key…</string>
     <string name="progress_extracting_key">extracting key…</string>
     <string name="progress_preparing_streams">preparing streams…</string>
