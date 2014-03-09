@@ -87,7 +87,7 @@ public class ProviderHelper {
     }
 
     /**
-     * Retrieves the actual PGPPublicKeyRing object from the database blob based on the maserKeyId
+     * Retrieves the actual PGPPublicKeyRing object from the database blob based on the masterKeyId
      */
     public static PGPPublicKeyRing getPGPPublicKeyRingByMasterKeyId(Context context,
                                                                     long masterKeyId) {
@@ -110,11 +110,8 @@ public class ProviderHelper {
      */
     public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
         PGPPublicKeyRing keyRing = getPGPPublicKeyRingByKeyId(context, keyId);
-        if (keyRing == null) {
-            return null;
-        }
 
-        return keyRing.getPublicKey(keyId);
+        return (keyRing == null)? null : keyRing.getPublicKey(keyId);
     }
 
     /**
@@ -149,11 +146,8 @@ public class ProviderHelper {
      */
     public static PGPSecretKey getPGPSecretKeyByKeyId(Context context, long keyId) {
         PGPSecretKeyRing keyRing = getPGPSecretKeyRingByKeyId(context, keyId);
-        if (keyRing == null) {
-            return null;
-        }
 
-        return keyRing.getSecretKey(keyId);
+        return (keyRing == null) ? null : keyRing.getSecretKey(keyId);
     }
 
     /**
