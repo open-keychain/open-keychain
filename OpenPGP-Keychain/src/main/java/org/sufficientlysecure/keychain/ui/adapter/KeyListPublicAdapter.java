@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.util.HashMap;
 import java.util.Set;
 
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -32,7 +33,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +41,7 @@ import android.widget.TextView;
 /**
  * Implements StickyListHeadersAdapter from library
  */
-public class KeyListPublicAdapter extends CursorAdapter implements StickyListHeadersAdapter {
+public class KeyListPublicAdapter extends HighlightQueryCursorAdapter implements StickyListHeadersAdapter {
     private LayoutInflater mInflater;
     private int mSectionColumnIndex;
     private int mIndexUserId;
@@ -52,7 +52,6 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
 
     public KeyListPublicAdapter(Context context, Cursor c, int flags, int sectionColumnIndex) {
         super(context, c, flags);
-
         mInflater = LayoutInflater.from(context);
         mSectionColumnIndex = sectionColumnIndex;
         initIndex(c);
@@ -109,6 +108,12 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             revoked.setVisibility(View.VISIBLE);
         } else {
             revoked.setVisibility(View.GONE);
+        }
+        String query = getSearchQuery();
+
+        if(query != null){
+            mainUserId.setText(highlightSearchKey(userIdSplit[0]));
+            mainUserIdRest.setText(highlightSearchKey(userIdSplit[1]));
         }
     }
 

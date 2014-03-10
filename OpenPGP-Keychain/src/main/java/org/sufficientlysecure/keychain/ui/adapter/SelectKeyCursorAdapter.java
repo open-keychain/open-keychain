@@ -25,7 +25,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,9 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SelectKeyCursorAdapter extends CursorAdapter {
+
+
+public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
 
     protected int mKeyType;
 
@@ -55,7 +56,6 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         mInflater = LayoutInflater.from(context);
         mListView = listView;
         mKeyType = keyType;
-
         initIndex(c);
     }
 
@@ -158,11 +158,15 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         mainUserIdRest.setEnabled(valid);
         keyId.setEnabled(valid);
         status.setEnabled(valid);
+        String query = getSearchQuery();
+        if(query != null){
+            mainUserId.setText(highlightSearchKey(userIdSplit[0]));
+            mainUserIdRest.setText(highlightSearchKey(userIdSplit[1]));
+        }
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.select_key_item, null);
     }
-
 }
