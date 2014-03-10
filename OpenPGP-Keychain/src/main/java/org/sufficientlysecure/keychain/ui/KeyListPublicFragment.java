@@ -367,6 +367,16 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
+        //Erase search result without focus
+        mSearchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mCurQuery = null;
+                    getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
+                }
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
