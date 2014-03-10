@@ -599,7 +599,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 int keysTotal = 2;
                 int keysCreated = 0;
                 setProgress(
-                        getResources().getQuantityString(R.plurals.progress_generating, keysTotal),
+                        getApplicationContext().getResources().getQuantityString(R.plurals.progress_generating, keysTotal),
                         keysCreated,
                         keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
