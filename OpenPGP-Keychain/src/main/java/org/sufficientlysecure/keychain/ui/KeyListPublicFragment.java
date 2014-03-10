@@ -171,15 +171,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
-
-                    // get IDs for checked positions as long array
-                    long[] ids = new long[positions.size()];
-                    int i = 0;
-                    for (int pos : positions) {
-                        ids[i] = mAdapter.getItemId(pos);
-                        i++;
-                    }
+                    // get row ids for checked positions as long array
+                    long[] ids = mStickyList.getCheckedItemIds();
 
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_public_multi_encrypt: {
@@ -192,9 +185,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                         }
                         case R.id.menu_key_list_public_multi_select_all: {
                             //Select all
-                            int localCount = mStickyList.getCount();
-                            for (int k = 0; k < localCount; k++) {
-                                mStickyList.setItemChecked(k, true);
+                            for (int i = 0; i < mStickyList.getCount(); i++) {
+                                mStickyList.setItemChecked(i, true);
                             }
                             break;
                         }
@@ -215,7 +207,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                     } else {
                         mAdapter.removeSelection(position);
                     }
-                    int count = mAdapter.getCurrentCheckedPosition().size();
+                    int count = mStickyList.getCheckedItemCount();
                     String keysSelected = getResources().getQuantityString(
                             R.plurals.key_list_selected_keys, count, count);
                     mode.setTitle(keysSelected);

@@ -98,16 +98,7 @@ public class KeyListSecretAdapter extends CursorAdapter {
         mSelection.put(position, value);
         notifyDataSetChanged();
     }
-
-    public boolean isPositionChecked(int position) {
-        Boolean result = mSelection.get(position);
-        return result == null ? false : result;
-    }
-
-    public Set<Integer> getCurrentCheckedPosition() {
-        return mSelection.keySet();
-    }
-
+    
     public void removeSelection(int position) {
         mSelection.remove(position);
         notifyDataSetChanged();
