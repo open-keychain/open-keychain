@@ -311,6 +311,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
+        mAdapter.setSearchQuery(mCurQuery);
         mAdapter.swapCursor(data);
 
         // The list should now be shown.
