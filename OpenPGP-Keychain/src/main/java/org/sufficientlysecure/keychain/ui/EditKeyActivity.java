@@ -187,7 +187,8 @@ public class EditKeyActivity extends ActionBarActivity {
 
                     // Message is received after generating is done in ApgService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                            this, R.string.progress_generating, ProgressDialog.STYLE_HORIZONTAL, true,
+                            this, getResources().getQuantityString(R.plurals.progress_generating, 1),
+                            ProgressDialog.STYLE_HORIZONTAL, true,
 
                             new DialogInterface.OnCancelListener() {
                                 @Override

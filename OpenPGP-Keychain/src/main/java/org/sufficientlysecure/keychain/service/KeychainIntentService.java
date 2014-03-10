@@ -597,9 +597,11 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 /* Operation */
                 int keysTotal = 2;
-                int keysCreated =0;
-                setProgress(getApplicationContext().getResources().getQuantityString(R.plurals.progress_generating,keysTotal),
-                        keysCreated, keysTotal);
+                int keysCreated = 0;
+                setProgress(
+                        getResources().getQuantityString(R.plurals.progress_generating, keysTotal),
+                        keysCreated,
+                        keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
@@ -610,7 +612,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, false);
                 keysCreated++;
-                setProgress(keysCreated, keysTotal );
+                setProgress(keysCreated, keysTotal);
 
                 // TODO: default to one master for cert, one sub for encrypt and one sub
                 //       for sign
