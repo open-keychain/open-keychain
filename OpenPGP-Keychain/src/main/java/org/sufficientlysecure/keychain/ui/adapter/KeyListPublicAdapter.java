@@ -19,8 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -34,10 +33,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.support.v4.widget.CursorAdapter;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,19 +41,17 @@ import android.widget.TextView;
 /**
  * Implements StickyListHeadersAdapter from library
  */
-public class KeyListPublicAdapter extends CursorAdapter implements StickyListHeadersAdapter {
+public class KeyListPublicAdapter extends HighlightQueryCursorAdapter implements StickyListHeadersAdapter {
     private LayoutInflater mInflater;
     private int mSectionColumnIndex;
     private int mIndexUserId;
     private int mIndexIsRevoked;
-    private String mCurQuery;
 
     @SuppressLint("UseSparseArrays")
     private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
 
     public KeyListPublicAdapter(Context context, Cursor c, int flags, int sectionColumnIndex) {
         super(context, c, flags);
-        mCurQuery = null;
         mInflater = LayoutInflater.from(context);
         mSectionColumnIndex = sectionColumnIndex;
         initIndex(c);
@@ -82,10 +75,6 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
             mIndexIsRevoked = cursor.getColumnIndexOrThrow(KeychainContract.Keys.IS_REVOKED);
         }
-    }
-
-    public void setSearchQuery(String searchQuery){
-        mCurQuery = searchQuery;
     }
 
     /**
@@ -120,7 +109,9 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
         } else {
             revoked.setVisibility(View.GONE);
         }
-        if(mCurQuery != null){
+        String query = getSearchQuery();
+
+        if(query != null){
             mainUserId.setText(highlightSearchKey(userIdSplit[0]));
             mainUserIdRest.setText(highlightSearchKey(userIdSplit[1]));
         }
@@ -241,25 +232,6 @@ public class KeyListPublicAdapter extends CursorAdapter implements StickyListHea
             v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
         }
         return v;
-    }
-    private Spannable highlightSearchKey(String text) {
-        Spannable  highlight;
-        Pattern pattern;
-        Matcher matcher;
-        String     orig_str;
-
-        orig_str  = Html.fromHtml(text).toString();
-        highlight  = (Spannable) Html.fromHtml(text);
-        pattern = Pattern.compile("(?i)" + mCurQuery);
-        matcher = pattern.matcher(orig_str);
-        if (matcher.find()) {
-            highlight.setSpan(
-                new ForegroundColorSpan(0xFF33B5E5),
-                matcher.start(),
-                matcher.end(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        return highlight;
     }
 
 }
