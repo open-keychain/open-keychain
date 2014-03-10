@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
@@ -173,10 +174,10 @@ public class ViewKeyMainFragment extends Fragment  implements
     static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
     static final int KEYRING_INDEX_USER_ID = 2;
 
-    static final String[] USER_IDS_PROJECTION = new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
-            KeychainContract.UserIds.RANK,};
+    static final String[] USER_IDS_PROJECTION = new String[]{ KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
+            KeychainContract.UserIds.RANK, "verified" };
     // not the main user id
-    static final String USER_IDS_SELECTION = KeychainContract.UserIds.RANK + " > 0 ";
+    static final String USER_IDS_SELECTION = KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.RANK + " > 0 ";
     static final String USER_IDS_SORT_ORDER = KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
 
     static final String[] KEYS_PROJECTION = new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,

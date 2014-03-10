@@ -32,6 +32,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
 
     private int mIndexUserId;
+    private int mVerifiedId;
 
     public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -57,15 +58,17 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     private void initIndex(Cursor cursor) {
         if (cursor != null) {
             mIndexUserId = cursor.getColumnIndexOrThrow(UserIds.USER_ID);
+            mVerifiedId = cursor.getColumnIndexOrThrow("verified");
         }
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         String userIdStr = cursor.getString(mIndexUserId);
+        int verified = cursor.getInt(mVerifiedId);
 
         TextView userId = (TextView) view.findViewById(R.id.userId);
-        userId.setText(userIdStr);
+        userId.setText(userIdStr + (verified > 0 ? " (ok)" : "(nope)"));
     }
 
     @Override
