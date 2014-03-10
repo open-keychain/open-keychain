@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Choice;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -110,6 +111,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setExpiryDate(null);
 
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
+            @TargetApi(11)
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
                 if (date == null) {

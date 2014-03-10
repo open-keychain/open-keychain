@@ -14,7 +14,7 @@
       limitations under the License.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/actionbar_done"
     style="@style/Widget.AppCompat.ActionButton"
     android:layout_width="0dp"
@@ -33,4 +33,4 @@
         style="@style/Widget.AppCompat.Light.ActionBar.TabText"
         android:text="Done (set in-code!)" />
 
-</FrameLayout>
+</merge>
