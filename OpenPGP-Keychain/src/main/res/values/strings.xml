@@ -310,8 +310,8 @@
     </plurals>
 
     <!-- progress dialogs, usually ending in '…' -->
-    <string name="progress_done">done.</string>
-    <string name="progress_cancel">cancel</string>
+    <string name="progress_done">Done.</string>
+    <string name="progress_cancel">Cancel</string>
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
@@ -326,7 +326,7 @@
         <item quantity="one">exporting key…</item>
         <item quantity="other">exporting keys…</item>
     </plurals>
-
+    <string name="progress_generating">generating keys, this can take up to 3 minutes…</string>
     <plurals name="progress_generating">
         <item quantity="one">generating key, this can take up to 3 minutes…</item>
         <item quantity="other">generating keys, this can take up to 3 minutes…</item>

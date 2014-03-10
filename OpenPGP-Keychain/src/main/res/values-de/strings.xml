@@ -356,7 +356,7 @@
   <string name="api_select_pub_keys_missing_text">Für diese Benutzer-IDs wurden keine öffentlichen Schlüssel gefunden:</string>
   <string name="api_select_pub_keys_dublicates_text">Für diese Benutzer-IDs existieren mehrere öffentliche Schlüssel:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
-  <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese App von einer anderen Quelle installiert? Wenn Sie eine Attacke ausschliessen können, sollten Sie die Registrierung der App in OpenKeychain widerrufen und die App erneut registrieren.</string>
+  <string name="api_error_wrong_signature">Signaturüberprüfung fehlgeschlagen! Haben Sie diese App von einer anderen Quelle installiert? Wenn Sie eine Attacke ausschließen können, sollten Sie die Registrierung der App in OpenKeychain widerrufen und die App erneut registrieren.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Über QR Code teilen</string>
   <string name="share_qr_code_dialog_start">Mit \'Weiter\' durch alle QR-Codes gehen und diese nacheinander scannen.</string>

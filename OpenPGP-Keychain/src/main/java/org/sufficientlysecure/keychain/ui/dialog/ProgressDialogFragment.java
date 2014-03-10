@@ -120,7 +120,6 @@ public class ProgressDialogFragment extends DialogFragment {
         int messageId = getArguments().getInt(ARG_MESSAGE_ID);
         int style = getArguments().getInt(ARG_STYLE);
         boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
-
         dialog.setMessage(getString(messageId));
         dialog.setProgressStyle(style);
 

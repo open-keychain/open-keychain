@@ -57,5 +57,7 @@ android {
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
+        htmlReport true
+        htmlOutput file("lint-report.html")
     }
 }
