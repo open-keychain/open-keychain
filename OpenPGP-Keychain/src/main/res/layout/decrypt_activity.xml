@@ -5,11 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:orientation="vertical">
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:orientation="vertical">
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,6 +73,7 @@
                         android:layout_gravity="left"
                         android:text="@string/label_main_user_id"
                         android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:layout_alignTop="@+id/linearLayout"
                         android:layout_toRightOf="@+id/relativeLayout" />
 
                     <TextView
@@ -200,6 +206,7 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
+    </LinearLayout>
 
     <include layout="@layout/drawer_list" />
 
