@@ -155,6 +155,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         if ( !(pgpKeyRing instanceof PGPSecretKeyRing) ) {
             secretKey = false;
         }
+        else{
+            secretKey = true;
+        }
 
         userIds = new ArrayList<String>();
         for (String userId : new IterableIterator<String>(pgpKeyRing.getPublicKey().getUserIDs())) {
