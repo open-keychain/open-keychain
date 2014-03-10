@@ -250,7 +250,7 @@ public class EditKeyActivity extends ActionBarActivity {
      */
     private void handleActionEditKey(Intent intent) {
         // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_save,
+        ActionBarHelper.setSaveView(getSupportActionBar(), R.string.btn_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
