@@ -362,9 +362,9 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
     // Message is received after importing is done in ApgService
     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-            R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
+            getString(R.string.progress_importing), ProgressDialog.STYLE_HORIZONTAL) {
         public void handleMessage(Message message) {
-            // handle messages by standard ApgHandler first
+            // handle messages by standard KeychainIntentServiceHandler first
             super.handleMessage(message);
 
             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {

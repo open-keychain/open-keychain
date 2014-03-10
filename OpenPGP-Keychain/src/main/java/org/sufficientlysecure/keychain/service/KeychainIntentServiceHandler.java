@@ -50,27 +50,15 @@ public class KeychainIntentServiceHandler extends Handler {
         this.mActivity = activity;
     }
 
-    public KeychainIntentServiceHandler(Activity activity, ProgressDialogFragment progressDialogFragment) {
+    public KeychainIntentServiceHandler(Activity activity,
+                                        ProgressDialogFragment progressDialogFragment) {
         this.mActivity = activity;
         this.mProgressDialogFragment = progressDialogFragment;
     }
 
-    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage, int progressDialogStyle) {
+    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
+                                        int progressDialogStyle) {
         this(activity, progressDialogMessage, progressDialogStyle, false, null);
-    }
-
-    public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId, int progressDialogStyle) {
-        this(activity, progressDialogMessageId, progressDialogStyle, false, null);
-    }
-
-    public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId,
-                                        int progressDialogStyle, boolean cancelable,
-                                        OnCancelListener onCancelListener) {
-        this(activity,
-                activity.getString(progressDialogMessageId),
-                progressDialogStyle,
-                cancelable,
-                onCancelListener);
     }
 
     public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
@@ -100,43 +88,43 @@ public class KeychainIntentServiceHandler extends Handler {
         Bundle data = message.getData();
 
         switch (message.arg1) {
-        case MESSAGE_OKAY:
-            mProgressDialogFragment.dismissAllowingStateLoss();
+            case MESSAGE_OKAY:
+                mProgressDialogFragment.dismissAllowingStateLoss();
 
-            break;
+                break;
 
-        case MESSAGE_EXCEPTION:
-            mProgressDialogFragment.dismissAllowingStateLoss();
+            case MESSAGE_EXCEPTION:
+                mProgressDialogFragment.dismissAllowingStateLoss();
 
-            // show error from service
-            if (data.containsKey(DATA_ERROR)) {
-                Toast.makeText(mActivity,
-                        mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            break;
-
-        case MESSAGE_UPDATE_PROGRESS:
-            if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
-
-                // update progress from service
-                if (data.containsKey(DATA_MESSAGE)) {
-                    mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
-                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                    mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
-                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                } else {
-                    mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
-                            data.getInt(DATA_PROGRESS_MAX));
+                // show error from service
+                if (data.containsKey(DATA_ERROR)) {
+                    Toast.makeText(mActivity,
+                            mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
+                            Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            break;
+                break;
 
-        default:
-            break;
+            case MESSAGE_UPDATE_PROGRESS:
+                if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
+
+                    // update progress from service
+                    if (data.containsKey(DATA_MESSAGE)) {
+                        mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
+                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                    } else if (data.containsKey(DATA_MESSAGE_ID)) {
+                        mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
+                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                    } else {
+                        mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
+                                data.getInt(DATA_PROGRESS_MAX));
+                    }
+                }
+
+                break;
+
+            default:
+                break;
         }
     }
 }
