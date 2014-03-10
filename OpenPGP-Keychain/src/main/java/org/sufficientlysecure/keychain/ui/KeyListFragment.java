@@ -280,7 +280,9 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
         } else {
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
-        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
+        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                Long.toString(mAdapter.getMasterKeyId(position)))
+        );
         startActivity(viewIntent);
     }
 
@@ -379,8 +381,8 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
         /**
          * Bind cursor data to the item list view
          * <p/>
-         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
-         * no ViewHolder is required here.
+         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method.
+         * Thus no ViewHolder is required here.
          */
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
@@ -417,7 +419,11 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
+                            editIntent.setData(
+                                    KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
+                                            Long.toString(id)
+                                    )
+                            );
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);
                         }
@@ -504,7 +510,7 @@ public class KeyListFragment extends Fragment implements AdapterView.OnItemClick
             String userId = mCursor.getString(KeyListFragment.INDEX_UID);
             String headerText = convertView.getResources().getString(R.string.user_id_no_name);
             if (userId != null && userId.length() > 0) {
-                headerText = "" + mCursor.getString(KeyListFragment.INDEX_UID).subSequence(0, 1).charAt(0);
+                headerText = "" + userId.subSequence(0, 1).charAt(0);
             }
             holder.text.setText(headerText);
             holder.count.setVisibility(View.GONE);
