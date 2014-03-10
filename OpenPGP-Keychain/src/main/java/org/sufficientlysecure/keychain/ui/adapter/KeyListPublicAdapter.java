@@ -92,12 +92,12 @@ public class KeyListPublicAdapter extends HighlightQueryCursorAdapter implements
         String userId = cursor.getString(mIndexUserId);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
         if (userIdSplit[0] != null) {
-            mainUserId.setText(userIdSplit[0]);
+            mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
         } else {
             mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
-            mainUserIdRest.setText(userIdSplit[1]);
+            mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
             mainUserIdRest.setVisibility(View.VISIBLE);
         } else {
             mainUserIdRest.setVisibility(View.GONE);
@@ -108,12 +108,6 @@ public class KeyListPublicAdapter extends HighlightQueryCursorAdapter implements
             revoked.setVisibility(View.VISIBLE);
         } else {
             revoked.setVisibility(View.GONE);
-        }
-        String query = getSearchQuery();
-
-        if(query != null){
-            mainUserId.setText(highlightSearchKey(userIdSplit[0]));
-            mainUserIdRest.setText(highlightSearchKey(userIdSplit[1]));
         }
     }
 
@@ -225,11 +219,12 @@ public class KeyListPublicAdapter extends HighlightQueryCursorAdapter implements
         /**
          * Change color for multi-selection
          */
-        // default color
-        v.setBackgroundColor(Color.TRANSPARENT);
         if (mSelection.get(position) != null && mSelection.get(position).booleanValue()) {
-            // this is a selected position, change color!
+            // color for selected items
             v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+        } else {
+            // default color
+            v.setBackgroundColor(Color.TRANSPARENT);
         }
         return v;
     }

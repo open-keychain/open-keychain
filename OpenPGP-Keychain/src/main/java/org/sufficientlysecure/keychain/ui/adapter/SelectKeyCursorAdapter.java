@@ -104,12 +104,12 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
-            mainUserId.setText(userIdSplit[0]);
+            mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
         } else {
             mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
-            mainUserIdRest.setText(userIdSplit[1]);
+            mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
         } else {
             mainUserIdRest.setText("");
         }
@@ -158,11 +158,6 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
         mainUserIdRest.setEnabled(valid);
         keyId.setEnabled(valid);
         status.setEnabled(valid);
-        String query = getSearchQuery();
-        if(query != null){
-            mainUserId.setText(highlightSearchKey(userIdSplit[0]));
-            mainUserIdRest.setText(highlightSearchKey(userIdSplit[1]));
-        }
     }
 
     @Override

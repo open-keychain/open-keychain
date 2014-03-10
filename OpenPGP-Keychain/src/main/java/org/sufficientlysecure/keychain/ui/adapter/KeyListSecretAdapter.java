@@ -126,11 +126,12 @@ public class KeyListSecretAdapter extends CursorAdapter {
         /**
          * Change color for multi-selection
          */
-        // default color
-        v.setBackgroundColor(Color.TRANSPARENT);
         if (mSelection.get(position) != null) {
-            // this is a selected position, change color!
+            // color for selected items
             v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+        } else {
+            // default color
+            v.setBackgroundColor(Color.TRANSPARENT);
         }
         return v;
     }
