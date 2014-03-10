@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
+import org.sufficientlysecure.keychain.util.KeychainServiceListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
@@ -51,9 +52,6 @@ import android.os.Environment;
 
 public class PgpImportExport {
 
-    public interface KeychainServiceListener{
-        public boolean hasServiceStopped();
-    }
     private Context mContext;
     private ProgressDialogUpdater mProgress;
 
@@ -201,7 +199,7 @@ public class PgpImportExport {
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(arOutStream);
                 }
-                if(mKeychainServiceListener.hasServiceStopped()==true){
+                if(mKeychainServiceListener.hasServiceStopped()){
                     arOutStream.close();
                     return null;
                 }
@@ -214,7 +212,7 @@ public class PgpImportExport {
                     publicKeyRing.encode(arOutStream);
                 }
 
-                if(mKeychainServiceListener.hasServiceStopped() == true){
+                if(mKeychainServiceListener.hasServiceStopped()){
                     arOutStream.close();
                     return null;
                 }

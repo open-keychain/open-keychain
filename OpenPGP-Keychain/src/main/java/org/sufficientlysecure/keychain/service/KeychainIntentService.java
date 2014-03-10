@@ -56,6 +56,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeychainServiceListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
@@ -73,7 +74,7 @@ import android.os.RemoteException;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService implements ProgressDialogUpdater, PgpImportExport.KeychainServiceListener {
+public class KeychainIntentService extends IntentService implements ProgressDialogUpdater, KeychainServiceListener {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
