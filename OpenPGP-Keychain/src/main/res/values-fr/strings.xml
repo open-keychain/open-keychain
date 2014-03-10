@@ -13,9 +13,10 @@
   <string name="title_preferences">Préférences</string>
   <string name="title_api_registered_apps">Applications enregistrées</string>
   <string name="title_key_server_preference">Préférences du serveur de clefs</string>
-  <string name="title_change_passphrase">Changer la phrase de passe</string>
+  <string name="title_change_passphrase">Modifier la phrase de passe</string>
   <string name="title_set_passphrase">Définir la phrase de passe</string>
-  <string name="title_send_email">Envoyer un courriel…</string>
+  <string name="title_send_email">Envoyer un courriel...</string>
+  <string name="title_send_file">Envoyer un fichier...</string>
   <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
   <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
   <string name="title_import_keys">importer des clefs</string>
@@ -61,7 +62,7 @@
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
   <string name="btn_clipboard">Presse-papiers</string>
-  <string name="btn_share">Partager avec…</string>
+  <string name="btn_share">Partager avec...</string>
   <string name="btn_lookup_key">Rechercher la clef</string>
   <!--menu-->
   <string name="menu_preferences">Paramètres</string>
@@ -80,10 +81,10 @@
   <string name="menu_update_key">Mettre à jour depuis le serveur de clefs</string>
   <string name="menu_export_key_to_server">Téléverser vers le serveur de clefs</string>
   <string name="menu_share">Partager</string>
-  <string name="menu_share_title_fingerprint">Partager l\'empreinte…</string>
-  <string name="menu_share_title">Partager la clef entière…</string>
-  <string name="menu_share_default_fingerprint">avec…</string>
-  <string name="menu_share_default">avec…</string>
+  <string name="menu_share_title_fingerprint">Partager l\'empreinte...</string>
+  <string name="menu_share_title">Partager la clef entière...</string>
+  <string name="menu_share_default_fingerprint">avec...</string>
+  <string name="menu_share_default">avec...</string>
   <string name="menu_share_qr_code">par un code QR</string>
   <string name="menu_share_qr_code_fingerprint">par un code QR</string>
   <string name="menu_share_nfc">par la NFC</string>
@@ -91,7 +92,8 @@
   <string name="menu_sign_key">Signer la clef</string>
   <string name="menu_beam_preferences">Paramètres Beam</string>
   <string name="menu_key_edit_cancel">Annuler</string>
-  <string name="menu_encrypt_to">Chiffrer vers…</string>
+  <string name="menu_encrypt_to">Chiffrer vers...</string>
+  <string name="menu_select_all">Tout sélectionner</string>
   <!--label-->
   <string name="label_sign">Signer</string>
   <string name="label_message">Message</string>
@@ -104,6 +106,7 @@
   <string name="label_select_public_keys">Destinataires</string>
   <string name="label_delete_after_encryption">Supprimer après le chiffrement</string>
   <string name="label_delete_after_decryption">Supprimer après le chiffrement</string>
+  <string name="label_share_after_encryption">Partager après chiffrement</string>
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
   <string name="label_asymmetric">Clef publique</string>
@@ -122,9 +125,12 @@
   <string name="label_name">Nom</string>
   <string name="label_comment">Commentaire</string>
   <string name="label_email">Courriel</string>
+  <string name="label_sign_user_id">Signer l\'ID utilisateur</string>
+  <string name="label_sign_email">Signer le courriel</string>
   <string name="label_send_key">Téléverser la clef vers le serveur de clefs choisi après certification</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="select_keys_button_default">Choisir</string>
+  <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d choisie</item>
     <item quantity="other">%d choisies</item>
@@ -137,6 +143,7 @@
   <string name="can_sign">peut signer</string>
   <string name="expired">expiré</string>
   <string name="revoked">révoquée</string>
+  <string name="user_id">ID utilisateur</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d serveur de clefs</item>
     <item quantity="other">%d serveurs de clefs</item>
@@ -163,7 +170,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Ouvrir…</string>
+  <string name="filemanager_title_open">Ouvrir...</string>
   <string name="warning">Avertissement</string>
   <string name="error">Erreur</string>
   <string name="error_message">Erreur : %s</string>
@@ -269,46 +276,53 @@
   <string name="error_keyserver_insufficient_query">Requête serveur insuffisante</string>
   <string name="error_keyserver_query">Échec lors de l\'interrogation du serveur de clefs</string>
   <string name="error_keyserver_too_many_responses">Trop de réponses</string>
+  <string name="error_import_file_no_content">Le fichier n\'a pas de contenu</string>
+  <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau rapport de bogue pour OpenKeychain.</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Veuillez le supprimer depuis l\'écran « Mes Clefs »!</item>
     <item quantity="other">Veuillez les supprimer depuis l\'écran « Mes Clefs »!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">une partie du fichier chargé est un objet OpenPGP valide mais pas une clef OpenPGP</item>
+    <item quantity="other">certaines parties du fichier chargé sont des objets OpenPGP valides mais pas des clefs OpenPGP</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">fait.</string>
-  <string name="progress_saving">sauvegarde…</string>
-  <string name="progress_importing">importation…</string>
-  <string name="progress_exporting">exportation…</string>
-  <string name="progress_generating">génération de la clef, ceci peut prendre jusqu\'à 3 minutes…</string>
-  <string name="progress_building_key">assemblage de la clef…</string>
-  <string name="progress_preparing_master_key">préparation de la clef maîtresse…</string>
-  <string name="progress_certifying_master_key">certification de la clef maîtresse…</string>
-  <string name="progress_building_master_key">assemblage du trousseau maître…</string>
-  <string name="progress_adding_sub_keys">ajout des sous-clefs…</string>
-  <string name="progress_saving_key_ring">sauvegarde de la clef…</string>
+  <string name="progress_cancel">annuler</string>
+  <string name="progress_saving">sauvegarde...</string>
+  <string name="progress_importing">importation...</string>
+  <string name="progress_exporting">exportation...</string>
+  <string name="progress_generating">génération de la clef, ceci peut prendre jusqu\'à 3 minutes...</string>
+  <string name="progress_building_key">assemblage de la clef...</string>
+  <string name="progress_preparing_master_key">préparation de la clef maîtresse...</string>
+  <string name="progress_certifying_master_key">certification de la clef maîtresse...</string>
+  <string name="progress_building_master_key">assemblage du trousseau maître...</string>
+  <string name="progress_adding_sub_keys">ajout des sous-clefs...</string>
+  <string name="progress_saving_key_ring">sauvegarde de la clef...</string>
   <plurals name="progress_exporting_key">
-    <item quantity="one">exportation de la clef…</item>
-    <item quantity="other">exportation des clefs…</item>
+    <item quantity="one">exportation de la clef...</item>
+    <item quantity="other">exportation des clefs...</item>
   </plurals>
-  <string name="progress_extracting_signature_key">extraction de la clef de signature…</string>
-  <string name="progress_extracting_key">extraction de la clef…</string>
-  <string name="progress_preparing_streams">préparation des flux…</string>
-  <string name="progress_encrypting">chiffrement des données…</string>
-  <string name="progress_decrypting">déchiffrement des données…</string>
-  <string name="progress_preparing_signature">préparation de la signature…</string>
-  <string name="progress_generating_signature">génération de la signature…</string>
-  <string name="progress_processing_signature">traitement de la signature…</string>
-  <string name="progress_verifying_signature">vérification de la signature…</string>
-  <string name="progress_signing">signature…</string>
-  <string name="progress_reading_data">lecture des données…</string>
-  <string name="progress_finding_key">recherche de la clef…</string>
-  <string name="progress_decompressing_data">décompression des données…</string>
-  <string name="progress_verifying_integrity">vérification de l\'intégrité…</string>
-  <string name="progress_deleting_securely">suppression sûre de « %s »…</string>
-  <string name="progress_querying">interrogation…</string>
+  <string name="progress_extracting_signature_key">extraction de la clef de signature...</string>
+  <string name="progress_extracting_key">extraction de la clef...</string>
+  <string name="progress_preparing_streams">préparation des flux...</string>
+  <string name="progress_encrypting">chiffrement des données...</string>
+  <string name="progress_decrypting">déchiffrement des données...</string>
+  <string name="progress_preparing_signature">préparation de la signature...</string>
+  <string name="progress_generating_signature">génération de la signature...</string>
+  <string name="progress_processing_signature">traitement de la signature...</string>
+  <string name="progress_verifying_signature">vérification de la signature...</string>
+  <string name="progress_signing">signature...</string>
+  <string name="progress_reading_data">lecture des données...</string>
+  <string name="progress_finding_key">recherche de la clef...</string>
+  <string name="progress_decompressing_data">décompression des données...</string>
+  <string name="progress_verifying_integrity">vérification de l\'intégrité...</string>
+  <string name="progress_deleting_securely">suppression sûre de « %s »...</string>
+  <string name="progress_querying">interrogation...</string>
   <!--action strings-->
   <string name="hint_public_keys">Rechercher des clefs publiques</string>
   <string name="hint_secret_keys">Rechercher des clefs secrètes</string>
-  <string name="action_share_key_with">Partager la clef avec…</string>
+  <string name="action_share_key_with">Partager la clef avec...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -374,7 +388,7 @@
     <item quantity="one">1 clef choisie</item>
     <item quantity="other">%d clefs choisies</item>
   </plurals>
-  <string name="key_list_empty_text1">Aucune clef encore disponible…</string>
+  <string name="key_list_empty_text1">Aucune clef encore disponible...</string>
   <string name="key_list_empty_text2">Vous pouvez commencer par</string>
   <string name="key_list_empty_text3">ou</string>
   <string name="key_list_empty_button_create">créer votre propre clef</string>

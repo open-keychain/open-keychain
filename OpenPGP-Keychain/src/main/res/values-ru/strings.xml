@@ -15,7 +15,7 @@
   <string name="title_key_server_preference">Настройки сервера ключей</string>
   <string name="title_change_passphrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
-  <string name="title_send_email">Отправить…</string>
+  <string name="title_send_email">Отправить...</string>
   <string name="title_encrypt_to_file">Зашифровать в файл</string>
   <string name="title_decrypt_to_file">Расшифровать в файл</string>
   <string name="title_import_keys">Импорт ключей</string>
@@ -61,7 +61,7 @@
   <string name="btn_next">Далее</string>
   <string name="btn_back">Назад</string>
   <string name="btn_clipboard">Буфер обмена</string>
-  <string name="btn_share">Поделиться…</string>
+  <string name="btn_share">Поделиться...</string>
   <string name="btn_lookup_key">Найти ключ</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
@@ -79,9 +79,9 @@
   <string name="menu_key_server">Импорт с сервера ключей</string>
   <string name="menu_update_key">Обновить с сервера ключей</string>
   <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
-  <string name="menu_share">Отправить…</string>
-  <string name="menu_share_title_fingerprint">Отправить отпечаток…</string>
-  <string name="menu_share_title">Отправить ключ…</string>
+  <string name="menu_share">Отправить...</string>
+  <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
+  <string name="menu_share_title">Отправить ключ...</string>
   <string name="menu_share_default_fingerprint">Отправить</string>
   <string name="menu_share_default">Отправить</string>
   <string name="menu_share_qr_code">QR код</string>
@@ -91,7 +91,8 @@
   <string name="menu_sign_key">Подписать ключ</string>
   <string name="menu_beam_preferences">Настройки Beam</string>
   <string name="menu_key_edit_cancel">Отмена</string>
-  <string name="menu_encrypt_to">Зашифровать….</string>
+  <string name="menu_encrypt_to">Зашифровать....</string>
+  <string name="menu_select_all">Выбрать все</string>
   <!--label-->
   <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
@@ -115,7 +116,7 @@
   <string name="label_key_servers">Серверы ключей</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_creation">Создан</string>
-  <string name="label_expiry">Годен до…</string>
+  <string name="label_expiry">Годен до...</string>
   <string name="label_usage">Применение</string>
   <string name="label_key_size">Размер ключа</string>
   <string name="label_main_user_id">Основной ID пользователя</string>
@@ -125,6 +126,7 @@
   <string name="label_send_key">После сертификации загрузить ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="select_keys_button_default">Выбрать</string>
+  <string name="expiry_date_dialog_title">Срок годности</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d выбран</item>
     <item quantity="few">%d выбрано</item>
@@ -165,7 +167,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Открыть…</string>
+  <string name="filemanager_title_open">Открыть...</string>
   <string name="warning">Внимание</string>
   <string name="error">Ошибка</string>
   <string name="error_message">Ошибка: %s</string>
@@ -284,41 +286,42 @@
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
-  <string name="progress_saving">сохранение…</string>
-  <string name="progress_importing">импорт…</string>
-  <string name="progress_exporting">экспорт…</string>
-  <string name="progress_generating">создание ключа. это может занять до 3 минут…</string>
-  <string name="progress_building_key">создание ключа…</string>
-  <string name="progress_preparing_master_key">подготовка основного ключа…</string>
-  <string name="progress_certifying_master_key">сертификация основного ключа…</string>
-  <string name="progress_building_master_key">создание основной связки…</string>
-  <string name="progress_adding_sub_keys">добавление доп. ключей…</string>
-  <string name="progress_saving_key_ring">сохранение ключа…</string>
+  <string name="progress_cancel">отмена</string>
+  <string name="progress_saving">сохранение...</string>
+  <string name="progress_importing">импорт...</string>
+  <string name="progress_exporting">экспорт...</string>
+  <string name="progress_generating">создание ключа. это может занять до 3 минут...</string>
+  <string name="progress_building_key">создание ключа...</string>
+  <string name="progress_preparing_master_key">подготовка основного ключа...</string>
+  <string name="progress_certifying_master_key">сертификация основного ключа...</string>
+  <string name="progress_building_master_key">создание основной связки...</string>
+  <string name="progress_adding_sub_keys">добавление доп. ключей...</string>
+  <string name="progress_saving_key_ring">сохранение ключа...</string>
   <plurals name="progress_exporting_key">
-    <item quantity="one">экспорт ключа…</item>
-    <item quantity="few">экспорт ключей…</item>
-    <item quantity="other">экспорт ключей…</item>
+    <item quantity="one">экспорт ключа...</item>
+    <item quantity="few">экспорт ключей...</item>
+    <item quantity="other">экспорт ключей...</item>
   </plurals>
-  <string name="progress_extracting_signature_key">извлечение подписи ключа…</string>
-  <string name="progress_extracting_key">извлечение ключа…</string>
-  <string name="progress_preparing_streams">подготовка к передаче…</string>
-  <string name="progress_encrypting">шифрование данных…</string>
-  <string name="progress_decrypting">расшифровка данных…</string>
-  <string name="progress_preparing_signature">подготовка подписи…</string>
-  <string name="progress_generating_signature">формирование подписи…</string>
-  <string name="progress_processing_signature">обработка подписи…</string>
-  <string name="progress_verifying_signature">проверка подписи…</string>
-  <string name="progress_signing">подписание…</string>
-  <string name="progress_reading_data">чтение данных…</string>
-  <string name="progress_finding_key">поиск ключа…</string>
-  <string name="progress_decompressing_data">распаковка данных…</string>
-  <string name="progress_verifying_integrity">проверка целостности…</string>
-  <string name="progress_deleting_securely">безопасное удаление \'%s\'…</string>
-  <string name="progress_querying">запрос…</string>
+  <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
+  <string name="progress_extracting_key">извлечение ключа...</string>
+  <string name="progress_preparing_streams">подготовка к передаче...</string>
+  <string name="progress_encrypting">шифрование данных...</string>
+  <string name="progress_decrypting">расшифровка данных...</string>
+  <string name="progress_preparing_signature">подготовка подписи...</string>
+  <string name="progress_generating_signature">формирование подписи...</string>
+  <string name="progress_processing_signature">обработка подписи...</string>
+  <string name="progress_verifying_signature">проверка подписи...</string>
+  <string name="progress_signing">подписание...</string>
+  <string name="progress_reading_data">чтение данных...</string>
+  <string name="progress_finding_key">поиск ключа...</string>
+  <string name="progress_decompressing_data">распаковка данных...</string>
+  <string name="progress_verifying_integrity">проверка целостности...</string>
+  <string name="progress_deleting_securely">безопасное удаление \'%s\'...</string>
+  <string name="progress_querying">запрос...</string>
   <!--action strings-->
   <string name="hint_public_keys">Найти публичные ключи</string>
   <string name="hint_secret_keys">Найти секретные ключи</string>
-  <string name="action_share_key_with">Отправить…</string>
+  <string name="action_share_key_with">Отправить...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -386,7 +389,7 @@
     <item quantity="few">%d ключей выбрано.</item>
     <item quantity="other">%d ключей выбрано.</item>
   </plurals>
-  <string name="key_list_empty_text1">У вас пока нет ключей…</string>
+  <string name="key_list_empty_text1">У вас пока нет ключей...</string>
   <string name="key_list_empty_text2">Но Вы можете</string>
   <string name="key_list_empty_text3">или</string>
   <string name="key_list_empty_button_create">создать свой ключ</string>

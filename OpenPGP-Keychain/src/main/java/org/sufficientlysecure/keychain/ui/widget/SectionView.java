@@ -80,19 +80,19 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void setType(int type) {
         mType = type;
         switch (type) {
-        case Id.type.user_id: {
-            mTitle.setText(R.string.section_user_ids);
-            break;
-        }
+            case Id.type.user_id: {
+                mTitle.setText(R.string.section_user_ids);
+                break;
+            }
 
-        case Id.type.key: {
-            mTitle.setText(R.string.section_keys);
-            break;
-        }
+            case Id.type.key: {
+                mTitle.setText(R.string.section_keys);
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
     }
 
@@ -103,7 +103,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onFinishInflate() {
         mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -121,7 +123,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         super.onFinishInflate();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void onDeleted(Editor editor) {
         this.updateEditorsVisible();
     }
@@ -131,38 +135,40 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         mEditors.setVisibility(hasChildren ? View.VISIBLE : View.GONE);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void onClick(View v) {
         if (canEdit) {
             switch (mType) {
-            case Id.type.user_id: {
-                UserIdEditor view = (UserIdEditor) mInflater.inflate(
-                        R.layout.edit_key_user_id_item, mEditors, false);
-                view.setEditorListener(this);
-                if (mEditors.getChildCount() == 0) {
-                    view.setIsMainUserId(true);
-                }
-                mEditors.addView(view);
-                break;
-            }
-
-            case Id.type.key: {
-                CreateKeyDialogFragment mCreateKeyDialogFragment = CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
-                mCreateKeyDialogFragment.setOnAlgorithmSelectedListener(new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
-                    @Override
-                    public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
-                        mNewKeyAlgorithmChoice = algorithmChoice;
-                        mNewKeySize = keySize;
-                        createKey();
+                case Id.type.user_id: {
+                    UserIdEditor view = (UserIdEditor) mInflater.inflate(
+                            R.layout.edit_key_user_id_item, mEditors, false);
+                    view.setEditorListener(this);
+                    if (mEditors.getChildCount() == 0) {
+                        view.setIsMainUserId(true);
                     }
-                });
-                mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
-                break;
-            }
+                    mEditors.addView(view);
+                    break;
+                }
 
-            default: {
-                break;
-            }
+                case Id.type.key: {
+                    CreateKeyDialogFragment mCreateKeyDialogFragment = CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
+                    mCreateKeyDialogFragment.setOnAlgorithmSelectedListener(new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
+                        @Override
+                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
+                            mNewKeyAlgorithmChoice = algorithmChoice;
+                            mNewKeySize = keySize;
+                            createKey();
+                        }
+                    });
+                    mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
+                    break;
+                }
+
+                default: {
+                    break;
+                }
             }
             this.updateEditorsVisible();
         }
@@ -238,13 +244,16 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // show progress dialog
-        mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
-                ProgressDialog.STYLE_SPINNER, true, new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                mActivity.stopService(intent);
-            }
-        });
+        mGeneratingDialog = ProgressDialogFragment.newInstance(
+                getResources().getQuantityString(R.plurals.progress_generating, 1),
+                ProgressDialog.STYLE_SPINNER,
+                true,
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        mActivity.stopService(intent);
+                    }
+                });
 
         // Message is received after generating is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,

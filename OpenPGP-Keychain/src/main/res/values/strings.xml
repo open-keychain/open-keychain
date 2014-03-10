@@ -147,6 +147,7 @@
     <string name="user_id_no_name">&lt;no name&gt;</string>
     <string name="none">&lt;none&gt;</string>
     <string name="no_key">&lt;no key&gt;</string>
+    <string name="no_email">&lt;No Email&gt;</string>
     <string name="unknown_status"></string>
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
@@ -273,6 +274,7 @@
     <string name="error_master_key_must_not_be_el_gamal">the master key cannot be an ElGamal key</string>
     <string name="error_unknown_algorithm_choice">unknown algorithm choice</string>
     <string name="error_user_id_needs_a_name">you need to specify a name</string>
+    <string name="error_user_id_no_email">no email found</string>
     <string name="error_user_id_needs_an_email_address">you need to specify an email address</string>
     <string name="error_key_needs_a_user_id">need at least one user id</string>
     <string name="error_main_user_id_must_not_be_empty">main user id must not be empty</string>
