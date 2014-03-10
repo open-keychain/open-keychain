@@ -50,13 +50,26 @@ import android.os.Bundle;
 import android.os.Environment;
 
 public class PgpImportExport {
+
+    public interface KeychainServiceListener{
+        public boolean hasServiceStopped();
+    }
     private Context mContext;
     private ProgressDialogUpdater mProgress;
+
+    private KeychainServiceListener mKeychainServiceListener;
 
     public PgpImportExport(Context context, ProgressDialogUpdater progress) {
         super();
         this.mContext = context;
         this.mProgress = progress;
+    }
+
+    public PgpImportExport(Context context, ProgressDialogUpdater progress, KeychainServiceListener keychainListener){
+        super();
+        this.mContext = context;
+        this.mProgress = progress;
+        this.mKeychainServiceListener = keychainListener;
     }
 
     public void updateProgress(int message, int current, int total) {
@@ -188,8 +201,10 @@ public class PgpImportExport {
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(arOutStream);
                 }
-                // Else if it's a public key get the PGPPublicKeyRing
-                // and encode that to the output
+                if(mKeychainServiceListener.hasServiceStopped()==true){
+                    arOutStream.close();
+                    return null;
+                }
             } else {
                 updateProgress(i * 100 / rowIdsSize, 100);
                 PGPPublicKeyRing publicKeyRing =
@@ -197,6 +212,11 @@ public class PgpImportExport {
 
                 if (publicKeyRing != null) {
                     publicKeyRing.encode(arOutStream);
+                }
+
+                if(mKeychainServiceListener.hasServiceStopped() == true){
+                    arOutStream.close();
+                    return null;
                 }
             }
 

@@ -73,7 +73,7 @@ import android.os.RemoteException;
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService implements ProgressDialogUpdater {
+public class KeychainIntentService extends IntentService implements ProgressDialogUpdater, PgpImportExport.KeychainServiceListener {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -712,9 +712,14 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 Bundle resultData;
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);
+
                 resultData = pgpImportExport
                         .exportKeyRings(keyRingRowIds, keyType, outStream);
+
+                if(mIsCanceled){
+                   boolean isDeleted = new File(outputFile).delete();
+                }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -902,5 +907,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     public void setProgress(int progress, int max) {
         setProgress(null, progress, max);
+    }
+
+    @Override
+    public boolean hasServiceStopped() {
+        return mIsCanceled;
     }
 }
