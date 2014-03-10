@@ -29,6 +29,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -82,6 +83,11 @@ public class KeychainProvider extends ContentProvider {
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
 
     private static final int UNIFIED_KEY_RING = 401;
+
+    private static final int CERTS = 401;
+    private static final int CERTS_BY_KEY_ID = 402;
+    private static final int CERTS_BY_ROW_ID = 403;
+    private static final int CERTS_BY_CERTIFIER_ID = 404;
 
     // private static final int DATA_STREAM = 401;
 
@@ -237,6 +243,20 @@ public class KeychainProvider extends ContentProvider {
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_UNIFIED, UNIFIED_KEY_RING);
+
+        /**
+         * certifications
+         * <pre>
+         *
+         * key_rings/unified
+         *
+         */
+        matcher.addURI(authority, KeychainContract.BASE_CERTS, CERTS);
+        matcher.addURI(authority, KeychainContract.BASE_CERTS + "/#", CERTS_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
+                + KeychainContract.PATH_BY_KEY_ID + "/#", CERTS_BY_KEY_ID);
+        matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
+                + KeychainContract.PATH_BY_CERTIFIER_ID + "/#", CERTS_BY_CERTIFIER_ID);
 
         /**
          * data stream
@@ -782,6 +802,12 @@ public class KeychainProvider extends ContentProvider {
                 case API_APPS:
                     rowId = db.insertOrThrow(Tables.API_APPS, null, values);
                     rowUri = ApiApps.buildIdUri(Long.toString(rowId));
+
+                    break;
+                case CERTS_BY_ROW_ID:
+                    rowId = db.insertOrThrow(Tables.CERTS, null, values);
+                    // kinda useless :S
+                    rowUri = Certs.buildCertsUri(Long.toString(rowId));
 
                     break;
                 default:

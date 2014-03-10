@@ -22,6 +22,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.content.Context;
@@ -31,13 +32,14 @@ import android.provider.BaseColumns;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
         String KEYS = "keys";
         String USER_IDS = "user_ids";
         String API_APPS = "api_apps";
+        String CERTS = "certs";
     }
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
@@ -83,6 +85,18 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
             + ApiAppsColumns.COMPRESSION + " INTEGER)";
 
+    private static final String CREATE_CERTS = "CREATE TABLE IF NOT EXISTS " + Tables.CERTS
+            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + CertsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL "
+                + " REFERENCES " + Tables.KEY_RINGS + "(" + BaseColumns._ID + ") ON DELETE CASCADE, "
+            + CertsColumns.KEY_ID + " INTEGER, " // certified key
+            + CertsColumns.RANK + " INTEGER, " // key rank of certified uid
+            + CertsColumns.KEY_ID_CERTIFIER + " INTEGER, " // certifying key
+            + CertsColumns.CREATION + " INTEGER, "
+            + CertsColumns.VERIFIED + " INTEGER, "
+            + CertsColumns.KEY_DATA+ " BLOB)";
+
+
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -95,6 +109,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_IDS);
         db.execSQL(CREATE_API_APPS);
+        db.execSQL(CREATE_CERTS);
     }
 
     @Override
@@ -133,6 +148,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // new column: fingerprint
                     db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.FINGERPRINT
                             + " BLOB;");
+                    break;
+                case 7:
+                    // new table: certs
+                    db.execSQL(CREATE_CERTS);
+
                     break;
                 default:
                     break;
