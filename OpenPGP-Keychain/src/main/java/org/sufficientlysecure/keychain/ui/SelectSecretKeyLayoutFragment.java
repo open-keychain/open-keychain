@@ -92,10 +92,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                     String  userName, userEmail;
 
                     if (userIdSplit[0] != null) {   userName = userIdSplit[0];  }
-                    else {  userName = "No Name";   }
+                    else {  userName = getActivity().getResources().getString(R.string.user_id_no_name);   }
 
                     if (userIdSplit[1] != null) {   userEmail = userIdSplit[1];    }
-                    else {    userEmail = "No Email";    }
+                    else {    userEmail = getActivity().getResources().getString(R.string.error_user_id_no_email);    }
 
                     mKeyMasterKeyIdHex.setText(masterkeyIdHex);
                     mKeyUserId.setText(userName);
@@ -104,7 +104,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                     mKeyUserIdRest.setVisibility(View.VISIBLE);
                 }
                 else{
-                    mKeyMasterKeyIdHex.setText("No key found for KeyRing");
+                    mKeyMasterKeyIdHex.setText(getActivity().getResources().getString(R.string.no_key));
                     mKeyUserId.setVisibility(View.GONE);
                     mKeyUserIdRest.setVisibility(View.GONE);
 
@@ -112,7 +112,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
             }
             else{
-                    mKeyMasterKeyIdHex.setText("No KeyRings found for MasterId: "+secretKeyId);
+                    mKeyMasterKeyIdHex.setText(getActivity().getResources().getString(R.string.no_keys_added_or_updated)+" for master id: "+secretKeyId);
                     mKeyUserId.setVisibility(View.GONE);
                     mKeyUserIdRest.setVisibility(View.GONE);
             }
