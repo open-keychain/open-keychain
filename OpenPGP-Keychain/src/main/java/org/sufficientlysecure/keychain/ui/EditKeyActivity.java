@@ -134,14 +134,14 @@ public class EditKeyActivity extends ActionBarActivity {
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
+        // Inflate a "Save"/"Cancel" custom action bar
+        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_save, R.drawable.ic_action_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         saveClicked();
                     }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
+                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         cancelClicked();
@@ -249,8 +249,8 @@ public class EditKeyActivity extends ActionBarActivity {
      * @param intent
      */
     private void handleActionEditKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setSaveView(getSupportActionBar(), R.string.btn_save,
+        // Inflate a "Save"/"Cancel" custom action bar
+        ActionBarHelper.setOneButtonView(getSupportActionBar(), R.string.btn_save, R.drawable.ic_action_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
