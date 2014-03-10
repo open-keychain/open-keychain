@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.provider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +28,14 @@ import java.util.Date;
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.UserAttributePacket;
 import org.spongycastle.bcpg.UserAttributeSubpacket;
+import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -41,6 +44,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.service.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -214,18 +218,49 @@ public class ProviderHelper {
             ++rank;
         }
 
+        // get a list of owned secret keys, for verification filtering
+        Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(context, KeyRings.buildPublicKeyRingsUri());
+
         int userIdRank = 0;
         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
             operations.add(buildPublicUserIdOperations(context, keyRingRowId, userId, userIdRank));
+
+            // look through signatures for this specific key
+            for (PGPSignature cert : new IterableIterator<PGPSignature>(
+                    masterKey.getSignaturesForID(userId))) {
+                long certId = cert.getKeyID();
+                boolean verified = false;
+                // only care for signatures from our own private keys
+                if(allKeyRings.containsKey(certId)) try {
+                    // mark them as verified
+                    cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider("SC"), allKeyRings.get(certId).getPublicKey());
+                    verified = cert.verifyCertification(userId,  masterKey);
+                    // TODO: at this point, we only save signatures from available secret keys.
+                    // should we save all? those are quite a lot of rows for info we don't really
+                    // use. I left it out for now - it is available from key servers, so we can
+                    // always get it later.
+                    Log.d(Constants.TAG, "sig for " + userId + " " + verified + " from "
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
+                    );
+                    operations.add(buildPublicCertOperations(
+                            context, keyRingRowId, userIdRank, masterKey.getKeyID(), cert, verified));
+                } catch(SignatureException e) {
+                    Log.e(Constants.TAG, "Signature verification failed.", e);
+                } catch(PGPException e) {
+                    Log.e(Constants.TAG, "Signature verification failed.", e);
+                } else {
+                    Log.d(Constants.TAG, "ignored sig for "
+                            + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
+                            + " from "
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
+                    );
+                }
+                // if we wanted to save all, not just our own verifications
+                // buildPublicCertOperations(context, keyRingRowId, rank, cert, verified);
+            }
+
             ++userIdRank;
         }
-
-        for (PGPSignature certification : new IterableIterator<PGPSignature>(masterKey.getSignaturesOfType(PGPSignature.POSITIVE_CERTIFICATION))) {
-            //TODO: how to do this?? we need to verify the signatures again and again when they are displayed...
-//            if (certification.verify
-//            operations.add(buildPublicKeyOperations(context, keyRingRowId, key, rank));
-        }
-
 
         try {
             context.getContentResolver().applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
