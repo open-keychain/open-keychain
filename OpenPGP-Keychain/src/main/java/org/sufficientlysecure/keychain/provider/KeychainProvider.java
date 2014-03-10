@@ -485,6 +485,8 @@ public class KeychainProvider extends ContentProvider {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         SQLiteDatabase db = mApgDatabase.getReadableDatabase();
 
+        String groupBy = null;
+
         int match = mUriMatcher.match(uri);
 
         // screw that switch
@@ -677,8 +679,25 @@ public class KeychainProvider extends ContentProvider {
 
             case PUBLIC_KEY_RING_USER_ID:
             case SECRET_KEY_RING_USER_ID:
-                qb.setTables(Tables.USER_IDS);
-                qb.appendWhere(UserIdsColumns.KEY_RING_ROW_ID + " = ");
+                qb.setTables(Tables.USER_IDS
+                        + " LEFT JOIN " + Tables.CERTS
+                        + " ON ("
+                            + Tables.USER_IDS + "." + UserIds.KEY_RING_ROW_ID + " = "
+                                + Tables.CERTS + "." + Certs.KEY_RING_ROW_ID
+                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = "
+                                + Tables.CERTS + "." + Certs.RANK
+                        + ")");
+
+                groupBy = Tables.USER_IDS + "." + UserIds.RANK;
+
+                HashMap<String, String> pmap = new HashMap<String, String>();
+                pmap.put(UserIds._ID, Tables.USER_IDS + "." + UserIds._ID);
+                pmap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
+                pmap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
+                pmap.put("verified", "COUNT(" + Tables.CERTS + "." + Certs._ID + ") AS verified");
+                qb.setProjectionMap(pmap);
+
+                qb.appendWhere(Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
                 break;
@@ -725,7 +744,7 @@ public class KeychainProvider extends ContentProvider {
             orderBy = sortOrder;
         }
 
-        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, null, orderBy);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);
