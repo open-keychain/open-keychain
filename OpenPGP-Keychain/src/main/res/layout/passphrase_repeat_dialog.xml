@@ -6,7 +6,9 @@
     android:paddingRight="16dp"
     android:stretchColumns="1" >
 
-    <TableRow>
+    <TableRow
+        android:layout_marginBottom="5dip"
+        >
 
         <TextView
             android:id="@+id/passphrase_label_passphrase"
@@ -24,7 +26,9 @@
             android:padding="4dp" />
     </TableRow>
 
-    <TableRow>
+    <TableRow
+        android:layout_marginBottom="10dip"
+        >
 
         <TextView
             android:id="@+id/passphrase_label_passphrase_again"
