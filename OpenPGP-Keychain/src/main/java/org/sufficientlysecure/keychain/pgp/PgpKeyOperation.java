@@ -73,6 +73,8 @@ import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 import android.content.Context;
 import android.util.Pair;
 
+import javax.crypto.SecretKey;
+
 public class PgpKeyOperation {
     private final Context mContext;
     private final ProgressDialogUpdater mProgress;
@@ -354,6 +356,7 @@ public class PgpKeyOperation {
         PGPSecretKey masterKey = saveParcel.keys.get(0);
 
         PGPSecretKeyRing mKR = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, masterKey.getKeyID());
+        PGPPublicKeyRing pKR = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext, masterKey.getKeyID());
 
         if (saveParcel.oldPassPhrase == null) {
             saveParcel.oldPassPhrase = "";
@@ -497,11 +500,27 @@ public class PgpKeyOperation {
 
         for (int i = 0; i < saveParcel.keys.size(); ++i) {
             updateProgress(40 + 50 * (i - 1) / (saveParcel.keys.size() - 1), 100);
-            if (saveParcel.newKeys[i]) {
-
+            if (saveParcel.moddedKeys[i]) {
+//secretkey.replacepublickey with updated public key
+//secretkeyring.insertsecretkey with newly signed secret key
             } else {
-
+//else nothing, right?
             }
+            if (saveParcel.newKeys[i]) {
+                //set the passphrase to the old one, so we can update the whole keyring passphrase later
+                PBESecretKeyEncryptor keyEncryptorOld = new JcePBESecretKeyEncryptorBuilder(
+                        PGPEncryptedData.CAST5, sha1Calc)
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                saveParcel.oldPassPhrase.toCharArray());
+                PBESecretKeyDecryptor keyDecryptorBlank = new JcePBESecretKeyDecryptorBuilder()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                saveParcel.oldPassPhrase.toCharArray());
+                saveParcel.keys.set(i, PGPSecretKey.copyWithNewPassword(saveParcel.keys.get(i),
+                        keyDecryptorBlank, keyEncryptorOld));
+            }
+            //finally, update the keyrings
+            mKR = PGPSecretKeyRing.insertSecretKey(mKR, saveParcel.keys.get(i));
+            pKR = PGPPublicKeyRing.insertPublicKey(pKR, saveParcel.keys.get(i).getPublicKey());
         }
         updateProgress(R.string.progress_adding_sub_keys, 40, 100);
 
@@ -560,13 +579,12 @@ public class PgpKeyOperation {
             keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
         }
 
-        PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
-        PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
-//must copy with new passphrase... new keys will have an empty passphrase... pass in boolean array to mark new key?
+        //update the passphrase
+        mKR = PGPSecretKeyRing.copyWithNewPassword(mKR, keyDecryptor, keyEncryptor);
         updateProgress(R.string.progress_saving_key_ring, 90, 100);
 
-        ProviderHelper.saveKeyRing(mContext, secretKeyRing);
-        ProviderHelper.saveKeyRing(mContext, publicKeyRing);
+        ProviderHelper.saveKeyRing(mContext, mKR);
+        ProviderHelper.saveKeyRing(mContext, pKR);
 
         updateProgress(R.string.progress_done, 100, 100);
     }
