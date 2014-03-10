@@ -113,4 +113,64 @@ public class ActionBarHelper {
         actionBar.setCustomView(customActionBarView);
     }
 
+    /**
+     * Sets custom view on ActionBar for Save activities
+     *
+     * @param actionBar
+     * @param saveText
+     * @param saveOnClickListener
+     */
+    public static void setSaveView(ActionBar actionBar, int saveText,
+                                   OnClickListener saveOnClickListener) {
+        // Inflate a "Save" custom action bar view to serve as the "Up" affordance.
+        final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
+                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater
+                .inflate(R.layout.actionbar_custom_view_save, null);
+
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_save_text)).setText(saveText);
+        customActionBarView.findViewById(R.id.actionbar_save).setOnClickListener(
+                saveOnClickListener);
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(customActionBarView);
+    }
+
+    /**
+     * Sets custom view on ActionBar for Save/Cancel activities
+     *
+     * @param actionBar
+     * @param saveText
+     * @param saveOnClickListener
+     * @param cancelText
+     * @param cancelOnClickListener
+     */
+    public static void setSaveCancelView(ActionBar actionBar, int saveText,
+                                         OnClickListener saveOnClickListener, int cancelText,
+                                         OnClickListener cancelOnClickListener) {
+
+        // Inflate a "Done"/"Cancel" custom action bar view
+        final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
+                .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_custom_view_save_cancel, null);
+
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_save_text)).setText(saveText);
+        customActionBarView.findViewById(R.id.actionbar_save).setOnClickListener(
+                saveOnClickListener);
+        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
+                .setText(cancelText);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
+                cancelOnClickListener);
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(customActionBarView, new ActionBar.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    }
 }
