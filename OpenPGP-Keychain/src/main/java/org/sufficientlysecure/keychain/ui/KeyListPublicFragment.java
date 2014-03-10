@@ -367,7 +367,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
-        //Erase search result without focus
+        // Erase search result without focus
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
