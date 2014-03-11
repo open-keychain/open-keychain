@@ -171,15 +171,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
-
-                    // get IDs for checked positions as long array
-                    long[] ids = new long[positions.size()];
-                    int i = 0;
-                    for (int pos : positions) {
-                        ids[i] = mAdapter.getItemId(pos);
-                        i++;
-                    }
+                    // get row ids for checked positions as long array
+                    long[] ids = mStickyList.getCheckedItemIds();
 
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_public_multi_encrypt: {
@@ -192,9 +185,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                         }
                         case R.id.menu_key_list_public_multi_select_all: {
                             //Select all
-                            int localCount = mStickyList.getCount();
-                            for (int k = 0; k < localCount; k++) {
-                                mStickyList.setItemChecked(k, true);
+                            for (int i = 0; i < mStickyList.getCount(); i++) {
+                                mStickyList.setItemChecked(i, true);
                             }
                             break;
                         }
@@ -215,7 +207,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                     } else {
                         mAdapter.removeSelection(position);
                     }
-                    int count = mAdapter.getCurrentCheckedPosition().size();
+                    int count = mStickyList.getCheckedItemCount();
                     String keysSelected = getResources().getQuantityString(
                             R.plurals.key_list_selected_keys, count, count);
                     mode.setTitle(keysSelected);
@@ -272,8 +264,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
+        mAdapter.setSearchQuery(mCurQuery);
         mAdapter.swapCursor(data);
-
         mStickyList.setAdapter(mAdapter);
 
         // NOTE: Not supported by StickyListHeader, but reimplemented here
@@ -375,6 +367,20 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
+        // Erase search result without focus
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mCurQuery = null;
+                getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
+                return true;
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }

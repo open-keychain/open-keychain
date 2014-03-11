@@ -91,15 +91,8 @@ public class KeyListSecretFragment extends ListFragment implements
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    Set<Integer> positions = mAdapter.getCurrentCheckedPosition();
-
-                    // get IDs for checked positions as long array
-                    long[] ids = new long[positions.size()];
-                    int i = 0;
-                    for (int pos : positions) {
-                        ids[i] = mAdapter.getItemId(pos);
-                        i++;
-                    }
+                    // get row ids for checked positions as long array
+                    long[] ids = getListView().getCheckedItemIds();
 
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_public_multi_delete: {
@@ -108,9 +101,8 @@ public class KeyListSecretFragment extends ListFragment implements
                         }
                         case R.id.menu_key_list_public_multi_select_all: {
                             //Select all
-                            int localCount = getListView().getCount();
-                            for (int k = 0; k < localCount; k++) {
-                                getListView().setItemChecked(k, true);
+                            for (int i = 0; i < getListView().getCount(); i++) {
+                                getListView().setItemChecked(i, true);
                             }
                             break;
                         }

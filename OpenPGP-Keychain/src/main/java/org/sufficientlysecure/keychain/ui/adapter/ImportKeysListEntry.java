@@ -125,7 +125,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      * Constructor for later querying from keyserver
      */
     public ImportKeysListEntry() {
+        // keys from keyserver are always public keys
         secretKey = false;
+        // do not select by default
+        selected = false;
         userIds = new ArrayList<String>();
     }
 
@@ -152,11 +155,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // selected is default
         this.selected = true;
 
-        if ( !(pgpKeyRing instanceof PGPSecretKeyRing) ) {
-            secretKey = false;
-        }
-        else{
+        if (pgpKeyRing instanceof PGPSecretKeyRing) {
             secretKey = true;
+        } else {
+            secretKey = false;
         }
 
         userIds = new ArrayList<String>();

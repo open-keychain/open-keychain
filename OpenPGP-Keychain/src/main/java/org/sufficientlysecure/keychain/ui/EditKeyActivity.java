@@ -187,7 +187,8 @@ public class EditKeyActivity extends ActionBarActivity {
 
                     // Message is received after generating is done in ApgService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER, true,
+                            this, getResources().getQuantityString(R.plurals.progress_generating, 1),
+                            ProgressDialog.STYLE_HORIZONTAL, true,
 
                             new DialogInterface.OnCancelListener() {
                                 @Override
@@ -249,7 +250,7 @@ public class EditKeyActivity extends ActionBarActivity {
      */
     private void handleActionEditKey(Intent intent) {
         // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_save,
+        ActionBarHelper.setSaveView(getSupportActionBar(), R.string.btn_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -543,7 +544,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
             // Message is received after saving is done in ApgService
             KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                    R.string.progress_saving, ProgressDialog.STYLE_HORIZONTAL) {
+                    getString(R.string.progress_saving), ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);

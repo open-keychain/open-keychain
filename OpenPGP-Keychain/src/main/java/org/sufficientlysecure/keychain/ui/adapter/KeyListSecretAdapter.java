@@ -98,16 +98,7 @@ public class KeyListSecretAdapter extends CursorAdapter {
         mSelection.put(position, value);
         notifyDataSetChanged();
     }
-
-    public boolean isPositionChecked(int position) {
-        Boolean result = mSelection.get(position);
-        return result == null ? false : result;
-    }
-
-    public Set<Integer> getCurrentCheckedPosition() {
-        return mSelection.keySet();
-    }
-
+    
     public void removeSelection(int position) {
         mSelection.remove(position);
         notifyDataSetChanged();
@@ -126,11 +117,12 @@ public class KeyListSecretAdapter extends CursorAdapter {
         /**
          * Change color for multi-selection
          */
-        // default color
-        v.setBackgroundColor(Color.TRANSPARENT);
         if (mSelection.get(position) != null) {
-            // this is a selected position, change color!
+            // color for selected items
             v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+        } else {
+            // default color
+            v.setBackgroundColor(Color.TRANSPARENT);
         }
         return v;
     }

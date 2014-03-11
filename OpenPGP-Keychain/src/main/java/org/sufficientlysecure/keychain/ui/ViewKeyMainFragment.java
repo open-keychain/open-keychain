@@ -19,13 +19,17 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -258,9 +262,8 @@ public class ViewKeyMainFragment extends Fragment  implements
                         fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), mDataUri);
                     }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
-                    fingerprint = fingerprint.replace("  ", "\n");
 
-                    mFingerprint.setText(fingerprint);
+                    mFingerprint.setText(colorizeFingerprint(fingerprint));
                 }
 
                 mKeysAdapter.swapCursor(data);
@@ -269,6 +272,24 @@ public class ViewKeyMainFragment extends Fragment  implements
             default:
                 break;
         }
+    }
+
+    private SpannableStringBuilder colorizeFingerprint(String fingerprint) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
+        ForegroundColorSpan fcs = new ForegroundColorSpan(Color.BLACK);
+
+        // for each 4 characters of the fingerprint + 1 space
+        for (int i = 0; i < fingerprint.length(); i += 5) {
+            String fourChars = fingerprint.substring(i, Math.min(i + 4, fingerprint.length()));
+
+            // Create a foreground color by converting the 4 fingerprint chars to an int hashcode
+            // and then converting that int to hex to use as a color
+            fcs = new ForegroundColorSpan(
+                    Color.parseColor(String.format("#%06X", (0xFFFFFF & fourChars.hashCode()))));
+            sb.setSpan(fcs, i, Math.min(i+4, fingerprint.length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+
+        return sb;
     }
 
     /**

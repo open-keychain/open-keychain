@@ -139,7 +139,7 @@ public class ExportHelper {
 
         // Message is received after exporting is done in ApgService
         KeychainIntentServiceHandler exportHandler = new KeychainIntentServiceHandler(activity,
-                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL) {
+                activity.getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
