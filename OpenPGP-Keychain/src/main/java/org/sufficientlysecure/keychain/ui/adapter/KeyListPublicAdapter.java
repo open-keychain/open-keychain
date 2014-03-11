@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.util.HashMap;
-import java.util.Set;
-
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;

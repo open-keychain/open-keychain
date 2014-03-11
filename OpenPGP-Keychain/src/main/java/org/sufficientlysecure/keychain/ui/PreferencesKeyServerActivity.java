@@ -81,11 +81,11 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         Intent intent = getIntent();
         String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
         if (servers != null) {
-            for (int i = 0; i < servers.length; ++i) {
+            for (String serv : servers) {
                 KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
                         R.layout.key_server_editor, mEditors, false);
                 view.setEditorListener(this);
-                view.setValue(servers[i]);
+                view.setValue(serv);
                 mEditors.addView(view);
             }
         }

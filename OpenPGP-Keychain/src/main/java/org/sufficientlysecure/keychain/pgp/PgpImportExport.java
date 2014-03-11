@@ -79,8 +79,9 @@ public class PgpImportExport {
 
     public boolean uploadKeyRingToServer(HkpKeyServer server, PGPPublicKeyRing keyring) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ArmoredOutputStream aos = new ArmoredOutputStream(bos);
+        ArmoredOutputStream aos = null;
         try {
+            aos = new ArmoredOutputStream(bos);
             aos.write(keyring.getEncoded());
             aos.close();
 
@@ -95,7 +96,8 @@ public class PgpImportExport {
             return false;
         } finally {
             try {
-                bos.close();
+                if (aos != null) aos.close();
+                if (bos != null) bos.close();
             } catch (IOException e) {
             }
         }
@@ -156,7 +158,7 @@ public class PgpImportExport {
     }
 
     public Bundle exportKeyRings(ArrayList<Long> keyRingRowIds, int keyType,
-                                 OutputStream outStream) throws PgpGeneralException, FileNotFoundException,
+                                 OutputStream outStream) throws PgpGeneralException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
