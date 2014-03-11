@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
@@ -66,14 +65,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
 import android.content.Context;
 import android.util.Pair;
-
-import javax.crypto.SecretKey;
 
 public class PgpKeyOperation {
     private final Context mContext;
