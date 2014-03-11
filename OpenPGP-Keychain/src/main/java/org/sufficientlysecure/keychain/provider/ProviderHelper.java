@@ -254,6 +254,8 @@ public class ProviderHelper {
                             + " from "
                             + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
                     );
+                    operations.add(buildPublicCertOperations(
+                            context, keyRingRowId, userIdRank, masterKey.getKeyID(), cert, false));
                 }
                 // if we wanted to save all, not just our own verifications
                 // buildPublicCertOperations(context, keyRingRowId, rank, cert, verified);
