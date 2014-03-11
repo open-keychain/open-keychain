@@ -63,7 +63,7 @@ public class ExportHelper {
     /**
      * Show dialog where to export keys
      */
-    public void showExportKeysDialog(final Uri dataUri, final int keyType,
+    public void showExportKeysDialog(final long[] rowIds, final int keyType,
             final String exportFilename) {
         mExportFilename = exportFilename;
 
@@ -75,7 +75,7 @@ public class ExportHelper {
                     Bundle data = message.getData();
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    exportKeys(dataUri, keyType);
+                    exportKeys(rowIds, keyType);
                 }
             }
         };
@@ -86,7 +86,7 @@ public class ExportHelper {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 String title = null;
-                if (dataUri == null) {
+                if (rowIds == null) {
                     // export all keys
                     title = activity.getString(R.string.title_export_keys);
                 } else {
@@ -112,7 +112,7 @@ public class ExportHelper {
     /**
      * Export keys
      */
-    public void exportKeys(Uri dataUri, int keyType) {
+    public void exportKeys(long[] rowIds, int keyType) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -126,13 +126,10 @@ public class ExportHelper {
         data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFilename);
         data.putInt(KeychainIntentService.EXPORT_KEY_TYPE, keyType);
 
-        if (dataUri == null) {
+        if (rowIds == null) {
             data.putBoolean(KeychainIntentService.EXPORT_ALL, true);
         } else {
-            // TODO: put data uri into service???
-            long keyRingMasterKeyId = ProviderHelper.getMasterKeyId(activity, dataUri);
-
-            data.putLong(KeychainIntentService.EXPORT_KEY_RING_MASTER_KEY_ID, keyRingMasterKeyId);
+            data.putLongArray(KeychainIntentService.EXPORT_KEY_RING_ROW_ID, rowIds);
         }
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);

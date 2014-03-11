@@ -155,59 +155,53 @@ public class PgpImportExport {
         return returnData;
     }
 
-    public Bundle exportKeyRings(ArrayList<Long> keyRingMasterKeyIds, int keyType,
+    public Bundle exportKeyRings(ArrayList<Long> keyRingRowIds, int keyType,
                                  OutputStream outStream) throws PgpGeneralException, FileNotFoundException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
+        int rowIdsSize = keyRingRowIds.size();
+
         updateProgress(
                 mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
-                        keyRingMasterKeyIds.size()), 0, 100);
+                        rowIdsSize), 0, 100);
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new PgpGeneralException(
                     mContext.getString(R.string.error_external_storage_not_ready));
         }
+        // For each row id
+        for (int i = 0; i < rowIdsSize; ++i) {
+            // Create an output stream
+            ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
+            arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
 
-        if (keyType == Id.type.secret_key) {
-            ArmoredOutputStream outSec = new ArmoredOutputStream(outStream);
-            outSec.setHeader("Version", PgpHelper.getFullVersion(mContext));
-
-            for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
-                updateProgress(i * 100 / keyRingMasterKeyIds.size() / 2, 100);
-
-                PGPSecretKeyRing secretKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
-                        mContext, keyRingMasterKeyIds.get(i));
+            // If the keyType is secret get the PGPSecretKeyRing
+            // based on the row id and encode it to the output
+            if (keyType == Id.type.secret_key) {
+                updateProgress(i * 100 / rowIdsSize / 2, 100);
+                PGPSecretKeyRing secretKeyRing =
+                        ProviderHelper.getPGPSecretKeyRingByRowId(mContext, keyRingRowIds.get(i));
 
                 if (secretKeyRing != null) {
-                    secretKeyRing.encode(outSec);
+                    secretKeyRing.encode(arOutStream);
                 }
-            }
-            outSec.close();
-        } else {
-            // export public keyrings...
-            ArmoredOutputStream outPub = new ArmoredOutputStream(outStream);
-            outPub.setHeader("Version", PgpHelper.getFullVersion(mContext));
-
-            for (int i = 0; i < keyRingMasterKeyIds.size(); ++i) {
-                // double the needed time if exporting both public and secret parts
-                if (keyType == Id.type.secret_key) {
-                    updateProgress(i * 100 / keyRingMasterKeyIds.size() / 2, 100);
-                } else {
-                    updateProgress(i * 100 / keyRingMasterKeyIds.size(), 100);
-                }
-
-                PGPPublicKeyRing publicKeyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(
-                        mContext, keyRingMasterKeyIds.get(i));
+                // Else if it's a public key get the PGPPublicKeyRing
+                // and encode that to the output
+            } else {
+                updateProgress(i * 100 / rowIdsSize, 100);
+                PGPPublicKeyRing publicKeyRing =
+                        ProviderHelper.getPGPPublicKeyRingByRowId(mContext, keyRingRowIds.get(i));
 
                 if (publicKeyRing != null) {
-                    publicKeyRing.encode(outPub);
+                    publicKeyRing.encode(arOutStream);
                 }
             }
-            outPub.close();
+
+            arOutStream.close();
         }
 
-        returnData.putInt(KeychainIntentService.RESULT_EXPORT, keyRingMasterKeyIds.size());
+        returnData.putInt(KeychainIntentService.RESULT_EXPORT, rowIdsSize);
 
         updateProgress(R.string.progress_done, 100, 100);
 
