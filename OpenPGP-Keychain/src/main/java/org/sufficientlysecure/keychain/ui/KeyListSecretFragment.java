@@ -17,10 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Set;
-
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -41,6 +41,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,6 +107,12 @@ public class KeyListSecretFragment extends ListFragment implements
                             }
                             break;
                         }
+                        case R.id.menu_key_list_public_multi_export: {
+                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
+                            break;
+                        }
+
                     }
                     return true;
                 }
