@@ -601,12 +601,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                         4096, passphrase, true);
 
                 updateProgressBar(pbarmessenger,25);
-                Log.i("PROGRESS", "25");
+
 
                 PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, false);
                 updateProgressBar(pbarmessenger,50);
-                Log.i("PROGRESS", "50");
+
 
                 // TODO: default to one master for cert, one sub for encrypt and one sub
                 //       for sign
@@ -615,13 +615,14 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
                         PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
+
                 updateProgressBar(pbarmessenger,75);
-                Log.i("PROGRESS","75");
+
                 resultData.putByteArray(RESULT_NEW_KEY2,
                         PgpConversionHelper.PGPSecretKeyToBytes(subKey));
 
                 updateProgressBar(pbarmessenger,100);
-                Log.i("PROGRESS","100");
+
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 

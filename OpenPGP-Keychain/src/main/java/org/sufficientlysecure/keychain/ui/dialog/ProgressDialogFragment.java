@@ -92,7 +92,7 @@ public class ProgressDialogFragment extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.i("WARNING", "CREATE DIALOG CALLED");
+
         Activity activity = getActivity();
 
         ProgressDialog dialog = new ProgressDialog(activity);
@@ -105,7 +105,7 @@ public class ProgressDialogFragment extends DialogFragment {
 
         dialog.setMessage(getString(messageId));
         dialog.setProgressStyle(style);
-
+        dialog.setMax(100);
 
 
         // Disable the back button

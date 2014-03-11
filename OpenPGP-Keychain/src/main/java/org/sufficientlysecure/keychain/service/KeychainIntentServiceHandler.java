@@ -68,12 +68,9 @@ public class KeychainIntentServiceHandler extends Handler {
         Handler handler = new Handler(){
             @Override
             public void handleMessage(Message msg) {
-                //super.handleMessage(msg);
-                Log.i("HANDLER","handlemessage called with value "+msg.arg1);
                 int progress = msg.arg1;
                 ((ProgressDialog)mProgressDialogFragment.getDialog()).setProgress(progress);
                 mProgressDialogFragment.getFragmentManager().executePendingTransactions();
-                Log.i("HANDLER","after setprogress");
                 try
                 {
                     Thread.sleep(3000);
@@ -88,14 +85,10 @@ public class KeychainIntentServiceHandler extends Handler {
                 }
             }
         };
-        //handler.post(new Runnable() {
-          // public void run() {
 
-                mProgressDialogFragment.show(manager, "progressDialog");
-                mProgressDialogFragment.getFragmentManager().executePendingTransactions();
-                //((ProgressDialog)mProgressDialogFragment.getDialog()).setProgress(60);
-          // }
-        //});
+        mProgressDialogFragment.show(manager, "progressDialog");
+        mProgressDialogFragment.getFragmentManager().executePendingTransactions();
+
 
         return handler;
     }
