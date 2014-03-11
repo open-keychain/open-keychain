@@ -84,13 +84,11 @@ public class ViewKeyActivity extends ActionBarActivity {
             selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        {
-            // normalize mDataUri to a "by row id" query, to ensure it works with any
-            // given valid /public/ query
-            long rowId = ProviderHelper.getRowId(this, getIntent().getData());
-            // TODO: handle (rowId == 0) with something else than a crash
-            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId)) ;
-        }
+        // normalize mDataUri to a "by row id" query, to ensure it works with any
+        // given valid /public/ query
+        long rowId = ProviderHelper.getRowId(this, getIntent().getData());
+        // TODO: handle (rowId == 0) with something else than a crash
+        mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId)) ;
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
@@ -98,7 +96,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 ViewKeyMainFragment.class, mainBundle, (selectedTab == 0 ? true : false));
 
         Bundle certBundle = new Bundle();
-        certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
+        certBundle.putLong(ViewKeyCertsFragment.ARG_KEYRING_ROW_ID, rowId);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
                 ViewKeyCertsFragment.class, certBundle, (selectedTab == 1 ? true : false));
     }
