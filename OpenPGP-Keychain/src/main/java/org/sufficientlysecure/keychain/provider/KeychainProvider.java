@@ -88,7 +88,8 @@ public class KeychainProvider extends ContentProvider {
     private static final int CERTS_BY_KEY_ID = 402;
     private static final int CERTS_BY_ROW_ID = 403;
     private static final int CERTS_BY_KEY_ROW_ID = 404;
-    private static final int CERTS_BY_CERTIFIER_ID = 405;
+    private static final int CERTS_BY_KEY_ROW_ID_ALL = 405;
+    private static final int CERTS_BY_CERTIFIER_ID = 406;
 
     // private static final int DATA_STREAM = 401;
 
@@ -256,6 +257,8 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/#", CERTS_BY_ROW_ID);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
                 + KeychainContract.PATH_BY_KEY_ROW_ID + "/#", CERTS_BY_KEY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
+                + KeychainContract.PATH_BY_KEY_ROW_ID + "/#/all", CERTS_BY_KEY_ROW_ID_ALL);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
                 + KeychainContract.PATH_BY_KEY_ID + "/#", CERTS_BY_KEY_ID);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
@@ -717,6 +720,7 @@ public class KeychainProvider extends ContentProvider {
                 break;
 
             case CERTS_BY_KEY_ROW_ID:
+            case CERTS_BY_KEY_ROW_ID_ALL:
                 qb.setTables(Tables.CERTS
                     + " JOIN " + Tables.USER_IDS + " ON ("
                             + Tables.CERTS + "." + Certs.KEY_RING_ROW_ID + " = "
@@ -725,9 +729,10 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_IDS + "." + UserIds.RANK
                     // noooooooot sure about this~ database design
-                    + ") LEFT JOIN " + Tables.KEYS + " ON ("
-                        + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
-                        + Tables.KEYS + "." + Keys.KEY_ID
+                    + ")" + (match == CERTS_BY_KEY_ROW_ID_ALL ? " LEFT" : "")
+                        + " JOIN " + Tables.KEYS + " ON ("
+                            + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
+                            + Tables.KEYS + "." + Keys.KEY_ID
                     + ") LEFT JOIN " + Tables.USER_IDS + " AS signer ON ("
                             + Tables.KEYS + "." + Keys.KEY_RING_ROW_ID + " = "
                             + "signer." + UserIds.KEY_RING_ROW_ID

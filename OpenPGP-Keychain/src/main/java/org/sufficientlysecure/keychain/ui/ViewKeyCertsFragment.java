@@ -19,9 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,21 +30,16 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.nio.ByteBuffer;
-import java.util.HashMap;
 
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -75,10 +68,12 @@ public class ViewKeyCertsFragment extends Fragment
     public static final String ARG_KEYRING_ROW_ID = "row_id";
 
     private StickyListHeadersListView mStickyList;
+    private CheckBox mShowUnknown;
 
     private CertListAdapter mAdapter;
+    private boolean mUnknownShown = false;
 
-    private Uri mDataUri;
+    private Uri mBaseUri, mDataUri;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,9 +82,25 @@ public class ViewKeyCertsFragment extends Fragment
         return view;
     }
 
+    private void toggleShowUnknown(boolean shown) {
+        if(shown)
+            mDataUri = mBaseUri.buildUpon().appendPath("all").build();
+        else
+            mDataUri = mBaseUri;
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mShowUnknown = (CheckBox) getActivity().findViewById(R.id.showUnknown);
+        mShowUnknown.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                toggleShowUnknown(b);
+            }
+        });
 
         mStickyList = (StickyListHeadersListView) getActivity().findViewById(R.id.list);
 
@@ -100,7 +111,7 @@ public class ViewKeyCertsFragment extends Fragment
         }
 
         long rowId = getArguments().getLong(ARG_KEYRING_ROW_ID);
-        mDataUri = KeychainContract.Certs.buildCertsByKeyRowIdUri(Long.toString(rowId));
+        mBaseUri = KeychainContract.Certs.buildCertsByKeyRowIdUri(Long.toString(rowId));
 
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
@@ -121,6 +132,7 @@ public class ViewKeyCertsFragment extends Fragment
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
+        mDataUri = mBaseUri;
         getLoaderManager().initLoader(0, null, this);
 
     }

@@ -442,5 +442,6 @@
     <string name="label_secret_key">Secret Key</string>
     <string name="secret_key_yes">available</string>
     <string name="secret_key_no">unavailable</string>
+    <string name="show_unknown_signatures">Show unknown signatures</string>
 
 </resources>
