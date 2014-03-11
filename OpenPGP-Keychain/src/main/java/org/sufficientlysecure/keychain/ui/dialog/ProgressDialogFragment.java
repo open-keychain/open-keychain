@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.KeyEvent;
 
 public class ProgressDialogFragment extends DialogFragment {
@@ -91,6 +92,7 @@ public class ProgressDialogFragment extends DialogFragment {
      */
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.i("WARNING", "CREATE DIALOG CALLED");
         Activity activity = getActivity();
 
         ProgressDialog dialog = new ProgressDialog(activity);
@@ -103,6 +105,8 @@ public class ProgressDialogFragment extends DialogFragment {
 
         dialog.setMessage(getString(messageId));
         dialog.setProgressStyle(style);
+
+
 
         // Disable the back button
         OnKeyListener keyListener = new OnKeyListener() {

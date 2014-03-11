@@ -62,6 +62,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -75,8 +76,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
+    public static final String PROGRESS_BAR_EXTRA="progress bar";
     public static final String EXTRA_DATA = "data";
-
+    public static final Object ob = new Object();
     /* possible actions */
     public static final String ACTION_ENCRYPT_SIGN = Constants.INTENT_PREFIX + "ENCRYPT_SIGN";
 
@@ -590,14 +592,21 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 /* Input */
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
+                Messenger pbarmessenger = (Messenger)extras.get(PROGRESS_BAR_EXTRA);
+
                 /* Operation */
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, true);
 
+                updateProgressBar(pbarmessenger,25);
+                Log.i("PROGRESS", "25");
+
                 PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, false);
+                updateProgressBar(pbarmessenger,50);
+                Log.i("PROGRESS", "50");
 
                 // TODO: default to one master for cert, one sub for encrypt and one sub
                 //       for sign
@@ -606,8 +615,13 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
                         PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
+                updateProgressBar(pbarmessenger,75);
+                Log.i("PROGRESS","75");
                 resultData.putByteArray(RESULT_NEW_KEY2,
                         PgpConversionHelper.PGPSecretKeyToBytes(subKey));
+
+                updateProgressBar(pbarmessenger,100);
+                Log.i("PROGRESS","100");
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 
@@ -873,5 +887,29 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     public void setProgress(int progress, int max) {
         setProgress(null, progress, max);
+    }
+
+    public void updateProgressBar (Messenger pbarmessenger,int arg1){
+        Message msg = Message.obtain();
+        msg.arg1 = arg1;
+        try
+        {
+            pbarmessenger.send(msg);
+        }
+        catch(RemoteException e)
+        {
+            e.printStackTrace();
+        }
+        synchronized (ob)
+        {
+            try
+            {
+                ob.wait();
+            }
+            catch(InterruptedException e)
+            {
+            e.printStackTrace();
+            }
+        }
     }
 }

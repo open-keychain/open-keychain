@@ -19,8 +19,10 @@ package org.sufficientlysecure.keychain.service;
 
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,15 +62,42 @@ public class KeychainIntentServiceHandler extends Handler {
                 progressDialogStyle);
     }
 
-    public void showProgressDialog(FragmentActivity activity) {
+    public Handler showProgressDialog(FragmentActivity activity) {
         // TODO: This is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
-        Handler handler = new Handler();
-        handler.post(new Runnable() {
-            public void run() {
-                mProgressDialogFragment.show(manager, "progressDialog");
+        Handler handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                //super.handleMessage(msg);
+                Log.i("HANDLER","handlemessage called with value "+msg.arg1);
+                int progress = msg.arg1;
+                ((ProgressDialog)mProgressDialogFragment.getDialog()).setProgress(progress);
+                mProgressDialogFragment.getFragmentManager().executePendingTransactions();
+                Log.i("HANDLER","after setprogress");
+                try
+                {
+                    Thread.sleep(3000);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                synchronized (KeychainIntentService.ob)
+                {
+                    KeychainIntentService.ob.notifyAll();
+                }
             }
-        });
+        };
+        //handler.post(new Runnable() {
+          // public void run() {
+
+                mProgressDialogFragment.show(manager, "progressDialog");
+                mProgressDialogFragment.getFragmentManager().executePendingTransactions();
+                //((ProgressDialog)mProgressDialogFragment.getDialog()).setProgress(60);
+          // }
+        //});
+
+        return handler;
     }
 
     @Override
