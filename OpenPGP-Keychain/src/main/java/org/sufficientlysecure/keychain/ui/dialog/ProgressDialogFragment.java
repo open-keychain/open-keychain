@@ -30,7 +30,7 @@ import android.view.KeyEvent;
 import org.sufficientlysecure.keychain.R;
 
 public class ProgressDialogFragment extends DialogFragment {
-    private static final String ARG_MESSAGE_ID = "message_id";
+    private static final String ARG_MESSAGE = "message";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
 
@@ -39,16 +39,16 @@ public class ProgressDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this fragment
      *
-     * @param messageId
+     * @param message
      * @param style
      * @param cancelable
      * @return
      */
-    public static ProgressDialogFragment newInstance(int messageId, int style, boolean cancelable,
+    public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable,
                                                      OnCancelListener onCancelListener) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_MESSAGE_ID, messageId);
+        args.putString(ARG_MESSAGE, message);
         args.putInt(ARG_STYLE, style);
         args.putBoolean(ARG_CANCELABLE, cancelable);
 
@@ -117,21 +117,22 @@ public class ProgressDialogFragment extends DialogFragment {
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
-        int messageId = getArguments().getInt(ARG_MESSAGE_ID);
+        String message = getArguments().getString(ARG_MESSAGE);
         int style = getArguments().getInt(ARG_STYLE);
         boolean cancelable = getArguments().getBoolean(ARG_CANCELABLE);
-        dialog.setMessage(getString(messageId));
+
+        dialog.setMessage(message);
         dialog.setProgressStyle(style);
 
         if (cancelable) {
             dialog.setButton(DialogInterface.BUTTON_NEGATIVE,
                     activity.getString(R.string.progress_cancel),
                     new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
         }
 
         // Disable the back button
@@ -139,7 +140,6 @@ public class ProgressDialogFragment extends DialogFragment {
 
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     return true;
                 }

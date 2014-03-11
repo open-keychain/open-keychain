@@ -42,7 +42,15 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected Activity mActivity;
 
     protected List<ImportKeysListEntry> data;
+    static class ViewHolder{
+        private TextView mainUserId;
+        private TextView mainUserIdRest;
+        private TextView keyId;
+        private TextView fingerprint;
+        private TextView algorithm;
+        private TextView status;
 
+    }
     public ImportKeysAdapter(Activity activity) {
         super(activity, -1);
         mActivity = activity;
@@ -86,16 +94,21 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ImportKeysListEntry entry = data.get(position);
-
-        View view = mInflater.inflate(R.layout.import_keys_list_entry, null);
-
-        TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
-        TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
-        TextView keyId = (TextView) view.findViewById(R.id.keyId);
-        TextView fingerprint = (TextView) view.findViewById(R.id.fingerprint);
-        TextView algorithm = (TextView) view.findViewById(R.id.algorithm);
-        TextView status = (TextView) view.findViewById(R.id.status);
-
+        ViewHolder holder;
+        if(convertView == null) {
+            holder = new ViewHolder();
+            convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
+            holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
+            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
+            holder.keyId = (TextView) convertView.findViewById(R.id.keyId);
+            holder.fingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
+            holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
+            holder.status = (TextView) convertView.findViewById(R.id.status);
+            convertView.setTag(holder);
+        }
+        else{
+            holder = (ViewHolder)convertView.getTag();
+        }
         // main user id
         String userId = entry.userIds.get(0);
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
@@ -105,39 +118,39 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // show red user id if it is a secret key
             if (entry.secretKey) {
                 userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
-                mainUserId.setTextColor(Color.RED);
+                holder.mainUserId.setTextColor(Color.RED);
             }
-            mainUserId.setText(userIdSplit[0]);
+            holder.mainUserId.setText(userIdSplit[0]);
         } else {
-            mainUserId.setText(R.string.user_id_no_name);
+            holder.mainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
         if (userIdSplit[1] != null) {
-            mainUserIdRest.setText(userIdSplit[1]);
-            mainUserIdRest.setVisibility(View.VISIBLE);
+            holder.mainUserIdRest.setText(userIdSplit[1]);
+            holder.mainUserIdRest.setVisibility(View.VISIBLE);
         } else {
-            mainUserIdRest.setVisibility(View.GONE);
+            holder.mainUserIdRest.setVisibility(View.GONE);
         }
 
-        keyId.setText(entry.hexKeyId);
+        holder.keyId.setText(entry.hexKeyId);
 
         if (entry.fingerPrint != null) {
-            fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
-            fingerprint.setVisibility(View.VISIBLE);
+            holder.fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
+            holder.fingerprint.setVisibility(View.VISIBLE);
         } else {
-            fingerprint.setVisibility(View.GONE);
+            holder.fingerprint.setVisibility(View.GONE);
         }
 
-        algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
-            status.setText(R.string.revoked);
+            holder.status.setText(R.string.revoked);
         } else {
-            status.setVisibility(View.GONE);
+            holder.status.setVisibility(View.GONE);
         }
 
-        LinearLayout ll = (LinearLayout) view.findViewById(R.id.list);
+        LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.list);
         if (entry.userIds.size() == 1) {
             ll.setVisibility(View.GONE);
         } else {
@@ -162,10 +175,10 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             }
         }
 
-        CheckBox cBox = (CheckBox) view.findViewById(R.id.selected);
+        CheckBox cBox = (CheckBox) convertView.findViewById(R.id.selected);
         cBox.setChecked(entry.isSelected());
 
-        return view;
+        return convertView;
     }
 
 }

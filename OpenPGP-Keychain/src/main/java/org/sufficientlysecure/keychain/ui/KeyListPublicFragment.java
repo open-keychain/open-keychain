@@ -367,6 +367,20 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
+        // Erase search result without focus
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mCurQuery = null;
+                getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
+                return true;
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }
