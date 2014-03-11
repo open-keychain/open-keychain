@@ -328,7 +328,7 @@
         <item quantity="one">exporting key…</item>
         <item quantity="other">exporting keys…</item>
     </plurals>
-    <string name="progress_generating">generating keys, this can take up to 3 minutes…</string>
+    
     <plurals name="progress_generating">
         <item quantity="one">generating key, this can take up to 3 minutes…</item>
         <item quantity="other">generating keys, this can take up to 3 minutes…</item>
