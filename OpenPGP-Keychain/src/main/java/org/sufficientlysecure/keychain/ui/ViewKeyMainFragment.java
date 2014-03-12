@@ -29,6 +29,7 @@ import android.support.v4.content.Loader;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
+import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +41,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -47,6 +49,8 @@ import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 
@@ -276,18 +280,40 @@ public class ViewKeyMainFragment extends Fragment  implements
 
     private SpannableStringBuilder colorizeFingerprint(String fingerprint) {
         SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
-        ForegroundColorSpan fcs = new ForegroundColorSpan(Color.BLACK);
+        try {
+            // for each 4 characters of the fingerprint + 1 space
+            for (int i = 0; i < fingerprint.length(); i += 5) {
+                int minFingLength = Math.min(i + 4, fingerprint.length());
+                String fourChars = fingerprint.substring(i, minFingLength);
 
-        // for each 4 characters of the fingerprint + 1 space
-        for (int i = 0; i < fingerprint.length(); i += 5) {
-            int minFingLength = Math.min(i + 4, fingerprint.length());
-            String fourChars = fingerprint.substring(i, minFingLength);
+                int raw = Integer.parseInt(fourChars, 16);
+                byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
+                int[] color = OtherHelper.getRgbForData(bytes);
 
-            // Create a foreground color by converting the 4 fingerprint chars to an int hashcode
-            // and then converting that int to hex to use as a color
-            fcs = new ForegroundColorSpan(
-                    Color.parseColor(String.format("#%06X", (0xFFFFFF & fourChars.hashCode()))));
-            sb.setSpan(fcs, i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                // Convert rgb to brightness
+                int brightness = (int) (0.2126*color[0] + 0.7152*color[1] + 0.0722*color[2]);
+
+                // Detect dark colors and invert their background to white to make them more distinguishable
+                if (brightness < 40) {
+                    sb.setSpan(new BackgroundColorSpan(Color.WHITE),
+                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+                // Detect bright colors and invert their background to black to make them more distinguishable
+                } else if (brightness > 210) {
+                    sb.setSpan(new BackgroundColorSpan(Color.BLACK),
+                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                }
+
+                // Create a foreground color with the 3 digest integers as RGB
+                // and then converting that int to hex to use as a color
+                sb.setSpan(new ForegroundColorSpan(Color.rgb(color[0], color[1], color[2])),
+                                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Colorization failed", e);
+            // if anything goes wrong, then just display the fingerprint without colour,
+            // instead of partially correct colour or wrong colours
+            return new SpannableStringBuilder(fingerprint);
         }
 
         return sb;
