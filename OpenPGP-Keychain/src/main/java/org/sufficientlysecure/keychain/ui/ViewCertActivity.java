@@ -17,10 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -28,10 +28,11 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -60,6 +61,8 @@ public class ViewCertActivity extends ActionBarActivity
     };
 
     private Uri mDataUri;
+
+    private long mSignerKeyId;
 
     private TextView mSigneeKey, mSigneeUid, mRank, mAlgorithm, mType, mCreation, mExpiry;
     private TextView mSignerKey, mSignerUid;
@@ -117,7 +120,8 @@ public class ViewCertActivity extends ActionBarActivity
             Date creationDate = new Date(data.getLong(4) * 1000);
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
-            String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(5));
+            mSignerKeyId = data.getLong(5);
+            String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
             mSignerKey.setText(signerKey);
 
             String signerUid = data.getString(6);
@@ -156,6 +160,40 @@ public class ViewCertActivity extends ActionBarActivity
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.view_cert, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_view_cert_verify:
+                // TODO verification routine
+                return true;
+            case R.id.menu_view_cert_view_signer:
+                // can't do this before the data is initialized
+                // TODO notify user of this, maybe offer download?
+                if(mSignerKeyId == 0)
+                    return true;
+                Intent viewIntent = null;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    viewIntent = new Intent(this, ViewKeyActivity.class);
+                } else {
+                    viewIntent = new Intent(this, ViewKeyActivityJB.class);
+                }
+                viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                                Long.toString(mSignerKeyId))
+                );
+                startActivity(viewIntent);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
