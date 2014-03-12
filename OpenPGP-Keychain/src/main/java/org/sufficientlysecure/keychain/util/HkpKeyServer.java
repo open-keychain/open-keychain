@@ -226,7 +226,7 @@ public class HkpKeyServer extends KeyServer {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet("http://" + mHost + ":" + mPort
-                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.convertKeyIdToHex(keyId));
+                    + "/pks/lookup?op=get&search=" + PgpKeyHelper.convertKeyIdToHex(keyId));
 
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
