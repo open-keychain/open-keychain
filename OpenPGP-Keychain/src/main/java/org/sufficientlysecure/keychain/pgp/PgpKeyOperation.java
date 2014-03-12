@@ -190,7 +190,7 @@ public class PgpKeyOperation {
     }
 
     public void changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassPhrase,
-            String newPassPhrase) throws IOException, PGPException, PGPException,
+            String newPassPhrase) throws IOException, PGPException,
             NoSuchProviderException {
 
         updateProgress(R.string.progress_building_key, 0, 100);

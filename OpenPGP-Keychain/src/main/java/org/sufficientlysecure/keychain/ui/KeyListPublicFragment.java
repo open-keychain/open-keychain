@@ -18,10 +18,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
-import java.util.Set;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
@@ -47,6 +48,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.ActionMode;
@@ -177,6 +179,11 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                     switch (item.getItemId()) {
                         case R.id.menu_key_list_public_multi_encrypt: {
                             encrypt(mode, ids);
+                            break;
+                        }
+                        case R.id.menu_key_list_public_multi_export: {
+                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
                             break;
                         }
                         case R.id.menu_key_list_public_multi_delete: {
@@ -367,7 +374,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // Execute this when searching
         mSearchView.setOnQueryTextListener(this);
 
-        //Erase search result without focus
+        // Erase search result without focus
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
@@ -377,6 +384,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mCurQuery = null;
+                mSearchView.setQuery("", true);
                 getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
                 return true;
             }
