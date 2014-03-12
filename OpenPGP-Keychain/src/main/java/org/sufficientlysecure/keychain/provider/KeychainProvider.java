@@ -377,6 +377,10 @@ public class KeychainProvider extends ContentProvider {
 
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
 
+        // type attribute is special: if there is any grouping, choose secret over public type
+        projectionMap.put(KeyRingsColumns.TYPE,
+                "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ") AS " + KeyRingsColumns.TYPE);
+
         return projectionMap;
     }
 
@@ -411,9 +415,11 @@ public class KeychainProvider extends ContentProvider {
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match) {
-        // public or secret keyring
-        qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-        qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        if(match != UNIFIED_KEY_RING) {
+            // public or secret keyring
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        }
 
         // join keyrings with keys and userIds
         // Only get user id and key with rank 0 (main user id and main key)
@@ -472,45 +478,14 @@ public class KeychainProvider extends ContentProvider {
 
         switch (match) {
             case UNIFIED_KEY_RING:
+                qb = buildKeyRingQuery(qb, match);
 
-                { // SELECT
-                    // todo: outsource into getprojectionmapforthingies? don't really see the point.
-                    HashMap<String, String> projectionMap = new HashMap<String, String>();
-
-                    // from keyrings table
-                    projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-                    projectionMap.put(KeyRingsColumns.TYPE,
-                            "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ")");
-                    projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
-                            + KeyRingsColumns.KEY_RING_DATA);
-                    projectionMap.put(KeyRingsColumns.MASTER_KEY_ID,
-                            Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID);
-
-                    // from keys table
-                    projectionMap.put(KeysColumns.FINGERPRINT, Tables.KEYS + "." + KeysColumns.FINGERPRINT);
-                    projectionMap.put(KeysColumns.IS_REVOKED, Tables.KEYS + "." + KeysColumns.IS_REVOKED);
-
-                    // from user id table
-                    projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
-
-                    qb.setProjectionMap(projectionMap);
-                }
-
-                { // FROM
-                    // todo: outsource into buildUnifiedQuery()? see above.
-                    // join keyrings with keys and userIds
-                    // Only get user id and key with rank 0 (main user id and main key)
-                    qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
-                            + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                            + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                            + KeysColumns.RANK + " = '0') " + " INNER JOIN " + Tables.USER_IDS + " ON "
-                            + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
-                            + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
-                            + UserIdsColumns.RANK + " = '0')");
-                }
-
-                // GROUP BY
+                // GROUP BY so we don't get duplicates
                 groupBy = Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID;
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = KeyRings.TYPE + " DESC, " + Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                }
 
                 break;
 
