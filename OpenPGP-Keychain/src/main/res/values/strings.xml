@@ -443,5 +443,14 @@
     <string name="secret_key_yes">available</string>
     <string name="secret_key_no">unavailable</string>
     <string name="show_unknown_signatures">Show unknown signatures</string>
+    <string name="section_signer_id">Signer</string>
+    <string name="section_cert">Certificate Details</string>
+    <string name="sig_type_default">default</string>
+    <string name="sig_type_none">none</string>
+    <string name="sig_type_casual">casual</string>
+    <string name="sig_type_positive">positive</string>
+    <string name="label_user_id">User ID</string>
+    <string name="label_subkey_rank">Subkey Rank</string>
+    <string name="unknown_uid"><![CDATA[<unknown>]]></string>
 
 </resources>

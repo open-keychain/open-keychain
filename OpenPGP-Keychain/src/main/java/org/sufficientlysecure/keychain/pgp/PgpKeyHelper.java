@@ -438,7 +438,10 @@ public class PgpKeyHelper {
             break;
         }
         }
-        return algorithmStr + ", " + keySize + " bit";
+        if(keySize > 0)
+            return algorithmStr + ", " + keySize + " bit";
+        else
+            return algorithmStr;
     }
 
     /**

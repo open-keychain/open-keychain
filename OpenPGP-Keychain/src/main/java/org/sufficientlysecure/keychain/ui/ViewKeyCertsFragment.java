@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -47,10 +48,10 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 
 public class ViewKeyCertsFragment extends Fragment
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>, AdapterView.OnItemClickListener {
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
+    static final String[] PROJECTION = new String[] {
         KeychainContract.Certs._ID,
         KeychainContract.Certs.VERIFIED,
         KeychainContract.Certs.RANK,
@@ -116,6 +117,7 @@ public class ViewKeyCertsFragment extends Fragment
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
+        mStickyList.setOnItemClickListener(this);
 
         try {
             mStickyList.setFastScrollAlwaysVisible(true);
@@ -153,6 +155,17 @@ public class ViewKeyCertsFragment extends Fragment
         mStickyList.setAdapter(mAdapter);
     }
 
+    /**
+     * On click on item, start key view activity
+     */
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Intent viewIntent = null;
+        viewIntent = new Intent(getActivity(), ViewCertActivity.class);
+        viewIntent.setData(KeychainContract.Certs.buildCertsUri(Long.toString(id)));
+        startActivity(viewIntent);
+    }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // This is called when the last Cursor provided to onLoadFinished()
@@ -166,6 +179,7 @@ public class ViewKeyCertsFragment extends Fragment
      */
     private class CertListAdapter extends CursorAdapter implements StickyListHeadersAdapter {
         private LayoutInflater mInflater;
+        private int mIndexCertId;
         private int mIndexUserId, mIndexRank;
         private int mIndexSignerKeyId, mIndexSignerUserId;
         private int mIndexVerified;
@@ -193,6 +207,7 @@ public class ViewKeyCertsFragment extends Fragment
         private void initIndex(Cursor cursor) {
             if (cursor != null) {
 
+                mIndexCertId = cursor.getColumnIndexOrThrow(KeychainContract.Certs._ID);
                 mIndexUserId = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.USER_ID);
                 mIndexRank = cursor.getColumnIndexOrThrow(KeychainContract.UserIds.RANK);
                 mIndexVerified = cursor.getColumnIndexOrThrow(KeychainContract.Certs.VERIFIED);

@@ -558,6 +558,7 @@ public class KeychainProvider extends ContentProvider {
             return c;
         }
 
+        boolean all = false;
         switch (match) {
             case PUBLIC_KEY_RING:
             case SECRET_KEY_RING:
@@ -719,8 +720,10 @@ public class KeychainProvider extends ContentProvider {
 
                 break;
 
-            case CERTS_BY_KEY_ROW_ID:
+            case CERTS_BY_ROW_ID:
             case CERTS_BY_KEY_ROW_ID_ALL:
+                all = true;
+            case CERTS_BY_KEY_ROW_ID:
                 qb.setTables(Tables.CERTS
                     + " JOIN " + Tables.USER_IDS + " ON ("
                             + Tables.CERTS + "." + Certs.KEY_RING_ROW_ID + " = "
@@ -729,7 +732,7 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_IDS + "." + UserIds.RANK
                     // noooooooot sure about this~ database design
-                    + ")" + (match == CERTS_BY_KEY_ROW_ID_ALL ? " LEFT" : "")
+                    + ")" + (all ? " LEFT" : "")
                         + " JOIN " + Tables.KEYS + " ON ("
                             + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
                             + Tables.KEYS + "." + Keys.KEY_ID
@@ -745,8 +748,11 @@ public class KeychainProvider extends ContentProvider {
 
                 HashMap<String, String> pmap2 = new HashMap<String, String>();
                 pmap2.put(Certs._ID, Tables.CERTS + "." + Certs._ID);
+                pmap2.put(Certs.KEY_ID, Tables.CERTS + "." + Certs.KEY_ID);
                 pmap2.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
+                pmap2.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
                 pmap2.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
+                pmap2.put(Certs.KEY_DATA, Tables.CERTS + "." + Certs.KEY_DATA);
                 pmap2.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 // verified key data
                 pmap2.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
@@ -754,8 +760,13 @@ public class KeychainProvider extends ContentProvider {
                 pmap2.put("signer_uid", "signer." + UserIds.USER_ID + " AS signer_uid");
                 qb.setProjectionMap(pmap2);
 
-                qb.appendWhere(Tables.CERTS + "." + Certs.KEY_RING_ROW_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                if(match == CERTS_BY_ROW_ID) {
+                    qb.appendWhere(Tables.CERTS + "." + Certs._ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                } else {
+                    qb.appendWhere(Tables.CERTS + "." + Certs.KEY_RING_ROW_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                }
 
                 break;
 
