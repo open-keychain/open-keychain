@@ -92,12 +92,12 @@ public class EditKeyActivity extends ActionBarActivity {
     private SectionView mUserIdsView;
     private SectionView mKeysView;
 
-    private String mCurrentPassPhrase = null;
+    private String mCurrentPassphrase = null;
     private String mNewPassPhrase = null;
     private String mSavedNewPassPhrase = null;
     private boolean mIsPassPhraseSet;
 
-    private BootstrapButton mChangePassPhrase;
+    private BootstrapButton mChangePassphrase;
 
     private CheckBox mNoPassphrase;
 
@@ -134,14 +134,14 @@ public class EditKeyActivity extends ActionBarActivity {
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_save,
+        // Inflate a "Save"/"Cancel" custom action bar
+        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_save, R.drawable.ic_action_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         saveClicked();
                     }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
+                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         cancelClicked();
@@ -150,7 +150,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
         Bundle extras = intent.getExtras();
 
-        mCurrentPassPhrase = "";
+        mCurrentPassphrase = "";
 
         if (extras != null) {
             // if userId is given, prefill the fields
@@ -165,7 +165,7 @@ public class EditKeyActivity extends ActionBarActivity {
                 if (noPassphrase) {
                     // check "no passphrase" checkbox and remove button
                     mNoPassphrase.setChecked(true);
-                    mChangePassPhrase.setVisibility(View.GONE);
+                    mChangePassphrase.setVisibility(View.GONE);
                 }
             }
 
@@ -181,13 +181,14 @@ public class EditKeyActivity extends ActionBarActivity {
                     // fill values for this action
                     Bundle data = new Bundle();
                     data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE,
-                            mCurrentPassPhrase);
+                            mCurrentPassphrase);
 
                     serviceIntent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                     // Message is received after generating is done in ApgService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER, true,
+                            this, getResources().getQuantityString(R.plurals.progress_generating, 1),
+                            ProgressDialog.STYLE_HORIZONTAL, true,
 
                             new DialogInterface.OnCancelListener() {
                                 @Override
@@ -224,7 +225,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
                                 buildLayout();
                             }
-                        };
+                        }
                     };
 
                     // Create a new Messenger for the communication back
@@ -248,8 +249,8 @@ public class EditKeyActivity extends ActionBarActivity {
      * @param intent
      */
     private void handleActionEditKey(Intent intent) {
-        // Inflate a "Done"/"Cancel" custom action bar
-        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_save,
+        // Inflate a "Save"/"Cancel" custom action bar
+        ActionBarHelper.setOneButtonView(getSupportActionBar(), R.string.btn_save, R.drawable.ic_action_save,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -279,9 +280,9 @@ public class EditKeyActivity extends ActionBarActivity {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    String passPhrase = PassphraseCacheService.getCachedPassphrase(
+                    String passphrase = PassphraseCacheService.getCachedPassphrase(
                             EditKeyActivity.this, masterKeyId);
-                    mCurrentPassPhrase = passPhrase;
+                    mCurrentPassphrase = passphrase;
                     finallySaveClicked();
                 }
             }
@@ -326,8 +327,8 @@ public class EditKeyActivity extends ActionBarActivity {
             cancelClicked();
             return true;
         case R.id.menu_key_edit_export_file:
-            mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
-                    + "/secexport.asc");
+            long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
+            mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
             return true;
         case R.id.menu_key_edit_delete: {
             // Message is received after key is deleted
@@ -371,14 +372,14 @@ public class EditKeyActivity extends ActionBarActivity {
             }
         }
 
-        mCurrentPassPhrase = "";
+        mCurrentPassphrase = "";
 
         buildLayout();
         mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
         if (!mIsPassPhraseSet) {
             // check "no passphrase" checkbox and remove button
             mNoPassphrase.setChecked(true);
-            mChangePassPhrase.setVisibility(View.GONE);
+            mChangePassphrase.setVisibility(View.GONE);
         }
     }
 
@@ -408,7 +409,7 @@ public class EditKeyActivity extends ActionBarActivity {
         // set title based on isPassphraseSet()
         int title = -1;
         if (isPassphraseSet()) {
-            title = R.string.title_change_pass_phrase;
+            title = R.string.title_change_passphrase;
         } else {
             title = R.string.title_set_passphrase;
         }
@@ -427,7 +428,7 @@ public class EditKeyActivity extends ActionBarActivity {
         setContentView(R.layout.edit_key_activity);
 
         // find views
-        mChangePassPhrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_pass_phrase);
+        mChangePassphrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_passphrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
 
         // Build layout based on given userIds and keys
@@ -447,7 +448,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
         updatePassPhraseButtonText();
 
-        mChangePassPhrase.setOnClickListener(new OnClickListener() {
+        mChangePassphrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 showSetPassphraseDialog();
             }
@@ -462,10 +463,10 @@ public class EditKeyActivity extends ActionBarActivity {
                     // remove passphrase
                     mSavedNewPassPhrase = mNewPassPhrase;
                     mNewPassPhrase = "";
-                    mChangePassPhrase.setVisibility(View.GONE);
+                    mChangePassphrase.setVisibility(View.GONE);
                 } else {
                     mNewPassPhrase = mSavedNewPassPhrase;
-                    mChangePassPhrase.setVisibility(View.VISIBLE);
+                    mChangePassphrase.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -504,7 +505,7 @@ public class EditKeyActivity extends ActionBarActivity {
             if (passphrase == null) {
                 showPassphraseDialog(masterKeyId, masterCanSign);
             } else {
-                mCurrentPassPhrase = passphrase;
+                mCurrentPassphrase = passphrase;
                 finallySaveClicked();
             }
         } catch (PgpGeneralException e) {
@@ -523,7 +524,7 @@ public class EditKeyActivity extends ActionBarActivity {
             // fill values for this action
             Bundle data = new Bundle();
             data.putString(KeychainIntentService.SAVE_KEYRING_CURRENT_PASSPHRASE,
-                    mCurrentPassPhrase);
+                    mCurrentPassphrase);
             data.putString(KeychainIntentService.SAVE_KEYRING_NEW_PASSPHRASE, mNewPassPhrase);
             data.putStringArrayList(KeychainIntentService.SAVE_KEYRING_USER_IDS,
                     getUserIds(mUserIdsView));
@@ -541,7 +542,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
             // Message is received after saving is done in ApgService
             KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                    R.string.progress_saving, ProgressDialog.STYLE_HORIZONTAL) {
+                    getString(R.string.progress_saving), ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
                     // handle messages by standard ApgHandler first
                     super.handleMessage(message);
@@ -559,7 +560,7 @@ public class EditKeyActivity extends ActionBarActivity {
                         setResult(RESULT_OK, data);
                         finish();
                     }
-                };
+                }
             };
 
             // Create a new Messenger for the communication back
@@ -694,7 +695,7 @@ public class EditKeyActivity extends ActionBarActivity {
     }
 
     private void updatePassPhraseButtonText() {
-        mChangePassPhrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
+        mChangePassphrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
     }
 

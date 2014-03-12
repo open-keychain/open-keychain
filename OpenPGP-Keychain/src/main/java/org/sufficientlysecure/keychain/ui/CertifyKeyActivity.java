@@ -230,7 +230,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after signing is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                R.string.progress_signing, ProgressDialog.STYLE_SPINNER) {
+                getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -249,7 +249,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         finish();
                     }
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back
@@ -283,7 +283,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Message is received after uploading is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -295,7 +295,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     setResult(RESULT_OK);
                     finish();
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back

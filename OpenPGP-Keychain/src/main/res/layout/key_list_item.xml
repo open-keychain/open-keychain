@@ -15,7 +15,7 @@
         android:id="@+id/mainUserId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Main User ID"
+        android:text="@string/label_main_user_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"

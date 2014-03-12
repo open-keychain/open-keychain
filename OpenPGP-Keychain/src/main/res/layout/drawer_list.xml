@@ -12,7 +12,7 @@
     android:layout_width="240dp"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="#fff"
+    android:background="@color/white"
     android:choiceMode="singleChoice"
     android:divider="@color/bg_gray"
     android:dividerHeight="1dp" />

@@ -1,6 +1,8 @@
 /*
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2011 Thialfihar <thi@thialfihar.org>
  * Copyright (C) 2011 Senecaso
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -224,7 +226,7 @@ public class HkpKeyServer extends KeyServer {
         HttpClient client = new DefaultHttpClient();
         try {
             HttpGet get = new HttpGet("http://" + mHost + ":" + mPort
-                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.convertKeyToHex(keyId));
+                    + "/pks/lookup?op=get&search=" + PgpKeyHelper.convertKeyIdToHex(keyId));
 
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

@@ -52,17 +52,21 @@ import android.os.Message;
 import android.os.Messenger;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.FontAwesomeText;
 import com.devspark.appmsg.AppMsg;
 
 public class EncryptActivity extends DrawerActivity {
@@ -101,18 +105,24 @@ public class EncryptActivity extends DrawerActivity {
 
     private int mEncryptTarget;
 
-    private EditText mPassPhrase = null;
-    private EditText mPassPhraseAgain = null;
+    private EditText mPassphrase = null;
+    private EditText mPassphraseAgain = null;
     private CheckBox mAsciiArmor = null;
     private Spinner mFileCompression = null;
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
+    private CheckBox mShareAfter = null;
     private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
+    private Integer mShortAnimationDuration = null;
+    private boolean mFileAdvancedSettingsVisible = false;
+    private TextView mFileAdvancedSettings = null;
+    private LinearLayout mFileAdvancedSettingsContainer = null;
+    private FontAwesomeText mAdvancedSettingsIcon;
     private boolean mAsciiArmorDemand = false;
     private boolean mOverrideAsciiArmor = false;
 
@@ -147,6 +157,9 @@ public class EncryptActivity extends DrawerActivity {
         updateMode();
 
         updateActionBarButtons();
+
+        // retrieve and cache the system's short animation time
+        mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
     }
 
     /**
@@ -436,14 +449,14 @@ public class EncryptActivity extends DrawerActivity {
         // symmetric encryption
         if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             boolean gotPassPhrase = false;
-            String passPhrase = mPassPhrase.getText().toString();
-            String passPhraseAgain = mPassPhraseAgain.getText().toString();
-            if (!passPhrase.equals(passPhraseAgain)) {
+            String passphrase = mPassphrase.getText().toString();
+            String passphraseAgain = mPassphraseAgain.getText().toString();
+            if (!passphrase.equals(passphraseAgain)) {
                 AppMsg.makeText(this, R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
                 return;
             }
 
-            gotPassPhrase = (passPhrase.length() != 0);
+            gotPassPhrase = (passphrase.length() != 0);
             if (!gotPassPhrase) {
                 AppMsg.makeText(this, R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
@@ -550,11 +563,11 @@ public class EncryptActivity extends DrawerActivity {
 
         if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
-            String passPhrase = mPassPhrase.getText().toString();
-            if (passPhrase.length() == 0) {
-                passPhrase = null;
+            String passphrase = mPassphrase.getText().toString();
+            if (passphrase.length() == 0) {
+                passphrase = null;
             }
-            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passPhrase);
+            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
             mSecretKeyIdToPass = mSecretKeyId;
             encryptionKeyIds = mEncryptionKeyIds;
@@ -604,7 +617,7 @@ public class EncryptActivity extends DrawerActivity {
 
         // Message is received after encrypting is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                R.string.progress_encrypting, ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -650,6 +663,15 @@ public class EncryptActivity extends DrawerActivity {
                                         .newInstance(mInputFilename);
                                 deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                             }
+
+                            if (mShareAfter.isChecked()) {
+                                // Share encrypted file
+                                Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
+                                sendFileIntent.setType("*/*");
+                                sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
+                                startActivity(Intent.createChooser(sendFileIntent,
+                                        getString(R.string.title_send_file)));
+                            }
                             break;
 
                         default:
@@ -659,8 +681,6 @@ public class EncryptActivity extends DrawerActivity {
                     }
                 }
             }
-
-            ;
         };
 
         // Create a new Messenger for the communication back
@@ -766,8 +786,8 @@ public class EncryptActivity extends DrawerActivity {
         mMainUserId = (TextView) findViewById(R.id.mainUserId);
         mMainUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
 
-        mPassPhrase = (EditText) findViewById(R.id.passPhrase);
-        mPassPhraseAgain = (EditText) findViewById(R.id.passPhraseAgain);
+        mPassphrase = (EditText) findViewById(R.id.passphrase);
+        mPassphraseAgain = (EditText) findViewById(R.id.passphraseAgain);
 
         // measure the height of the source_file view and set the message view's min height to that,
         // so it fills mSource fully... bit of a hack.
@@ -782,6 +802,50 @@ public class EncryptActivity extends DrawerActivity {
             public void onClick(View v) {
                 FileHelper.openFile(EncryptActivity.this, mFilename.getText().toString(), "*/*",
                         Id.request.filename);
+            }
+        });
+
+        mAdvancedSettingsIcon = (FontAwesomeText) findViewById(R.id.advancedSettingsIcon);
+        mFileAdvancedSettingsContainer = (LinearLayout) findViewById(R.id.fileAdvancedSettingsContainer);
+        mFileAdvancedSettings = (TextView) findViewById(R.id.advancedSettings);
+
+        LinearLayout advancedSettingsControl = (LinearLayout) findViewById(R.id.advancedSettingsControl);
+        advancedSettingsControl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mFileAdvancedSettingsVisible = !mFileAdvancedSettingsVisible;
+                if (mFileAdvancedSettingsVisible) {
+                    mAdvancedSettingsIcon.setIcon("fa-chevron-down");
+                    mFileAdvancedSettingsContainer.setVisibility(View.VISIBLE);
+                    AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                    animation.setDuration(mShortAnimationDuration);
+                    mFileAdvancedSettingsContainer.startAnimation(animation);
+                    mFileAdvancedSettings.setText(R.string.btn_encryption_advanced_settings_hide);
+
+                } else {
+                    mAdvancedSettingsIcon.setIcon("fa-chevron-right");
+                    AlphaAnimation animation = new AlphaAnimation(1f, 0f);
+                    animation.setDuration(mShortAnimationDuration);
+                    animation.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                            // do nothing
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            // making sure that at the end the container is completely removed from view
+                            mFileAdvancedSettingsContainer.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                            // do nothing
+                        }
+                    });
+                    mFileAdvancedSettingsContainer.startAnimation(animation);
+                    mFileAdvancedSettings.setText(R.string.btn_encryption_advanced_settings_show);
+                }
             }
         });
 
@@ -809,6 +873,7 @@ public class EncryptActivity extends DrawerActivity {
         }
 
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
+        mShareAfter = (CheckBox) findViewById(R.id.shareAfterEncryption);
 
         mAsciiArmor = (CheckBox) findViewById(R.id.asciiArmour);
         mAsciiArmor.setChecked(Preferences.getPreferences(this).getDefaultAsciiArmour());

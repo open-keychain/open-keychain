@@ -22,16 +22,11 @@ import java.util.ArrayList;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.widget.TextView;
 
 public class HelpActivity extends ActionBarActivity {
     public static final String EXTRA_SELECTED_TAB = "selectedTab";
@@ -64,19 +59,19 @@ public class HelpActivity extends ActionBarActivity {
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_start);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_start)),
-                HelpHtmlFragment.class, startBundle, (selectedTab == 0 ? true : false));
+                HelpHtmlFragment.class, startBundle, (selectedTab == 0) );
 
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_nfc_beam);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
-                HelpHtmlFragment.class, nfcBundle, (selectedTab == 1 ? true : false));
+                HelpHtmlFragment.class, nfcBundle, (selectedTab == 1) );
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_changelog);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
-                HelpHtmlFragment.class, changelogBundle, (selectedTab == 2 ? true : false));
+                HelpHtmlFragment.class, changelogBundle, (selectedTab == 2) );
 
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
-                HelpAboutFragment.class, null, (selectedTab == 3 ? true : false));
+                HelpAboutFragment.class, null, (selectedTab == 3) );
     }
 }

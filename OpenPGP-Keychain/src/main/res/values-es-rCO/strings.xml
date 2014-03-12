@@ -10,7 +10,6 @@
   <string name="title_edit_key">Editar clave</string>
   <string name="title_preferences">Preferencias</string>
   <string name="title_api_registered_apps">Aplicaciones registradas</string>
-  <string name="title_change_pass_phrase">Cambiar contraseña</string>
   <string name="title_set_passphrase">Establecer contraseña</string>
   <string name="title_send_email">Enviar correo electrónico...</string>
   <string name="title_encrypt_to_file">Cifrar a archivo</string>

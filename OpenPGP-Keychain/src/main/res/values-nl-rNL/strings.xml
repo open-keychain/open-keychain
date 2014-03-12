@@ -10,7 +10,6 @@
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Geregistreerde apps</string>
-  <string name="title_change_pass_phrase">Wachtwoord wijzigen</string>
   <string name="title_set_passphrase">Wachtwoord instellen</string>
   <string name="title_send_email">E-mail verzenden...</string>
   <string name="title_encrypt_to_file">Versleutelen naar bestand</string>

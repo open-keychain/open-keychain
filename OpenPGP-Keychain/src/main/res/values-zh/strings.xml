@@ -1,17 +1,47 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
   <!--title-->
+  <string name="title_select_recipients">选择公钥</string>
+  <string name="title_select_secret_key">选择私钥</string>
   <string name="title_encrypt">加密</string>
   <string name="title_decrypt">解密</string>
+  <string name="title_authentication">密码短语</string>
+  <string name="title_create_key">创建密钥</string>
+  <string name="title_edit_key">编辑密钥</string>
+  <string name="title_preferences">参数</string>
+  <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">密钥服务器偏好</string>
+  <string name="title_set_passphrase">设置密码短语</string>
+  <string name="title_send_email">发送邮件</string>
+  <string name="title_encrypt_to_file">加密至文件</string>
+  <string name="title_decrypt_to_file">解密至文件</string>
+  <string name="title_import_keys">导入密钥</string>
+  <string name="title_export_key">导出密钥</string>
+  <string name="title_export_keys">导出密钥</string>
+  <string name="title_key_not_found">无法找到密钥</string>
   <string name="title_key_server_query">查询密钥服务器</string>
   <string name="title_send_key">上传到密钥服务器</string>
+  <string name="title_unknown_signature_key">未知签名密钥</string>
+  <string name="title_help">帮助</string>
   <!--section-->
+  <string name="section_user_ids">用户ID</string>
+  <string name="section_keys">密钥</string>
+  <string name="section_general">常规</string>
+  <string name="section_defaults">缺省</string>
+  <string name="section_advanced">高级</string>
   <string name="section_master_key">主密钥</string>
   <string name="section_key_server">密钥服务器</string>
   <string name="section_decrypt_verify">解密并验证</string>
   <!--button-->
+  <string name="btn_sign">签名</string>
+  <string name="btn_decrypt">解密</string>
   <string name="btn_decrypt_verify">解密并验证</string>
+  <string name="btn_select_encrypt_keys">选择收件人</string>
+  <string name="btn_encrypt_file">加密文件</string>
+  <string name="btn_save">保存</string>
+  <string name="btn_do_not_save">取消</string>
+  <string name="btn_delete">删除</string>
+  <string name="btn_no_date">无</string>
   <string name="btn_clipboard">剪贴板</string>
   <!--menu-->
   <string name="menu_help">帮助</string>

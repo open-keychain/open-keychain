@@ -72,7 +72,7 @@ public abstract class RemoteService extends Service {
                     // return error
                     Intent result = new Intent();
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                    result.putExtra(OpenPgpApi.RESULT_ERRORS,
+                    result.putExtra(OpenPgpApi.RESULT_ERROR,
                             new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
                     return result;
                 }

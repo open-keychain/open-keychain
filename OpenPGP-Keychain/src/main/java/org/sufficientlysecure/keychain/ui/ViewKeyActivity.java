@@ -93,12 +93,12 @@ public class ViewKeyActivity extends ActionBarActivity {
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_main)),
-                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0 ? true : false));
+                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0));
 
         Bundle certBundle = new Bundle();
         certBundle.putLong(ViewKeyCertsFragment.ARG_KEYRING_ROW_ID, rowId);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
-                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1 ? true : false));
+                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1));
     }
 
     @Override
@@ -123,8 +123,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
-                        + "/pubexport.asc");
+                long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
+                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -159,7 +159,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
+        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
 
         if (updateKeyId == 0) {
             Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");

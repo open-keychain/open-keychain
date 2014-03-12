@@ -59,8 +59,8 @@ public class KeyListActivity extends DrawerActivity {
 
             return true;
         case R.id.menu_key_list_export:
-            mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR
-                    + "/pubexport.asc");
+            // TODO fix this for unified keylist
+            mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
 
             return true;
         default:

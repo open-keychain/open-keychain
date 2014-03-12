@@ -342,7 +342,7 @@ public class KeychainProvider extends ContentProvider {
     /**
      * Returns type of the query (secret/public)
      *
-     * @param uri
+     * @param match
      * @return
      */
     private int getKeyType(int match) {
@@ -1039,7 +1039,8 @@ public class KeychainProvider extends ContentProvider {
      * Build default selection statement for KeyRings. If no extra selection is specified only build
      * where clause with rowId
      *
-     * @param uri
+     * @param defaultSelection
+     * @param keyType
      * @param selection
      * @return
      */

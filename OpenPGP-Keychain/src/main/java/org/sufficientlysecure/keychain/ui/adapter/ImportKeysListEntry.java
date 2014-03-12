@@ -125,7 +125,10 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
      * Constructor for later querying from keyserver
      */
     public ImportKeysListEntry() {
+        // keys from keyserver are always public keys
         secretKey = false;
+        // do not select by default
+        selected = false;
         userIds = new ArrayList<String>();
     }
 
@@ -167,7 +170,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.revoked = pgpKeyRing.getPublicKey().isRevoked();
         this.fingerPrint = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
                 .getFingerprint(), true);
-        this.hexKeyId = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
+        this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
         int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
         if (algorithm == PGPPublicKey.RSA_ENCRYPT || algorithm == PGPPublicKey.RSA_GENERAL

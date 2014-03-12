@@ -144,8 +144,8 @@ public class Preferences {
                 Constants.defaults.KEY_SERVERS);
         Vector<String> servers = new Vector<String>();
         String chunks[] = rawData.split(",");
-        for (int i = 0; i < chunks.length; ++i) {
-            String tmp = chunks[i].trim();
+        for (String c : chunks) {
+            String tmp = c.trim();
             if (tmp.length() > 0) {
                 servers.add(tmp);
             }
@@ -156,8 +156,8 @@ public class Preferences {
     public void setKeyServers(String[] value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         String rawData = "";
-        for (int i = 0; i < value.length; ++i) {
-            String tmp = value[i].trim();
+        for (String v : value) {
+            String tmp = v.trim();
             if (tmp.length() == 0) {
                 continue;
             }

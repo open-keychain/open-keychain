@@ -13,7 +13,7 @@
   <string name="title_preferences">Настройки</string>
   <string name="title_api_registered_apps">Связанные приложения</string>
   <string name="title_key_server_preference">Настройки сервера ключей</string>
-  <string name="title_change_pass_phrase">Изменить пароль</string>
+  <string name="title_change_passphrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
   <string name="title_send_email">Отправить...</string>
   <string name="title_encrypt_to_file">Зашифровать в файл</string>
@@ -92,6 +92,7 @@
   <string name="menu_beam_preferences">Настройки Beam</string>
   <string name="menu_key_edit_cancel">Отмена</string>
   <string name="menu_encrypt_to">Зашифровать....</string>
+  <string name="menu_select_all">Выбрать все</string>
   <!--label-->
   <string name="label_sign">Подписать</string>
   <string name="label_message">Сообщение</string>
@@ -125,6 +126,7 @@
   <string name="label_send_key">После сертификации загрузить ключ на сервер</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="select_keys_button_default">Выбрать</string>
+  <string name="expiry_date_dialog_title">Срок годности</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d выбран</item>
     <item quantity="few">%d выбрано</item>
@@ -284,6 +286,7 @@
   </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
+  <string name="progress_cancel">отмена</string>
   <string name="progress_saving">сохранение...</string>
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>

@@ -43,6 +43,8 @@ public final class Constants {
     public static final class path {
         public static final String APP_DIR = Environment.getExternalStorageDirectory()
                 + "/OpenPGP-Keychain";
+        public static final String APP_DIR_FILE_SEC = APP_DIR + "/secexport.asc";
+        public static final String APP_DIR_FILE_PUB = APP_DIR + "/pubexport.asc";
     }
 
     public static final class pref {
@@ -51,7 +53,7 @@ public final class Constants {
         public static final String DEFAULT_ASCII_ARMOUR = "defaultAsciiArmour";
         public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
         public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
-        public static final String PASS_PHRASE_CACHE_TTL = "passPhraseCacheTtl";
+        public static final String PASS_PHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String LANGUAGE = "language";
         public static final String FORCE_V3_SIGNATURES = "forceV3Signatures";
         public static final String KEY_SERVERS = "keyServers";

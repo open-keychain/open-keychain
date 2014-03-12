@@ -100,7 +100,7 @@ public class ProviderHelper {
     }
 
     /**
-     * Retrieves the actual PGPPublicKeyRing object from the database blob based on the maserKeyId
+     * Retrieves the actual PGPPublicKeyRing object from the database blob based on the masterKeyId
      */
     public static PGPPublicKeyRing getPGPPublicKeyRingByMasterKeyId(Context context,
                                                                     long masterKeyId) {
@@ -123,11 +123,8 @@ public class ProviderHelper {
      */
     public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
         PGPPublicKeyRing keyRing = getPGPPublicKeyRingByKeyId(context, keyId);
-        if (keyRing == null) {
-            return null;
-        }
 
-        return keyRing.getPublicKey(keyId);
+        return (keyRing == null)? null : keyRing.getPublicKey(keyId);
     }
 
     /**
@@ -162,11 +159,8 @@ public class ProviderHelper {
      */
     public static PGPSecretKey getPGPSecretKeyByKeyId(Context context, long keyId) {
         PGPSecretKeyRing keyRing = getPGPSecretKeyRingByKeyId(context, keyId);
-        if (keyRing == null) {
-            return null;
-        }
 
-        return keyRing.getSecretKey(keyId);
+        return (keyRing == null) ? null : keyRing.getSecretKey(keyId);
     }
 
     /**
@@ -411,10 +405,10 @@ public class ProviderHelper {
                                                                      long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
 
-        boolean has_private = true;
+        boolean hasPrivate = true;
         if (key.isMasterKey()) {
-            if (PgpKeyHelper.isSecretKeyPrivateEmpty(key)) {
-                has_private = false;
+            if (key.isPrivateKeyEmpty()) {
+                hasPrivate = false;
             }
         }
 
@@ -422,8 +416,8 @@ public class ProviderHelper {
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
         values.put(Keys.ALGORITHM, key.getPublicKey().getAlgorithm());
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
-        values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && has_private));
-        values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && has_private));
+        values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && hasPrivate));
+        values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && hasPrivate));
         values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
         values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);
@@ -481,6 +475,30 @@ public class ProviderHelper {
     }
 
     /**
+     * Private helper method
+     */
+    private static ArrayList<Long> getKeyRingsRowIds(Context context, Uri queryUri) {
+        Cursor cursor = context.getContentResolver().query(queryUri,
+                new String[]{KeyRings._ID}, null, null, null);
+
+        ArrayList<Long> rowIds = new ArrayList<Long>();
+        if (cursor != null) {
+            int IdCol = cursor.getColumnIndex(KeyRings._ID);
+            if (cursor.moveToFirst()) {
+                do {
+                    rowIds.add(cursor.getLong(IdCol));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rowIds;
+    }
+
+    /**
      * Retrieves ids of all SecretKeyRings
      */
     public static ArrayList<Long> getSecretKeyRingsMasterKeyIds(Context context) {
@@ -494,6 +512,22 @@ public class ProviderHelper {
     public static ArrayList<Long> getPublicKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
         return getKeyRingsMasterKeyIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all SecretKeyRings
+     */
+    public static ArrayList<Long> getSecretKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all PublicKeyRings
+     */
+    public static ArrayList<Long> getPublicKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildPublicKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
     }
 
     public static void deletePublicKeyRing(Context context, long rowId) {
@@ -722,7 +756,7 @@ public class ProviderHelper {
 
                             String armoredKey = bos.toString("UTF-8");
 
-                            Log.d(Constants.TAG, "armouredKey:" + armoredKey);
+                            Log.d(Constants.TAG, "armoredKey:" + armoredKey);
 
                             output.add(armoredKey);
                         } catch (IOException e) {

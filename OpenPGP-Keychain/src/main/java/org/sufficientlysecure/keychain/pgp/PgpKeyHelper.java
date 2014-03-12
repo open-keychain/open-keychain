@@ -32,6 +32,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -415,58 +416,32 @@ public class PgpKeyHelper {
         String algorithmStr = null;
 
         switch (algorithm) {
-        case PGPPublicKey.RSA_ENCRYPT:
-        case PGPPublicKey.RSA_GENERAL:
-        case PGPPublicKey.RSA_SIGN: {
-            algorithmStr = "RSA";
-            break;
-        }
+            case PGPPublicKey.RSA_ENCRYPT:
+            case PGPPublicKey.RSA_GENERAL:
+            case PGPPublicKey.RSA_SIGN: {
+                algorithmStr = "RSA";
+                break;
+            }
+            case PGPPublicKey.DSA: {
+                algorithmStr = "DSA";
+                break;
+            }
 
-        case PGPPublicKey.DSA: {
-            algorithmStr = "DSA";
-            break;
-        }
+            case PGPPublicKey.ELGAMAL_ENCRYPT:
+            case PGPPublicKey.ELGAMAL_GENERAL: {
+                algorithmStr = "ElGamal";
+                break;
+            }
 
-        case PGPPublicKey.ELGAMAL_ENCRYPT:
-        case PGPPublicKey.ELGAMAL_GENERAL: {
-            algorithmStr = "ElGamal";
-            break;
-        }
-
-        default: {
-            algorithmStr = "Unknown";
-            break;
-        }
+            default: {
+                algorithmStr = "Unknown";
+                break;
+            }
         }
         if(keySize > 0)
             return algorithmStr + ", " + keySize + " bit";
         else
             return algorithmStr;
-    }
-
-    /**
-     * Converts fingerprint to hex with whitespaces after 4 characters
-     * 
-     * @param fp
-     * @return
-     */
-    public static String convertFingerprintToHex(byte[] fp, boolean chunked) {
-        String fingerPrint = "";
-        for (int i = 0; i < fp.length; ++i) {
-            if (chunked && i != 0 && i % 10 == 0) {
-                fingerPrint += "  ";
-            } else if (chunked && i != 0 && i % 2 == 0) {
-                fingerPrint += " ";
-            }
-            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase(Locale.US);
-            while (chunk.length() < 2) {
-                chunk = "0" + chunk;
-            }
-            fingerPrint += chunk;
-        }
-
-        return fingerPrint;
-
     }
 
     public static String getFingerPrint(Context context, long keyId) {
@@ -484,52 +459,68 @@ public class PgpKeyHelper {
         return convertFingerprintToHex(key.getFingerprint(), true);
     }
 
-    public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
-        return secretKey.isPrivateKeyEmpty();
-    }
-
-//    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
-//        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-//        if (secretKey == null) {
-//            Log.e(Constants.TAG, "Key could not be found!");
-//            return false; // could be a public key, assume it is not empty
-//        }
-//        return isSecretKeyPrivateEmpty(secretKey);
-//    }
-
-    public static String convertKeyIdToHex(long keyId) {
-        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
-        while (fingerPrint.length() < 8) {
-            fingerPrint = "0" + fingerPrint;
+    /**
+     * Converts fingerprint to hex (optional: with whitespaces after 4 characters)
+     * <p/>
+     * Fingerprint is shown using lowercase characters. Studies have shown that humans can
+     * better differentiate between numbers and letters when letters are lowercase.
+     *
+     * @param fingerprint
+     * @param split       split into 4 character chunks
+     * @return
+     */
+    public static String convertFingerprintToHex(byte[] fingerprint, boolean split) {
+        String hexString = Hex.toHexString(fingerprint);
+        if (split) {
+            hexString = hexString.replaceAll("(.{4})(?!$)", "$1 ");
         }
-        return fingerPrint;
+
+        return hexString;
     }
 
     /**
-     * TODO: documentation
-     * 
+     * Convert key id from long to 64 bit hex string
+     * <p/>
+     * V4: "The Key ID is the low-order 64 bits of the fingerprint"
+     * <p/>
+     * see http://tools.ietf.org/html/rfc4880#section-12.2
+     *
      * @param keyId
      * @return
      */
-    public static String convertKeyToHex(long keyId) {
-        return convertKeyIdToHex(keyId >> 32) + convertKeyIdToHex(keyId);
+    public static String convertKeyIdToHex(long keyId) {
+        return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
     }
 
-    public static long convertHexToKeyId(String data) {
-        int len = data.length();
-        String s2 = data.substring(len - 8);
-        String s1 = data.substring(0, len - 8);
+    private static String convertKeyIdToHex32bit(long keyId) {
+        String hexString = Long.toHexString(keyId & 0xffffffffL).toLowerCase(Locale.US);
+        while (hexString.length() < 8) {
+            hexString = "0" + hexString;
+        }
+        return hexString;
+    }
+
+    /**
+     * Used in HkpKeyServer to convert hex encoded key ids back to long.
+     *
+     * @param hexString
+     * @return
+     */
+    public static long convertHexToKeyId(String hexString) {
+        int len = hexString.length();
+        String s2 = hexString.substring(len - 8);
+        String s1 = hexString.substring(0, len - 8);
         return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
     }
 
     /**
      * Splits userId string into naming part, email part, and comment part
-     * 
+     *
      * @param userId
      * @return array with naming (0), email (1), comment (2)
      */
     public static String[] splitUserId(String userId) {
-        String[] result = new String[] { null, null, null };
+        String[] result = new String[]{null, null, null};
 
         if (userId == null || userId.equals("")) {
             return result;
@@ -550,7 +541,6 @@ public class PgpKeyHelper {
             result[0] = matcher.group(1);
             result[1] = matcher.group(3);
             result[2] = matcher.group(2);
-            return result;
         }
 
         return result;

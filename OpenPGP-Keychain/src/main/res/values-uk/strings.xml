@@ -13,9 +13,10 @@
   <string name="title_preferences">Налаштування</string>
   <string name="title_api_registered_apps">Зареєстровані програми</string>
   <string name="title_key_server_preference">Налаштування сервера ключів</string>
-  <string name="title_change_pass_phrase">Змінити парольну фразу</string>
+  <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_set_passphrase">Задати парольну фразу</string>
   <string name="title_send_email">Надіслати листа…</string>
+  <string name="title_send_file">Надіслати файл…</string>
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
@@ -92,6 +93,7 @@
   <string name="menu_beam_preferences">Налаштування променя</string>
   <string name="menu_key_edit_cancel">Скасувати</string>
   <string name="menu_encrypt_to">Зашифрувати…</string>
+  <string name="menu_select_all">Вибрати усе</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -104,6 +106,7 @@
   <string name="label_select_public_keys">Отримувачі</string>
   <string name="label_delete_after_encryption">Вилучити після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
+  <string name="label_share_after_encryption">Поширити після шифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
   <string name="label_asymmetric">Публічний ключ</string>
@@ -122,9 +125,12 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_sign_user_id">Ід підпису користувача</string>
+  <string name="label_sign_email">Підписати листа</string>
   <string name="label_send_key">Завантажити ключ до вибраного сервера ключів після сертифікації</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="select_keys_button_default">Вибрати</string>
+  <string name="expiry_date_dialog_title">Задати термін дії</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d вибраний</item>
     <item quantity="few">%d вибрані</item>
@@ -138,6 +144,7 @@
   <string name="can_sign">можна підписати</string>
   <string name="expired">закінчився</string>
   <string name="revoked">скасовано</string>
+  <string name="user_id">ІД користувача</string>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключів</item>
     <item quantity="few">%d сервери ключів</item>
@@ -277,13 +284,21 @@
   <string name="error_keyserver_insufficient_query">Запит обмеженого сервера</string>
   <string name="error_keyserver_query">Збій сервера ключа запиту</string>
   <string name="error_keyserver_too_many_responses">Забагато відповідей</string>
+  <string name="error_import_file_no_content">Файл не має вмісту</string>
+  <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Будь ласка, вилучіть його з екрану „Мої ключі“!</item>
     <item quantity="few">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
     <item quantity="other">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+    <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+    <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">готово.</string>
+  <string name="progress_cancel">cкасувати</string>
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
@@ -351,10 +366,10 @@
   <string name="import_nfc_help_button">Довідка</string>
   <string name="import_clipboard_button">Отримати ключ з буфера обміну</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenPGP: розшифрувати файл</string>
-  <string name="intent_import_key">OpenPGP: імпортувати ключ</string>
-  <string name="intent_send_encrypt">OpenPGP: зашифрувати</string>
-  <string name="intent_send_decrypt">OpenPGP: розшифрувати</string>
+  <string name="intent_decrypt_file">Розшифрувати файл з OpenKeychain</string>
+  <string name="intent_import_key">Імпортувати ключ з OpenKeychain</string>
+  <string name="intent_send_encrypt">Зашифрувати з OpenKeychain</string>
+  <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>

@@ -13,9 +13,10 @@
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">登録済みのアプリケーション</string>
   <string name="title_key_server_preference">鍵サーバ設定</string>
-  <string name="title_change_pass_phrase">パスフレーズの変更</string>
+  <string name="title_change_passphrase">パスフレーズの変更</string>
   <string name="title_set_passphrase">パスフレーズの設定</string>
   <string name="title_send_email">メールの送信...</string>
+  <string name="title_send_file">ファイルの送信...</string>
   <string name="title_encrypt_to_file">暗号化してファイルに</string>
   <string name="title_decrypt_to_file">復号化してファイルに</string>
   <string name="title_import_keys">鍵のインポート</string>
@@ -92,6 +93,7 @@
   <string name="menu_beam_preferences">Beamの設定</string>
   <string name="menu_key_edit_cancel">キャンセル</string>
   <string name="menu_encrypt_to">暗号化...</string>
+  <string name="menu_select_all">すべて選択</string>
   <!--label-->
   <string name="label_sign">署名</string>
   <string name="label_message">メッセージ</string>
@@ -104,6 +106,7 @@
   <string name="label_select_public_keys">受信者</string>
   <string name="label_delete_after_encryption">暗号化後に削除</string>
   <string name="label_delete_after_decryption">復号化後に削除</string>
+  <string name="label_share_after_encryption">暗号化して共有</string>
   <string name="label_encryption_algorithm">暗号化アルゴリズム</string>
   <string name="label_hash_algorithm">ハッシュアルゴリズム</string>
   <string name="label_asymmetric">公開鍵</string>
@@ -122,9 +125,12 @@
   <string name="label_name">名前</string>
   <string name="label_comment">コメント</string>
   <string name="label_email">Eメールアドレス</string>
+  <string name="label_sign_user_id">署名ユーザーID</string>
+  <string name="label_sign_email">メールを署名</string>
   <string name="label_send_key">証明後選択した鍵サーバに鍵をアップロード</string>
   <string name="label_fingerprint">指紋</string>
   <string name="select_keys_button_default">選択</string>
+  <string name="expiry_date_dialog_title">期限日時を設定</string>
   <plurals name="select_keys_button">
     <item quantity="other">%d を選択</item>
   </plurals>
@@ -136,6 +142,7 @@
   <string name="can_sign">署名可能</string>
   <string name="expired">期限切れ</string>
   <string name="revoked">破棄</string>
+  <string name="user_id">ユーザーID</string>
   <plurals name="n_key_servers">
     <item quantity="other">%d の鍵サーバ</item>
   </plurals>
@@ -261,11 +268,17 @@
   <string name="error_keyserver_insufficient_query">サーバへのクエリーが不足しています</string>
   <string name="error_keyserver_query">鍵サーバへのクエリーが失敗</string>
   <string name="error_keyserver_too_many_responses">レスポンスが多すぎます</string>
+  <string name="error_import_file_no_content">ファイルに内容がありません</string>
+  <string name="error_generic_report_bug">一般エラーが発生しました、この新しいバグの情報をOpenKeychainプロジェクトに送ってください</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="other">\'自分の鍵\'画面から削除してください!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="other">読み込んだファイルのOpenPGPオブジェクト部分は正しいですが、OpenPGPの鍵ではありません</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_done">完了。</string>
+  <string name="progress_cancel">キャンセル</string>
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">インポート...</string>
   <string name="progress_exporting">エクスポート...</string>
@@ -329,10 +342,10 @@
   <string name="import_nfc_help_button">ヘルプ</string>
   <string name="import_clipboard_button">クリップボードから鍵を取得</string>
   <!--Intent labels-->
-  <string name="intent_decrypt_file">OpenKeychain: ファイル復号化</string>
-  <string name="intent_import_key">OpenKeychain: 鍵のインポート</string>
-  <string name="intent_send_encrypt">OpenKeychain: 暗号化</string>
-  <string name="intent_send_decrypt">OpenKeychain: 復号化</string>
+  <string name="intent_decrypt_file">OpenKeychainでファイルを復号化</string>
+  <string name="intent_import_key">OpenKeychainに鍵をインポート</string>
+  <string name="intent_send_encrypt">OpenKeychainで暗号化</string>
+  <string name="intent_send_decrypt">OpenKeychainで復号化</string>
   <!--Remote API-->
   <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>

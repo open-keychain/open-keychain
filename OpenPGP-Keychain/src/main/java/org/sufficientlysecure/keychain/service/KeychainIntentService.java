@@ -44,11 +44,13 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
@@ -152,6 +154,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String EXPORT_KEY_TYPE = "export_key_type";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
+    public static final String EXPORT_KEY_RING_ROW_ID = "export_key_rind_row_id";
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
@@ -181,13 +184,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     // decrypt/verify
     public static final String RESULT_DECRYPTED_STRING = "decrypted_message";
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
-    public static final String RESULT_SIGNATURE = "signature";
-    public static final String RESULT_SIGNATURE_KEY_ID = "signature_key_id";
-    public static final String RESULT_SIGNATURE_USER_ID = "signature_user_id";
-    public static final String RESULT_CLEARTEXT_SIGNATURE_ONLY = "signature_only";
-
-    public static final String RESULT_SIGNATURE_SUCCESS = "signature_success";
-    public static final String RESULT_SIGNATURE_UNKNOWN = "signature_unknown";
+    public static final String RESULT_DECRYPT_VERIFY_RESULT = "signature";
 
     // import
     public static final String RESULT_IMPORT_ADDED = "added";
@@ -206,7 +203,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     private boolean mIsCanceled;
 
     public KeychainIntentService() {
-        super("ApgService");
+        super("KeychainIntentService");
     }
 
     @Override
@@ -489,14 +486,16 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // verifyText and decrypt returning additional resultData values for the
                 // verification of signatures
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
-                builder.progress(this);
+                builder.progressDialogUpdater(this);
 
                 builder.assumeSymmetric(assumeSymmetricEncryption)
                         .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
-                resultData = builder.build().execute();
+                PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
                 outStream.close();
+
+                resultData.putParcelable(RESULT_DECRYPT_VERIFY_RESULT, decryptVerifyResult);
 
                 /* Output */
 
@@ -599,13 +598,23 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
 
                 /* Operation */
+                int keysTotal = 2;
+                int keysCreated = 0;
+                setProgress(
+                        getApplicationContext().getResources().getQuantityString(R.plurals.progress_generating, keysTotal),
+                        keysCreated,
+                        keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, true);
+                keysCreated++;
+                setProgress(keysCreated, keysTotal);
 
                 PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, false);
+                keysCreated++;
+                setProgress(keysCreated, keysTotal);
 
                 // TODO: default to one master for cert, one sub for encrypt and one sub
                 //       for sign
@@ -668,10 +677,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 String outputFile = data.getString(EXPORT_FILENAME);
 
+                long[] rowIds = new long[0];
+
+                // If not exporting all keys get the rowIds of the keys to export from the intent
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
-                long keyRingMasterKeyId = -1;
                 if (!exportAll) {
-                    keyRingMasterKeyId = data.getLong(EXPORT_KEY_RING_MASTER_KEY_ID);
+                    rowIds = data.getLongArray(EXPORT_KEY_RING_ROW_ID);
                 }
 
                 /* Operation */
@@ -684,24 +695,26 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // OutputStream
                 FileOutputStream outStream = new FileOutputStream(outputFile);
 
-                ArrayList<Long> keyRingMasterKeyIds = new ArrayList<Long>();
+                ArrayList<Long> keyRingRowIds = new ArrayList<Long>();
                 if (exportAll) {
-                    // get all key ring row ids based on export type
 
+                    // get all key ring row ids based on export type
                     if (keyType == Id.type.public_key) {
-                        keyRingMasterKeyIds = ProviderHelper.getPublicKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getPublicKeyRingsRowIds(this);
                     } else {
-                        keyRingMasterKeyIds = ProviderHelper.getSecretKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getSecretKeyRingsRowIds(this);
                     }
                 } else {
-                    keyRingMasterKeyIds.add(keyRingMasterKeyId);
+                    for(long rowId : rowIds) {
+                        keyRingRowIds.add(rowId);
+                    }
                 }
 
-                Bundle resultData = new Bundle();
+                Bundle resultData;
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 resultData = pgpImportExport
-                        .exportKeyRings(keyRingMasterKeyIds, keyType, outStream);
+                        .exportKeyRings(keyRingRowIds, keyType, outStream);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -751,7 +764,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                      */
                     // need to have access to the bufferedInput, so we can reuse it for the possible
                     // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
-                    // armour blocks
+                    // armor blocks
                     BufferedInputStream bufferedInput = new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
                     try {
 
@@ -867,10 +880,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     }
 
     /**
-     * Set progress of ProgressDialog by sending message to handler on UI thread
+     * Set progressDialogUpdater of ProgressDialog by sending message to handler on UI thread
      */
     public void setProgress(String message, int progress, int max) {
-        Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
+        Log.d(Constants.TAG, "Send message by setProgress with progressDialogUpdater=" + progress + ", max="
                 + max);
 
         Bundle data = new Bundle();

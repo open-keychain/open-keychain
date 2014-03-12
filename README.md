@@ -32,9 +32,9 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 2. Open the Android SDK Manager (shell command: ``android``).  
-Expand the Tools directory and select "Android SDK Build-tools" newest version.  
+Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".  
 Expand the Extras directory and install "Android Support Repository"  
-Select everything for the newest SDK
+Select everything for the newest SDK (API-Level 19)
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
 5. You can install the app with ``adb install -r OpenPGP-Keychain/build/apk/OpenPGP-Keychain-debug-unaligned.apk``
@@ -116,6 +116,15 @@ When changing build files or dependencies, respect the following requirements:
 * No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
 * Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
 * Commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
+* In order to update the build system to a newer gradle version you need to:
+  * Update every build.gradle file with the new gradle version and/or gradle plugin version
+    * build.gradle
+    * OpenPGP-Keychain/build.gradle
+    * OpenPGP-Keychain-API/build.gradle
+    * OpenPGP-Keychain-API/example-app/build.gradle
+    * OpenPGP-Keychain-API/libraries/keychain-api-library/build.gradle
+  * run ./gradlew wrapper twice to update gradle and download the new jar file
+  * commit the new jar and property files
 
 ### Translations
 
@@ -145,6 +154,14 @@ See http://source.android.com/source/code-style.html
 * XML: Indent using spaces with Indention size 4 (Eclipse: Properties -> XML -> XML Files -> Editor)
 
 See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
+
+### Automated syntax check with CheckStyle
+* Paste the tools/checkstyle.xml file to ~/.AndroidStudioPreview/config/codestyles/ (in Linux/Unix)
+  or  ~/Library/Preferences/AndroidStudioPreview/codestyles (in Mac OSX)
+* Go to Settings (or Preferences in Mac OS X) > Code Style > Java, select OpenPgpChecker, 
+  as well as Code Style > XML and select OpenPgpChecker again.
+* Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio
+  or you can directly run checkstyle via cli with .tools/checkstyle. Make sure it's executable first.
 
 ## Licenses
 OpenPGP Kechain is licensed under GPLv3+.

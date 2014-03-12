@@ -14,9 +14,10 @@
     <string name="title_preferences">Preferences</string>
     <string name="title_api_registered_apps">Registered Applications</string>
     <string name="title_key_server_preference">Keyserver Preference</string>
-    <string name="title_change_pass_phrase">Change Passphrase</string>
+    <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_send_email">"Send Mail…"</string>
+    <string name="title_send_file">"Send File…"</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
     <string name="title_import_keys">Import Keys</string>
@@ -66,6 +67,8 @@
     <string name="btn_clipboard">Clipboard</string>
     <string name="btn_share">Share with…</string>
     <string name="btn_lookup_key">Lookup key</string>
+    <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
+    <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -96,6 +99,7 @@
     <string name="menu_beam_preferences">Beam settings</string>
     <string name="menu_key_edit_cancel">Cancel</string>
     <string name="menu_encrypt_to">Encrypt to…</string>
+    <string name="menu_select_all">Select all</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -109,6 +113,7 @@
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
+    <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
@@ -127,9 +132,12 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
+    <string name="label_sign_user_id">Sign User Id</string>
+    <string name="label_sign_email">Sign email</string>
     <string name="label_send_key">Upload key to selected keyserver after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
+    <string name="expiry_date_dialog_title">Set expiry date</string>
 
     <plurals name="select_keys_button">
         <item quantity="one">%d selected</item>
@@ -139,11 +147,13 @@
     <string name="user_id_no_name">&lt;no name&gt;</string>
     <string name="none">&lt;none&gt;</string>
     <string name="no_key">&lt;no key&gt;</string>
+    <string name="no_email">&lt;No Email&gt;</string>
     <string name="unknown_status"></string>
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
     <string name="expired">expired</string>
     <string name="revoked">revoked</string>
+    <string name="user_id">User ID</string>
 
     <plurals name="n_contacts">
         <item quantity="one">1 contact</item>
@@ -269,6 +279,7 @@
     <string name="error_master_key_must_not_be_el_gamal">the master key cannot be an ElGamal key</string>
     <string name="error_unknown_algorithm_choice">unknown algorithm choice</string>
     <string name="error_user_id_needs_a_name">you need to specify a name</string>
+    <string name="error_user_id_no_email">no email found</string>
     <string name="error_user_id_needs_an_email_address">you need to specify an email address</string>
     <string name="error_key_needs_a_user_id">need at least one user id</string>
     <string name="error_main_user_id_must_not_be_empty">main user id must not be empty</string>
@@ -294,9 +305,15 @@
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
     <string name="error_keyserver_query">Querying keyserver failed</string>
     <string name="error_keyserver_too_many_responses">Too many responses</string>
+    <string name="error_import_file_no_content">File has no content</string>
+    <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>
+    </plurals>
+    <plurals name="error_import_non_pgp_part">
+        <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
+        <item quantity="other">parts of the loaded file are valid OpenPGP objects but not OpenPGP keys</item>
     </plurals>
 
     <!-- progress dialogs, usually ending in '…' -->
@@ -305,7 +322,6 @@
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
-    <string name="progress_generating">generating key, this can take up to 3 minutes…</string>
     <string name="progress_building_key">building key…</string>
     <string name="progress_preparing_master_key">preparing master key…</string>
     <string name="progress_certifying_master_key">certifying master key…</string>
@@ -316,6 +332,11 @@
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>
         <item quantity="other">exporting keys…</item>
+    </plurals>
+
+    <plurals name="progress_generating">
+        <item quantity="one">generating key, this can take up to 3 minutes…</item>
+        <item quantity="other">generating keys, this can take up to 3 minutes…</item>
     </plurals>
 
     <string name="progress_extracting_signature_key">extracting signature key…</string>

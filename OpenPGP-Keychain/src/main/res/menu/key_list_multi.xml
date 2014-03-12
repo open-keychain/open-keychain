@@ -2,7 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_key_list_multi_select_all"
+        android:icon="@drawable/ic_action_select_all"
+        android:title="@string/menu_select_all" />
+    <item
+        android:id="@+id/menu_key_list_multi_export"
+        android:icon="@drawable/ic_action_import_export"
+        android:title="@string/menu_export_key" />
+    <item
         android:id="@+id/menu_key_list_multi_encrypt"
+        android:icon="@drawable/ic_action_secure"
         android:title="@string/menu_encrypt_to" />
     <item
         android:id="@+id/menu_key_list_multi_delete"

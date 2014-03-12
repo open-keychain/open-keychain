@@ -88,7 +88,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
 
             // Inflate a "Done"/"Cancel" custom action bar view
-            ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.api_register_allow,
+            ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.api_register_allow, R.drawable.ic_action_done,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -108,7 +108,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 RemoteServiceActivity.this.finish();
                             }
                         }
-                    }, R.string.api_register_disallow, new View.OnClickListener() {
+                    }, R.string.api_register_disallow, R.drawable.ic_action_cancel, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // Disallow
@@ -161,7 +161,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             }
 
             // Inflate a "Done"/"Cancel" custom action bar view
-            ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
+            ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -173,7 +173,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                             RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
                             RemoteServiceActivity.this.finish();
                         }
-                    }, R.string.btn_do_not_save, new View.OnClickListener() {
+                    }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             // cancel
@@ -214,7 +214,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
             String text = "<font color=\"red\">" + errorMessage + "</font>";
 
             // Inflate a "Done" custom action bar view
-            ActionBarHelper.setDoneView(getSupportActionBar(), R.string.btn_okay,
+            ActionBarHelper.setOneButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
                     new View.OnClickListener() {
 
                         @Override

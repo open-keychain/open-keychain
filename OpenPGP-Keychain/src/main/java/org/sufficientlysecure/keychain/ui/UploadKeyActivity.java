@@ -102,7 +102,7 @@ public class UploadKeyActivity extends ActionBarActivity {
 
         // Message is received after uploading is done in ApgService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                R.string.progress_exporting, ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
@@ -113,7 +113,7 @@ public class UploadKeyActivity extends ActionBarActivity {
                             Toast.LENGTH_SHORT).show();
                     finish();
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back
