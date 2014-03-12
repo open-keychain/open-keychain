@@ -124,6 +124,8 @@ public class ViewKeyCertsFragment extends Fragment
         } catch (ApiLevelTooLowException e) {
         }
 
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
+
         // TODO this view is made visible if no data is available
         // mStickyList.setEmptyView(getActivity().findViewById(R.id.empty));
 

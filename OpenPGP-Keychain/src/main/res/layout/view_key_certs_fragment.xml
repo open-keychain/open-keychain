@@ -33,6 +33,16 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="16dp" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/empty_certs"
+            android:id="@+id/empty"
+            android:visibility="gone"
+            android:layout_centerInParent="true"
+            android:paddingBottom="32dp" />
+
     </RelativeLayout>
 
 </ScrollView>

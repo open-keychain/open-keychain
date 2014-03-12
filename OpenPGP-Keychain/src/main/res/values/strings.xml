@@ -452,5 +452,6 @@
     <string name="label_user_id">User ID</string>
     <string name="label_subkey_rank">Subkey Rank</string>
     <string name="unknown_uid"><![CDATA[<unknown>]]></string>
+    <string name="empty_certs">No certificates for this key</string>
 
 </resources>
