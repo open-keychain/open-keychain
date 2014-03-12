@@ -377,6 +377,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mCurQuery = null;
+                mSearchView.setQuery("", true);
                 getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
                 return true;
             }
