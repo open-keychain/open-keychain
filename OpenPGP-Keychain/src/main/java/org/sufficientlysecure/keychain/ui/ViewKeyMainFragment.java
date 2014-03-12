@@ -64,6 +64,7 @@ public class ViewKeyMainFragment extends Fragment implements
     private TextView mSecretKey;
     private BootstrapButton mActionEdit;
     private BootstrapButton mActionEncrypt;
+    private BootstrapButton mActionCertify;
 
     private ListView mUserIds;
     private ListView mKeys;
@@ -94,6 +95,7 @@ public class ViewKeyMainFragment extends Fragment implements
         mKeys = (ListView) view.findViewById(R.id.keys);
         mActionEdit = (BootstrapButton) view.findViewById(R.id.action_edit);
         mActionEncrypt = (BootstrapButton) view.findViewById(R.id.action_encrypt);
+        mActionCertify = (BootstrapButton) view.findViewById(R.id.action_certify);
 
         return view;
     }
@@ -130,6 +132,9 @@ public class ViewKeyMainFragment extends Fragment implements
                 mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
                 mSecretKey.setText(R.string.secret_key_yes);
 
+                // certify button
+                mActionCertify.setVisibility(View.GONE);
+
                 // edit button
                 mActionEdit.setVisibility(View.VISIBLE);
                 mActionEdit.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +148,18 @@ public class ViewKeyMainFragment extends Fragment implements
             } else {
                 mSecretKey.setTextColor(Color.BLACK);
                 mSecretKey.setText(getResources().getString(R.string.secret_key_no));
+
+                // certify button
+                mActionCertify.setVisibility(View.VISIBLE);
+                mActionCertify.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        certifyKey(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                                Long.toString(masterKeyId)
+                        ));
+                    }
+                });
+
+                // edit button
                 mActionEdit.setVisibility(View.GONE);
             }
         }
