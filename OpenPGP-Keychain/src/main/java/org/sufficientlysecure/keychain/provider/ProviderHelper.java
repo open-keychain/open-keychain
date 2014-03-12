@@ -405,6 +405,30 @@ public class ProviderHelper {
     }
 
     /**
+     * Private helper method
+     */
+    private static ArrayList<Long> getKeyRingsRowIds(Context context, Uri queryUri) {
+        Cursor cursor = context.getContentResolver().query(queryUri,
+                new String[]{KeyRings._ID}, null, null, null);
+
+        ArrayList<Long> rowIds = new ArrayList<Long>();
+        if (cursor != null) {
+            int IdCol = cursor.getColumnIndex(KeyRings._ID);
+            if (cursor.moveToFirst()) {
+                do {
+                    rowIds.add(cursor.getLong(IdCol));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rowIds;
+    }
+
+    /**
      * Retrieves ids of all SecretKeyRings
      */
     public static ArrayList<Long> getSecretKeyRingsMasterKeyIds(Context context) {
@@ -418,6 +442,22 @@ public class ProviderHelper {
     public static ArrayList<Long> getPublicKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
         return getKeyRingsMasterKeyIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all SecretKeyRings
+     */
+    public static ArrayList<Long> getSecretKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all PublicKeyRings
+     */
+    public static ArrayList<Long> getPublicKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildPublicKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
     }
 
     public static void deletePublicKeyRing(Context context, long rowId) {

@@ -41,7 +41,7 @@ public class AppSettingsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done" custom action bar
-        ActionBarHelper.setDoneView(getSupportActionBar(), R.string.api_settings_save,
+        ActionBarHelper.setOneButtonView(getSupportActionBar(), R.string.api_settings_save, R.drawable.ic_action_done,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

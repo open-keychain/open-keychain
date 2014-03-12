@@ -530,6 +530,10 @@ public class DecryptActivity extends DrawerActivity {
                 Log.e(Constants.TAG, "File not found!", e);
                 AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
                         AppMsg.STYLE_ALERT).show();
+            } finally {
+                try {
+                    if (inStream != null) inStream.close();
+                } catch (Exception e){ }
             }
         } else {
             inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());

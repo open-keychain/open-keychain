@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;

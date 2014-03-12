@@ -193,11 +193,10 @@ public class PgpHelper {
      * @param context
      * @param progress
      * @param file
-     * @throws FileNotFoundException
      * @throws IOException
      */
     public static void deleteFileSecurely(Context context, ProgressDialogUpdater progress, File file)
-            throws FileNotFoundException, IOException {
+            throws IOException {
         long length = file.length();
         SecureRandom random = new SecureRandom();
         RandomAccessFile raf = new RandomAccessFile(file, "rws");

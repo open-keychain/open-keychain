@@ -155,6 +155,14 @@ See http://source.android.com/source/code-style.html
 
 See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
 
+### Automated syntax check with CheckStyle
+* Paste the tools/checkstyle.xml file to ~/.AndroidStudioPreview/config/codestyles/ (in Linux/Unix)
+  or  ~/Library/Preferences/AndroidStudioPreview/codestyles (in Mac OSX)
+* Go to Settings (or Preferences in Mac OS X) > Code Style > Java, select OpenPgpChecker, 
+  as well as Code Style > XML and select OpenPgpChecker again.
+* Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio
+  or you can directly run checkstyle via cli with .tools/checkstyle. Make sure it's executable first.
+
 ## Licenses
 OpenPGP Kechain is licensed under GPLv3+.
 Some parts (older parts and some libraries are Apache License v2, MIT X11 License)

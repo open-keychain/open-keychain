@@ -62,8 +62,7 @@ public class KeyListSecretActivity extends DrawerActivity {
 
             return true;
         case R.id.menu_key_list_secret_export:
-            mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR
-                    + "/secexport.asc");
+            mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
 
             return true;
         case R.id.menu_key_list_secret_import:

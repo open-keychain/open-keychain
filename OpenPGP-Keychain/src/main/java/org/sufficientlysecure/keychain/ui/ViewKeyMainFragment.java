@@ -280,13 +280,14 @@ public class ViewKeyMainFragment extends Fragment  implements
 
         // for each 4 characters of the fingerprint + 1 space
         for (int i = 0; i < fingerprint.length(); i += 5) {
-            String fourChars = fingerprint.substring(i, Math.min(i + 4, fingerprint.length()));
+            int minFingLength = Math.min(i + 4, fingerprint.length());
+            String fourChars = fingerprint.substring(i, minFingLength);
 
             // Create a foreground color by converting the 4 fingerprint chars to an int hashcode
             // and then converting that int to hex to use as a color
             fcs = new ForegroundColorSpan(
                     Color.parseColor(String.format("#%06X", (0xFFFFFF & fourChars.hashCode()))));
-            sb.setSpan(fcs, i, Math.min(i+4, fingerprint.length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            sb.setSpan(fcs, i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         }
 
         return sb;

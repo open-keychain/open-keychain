@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.pgp.PgpImportExport;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
@@ -153,6 +154,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String EXPORT_KEY_TYPE = "export_key_type";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
+    public static final String EXPORT_KEY_RING_ROW_ID = "export_key_rind_row_id";
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
@@ -675,10 +677,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 String outputFile = data.getString(EXPORT_FILENAME);
 
+                long[] rowIds = new long[0];
+
+                // If not exporting all keys get the rowIds of the keys to export from the intent
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
-                long keyRingMasterKeyId = -1;
                 if (!exportAll) {
-                    keyRingMasterKeyId = data.getLong(EXPORT_KEY_RING_MASTER_KEY_ID);
+                    rowIds = data.getLongArray(EXPORT_KEY_RING_ROW_ID);
                 }
 
                 /* Operation */
@@ -691,24 +695,26 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // OutputStream
                 FileOutputStream outStream = new FileOutputStream(outputFile);
 
-                ArrayList<Long> keyRingMasterKeyIds = new ArrayList<Long>();
+                ArrayList<Long> keyRingRowIds = new ArrayList<Long>();
                 if (exportAll) {
-                    // get all key ring row ids based on export type
 
+                    // get all key ring row ids based on export type
                     if (keyType == Id.type.public_key) {
-                        keyRingMasterKeyIds = ProviderHelper.getPublicKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getPublicKeyRingsRowIds(this);
                     } else {
-                        keyRingMasterKeyIds = ProviderHelper.getSecretKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getSecretKeyRingsRowIds(this);
                     }
                 } else {
-                    keyRingMasterKeyIds.add(keyRingMasterKeyId);
+                    for(long rowId : rowIds) {
+                        keyRingRowIds.add(rowId);
+                    }
                 }
 
-                Bundle resultData = new Bundle();
+                Bundle resultData;
 
                 PgpImportExport pgpImportExport = new PgpImportExport(this, this);
                 resultData = pgpImportExport
-                        .exportKeyRings(keyRingMasterKeyIds, keyType, outStream);
+                        .exportKeyRings(keyRingRowIds, keyType, outStream);
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {

@@ -199,8 +199,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         if (masterKeyIds != null) {
             for (int i = 0; i < getListView().getCount(); ++i) {
                 long keyId = mAdapter.getMasterKeyId(i);
-                for (int j = 0; j < masterKeyIds.length; ++j) {
-                    if (keyId == masterKeyIds[j]) {
+                for (long masterKeyId : masterKeyIds) {
+                    if (keyId == masterKeyId) {
                         getListView().setItemChecked(i, true);
                         break;
                     }
