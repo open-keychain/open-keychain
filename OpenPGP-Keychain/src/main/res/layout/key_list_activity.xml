@@ -9,8 +9,8 @@
         android:layout_height="match_parent" >
 
         <fragment
-            android:id="@+id/key_list_public_fragment"
-            android:name="org.sufficientlysecure.keychain.ui.KeyListPublicFragment"
+            android:id="@+id/key_list_fragment"
+            android:name="org.sufficientlysecure.keychain.ui.KeyListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>

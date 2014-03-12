@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class KeyListPublicActivity extends DrawerActivity {
+public class KeyListActivity extends DrawerActivity {
 
     ExportHelper mExportHelper;
 
@@ -37,7 +37,7 @@ public class KeyListPublicActivity extends DrawerActivity {
 
         mExportHelper = new ExportHelper(this);
 
-        setContentView(R.layout.key_list_public_activity);
+        setContentView(R.layout.key_list_activity);
 
         // now setup navigation drawer in DrawerActivity...
         setupDrawerNavigation(savedInstanceState);
@@ -46,19 +46,20 @@ public class KeyListPublicActivity extends DrawerActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.key_list_public, menu);
+        getMenuInflater().inflate(R.menu.key_list, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_key_list_public_import:
+        case R.id.menu_key_list_import:
             Intent intentImport = new Intent(this, ImportKeysActivity.class);
             startActivityForResult(intentImport, 0);
 
             return true;
-        case R.id.menu_key_list_public_export:
+        case R.id.menu_key_list_export:
+            // TODO fix this for unified keylist
             mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
 
             return true;
