@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -255,7 +256,11 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
 
     static final int INDEX_TYPE = 1;
     static final int INDEX_UID = 3;
-    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
+    static final String SORT_ORDER =
+                // show secret before public key
+                KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings.TYPE + " DESC, "
+                    // sort by user id otherwise
+                    + UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
