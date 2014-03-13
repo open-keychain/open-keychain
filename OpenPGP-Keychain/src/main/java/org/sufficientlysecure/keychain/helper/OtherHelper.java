@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -56,6 +59,25 @@ public class OtherHelper {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
         }
+    }
+
+    /**
+     * Converts the given bytes to a unique RGB color using SHA1 algorithm
+     * @param bytes
+     * @return an integer array containing 3 numeric color representations (Red, Green, Black)
+     * @throws NoSuchAlgorithmException
+     * @throws DigestException
+     */
+    public static int[] getRgbForData(byte[] bytes) throws NoSuchAlgorithmException, DigestException {
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+
+        md.update(bytes);
+        byte[] digest = md.digest();
+
+        int[] result = {((int) digest[0] + 256) % 256,
+                        ((int) digest[1] + 256) % 256,
+                        ((int) digest[2] + 256) % 256};
+        return result;
     }
 
 }

@@ -3,7 +3,7 @@ jdk: oraclejdk7
 before_install:
     # Install base Android SDK
     - sudo apt-get update -qq
-    - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm ia32-libs; fi
+    - if [ `uname -m` = x86_64 ]; then sudo apt-get install -qq --force-yes libgd2-xpm lib32z1 lib32stdc++6; fi
     - wget http://dl.google.com/android/android-sdk_r22.3-linux.tgz
     - tar xzf android-sdk_r22.3-linux.tgz
     - export ANDROID_HOME=$PWD/android-sdk-linux
