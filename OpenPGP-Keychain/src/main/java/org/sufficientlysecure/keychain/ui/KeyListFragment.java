@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -201,6 +202,20 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
                         case R.id.menu_key_list_multi_delete: {
                             ids = mStickyList.getWrappedList().getCheckedItemIds();
                             showDeleteKeyDialog(mode, ids);
+                            break;
+                        }
+                        case R.id.menu_key_list_multi_export: {
+                            // todo: public/secret needs to be handled differently here
+                            ids = mStickyList.getWrappedList().getCheckedItemIds();
+                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
+                            break;
+                        }
+                        case R.id.menu_key_list_multi_select_all: {
+                            // select all
+                            for (int i = 0; i < mStickyList.getCount(); i++) {
+                                mStickyList.setItemChecked(i, true);
+                            }
                             break;
                         }
                     }
@@ -455,7 +470,7 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
     /**
      * Implements StickyListHeadersAdapter from library
      */
-    private class KeyListAdapter extends CursorAdapter implements StickyListHeadersAdapter {
+    private class KeyListAdapter extends HighlightQueryCursorAdapter implements StickyListHeadersAdapter {
         private LayoutInflater mInflater;
         private int mIndexUserId;
         private int mIndexIsRevoked;
@@ -698,42 +713,16 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
              * Change color for multi-selection
              */
             // default color
-            v.setBackgroundColor(Color.TRANSPARENT);
             if (mSelection.get(position) != null) {
                 // this is a selected position, change color!
                 v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+            } else {
+                v.setBackgroundColor(Color.TRANSPARENT);
             }
+
             return v;
         }
 
-        // search highlight methods
-
-        public void setSearchQuery(String searchQuery) {
-            mCurQuery = searchQuery;
-        }
-
-        public String getSearchQuery() {
-            return mCurQuery;
-        }
-
-        protected Spannable highlightSearchQuery(String text) {
-            Spannable highlight = Spannable.Factory.getInstance().newSpannable(text);
-
-            if (mCurQuery != null) {
-                Pattern pattern = Pattern.compile("(?i)" + mCurQuery);
-                Matcher matcher = pattern.matcher(text);
-                if (matcher.find()) {
-                    highlight.setSpan(
-                            new ForegroundColorSpan(mContext.getResources().getColor(R.color.emphasis)),
-                            matcher.start(),
-                            matcher.end(),
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
-                return highlight;
-            } else {
-                return highlight;
-            }
-        }
     }
 
 }
