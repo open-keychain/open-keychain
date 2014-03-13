@@ -17,20 +17,11 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Environment;
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.*;
 import org.spongycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -39,16 +30,14 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
-import org.sufficientlysecure.keychain.util.IterableIterator;
+import org.sufficientlysecure.keychain.util.*;
 import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
-import org.sufficientlysecure.keychain.util.KeychainServiceListener;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Environment;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PgpImportExport {
 
@@ -63,7 +52,7 @@ public class PgpImportExport {
         this.mProgress = progress;
     }
 
-    public PgpImportExport(Context context, ProgressDialogUpdater progress, KeychainServiceListener keychainListener){
+    public PgpImportExport(Context context, ProgressDialogUpdater progress, KeychainServiceListener keychainListener) {
         super();
         this.mContext = context;
         this.mProgress = progress;
@@ -107,8 +96,8 @@ public class PgpImportExport {
             return false;
         } finally {
             try {
-                if (aos != null) aos.close();
-                if (bos != null) bos.close();
+                if (aos != null) { aos.close(); }
+                if (bos != null) { bos.close(); }
             } catch (IOException e) {
             }
         }
@@ -199,7 +188,7 @@ public class PgpImportExport {
                 if (secretKeyRing != null) {
                     secretKeyRing.encode(arOutStream);
                 }
-                if(mKeychainServiceListener.hasServiceStopped()){
+                if (mKeychainServiceListener.hasServiceStopped()) {
                     arOutStream.close();
                     return null;
                 }
@@ -212,7 +201,7 @@ public class PgpImportExport {
                     publicKeyRing.encode(arOutStream);
                 }
 
-                if(mKeychainServiceListener.hasServiceStopped()){
+                if (mKeychainServiceListener.hasServiceStopped()) {
                     arOutStream.close();
                     return null;
                 }

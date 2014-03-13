@@ -1,33 +1,24 @@
+/*
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.sufficientlysecure.keychain.pgp;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
-
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-
 import org.spongycastle.asn1.DERObjectIdentifier;
-import org.spongycastle.asn1.x509.AuthorityKeyIdentifier;
-import org.spongycastle.asn1.x509.BasicConstraints;
-import org.spongycastle.asn1.x509.GeneralName;
-import org.spongycastle.asn1.x509.GeneralNames;
-import org.spongycastle.asn1.x509.SubjectKeyIdentifier;
-import org.spongycastle.asn1.x509.X509Extensions;
-import org.spongycastle.asn1.x509.X509Name;
+import org.spongycastle.asn1.x509.*;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -38,30 +29,38 @@ import org.spongycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
+
 public class PgpToX509 {
-    public final static String DN_COMMON_PART_O = "OpenPGP to X.509 Bridge";
-    public final static String DN_COMMON_PART_OU = "OpenPGP Keychain cert";
+    public static final String DN_COMMON_PART_O = "OpenPGP to X.509 Bridge";
+    public static final String DN_COMMON_PART_OU = "OpenPGP Keychain cert";
 
     /**
      * Creates a self-signed certificate from a public and private key. The (critical) key-usage
      * extension is set up with: digital signature, non-repudiation, key-encipherment, key-agreement
      * and certificate-signing. The (non-critical) Netscape extension is set up with: SSL client and
      * S/MIME. A URI subjectAltName may also be set up.
-     * 
-     * @param pubKey
-     *            public key
-     * @param privKey
-     *            private key
-     * @param subject
-     *            subject (and issuer) DN for this certificate, RFC 2253 format preferred.
-     * @param startDate
-     *            date from which the certificate will be valid (defaults to current date and time
-     *            if null)
-     * @param endDate
-     *            date until which the certificate will be valid (defaults to current date and time
-     *            if null) *
-     * @param subjAltNameURI
-     *            URI to be placed in subjectAltName
+     *
+     * @param pubKey         public key
+     * @param privKey        private key
+     * @param subject        subject (and issuer) DN for this certificate, RFC 2253 format preferred.
+     * @param startDate      date from which the certificate will be valid (defaults to current date and time
+     *                       if null)
+     * @param endDate        date until which the certificate will be valid (defaults to current date and time
+     *                       if null) *
+     * @param subjAltNameURI URI to be placed in subjectAltName
      * @return self-signed certificate
      * @throws InvalidKeyException
      * @throws SignatureException
@@ -70,11 +69,10 @@ public class PgpToX509 {
      * @throws NoSuchProviderException
      * @throws CertificateException
      * @throws Exception
-     * 
      * @author Bruno Harbulot
      */
     public static X509Certificate createSelfSignedCert(PublicKey pubKey, PrivateKey privKey,
-            X509Name subject, Date startDate, Date endDate, String subjAltNameURI)
+                                                       X509Name subject, Date startDate, Date endDate, String subjAltNameURI)
             throws InvalidKeyException, IllegalStateException, NoSuchAlgorithmException,
             SignatureException, CertificateException, NoSuchProviderException {
 
@@ -171,15 +169,12 @@ public class PgpToX509 {
 
     /**
      * Creates a self-signed certificate from a PGP Secret Key.
-     * 
-     * @param pgpSecKey
-     *            PGP Secret Key (from which one can extract the public and private keys and other
-     *            attributes).
-     * @param pgpPrivKey
-     *            PGP Private Key corresponding to the Secret Key (password callbacks should be done
-     *            before calling this method)
-     * @param subjAltNameURI
-     *            optional URI to embed in the subject alternative-name
+     *
+     * @param pgpSecKey      PGP Secret Key (from which one can extract the public and private keys and other
+     *                       attributes).
+     * @param pgpPrivKey     PGP Private Key corresponding to the Secret Key (password callbacks should be done
+     *                       before calling this method)
+     * @param subjAltNameURI optional URI to embed in the subject alternative-name
      * @return self-signed certificate
      * @throws PGPException
      * @throws NoSuchProviderException
@@ -187,11 +182,10 @@ public class PgpToX509 {
      * @throws NoSuchAlgorithmException
      * @throws SignatureException
      * @throws CertificateException
-     * 
      * @author Bruno Harbulot
      */
     public static X509Certificate createSelfSignedCert(PGPSecretKey pgpSecKey,
-            PGPPrivateKey pgpPrivKey, String subjAltNameURI) throws PGPException,
+                                                       PGPPrivateKey pgpPrivKey, String subjAltNameURI) throws PGPException,
             NoSuchProviderException, InvalidKeyException, NoSuchAlgorithmException,
             SignatureException, CertificateException {
         // get public key from secret key
@@ -213,7 +207,7 @@ public class PgpToX509 {
         x509NameValues.add(DN_COMMON_PART_OU);
 
         for (@SuppressWarnings("unchecked")
-        Iterator<Object> it = (Iterator<Object>) pgpSecKey.getUserIDs(); it.hasNext();) {
+             Iterator<Object> it = (Iterator<Object>) pgpSecKey.getUserIDs(); it.hasNext(); ) {
             Object attrib = it.next();
             x509NameOids.add(X509Name.CN);
             x509NameValues.add("CryptoCall");
@@ -225,7 +219,7 @@ public class PgpToX509 {
          */
         Log.d(Constants.TAG, "User attributes: ");
         for (@SuppressWarnings("unchecked")
-        Iterator<Object> it = (Iterator<Object>) pgpSecKey.getUserAttributes(); it.hasNext();) {
+             Iterator<Object> it = (Iterator<Object>) pgpSecKey.getUserAttributes(); it.hasNext(); ) {
             Object attrib = it.next();
             Log.d(Constants.TAG, " - " + attrib + " -- " + attrib.getClass());
         }
@@ -261,9 +255,8 @@ public class PgpToX509 {
      * This is a password callback handler that will fill in a password automatically. Useful to
      * configure passwords in advance, but should be used with caution depending on how much you
      * allow passwords to be stored within your application.
-     * 
+     *
      * @author Bruno Harbulot.
-     * 
      */
     public final static class PredefinedPasswordCallbackHandler implements CallbackHandler {
 
