@@ -312,31 +312,47 @@ public class ViewKeyMainFragment extends Fragment  implements
         try {
             // for each 4 characters of the fingerprint + 1 space
             for (int i = 0; i < fingerprint.length(); i += 5) {
-                int minFingLength = Math.min(i + 4, fingerprint.length());
-                String fourChars = fingerprint.substring(i, minFingLength);
+                int spanEnd = Math.min(i + 4, fingerprint.length());
+                String fourChars = fingerprint.substring(i, spanEnd);
 
                 int raw = Integer.parseInt(fourChars, 16);
                 byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
                 int[] color = OtherHelper.getRgbForData(bytes);
+                int r = color[0];
+                int g = color[1];
+                int b = color[2];
+
+                // we cannot change black by multiplication, so adjust it to an almost-black grey,
+                // which will then be brightened to the minimal brightness level
+                if (r == 0 && g == 0 && b == 0) {
+                    r = 1;
+                    g = 1;
+                    b = 1;
+                }
 
                 // Convert rgb to brightness
-                int brightness = (int) (0.2126*color[0] + 0.7152*color[1] + 0.0722*color[2]);
+                double brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
-                // Detect dark colors and invert their background to white to make them more distinguishable
-                if (brightness < 40) {
-                    sb.setSpan(new BackgroundColorSpan(Color.WHITE),
-                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                // If a color is too dark to be seen on black,
+                // then brighten it up to a minimal brightness.
+                if (brightness < 80) {
+                    double factor = 80.0 / brightness;
+                    r = Math.min(255, (int) (r * factor));
+                    g = Math.min(255, (int) (g * factor));
+                    b = Math.min(255, (int) (b * factor));
 
-                // Detect bright colors and invert their background to black to make them more distinguishable
-                } else if (brightness > 210) {
-                    sb.setSpan(new BackgroundColorSpan(Color.BLACK),
-                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                // If it is too light, then darken it to a respective maximal brightness.
+                } else if (brightness > 180) {
+                    double factor = 180.0 / brightness;
+                    r = (int) (r * factor);
+                    g = (int) (g * factor);
+                    b = (int) (b * factor);
                 }
 
                 // Create a foreground color with the 3 digest integers as RGB
                 // and then converting that int to hex to use as a color
-                sb.setSpan(new ForegroundColorSpan(Color.rgb(color[0], color[1], color[2])),
-                                            i, minFingLength, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
+                                            i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Colorization failed", e);
