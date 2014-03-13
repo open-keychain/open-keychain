@@ -17,10 +17,25 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.Vector;
-
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -44,30 +59,9 @@ import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Vector;
 
 public class EditKeyActivity extends ActionBarActivity {
 
@@ -130,7 +124,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
     /**
      * Handle intent action to create new key
-     * 
+     *
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
@@ -146,7 +140,8 @@ public class EditKeyActivity extends ActionBarActivity {
                     public void onClick(View v) {
                         cancelClicked();
                     }
-                });
+                }
+        );
 
         Bundle extras = intent.getExtras();
 
@@ -245,7 +240,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
     /**
      * Handle intent action to edit existing key
-     * 
+     *
      * @param intent
      */
     private void handleActionEditKey(Intent intent) {
@@ -323,28 +318,28 @@ public class EditKeyActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_key_edit_cancel:
-            cancelClicked();
-            return true;
-        case R.id.menu_key_edit_export_file:
-            long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-            mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
-            return true;
-        case R.id.menu_key_edit_delete: {
-            // Message is received after key is deleted
-            Handler returnHandler = new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                        setResult(RESULT_CANCELED);
-                        finish();
+            case R.id.menu_key_edit_cancel:
+                cancelClicked();
+                return true;
+            case R.id.menu_key_edit_export_file:
+                long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
+                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
+                return true;
+            case R.id.menu_key_edit_delete: {
+                // Message is received after key is deleted
+                Handler returnHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        }
                     }
-                }
-            };
+                };
 
-            mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
-            return true;
-        }
+                mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -584,7 +579,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
     /**
      * Returns user ids from the SectionView
-     * 
+     *
      * @param userIdsView
      * @return
      */
@@ -633,7 +628,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
     /**
      * Returns keys from the SectionView
-     * 
+     *
      * @param keysView
      * @return
      */
@@ -656,7 +651,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
     /**
      * Returns usage selections of keys from the SectionView
-     * 
+     *
      * @param keysView
      * @return
      */

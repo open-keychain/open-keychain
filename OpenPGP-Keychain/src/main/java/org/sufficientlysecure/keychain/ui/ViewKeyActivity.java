@@ -29,7 +29,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -89,7 +88,7 @@ public class ViewKeyActivity extends ActionBarActivity {
             // given valid /public/ query
             long rowId = ProviderHelper.getRowId(this, getIntent().getData());
             // TODO: handle (rowId == 0) with something else than a crash
-            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId)) ;
+            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
         }
 
         Bundle mainBundle = new Bundle();

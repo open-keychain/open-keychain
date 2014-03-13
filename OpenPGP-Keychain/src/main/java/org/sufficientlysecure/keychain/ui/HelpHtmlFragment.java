@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,11 +25,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 public class HelpHtmlFragment extends Fragment {
     private Activity mActivity;
 
-    private int htmlFile;
+    private int mHtmlFile;
 
     public static final String ARG_HTML_FILE = "htmlFile";
 
@@ -52,8 +51,8 @@ public class HelpHtmlFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mActivity = getActivity();
-        
-        htmlFile = getArguments().getInt(ARG_HTML_FILE);
+
+        mHtmlFile = getArguments().getInt(ARG_HTML_FILE);
 
         ScrollView scroller = new ScrollView(mActivity);
         HtmlTextView text = new HtmlTextView(mActivity);
@@ -66,7 +65,7 @@ public class HelpHtmlFragment extends Fragment {
         scroller.addView(text);
 
         // load html from raw resource (Parsing handled by HtmlTextView library)
-        text.setHtmlFromRawResource(getActivity(), htmlFile);
+        text.setHtmlFromRawResource(getActivity(), mHtmlFile);
 
         // no flickering when clicking textview for Android < 4
         text.setTextColor(getResources().getColor(android.R.color.black));

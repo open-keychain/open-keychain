@@ -17,9 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -31,17 +28,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
 public class RegisteredAppsAdapter extends CursorAdapter {
 
     private LayoutInflater mInflater;
-    private PackageManager pm;
+    private PackageManager mPM;
 
     public RegisteredAppsAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
-        pm = context.getApplicationContext().getPackageManager();
+        mPM = context.getApplicationContext().getPackageManager();
     }
 
     @Override
@@ -53,10 +52,10 @@ public class RegisteredAppsAdapter extends CursorAdapter {
         if (packageName != null) {
             // get application name
             try {
-                ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+                ApplicationInfo ai = mPM.getApplicationInfo(packageName, 0);
 
-                text.setText(pm.getApplicationLabel(ai));
-                icon.setImageDrawable(pm.getApplicationIcon(ai));
+                text.setText(mPM.getApplicationLabel(ai));
+                icon.setImageDrawable(mPM.getApplicationIcon(ai));
             } catch (final NameNotFoundException e) {
                 // fallback
                 text.setText(packageName);

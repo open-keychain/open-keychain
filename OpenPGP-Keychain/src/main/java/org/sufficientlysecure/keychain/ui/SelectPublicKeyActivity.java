@@ -17,14 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 
 public class SelectPublicKeyActivity extends ActionBarActivity {
 
@@ -59,7 +58,8 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
                         // cancel
                         cancelClicked();
                     }
-                });
+                }
+        );
 
         setContentView(R.layout.select_public_key_activity);
 

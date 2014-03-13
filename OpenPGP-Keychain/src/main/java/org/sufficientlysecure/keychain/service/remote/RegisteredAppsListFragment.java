@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -33,6 +29,9 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
 public class RegisteredAppsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -71,7 +70,7 @@ public class RegisteredAppsListFragment extends ListFragment implements
     }
 
     // These are the Contacts rows that we will retrieve.
-    static final String[] PROJECTION = new String[] { ApiApps._ID, ApiApps.PACKAGE_NAME };
+    static final String[] PROJECTION = new String[]{ApiApps._ID, ApiApps.PACKAGE_NAME};
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This

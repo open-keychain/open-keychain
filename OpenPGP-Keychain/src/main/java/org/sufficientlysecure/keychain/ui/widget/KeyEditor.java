@@ -16,20 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import java.util.Vector;
-
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.util.Choice;
-
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -40,13 +26,17 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.util.Choice;
+
+import java.text.DateFormat;
+import java.util.*;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private PGPSecretKey mKey;
@@ -99,7 +89,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 new Choice(Id.choice.usage.encrypt_only, getResources().getString(
                         R.string.choice_encrypt_only)),
                 new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                        R.string.choice_sign_and_encrypt)), };
+                        R.string.choice_sign_and_encrypt)),};
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -144,11 +134,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                     dialog.getDatePicker().setCalendarViewShown(false);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    if ( dialog != null && mCreatedDate != null ) {
-                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    if (dialog != null && mCreatedDate != null) {
+                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     } else {
                         //When created date isn't available
-                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     }
                 }
 
@@ -290,6 +280,7 @@ class ExpiryDatePickerDialog extends DatePickerDialog {
     public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
+
     //Set permanent title.
     public void setTitle(CharSequence title) {
         super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));

@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -38,6 +27,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Binder;
+import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.util.OpenPgpApi;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Abstract service class for remote APIs that handle app registration and user input.
@@ -84,7 +83,8 @@ public abstract class RemoteService extends Service {
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
                 intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
+                                                    PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -98,10 +98,12 @@ public abstract class RemoteService extends Service {
 
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
-            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, getString(R.string.api_error_wrong_signature));
+            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+                                    getString(R.string.api_error_wrong_signature));
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_ERROR, intent, 0);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
+                                        PRIVATE_REQUEST_CODE_ERROR, intent, 0);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -138,8 +140,9 @@ public abstract class RemoteService extends Service {
 
             AppSettings settings = ProviderHelper.getApiAppSettings(this, uri);
 
-            if (settings != null)
+            if (settings != null) {
                 return settings;
+            }
         }
 
         return null;
@@ -213,7 +216,7 @@ public abstract class RemoteService extends Service {
                 return true;
             } else {
                 throw new WrongPackageSignatureException(
-                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
+                    "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
             }
         }
 

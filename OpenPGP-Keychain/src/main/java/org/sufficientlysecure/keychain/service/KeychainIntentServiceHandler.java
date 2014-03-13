@@ -17,9 +17,6 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.R;
-
 import android.app.Activity;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
@@ -28,6 +25,8 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 public class KeychainIntentServiceHandler extends Handler {
 
@@ -73,7 +72,8 @@ public class KeychainIntentServiceHandler extends Handler {
     }
 
     public void showProgressDialog(FragmentActivity activity) {
-        // TODO: This is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
+        // TODO: This is a hack!, see
+        // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
         Handler handler = new Handler();
         handler.post(new Runnable() {
