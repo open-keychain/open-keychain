@@ -16,6 +16,17 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
+import android.widget.Toast;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -25,16 +36,6 @@ import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
-import android.widget.Toast;
 
 public class ExportHelper {
     protected FileDialogFragment mFileDialog;
@@ -115,7 +116,7 @@ public class ExportHelper {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
-        Intent intent = new Intent(activity, KeychainIntentService.class);
+        final Intent intent = new Intent(activity, KeychainIntentService.class);
 
         intent.setAction(KeychainIntentService.ACTION_EXPORT_KEYRING);
 
@@ -135,7 +136,12 @@ public class ExportHelper {
 
         // Message is received after exporting is done in ApgService
         KeychainIntentServiceHandler exportHandler = new KeychainIntentServiceHandler(activity,
-                activity.getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
+                activity.getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL, true, new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                activity.stopService(intent);
+            }
+        }) {
             public void handleMessage(Message message) {
                 // handle messages by standard ApgHandler first
                 super.handleMessage(message);
