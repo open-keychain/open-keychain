@@ -52,7 +52,8 @@ public class PgpImportExport {
         this.mProgress = progress;
     }
 
-    public PgpImportExport(Context context, ProgressDialogUpdater progress, KeychainServiceListener keychainListener) {
+    public PgpImportExport(Context context,
+                           ProgressDialogUpdater progress, KeychainServiceListener keychainListener) {
         super();
         this.mContext = context;
         this.mProgress = progress;
@@ -252,8 +253,9 @@ public class PgpImportExport {
                         }
                         newPubRing = PGPPublicKeyRing.insertPublicKey(newPubRing, key);
                     }
-                    if (newPubRing != null)
+                    if (newPubRing != null) {
                         ProviderHelper.saveKeyRing(mContext, newPubRing);
+                    }
                     // TODO: remove status returns, use exceptions!
                     status = Id.return_value.ok;
                 }

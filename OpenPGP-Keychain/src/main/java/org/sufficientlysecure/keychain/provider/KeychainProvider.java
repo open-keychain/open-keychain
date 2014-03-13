@@ -17,21 +17,6 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -43,6 +28,13 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.*;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class KeychainProvider extends ContentProvider {
     // public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
@@ -367,7 +359,8 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.KEY_RING_DATA);
-        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
         // TODO: deprecated master key id
         //projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.KEY_ID);
 
@@ -483,7 +476,8 @@ public class KeychainProvider extends ContentProvider {
                 groupBy = Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID;
 
                 if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = KeyRings.TYPE + " DESC, " + Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                    sortOrder = KeyRings.TYPE + " DESC, " +
+                            Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
                 }
 
                 break;

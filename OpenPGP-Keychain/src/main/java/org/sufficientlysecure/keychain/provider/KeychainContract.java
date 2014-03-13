@@ -17,10 +17,9 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import org.sufficientlysecure.keychain.Constants;
-
 import android.net.Uri;
 import android.provider.BaseColumns;
+import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainContract {
 
@@ -94,10 +93,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key_ring";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
 
         public static Uri buildUnifiedKeyRingsUri() {
@@ -165,10 +168,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key";
 
         public static Uri buildPublicKeysUri(String keyRingRowId) {
@@ -204,10 +211,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
 
         public static Uri buildPublicUserIdsUri(String keyRingRowId) {
@@ -243,10 +254,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_API_APPS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_apps";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_apps";
 
         public static Uri buildIdUri(String rowId) {

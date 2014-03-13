@@ -287,7 +287,8 @@ public class PgpKeyOperation {
             long numDays =
                     (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
             if (numDays <= 0) {
-                throw new PgpGeneralException(mContext.getString(R.string.error_expiry_must_come_after_creation));
+                throw new PgpGeneralException(
+                        mContext.getString(R.string.error_expiry_must_come_after_creation));
             }
             hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
         } else {
@@ -336,8 +337,10 @@ public class PgpKeyOperation {
             keyFlags = 0;
 
             usageId = keysUsages.get(i);
-            canSign = (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
-            canEncrypt = (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
+            canSign =
+                    (usageId == Id.choice.usage.sign_only || usageId == Id.choice.usage.sign_and_encrypt);
+            canEncrypt =
+                    (usageId == Id.choice.usage.encrypt_only || usageId == Id.choice.usage.sign_and_encrypt);
             if (canSign) {
                 Date todayDate = new Date(); //both sig times the same
                 keyFlags |= KeyFlags.SIGN_DATA;
