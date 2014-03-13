@@ -17,12 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +24,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class AppSettingsActivity extends ActionBarActivity {
     private Uri mAppUri;
@@ -77,12 +76,12 @@ public class AppSettingsActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_api_settings_revoke:
-            revokeAccess();
-            return true;
-        case R.id.menu_api_settings_cancel:
-            finish();
-            return true;
+            case R.id.menu_api_settings_revoke:
+                revokeAccess();
+                return true;
+            case R.id.menu_api_settings_cancel:
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

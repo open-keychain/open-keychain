@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import org.spongycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
-import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
-import org.sufficientlysecure.keychain.util.AlgorithmNames;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -40,14 +29,19 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.spongycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
+import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
+import org.sufficientlysecure.keychain.util.AlgorithmNames;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class AppSettingsFragment extends Fragment implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {

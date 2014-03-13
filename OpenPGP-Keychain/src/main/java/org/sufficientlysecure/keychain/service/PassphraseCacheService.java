@@ -17,10 +17,15 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.*;
+import android.util.Log;
 import android.util.LongSparseArray;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
@@ -34,28 +39,13 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.RemoteException;
-import android.util.Log;
+import java.util.Date;
+import java.util.Iterator;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
  * passphrase cache. Use the static methods addCachedPassphrase and getCachedPassphrase for
  * convenience.
- * 
  */
 public class PassphraseCacheService extends Service {
     public static final String TAG = Constants.TAG + ": PassphraseCacheService";
@@ -86,7 +76,7 @@ public class PassphraseCacheService extends Service {
      * This caches a new passphrase in memory by sending a new command to the service. An android
      * service is only run once. Thus, when the service is already started, new commands just add
      * new events to the alarm manager for new passphrases to let them timeout in the future.
-     * 
+     *
      * @param context
      * @param keyId
      * @param passphrase
@@ -106,7 +96,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Gets a cached passphrase from memory by sending an intent to the service. This method is
      * designed to wait until the service returns the passphrase.
-     * 
+     *
      * @param context
      * @param keyId
      * @return passphrase or null (if no passphrase is cached for this keyId)
@@ -161,7 +151,7 @@ public class PassphraseCacheService extends Service {
 
     /**
      * Internal implementation to get cached passphrase.
-     * 
+     *
      * @param keyId
      * @return
      */
@@ -205,7 +195,7 @@ public class PassphraseCacheService extends Service {
 
     /**
      * Checks if key has a passphrase.
-     * 
+     *
      * @param secretKeyId
      * @return true if it has a passphrase
      */
@@ -216,8 +206,8 @@ public class PassphraseCacheService extends Service {
                     .getPGPSecretKeyRingByKeyId(context, secretKeyId);
             PGPSecretKey secretKey = null;
             boolean foundValidKey = false;
-            for (Iterator keys = secRing.getSecretKeys(); keys.hasNext();) {
-                secretKey = (PGPSecretKey)keys.next();
+            for (Iterator keys = secRing.getSecretKeys(); keys.hasNext(); ) {
+                secretKey = (PGPSecretKey) keys.next();
                 if (!secretKey.isPrivateKeyEmpty()) {
                     foundValidKey = true;
                     break;
@@ -269,7 +259,7 @@ public class PassphraseCacheService extends Service {
 
     /**
      * Build pending intent that is executed by alarm manager to time out a specific passphrase
-     * 
+     *
      * @param context
      * @param keyId
      * @return
@@ -337,7 +327,7 @@ public class PassphraseCacheService extends Service {
 
     /**
      * Called when one specific passphrase for keyId timed out
-     * 
+     *
      * @param context
      * @param keyId
      */

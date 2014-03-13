@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -38,6 +27,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Binder;
+import org.openintents.openpgp.OpenPgpError;
+import org.openintents.openpgp.util.OpenPgpApi;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Abstract service class for remote APIs that handle app registration and user input.
