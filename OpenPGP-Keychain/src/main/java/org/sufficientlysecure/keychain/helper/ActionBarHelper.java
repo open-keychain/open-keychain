@@ -17,24 +17,23 @@
 
 package org.sufficientlysecure.keychain.helper;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class ActionBarHelper {
 
     /**
      * Set actionbar without home button if called from another app
-     * 
+     *
      * @param activity
      */
     public static void setBackButton(ActionBarActivity activity) {
@@ -54,7 +53,7 @@ public class ActionBarHelper {
 
     /**
      * Sets custom view on ActionBar for Done/Cancel activities
-     * 
+     *
      * @param actionBar
      * @param firstText
      * @param firstDrawableId
@@ -63,9 +62,9 @@ public class ActionBarHelper {
      * @param secondDrawableId
      * @param secondOnClickListener
      */
-    public static void setTwoButtonView(ActionBar actionBar, int firstText, int firstDrawableId,
-            OnClickListener firstOnClickListener, int secondText, int secondDrawableId,
-            OnClickListener secondOnClickListener) {
+    public static void setTwoButtonView(ActionBar actionBar,
+                                int firstText, int firstDrawableId, OnClickListener firstOnClickListener,
+                                int secondText, int secondDrawableId, OnClickListener secondOnClickListener) {
 
         // Inflate the custom action bar view
         final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
@@ -94,13 +93,13 @@ public class ActionBarHelper {
 
     /**
      * Sets custom view on ActionBar for Done activities
-     * 
+     *
      * @param actionBar
      * @param firstText
      * @param firstOnClickListener
      */
     public static void setOneButtonView(ActionBar actionBar, int firstText, int firstDrawableId,
-            OnClickListener firstOnClickListener) {
+                                        OnClickListener firstOnClickListener) {
         // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
         final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
