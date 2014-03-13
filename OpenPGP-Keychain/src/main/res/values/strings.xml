@@ -78,6 +78,7 @@
     <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
     <string name="menu_export_keys">Export all keys</string>
+    <string name="menu_export_secret_keys">Export all secret keys</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
     <string name="menu_create_key">Create key</string>
