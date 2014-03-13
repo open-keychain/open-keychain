@@ -466,4 +466,6 @@
     <string name="secret_key_yes">available</string>
     <string name="secret_key_no">unavailable</string>
 
+    <!-- Success Messages -->
+    <string name="success_set_passphrase">Passphrase set Successfully</string>
 </resources>
