@@ -55,7 +55,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
-    private boolean canEdit = true;
+    private boolean mCanEdit = true;
 
     private ActionBarActivity mActivity;
 
@@ -95,8 +95,8 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     }
 
     public void setCanEdit(boolean bCanEdit) {
-        canEdit = bCanEdit;
-        if (!canEdit) {
+        mCanEdit = bCanEdit;
+        if (!mCanEdit) {
             mPlusButton.setVisibility(View.INVISIBLE);
         }
     }
@@ -137,7 +137,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
      * {@inheritDoc}
      */
     public void onClick(View v) {
-        if (canEdit) {
+        if (mCanEdit) {
             switch (mType) {
                 case Id.type.user_id: {
                     UserIdEditor view = (UserIdEditor) mInflater.inflate(
@@ -151,15 +151,18 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 }
 
                 case Id.type.key: {
-                    CreateKeyDialogFragment mCreateKeyDialogFragment = CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
-                    mCreateKeyDialogFragment.setOnAlgorithmSelectedListener(new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
-                        @Override
-                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
-                            mNewKeyAlgorithmChoice = algorithmChoice;
-                            mNewKeySize = keySize;
-                            createKey();
-                        }
-                    });
+                    CreateKeyDialogFragment mCreateKeyDialogFragment =
+                            CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
+                    mCreateKeyDialogFragment
+                            .setOnAlgorithmSelectedListener(
+                                    new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
+                                        @Override
+                                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
+                                            mNewKeyAlgorithmChoice = algorithmChoice;
+                                            mNewKeySize = keySize;
+                                            createKey();
+                                        }
+                                    });
                     mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
                     break;
                 }
@@ -186,7 +189,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             if (mEditors.getChildCount() == 0) {
                 view.setIsMainUserId(true);
             }
-            view.setCanEdit(canEdit);
+            view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
 
@@ -207,7 +210,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
             view.setValue(list.get(i), isMasterKey, usages.get(i));
-            view.setCanEdit(canEdit);
+            view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
 

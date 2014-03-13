@@ -221,15 +221,15 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     private class NavigationDrawerAdapter extends ArrayAdapter<NavItem> {
-        Context context;
-        int layoutResourceId;
-        NavItem data[] = null;
+        Context mContext;
+        int mLayoutResourceId;
+        NavItem mData[] = null;
 
         public NavigationDrawerAdapter(Context context, int layoutResourceId, NavItem[] data) {
             super(context, layoutResourceId, data);
-            this.layoutResourceId = layoutResourceId;
-            this.context = context;
-            this.data = data;
+            this.mLayoutResourceId = layoutResourceId;
+            this.mContext = context;
+            this.mData = data;
         }
 
         @Override
@@ -238,21 +238,21 @@ public class DrawerActivity extends ActionBarActivity {
             NavItemHolder holder = null;
 
             if (row == null) {
-                LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-                row = inflater.inflate(layoutResourceId, parent, false);
+                LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                row = inflater.inflate(mLayoutResourceId, parent, false);
 
                 holder = new NavItemHolder();
-                holder.img = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
-                holder.txtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
+                holder.mImg = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
+                holder.mTxtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
 
                 row.setTag(holder);
             } else {
                 holder = (NavItemHolder) row.getTag();
             }
 
-            NavItem item = data[position];
-            holder.txtTitle.setText(item.title);
-            holder.img.setIcon(item.icon);
+            NavItem item = mData[position];
+            holder.mTxtTitle.setText(item.title);
+            holder.mImg.setIcon(item.icon);
 
             return row;
         }
@@ -260,8 +260,8 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     static class NavItemHolder {
-        FontAwesomeText img;
-        TextView txtTitle;
+        FontAwesomeText mImg;
+        TextView mTxtTitle;
     }
 
 }

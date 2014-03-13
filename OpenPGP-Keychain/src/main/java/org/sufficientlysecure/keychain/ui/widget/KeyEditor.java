@@ -54,7 +54,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     GregorianCalendar mExpiryDate;
 
     private int mDatePickerResultCount = 0;
-    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // Note: Ignore results after the first one - android sends multiples.
             if (mDatePickerResultCount++ == 0) {
@@ -89,7 +90,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 new Choice(Id.choice.usage.encrypt_only, getResources().getString(
                         R.string.choice_encrypt_only)),
                 new Choice(Id.choice.usage.sign_and_encrypt, getResources().getString(
-                        R.string.choice_sign_and_encrypt)),};
+                        R.string.choice_sign_and_encrypt)), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getContext(),
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -129,13 +130,15 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         });
 
                 // setCalendarViewShown() is supported from API 11 onwards.
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     // Hide calendarView in tablets because of the unix warparound bug.
                     dialog.getDatePicker().setCalendarViewShown(false);
-
+                }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     if (dialog != null && mCreatedDate != null) {
-                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
+                        dialog.getDatePicker()
+                                .setMinDate(
+                                        mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     } else {
                         //When created date isn't available
                         dialog.getDatePicker().setMinDate(date.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
@@ -277,7 +280,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
 class ExpiryDatePickerDialog extends DatePickerDialog {
 
-    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack,
+                                  int year, int monthOfYear, int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
 

@@ -34,8 +34,8 @@ import java.util.List;
 @SuppressLint("NewApi")
 public class PreferencesActivity extends PreferenceActivity {
 
-    public final static String ACTION_PREFS_GEN = "org.sufficientlysecure.keychain.ui.PREFS_GEN";
-    public final static String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
+    public static final String ACTION_PREFS_GEN = "org.sufficientlysecure.keychain.ui.PREFS_GEN";
+    public static final String ACTION_PREFS_ADV = "org.sufficientlysecure.keychain.ui.PREFS_ADV";
 
     private PreferenceScreen mKeyServerPreference = null;
     private static Preferences mPreferences;
@@ -81,12 +81,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
             String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -104,9 +104,11 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour((CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmour(
+                    (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
 
-            initializeForceV3Signatures((CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+            initializeForceV3Signatures(
+                    (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
 
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
@@ -216,12 +218,12 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
             String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -239,9 +241,11 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour((CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmour(
+                    (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
 
-            initializeForceV3Signatures((CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+            initializeForceV3Signatures(
+                    (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
         }
     }
 
@@ -269,9 +273,9 @@ public class PreferencesActivity extends PreferenceActivity {
         int valueIds[] = {PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
                 PGPEncryptedData.AES_256, PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH,
                 PGPEncryptedData.CAST5, PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES,
-                PGPEncryptedData.IDEA,};
+                PGPEncryptedData.IDEA, };
         String entries[] = {"AES-128", "AES-192", "AES-256", "Blowfish", "Twofish", "CAST5",
-                "DES", "Triple DES", "IDEA",};
+                "DES", "Triple DES", "IDEA", };
         String values[] = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -296,9 +300,9 @@ public class PreferencesActivity extends PreferenceActivity {
             (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
         valueIds = new int[]{HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
-                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
+                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512, };
         entries = new String[]{"MD5", "RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
-                "SHA-512",};
+                "SHA-512", };
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -317,8 +321,9 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
-    private static void initializeMessageCompression
-            (final IntegerListPreference mMessageCompression, int[] valueIds, String[] entries, String[] values) {
+    private static void initializeMessageCompression(
+            final IntegerListPreference mMessageCompression,
+            int[] valueIds, String[] entries, String[] values) {
         mMessageCompression.setEntries(entries);
         mMessageCompression.setEntryValues(values);
         mMessageCompression.setValue("" + mPreferences.getDefaultMessageCompression());

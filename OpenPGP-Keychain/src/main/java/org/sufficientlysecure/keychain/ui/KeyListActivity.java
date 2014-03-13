@@ -73,7 +73,7 @@ public class KeyListActivity extends DrawerActivity {
             case R.id.menu_key_list_secret_export:
                 mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
 
-
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -351,7 +351,7 @@ public class DecryptActivity extends DrawerActivity {
                 }
             } else {
                 Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
+                "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
                 Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
@@ -519,7 +519,9 @@ public class DecryptActivity extends DrawerActivity {
                         AppMsg.STYLE_ALERT).show();
             } finally {
                 try {
-                    if (inStream != null) inStream.close();
+                    if (inStream != null) {
+                        inStream.close();
+                    }
                 } catch (Exception e) {
                 }
             }
