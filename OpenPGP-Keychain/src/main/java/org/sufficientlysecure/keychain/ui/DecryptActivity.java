@@ -370,7 +370,7 @@ public class DecryptActivity extends DrawerActivity {
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
             filename = filename.substring(0, filename.length() - 4);
         }
-        mOutputFilename = Constants.path.APP_DIR + "/" + filename;
+        mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
     }
 
     private void updateSource() {

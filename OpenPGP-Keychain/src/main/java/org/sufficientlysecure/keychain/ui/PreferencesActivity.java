@@ -56,9 +56,9 @@ public class PreferencesActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.gen_preferences);
 
             initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL));
+                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
 
-            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
+            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = mPreferences.getKeyServers();
             mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
                     servers.length, servers.length));
@@ -78,7 +78,7 @@ public class PreferencesActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.adv_preferences);
 
             initializeEncryptionAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
                     Id.choice.compression.zlib, Id.choice.compression.bzip2, };
@@ -93,22 +93,22 @@ public class PreferencesActivity extends PreferenceActivity {
             }
 
             initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM),
                     valueIds, entries, values);
 
             initializeMessageCompression(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
                     valueIds, entries, values);
 
             initializeFileCompression(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
             initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
 
             initializeForceV3Signatures(
-                    (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+                    (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
 
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             // Load the legacy preferences headers
@@ -160,9 +160,9 @@ public class PreferencesActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.gen_preferences);
 
             initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.pref.PASS_PHRASE_CACHE_TTL));
+                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
 
-            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.pref.KEY_SERVERS);
+            mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = mPreferences.getKeyServers();
             mKeyServerPreference.setSummary(getResources().getQuantityString(R.plurals.n_key_servers,
                     servers.length, servers.length));
@@ -215,7 +215,7 @@ public class PreferencesActivity extends PreferenceActivity {
             addPreferencesFromResource(R.xml.adv_preferences);
 
             initializeEncryptionAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
             int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
                     Id.choice.compression.zlib, Id.choice.compression.bzip2, };
@@ -230,22 +230,22 @@ public class PreferencesActivity extends PreferenceActivity {
             }
 
             initializeHashAlgorithm(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_HASH_ALGORITHM),
                     valueIds, entries, values);
 
             initializeMessageCompression(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_MESSAGE_COMPRESSION),
                     valueIds, entries, values);
 
             initializeFileCompression(
-                    (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
+                    (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
             initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
 
             initializeForceV3Signatures(
-                    (CheckBoxPreference) findPreference(Constants.pref.FORCE_V3_SIGNATURES));
+                    (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
         }
     }
 

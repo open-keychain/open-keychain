@@ -189,7 +189,7 @@ public class KeyListFragment extends Fragment
                             mExportHelper
                                     .showExportKeysDialog(ids,
                                             Id.type.public_key,
-                                            Constants.path.APP_DIR_FILE_PUB);
+                                            Constants.Path.APP_DIR_FILE_PUB);
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {

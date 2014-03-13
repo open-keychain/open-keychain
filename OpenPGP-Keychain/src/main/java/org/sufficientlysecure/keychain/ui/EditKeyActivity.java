@@ -323,7 +323,7 @@ public class EditKeyActivity extends ActionBarActivity {
                 return true;
             case R.id.menu_key_edit_export_file:
                 long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
+                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC);
                 return true;
             case R.id.menu_key_edit_delete: {
                 // Message is received after key is deleted

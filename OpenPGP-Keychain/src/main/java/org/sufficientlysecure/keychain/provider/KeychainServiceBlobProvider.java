@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class KeychainServiceBlobProvider extends ContentProvider {
-    private static final String STORE_PATH = Constants.path.APP_DIR + "/ApgBlobs";
+    private static final String STORE_PATH = Constants.Path.APP_DIR + "/ApgBlobs";
 
     private KeychainServiceBlobDatabase mBlobDatabase = null;
 
