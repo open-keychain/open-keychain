@@ -83,7 +83,8 @@ public abstract class RemoteService extends Service {
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
                 intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
+                                                    PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -97,10 +98,12 @@ public abstract class RemoteService extends Service {
 
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
-            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, getString(R.string.api_error_wrong_signature));
+            intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE,
+                                    getString(R.string.api_error_wrong_signature));
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), PRIVATE_REQUEST_CODE_ERROR, intent, 0);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
+                                        PRIVATE_REQUEST_CODE_ERROR, intent, 0);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -137,8 +140,9 @@ public abstract class RemoteService extends Service {
 
             AppSettings settings = ProviderHelper.getApiAppSettings(this, uri);
 
-            if (settings != null)
+            if (settings != null) {
                 return settings;
+            }
         }
 
         return null;
@@ -212,7 +216,7 @@ public abstract class RemoteService extends Service {
                 return true;
             } else {
                 throw new WrongPackageSignatureException(
-                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
+                    "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
             }
         }
 

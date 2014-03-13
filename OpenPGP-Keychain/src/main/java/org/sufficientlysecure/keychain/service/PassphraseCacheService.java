@@ -214,9 +214,9 @@ public class PassphraseCacheService extends Service {
                 }
             }
 
-            if (!foundValidKey)
+            if (!foundValidKey) {
                 return false;
-
+            }
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                     "SC").build("".toCharArray());
             PGPPrivateKey testKey = secretKey.extractPrivateKey(keyDecryptor);
