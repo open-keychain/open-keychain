@@ -414,7 +414,7 @@ public class KeychainProvider extends ContentProvider {
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match) {
-        if(match != UNIFIED_KEY_RING) {
+        if (match != UNIFIED_KEY_RING) {
             // public or secret keyring
             qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
             qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
