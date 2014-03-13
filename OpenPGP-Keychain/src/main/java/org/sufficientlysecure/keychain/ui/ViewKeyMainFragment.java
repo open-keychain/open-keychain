@@ -136,7 +136,10 @@ public class ViewKeyMainFragment extends Fragment implements
                 mActionEdit.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View view) {
                         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                        editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(masterKeyId)));
+                        editIntent.setData(
+                                KeychainContract
+                                        .KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
+                                                                Long.toString(masterKeyId)));
                         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                         startActivityForResult(editIntent, 0);
                     }
@@ -169,21 +172,28 @@ public class ViewKeyMainFragment extends Fragment implements
         getActivity().getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
     }
 
-    static final String[] KEYRING_PROJECTION = new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
+    static final String[] KEYRING_PROJECTION =
+            new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.UserIds.USER_ID};
     static final int KEYRING_INDEX_ID = 0;
     static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
     static final int KEYRING_INDEX_USER_ID = 2;
 
-    static final String[] USER_IDS_PROJECTION = new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
-            KeychainContract.UserIds.RANK,};
+    static final String[] USER_IDS_PROJECTION =
+            new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
+            KeychainContract.UserIds.RANK, };
     // not the main user id
     static final String USER_IDS_SELECTION = KeychainContract.UserIds.RANK + " > 0 ";
-    static final String USER_IDS_SORT_ORDER = KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
+    static final String USER_IDS_SORT_ORDER =
+            KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
 
-    static final String[] KEYS_PROJECTION = new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
-            KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM, KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY, KeychainContract.Keys.CAN_SIGN,
-            KeychainContract.Keys.CAN_ENCRYPT, KeychainContract.Keys.CREATION, KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
+    static final String[] KEYS_PROJECTION =
+            new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
+            KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
+            KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
+            KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
+            KeychainContract.Keys.CREATION, KeychainContract.Keys.EXPIRY,
+            KeychainContract.Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -266,7 +276,8 @@ public class ViewKeyMainFragment extends Fragment implements
                     } else {
                         Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
 
-                        mCreation.setText(DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
+                        mCreation.setText(
+                                DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
                                 creationDate));
                     }
 
@@ -276,7 +287,8 @@ public class ViewKeyMainFragment extends Fragment implements
                     } else {
                         Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
 
-                        mExpiry.setText(DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
+                        mExpiry.setText(
+                                DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
                                 expiryDate));
                     }
 
@@ -396,6 +408,5 @@ public class ViewKeyMainFragment extends Fragment implements
         signIntent.setData(dataUri);
         startActivity(signIntent);
     }
-
 
 }

@@ -132,7 +132,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         mSearchView = new EditText(context);
         mSearchView.setId(SEARCH_ID);
         mSearchView.setHint(R.string.menu_search);
-        mSearchView.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
+        mSearchView.setCompoundDrawablesWithIntrinsicBounds(
+                getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
 
         linearLayout.addView(mSearchView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -270,7 +271,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                         + Keys.CAN_ENCRYPT + " = '1' AND valid_keys." + Keys.CREATION + " <= '"
                         + now + "' AND " + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys."
                         + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,};
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {

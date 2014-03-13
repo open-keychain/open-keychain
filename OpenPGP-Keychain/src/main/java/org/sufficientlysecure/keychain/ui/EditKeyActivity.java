@@ -98,7 +98,7 @@ public class EditKeyActivity extends ActionBarActivity {
     Vector<String> mUserIds;
     Vector<PGPSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
-    boolean masterCanSign = true;
+    boolean mMasterCanSign = true;
 
     ExportHelper mExportHelper;
 
@@ -264,8 +264,8 @@ public class EditKeyActivity extends ActionBarActivity {
             // get master key id using row id
             long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
 
-            masterCanSign = ProviderHelper.getMasterKeyCanSign(this, mDataUri);
-            finallyEdit(masterKeyId, masterCanSign);
+            mMasterCanSign = ProviderHelper.getMasterKeyCanSign(this, mDataUri);
+            finallyEdit(masterKeyId, mMasterCanSign);
         }
     }
 
@@ -432,12 +432,12 @@ public class EditKeyActivity extends ActionBarActivity {
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mUserIdsView.setType(Id.type.user_id);
-        mUserIdsView.setCanEdit(masterCanSign);
+        mUserIdsView.setCanEdit(mMasterCanSign);
         mUserIdsView.setUserIds(mUserIds);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
-        mKeysView.setCanEdit(masterCanSign);
+        mKeysView.setCanEdit(mMasterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages);
         container.addView(mKeysView);
 
@@ -493,12 +493,13 @@ public class EditKeyActivity extends ActionBarActivity {
             }
 
             String passphrase = null;
-            if (mIsPassPhraseSet)
+            if (mIsPassPhraseSet) {
                 passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
-            else
+            } else {
                 passphrase = "";
+            }
             if (passphrase == null) {
-                showPassphraseDialog(masterKeyId, masterCanSign);
+                showPassphraseDialog(masterKeyId, mMasterCanSign);
             } else {
                 mCurrentPassphrase = passphrase;
                 finallySaveClicked();
@@ -531,7 +532,7 @@ public class EditKeyActivity extends ActionBarActivity {
             data.putSerializable(KeychainIntentService.SAVE_KEYRING_KEYS_EXPIRY_DATES,
                     getKeysExpiryDates(mKeysView));
             data.putLong(KeychainIntentService.SAVE_KEYRING_MASTER_KEY_ID, getMasterKeyId());
-            data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
+            data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, mMasterCanSign);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
