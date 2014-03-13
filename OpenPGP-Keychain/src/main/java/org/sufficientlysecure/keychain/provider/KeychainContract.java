@@ -78,7 +78,6 @@ public class KeychainContract {
 
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
-    public static final String PATH_UNIFIED = "unified";
 
     public static final String PATH_BY_MASTER_KEY_ID = "master_key_id";
     public static final String PATH_BY_KEY_ID = "key_id";
@@ -102,7 +101,7 @@ public class KeychainContract {
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
 
         public static Uri buildUnifiedKeyRingsUri() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
+            return CONTENT_URI;
         }
 
         public static Uri buildPublicKeyRingsUri() {

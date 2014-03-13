@@ -97,6 +97,15 @@ public class KeychainProvider extends ContentProvider {
         String authority = KeychainContract.CONTENT_AUTHORITY;
 
         /**
+         * unified key rings
+         *
+         * <pre>
+         * key_rings
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS, UNIFIED_KEY_RING);
+
+        /**
          * public key rings
          *
          * <pre>
@@ -227,16 +236,6 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
-
-        /**
-         * unified key rings
-         * <pre>
-         *
-         * key_rings/unified
-         *
-         */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                + KeychainContract.PATH_UNIFIED, UNIFIED_KEY_RING);
 
         /**
          * data stream
@@ -813,9 +812,6 @@ public class KeychainProvider extends ContentProvider {
 
         // notify of changes in db
         getContext().getContentResolver().notifyChange(uri, null);
-        getContext().getContentResolver().notifyChange(
-                KeyRings.buildUnifiedKeyRingsUri().buildUpon().appendPath("lulz").build(), null
-        );
 
         return count;
     }
