@@ -85,25 +85,25 @@ public class HkpKeyServer extends KeyServer {
     public static Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
             | Pattern.CASE_INSENSITIVE);
 
-	private static final short PORT_DEFAULT = 11371;
+    private static final short PORT_DEFAULT = 11371;
 
-	/**
-	 * @param hostAndPort may be just "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
-	 *                connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
-	 *                ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
-	 */
-	public HkpKeyServer(String hostAndPort) {
-		String host = hostAndPort;
-		short port = PORT_DEFAULT;
-		final int colonPosition = hostAndPort.lastIndexOf(':');
-		if (colonPosition > 0) {
-			host = hostAndPort.substring(0, colonPosition);
-			final String portStr = hostAndPort.substring(colonPosition + 1);
-			port = Short.decode(portStr);
-		}
-		mHost = host;
-		mPort = port;
-	}
+    /**
+     * @param hostAndPort may be just "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
+     *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
+     *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
+     */
+    public HkpKeyServer(String hostAndPort) {
+        String host = hostAndPort;
+        short port = PORT_DEFAULT;
+        final int colonPosition = hostAndPort.lastIndexOf(':');
+        if (colonPosition > 0) {
+            host = hostAndPort.substring(0, colonPosition);
+            final String portStr = hostAndPort.substring(colonPosition + 1);
+            port = Short.decode(portStr);
+        }
+        mHost = host;
+        mPort = port;
+    }
 
     public HkpKeyServer(String host, short port) {
         mHost = host;

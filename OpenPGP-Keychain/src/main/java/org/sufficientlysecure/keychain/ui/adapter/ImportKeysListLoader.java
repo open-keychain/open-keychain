@@ -31,21 +31,22 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
+public class ImportKeysListLoader
+        extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
     public static class FileHasNoContent extends Exception {
 
     }
 
     public static class NonPgpPart extends Exception {
-        private int count;
+        private int mCount;
 
         public NonPgpPart(int count) {
-            this.count = count;
+            this.mCount = count;
         }
 
         public int getCount() {
-            return count;
+            return mCount;
         }
     }
 
@@ -53,8 +54,8 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
     InputData mInputData;
 
-    ArrayList<ImportKeysListEntry> data = new ArrayList<ImportKeysListEntry>();
-    AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
+    ArrayList<ImportKeysListEntry> mData = new ArrayList<ImportKeysListEntry>();
+    AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListLoader(Context context, InputData inputData) {
         super(context);
@@ -65,16 +66,16 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
 
-        entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(data, null);
+        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, null);
 
         if (mInputData == null) {
             Log.e(Constants.TAG, "Input data is null!");
-            return entryListWrapper;
+            return mEntryListWrapper;
         }
 
         generateListOfKeyrings(mInputData);
 
-        return entryListWrapper;
+        return mEntryListWrapper;
     }
 
     @Override
@@ -142,25 +143,25 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Exception on parsing key file!", e);
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(data, e);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mData, e);
             nonPgpCounter = 0;
         }
 
         if (isEmpty) {
             Log.e(Constants.TAG, "File has no content!", new FileHasNoContent());
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (data, new FileHasNoContent());
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+                    (mData, new FileHasNoContent());
         }
 
         if (nonPgpCounter > 0) {
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
-                    (data, new NonPgpPart(nonPgpCounter));
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
+                    (mData, new NonPgpPart(nonPgpCounter));
         }
     }
 
     private void addToData(PGPKeyRing keyring) {
         ImportKeysListEntry item = new ImportKeysListEntry(keyring);
-        data.add(item);
+        mData.add(item);
     }
 
 }

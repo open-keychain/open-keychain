@@ -17,13 +17,14 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.util.HashMap;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import android.annotation.SuppressLint;
-import android.app.Activity;
+
+import java.util.HashMap;
 
 @SuppressLint("UseSparseArrays")
 public class AlgorithmNames {

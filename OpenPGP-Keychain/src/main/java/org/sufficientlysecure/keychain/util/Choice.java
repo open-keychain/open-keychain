@@ -39,7 +39,7 @@ public class Choice {
     }
 
     @Override
-	public String toString() {
+    public String toString() {
         return mName;
     }
 }

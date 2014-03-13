@@ -27,20 +27,20 @@ package org.sufficientlysecure.keychain.ui.adapter;
  */
 public class AsyncTaskResultWrapper<T> {
 
-    private final T result;
-    private final Exception error;
+    private final T mResult;
+    private final Exception mError;
 
     public AsyncTaskResultWrapper(T result, Exception error) {
-        this.result = result;
-        this.error = error;
+        this.mResult = result;
+        this.mError = error;
     }
 
     public T getResult() {
-        return result;
+        return mResult;
     }
 
     public Exception getError() {
-        return error;
+        return mError;
     }
 
 }

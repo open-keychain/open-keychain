@@ -848,7 +848,7 @@ public class EncryptActivity extends DrawerActivity {
                 new Choice(Id.choice.compression.zlib, "ZLIB ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.bzip2, "BZIP2 ("
-                        + getString(R.string.compression_very_slow) + ")"),};
+                        + getString(R.string.compression_very_slow) + ")"), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

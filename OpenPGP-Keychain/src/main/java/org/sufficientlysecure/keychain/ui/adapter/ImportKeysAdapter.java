@@ -40,15 +40,15 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected LayoutInflater mInflater;
     protected Activity mActivity;
 
-    protected List<ImportKeysListEntry> data;
+    protected List<ImportKeysListEntry> mData;
 
     static class ViewHolder {
-        private TextView mainUserId;
-        private TextView mainUserIdRest;
-        private TextView keyId;
-        private TextView fingerprint;
-        private TextView algorithm;
-        private TextView status;
+        private TextView mMainUserId;
+        private TextView mMainUserIdRest;
+        private TextView mKeyId;
+        private TextView mFingerprint;
+        private TextView mAlgorithm;
+        private TextView mStatus;
 
     }
 
@@ -62,7 +62,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     public void setData(List<ImportKeysListEntry> data) {
         clear();
         if (data != null) {
-            this.data = data;
+            this.mData = data;
 
             // add data to extended ArrayAdapter
             if (Build.VERSION.SDK_INT >= 11) {
@@ -76,14 +76,15 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     }
 
     public List<ImportKeysListEntry> getData() {
-        return data;
+        return mData;
     }
 
     public ArrayList<ImportKeysListEntry> getSelectedData() {
         ArrayList<ImportKeysListEntry> selectedData = new ArrayList<ImportKeysListEntry>();
-        for (ImportKeysListEntry entry : data) {
-            if (entry.isSelected())
+        for (ImportKeysListEntry entry : mData) {
+            if (entry.isSelected()) {
                 selectedData.add(entry);
+            }
         }
         return selectedData;
     }
@@ -94,17 +95,17 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImportKeysListEntry entry = data.get(position);
+        ImportKeysListEntry entry = mData.get(position);
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
-            holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
-            holder.mainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
-            holder.keyId = (TextView) convertView.findViewById(R.id.keyId);
-            holder.fingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
-            holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
-            holder.status = (TextView) convertView.findViewById(R.id.status);
+            holder.mMainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
+            holder.mMainUserIdRest = (TextView) convertView.findViewById(R.id.mainUserIdRest);
+            holder.mKeyId = (TextView) convertView.findViewById(R.id.keyId);
+            holder.mFingerprint = (TextView) convertView.findViewById(R.id.fingerprint);
+            holder.mAlgorithm = (TextView) convertView.findViewById(R.id.algorithm);
+            holder.mStatus = (TextView) convertView.findViewById(R.id.status);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -118,36 +119,36 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             // show red user id if it is a secret key
             if (entry.secretKey) {
                 userIdSplit[0] = mActivity.getString(R.string.secret_key) + " " + userIdSplit[0];
-                holder.mainUserId.setTextColor(Color.RED);
+                holder.mMainUserId.setTextColor(Color.RED);
             }
-            holder.mainUserId.setText(userIdSplit[0]);
+            holder.mMainUserId.setText(userIdSplit[0]);
         } else {
-            holder.mainUserId.setText(R.string.user_id_no_name);
+            holder.mMainUserId.setText(R.string.user_id_no_name);
         }
 
         // email
         if (userIdSplit[1] != null) {
-            holder.mainUserIdRest.setText(userIdSplit[1]);
-            holder.mainUserIdRest.setVisibility(View.VISIBLE);
+            holder.mMainUserIdRest.setText(userIdSplit[1]);
+            holder.mMainUserIdRest.setVisibility(View.VISIBLE);
         } else {
-            holder.mainUserIdRest.setVisibility(View.GONE);
+            holder.mMainUserIdRest.setVisibility(View.GONE);
         }
 
-        holder.keyId.setText(entry.hexKeyId);
+        holder.mKeyId.setText(entry.hexKeyId);
 
         if (entry.fingerPrint != null) {
-            holder.fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
-            holder.fingerprint.setVisibility(View.VISIBLE);
+            holder.mFingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrint);
+            holder.mFingerprint.setVisibility(View.VISIBLE);
         } else {
-            holder.fingerprint.setVisibility(View.GONE);
+            holder.mFingerprint.setVisibility(View.GONE);
         }
 
-        holder.algorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
+        holder.mAlgorithm.setText("" + entry.bitStrength + "/" + entry.algorithm);
 
         if (entry.revoked) {
-            holder.status.setText(R.string.revoked);
+            holder.mStatus.setText(R.string.revoked);
         } else {
-            holder.status.setVisibility(View.GONE);
+            holder.mStatus.setVisibility(View.GONE);
         }
 
         LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.list);

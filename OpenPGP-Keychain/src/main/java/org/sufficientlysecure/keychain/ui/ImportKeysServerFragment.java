@@ -94,7 +94,8 @@ public class ImportKeysServerFragment extends Fragment {
                 search(query, keyServer);
 
                 // close keyboard after pressing search
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm =
+                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(mQueryEditText.getWindowToken(), 0);
             }
         });
@@ -108,7 +109,6 @@ public class ImportKeysServerFragment extends Fragment {
                     search(query, keyServer);
 
                     // Don't return true to let the keyboard close itself after pressing search
-                    // http://stackoverflow.com/questions/2342620/how-to-hide-keyboard-after-typing-in-edittext-in-android
                     return false;
                 }
                 return false;
