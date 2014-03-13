@@ -288,9 +288,11 @@ public class PgpDecryptVerify {
                         // if no passphrase was explicitly set try to get it from the cache service
                         if (mPassphrase == null) {
                             // returns "" if key has no passphrase
-                            mPassphrase = PassphraseCacheService.getCachedPassphrase(mContext, encData.getKeyID());
+                            mPassphrase =
+                                    PassphraseCacheService.getCachedPassphrase(mContext, encData.getKeyID());
 
-                            // if passphrase was not cached, return here indicating that a passphrase is missing!
+                            // if passphrase was not cached, return here
+                            // indicating that a passphrase is missing!
                             if (mPassphrase == null) {
                                 returnData.setKeyPassphraseNeeded(true);
                                 return returnData;
@@ -384,7 +386,8 @@ public class PgpDecryptVerify {
             signatureResult.setKeyId(signatureKeyId);
 
             if (signature != null) {
-                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider = new JcaPGPContentVerifierBuilderProvider()
+                JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
+                        new JcaPGPContentVerifierBuilderProvider()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
                 signature.init(contentVerifierBuilderProvider, signatureKey);
@@ -613,7 +616,8 @@ public class PgpDecryptVerify {
         return returnData;
     }
 
-    private static boolean verifyKeyBinding(Context context, PGPSignature signature, PGPPublicKey signatureKey) {
+    private static boolean verifyKeyBinding(Context context,
+                                            PGPSignature signature, PGPPublicKey signatureKey) {
         long signatureKeyId = signature.getKeyID();
         boolean validKeyBinding = false;
 
@@ -648,7 +652,8 @@ public class PgpDecryptVerify {
             //about keys without subkey signing. Can't get it to import a slightly broken one
             //either, so we will err on bad subkey binding here.
             PGPSignature sig = itr.next();
-            if (sig.getKeyID() == masterPublicKey.getKeyID() && sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
+            if (sig.getKeyID() == masterPublicKey.getKeyID() &&
+                    sig.getSignatureType() == PGPSignature.SUBKEY_BINDING) {
                 //check and if ok, check primary key binding.
                 try {
                     sig.init(contentVerifierBuilderProvider, masterPublicKey);
@@ -680,7 +685,7 @@ public class PgpDecryptVerify {
     }
 
     private static boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector pkts,
-                                                   PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+                          PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
         boolean validPrimaryKeyBinding = false;
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                 new JcaPGPContentVerifierBuilderProvider()

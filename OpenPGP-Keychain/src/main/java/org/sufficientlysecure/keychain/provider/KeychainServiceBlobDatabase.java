@@ -22,7 +22,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-
 import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.BlobsColumns;
 
 public class KeychainServiceBlobDatabase extends SQLiteOpenHelper {

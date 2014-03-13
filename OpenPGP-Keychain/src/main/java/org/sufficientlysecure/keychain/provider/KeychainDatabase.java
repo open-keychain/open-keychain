@@ -17,17 +17,16 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
 import org.sufficientlysecure.keychain.util.Log;
-
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
