@@ -17,13 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,8 +29,13 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.util.Log;
 
 /**
  * Sends the selected public key to a keyserver
@@ -59,7 +57,7 @@ public class UploadKeyActivity extends ActionBarActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
-                        .getKeyServers());
+                .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mKeyServerSpinner.setAdapter(adapter);
         if (adapter.getCount() > 0) {

@@ -17,13 +17,12 @@
 
 package org.sufficientlysecure.keychain.helper;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.util.Vector;
 
@@ -38,8 +37,8 @@ public class Preferences {
         return getPreferences(context, false);
     }
 
-    public static synchronized Preferences getPreferences(Context context, boolean force_new) {
-        if (mPreferences == null || force_new) {
+    public static synchronized Preferences getPreferences(Context context, boolean forceNew) {
+        if (mPreferences == null || forceNew) {
             mPreferences = new Preferences(context);
         }
         return mPreferences;
@@ -144,8 +143,8 @@ public class Preferences {
                 Constants.defaults.KEY_SERVERS);
         Vector<String> servers = new Vector<String>();
         String chunks[] = rawData.split(",");
-        for (int i = 0; i < chunks.length; ++i) {
-            String tmp = chunks[i].trim();
+        for (String c : chunks) {
+            String tmp = c.trim();
             if (tmp.length() > 0) {
                 servers.add(tmp);
             }
@@ -156,8 +155,8 @@ public class Preferences {
     public void setKeyServers(String[] value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         String rawData = "";
-        for (int i = 0; i < value.length; ++i) {
-            String tmp = value[i].trim();
+        for (String v : value) {
+            String tmp = v.trim();
             if (tmp.length() == 0) {
                 continue;
             }

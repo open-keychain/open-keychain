@@ -27,12 +27,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Choice;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class CreateKeyDialogFragment extends DialogFragment {
 
@@ -78,7 +77,7 @@ public class CreateKeyDialogFragment extends DialogFragment {
         boolean wouldBeMasterKey = (childCount == 0);
 
         final Spinner algorithm = (Spinner) view.findViewById(R.id.create_key_algorithm);
-        Vector<Choice> choices = new Vector<Choice>();
+        ArrayList<Choice> choices = new ArrayList<Choice>();
         choices.add(new Choice(Id.choice.algorithm.dsa, getResources().getString(
                 R.string.dsa)));
         if (!wouldBeMasterKey) {

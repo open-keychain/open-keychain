@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    android:layout_marginRight="?android:attr/scrollbarSize"
     android:gravity="center_vertical"
     android:paddingLeft="8dp"
-    android:paddingRight="8dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
-    android:singleLine="true">
+    android:singleLine="true"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="false">
 
     <TextView
         android:id="@+id/mainUserId"
@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:text="@string/label_main_user_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -30,6 +31,23 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        style="@android:style/Widget.DeviceDefault.Button.Borderless.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit"
+        android:focusable="false"
+        android:layout_alignTop="@+id/mainUserId"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentTop="false"
+        android:layout_alignBottom="@+id/mainUserIdRest"
+        android:visibility="visible"
+        android:enabled="true"
+        android:textColor="@color/black"
+        android:text="@string/edit" />
+
     <TextView
         android:id="@+id/revoked"
         android:layout_width="wrap_content"
@@ -37,7 +55,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/revoked"
         android:textColor="#e00"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />

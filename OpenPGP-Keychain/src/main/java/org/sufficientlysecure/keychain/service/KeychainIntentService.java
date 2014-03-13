@@ -17,47 +17,6 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPObjectFactory;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPUtil;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpImportExport;
-import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.HkpKeyServer;
-import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
-import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
-
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -66,13 +25,32 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import org.spongycastle.openpgp.*;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.*;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
+import org.sufficientlysecure.keychain.util.*;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * This Service contains all important long lasting operations for APG. It receives Intents with
  * data from the activities or other apps, queues these intents, executes them, and stops itself
  * after doing them.
  */
-public class KeychainIntentService extends IntentService implements ProgressDialogUpdater {
+public class KeychainIntentService extends IntentService
+        implements ProgressDialogUpdater, KeychainServiceListener {
 
     /* extras that can be given by intent */
     public static final String EXTRA_MESSENGER = "messenger";
@@ -153,6 +131,7 @@ public class KeychainIntentService extends IntentService implements ProgressDial
     public static final String EXPORT_KEY_TYPE = "export_key_type";
     public static final String EXPORT_ALL = "export_all";
     public static final String EXPORT_KEY_RING_MASTER_KEY_ID = "export_key_ring_id";
+    public static final String EXPORT_KEY_RING_ROW_ID = "export_key_rind_row_id";
 
     // upload key
     public static final String UPLOAD_KEY_SERVER = "upload_key_server";
@@ -329,8 +308,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     builder.enableAsciiArmorOutput(useAsciiArmor)
                             .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
                             .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                            .signatureHashAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(
+                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
                     builder.build().generateSignature();
                 } else if (signOnly) {
@@ -338,21 +319,26 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     builder.enableAsciiArmorOutput(useAsciiArmor)
                             .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
                             .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                            .signatureHashAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(
+                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
                     builder.build().execute();
                 } else {
                     Log.d(Constants.TAG, "encrypt...");
                     builder.enableAsciiArmorOutput(useAsciiArmor)
                             .compressionId(compressionId)
-                            .symmetricEncryptionAlgorithm(Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
+                            .symmetricEncryptionAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                             .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
                             .encryptionKeyIds(encryptionKeyIds)
                             .encryptionPassphrase(encryptionPassphrase)
                             .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                            .signatureHashAlgorithm(
+                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                            .signaturePassphrase(
+                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
 
                     builder.build().execute();
                 }
@@ -544,7 +530,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 ArrayList<PGPSecretKey> keys = PgpConversionHelper.BytesToPGPSecretKeyList(data
                         .getByteArray(SAVE_KEYRING_KEYS));
                 ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
-                ArrayList<GregorianCalendar> keysExpiryDates = (ArrayList<GregorianCalendar>) data.getSerializable(SAVE_KEYRING_KEYS_EXPIRY_DATES);
+                ArrayList<GregorianCalendar> keysExpiryDates =
+                        (ArrayList<GregorianCalendar>) data.getSerializable(SAVE_KEYRING_KEYS_EXPIRY_DATES);
 
                 long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
 
@@ -599,7 +586,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 int keysTotal = 2;
                 int keysCreated = 0;
                 setProgress(
-                        getApplicationContext().getResources().getQuantityString(R.plurals.progress_generating, keysTotal),
+                        getApplicationContext().getResources().
+                                getQuantityString(R.plurals.progress_generating, keysTotal),
                         keysCreated,
                         keysTotal);
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
@@ -675,10 +663,12 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
                 String outputFile = data.getString(EXPORT_FILENAME);
 
+                long[] rowIds = new long[0];
+
+                // If not exporting all keys get the rowIds of the keys to export from the intent
                 boolean exportAll = data.getBoolean(EXPORT_ALL);
-                long keyRingMasterKeyId = -1;
                 if (!exportAll) {
-                    keyRingMasterKeyId = data.getLong(EXPORT_KEY_RING_MASTER_KEY_ID);
+                    rowIds = data.getLongArray(EXPORT_KEY_RING_ROW_ID);
                 }
 
                 /* Operation */
@@ -691,24 +681,31 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                 // OutputStream
                 FileOutputStream outStream = new FileOutputStream(outputFile);
 
-                ArrayList<Long> keyRingMasterKeyIds = new ArrayList<Long>();
+                ArrayList<Long> keyRingRowIds = new ArrayList<Long>();
                 if (exportAll) {
-                    // get all key ring row ids based on export type
 
+                    // get all key ring row ids based on export type
                     if (keyType == Id.type.public_key) {
-                        keyRingMasterKeyIds = ProviderHelper.getPublicKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getPublicKeyRingsRowIds(this);
                     } else {
-                        keyRingMasterKeyIds = ProviderHelper.getSecretKeyRingsMasterKeyIds(this);
+                        keyRingRowIds = ProviderHelper.getSecretKeyRingsRowIds(this);
                     }
                 } else {
-                    keyRingMasterKeyIds.add(keyRingMasterKeyId);
+                    for (long rowId : rowIds) {
+                        keyRingRowIds.add(rowId);
+                    }
                 }
 
-                Bundle resultData = new Bundle();
+                Bundle resultData;
 
-                PgpImportExport pgpImportExport = new PgpImportExport(this, this);
+                PgpImportExport pgpImportExport = new PgpImportExport(this, this, this);
+
                 resultData = pgpImportExport
-                        .exportKeyRings(keyRingMasterKeyIds, keyType, outStream);
+                        .exportKeyRings(keyRingRowIds, keyType, outStream);
+
+                if (mIsCanceled) {
+                    boolean isDeleted = new File(outputFile).delete();
+                }
 
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY, resultData);
             } catch (Exception e) {
@@ -759,7 +756,8 @@ public class KeychainIntentService extends IntentService implements ProgressDial
                     // need to have access to the bufferedInput, so we can reuse it for the possible
                     // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
                     // armor blocks
-                    BufferedInputStream bufferedInput = new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
+                    BufferedInputStream bufferedInput =
+                            new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
                     try {
 
                         // read all available blocks... (asc files can contain many blocks with BEGIN END)
@@ -831,9 +829,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     private void sendErrorToHandler(Exception e) {
         // Service was canceled. Do not send error to handler.
-        if (this.mIsCanceled)
+        if (this.mIsCanceled) {
             return;
-
+        }
         Log.e(Constants.TAG, "ApgService Exception: ", e);
         e.printStackTrace();
 
@@ -844,9 +842,9 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     private void sendMessageToHandler(Integer arg1, Integer arg2, Bundle data) {
         // Service was canceled. Do not send message to handler.
-        if (this.mIsCanceled)
+        if (this.mIsCanceled) {
             return;
-
+        }
         Message msg = Message.obtain();
         msg.arg1 = arg1;
         if (arg2 != null) {
@@ -896,5 +894,10 @@ public class KeychainIntentService extends IntentService implements ProgressDial
 
     public void setProgress(int progress, int max) {
         setProgress(null, progress, max);
+    }
+
+    @Override
+    public boolean hasServiceStopped() {
+        return mIsCanceled;
     }
 }

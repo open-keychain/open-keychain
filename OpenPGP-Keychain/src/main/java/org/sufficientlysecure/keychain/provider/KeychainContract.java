@@ -100,6 +100,10 @@ public class KeychainContract {
         /** Use if a single item is returned */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
 
+        public static Uri buildUnifiedKeyRingsUri() {
+            return CONTENT_URI;
+        }
+
         public static Uri buildPublicKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
         }

@@ -17,27 +17,22 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
-
-import android.Manifest;
-import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class SelectSecretKeyLayoutFragment extends Fragment {
 

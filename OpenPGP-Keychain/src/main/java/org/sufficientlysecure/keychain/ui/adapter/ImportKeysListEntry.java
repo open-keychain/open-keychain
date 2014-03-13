@@ -19,12 +19,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -32,6 +26,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;

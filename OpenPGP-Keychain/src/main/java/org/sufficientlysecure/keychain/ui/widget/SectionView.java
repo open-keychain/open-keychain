@@ -31,9 +31,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;

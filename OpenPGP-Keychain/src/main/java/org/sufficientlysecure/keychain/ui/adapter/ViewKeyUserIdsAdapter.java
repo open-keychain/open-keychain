@@ -17,9 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
@@ -27,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
 public class ViewKeyUserIdsAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
@@ -51,7 +50,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     /**
      * Get column indexes for performance reasons just once in constructor and swapCursor. For a
      * performance comparison see http://stackoverflow.com/a/17999582
-     * 
+     *
      * @param cursor
      */
     private void initIndex(Cursor cursor) {

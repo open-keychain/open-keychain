@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -32,6 +28,9 @@ import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 
 public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_FILE = "delete_file";

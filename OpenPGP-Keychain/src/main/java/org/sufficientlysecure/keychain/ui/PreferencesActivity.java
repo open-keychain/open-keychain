@@ -16,6 +16,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.preference.*;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.openpgp.PGPEncryptedData;
 import org.sufficientlysecure.keychain.Constants;
@@ -23,17 +28,6 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.ui.widget.IntegerListPreference;
-
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceScreen;
-import android.support.v7.app.ActionBarActivity;
 
 import java.util.List;
 
@@ -86,13 +80,13 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
-            int[] valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
-            String[] entries = new String[] {
+            int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
+            String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -100,15 +94,15 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeHashAlgorithm(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
-                                            valueIds, entries, values);
+                    valueIds, entries, values);
 
             initializeMessageCompression(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
-                                            valueIds, entries, values);
+                    valueIds, entries, values);
 
             initializeFileCompression(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
-                                            entries, values);
+                    entries, values);
 
             initializeAsciiArmour((CheckBoxPreference) findPreference(Constants.pref.DEFAULT_ASCII_ARMOUR));
 
@@ -149,7 +143,9 @@ public class PreferencesActivity extends PreferenceActivity {
         loadHeadersFromResource(R.xml.preference_headers, target);
     }
 
-    /** This fragment shows the general preferences in android 3.0+ */
+    /**
+     * This fragment shows the general preferences in android 3.0+
+     */
     public static class GeneralPrefsFragment extends PreferenceFragment {
 
         private PreferenceScreen mKeyServerPreference = null;
@@ -204,7 +200,9 @@ public class PreferencesActivity extends PreferenceActivity {
         }
     }
 
-    /** This fragment shows the advanced preferences in android 3.0+ */
+    /**
+     * This fragment shows the advanced preferences in android 3.0+
+     */
     public static class AdvancedPrefsFragment extends PreferenceFragment {
 
         @Override
@@ -217,13 +215,13 @@ public class PreferencesActivity extends PreferenceActivity {
             initializeEncryptionAlgorithm(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_ENCRYPTION_ALGORITHM));
 
-            int[] valueIds = new int[] { Id.choice.compression.none, Id.choice.compression.zip,
-                    Id.choice.compression.zlib, Id.choice.compression.bzip2, };
-            String[] entries = new String[] {
+            int[] valueIds = new int[]{Id.choice.compression.none, Id.choice.compression.zip,
+                    Id.choice.compression.zlib, Id.choice.compression.bzip2,};
+            String[] entries = new String[]{
                     getString(R.string.choice_none) + " (" + getString(R.string.compression_fast) + ")",
                     "ZIP (" + getString(R.string.compression_fast) + ")",
                     "ZLIB (" + getString(R.string.compression_fast) + ")",
-                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")", };
+                    "BZIP2 (" + getString(R.string.compression_very_slow) + ")",};
             String[] values = new String[valueIds.length];
             for (int i = 0; i < values.length; ++i) {
                 values[i] = "" + valueIds[i];
@@ -231,11 +229,11 @@ public class PreferencesActivity extends PreferenceActivity {
 
             initializeHashAlgorithm(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_HASH_ALGORITHM),
-                                                                    valueIds, entries, values);
+                    valueIds, entries, values);
 
             initializeMessageCompression(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_MESSAGE_COMPRESSION),
-                                                                valueIds, entries, values);
+                    valueIds, entries, values);
 
             initializeFileCompression(
                     (IntegerListPreference) findPreference(Constants.pref.DEFAULT_FILE_COMPRESSION),
@@ -247,7 +245,7 @@ public class PreferencesActivity extends PreferenceActivity {
         }
     }
 
-    protected boolean isValidFragment (String fragmentName) {
+    protected boolean isValidFragment(String fragmentName) {
         return AdvancedPrefsFragment.class.getName().equals(fragmentName)
                 || GeneralPrefsFragment.class.getName().equals(fragmentName)
                 || super.isValidFragment(fragmentName);
@@ -268,12 +266,12 @@ public class PreferencesActivity extends PreferenceActivity {
     }
 
     private static void initializeEncryptionAlgorithm(final IntegerListPreference mEncryptionAlgorithm) {
-        int valueIds[] = { PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
+        int valueIds[] = {PGPEncryptedData.AES_128, PGPEncryptedData.AES_192,
                 PGPEncryptedData.AES_256, PGPEncryptedData.BLOWFISH, PGPEncryptedData.TWOFISH,
                 PGPEncryptedData.CAST5, PGPEncryptedData.DES, PGPEncryptedData.TRIPLE_DES,
-                PGPEncryptedData.IDEA, };
-        String entries[] = { "AES-128", "AES-192", "AES-256", "Blowfish", "Twofish", "CAST5",
-                "DES", "Triple DES", "IDEA", };
+                PGPEncryptedData.IDEA,};
+        String entries[] = {"AES-128", "AES-192", "AES-256", "Blowfish", "Twofish", "CAST5",
+                "DES", "Triple DES", "IDEA",};
         String values[] = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];
@@ -296,11 +294,11 @@ public class PreferencesActivity extends PreferenceActivity {
 
     private static void initializeHashAlgorithm
             (final IntegerListPreference mHashAlgorithm, int[] valueIds, String[] entries, String[] values) {
-        valueIds = new int[] { HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
+        valueIds = new int[]{HashAlgorithmTags.MD5, HashAlgorithmTags.RIPEMD160,
                 HashAlgorithmTags.SHA1, HashAlgorithmTags.SHA224, HashAlgorithmTags.SHA256,
-                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512, };
-        entries = new String[] { "MD5", "RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
-                "SHA-512", };
+                HashAlgorithmTags.SHA384, HashAlgorithmTags.SHA512,};
+        entries = new String[]{"MD5", "RIPEMD-160", "SHA-1", "SHA-224", "SHA-256", "SHA-384",
+                "SHA-512",};
         values = new String[valueIds.length];
         for (int i = 0; i < values.length; ++i) {
             values[i] = "" + valueIds[i];

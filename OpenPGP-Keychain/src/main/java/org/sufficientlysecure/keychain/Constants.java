@@ -43,6 +43,8 @@ public final class Constants {
     public static final class path {
         public static final String APP_DIR = Environment.getExternalStorageDirectory()
                 + "/OpenPGP-Keychain";
+        public static final String APP_DIR_FILE_SEC = APP_DIR + "/secexport.asc";
+        public static final String APP_DIR_FILE_PUB = APP_DIR + "/pubexport.asc";
     }
 
     public static final class pref {

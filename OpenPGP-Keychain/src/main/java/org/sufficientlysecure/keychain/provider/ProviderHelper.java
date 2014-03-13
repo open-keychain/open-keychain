@@ -405,6 +405,30 @@ public class ProviderHelper {
     }
 
     /**
+     * Private helper method
+     */
+    private static ArrayList<Long> getKeyRingsRowIds(Context context, Uri queryUri) {
+        Cursor cursor = context.getContentResolver().query(queryUri,
+                new String[]{KeyRings._ID}, null, null, null);
+
+        ArrayList<Long> rowIds = new ArrayList<Long>();
+        if (cursor != null) {
+            int IdCol = cursor.getColumnIndex(KeyRings._ID);
+            if (cursor.moveToFirst()) {
+                do {
+                    rowIds.add(cursor.getLong(IdCol));
+                } while (cursor.moveToNext());
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rowIds;
+    }
+
+    /**
      * Retrieves ids of all SecretKeyRings
      */
     public static ArrayList<Long> getSecretKeyRingsMasterKeyIds(Context context) {
@@ -418,6 +442,22 @@ public class ProviderHelper {
     public static ArrayList<Long> getPublicKeyRingsMasterKeyIds(Context context) {
         Uri queryUri = KeyRings.buildPublicKeyRingsUri();
         return getKeyRingsMasterKeyIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all SecretKeyRings
+     */
+    public static ArrayList<Long> getSecretKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
+    }
+
+    /**
+     * Retrieves ids of all PublicKeyRings
+     */
+    public static ArrayList<Long> getPublicKeyRingsRowIds(Context context) {
+        Uri queryUri = KeyRings.buildPublicKeyRingsUri();
+        return getKeyRingsRowIds(context, queryUri);
     }
 
     public static void deletePublicKeyRing(Context context, long rowId) {
@@ -443,13 +483,13 @@ public class ProviderHelper {
      */
     public static boolean getSecretMasterKeyCanSign(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyCanSign(context, queryUri, keyRingRowId);
+        return getMasterKeyCanSign(context, queryUri);
     }
 
     /**
      * Private helper method to get master key private empty status of keyring by its row id
      */
-    private static boolean getMasterKeyCanSign(Context context, Uri queryUri, long keyRingRowId) {
+    public static boolean getMasterKeyCanSign(Context context, Uri queryUri) {
         String[] projection = new String[]{
                 KeyRings.MASTER_KEY_ID,
                 "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
@@ -473,6 +513,12 @@ public class ProviderHelper {
         }
 
         return (masterKeyId > 0);
+    }
+
+    public static boolean hasSecretKeyByMasterKeyId(Context context, long masterKeyId) {
+        Uri queryUri = KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(masterKeyId));
+        // see if we can get our master key id back from the uri
+        return getMasterKeyId(context, queryUri) == masterKeyId;
     }
 
     /**
@@ -504,6 +550,26 @@ public class ProviderHelper {
         }
 
         return masterKeyId;
+    }
+
+    public static long getRowId(Context context, Uri queryUri) {
+        String[] projection = new String[]{KeyRings._ID};
+        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
+
+        long rowId = 0;
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                int idCol = cursor.getColumnIndexOrThrow(KeyRings._ID);
+
+                rowId = cursor.getLong(idCol);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return rowId;
     }
 
     /**

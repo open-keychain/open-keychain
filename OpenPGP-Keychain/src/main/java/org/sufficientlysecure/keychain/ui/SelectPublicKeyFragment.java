@@ -17,19 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Date;
-import java.util.Vector;
-
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -45,12 +32,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
+
+import java.util.Date;
+import java.util.Vector;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements TextWatcher,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -199,8 +193,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         if (masterKeyIds != null) {
             for (int i = 0; i < getListView().getCount(); ++i) {
                 long keyId = mAdapter.getMasterKeyId(i);
-                for (int j = 0; j < masterKeyIds.length; ++j) {
-                    if (keyId == masterKeyIds[j]) {
+                for (long masterKeyId : masterKeyIds) {
+                    if (keyId == masterKeyId) {
                         getListView().setItemChecked(i, true);
                         break;
                     }

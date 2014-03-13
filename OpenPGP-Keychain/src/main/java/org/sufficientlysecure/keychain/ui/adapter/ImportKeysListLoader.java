@@ -17,10 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-
+import android.content.Context;
+import android.support.v4.content.AsyncTaskLoader;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPUtil;
@@ -29,8 +27,9 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
 
-import android.content.Context;
-import android.support.v4.content.AsyncTaskLoader;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
 
@@ -40,9 +39,11 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
     public static class NonPgpPart extends Exception {
         private int count;
+
         public NonPgpPart(int count) {
             this.count = count;
         }
+
         public int getCount() {
             return count;
         }
@@ -101,7 +102,7 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
 
     /**
      * Reads all PGPKeyRing objects from input
-     * 
+     *
      * @param inputData
      * @return
      */
@@ -145,13 +146,13 @@ public class ImportKeysListLoader extends AsyncTaskLoader<AsyncTaskResultWrapper
             nonPgpCounter = 0;
         }
 
-        if(isEmpty) {
+        if (isEmpty) {
             Log.e(Constants.TAG, "File has no content!", new FileHasNoContent());
             entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
                     (data, new FileHasNoContent());
         }
 
-        if(nonPgpCounter > 0) {
+        if (nonPgpCounter > 0) {
             entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>
                     (data, new NonPgpPart(nonPgpCounter));
         }

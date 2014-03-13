@@ -22,14 +22,15 @@ package org.sufficientlysecure.keychain.ui.adapter;
  * You can pass the result and an exception in it if an error occurred.
  * Concept found at:
  * https://stackoverflow.com/questions/19593577/how-to-handle-errors-in-custom-asynctaskloader
+ *
  * @param <T> - Typ of the result which is wrapped
  */
-public class AsyncTaskResultWrapper <T>{
+public class AsyncTaskResultWrapper<T> {
 
     private final T result;
     private final Exception error;
 
-    public AsyncTaskResultWrapper(T result, Exception error){
+    public AsyncTaskResultWrapper(T result, Exception error) {
         this.result = result;
         this.error = error;
     }

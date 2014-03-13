@@ -17,10 +17,9 @@
 
 package org.sufficientlysecure.keychain.service.remote;
 
+import android.os.Bundle;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.DrawerActivity;
-
-import android.os.Bundle;
 
 public class RegisteredAppsListActivity extends DrawerActivity {
 

@@ -35,11 +35,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -50,8 +49,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.Date;
 
 
-public class ViewKeyMainFragment extends Fragment  implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+public class ViewKeyMainFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
@@ -63,6 +62,8 @@ public class ViewKeyMainFragment extends Fragment  implements
     private TextView mExpiry;
     private TextView mCreation;
     private TextView mFingerprint;
+    private TextView mSecretKey;
+    private BootstrapButton mActionEdit;
     private BootstrapButton mActionEncrypt;
 
     private ListView mUserIds;
@@ -89,8 +90,10 @@ public class ViewKeyMainFragment extends Fragment  implements
         mCreation = (TextView) view.findViewById(R.id.creation);
         mExpiry = (TextView) view.findViewById(R.id.expiry);
         mFingerprint = (TextView) view.findViewById(R.id.fingerprint);
+        mSecretKey = (TextView) view.findViewById(R.id.secret_key);
         mUserIds = (ListView) view.findViewById(R.id.user_ids);
         mKeys = (ListView) view.findViewById(R.id.keys);
+        mActionEdit = (BootstrapButton) view.findViewById(R.id.action_edit);
         mActionEncrypt = (BootstrapButton) view.findViewById(R.id.action_encrypt);
 
         return view;
@@ -119,6 +122,31 @@ public class ViewKeyMainFragment extends Fragment  implements
         mDataUri = dataUri;
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+
+        { // label whether secret key is available, and edit button if it is
+            final long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), mDataUri);
+            if (ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
+                // set this attribute. this is a LITTLE unclean, but we have the info available
+                // right here, so why not.
+                mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
+                mSecretKey.setText(R.string.secret_key_yes);
+
+                // edit button
+                mActionEdit.setVisibility(View.VISIBLE);
+                mActionEdit.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
+                        editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(masterKeyId)));
+                        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+                        startActivityForResult(editIntent, 0);
+                    }
+                });
+            } else {
+                mSecretKey.setTextColor(Color.BLACK);
+                mSecretKey.setText(getResources().getString(R.string.secret_key_no));
+                mActionEdit.setVisibility(View.GONE);
+            }
+        }
 
         mActionEncrypt.setOnClickListener(new View.OnClickListener() {
 
@@ -276,17 +304,56 @@ public class ViewKeyMainFragment extends Fragment  implements
 
     private SpannableStringBuilder colorizeFingerprint(String fingerprint) {
         SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
-        ForegroundColorSpan fcs = new ForegroundColorSpan(Color.BLACK);
+        try {
+            // for each 4 characters of the fingerprint + 1 space
+            for (int i = 0; i < fingerprint.length(); i += 5) {
+                int spanEnd = Math.min(i + 4, fingerprint.length());
+                String fourChars = fingerprint.substring(i, spanEnd);
 
-        // for each 4 characters of the fingerprint + 1 space
-        for (int i = 0; i < fingerprint.length(); i += 5) {
-            String fourChars = fingerprint.substring(i, Math.min(i + 4, fingerprint.length()));
+                int raw = Integer.parseInt(fourChars, 16);
+                byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
+                int[] color = OtherHelper.getRgbForData(bytes);
+                int r = color[0];
+                int g = color[1];
+                int b = color[2];
 
-            // Create a foreground color by converting the 4 fingerprint chars to an int hashcode
-            // and then converting that int to hex to use as a color
-            fcs = new ForegroundColorSpan(
-                    Color.parseColor(String.format("#%06X", (0xFFFFFF & fourChars.hashCode()))));
-            sb.setSpan(fcs, i, Math.min(i+4, fingerprint.length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                // we cannot change black by multiplication, so adjust it to an almost-black grey,
+                // which will then be brightened to the minimal brightness level
+                if (r == 0 && g == 0 && b == 0) {
+                    r = 1;
+                    g = 1;
+                    b = 1;
+                }
+
+                // Convert rgb to brightness
+                double brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+                // If a color is too dark to be seen on black,
+                // then brighten it up to a minimal brightness.
+                if (brightness < 80) {
+                    double factor = 80.0 / brightness;
+                    r = Math.min(255, (int) (r * factor));
+                    g = Math.min(255, (int) (g * factor));
+                    b = Math.min(255, (int) (b * factor));
+
+                    // If it is too light, then darken it to a respective maximal brightness.
+                } else if (brightness > 180) {
+                    double factor = 180.0 / brightness;
+                    r = (int) (r * factor);
+                    g = (int) (g * factor);
+                    b = (int) (b * factor);
+                }
+
+                // Create a foreground color with the 3 digest integers as RGB
+                // and then converting that int to hex to use as a color
+                sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
+                        i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Colorization failed", e);
+            // if anything goes wrong, then just display the fingerprint without colour,
+            // instead of partially correct colour or wrong colours
+            return new SpannableStringBuilder(fingerprint);
         }
 
         return sb;
