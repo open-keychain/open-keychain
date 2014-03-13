@@ -125,7 +125,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 return true;
             case R.id.menu_key_view_export_file:
                 long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
+                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -241,7 +241,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                         // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
                         Toast.makeText(ViewKeyActivity.this,
                                 getString(R.string.error_can_not_delete_contact)
-                                        + getResources().getQuantityString(R.plurals.error_can_not_delete_info, 1),
+                                + getResources()
+                                        .getQuantityString(R.plurals.error_can_not_delete_info, 1),
                                 Toast.LENGTH_LONG).show();
                     } else {
                         setResult(RESULT_CANCELED);

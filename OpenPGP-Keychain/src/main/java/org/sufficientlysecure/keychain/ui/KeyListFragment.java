@@ -36,8 +36,8 @@ import android.text.TextUtils;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.*;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -63,7 +63,8 @@ import java.util.HashMap;
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
+public class KeyListFragment extends Fragment
+        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private KeyListAdapter mAdapter;
@@ -185,7 +186,10 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
                             // todo: public/secret needs to be handled differently here
                             ids = mStickyList.getWrappedList().getCheckedItemIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
+                            mExportHelper
+                                    .showExportKeysDialog(ids,
+                                            Id.type.public_key,
+                                            Constants.Path.APP_DIR_FILE_PUB);
                             break;
                         }
                         case R.id.menu_key_list_multi_select_all: {
@@ -310,7 +314,10 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
         } else {
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
-        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(Long.toString(mAdapter.getMasterKeyId(position))));
+        viewIntent.setData(
+                KeychainContract
+                        .KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                                            Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
 
@@ -347,8 +354,12 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
                         for (String userId : notDeleted) {
                             notDeletedMsg += userId + "\n";
                         }
-                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
-                                + getResources().getQuantityString(R.plurals.error_can_not_delete_info, notDeleted.size()),
+                        Toast.makeText(getActivity(),
+                                getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
+                                + getResources()
+                                        .getQuantityString(
+                                                R.plurals.error_can_not_delete_info,
+                                                notDeleted.size()),
                                 Toast.LENGTH_LONG).show();
 
                         mode.finish();
@@ -507,7 +518,9 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
+                            editIntent.setData(
+                                    KeychainContract.KeyRings
+                                            .buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);
                         }
@@ -582,7 +595,8 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
             String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
             String headerText = convertView.getResources().getString(R.string.user_id_no_name);
             if (userId != null && userId.length() > 0) {
-                headerText = "" + mCursor.getString(KeyListFragment.INDEX_USER_ID).subSequence(0, 1).charAt(0);
+                headerText = "" +
+                            mCursor.getString(KeyListFragment.INDEX_USER_ID).subSequence(0, 1).charAt(0);
             }
             holder.mText.setText(headerText);
             holder.mCount.setVisibility(View.GONE);
@@ -605,9 +619,9 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
             }
 
             // early breakout: all secret keys are assigned id 0
-            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET)
+            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
                 return 1L;
-
+            }
             // otherwise, return the first character of the name as ID
             String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
             if (userId != null && userId.length() > 0) {

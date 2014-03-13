@@ -88,7 +88,8 @@ public class DeleteFileDialogFragment extends DialogFragment {
                         null);
 
                 // Message is received after deleting is done in ApgService
-                KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(activity, deletingDialog) {
+                KeychainIntentServiceHandler saveHandler =
+                        new KeychainIntentServiceHandler(activity, deletingDialog) {
                     public void handleMessage(Message message) {
                         // handle messages by standard ApgHandler first
                         super.handleMessage(message);

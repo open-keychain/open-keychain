@@ -167,7 +167,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                     query = "0x" + fingerprint;
                 }
             } else {
-                Log.e(Constants.TAG, "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or 'fingerprint' extra!");
+                Log.e(Constants.TAG,
+                "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or 'fingerprint' extra!");
                 return;
             }
 
@@ -336,7 +337,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     // } else {
     // status.putString(
     // EXTRA_ERROR,
-    // "Scanned fingerprint does NOT match the fingerprint of the received key.  You shouldnt trust this key.");
+    // "Scanned fingerprint does NOT match the fingerprint of the received key. You shouldnt trust this key.");
     // }
     // }
     // } catch (QueryException e) {
@@ -398,7 +399,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                     AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
                             .show();
                     if (bad > 0) {
-                        BadImportKeyDialogFragment badImportKeyDialogFragment = BadImportKeyDialogFragment.newInstance(bad);
+                        BadImportKeyDialogFragment badImportKeyDialogFragment =
+                                BadImportKeyDialogFragment.newInstance(bad);
                         badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
                     }
                 }

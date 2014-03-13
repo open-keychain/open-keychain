@@ -101,7 +101,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                     mKeyUserIdRest.setVisibility(View.GONE);
                 }
             } else {
-                mKeyMasterKeyIdHex.setText(getActivity().getResources().getString(R.string.no_keys_added_or_updated) + " for master id: " + secretKeyId);
+                mKeyMasterKeyIdHex.setText(
+                        getActivity().getResources()
+                                .getString(R.string.no_keys_added_or_updated)
+                         + " for master id: " + secretKeyId);
                 mKeyUserId.setVisibility(View.GONE);
                 mKeyUserIdRest.setVisibility(View.GONE);
             }

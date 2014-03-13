@@ -178,7 +178,8 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     @Override
-    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(int id, Bundle args) {
+    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>>
+                                        onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
                 InputData inputData = getInputData(mKeyBytes, mDataUri);

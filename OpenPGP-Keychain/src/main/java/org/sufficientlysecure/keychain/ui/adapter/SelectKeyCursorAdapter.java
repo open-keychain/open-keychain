@@ -44,8 +44,8 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
     private int mIndexProjectionValid;
     private int mIndexProjectionAvailable;
 
-    public final static String PROJECTION_ROW_AVAILABLE = "available";
-    public final static String PROJECTION_ROW_VALID = "valid";
+    public static final String PROJECTION_ROW_AVAILABLE = "available";
+    public static final String PROJECTION_ROW_VALID = "valid";
 
     public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView,
                                   int keyType) {

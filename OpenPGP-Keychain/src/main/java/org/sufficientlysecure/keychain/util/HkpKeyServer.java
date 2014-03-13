@@ -78,39 +78,40 @@ public class HkpKeyServer extends KeyServer {
     // pub 2048R/<a href="/pks/lookup?op=get&search=0x887DF4BE9F5C9090">9F5C9090</a> 2009-08-17 <a
     // href="/pks/lookup?op=vindex&search=0x887DF4BE9F5C9090">Jörg Runge
     // &lt;joerg@joergrunge.de&gt;</a>
-    public static Pattern PUB_KEY_LINE = Pattern
+    public static final Pattern PUB_KEY_LINE = Pattern
             .compile(
                     "pub +([0-9]+)([a-z]+)/.*?0x([0-9a-z]+).*? +([0-9-]+) +(.+)[\n\r]+((?:    +.+[\n\r]+)*)",
                     Pattern.CASE_INSENSITIVE);
-    public static Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
+    public static final Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
             | Pattern.CASE_INSENSITIVE);
 
-	private static final short PORT_DEFAULT = 11371;
+    private static final short PORT_DEFAULT = 11371;
 
-	/**
-	 * @param hostAndPort may be just "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
-	 *                connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
-	 *                ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
-	 */
-	public HkpKeyServer(String hostAndPort) {
-		String host = hostAndPort;
-		short port = PORT_DEFAULT;
-		final int colonPosition = hostAndPort.lastIndexOf(':');
-		if (colonPosition > 0) {
-			host = hostAndPort.substring(0, colonPosition);
-			final String portStr = hostAndPort.substring(colonPosition + 1);
-			port = Short.decode(portStr);
-		}
-		mHost = host;
-		mPort = port;
-	}
+    /**
+     * @param hostAndPort may be just
+     *                    "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
+     *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
+     *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
+     */
+    public HkpKeyServer(String hostAndPort) {
+        String host = hostAndPort;
+        short port = PORT_DEFAULT;
+        final int colonPosition = hostAndPort.lastIndexOf(':');
+        if (colonPosition > 0) {
+            host = hostAndPort.substring(0, colonPosition);
+            final String portStr = hostAndPort.substring(colonPosition + 1);
+            port = Short.decode(portStr);
+        }
+        mHost = host;
+        mPort = port;
+    }
 
     public HkpKeyServer(String host, short port) {
         mHost = host;
         mPort = port;
     }
 
-    static private String readAll(InputStream in, String encoding) throws IOException {
+    private static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
 
         byte buffer[] = new byte[1 << 16];

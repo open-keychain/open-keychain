@@ -38,7 +38,7 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
 
     SelectPublicKeyFragment mSelectFragment;
 
-    long selectedMasterKeyIds[];
+    long mSelectedMasterKeyIds[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +79,7 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
             }
 
             // Create an instance of the fragment
-            mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+            mSelectFragment = SelectPublicKeyFragment.newInstance(mSelectedMasterKeyIds);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
@@ -124,7 +124,7 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
         // }
 
         // preselected master keys
-        selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
+        mSelectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
     }
 
     private void cancelClicked() {
