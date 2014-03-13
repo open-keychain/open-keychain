@@ -374,6 +374,7 @@
 
     <!-- Help -->
     <string name="help_tab_start">Start</string>
+    <string name="help_tab_faq">FAQ</string>
     <string name="help_tab_nfc_beam">NFC Beam</string>
     <string name="help_tab_changelog">Changelog</string>
     <string name="help_tab_about">About</string>

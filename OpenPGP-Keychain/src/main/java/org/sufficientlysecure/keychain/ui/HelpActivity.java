@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 
@@ -29,7 +27,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 
 public class HelpActivity extends ActionBarActivity {
-    public static final String EXTRA_SELECTED_TAB = "selectedTab";
+    public static final String EXTRA_SELECTED_TAB = "selected_tab";
 
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
@@ -59,19 +57,24 @@ public class HelpActivity extends ActionBarActivity {
         Bundle startBundle = new Bundle();
         startBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_start);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_start)),
-                HelpHtmlFragment.class, startBundle, (selectedTab == 0) );
+                HelpHtmlFragment.class, startBundle, (selectedTab == 0));
+
+        Bundle faqBundle = new Bundle();
+        faqBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_faq);
+        mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_faq)),
+                HelpHtmlFragment.class, faqBundle, (selectedTab == 1));
 
         Bundle nfcBundle = new Bundle();
         nfcBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_nfc_beam);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_nfc_beam)),
-                HelpHtmlFragment.class, nfcBundle, (selectedTab == 1) );
+                HelpHtmlFragment.class, nfcBundle, (selectedTab == 2));
 
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpHtmlFragment.ARG_HTML_FILE, R.raw.help_changelog);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_changelog)),
-                HelpHtmlFragment.class, changelogBundle, (selectedTab == 2) );
+                HelpHtmlFragment.class, changelogBundle, (selectedTab == 3));
 
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.help_tab_about)),
-                HelpAboutFragment.class, null, (selectedTab == 3) );
+                HelpAboutFragment.class, null, (selectedTab == 4));
     }
 }
