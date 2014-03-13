@@ -29,16 +29,13 @@ import android.support.v4.content.Loader;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
@@ -49,13 +46,11 @@ import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 
-public class ViewKeyMainFragment extends Fragment  implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+public class ViewKeyMainFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
@@ -130,7 +125,7 @@ public class ViewKeyMainFragment extends Fragment  implements
 
         { // label whether secret key is available, and edit button if it is
             final long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), mDataUri);
-            if(ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
+            if (ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
                 // set this attribute. this is a LITTLE unclean, but we have the info available
                 // right here, so why not.
                 mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
@@ -341,7 +336,7 @@ public class ViewKeyMainFragment extends Fragment  implements
                     g = Math.min(255, (int) (g * factor));
                     b = Math.min(255, (int) (b * factor));
 
-                // If it is too light, then darken it to a respective maximal brightness.
+                    // If it is too light, then darken it to a respective maximal brightness.
                 } else if (brightness > 180) {
                     double factor = 180.0 / brightness;
                     r = (int) (r * factor);
@@ -352,7 +347,7 @@ public class ViewKeyMainFragment extends Fragment  implements
                 // Create a foreground color with the 3 digest integers as RGB
                 // and then converting that int to hex to use as a color
                 sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
-                                            i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                        i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             }
         } catch (Exception e) {
             Log.e(Constants.TAG, "Colorization failed", e);

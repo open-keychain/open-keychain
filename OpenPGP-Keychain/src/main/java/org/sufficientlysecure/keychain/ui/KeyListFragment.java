@@ -17,27 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
-
-import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -45,11 +24,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
+import android.os.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -58,23 +33,31 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
+import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
@@ -566,8 +549,8 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
             if (convertView == null) {
                 holder = new HeaderViewHolder();
                 convertView = mInflater.inflate(R.layout.key_list_header, parent, false);
-                holder.text = (TextView) convertView.findViewById(R.id.stickylist_header_text);
-                holder.count = (TextView) convertView.findViewById(R.id.contacts_num);
+                holder.mText = (TextView) convertView.findViewById(R.id.stickylist_header_text);
+                holder.mCount = (TextView) convertView.findViewById(R.id.contacts_num);
                 convertView.setTag(holder);
             } else {
                 holder = (HeaderViewHolder) convertView.getTag();
@@ -587,11 +570,11 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
                 { // set contact count
                     int num = mCursor.getCount();
                     String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
-                    holder.count.setText(contactsTotal);
-                    holder.count.setVisibility(View.VISIBLE);
+                    holder.mCount.setText(contactsTotal);
+                    holder.mCount.setVisibility(View.VISIBLE);
                 }
 
-                holder.text.setText(convertView.getResources().getString(R.string.my_keys));
+                holder.mText.setText(convertView.getResources().getString(R.string.my_keys));
                 return convertView;
             }
 
@@ -601,8 +584,8 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
             if (userId != null && userId.length() > 0) {
                 headerText = "" + mCursor.getString(KeyListFragment.INDEX_USER_ID).subSequence(0, 1).charAt(0);
             }
-            holder.text.setText(headerText);
-            holder.count.setVisibility(View.GONE);
+            holder.mText.setText(headerText);
+            holder.mCount.setVisibility(View.GONE);
             return convertView;
         }
 
@@ -635,8 +618,8 @@ public class KeyListFragment extends Fragment implements SearchView.OnQueryTextL
         }
 
         class HeaderViewHolder {
-            TextView text;
-            TextView count;
+            TextView mText;
+            TextView mCount;
         }
 
         /**

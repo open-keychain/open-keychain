@@ -17,12 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -36,13 +30,19 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected LayoutInflater mInflater;
     protected Activity mActivity;
 
     protected List<ImportKeysListEntry> data;
-    static class ViewHolder{
+
+    static class ViewHolder {
         private TextView mainUserId;
         private TextView mainUserIdRest;
         private TextView keyId;
@@ -51,6 +51,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         private TextView status;
 
     }
+
     public ImportKeysAdapter(Activity activity) {
         super(activity, -1);
         mActivity = activity;
@@ -95,7 +96,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImportKeysListEntry entry = data.get(position);
         ViewHolder holder;
-        if(convertView == null) {
+        if (convertView == null) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.import_keys_list_entry, null);
             holder.mainUserId = (TextView) convertView.findViewById(R.id.mainUserId);
@@ -105,9 +106,8 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
             holder.algorithm = (TextView) convertView.findViewById(R.id.algorithm);
             holder.status = (TextView) convertView.findViewById(R.id.status);
             convertView.setTag(holder);
-        }
-        else{
-            holder = (ViewHolder)convertView.getTag();
+        } else {
+            holder = (ViewHolder) convertView.getTag();
         }
         // main user id
         String userId = entry.userIds.get(0);

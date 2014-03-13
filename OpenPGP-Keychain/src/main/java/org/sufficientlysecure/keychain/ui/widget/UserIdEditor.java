@@ -16,20 +16,18 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import android.widget.*;
-import org.sufficientlysecure.keychain.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
@@ -109,7 +107,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mEmail.setAdapter(
                 new ArrayAdapter<String>
                         (this.getContext(), android.R.layout.simple_dropdown_item_1line,
-                                                                    ContactHelper.getMailAccounts(getContext())
+                                ContactHelper.getMailAccounts(getContext())
                         ));
 
         super.onFinishInflate();
