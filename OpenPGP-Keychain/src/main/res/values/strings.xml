@@ -155,6 +155,11 @@
     <string name="revoked">revoked</string>
     <string name="user_id">User ID</string>
 
+    <plurals name="n_contacts">
+        <item quantity="one">1 contact</item>
+        <item quantity="other">%d contacts</item>
+    </plurals>
+
     <plurals name="n_key_servers">
         <item quantity="one">%d keyserver</item>
         <item quantity="other">%d keyservers</item>
@@ -438,6 +443,7 @@
     <string name="key_list_empty_button_import">importing keys.</string>
 
     <!-- Key view -->
+    <string name="key_view_action_edit">Edit this key</string>
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
     <string name="key_view_action_certify">Certify this contact\'s key</string>
     <string name="key_view_tab_main">Info</string>
@@ -452,5 +458,10 @@
     <string name="nav_apps">Registered Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="edit">Edit</string>
+    <string name="my_keys">My Keys</string>
+    <string name="label_secret_key">Secret Key</string>
+    <string name="secret_key_yes">available</string>
+    <string name="secret_key_no">unavailable</string>
 
 </resources>

@@ -81,6 +81,8 @@ public class KeychainProvider extends ContentProvider {
     private static final int API_APPS_BY_ROW_ID = 302;
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
 
+    private static final int UNIFIED_KEY_RING = 401;
+
     // private static final int DATA_STREAM = 401;
 
     protected UriMatcher mUriMatcher;
@@ -93,6 +95,15 @@ public class KeychainProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority = KeychainContract.CONTENT_AUTHORITY;
+
+        /**
+         * unified key rings
+         *
+         * <pre>
+         * key_rings
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS, UNIFIED_KEY_RING);
 
         /**
          * public key rings
@@ -365,6 +376,10 @@ public class KeychainProvider extends ContentProvider {
 
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
 
+        // type attribute is special: if there is any grouping, choose secret over public type
+        projectionMap.put(KeyRingsColumns.TYPE,
+                "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ") AS " + KeyRingsColumns.TYPE);
+
         return projectionMap;
     }
 
@@ -399,9 +414,11 @@ public class KeychainProvider extends ContentProvider {
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match) {
-        // public or secret keyring
-        qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-        qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        if(match != UNIFIED_KEY_RING) {
+            // public or secret keyring
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        }
 
         // join keyrings with keys and userIds
         // Only get user id and key with rank 0 (main user id and main key)
@@ -455,7 +472,22 @@ public class KeychainProvider extends ContentProvider {
 
         int match = mUriMatcher.match(uri);
 
+        // all query() parameters, for good measure
+        String groupBy = null, having = null;
+
         switch (match) {
+            case UNIFIED_KEY_RING:
+                qb = buildKeyRingQuery(qb, match);
+
+                // GROUP BY so we don't get duplicates
+                groupBy = Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID;
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = KeyRings.TYPE + " DESC, " + Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                }
+
+                break;
+
             case PUBLIC_KEY_RING:
             case SECRET_KEY_RING:
                 qb = buildKeyRingQuery(qb, match);
@@ -630,7 +662,7 @@ public class KeychainProvider extends ContentProvider {
             orderBy = sortOrder;
         }
 
-        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);

@@ -7,7 +7,7 @@
 
     <!--rebuild functionality of ListFragment -->
     <LinearLayout
-        android:id="@+id/key_list_public_progress_container"
+        android:id="@+id/key_list_progress_container"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -30,12 +30,12 @@
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/key_list_public_list_container"
+        android:id="@+id/key_list_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <se.emilsjolander.stickylistheaders.StickyListHeadersListView
-            android:id="@+id/key_list_public_list"
+            android:id="@+id/key_list_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
@@ -47,7 +47,7 @@
             android:scrollbarStyle="outsideOverlay" />
 
         <LinearLayout
-            android:id="@+id/key_list_public_empty"
+            android:id="@+id/key_list_empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
