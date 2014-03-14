@@ -52,6 +52,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.NewDeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
@@ -355,36 +356,16 @@ public class KeyListFragment extends Fragment
             @Override
             public void handleMessage(Message message) {
                 if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        ArrayList<String> notDeleted =
-                                returnData.getStringArrayList(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED);
-                        String notDeletedMsg = "";
-                        for (String userId : notDeleted) {
-                            notDeletedMsg += userId + "\n";
-                        }
-                        Toast.makeText(getActivity(),
-                                getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
-                                + getResources()
-                                        .getQuantityString(
-                                                R.plurals.error_can_not_delete_info,
-                                                notDeleted.size()),
-                                Toast.LENGTH_LONG).show();
-
                         mode.finish();
                     }
                 }
-            }
         };
 
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
 
-        DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                keyRingRowIds, Id.type.public_key);
-
-        deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
+        NewDeleteKeyDialogFragment newDeleteKeyDialogFragment = NewDeleteKeyDialogFragment.newInstance(messenger, keyRingRowIds);
+        newDeleteKeyDialogFragment.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
 
 
