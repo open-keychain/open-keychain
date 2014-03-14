@@ -58,8 +58,7 @@ public class KeyListActivity extends DrawerActivity {
 
                 return true;
             case R.id.menu_key_list_export:
-                // TODO fix this for unified keylist
-                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
+                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
 
                 return true;
             case R.id.menu_key_list_create:
@@ -71,7 +70,7 @@ public class KeyListActivity extends DrawerActivity {
 
                 return true;
             case R.id.menu_key_list_secret_export:
-                mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC);
+                mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC, null);
 
                 return true;
             default:

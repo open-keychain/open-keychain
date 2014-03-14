@@ -124,8 +124,11 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
+                long masterKeyId =
+                        ProviderHelper.getPublicMasterKeyId(this, Long.valueOf(mDataUri.getLastPathSegment()));
+                long[] ids = new long[]{masterKeyId};
+                mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
+                        Constants.Path.APP_DIR_FILE_PUB, null);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
