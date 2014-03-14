@@ -152,6 +152,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         }
 
         LinearLayout ll = (LinearLayout) convertView.findViewById(R.id.list);
+        ll.removeAllViews();
         if (entry.userIds.size() == 1) {
             ll.setVisibility(View.GONE);
         } else {

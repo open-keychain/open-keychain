@@ -89,6 +89,7 @@ public class ImportKeysListServerLoader
         try {
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
+            mEntryList.clear();
             // add result to data
             mEntryList.addAll(searchResult);
             mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
