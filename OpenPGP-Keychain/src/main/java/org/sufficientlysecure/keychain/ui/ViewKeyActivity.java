@@ -29,13 +29,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -83,7 +83,13 @@ public class ViewKeyActivity extends ActionBarActivity {
             selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        mDataUri = getIntent().getData();
+        {
+            // normalize mDataUri to a "by row id" query, to ensure it works with any
+            // given valid /public/ query
+            long rowId = ProviderHelper.getRowId(this, getIntent().getData());
+            // TODO: handle (rowId == 0) with something else than a crash
+            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+        }
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
@@ -107,7 +113,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent homeIntent = new Intent(this, KeyListPublicActivity.class);
+                Intent homeIntent = new Intent(this, KeyListActivity.class);
                 homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(homeIntent);
                 return true;
@@ -119,7 +125,7 @@ public class ViewKeyActivity extends ActionBarActivity {
                 return true;
             case R.id.menu_key_view_export_file:
                 long[] ids = new long[]{Long.valueOf(mDataUri.getLastPathSegment())};
-                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
+                mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -235,7 +241,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                         // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
                         Toast.makeText(ViewKeyActivity.this,
                                 getString(R.string.error_can_not_delete_contact)
-                                        + getResources().getQuantityString(R.plurals.error_can_not_delete_info, 1),
+                                + getResources()
+                                        .getQuantityString(R.plurals.error_can_not_delete_info, 1),
                                 Toast.LENGTH_LONG).show();
                     } else {
                         setResult(RESULT_CANCELED);

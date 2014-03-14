@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Date;
-
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
-
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +28,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
+
+import java.util.Date;
 
 public class SelectSecretKeyFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -46,9 +45,9 @@ public class SelectSecretKeyFragment extends ListFragment implements
     private SelectSecretKeyActivity mActivity;
     private SelectKeyCursorAdapter mAdapter;
     private ListView mListView;
-    
+
     private boolean mFilterCertify;
-    
+
     private static final String ARG_FILTER_CERTIFY = "filter_certify";
 
     /**
@@ -122,7 +121,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
 
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
-        String[] projection = new String[] {
+        String[] projection = new String[]{
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,

@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
@@ -19,12 +36,12 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
-        private final Class<?> clss;
-        private final Bundle args;
+        private final Class<?> mClss;
+        private final Bundle mArgs;
 
-        TabInfo(Class<?> _class, Bundle _args) {
-            clss = _class;
-            args = _args;
+        TabInfo(Class<?> mClss, Bundle mArgs) {
+            this.mClss = mClss;
+            this.mArgs = mArgs;
         }
     }
 
@@ -54,7 +71,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     @Override
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
-        return Fragment.instantiate(mContext, info.clss.getName(), info.args);
+        return Fragment.instantiate(mContext, info.mClss.getName(), info.mArgs);
     }
 
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

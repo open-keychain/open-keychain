@@ -17,11 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,8 +31,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class ImportKeysServerFragment extends Fragment {
     public static final String ARG_QUERY = "query";
@@ -96,7 +94,8 @@ public class ImportKeysServerFragment extends Fragment {
                 search(query, keyServer);
 
                 // close keyboard after pressing search
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm =
+                        (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(mQueryEditText.getWindowToken(), 0);
             }
         });
@@ -110,7 +109,6 @@ public class ImportKeysServerFragment extends Fragment {
                     search(query, keyServer);
 
                     // Don't return true to let the keyboard close itself after pressing search
-                    // http://stackoverflow.com/questions/2342620/how-to-hide-keyboard-after-typing-in-edittext-in-android
                     return false;
                 }
                 return false;

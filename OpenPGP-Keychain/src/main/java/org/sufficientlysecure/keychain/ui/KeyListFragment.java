@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2013-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,32 +17,14 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ExportHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.ui.adapter.KeyListPublicAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-
-import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
-import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
+import android.os.*;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -51,30 +33,41 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.*;
 import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ExportHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
+import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Public key list with sticky list headers. It does _not_ extend ListFragment because it uses
  * StickyListHeaders library which does not extend upon ListView.
  */
-public class KeyListPublicFragment extends Fragment implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
+public class KeyListFragment extends Fragment
+        implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private KeyListPublicAdapter mAdapter;
+    private KeyListAdapter mAdapter;
     private StickyListHeadersListView mStickyList;
 
     // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
@@ -94,9 +87,9 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.key_list_public_fragment, container, false);
+        View root = inflater.inflate(R.layout.key_list_fragment, container, false);
 
-        mStickyList = (StickyListHeadersListView) root.findViewById(R.id.key_list_public_list);
+        mStickyList = (StickyListHeadersListView) root.findViewById(R.id.key_list_list);
         mStickyList.setOnItemClickListener(this);
 
 
@@ -125,8 +118,8 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         });
 
         // rebuild functionality of ListFragment, http://stackoverflow.com/a/12504097
-        mListContainer = root.findViewById(R.id.key_list_public_list_container);
-        mProgressContainer = root.findViewById(R.id.key_list_public_progress_container);
+        mListContainer = root.findViewById(R.id.key_list_list_container);
+        mProgressContainer = root.findViewById(R.id.key_list_progress_container);
         mListShown = true;
 
         return root;
@@ -140,6 +133,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mStickyList.setOnItemClickListener(this);
         mStickyList.setAreHeadersSticky(true);
         mStickyList.setDrawingListUnderStickyHeader(false);
         mStickyList.setFastScrollEnabled(true);
@@ -149,7 +143,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         }
 
         // this view is made visible if no data is available
-        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_public_empty));
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
         /*
          * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
@@ -162,7 +156,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     android.view.MenuInflater inflater = getActivity().getMenuInflater();
-                    inflater.inflate(R.menu.key_list_public_multi, menu);
+                    inflater.inflate(R.menu.key_list_multi, menu);
                     return true;
                 }
 
@@ -173,25 +167,33 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
 
                 @Override
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    // get row ids for checked positions as long array
-                    long[] ids = mStickyList.getCheckedItemIds();
+
+                    // get IDs for checked positions as long array
+                    long[] ids;
 
                     switch (item.getItemId()) {
-                        case R.id.menu_key_list_public_multi_encrypt: {
+                        case R.id.menu_key_list_multi_encrypt: {
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             encrypt(mode, ids);
                             break;
                         }
-                        case R.id.menu_key_list_public_multi_export: {
-                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
-                            mExportHelper.showExportKeysDialog(ids, Id.type.public_key, Constants.path.APP_DIR_FILE_PUB);
-                            break;
-                        }
-                        case R.id.menu_key_list_public_multi_delete: {
+                        case R.id.menu_key_list_multi_delete: {
+                            ids = mStickyList.getWrappedList().getCheckedItemIds();
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
-                        case R.id.menu_key_list_public_multi_select_all: {
-                            //Select all
+                        case R.id.menu_key_list_multi_export: {
+                            // todo: public/secret needs to be handled differently here
+                            ids = mStickyList.getWrappedList().getCheckedItemIds();
+                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            mExportHelper
+                                    .showExportKeysDialog(ids,
+                                            Id.type.public_key,
+                                            Constants.Path.APP_DIR_FILE_PUB);
+                            break;
+                        }
+                        case R.id.menu_key_list_multi_select_all: {
+                            // select all
                             for (int i = 0; i < mStickyList.getCount(); i++) {
                                 mStickyList.setItemChecked(i, true);
                             }
@@ -231,7 +233,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         setListShown(false);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new KeyListPublicAdapter(getActivity(), null, Id.type.public_key, USER_ID_INDEX);
+        mAdapter = new KeyListAdapter(getActivity(), null, Id.type.public_key);
         mStickyList.setAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -242,20 +244,28 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
+            KeychainContract.KeyRings.TYPE,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.UserIds.USER_ID,
             KeychainContract.Keys.IS_REVOKED
     };
 
-    static final int USER_ID_INDEX = 2;
+    static final int INDEX_TYPE = 1;
+    static final int INDEX_MASTER_KEY_ID = 2;
+    static final int INDEX_USER_ID = 3;
+    static final int INDEX_IS_REVOKED = 4;
 
-    static final String SORT_ORDER = UserIds.USER_ID + " ASC";
+    static final String SORT_ORDER =
+            // show secret before public key
+            KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings.TYPE + " DESC, "
+                    // sort by user id otherwise
+                    + UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
         String where = null;
         String whereArgs[] = null;
         if (mCurQuery != null) {
@@ -273,6 +283,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         // old cursor once we return.)
         mAdapter.setSearchQuery(mCurQuery);
         mAdapter.swapCursor(data);
+
         mStickyList.setAdapter(mAdapter);
 
         // NOTE: Not supported by StickyListHeader, but reimplemented here
@@ -303,21 +314,18 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
         } else {
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
-        viewIntent.setData(KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(id)));
+        viewIntent.setData(
+                KeychainContract
+                        .KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                                            Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
 
     @TargetApi(11)
-    public void encrypt(ActionMode mode, long[] keyRingRowIds) {
-        // get master key ids from row ids
-        long[] keyRingIds = new long[keyRingRowIds.length];
-        for (int i = 0; i < keyRingRowIds.length; i++) {
-            keyRingIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), keyRingRowIds[i]);
-        }
-
+    protected void encrypt(ActionMode mode, long[] keyRingMasterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingIds);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingMasterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
 
@@ -330,6 +338,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
      * @param keyRingRowIds
      */
     @TargetApi(11)
+    // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
@@ -345,8 +354,12 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
                         for (String userId : notDeleted) {
                             notDeletedMsg += userId + "\n";
                         }
-                        Toast.makeText(getActivity(), getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
-                                + getResources().getQuantityString(R.plurals.error_can_not_delete_info, notDeleted.size()),
+                        Toast.makeText(getActivity(),
+                                getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
+                                + getResources()
+                                        .getQuantityString(
+                                                R.plurals.error_can_not_delete_info,
+                                                notDeleted.size()),
                                 Toast.LENGTH_LONG).show();
 
                         mode.finish();
@@ -368,7 +381,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     @Override
     public void onCreateOptionsMenu(final Menu menu, final MenuInflater inflater) {
         // Get the searchview
-        MenuItem searchItem = menu.findItem(R.id.menu_key_list_public_search);
+        MenuItem searchItem = menu.findItem(R.id.menu_key_list_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         // Execute this when searching
@@ -385,7 +398,7 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 mCurQuery = null;
                 mSearchView.setQuery("", true);
-                getLoaderManager().restartLoader(0, null, KeyListPublicFragment.this);
+                getLoaderManager().restartLoader(0, null, KeyListFragment.this);
                 return true;
             }
         });
@@ -444,4 +457,232 @@ public class KeyListPublicFragment extends Fragment implements SearchView.OnQuer
     public void setListShownNoAnimation(boolean shown) {
         setListShown(shown, false);
     }
+
+    /**
+     * Implements StickyListHeadersAdapter from library
+     */
+    private class KeyListAdapter extends HighlightQueryCursorAdapter implements StickyListHeadersAdapter {
+        private LayoutInflater mInflater;
+
+        private HashMap<Integer, Boolean> mSelection = new HashMap<Integer, Boolean>();
+
+        public KeyListAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+
+            mInflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public Cursor swapCursor(Cursor newCursor) {
+            return super.swapCursor(newCursor);
+        }
+
+        /**
+         * Bind cursor data to the item list view
+         * <p/>
+         * NOTE: CursorAdapter already implements the ViewHolder pattern in its getView() method. Thus
+         * no ViewHolder is required here.
+         */
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+            { // set name and stuff, common to both key types
+                TextView mainUserId = (TextView) view.findViewById(R.id.mainUserId);
+                TextView mainUserIdRest = (TextView) view.findViewById(R.id.mainUserIdRest);
+
+                String userId = cursor.getString(INDEX_USER_ID);
+                String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+                if (userIdSplit[0] != null) {
+                    mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
+                } else {
+                    mainUserId.setText(R.string.user_id_no_name);
+                }
+                if (userIdSplit[1] != null) {
+                    mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
+                    mainUserIdRest.setVisibility(View.VISIBLE);
+                } else {
+                    mainUserIdRest.setVisibility(View.GONE);
+                }
+            }
+
+            { // set edit button and revoked info, specific by key type
+                Button button = (Button) view.findViewById(R.id.edit);
+                TextView revoked = (TextView) view.findViewById(R.id.revoked);
+
+                if (cursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                    // this is a secret key - show the edit button
+                    revoked.setVisibility(View.GONE);
+                    button.setVisibility(View.VISIBLE);
+
+                    final long id = cursor.getLong(INDEX_MASTER_KEY_ID);
+                    button.setOnClickListener(new OnClickListener() {
+                        public void onClick(View view) {
+                            Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
+                            editIntent.setData(
+                                    KeychainContract.KeyRings
+                                            .buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
+                            editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+                            startActivityForResult(editIntent, 0);
+                        }
+                    });
+                } else {
+                    // this is a public key - hide the edit button, show if it's revoked
+                    button.setVisibility(View.GONE);
+
+                    boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                    revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
+                }
+            }
+
+        }
+
+        public long getMasterKeyId(int id) {
+            if (!mCursor.moveToPosition(id)) {
+                throw new IllegalStateException("couldn't move cursor to position " + id);
+            }
+
+            return mCursor.getLong(INDEX_MASTER_KEY_ID);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.key_list_item, parent, false);
+        }
+
+        /**
+         * Creates a new header view and binds the section headers to it. It uses the ViewHolder
+         * pattern. Most functionality is similar to getView() from Android's CursorAdapter.
+         * <p/>
+         * NOTE: The variables mDataValid and mCursor are available due to the super class
+         * CursorAdapter.
+         */
+        @Override
+        public View getHeaderView(int position, View convertView, ViewGroup parent) {
+            HeaderViewHolder holder;
+            if (convertView == null) {
+                holder = new HeaderViewHolder();
+                convertView = mInflater.inflate(R.layout.key_list_header, parent, false);
+                holder.mText = (TextView) convertView.findViewById(R.id.stickylist_header_text);
+                holder.mCount = (TextView) convertView.findViewById(R.id.contacts_num);
+                convertView.setTag(holder);
+            } else {
+                holder = (HeaderViewHolder) convertView.getTag();
+            }
+
+            if (!mDataValid) {
+                // no data available at this point
+                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
+                return convertView;
+            }
+
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                { // set contact count
+                    int num = mCursor.getCount();
+                    String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
+                    holder.mCount.setText(contactsTotal);
+                    holder.mCount.setVisibility(View.VISIBLE);
+                }
+
+                holder.mText.setText(convertView.getResources().getString(R.string.my_keys));
+                return convertView;
+            }
+
+            // set header text as first char in user id
+            String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
+            String headerText = convertView.getResources().getString(R.string.user_id_no_name);
+            if (userId != null && userId.length() > 0) {
+                headerText = "" +
+                            mCursor.getString(KeyListFragment.INDEX_USER_ID).subSequence(0, 1).charAt(0);
+            }
+            holder.mText.setText(headerText);
+            holder.mCount.setVisibility(View.GONE);
+            return convertView;
+        }
+
+        /**
+         * Header IDs should be static, position=1 should always return the same Id that is.
+         */
+        @Override
+        public long getHeaderId(int position) {
+            if (!mDataValid) {
+                // no data available at this point
+                Log.d(Constants.TAG, "getHeaderView: No data available at this point!");
+                return -1;
+            }
+
+            if (!mCursor.moveToPosition(position)) {
+                throw new IllegalStateException("couldn't move cursor to position " + position);
+            }
+
+            // early breakout: all secret keys are assigned id 0
+            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                return 1L;
+            }
+            // otherwise, return the first character of the name as ID
+            String userId = mCursor.getString(KeyListFragment.INDEX_USER_ID);
+            if (userId != null && userId.length() > 0) {
+                return userId.charAt(0);
+            } else {
+                return Long.MAX_VALUE;
+            }
+        }
+
+        class HeaderViewHolder {
+            TextView mText;
+            TextView mCount;
+        }
+
+        /**
+         * -------------------------- MULTI-SELECTION METHODS --------------
+         */
+        public void setNewSelection(int position, boolean value) {
+            mSelection.put(position, value);
+            notifyDataSetChanged();
+        }
+
+        public long[] getCurrentSelectedMasterKeyIds() {
+            long[] ids = new long[mSelection.size()];
+            int i = 0;
+            // get master key ids
+            for (int pos : mSelection.keySet()) {
+                ids[i++] = mAdapter.getMasterKeyId(pos);
+            }
+            return ids;
+        }
+
+        public void removeSelection(int position) {
+            mSelection.remove(position);
+            notifyDataSetChanged();
+        }
+
+        public void clearSelection() {
+            mSelection.clear();
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            // let the adapter handle setting up the row views
+            View v = super.getView(position, convertView, parent);
+
+            /**
+             * Change color for multi-selection
+             */
+            if (mSelection.get(position) != null) {
+                // selected position color
+                v.setBackgroundColor(parent.getResources().getColor(R.color.emphasis));
+            } else {
+                // default color
+                v.setBackgroundColor(Color.TRANSPARENT);
+            }
+
+            return v;
+        }
+
+    }
+
 }

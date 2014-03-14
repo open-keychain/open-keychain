@@ -13,7 +13,7 @@
 
         <EditText
             android:id="@+id/server"
-            android:layout_width="match_parent"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="textUri" />

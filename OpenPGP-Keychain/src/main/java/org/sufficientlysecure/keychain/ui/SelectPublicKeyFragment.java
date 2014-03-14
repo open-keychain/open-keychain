@@ -17,19 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Date;
-import java.util.Vector;
-
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -45,12 +32,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.*;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.ui.adapter.SelectKeyCursorAdapter;
+
+import java.util.Date;
+import java.util.Vector;
 
 public class SelectPublicKeyFragment extends ListFragmentWorkaround implements TextWatcher,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -138,7 +132,8 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
         mSearchView = new EditText(context);
         mSearchView.setId(SEARCH_ID);
         mSearchView.setHint(R.string.menu_search);
-        mSearchView.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
+        mSearchView.setCompoundDrawablesWithIntrinsicBounds(
+                getResources().getDrawable(R.drawable.ic_action_search), null, null, null);
 
         linearLayout.addView(mSearchView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -276,7 +271,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                         + Keys.CAN_ENCRYPT + " = '1' AND valid_keys." + Keys.CREATION + " <= '"
                         + now + "' AND " + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys."
                         + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,};
+                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {

@@ -17,12 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -31,7 +25,11 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
 
 public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
@@ -46,11 +44,11 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
     private int mIndexProjectionValid;
     private int mIndexProjectionAvailable;
 
-    public final static String PROJECTION_ROW_AVAILABLE = "available";
-    public final static String PROJECTION_ROW_VALID = "valid";
+    public static final String PROJECTION_ROW_AVAILABLE = "available";
+    public static final String PROJECTION_ROW_VALID = "valid";
 
     public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView,
-            int keyType) {
+                                  int keyType) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
@@ -69,7 +67,7 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
     /**
      * Get column indexes for performance reasons just once in constructor and swapCursor. For a
      * performance comparison see http://stackoverflow.com/a/17999582
-     * 
+     *
      * @param cursor
      */
     private void initIndex(Cursor cursor) {

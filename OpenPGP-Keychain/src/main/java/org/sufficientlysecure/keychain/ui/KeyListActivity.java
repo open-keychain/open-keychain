@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,16 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-
-public class KeyListSecretActivity extends DrawerActivity {
+public class KeyListActivity extends DrawerActivity {
 
     ExportHelper mExportHelper;
 
@@ -37,7 +36,7 @@ public class KeyListSecretActivity extends DrawerActivity {
 
         mExportHelper = new ExportHelper(this);
 
-        setContentView(R.layout.key_list_secret_activity);
+        setContentView(R.layout.key_list_activity);
 
         // now setup navigation drawer in DrawerActivity...
         setupDrawerNavigation(savedInstanceState);
@@ -46,33 +45,37 @@ public class KeyListSecretActivity extends DrawerActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.key_list_secret, menu);
+        getMenuInflater().inflate(R.menu.key_list, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_key_list_secret_create:
-            createKey();
+            case R.id.menu_key_list_import:
+                Intent intentImport = new Intent(this, ImportKeysActivity.class);
+                startActivityForResult(intentImport, 0);
 
-            return true;
-        case R.id.menu_key_list_secret_create_expert:
-            createKeyExpert();
+                return true;
+            case R.id.menu_key_list_export:
+                // TODO fix this for unified keylist
+                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB);
 
-            return true;
-        case R.id.menu_key_list_secret_export:
-            mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.path.APP_DIR_FILE_SEC);
+                return true;
+            case R.id.menu_key_list_create:
+                createKey();
 
-            return true;
-        case R.id.menu_key_list_secret_import:
-            Intent intentImportFromFile = new Intent(this, ImportKeysActivity.class);
-            intentImportFromFile.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE);
-            startActivityForResult(intentImportFromFile, 0);
+                return true;
+            case R.id.menu_key_list_create_expert:
+                createKeyExpert();
 
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+                return true;
+            case R.id.menu_key_list_secret_export:
+                mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

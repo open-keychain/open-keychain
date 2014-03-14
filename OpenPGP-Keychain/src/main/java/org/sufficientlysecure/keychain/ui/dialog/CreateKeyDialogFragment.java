@@ -27,13 +27,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.Choice;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class CreateKeyDialogFragment extends DialogFragment {
 

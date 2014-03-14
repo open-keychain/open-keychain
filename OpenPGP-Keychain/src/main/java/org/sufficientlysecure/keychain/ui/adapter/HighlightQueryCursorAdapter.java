@@ -22,7 +22,6 @@ import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
-
 import org.sufficientlysecure.keychain.R;
 
 import java.util.regex.Matcher;
