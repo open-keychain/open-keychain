@@ -17,24 +17,17 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Date;
-
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.UserAttributePacket;
 import org.spongycastle.bcpg.UserAttributeSubpacket;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPKeyRing;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
+import android.content.*;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.net.Uri;
+import android.os.RemoteException;
+import org.spongycastle.bcpg.ArmoredOutputStream;
+import org.spongycastle.openpgp.*;
 import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
@@ -50,15 +43,13 @@ import org.sufficientlysecure.keychain.service.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.OperationApplicationException;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
-import android.os.RemoteException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class ProviderHelper {
 
@@ -124,7 +115,7 @@ public class ProviderHelper {
     public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
         PGPPublicKeyRing keyRing = getPGPPublicKeyRingByKeyId(context, keyId);
 
-        return (keyRing == null)? null : keyRing.getPublicKey(keyId);
+        return (keyRing == null) ? null : keyRing.getPublicKey(keyId);
     }
 
     /**
@@ -175,7 +166,8 @@ public class ProviderHelper {
 
         // get current _ID of key
         long currentRowId = -1;
-        Cursor oldQuery = context.getContentResolver().query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
+        Cursor oldQuery = context.getContentResolver()
+                .query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
         if (oldQuery != null && oldQuery.moveToFirst()) {
             currentRowId = oldQuery.getLong(0);
         } else {
@@ -191,10 +183,12 @@ public class ProviderHelper {
 
         ContentValues values = new ContentValues();
         // use exactly the same _ID again to replace key in-place.
-        // NOTE: If we would not use the same _ID again, getting back to the ViewKeyActivity would result in Nullpointer,
+        // NOTE: If we would not use the same _ID again,
+        // getting back to the ViewKeyActivity would result in Nullpointer,
         // because the currently loaded key would be gone from the database
-        if (currentRowId != -1)
+        if (currentRowId != -1) {
             values.put(KeyRings._ID, currentRowId);
+        }
         values.put(KeyRings.MASTER_KEY_ID, masterKeyId);
         values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
@@ -279,7 +273,8 @@ public class ProviderHelper {
 
         // get current _ID of key
         long currentRowId = -1;
-        Cursor oldQuery = context.getContentResolver().query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
+        Cursor oldQuery = context.getContentResolver()
+                    .query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
         if (oldQuery != null && oldQuery.moveToFirst()) {
             currentRowId = oldQuery.getLong(0);
         } else {
@@ -295,10 +290,12 @@ public class ProviderHelper {
 
         ContentValues values = new ContentValues();
         // use exactly the same _ID again to replace key in-place.
-        // NOTE: If we would not use the same _ID again, getting back to the ViewKeyActivity would result in Nullpointer,
+        // NOTE: If we would not use the same _ID again,
+        // getting back to the ViewKeyActivity would result in Nullpointer,
         // because the currently loaded key would be gone from the database
-        if (currentRowId != -1)
+        if (currentRowId != -1) {
             values.put(KeyRings._ID, currentRowId);
+        }
         values.put(KeyRings.MASTER_KEY_ID, masterKeyId);
         values.put(KeyRings.KEY_RING_DATA, keyRing.getEncoded());
 
@@ -335,7 +332,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildPublicKeyOperations(Context context,
-                                                                     long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
+                        long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
         values.put(Keys.KEY_ID, key.getKeyID());
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
@@ -387,7 +384,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildPublicUserIdOperations(Context context,
-                                                                        long keyRingRowId, String userId, int rank) {
+                           long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -402,7 +399,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PGPSecretKey to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildSecretKeyOperations(Context context,
-                                                                     long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
+                                  long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
 
         boolean hasPrivate = true;
@@ -439,7 +436,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add SecretUserIds to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildSecretUserIdOperations(Context context,
-                                                                        long keyRingRowId, String userId, int rank) {
+                                            long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -483,10 +480,10 @@ public class ProviderHelper {
 
         ArrayList<Long> rowIds = new ArrayList<Long>();
         if (cursor != null) {
-            int IdCol = cursor.getColumnIndex(KeyRings._ID);
+            int idCol = cursor.getColumnIndex(KeyRings._ID);
             if (cursor.moveToFirst()) {
                 do {
-                    rowIds.add(cursor.getLong(IdCol));
+                    rowIds.add(cursor.getLong(idCol));
                 } while (cursor.moveToNext());
             }
         }
@@ -566,7 +563,7 @@ public class ProviderHelper {
                         + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
                         + " AND sign_keys." + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY
-                        + " = 1) AS sign",};
+                        + " = 1) AS sign", };
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);

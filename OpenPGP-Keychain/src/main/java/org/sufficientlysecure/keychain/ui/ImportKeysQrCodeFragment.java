@@ -17,14 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,9 +28,15 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.google.zxing.integration.android.IntentResult;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class ImportKeysQrCodeFragment extends Fragment {
 
@@ -94,45 +92,45 @@ public class ImportKeysQrCodeFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
-        case IntentIntegratorSupportV4.REQUEST_CODE: {
-            IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
-                    resultCode, data);
-            if (scanResult != null && scanResult.getFormatName() != null) {
-                String scannedContent = scanResult.getContents();
+            case IntentIntegratorSupportV4.REQUEST_CODE: {
+                IntentResult scanResult = IntentIntegratorSupportV4.parseActivityResult(requestCode,
+                        resultCode, data);
+                if (scanResult != null && scanResult.getFormatName() != null) {
+                    String scannedContent = scanResult.getContents();
 
-                Log.d(Constants.TAG, "scannedContent: " + scannedContent);
+                    Log.d(Constants.TAG, "scannedContent: " + scannedContent);
 
-                // look if it's fingerprint only
-                if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
-                    importFingerprint(Uri.parse(scanResult.getContents()));
-                    return;
+                    // look if it's fingerprint only
+                    if (scannedContent.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                        importFingerprint(Uri.parse(scanResult.getContents()));
+                        return;
+                    }
+
+                    // look if it is the whole key
+                    String[] parts = scannedContent.split(",");
+                    if (parts.length == 3) {
+                        importParts(parts);
+                        return;
+                    }
+
+                    // is this a full key encoded as qr code?
+                    if (scannedContent.startsWith("-----BEGIN PGP")) {
+                        mImportActivity.loadCallback(scannedContent.getBytes(), null, null, null);
+                        return;
+                    }
+
+                    // fail...
+                    Toast.makeText(getActivity(), R.string.import_qr_code_wrong, Toast.LENGTH_LONG)
+                            .show();
                 }
 
-                // look if it is the whole key
-                String[] parts = scannedContent.split(",");
-                if (parts.length == 3) {
-                    importParts(parts);
-                    return;
-                }
-
-                // is this a full key encoded as qr code?
-                if (scannedContent.startsWith("-----BEGIN PGP")) {
-                    mImportActivity.loadCallback(scannedContent.getBytes(), null, null, null);
-                    return;
-                }
-
-                // fail...
-                Toast.makeText(getActivity(), R.string.import_qr_code_wrong, Toast.LENGTH_LONG)
-                        .show();
+                break;
             }
 
-            break;
-        }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
 
-        default:
-            super.onActivityResult(requestCode, resultCode, data);
-
-            break;
+                break;
         }
     }
 

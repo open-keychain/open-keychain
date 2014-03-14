@@ -18,24 +18,7 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.Locale;
-
+import android.text.Html;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -51,7 +34,14 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
-import android.text.Html;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TODO:
@@ -82,21 +72,38 @@ public class HkpKeyServer extends KeyServer {
     }
 
     private String mHost;
-    private short mPort = 11371;
+    private short mPort;
 
     // example:
     // pub 2048R/<a href="/pks/lookup?op=get&search=0x887DF4BE9F5C9090">9F5C9090</a> 2009-08-17 <a
     // href="/pks/lookup?op=vindex&search=0x887DF4BE9F5C9090">Jörg Runge
     // &lt;joerg@joergrunge.de&gt;</a>
-    public static Pattern PUB_KEY_LINE = Pattern
+    public static final Pattern PUB_KEY_LINE = Pattern
             .compile(
                     "pub +([0-9]+)([a-z]+)/.*?0x([0-9a-z]+).*? +([0-9-]+) +(.+)[\n\r]+((?:    +.+[\n\r]+)*)",
                     Pattern.CASE_INSENSITIVE);
-    public static Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
+    public static final Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
             | Pattern.CASE_INSENSITIVE);
 
-    public HkpKeyServer(String host) {
+    private static final short PORT_DEFAULT = 11371;
+
+    /**
+     * @param hostAndPort may be just
+     *                    "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
+     *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
+     *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
+     */
+    public HkpKeyServer(String hostAndPort) {
+        String host = hostAndPort;
+        short port = PORT_DEFAULT;
+        final int colonPosition = hostAndPort.lastIndexOf(':');
+        if (colonPosition > 0) {
+            host = hostAndPort.substring(0, colonPosition);
+            final String portStr = hostAndPort.substring(colonPosition + 1);
+            port = Short.decode(portStr);
+        }
         mHost = host;
+        mPort = port;
     }
 
     public HkpKeyServer(String host, short port) {
@@ -104,7 +111,7 @@ public class HkpKeyServer extends KeyServer {
         mPort = port;
     }
 
-    static private String readAll(InputStream in, String encoding) throws IOException {
+    private static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
 
         byte buffer[] = new byte[1 << 16];

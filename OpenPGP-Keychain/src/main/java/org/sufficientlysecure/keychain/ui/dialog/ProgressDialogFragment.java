@@ -26,7 +26,6 @@ import android.content.DialogInterface.OnKeyListener;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
-
 import org.sufficientlysecure.keychain.R;
 
 public class ProgressDialogFragment extends DialogFragment {
@@ -101,8 +100,9 @@ public class ProgressDialogFragment extends DialogFragment {
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
 
-        if (this.mOnCancelListener != null)
+        if (this.mOnCancelListener != null) {
             this.mOnCancelListener.onCancel(dialog);
+        }
     }
 
     /**

@@ -42,6 +42,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.util.Log;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;

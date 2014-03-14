@@ -19,12 +19,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -32,6 +26,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
@@ -46,9 +45,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public String algorithm;
     public boolean secretKey;
 
-    private boolean selected;
+    private boolean mSelected;
 
-    private byte[] bytes = new byte[]{};
+    private byte[] mBytes = new byte[]{};
 
     public ImportKeysListEntry(ImportKeysListEntry b) {
         this.userIds = b.userIds;
@@ -60,8 +59,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.bitStrength = b.bitStrength;
         this.algorithm = b.algorithm;
         this.secretKey = b.secretKey;
-        this.selected = b.selected;
-        this.bytes = b.bytes;
+        this.mSelected = b.mSelected;
+        this.mBytes = b.mBytes;
     }
 
     public int describeContents() {
@@ -79,9 +78,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeInt(bitStrength);
         dest.writeString(algorithm);
         dest.writeByte((byte) (secretKey ? 1 : 0));
-        dest.writeByte((byte) (selected ? 1 : 0));
-        dest.writeInt(bytes.length);
-        dest.writeByteArray(bytes);
+        dest.writeByte((byte) (mSelected ? 1 : 0));
+        dest.writeInt(mBytes.length);
+        dest.writeByteArray(mBytes);
     }
 
     public static final Creator<ImportKeysListEntry> CREATOR = new Creator<ImportKeysListEntry>() {
@@ -97,9 +96,9 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.bitStrength = source.readInt();
             vr.algorithm = source.readString();
             vr.secretKey = source.readByte() == 1;
-            vr.selected = source.readByte() == 1;
-            vr.bytes = new byte[source.readInt()];
-            source.readByteArray(vr.bytes);
+            vr.mSelected = source.readByte() == 1;
+            vr.mBytes = new byte[source.readInt()];
+            source.readByteArray(vr.mBytes);
 
             return vr;
         }
@@ -114,11 +113,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     }
 
     public byte[] getBytes() {
-        return bytes;
+        return mBytes;
     }
 
     public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+        this.mBytes = bytes;
     }
 
     /**
@@ -128,16 +127,16 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // keys from keyserver are always public keys
         secretKey = false;
         // do not select by default
-        selected = false;
+        mSelected = false;
         userIds = new ArrayList<String>();
     }
 
     public boolean isSelected() {
-        return selected;
+        return mSelected;
     }
 
     public void setSelected(boolean selected) {
-        this.selected = selected;
+        this.mSelected = selected;
     }
 
     /**
@@ -147,13 +146,13 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public ImportKeysListEntry(PGPKeyRing pgpKeyRing) {
         // save actual key object into entry, used to import it later
         try {
-            this.bytes = pgpKeyRing.getEncoded();
+            this.mBytes = pgpKeyRing.getEncoded();
         } catch (IOException e) {
             Log.e(Constants.TAG, "IOException on pgpKeyRing.getEncoded()", e);
         }
 
         // selected is default
-        this.selected = true;
+        this.mSelected = true;
 
         if (pgpKeyRing instanceof PGPSecretKeyRing) {
             secretKey = true;

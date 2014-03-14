@@ -17,22 +17,6 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -44,6 +28,13 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.*;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class KeychainProvider extends ContentProvider {
     // public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
@@ -103,6 +94,15 @@ public class KeychainProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority = KeychainContract.CONTENT_AUTHORITY;
+
+        /**
+         * unified key rings
+         *
+         * <pre>
+         * key_rings
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS, UNIFIED_KEY_RING);
 
         /**
          * public key rings
@@ -237,20 +237,11 @@ public class KeychainProvider extends ContentProvider {
                 + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
 
         /**
-         * unified key rings
-         * <pre>
-         *
-         * key_rings/unified
-         *
-         */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                + KeychainContract.PATH_UNIFIED, UNIFIED_KEY_RING);
-
         /**
          * certifications
-         * <pre>
          *
-         * key_rings/unified
+         * <pre>
+         * </pre>
          *
          */
         matcher.addURI(authority, KeychainContract.BASE_CERTS, CERTS);
@@ -394,7 +385,8 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.KEY_RING_DATA);
-        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
         // TODO: deprecated master key id
         //projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.KEY_ID);
 
@@ -402,6 +394,10 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeysColumns.IS_REVOKED, Tables.KEYS + "." + KeysColumns.IS_REVOKED);
 
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+
+        // type attribute is special: if there is any grouping, choose secret over public type
+        projectionMap.put(KeyRingsColumns.TYPE,
+                "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ") AS " + KeyRingsColumns.TYPE);
 
         return projectionMap;
     }
@@ -437,9 +433,11 @@ public class KeychainProvider extends ContentProvider {
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match) {
-        // public or secret keyring
-        qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-        qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        if (match != UNIFIED_KEY_RING) {
+            // public or secret keyring
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        }
 
         // join keyrings with keys and userIds
         // Only get user id and key with rank 0 (main user id and main key)
@@ -491,75 +489,26 @@ public class KeychainProvider extends ContentProvider {
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         SQLiteDatabase db = mApgDatabase.getReadableDatabase();
 
-        String groupBy = null;
-
         int match = mUriMatcher.match(uri);
 
-        // screw that switch
-        if(match == UNIFIED_KEY_RING) {
-
-            // join keyrings with keys and userIds
-            // Only get user id and key with rank 0 (main user id and main key)
-            qb.setTables(Tables.KEY_RINGS + " INNER JOIN " + Tables.KEYS + " ON " + "("
-                    + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.KEYS + "."
-                    + KeysColumns.KEY_RING_ROW_ID + " AND " + Tables.KEYS + "."
-                    + KeysColumns.RANK + " = '0') " + " INNER JOIN " + Tables.USER_IDS + " ON "
-                    + "(" + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
-                    + UserIdsColumns.KEY_RING_ROW_ID + " AND " + Tables.USER_IDS + "."
-                    + UserIdsColumns.RANK + " = '0')");
-
-            {
-                HashMap<String, String> projectionMap = new HashMap<String, String>();
-
-                projectionMap.put(KeyRingsColumns.TYPE, "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ")");
-
-                projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
-                projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
-                        + KeyRingsColumns.KEY_RING_DATA);
-                projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID);
-                // TODO: deprecated master key id
-                //projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.KEY_ID);
-
-                projectionMap.put(KeysColumns.FINGERPRINT, Tables.KEYS + "." + KeysColumns.FINGERPRINT);
-                projectionMap.put(KeysColumns.IS_REVOKED, Tables.KEYS + "." + KeysColumns.IS_REVOKED);
-
-                projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
-
-                qb.setProjectionMap(projectionMap);
-            }
-
-            if (TextUtils.isEmpty(sortOrder)) {
-                sortOrder = Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
-            }
-
-            // If no sort order is specified use the default
-            String orderBy;
-            if (TextUtils.isEmpty(sortOrder)) {
-                orderBy = Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " DESC";
-            } else {
-                orderBy = Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " DESC, " + sortOrder;
-            }
-
-            Cursor c = qb.query(db, projection, selection, selectionArgs,
-                    Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID,
-                    null, orderBy);
-
-            // Tell the cursor what uri to watch, so it knows when its source data changes
-            c.setNotificationUri(getContext().getContentResolver(), uri);
-
-            if (Constants.DEBUG) {
-                Log.d(Constants.TAG,
-                        "Query: "
-                                + qb.buildQuery(projection, selection, selectionArgs, Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID, null,
-                                orderBy, null));
-                Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(c));
-            }
-
-            return c;
-        }
-
+        // all query() parameters, for good measure
+        String groupBy = null, having = null;
         boolean all = false;
+
         switch (match) {
+            case UNIFIED_KEY_RING:
+                qb = buildKeyRingQuery(qb, match);
+
+                // GROUP BY so we don't get duplicates
+                groupBy = Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID;
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = KeyRings.TYPE + " DESC, " +
+                            Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                }
+
+                break;
+
             case PUBLIC_KEY_RING:
             case SECRET_KEY_RING:
                 qb = buildKeyRingQuery(qb, match);
@@ -740,8 +689,7 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.KEYS + "." + Keys.KEY_RING_ROW_ID + " = "
                             + "signer." + UserIds.KEY_RING_ROW_ID
                         + " AND "
-                            + Tables.KEYS + "." + Keys.RANK + " = "
-                            + "signer." + UserIds.RANK
+                            + "signer." + Keys.RANK + " = 0"
                     + ")");
 
                 // groupBy = Tables.USER_IDS + "." + UserIds.RANK;
@@ -801,7 +749,7 @@ public class KeychainProvider extends ContentProvider {
             orderBy = sortOrder;
         }
 
-        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, null, orderBy);
+        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);

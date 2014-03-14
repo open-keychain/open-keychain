@@ -17,17 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 
 public class ImportKeysClipboardFragment extends Fragment {
 
@@ -60,8 +58,9 @@ public class ImportKeysClipboardFragment extends Fragment {
             public void onClick(View v) {
                 CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
                 String sendText = "";
-                if (clipboardText != null)
+                if (clipboardText != null) {
                     sendText = clipboardText.toString();
+                }
                 mImportActivity.loadCallback(sendText.getBytes(), null, null, null);
             }
         });

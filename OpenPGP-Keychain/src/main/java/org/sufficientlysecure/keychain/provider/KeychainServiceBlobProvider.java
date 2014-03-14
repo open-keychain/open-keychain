@@ -18,11 +18,6 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.Blobs;
-import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.BlobsColumns;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -31,7 +26,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.Blobs;
+import org.sufficientlysecure.keychain.provider.KeychainServiceBlobContract.BlobsColumns;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class KeychainServiceBlobProvider extends ContentProvider {
-    private static final String STORE_PATH = Constants.path.APP_DIR + "/ApgBlobs";
+    private static final String STORE_PATH = Constants.Path.APP_DIR + "/ApgBlobs";
 
     private KeychainServiceBlobDatabase mBlobDatabase = null;
 
@@ -55,7 +53,9 @@ public class KeychainServiceBlobProvider extends ContentProvider {
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Uri insert(Uri uri, ContentValues ignored) {
         // ContentValues are actually ignored, because we want to store a blob with no more
@@ -74,7 +74,9 @@ public class KeychainServiceBlobProvider extends ContentProvider {
         return Uri.withAppendedPath(insertedUri, password);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws SecurityException,
             FileNotFoundException {
@@ -91,9 +93,9 @@ public class KeychainServiceBlobProvider extends ContentProvider {
 
         // get the data
         SQLiteDatabase db = mBlobDatabase.getReadableDatabase();
-        Cursor result = db.query(KeychainServiceBlobDatabase.TABLE, new String[] { BaseColumns._ID },
+        Cursor result = db.query(KeychainServiceBlobDatabase.TABLE, new String[]{BaseColumns._ID},
                 BaseColumns._ID + " = ? and " + BlobsColumns.KEY + " = ?",
-                new String[] { id, key }, null, null, null);
+                new String[]{id, key}, null, null, null);
 
         if (result.getCount() == 0) {
             // either the key is wrong or no id exists
@@ -124,26 +126,34 @@ public class KeychainServiceBlobProvider extends ContentProvider {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getType(Uri uri) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-            String sortOrder) {
+                        String sortOrder) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return 0;

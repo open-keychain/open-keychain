@@ -17,37 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.regex.Matcher;
-
-import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
-import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -59,16 +28,34 @@ import android.os.Messenger;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
+import org.openintents.openpgp.OpenPgpSignatureResult;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.*;
+import java.util.regex.Matcher;
 
 @SuppressLint("NewApi")
 public class DecryptActivity extends DrawerActivity {
@@ -364,7 +351,7 @@ public class DecryptActivity extends DrawerActivity {
                 }
             } else {
                 Log.e(Constants.TAG,
-                        "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
+                "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
                 Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
@@ -383,7 +370,7 @@ public class DecryptActivity extends DrawerActivity {
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
             filename = filename.substring(0, filename.length() - 4);
         }
-        mOutputFilename = Constants.path.APP_DIR + "/" + filename;
+        mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
     }
 
     private void updateSource() {
@@ -532,8 +519,11 @@ public class DecryptActivity extends DrawerActivity {
                         AppMsg.STYLE_ALERT).show();
             } finally {
                 try {
-                    if (inStream != null) inStream.close();
-                } catch (Exception e){ }
+                    if (inStream != null) {
+                        inStream.close();
+                    }
+                } catch (Exception e) {
+                }
             }
         } else {
             inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());

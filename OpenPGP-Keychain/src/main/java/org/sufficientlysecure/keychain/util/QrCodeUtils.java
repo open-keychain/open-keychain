@@ -18,26 +18,24 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.util.Hashtable;
-
-import org.sufficientlysecure.keychain.Constants;
-
 import android.graphics.Bitmap;
 import android.graphics.Color;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.sufficientlysecure.keychain.Constants;
+
+import java.util.Hashtable;
 
 public class QrCodeUtils {
-    public final static QRCodeWriter QR_CODE_WRITER = new QRCodeWriter();
+    public static final QRCodeWriter QR_CODE_WRITER = new QRCodeWriter();
 
     /**
      * Generate Bitmap with QR Code based on input.
-     * 
+     *
      * @param input
      * @param size
      * @return QR Code as Bitmap

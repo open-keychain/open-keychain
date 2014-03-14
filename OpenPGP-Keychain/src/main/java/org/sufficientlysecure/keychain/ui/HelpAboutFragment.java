@@ -17,11 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.htmltextview.HtmlTextView;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -31,6 +26,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 
 public class HelpAboutFragment extends Fragment {
@@ -55,7 +54,7 @@ public class HelpAboutFragment extends Fragment {
 
     /**
      * Get the current package version.
-     * 
+     *
      * @return The current version.
      */
     private String getVersion() {

@@ -238,7 +238,12 @@
                             android:layout_width="0dip"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:inputType="textNoSuggestions" />
+                            android:gravity="top|left"
+                            android:inputType="textMultiLine|textUri"
+                            android:lines="4"
+                            android:maxLines="10"
+                            android:minLines="2"
+                            android:scrollbars="vertical" />
 
                         <com.beardedhen.androidbootstrap.BootstrapButton
                             android:id="@+id/btn_browse"
@@ -257,6 +262,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:clickable="true">
+
                         <com.beardedhen.androidbootstrap.FontAwesomeText
                             android:id="@+id/advancedSettingsIcon"
                             android:layout_width="wrap_content"
@@ -265,7 +271,8 @@
                             android:textSize="12sp"
                             android:paddingTop="@dimen/padding_medium"
                             android:paddingBottom="@dimen/padding_medium"
-                            fontawesometext:fa_icon="fa-chevron-right"/>
+                            fontawesometext:fa_icon="fa-chevron-right" />
+
                         <TextView
                             android:id="@+id/advancedSettings"
                             android:layout_width="wrap_content"
@@ -273,7 +280,7 @@
                             android:text="@string/btn_encryption_advanced_settings_show"
                             android:paddingTop="@dimen/padding_medium"
                             android:paddingBottom="@dimen/padding_medium"
-                            android:textColor="@color/emphasis"/>
+                            android:textColor="@color/emphasis" />
                     </LinearLayout>
 
                     <LinearLayout

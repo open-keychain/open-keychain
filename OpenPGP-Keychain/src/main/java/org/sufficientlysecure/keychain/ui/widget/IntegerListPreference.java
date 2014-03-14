@@ -25,7 +25,7 @@ import android.util.AttributeSet;
  * values should use {@link android.content.SharedPreferences#getInt}. When using XML-declared
  * arrays for entry values, the arrays should be regular string arrays containing valid integer
  * values.
- * 
+ *
  * @author Rodrigo Damazio
  */
 public class IntegerListPreference extends ListPreference {

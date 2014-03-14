@@ -16,20 +16,7 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-import java.util.Vector;
-
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.util.Choice;
-
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -39,13 +26,17 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.util.Choice;
+
+import java.text.DateFormat;
+import java.util.*;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private PGPSecretKey mKey;
@@ -63,7 +54,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     GregorianCalendar mExpiryDate;
 
     private int mDatePickerResultCount = 0;
-    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // Note: Ignore results after the first one - android sends multiples.
             if (mDatePickerResultCount++ == 0) {
@@ -110,6 +102,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setExpiryDate(null);
 
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
+            @TargetApi(11)
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
                 if (date == null) {
@@ -137,16 +130,18 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         });
 
                 // setCalendarViewShown() is supported from API 11 onwards.
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     // Hide calendarView in tablets because of the unix warparound bug.
                     dialog.getDatePicker().setCalendarViewShown(false);
-
+                }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    if ( dialog != null && mCreatedDate != null ) {
-                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    if (dialog != null && mCreatedDate != null) {
+                        dialog.getDatePicker()
+                                .setMinDate(
+                                        mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     } else {
                         //When created date isn't available
-                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     }
                 }
 
@@ -285,9 +280,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
 class ExpiryDatePickerDialog extends DatePickerDialog {
 
-    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack,
+                                  int year, int monthOfYear, int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
+
     //Set permanent title.
     public void setTitle(CharSequence title) {
         super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));

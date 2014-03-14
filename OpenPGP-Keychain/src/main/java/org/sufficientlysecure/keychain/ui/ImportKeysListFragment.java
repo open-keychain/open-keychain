@@ -17,25 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.ui.adapter.AsyncTaskResultWrapper;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListServerLoader;
-import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.KeyServer;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
@@ -44,8 +25,21 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
-
 import com.devspark.appmsg.AppMsg;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.ui.adapter.*;
+import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.KeyServer;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportKeysListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
@@ -184,7 +178,8 @@ public class ImportKeysListFragment extends ListFragment implements
     }
 
     @Override
-    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> onCreateLoader(int id, Bundle args) {
+    public Loader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>>
+                                        onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_BYTES: {
                 InputData inputData = getInputData(mKeyBytes, mDataUri);
@@ -225,16 +220,16 @@ public class ImportKeysListFragment extends ListFragment implements
         switch (loader.getId()) {
             case LOADER_ID_BYTES:
 
-                if(error == null){
+                if (error == null) {
                     // No error
-                } else if(error instanceof ImportKeysListLoader.FileHasNoContent) {
+                } else if (error instanceof ImportKeysListLoader.FileHasNoContent) {
                     AppMsg.makeText(getActivity(), R.string.error_import_file_no_content,
                             AppMsg.STYLE_ALERT).show();
-                } else if(error instanceof ImportKeysListLoader.NonPgpPart) {
+                } else if (error instanceof ImportKeysListLoader.NonPgpPart) {
                     AppMsg.makeText(getActivity(),
                             ((ImportKeysListLoader.NonPgpPart) error).getCount() + " " + getResources().
-                            getQuantityString(R.plurals.error_import_non_pgp_part,
-                                    ((ImportKeysListLoader.NonPgpPart) error).getCount()),
+                                    getQuantityString(R.plurals.error_import_non_pgp_part,
+                                            ((ImportKeysListLoader.NonPgpPart) error).getCount()),
                             new AppMsg.Style(AppMsg.LENGTH_LONG, R.color.confirm)).show();
                 } else {
                     AppMsg.makeText(getActivity(), R.string.error_generic_report_bug,
@@ -244,19 +239,19 @@ public class ImportKeysListFragment extends ListFragment implements
 
             case LOADER_ID_SERVER_QUERY:
 
-                if(error == null) {
+                if (error == null) {
                     AppMsg.makeText(
                             getActivity(), getResources().getQuantityString(R.plurals.keys_found,
                             mAdapter.getCount(), mAdapter.getCount()),
                             AppMsg.STYLE_INFO
                     ).show();
-                } else if(error instanceof KeyServer.InsufficientQuery) {
+                } else if (error instanceof KeyServer.InsufficientQuery) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_insufficient_query,
                             AppMsg.STYLE_ALERT).show();
-                } else if(error instanceof  KeyServer.QueryException) {
+                } else if (error instanceof KeyServer.QueryException) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_query,
                             AppMsg.STYLE_ALERT).show();
-                } else if(error instanceof KeyServer.TooManyResponses) {
+                } else if (error instanceof KeyServer.TooManyResponses) {
                     AppMsg.makeText(getActivity(), R.string.error_keyserver_too_many_responses,
                             AppMsg.STYLE_ALERT).show();
                 }

@@ -17,20 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -52,6 +38,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class PassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -62,20 +61,18 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
-    private boolean canKB;
+    private boolean mCanKB;
 
     /**
      * Creates new instance of this dialog fragment
-     * 
-     * @param secretKeyId
-     *            secret key id you want to use
-     * @param messenger
-     *            to communicate back after caching the passphrase
+     *
+     * @param secretKeyId secret key id you want to use
+     * @param messenger   to communicate back after caching the passphrase
      * @return
      * @throws PgpGeneralException
      */
     public static PassphraseDialogFragment newInstance(Context context, Messenger messenger,
-            long secretKeyId) throws PgpGeneralException {
+                                                       long secretKeyId) throws PgpGeneralException {
         // check if secret key has a passphrase
         if (!(secretKeyId == Id.key.symmetric || secretKeyId == Id.key.none)) {
             if (!PassphraseCacheService.hasPassphrase(context, secretKeyId)) {
@@ -131,7 +128,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                     }
                 });
                 alert.setCancelable(false);
-                canKB = false;
+                mCanKB = false;
                 return alert.create();
             }
             String userId = PgpKeyHelper.getMainUserIdSafe(activity, secretKey);
@@ -171,7 +168,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         Toast.makeText(activity,
                                                 R.string.error_could_not_extract_private_key,
                                                 Toast.LENGTH_SHORT).show();
-                                        
+
                                         sendMessageToHandler(MESSAGE_CANCEL);
                                         return;
                                     } else {
@@ -187,14 +184,14 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             } catch (PGPException e) {
                                 Toast.makeText(activity, R.string.wrong_passphrase,
                                         Toast.LENGTH_SHORT).show();
-                                
+
                                 sendMessageToHandler(MESSAGE_CANCEL);
                                 return;
                             }
                         } else {
                             Toast.makeText(activity, R.string.error_could_not_extract_private_key,
                                     Toast.LENGTH_SHORT).show();
-                            
+
                             sendMessageToHandler(MESSAGE_CANCEL);
                             return; // ran out of keys to try
                         }
@@ -207,7 +204,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                 // cache the new passphrase
                 Log.d(Constants.TAG, "Everything okay! Caching entered passphrase");
                 PassphraseCacheService.addCachedPassphrase(activity, keyId, passphrase);
-                if ( !keyOK && clickSecretKey.getKeyID() != keyId) {
+                if (!keyOK && clickSecretKey.getKeyID() != keyId) {
                     PassphraseCacheService.addCachedPassphrase(activity, clickSecretKey.getKeyID(),
                             passphrase);
                 }
@@ -224,14 +221,14 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             }
         });
 
-        canKB = true;
+        mCanKB = true;
         return alert.create();
     }
 
     @Override
     public void onActivityCreated(Bundle arg0) {
         super.onActivityCreated(arg0);
-        if (canKB) {
+        if (mCanKB) {
             // request focus and open soft keyboard
             mPassphraseEditText.requestFocus();
             getDialog().getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -265,9 +262,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
 
     /**
      * Send message back to handler which is initialized in a activity
-     * 
-     * @param what
-     *            Message integer you want to send
+     *
+     * @param what Message integer you want to send
      */
     private void sendMessageToHandler(Integer what) {
         Message msg = Message.obtain();

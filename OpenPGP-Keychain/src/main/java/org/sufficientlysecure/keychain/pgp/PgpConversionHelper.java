@@ -17,11 +17,6 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPObjectFactory;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -31,12 +26,17 @@ import org.spongycastle.openpgp.PGPSignatureList;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 
 public class PgpConversionHelper {
 
     /**
      * Convert from byte[] to PGPKeyRing
-     * 
+     *
      * @param keysBytes
      * @return
      */
@@ -56,7 +56,7 @@ public class PgpConversionHelper {
 
     /**
      * Convert from byte[] to ArrayList<PGPSecretKey>
-     * 
+     *
      * @param keysBytes
      * @return
      */
@@ -75,9 +75,9 @@ public class PgpConversionHelper {
 
     /**
      * Convert from byte[] to PGPSecretKey
-     * 
+     * <p/>
      * Singles keys are encoded as keyRings with one single key in it by Bouncy Castle
-     * 
+     *
      * @param keyBytes
      * @return
      */
@@ -90,13 +90,13 @@ public class PgpConversionHelper {
             Log.e(Constants.TAG, "Error while converting to PGPSecretKey!", e);
         }
         PGPSecretKey secKey = null;
-        if(obj instanceof PGPSecretKey) {
-            if ((secKey = (PGPSecretKey)obj ) == null) {
+        if (obj instanceof PGPSecretKey) {
+            if ((secKey = (PGPSecretKey) obj) == null) {
                 Log.e(Constants.TAG, "No keys given!");
             }
-        } else if(obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
+        } else if (obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
             PGPSecretKeyRing keyRing = null;
-            if ((keyRing = (PGPSecretKeyRing)obj) == null) {
+            if ((keyRing = (PGPSecretKeyRing) obj) == null) {
                 Log.e(Constants.TAG, "No keys given!");
             }
             secKey = keyRing.getSecretKey();
@@ -129,7 +129,7 @@ public class PgpConversionHelper {
 
     /**
      * Convert from ArrayList<PGPSecretKey> to byte[]
-     * 
+     *
      * @param keys
      * @return
      */
@@ -148,7 +148,7 @@ public class PgpConversionHelper {
 
     /**
      * Convert from PGPSecretKey to byte[]
-     * 
+     *
      * @param key
      * @return
      */
@@ -164,7 +164,7 @@ public class PgpConversionHelper {
 
     /**
      * Convert from PGPSecretKeyRing to byte[]
-     * 
+     *
      * @param keyRing
      * @return
      */

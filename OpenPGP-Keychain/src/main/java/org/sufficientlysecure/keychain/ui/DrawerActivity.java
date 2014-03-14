@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -30,17 +26,14 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.FontAwesomeText;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
 
 public class DrawerActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
@@ -50,9 +43,9 @@ public class DrawerActivity extends ActionBarActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
 
-    private static Class[] mItemsClass = new Class[] { KeyListActivity.class,
+    private static Class[] mItemsClass = new Class[]{KeyListActivity.class,
             EncryptActivity.class, DecryptActivity.class, ImportKeysActivity.class,
-            RegisteredAppsListActivity.class };
+            RegisteredAppsListActivity.class};
     private Class mSelectedItem;
 
     private static final int MENU_ID_PREFERENCE = 222;
@@ -67,12 +60,12 @@ public class DrawerActivity extends ActionBarActivity {
         // opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        NavItem mItemIconTexts[] = new NavItem[] {
+        NavItem mItemIconTexts[] = new NavItem[]{
                 new NavItem("fa-user", getString(R.string.nav_contacts)),
                 new NavItem("fa-lock", getString(R.string.nav_encrypt)),
                 new NavItem("fa-unlock", getString(R.string.nav_decrypt)),
                 new NavItem("fa-download", getString(R.string.nav_import)),
-                new NavItem("fa-android", getString(R.string.nav_apps)) };
+                new NavItem("fa-android", getString(R.string.nav_apps))};
 
         mDrawerList.setAdapter(new NavigationDrawerAdapter(this, R.layout.drawer_list_item,
                 mItemIconTexts));
@@ -86,10 +79,10 @@ public class DrawerActivity extends ActionBarActivity {
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
         mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
-        mDrawerLayout, /* DrawerLayout object */
-        R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
-        R.string.drawer_open, /* "open drawer" description for accessibility */
-        R.string.drawer_close /* "close drawer" description for accessibility */
+                mDrawerLayout, /* DrawerLayout object */
+                R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
+                R.string.drawer_open, /* "open drawer" description for accessibility */
+                R.string.drawer_close /* "close drawer" description for accessibility */
         ) {
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
@@ -97,7 +90,7 @@ public class DrawerActivity extends ActionBarActivity {
                 supportInvalidateOptionsMenu();
 
                 // call intent activity if selected
-                if(mSelectedItem != null) {
+                if (mSelectedItem != null) {
                     finish();
                     overridePendingTransition(0, 0);
 
@@ -149,18 +142,18 @@ public class DrawerActivity extends ActionBarActivity {
         }
 
         switch (item.getItemId()) {
-        case MENU_ID_PREFERENCE: {
-            Intent intent = new Intent(this, PreferencesActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        case MENU_ID_HELP: {
-            Intent intent = new Intent(this, HelpActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        default:
-            return super.onOptionsItemSelected(item);
+            case MENU_ID_PREFERENCE: {
+                Intent intent = new Intent(this, PreferencesActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            case MENU_ID_HELP: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                startActivity(intent);
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
         // Handle action buttons
@@ -228,15 +221,15 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     private class NavigationDrawerAdapter extends ArrayAdapter<NavItem> {
-        Context context;
-        int layoutResourceId;
-        NavItem data[] = null;
+        Context mContext;
+        int mLayoutResourceId;
+        NavItem mData[] = null;
 
         public NavigationDrawerAdapter(Context context, int layoutResourceId, NavItem[] data) {
             super(context, layoutResourceId, data);
-            this.layoutResourceId = layoutResourceId;
-            this.context = context;
-            this.data = data;
+            this.mLayoutResourceId = layoutResourceId;
+            this.mContext = context;
+            this.mData = data;
         }
 
         @Override
@@ -245,21 +238,21 @@ public class DrawerActivity extends ActionBarActivity {
             NavItemHolder holder = null;
 
             if (row == null) {
-                LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-                row = inflater.inflate(layoutResourceId, parent, false);
+                LayoutInflater inflater = ((Activity) mContext).getLayoutInflater();
+                row = inflater.inflate(mLayoutResourceId, parent, false);
 
                 holder = new NavItemHolder();
-                holder.img = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
-                holder.txtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
+                holder.mImg = (FontAwesomeText) row.findViewById(R.id.drawer_item_icon);
+                holder.mTxtTitle = (TextView) row.findViewById(R.id.drawer_item_text);
 
                 row.setTag(holder);
             } else {
                 holder = (NavItemHolder) row.getTag();
             }
 
-            NavItem item = data[position];
-            holder.txtTitle.setText(item.title);
-            holder.img.setIcon(item.icon);
+            NavItem item = mData[position];
+            holder.mTxtTitle.setText(item.title);
+            holder.mImg.setIcon(item.icon);
 
             return row;
         }
@@ -267,8 +260,8 @@ public class DrawerActivity extends ActionBarActivity {
     }
 
     static class NavItemHolder {
-        FontAwesomeText img;
-        TextView txtTitle;
+        FontAwesomeText mImg;
+        TextView mTxtTitle;
     }
 
 }

@@ -17,14 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 
 public class SelectSecretKeyActivity extends ActionBarActivity {
 
@@ -90,7 +89,7 @@ public class SelectSecretKeyActivity extends ActionBarActivity {
 
     /**
      * This is executed by SelectSecretKeyFragment after clicking on an item
-     * 
+     *
      * @param masterKeyId
      * @param userId
      */

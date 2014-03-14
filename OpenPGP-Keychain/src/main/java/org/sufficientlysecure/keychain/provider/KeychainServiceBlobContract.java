@@ -17,10 +17,9 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import org.sufficientlysecure.keychain.Constants;
-
 import android.net.Uri;
 import android.provider.BaseColumns;
+import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainServiceBlobContract {
 

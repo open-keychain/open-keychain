@@ -16,14 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Vector;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.ui.widget.Editor;
-import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
-import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +25,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.widget.Editor;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
+import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
+
+import java.util.Vector;
 
 public class PreferencesKeyServerActivity extends ActionBarActivity implements OnClickListener,
         EditorListener {
@@ -63,7 +62,8 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
                         // cancel
                         cancelClicked();
                     }
-                });
+                }
+        );
 
         setContentView(R.layout.key_server_preference);
 

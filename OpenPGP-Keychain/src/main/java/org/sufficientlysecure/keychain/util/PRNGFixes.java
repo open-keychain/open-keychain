@@ -14,48 +14,36 @@ import android.os.Build;
 import android.os.Process;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.security.SecureRandomSpi;
-import java.security.Security;
+import java.io.*;
+import java.security.*;
 
 /**
  * Fixes for the output of the default PRNG having low entropy.
- * 
+ * <p/>
  * The fixes need to be applied via {@link #apply()} before any use of Java Cryptography
  * Architecture primitives. A good place to invoke them is in the application's {@code onCreate}.
- * 
+ * <p/>
  * copied from http://android-developers.blogspot.de/2013/08/some-securerandom-thoughts.html
- * 
- * 
+ * <p/>
+ * <p/>
  * More information on these Android bugs:
  * http://blog.k3170makan.com/2013/08/more-details-on-android-jca-prng-flaw.html
  * Paper: "Randomly failed! Weaknesses in Java Pseudo Random Number Generators (PRNGs)"
- * 
- * 
+ * <p/>
+ * <p/>
  * Sep 15, 2013:
  * On some devices /dev/urandom is non-writable!
  * No need to seed /dev/urandom. urandom should have enough seeds from the OS and kernel.
  * Only OpenSSL seeds are broken. See http://emboss.github.io/blog/2013/08/21/openssl-prng-is-not-really-fork-safe
- * 
+ * <p/>
  * see also:
  * https://github.com/k9mail/k-9/commit/dda8f64276d4d29c43f86237cd77819c28f22f21
  * In addition to a couple of custom ROMs linking /dev/urandom to a non-writable
  * random version, now Samsung's SELinux policy also prevents apps from opening
  * /dev/urandom for writing. Since we shouldn't need to write to /dev/urandom anyway
  * we now simply don't.
- *
- *
+ * <p/>
+ * <p/>
  * Sep 17, 2013:
  * Updated from official blogpost:
  * Update: the original code sample below crashed on a small fraction of Android
@@ -66,10 +54,13 @@ public final class PRNGFixes {
     private static final int VERSION_CODE_JELLY_BEAN = 16;
     private static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;
     private static final byte[] BUILD_FINGERPRINT_AND_DEVICE_SERIAL =
-        getBuildFingerprintAndDeviceSerial();
+            getBuildFingerprintAndDeviceSerial();
 
-    /** Hidden constructor to prevent instantiation. */
-    private PRNGFixes() {}
+    /**
+     * Hidden constructor to prevent instantiation.
+     */
+    private PRNGFixes() {
+    }
 
     /**
      * Applies all fixes.
@@ -136,7 +127,7 @@ public final class PRNGFixes {
         if ((secureRandomProviders == null)
                 || (secureRandomProviders.length < 1)
                 || (!LinuxPRNGSecureRandomProvider.class.equals(
-                        secureRandomProviders[0].getClass()))) {
+                secureRandomProviders[0].getClass()))) {
             Security.insertProviderAt(new LinuxPRNGSecureRandomProvider(), 1);
         }
 
@@ -161,7 +152,7 @@ public final class PRNGFixes {
                 rng2.getProvider().getClass())) {
             throw new SecurityException(
                     "SecureRandom.getInstance(\"SHA1PRNG\") backed by wrong"
-                    + " Provider: " + rng2.getProvider().getClass());
+                            + " Provider: " + rng2.getProvider().getClass());
         }
     }
 
@@ -175,7 +166,7 @@ public final class PRNGFixes {
             super("LinuxPRNG",
                     1.0,
                     "A Linux-specific random number provider that uses"
-                        + " /dev/urandom");
+                            + " /dev/urandom");
             // Although /dev/urandom is not a SHA-1 PRNG, some apps
             // explicitly request a SHA1PRNG SecureRandom and we thus need to
             // prevent them from getting the default implementation whose output

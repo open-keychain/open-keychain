@@ -17,8 +17,20 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Iterator;
-
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.*;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
@@ -33,25 +45,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Spinner;
-import android.widget.Toast;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
+import java.util.Iterator;
 
 /**
  * Signs the specified public key with the specified secret master key
@@ -87,7 +81,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
-                        .getKeyServers());
+                .getKeyServers());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSelectKeyserverSpinner.setAdapter(adapter);
 
