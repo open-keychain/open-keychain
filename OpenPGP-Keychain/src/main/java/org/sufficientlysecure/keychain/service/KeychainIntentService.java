@@ -543,8 +543,9 @@ public class KeychainIntentService extends IntentService
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates, masterKeyId,
-                            oldPassPhrase, newPassPhrase);
+                    PGPPublicKey pubkey = ProviderHelper.getPGPPublicKeyByKeyId(this, masterKeyId);
+                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
+                            pubkey, oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
