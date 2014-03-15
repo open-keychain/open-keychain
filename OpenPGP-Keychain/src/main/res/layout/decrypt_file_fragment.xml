@@ -80,13 +80,7 @@
     <ScrollView
         android:layout_marginTop="15dip"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
+        android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/sourceFile"
             android:layout_width="match_parent"
@@ -119,44 +113,37 @@
                     bootstrapbutton:bb_type="default" />
             </LinearLayout>
 
-            <LinearLayout
+            <CheckBox
+                android:id="@+id/deleteAfterDecryption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <CheckBox
-                    android:id="@+id/deleteAfterDecryption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/label_delete_after_decryption" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="bottom"
-                android:orientation="vertical"
-                android:padding="4dp">
-
-                <TextView
-                    style="@style/SectionHeader"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:text="@string/section_decrypt_verify" />
-
-                <com.beardedhen.androidbootstrap.BootstrapButton
-                    android:id="@+id/action_decrypt"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:padding="4dp"
-                    android:text="@string/btn_decrypt_verify"
-                    bootstrapbutton:bb_icon_left="fa-unlock"
-                    bootstrapbutton:bb_type="info" />
-            </LinearLayout>
+                android:layout_gravity="center_vertical"
+                android:text="@string/label_delete_after_decryption" />
         </LinearLayout>
-        </LinearLayout>
+
     </ScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:text="@string/section_decrypt_verify" />
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/action_decrypt"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="4dp"
+            android:text="@string/btn_decrypt_verify"
+            bootstrapbutton:bb_icon_left="fa-unlock"
+            bootstrapbutton:bb_type="info" />
+    </LinearLayout>
 
 </LinearLayout>

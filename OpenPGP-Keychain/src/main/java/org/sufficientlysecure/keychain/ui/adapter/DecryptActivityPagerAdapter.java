@@ -29,7 +29,8 @@ public class DecryptActivityPagerAdapter extends FragmentPagerAdapter implements
     private final ViewPager mViewPager;
     private DrawerActivity mActivity;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-
+    //Dont change the order.
+    private final String[] titles={"Decrypt Message", "Decrypt File"};
     static final class TabInfo {
         private final Class<?> clss;
         private Bundle args;
@@ -62,12 +63,14 @@ public class DecryptActivityPagerAdapter extends FragmentPagerAdapter implements
                 }
             }
             return null;
+
+
         }
+
 
         public void putBundle(Bundle bundle){
                 args = bundle;
         }
-
         public String getTag(){
             return tag;
         }
@@ -89,6 +92,7 @@ public class DecryptActivityPagerAdapter extends FragmentPagerAdapter implements
         TabInfo info = new TabInfo(clss, args, Tag);
         tab.setTag(info);
         tab.setTabListener(this);
+
         mTabs.add(info);
         mActionBar.addTab(tab);
         notifyDataSetChanged();
@@ -111,7 +115,7 @@ public class DecryptActivityPagerAdapter extends FragmentPagerAdapter implements
 
     @Override
     public void onPageSelected(int position) {
-        mActionBar.setSelectedNavigationItem(position);
+
     }
 
     @Override
@@ -159,5 +163,10 @@ public class DecryptActivityPagerAdapter extends FragmentPagerAdapter implements
     public void setCurrentFragment(String tag){
         TabInfo tab = TabInfo.getTabTag(tag, mTabs, null);
         mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return titles[position];
     }
 }

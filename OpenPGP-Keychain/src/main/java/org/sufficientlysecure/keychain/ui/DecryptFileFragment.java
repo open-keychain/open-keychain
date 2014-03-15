@@ -39,9 +39,10 @@ public class DecryptFileFragment extends Fragment{
         public void guessOutputFilename(EditText v);
         public void showPassphraseDialog(View v);
         public void askForOutputFilename(View v, int code);
-        public void decryptClicked(EditText data, int code);
+        public void decryptClicked(View fragment_view, int code);
         public void decryptStart(View view, int code);
         public void mSignatureLayout_OnClick();
+        public void lookupUnknownKey(long id);
     }
 
     public View mMainView;
@@ -90,7 +91,7 @@ public class DecryptFileFragment extends Fragment{
         mLookupKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lookupUnknownKey(mSignatureKeyId);
+                decryptionfunctions.lookupUnknownKey(mSignatureKeyId);
             }
         });
 
@@ -99,7 +100,7 @@ public class DecryptFileFragment extends Fragment{
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                decryptionfunctions.decryptClicked(mFilename, mDecryptTarget);
+                decryptionfunctions.decryptClicked(mMainView, mDecryptTarget);
             }
         });
         mSignatureLayout.setOnClickListener(new View.OnClickListener() {
@@ -129,12 +130,7 @@ public class DecryptFileFragment extends Fragment{
         return mMainView;
     }
 
-    private void lookupUnknownKey(long unknownKeyId) {
-        Intent intent = new Intent(getActivity(), ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
-        startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
-    }
+
 
 
 
