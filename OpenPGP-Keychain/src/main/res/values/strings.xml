@@ -466,5 +466,6 @@
     <string name="secret_key_yes">available</string>
     <string name="secret_key_no">unavailable</string>
     <string name="section_uids_to_sign">User IDs to sign</string>
+    <string name="progress_re_adding_certs">Reapplying certificates</string>
 
 </resources>
