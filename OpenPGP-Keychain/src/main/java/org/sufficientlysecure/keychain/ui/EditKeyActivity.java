@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -59,6 +60,7 @@ import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -328,6 +330,10 @@ public class EditKeyActivity extends ActionBarActivity {
                                                             null);
                 return true;
             case R.id.menu_key_edit_delete: {
+                //Convert the uri to one based on rowId
+                long rowId= ProviderHelper.getRowId(this,mDataUri);
+                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+
                 // Message is received after key is deleted
                 Handler returnHandler = new Handler() {
                     @Override
@@ -339,7 +345,7 @@ public class EditKeyActivity extends ActionBarActivity {
                     }
                 };
 
-                mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+                mExportHelper.deleteKey(convertUri, returnHandler);
                 return true;
             }
         }

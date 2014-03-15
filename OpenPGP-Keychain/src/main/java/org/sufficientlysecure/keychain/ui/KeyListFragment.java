@@ -52,13 +52,10 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.NewDeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 import se.emilsjolander.stickylistheaders.ApiLevelTooLowException;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -349,7 +346,6 @@ public class KeyListFragment extends Fragment
      * @param keyRingRowIds
      */
     @TargetApi(11)
-    // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
     public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
@@ -364,8 +360,8 @@ public class KeyListFragment extends Fragment
         // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(returnHandler);
 
-        NewDeleteKeyDialogFragment newDeleteKeyDialogFragment = NewDeleteKeyDialogFragment.newInstance(messenger, keyRingRowIds);
-        newDeleteKeyDialogFragment.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
+        DeleteKeyDialogFragment deleteKeyDialogFragment = DeleteKeyDialogFragment.newInstance(messenger, keyRingRowIds);
+        deleteKeyDialogFragment.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
 
 

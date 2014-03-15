@@ -469,6 +469,15 @@ public class ProviderHelper {
         cr.delete(KeyRings.buildSecretKeyRingsUri(Long.toString(rowId)), null, null);
     }
 
+    public static void deleteUnifiedKeyRing(Context context,String masterKeyId,boolean isSecretKey){
+       ContentResolver cr= context.getContentResolver();
+       cr.delete(KeyRings.buildPublicKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
+       if(isSecretKey){
+           cr.delete(KeyRings.buildSecretKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
+       }
+
+    }
+
     /**
      * Get master key id of keyring by its row id
      */
