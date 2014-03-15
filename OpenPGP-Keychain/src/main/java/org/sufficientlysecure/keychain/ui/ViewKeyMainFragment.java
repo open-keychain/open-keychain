@@ -26,10 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
 import android.text.format.DateFormat;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,7 +132,9 @@ public class ViewKeyMainFragment extends Fragment implements
                 mSecretKey.setText(R.string.secret_key_yes);
 
                 // certify button
-                mActionCertify.setVisibility(View.GONE);
+                // TODO this button MIGHT be useful if the user wants to
+                // certify a private key with another...
+                // mActionCertify.setVisibility(View.GONE);
 
                 // edit button
                 mActionEdit.setVisibility(View.VISIBLE);
@@ -156,17 +155,19 @@ public class ViewKeyMainFragment extends Fragment implements
 
                 // certify button
                 mActionCertify.setVisibility(View.VISIBLE);
-                mActionCertify.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View view) {
-                        certifyKey(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
-                                Long.toString(masterKeyId)
-                        ));
-                    }
-                });
-
                 // edit button
                 mActionEdit.setVisibility(View.GONE);
             }
+
+            // TODO see todo note above, doing this here for now
+            mActionCertify.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    certifyKey(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                            Long.toString(masterKeyId)
+                    ));
+                }
+            });
+
         }
 
         mActionEncrypt.setOnClickListener(new View.OnClickListener() {
@@ -198,13 +199,13 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int KEYRING_INDEX_USER_ID = 2;
 
     static final String[] USER_IDS_PROJECTION =
-            new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
-            KeychainContract.UserIds.RANK, };
-    // not the main user id
-    static final String USER_IDS_SELECTION =
-            KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.RANK + " > 0 ";
+            new String[]{
+                KeychainContract.UserIds._ID,
+                KeychainContract.UserIds.USER_ID,
+                KeychainContract.UserIds.RANK,
+            };
     static final String USER_IDS_SORT_ORDER =
-            KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
+            KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
     static final String[] KEYS_PROJECTION =
             new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
@@ -240,7 +241,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
+                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null,
                         USER_IDS_SORT_ORDER);
             }
             case LOADER_ID_KEYS: {
@@ -322,7 +323,7 @@ public class ViewKeyMainFragment extends Fragment implements
                     }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
 
-                    mFingerprint.setText(colorizeFingerprint(fingerprint));
+                    mFingerprint.setText(OtherHelper.colorizeFingerprint(fingerprint));
                 }
 
                 mKeysAdapter.swapCursor(data);
@@ -331,63 +332,6 @@ public class ViewKeyMainFragment extends Fragment implements
             default:
                 break;
         }
-    }
-
-    private SpannableStringBuilder colorizeFingerprint(String fingerprint) {
-        SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
-        try {
-            // for each 4 characters of the fingerprint + 1 space
-            for (int i = 0; i < fingerprint.length(); i += 5) {
-                int spanEnd = Math.min(i + 4, fingerprint.length());
-                String fourChars = fingerprint.substring(i, spanEnd);
-
-                int raw = Integer.parseInt(fourChars, 16);
-                byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
-                int[] color = OtherHelper.getRgbForData(bytes);
-                int r = color[0];
-                int g = color[1];
-                int b = color[2];
-
-                // we cannot change black by multiplication, so adjust it to an almost-black grey,
-                // which will then be brightened to the minimal brightness level
-                if (r == 0 && g == 0 && b == 0) {
-                    r = 1;
-                    g = 1;
-                    b = 1;
-                }
-
-                // Convert rgb to brightness
-                double brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-
-                // If a color is too dark to be seen on black,
-                // then brighten it up to a minimal brightness.
-                if (brightness < 80) {
-                    double factor = 80.0 / brightness;
-                    r = Math.min(255, (int) (r * factor));
-                    g = Math.min(255, (int) (g * factor));
-                    b = Math.min(255, (int) (b * factor));
-
-                    // If it is too light, then darken it to a respective maximal brightness.
-                } else if (brightness > 180) {
-                    double factor = 180.0 / brightness;
-                    r = (int) (r * factor);
-                    g = (int) (g * factor);
-                    b = (int) (b * factor);
-                }
-
-                // Create a foreground color with the 3 digest integers as RGB
-                // and then converting that int to hex to use as a color
-                sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
-                        i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-            }
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "Colorization failed", e);
-            // if anything goes wrong, then just display the fingerprint without colour,
-            // instead of partially correct colour or wrong colours
-            return new SpannableStringBuilder(fingerprint);
-        }
-
-        return sb;
     }
 
     /**

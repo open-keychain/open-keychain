@@ -55,6 +55,7 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int PUBLIC_KEY_RING_USER_ID = 121;
     private static final int PUBLIC_KEY_RING_USER_ID_BY_ROW_ID = 122;
+    private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID = 123;
 
     private static final int SECRET_KEY_RING = 201;
     private static final int SECRET_KEY_RING_BY_ROW_ID = 202;
@@ -157,6 +158,7 @@ public class KeychainProvider extends ContentProvider {
          * <pre>
          * key_rings/public/#/user_ids
          * key_rings/public/#/user_ids/#
+         * key_rings/public/master_key_id/#/user_ids
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
@@ -165,6 +167,10 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_USER_IDS + "/#",
                 PUBLIC_KEY_RING_USER_ID_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/"
+                + KeychainContract.PATH_BY_MASTER_KEY_ID + "/*/" + KeychainContract.PATH_USER_IDS,
+                PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID);
 
         /**
          * secret key rings
@@ -311,6 +317,7 @@ public class KeychainProvider extends ContentProvider {
                 return Keys.CONTENT_ITEM_TYPE;
 
             case PUBLIC_KEY_RING_USER_ID:
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
             case SECRET_KEY_RING_USER_ID:
                 return UserIds.CONTENT_TYPE;
 
@@ -348,6 +355,7 @@ public class KeychainProvider extends ContentProvider {
             case PUBLIC_KEY_RING_KEY:
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
             case PUBLIC_KEY_RING_USER_ID:
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
                 type = KeyTypes.PUBLIC;
                 break;
@@ -390,6 +398,11 @@ public class KeychainProvider extends ContentProvider {
         // TODO: deprecated master key id
         //projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.KEY_ID);
 
+        projectionMap.put(KeysColumns.ALGORITHM, Tables.KEYS + "." + KeysColumns.ALGORITHM);
+        projectionMap.put(KeysColumns.KEY_SIZE, Tables.KEYS + "." + KeysColumns.KEY_SIZE);
+        projectionMap.put(KeysColumns.CREATION, Tables.KEYS + "." + KeysColumns.CREATION);
+        projectionMap.put(KeysColumns.EXPIRY, Tables.KEYS + "." + KeysColumns.EXPIRY);
+        projectionMap.put(KeysColumns.KEY_RING_ROW_ID, Tables.KEYS + "." + KeysColumns.KEY_RING_ROW_ID);
         projectionMap.put(KeysColumns.FINGERPRINT, Tables.KEYS + "." + KeysColumns.FINGERPRINT);
         projectionMap.put(KeysColumns.IS_REVOKED, Tables.KEYS + "." + KeysColumns.IS_REVOKED);
 
@@ -425,6 +438,18 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeysColumns.KEY_DATA, KeysColumns.KEY_DATA);
         projectionMap.put(KeysColumns.RANK, KeysColumns.RANK);
         projectionMap.put(KeysColumns.FINGERPRINT, KeysColumns.FINGERPRINT);
+
+        return projectionMap;
+    }
+
+    private HashMap<String, String> getProjectionMapForUserIds() {
+        HashMap<String, String> projectionMap = new HashMap<String, String>();
+
+        projectionMap.put(BaseColumns._ID, Tables.USER_IDS + "." + BaseColumns._ID);
+        projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+        projectionMap.put(UserIdsColumns.RANK, Tables.USER_IDS + "." + UserIdsColumns.RANK);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
 
         return projectionMap;
     }
@@ -630,6 +655,17 @@ public class KeychainProvider extends ContentProvider {
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 qb.setProjectionMap(getProjectionMapForKeys());
+
+                break;
+
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
+                qb.setTables(Tables.USER_IDS + " INNER JOIN " + Tables.KEY_RINGS + " ON " + "("
+                        + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
+                        + KeysColumns.KEY_RING_ROW_ID + " )");
+                qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+
+                qb.setProjectionMap(getProjectionMapForUserIds());
 
                 break;
 
