@@ -53,12 +53,17 @@ public class ViewCertActivity extends ActionBarActivity
             KeychainContract.Certs._ID,
             KeychainContract.Certs.KEY_ID,
             KeychainContract.UserIds.USER_ID,
-            KeychainContract.Certs.RANK,
             KeychainContract.Certs.CREATION,
             KeychainContract.Certs.KEY_ID_CERTIFIER,
             "signer_uid",
             KeychainContract.Certs.KEY_DATA
     };
+    private static final int INDEX_KEY_ID = 1;
+    private static final int INDEX_USER_ID = 2;
+    private static final int INDEX_CREATION = 3;
+    private static final int INDEX_KEY_ID_CERTIFIER = 4;
+    private static final int INDEX_UID_CERTIFIER = 5;
+    private static final int INDEX_KEY_DATA = 6;
 
     private Uri mDataUri;
 
@@ -78,7 +83,6 @@ public class ViewCertActivity extends ActionBarActivity
 
         mSigneeKey = (TextView) findViewById(R.id.signee_key);
         mSigneeUid = (TextView) findViewById(R.id.signee_uid);
-        mRank = (TextView) findViewById(R.id.subkey_rank);
         mAlgorithm = (TextView) findViewById(R.id.algorithm);
         mType = (TextView) findViewById(R.id.signature_type);
         mCreation = (TextView) findViewById(R.id.creation);
@@ -108,29 +112,26 @@ public class ViewCertActivity extends ActionBarActivity
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()) {
-            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(1));
+            String signeeKey = "0x" + PgpKeyHelper.convertKeyIdToHex(data.getLong(INDEX_KEY_ID));
             mSigneeKey.setText(signeeKey);
 
-            String signeeUid = data.getString(2);
+            String signeeUid = data.getString(INDEX_USER_ID);
             mSigneeUid.setText(signeeUid);
 
-            String subkey_rank = Integer.toString(data.getInt(3));
-            mRank.setText(subkey_rank);
-
-            Date creationDate = new Date(data.getLong(4) * 1000);
+            Date creationDate = new Date(data.getLong(INDEX_CREATION) * 1000);
             mCreation.setText(DateFormat.getDateFormat(getApplicationContext()).format(creationDate));
 
-            mSignerKeyId = data.getLong(5);
+            mSignerKeyId = data.getLong(INDEX_KEY_ID_CERTIFIER);
             String signerKey = "0x" + PgpKeyHelper.convertKeyIdToHex(mSignerKeyId);
             mSignerKey.setText(signerKey);
 
-            String signerUid = data.getString(6);
+            String signerUid = data.getString(INDEX_UID_CERTIFIER);
             if(signerUid != null)
                 mSignerUid.setText(signerUid);
             else
                 mSignerUid.setText(R.string.unknown_uid);
 
-            byte[] sigData = data.getBlob(7);
+            byte[] sigData = data.getBlob(INDEX_KEY_DATA);
             PGPSignature sig = PgpConversionHelper.BytesToPGPSignature(sigData);
             if(sig != null) {
                 String algorithmStr = PgpKeyHelper.getAlgorithmInfo(sig.getKeyAlgorithm(), 0);

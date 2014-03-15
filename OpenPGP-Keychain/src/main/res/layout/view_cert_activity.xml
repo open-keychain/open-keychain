@@ -69,24 +69,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:paddingRight="10dip"
-                    android:text="@string/label_subkey_rank" />
-
-                <TextView
-                    android:id="@+id/subkey_rank"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingRight="5dip" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:paddingRight="10dip"
                     android:text="@string/label_algorithm" />
 
                 <TextView

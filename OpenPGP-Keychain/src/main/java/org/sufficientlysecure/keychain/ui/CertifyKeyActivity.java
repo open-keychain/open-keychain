@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -164,7 +165,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     KeychainContract.KeyRings._ID,
                     KeychainContract.KeyRings.MASTER_KEY_ID,
                     KeychainContract.Keys.FINGERPRINT,
-                    KeychainContract.UserIds.USER_ID
+                    KeychainContract.UserIds.USER_ID,
             };
     static final int INDEX_MASTER_KEY_ID = 1;
     static final int INDEX_FINGERPRINT = 2;
@@ -174,10 +175,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             new String[]{
                     KeychainContract.UserIds._ID,
                     KeychainContract.UserIds.USER_ID,
-                    KeychainContract.UserIds.RANK
+                    KeychainContract.UserIds.RANK,
+                    "verified"
             };
     static final String USER_IDS_SORT_ORDER =
-            KeychainContract.UserIds.RANK + " ASC";
+            KeychainDatabase.Tables.USER_IDS + "." + KeychainContract.UserIds.RANK + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

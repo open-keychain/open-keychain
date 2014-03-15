@@ -451,6 +451,9 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.MASTER_KEY_ID);
 
+        // this is the count of known secret keys who certified this uid
+        projectionMap.put("verified", "COUNT(" + Tables.KEYS + "." + Keys._ID + ") AS verified");
+
         return projectionMap;
     }
 
@@ -659,38 +662,37 @@ public class KeychainProvider extends ContentProvider {
                 break;
 
             case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
-                qb.setTables(Tables.USER_IDS + " INNER JOIN " + Tables.KEY_RINGS + " ON " + "("
-                        + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
-                        + KeysColumns.KEY_RING_ROW_ID + " )");
-                qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(3));
-
-                qb.setProjectionMap(getProjectionMapForUserIds());
-
-                break;
-
             case PUBLIC_KEY_RING_USER_ID:
             case SECRET_KEY_RING_USER_ID:
                 qb.setTables(Tables.USER_IDS
-                        + " LEFT JOIN " + Tables.CERTS
-                        + " ON ("
+                        + " INNER JOIN " + Tables.KEY_RINGS + " ON ("
+                            + Tables.KEY_RINGS + "." + BaseColumns._ID + " = "
+                                + Tables.USER_IDS + "." + KeysColumns.KEY_RING_ROW_ID
+                        + ") LEFT JOIN " + Tables.CERTS + " ON ("
                             + Tables.USER_IDS + "." + UserIds.KEY_RING_ROW_ID + " = "
                                 + Tables.CERTS + "." + Certs.KEY_RING_ROW_ID
                             + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = "
                                 + Tables.CERTS + "." + Certs.RANK
+                        + ") LEFT JOIN " + Tables.KEYS + " ON ("
+                            + Tables.KEYS + "." + Keys.KEY_ID + " = "
+                                + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER
+                            // might introduce a "trusted" flag later? for now, we simply assume
+                            // every private key's signature is good.
+                            + " AND " + Tables.KEYS + "." + Keys.TYPE
+                                + " == " + KeyTypes.SECRET
                         + ")");
 
                 groupBy = Tables.USER_IDS + "." + UserIds.RANK;
 
-                HashMap<String, String> pmap = new HashMap<String, String>();
-                pmap.put(UserIds._ID, Tables.USER_IDS + "." + UserIds._ID);
-                pmap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
-                pmap.put(UserIds.RANK, Tables.USER_IDS + "." + UserIds.RANK);
-                pmap.put("verified", "COUNT(" + Tables.CERTS + "." + Certs._ID + ") AS verified");
-                qb.setProjectionMap(pmap);
+                qb.setProjectionMap(getProjectionMapForUserIds());
 
-                qb.appendWhere(Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                if(match == PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID) {
+                    qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
+                } else {
+                    qb.appendWhere(Tables.USER_IDS + "." + UserIdsColumns.KEY_RING_ROW_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                }
 
                 break;
 
@@ -728,7 +730,8 @@ public class KeychainProvider extends ContentProvider {
                             + "signer." + Keys.RANK + " = 0"
                     + ")");
 
-                // groupBy = Tables.USER_IDS + "." + UserIds.RANK;
+                groupBy = Tables.CERTS + "." + Certs.RANK + ", "
+                        + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER;
 
                 HashMap<String, String> pmap2 = new HashMap<String, String>();
                 pmap2.put(Certs._ID, Tables.CERTS + "." + Certs._ID);

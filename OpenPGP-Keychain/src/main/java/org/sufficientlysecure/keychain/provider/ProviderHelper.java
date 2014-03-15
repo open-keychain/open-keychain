@@ -207,7 +207,7 @@ public class ProviderHelper {
         }
 
         // get a list of owned secret keys, for verification filtering
-        Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(context, KeyRings.buildPublicKeyRingsUri());
+        Map<Long, PGPKeyRing> allKeyRings = getPGPKeyRings(context, KeyRings.buildSecretKeyRingsUri());
 
         int userIdRank = 0;
         for (String userId : new IterableIterator<String>(masterKey.getUserIDs())) {
@@ -218,35 +218,34 @@ public class ProviderHelper {
                     masterKey.getSignaturesForID(userId))) {
                 long certId = cert.getKeyID();
                 boolean verified = false;
-                // only care for signatures from our own private keys
+                // do verify signatures from our own private keys
                 if(allKeyRings.containsKey(certId)) try {
                     // mark them as verified
-                    cert.init(new JcaPGPContentVerifierBuilderProvider().setProvider("SC"), allKeyRings.get(certId).getPublicKey());
+                    cert.init(
+                            new JcaPGPContentVerifierBuilderProvider().setProvider(
+                                    Constants.BOUNCY_CASTLE_PROVIDER_NAME),
+                            allKeyRings.get(certId).getPublicKey());
                     verified = cert.verifyCertification(userId,  masterKey);
-                    // TODO: at this point, we only save signatures from available secret keys.
-                    // should we save all? those are quite a lot of rows for info we don't really
-                    // use. I left it out for now - it is available from key servers, so we can
-                    // always get it later.
-                    Log.d(Constants.TAG, "sig for " + userId + " " + verified + " from "
+                    Log.d(Constants.TAG, "Verified sig for " + userId + " " + verified + " from "
                             + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
                     );
-                    operations.add(buildPublicCertOperations(
-                            context, keyRingRowId, userIdRank, masterKey.getKeyID(), cert, verified));
                 } catch(SignatureException e) {
-                    Log.e(Constants.TAG, "Signature verification failed.", e);
-                } catch(PGPException e) {
-                    Log.e(Constants.TAG, "Signature verification failed.", e);
-                } else {
-                    Log.d(Constants.TAG, "ignored sig for "
+                    Log.e(Constants.TAG, "Signature verification failed! "
                             + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
                             + " from "
-                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
-                    );
-                    operations.add(buildPublicCertOperations(
-                            context, keyRingRowId, userIdRank, masterKey.getKeyID(), cert, false));
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID()), e);
+                } catch(PGPException e) {
+                    Log.e(Constants.TAG, "Signature verification failed! "
+                            + PgpKeyHelper.convertKeyIdToHex(masterKey.getKeyID())
+                            + " from "
+                            + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID()), e);
                 }
-                // if we wanted to save all, not just our own verifications
-                // buildPublicCertOperations(context, keyRingRowId, rank, cert, verified);
+                Log.d(Constants.TAG, "sig for " + userId + " from "
+                        + PgpKeyHelper.convertKeyIdToHex(cert.getKeyID())
+                );
+                // regardless of verification, save the certification
+                operations.add(buildPublicCertOperations(
+                        context, keyRingRowId, userIdRank, masterKey.getKeyID(), cert, verified));
             }
 
             ++userIdRank;
