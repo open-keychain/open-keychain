@@ -39,6 +39,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
     private TextView mKeyMasterKeyIdHex;
+    private TextView mNoKeySelected;
     private BootstrapButton mSelectKeyButton;
     private Boolean mFilterCertify;
 
@@ -60,10 +61,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
     public void selectKey(long secretKeyId) {
         if (secretKeyId == Id.key.none) {
-            mKeyMasterKeyIdHex.setText(R.string.api_settings_no_key);
-            mKeyUserIdRest.setText("");
+            mNoKeySelected.setVisibility(View.VISIBLE);
             mKeyUserId.setVisibility(View.GONE);
             mKeyUserIdRest.setVisibility(View.GONE);
+            mKeyMasterKeyIdHex.setVisibility(View.GONE);
 
         } else {
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
@@ -93,20 +94,25 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                     mKeyMasterKeyIdHex.setText(masterkeyIdHex);
                     mKeyUserId.setText(userName);
                     mKeyUserIdRest.setText(userEmail);
+                    mKeyMasterKeyIdHex.setVisibility(View.VISIBLE);
                     mKeyUserId.setVisibility(View.VISIBLE);
                     mKeyUserIdRest.setVisibility(View.VISIBLE);
+                    mNoKeySelected.setVisibility(View.GONE);
                 } else {
-                    mKeyMasterKeyIdHex.setText(getActivity().getResources().getString(R.string.no_key));
+                    mKeyMasterKeyIdHex.setVisibility(View.GONE);
                     mKeyUserId.setVisibility(View.GONE);
                     mKeyUserIdRest.setVisibility(View.GONE);
+                    mNoKeySelected.setVisibility(View.VISIBLE);
                 }
             } else {
                 mKeyMasterKeyIdHex.setText(
                         getActivity().getResources()
                                 .getString(R.string.no_keys_added_or_updated)
                          + " for master id: " + secretKeyId);
+                mKeyMasterKeyIdHex.setVisibility(View.VISIBLE);
                 mKeyUserId.setVisibility(View.GONE);
                 mKeyUserIdRest.setVisibility(View.GONE);
+                mNoKeySelected.setVisibility(View.GONE);
             }
 
         }
@@ -124,6 +130,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.select_secret_key_layout_fragment, container, false);
 
+        mNoKeySelected = (TextView) view.findViewById(R.id.no_key_selected);
         mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
         mKeyMasterKeyIdHex = (TextView) view.findViewById(R.id.select_secret_key_master_key_hex);
