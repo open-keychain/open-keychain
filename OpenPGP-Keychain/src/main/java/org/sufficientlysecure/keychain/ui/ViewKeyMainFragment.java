@@ -198,12 +198,13 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int KEYRING_INDEX_USER_ID = 2;
 
     static final String[] USER_IDS_PROJECTION =
-            new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
-            KeychainContract.UserIds.RANK, };
-    // not the main user id
-    static final String USER_IDS_SELECTION = KeychainContract.UserIds.RANK + " > 0 ";
+            new String[]{
+                KeychainContract.UserIds._ID,
+                KeychainContract.UserIds.USER_ID,
+                KeychainContract.UserIds.RANK,
+            };
     static final String USER_IDS_SORT_ORDER =
-            KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
+            KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
     static final String[] KEYS_PROJECTION =
             new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
@@ -239,7 +240,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
+                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null,
                         USER_IDS_SORT_ORDER);
             }
             case LOADER_ID_KEYS: {
