@@ -143,6 +143,7 @@ public class KeychainIntentService extends IntentService
     // sign key
     public static final String CERTIFY_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
     public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
+    public static final String CERTIFY_KEY_UIDS = "sign_key_uids";
 
     /*
      * possible data keys as result send over messenger
@@ -804,6 +805,7 @@ public class KeychainIntentService extends IntentService
                 /* Input */
                 long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
                 long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
+                // String[] userIds = data.getStringArray(CERTIFY_KEY_PUB_KEY_ID);
 
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
