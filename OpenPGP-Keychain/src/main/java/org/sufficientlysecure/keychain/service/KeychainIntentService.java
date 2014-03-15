@@ -805,7 +805,7 @@ public class KeychainIntentService extends IntentService
                 /* Input */
                 long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
                 long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
-                // String[] userIds = data.getStringArray(CERTIFY_KEY_PUB_KEY_ID);
+                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
 
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
@@ -813,7 +813,7 @@ public class KeychainIntentService extends IntentService
 
                 PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
                 PGPPublicKeyRing signedPubKeyRing = keyOperation.certifyKey(masterKeyId, pubKeyId,
-                        signaturePassPhrase);
+                        userIds, signaturePassPhrase);
 
                 // store the signed key in our local cache
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);

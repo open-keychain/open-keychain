@@ -30,14 +30,12 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
@@ -53,8 +51,7 @@ import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.Date;
-import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Signs the specified public key with the specified secret master key
@@ -267,6 +264,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;
 
+            /* todo: reconsider this at a later point when certs are in the db
             @SuppressWarnings("unchecked")
             Iterator<PGPSignature> itr = pubring.getPublicKey(mPubKeyId).getSignatures();
             while (itr.hasNext()) {
@@ -276,6 +274,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                     break;
                 }
             }
+            */
 
             if (!alreadySigned) {
                 /*
@@ -303,6 +302,15 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      * kicks off the actual signing process on a background thread
      */
     private void startSigning() {
+
+        // Bail out if there is not at least one user id selected
+        ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
+        if(userIds.isEmpty()) {
+            Toast.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Send all information needed to service to sign key in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
 
@@ -313,8 +321,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         data.putLong(KeychainIntentService.CERTIFY_KEY_MASTER_KEY_ID, mMasterKeyId);
         data.putLong(KeychainIntentService.CERTIFY_KEY_PUB_KEY_ID, mPubKeyId);
-        data.putStringArray(KeychainIntentService.CERTIFY_KEY_UIDS,
-                (String[]) mUserIdsAdapter.getSelectedUserIds().toArray());
+        data.putStringArrayList(KeychainIntentService.CERTIFY_KEY_UIDS, userIds);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
