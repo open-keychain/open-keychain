@@ -24,7 +24,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
         <TextView
             android:id="@+id/userId"
@@ -40,6 +41,15 @@
             android:text="@string/label_email"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingLeft="10dp" />
+
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/certified"
+        android:src="@android:drawable/presence_invisible"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp" />
 
 </LinearLayout>

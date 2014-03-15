@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -90,17 +91,24 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         TextView vRank = (TextView) view.findViewById(R.id.rank);
         TextView vUserId = (TextView) view.findViewById(R.id.userId);
         TextView vAddress = (TextView) view.findViewById(R.id.address);
+        ImageView vVerified = (ImageView) view.findViewById(R.id.certified);
 
         vRank.setText(Integer.toString(cursor.getInt(mIndexRank)));
 
         String[] userId = PgpKeyHelper.splitUserId(cursor.getString(mIndexUserId));
-        int verified = cursor.getInt(mVerifiedId);
         if (userId[0] != null) {
-            vUserId.setText(userId[0] + (verified > 0 ? " (ok)" : "(nope)"));
+            vUserId.setText(userId[0]);
         } else {
             vUserId.setText(R.string.user_id_no_name);
         }
         vAddress.setText(userId[1]);
+
+        int verified = cursor.getInt(mVerifiedId);
+        // TODO introduce own resource for this :)
+        if(verified > 0)
+            vVerified.setImageResource(android.R.drawable.presence_online);
+        else
+            vVerified.setImageResource(android.R.drawable.presence_invisible);
 
         // don't care further if checkboxes aren't shown
         if(mCheckStates == null)
