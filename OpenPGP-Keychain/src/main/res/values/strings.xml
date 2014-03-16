@@ -41,6 +41,7 @@
     <string name="section_master_user_id">Master User ID</string>
     <string name="section_actions">Actions</string>
     <string name="section_certification_key">Your Key used for certification</string>
+    <string name="section_key_to_certificate">Key to certify</string>
     <string name="section_upload_key">Upload Key</string>
     <string name="section_key_server">Keyserver</string>
     <string name="section_encrypt_and_or_sign">Encrypt and/or Sign</string>
