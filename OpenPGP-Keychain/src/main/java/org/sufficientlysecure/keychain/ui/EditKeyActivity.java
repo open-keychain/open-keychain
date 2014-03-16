@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -68,7 +69,7 @@ public class EditKeyActivity extends ActionBarActivity {
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
     public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
-
+    private String ACTION;
     // possible extra keys
     public static final String EXTRA_USER_IDS = "user_ids";
     public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
@@ -116,8 +117,10 @@ public class EditKeyActivity extends ActionBarActivity {
         Intent intent = getIntent();
         String action = intent.getAction();
         if (ACTION_CREATE_KEY.equals(action)) {
+            ACTION = ACTION_CREATE_KEY;
             handleActionCreateKey(intent);
         } else if (ACTION_EDIT_KEY.equals(action)) {
+            ACTION = ACTION_EDIT_KEY;
             handleActionEditKey(intent);
         }
     }
@@ -251,7 +254,9 @@ public class EditKeyActivity extends ActionBarActivity {
                     public void onClick(View v) {
                         saveClicked();
                     }
-                });
+                }
+        );
+
 
         mDataUri = intent.getData();
         if (mDataUri == null) {
@@ -271,10 +276,12 @@ public class EditKeyActivity extends ActionBarActivity {
 
     private void showPassphraseDialog(final long masterKeyId, final boolean masterCanSign) {
         // Message is received after passphrase is cached
+
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+
                     String passphrase = PassphraseCacheService.getCachedPassphrase(
                             EditKeyActivity.this, masterKeyId);
                     mCurrentPassphrase = passphrase;
@@ -368,9 +375,9 @@ public class EditKeyActivity extends ActionBarActivity {
         }
 
         mCurrentPassphrase = "";
-
-        buildLayout();
         mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
+        buildLayout();
+
         if (!mIsPassPhraseSet) {
             // check "no passphrase" checkbox and remove button
             mNoPassphrase.setChecked(true);
@@ -392,7 +399,6 @@ public class EditKeyActivity extends ActionBarActivity {
                     // set new returned passphrase!
                     mNewPassPhrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
-
                     updatePassPhraseButtonText();
                 }
             }
@@ -425,8 +431,11 @@ public class EditKeyActivity extends ActionBarActivity {
         // find views
         mChangePassphrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_passphrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
-
-        // Build layout based on given userIds and keys
+        if(mIsPassPhraseSet){
+            mChangePassphrase.setText(getString(R.string.btn_change_passphrase));
+        }
+        // Build layout based
+        // on given userIds and keys
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
@@ -446,6 +455,7 @@ public class EditKeyActivity extends ActionBarActivity {
         mChangePassphrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 showSetPassphraseDialog();
+
             }
         });
 
@@ -493,6 +503,7 @@ public class EditKeyActivity extends ActionBarActivity {
             }
 
             String passphrase = null;
+            mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(getApplicationContext(), masterKeyId);
             if (mIsPassPhraseSet) {
                 passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
             } else {
@@ -562,7 +573,6 @@ public class EditKeyActivity extends ActionBarActivity {
             // Create a new Messenger for the communication back
             Messenger messenger = new Messenger(saveHandler);
             intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-
             saveHandler.showProgressDialog(this);
 
             // start service with intent
@@ -691,6 +701,28 @@ public class EditKeyActivity extends ActionBarActivity {
     private void updatePassPhraseButtonText() {
         mChangePassphrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(ACTION.equals(ACTION_CREATE_KEY)) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Closing Window")
+                    .setMessage(getString(R.string.closing_edit_key_activity))
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 
 }
