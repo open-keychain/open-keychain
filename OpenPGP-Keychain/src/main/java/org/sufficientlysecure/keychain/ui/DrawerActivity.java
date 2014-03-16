@@ -30,9 +30,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.*;
 import android.widget.*;
 import com.beardedhen.androidbootstrap.FontAwesomeText;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
 
 public class DrawerActivity extends ActionBarActivity {
     private DrawerLayout mDrawerLayout;
@@ -43,9 +42,6 @@ public class DrawerActivity extends ActionBarActivity {
     private CharSequence mTitle;
     private boolean mIsDrawerLocked = false;
 
-    private static Class[] mItemsClass = new Class[]{KeyListActivity.class,
-            EncryptActivity.class, DecryptActivity.class, ImportKeysActivity.class,
-            RegisteredAppsListActivity.class};
     private Class mSelectedItem;
 
     private static final int MENU_ID_PREFERENCE = 222;
@@ -102,7 +98,7 @@ public class DrawerActivity extends ActionBarActivity {
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
 
-                callIntentForSelectedItem();
+                callIntentForDrawerItem(mSelectedItem);
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -112,11 +108,10 @@ public class DrawerActivity extends ActionBarActivity {
                 supportInvalidateOptionsMenu();
             }
         };
+
         if ( !mIsDrawerLocked ) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
-        }
-
-        if ( mIsDrawerLocked ) {
+        } else {
             // If the drawer is locked open make it un-focusable
             // so that it doesn't consume all the Back button presses
             mDrawerLayout.setFocusableInTouchMode(false);
@@ -126,16 +121,20 @@ public class DrawerActivity extends ActionBarActivity {
         // }
     }
 
-    private void callIntentForSelectedItem() {
+    /**
+     * Uses startActivity to call the Intent of the given class
+     * @param drawerItem the class of the drawer item you want to load. Based on Constants.DrawerItems.*
+     */
+    public void callIntentForDrawerItem(Class drawerItem) {
         // creates call to onPrepareOptionsMenu()
         supportInvalidateOptionsMenu();
 
         // call intent activity if selected
-        if (mSelectedItem != null) {
+        if (drawerItem != null) {
             finish();
             overridePendingTransition(0, 0);
 
-            Intent intent = new Intent(this, mSelectedItem);
+            Intent intent = new Intent(this, drawerItem);
             startActivity(intent);
 
             // disable animation of activity start
@@ -214,7 +213,7 @@ public class DrawerActivity extends ActionBarActivity {
         // update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         // set selected class
-        mSelectedItem = mItemsClass[position];
+        mSelectedItem = Constants.DrawerItems.ARRAY[position];
 
         // setTitle(mDrawerTitles[position]);
         // If drawer isn't locked just close the drawer and
@@ -223,7 +222,7 @@ public class DrawerActivity extends ActionBarActivity {
             mDrawerLayout.closeDrawer(mDrawerList);
         // else move to the selected item yourself
         } else {
-            callIntentForSelectedItem();
+            callIntentForDrawerItem(mSelectedItem);
         }
     }
 
