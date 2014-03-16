@@ -31,9 +31,14 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
+import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -104,6 +109,9 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
+
+
+
         mSignButton = (BootstrapButton) findViewById(R.id.sign_key_sign_button);
         mSignButton.setOnClickListener(new OnClickListener() {
 
@@ -130,9 +138,58 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         if (signKey != null) {
             mPubKeyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
+            drawPublicKey();
         }
         if (mPubKeyId == 0) {
             Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
+            finish();
+            return;
+        }
+    }
+
+    public void drawPublicKey() {
+        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, mPubKeyId);
+
+        if (pubring != null) {
+            PGPPublicKey key = PgpKeyHelper.getMasterKey(pubring);
+            String masterKeyIdHex = PgpKeyHelper.convertKeyIdToHex(mPubKeyId);
+
+            // get relevant UI elements
+            TextView keyIdHex = (TextView)findViewById(R.id.public_key_master_key_hex);
+            TextView keyUserId = (TextView)findViewById(R.id.public_key_user_id);
+            TextView keyUserIdRest = (TextView)findViewById(R.id.public_key_user_id_rest);
+
+            if (key != null) {
+                String userId = PgpKeyHelper.getMainUserIdSafe(this, key);
+
+                String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+                String userName, userEmail;
+
+                if (userIdSplit[0] != null) {
+                    userName = userIdSplit[0];
+                } else {
+                    userName = getResources().getString(R.string.user_id_no_name);
+                }
+
+                if (userIdSplit[1] != null) {
+                    userEmail = userIdSplit[1];
+                } else {
+                    userEmail = getResources().getString(R.string.error_user_id_no_email);
+                }
+
+                keyIdHex.setText(masterKeyIdHex);
+
+                keyUserId.setText(userName);
+                keyUserIdRest.setText(userEmail);
+                keyUserId.setVisibility(View.VISIBLE);
+                keyUserIdRest.setVisibility(View.VISIBLE);
+            } else {
+                Log.e(Constants.TAG, "this shouldn't happen. key == 0!");
+                finish();
+                return;
+            }
+        } else {
+            Log.e(Constants.TAG, "this shouldn't happen. pubring == 0!");
             finish();
             return;
         }
