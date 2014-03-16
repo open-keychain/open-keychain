@@ -53,8 +53,11 @@ public class KeyListActivity extends DrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_key_list_import:
+
+                overridePendingTransition(0, 0);
                 Intent intentImport = new Intent(this, ImportKeysActivity.class);
                 startActivityForResult(intentImport, 0);
+                overridePendingTransition(0, 0);
 
                 return true;
             case R.id.menu_key_list_export:
