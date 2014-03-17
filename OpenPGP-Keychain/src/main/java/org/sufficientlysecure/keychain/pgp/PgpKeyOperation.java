@@ -432,7 +432,7 @@ public class PgpKeyOperation {
         // TODO: this only takes care of user id certificates, what about others?
         PGPPublicKey pubkey = publicKeyRing.getPublicKey();
         for(String uid : new IterableIterator<String>(pubkey.getUserIDs())) {
-            for(PGPSignature sig : new IterableIterator<PGPSignature>(oldPublicKey.getSignaturesForID(uid))) {
+            for(PGPSignature sig : new IterableIterator<PGPSignature>(oldPublicKey.getSignaturesForID(uid), true)) {
                 // but skip self certificates
                 if(sig.getKeyID() == pubkey.getKeyID())
                     continue;
