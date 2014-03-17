@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,6 +52,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.CloseActivityDialog;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -706,19 +708,8 @@ public class EditKeyActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         if(ACTION.equals(ACTION_CREATE_KEY)) {
-            new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setTitle("Closing Window")
-                    .setMessage(getString(R.string.closing_edit_key_activity))
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
+            CloseActivityDialog dialog = new CloseActivityDialog();
+            getSupportFragmentManager().beginTransaction().add(dialog, "Close Dialog").commit();
         }
         else{
             super.onBackPressed();
