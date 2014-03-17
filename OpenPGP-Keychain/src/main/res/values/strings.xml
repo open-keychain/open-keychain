@@ -308,6 +308,7 @@
     <string name="error_keyserver_too_many_responses">Too many responses</string>
     <string name="error_import_file_no_content">File has no content</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
+    <string name="error_no_key_to_be_signed">Key to be signed not found</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>

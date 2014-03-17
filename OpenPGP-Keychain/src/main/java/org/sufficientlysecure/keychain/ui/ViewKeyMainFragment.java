@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -51,8 +52,14 @@ import java.util.Date;
 
 public class ViewKeyMainFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
+    public interface ViewKeyCallbacks{
+        public void setMasterKeyId(String id);
+    }
 
+    public ViewKeyCallbacks callbacks;
     public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_MASTER_KEY_ID = "masterkeyid";
+    private String mMasterkeyId;
 
     private TextView mName;
     private TextView mEmail;
@@ -111,6 +118,8 @@ public class ViewKeyMainFragment extends Fragment implements
         }
 
         loadData(dataUri);
+
+
     }
 
     private void loadData(Uri dataUri) {
@@ -268,6 +277,9 @@ public class ViewKeyMainFragment extends Fragment implements
                     long keyId = data.getLong(KEYS_INDEX_KEY_ID);
 
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+                    mMasterkeyId = keyIdStr;
+                    callbacks.setMasterKeyId(mMasterkeyId);
+                    Log.i("MASTERKEYID", mMasterkeyId);
                     mKeyId.setText(keyIdStr);
 
                     // get creation date from CREATION
@@ -312,6 +324,7 @@ public class ViewKeyMainFragment extends Fragment implements
             default:
                 break;
         }
+
     }
 
     private SpannableStringBuilder colorizeFingerprint(String fingerprint) {
@@ -403,10 +416,9 @@ public class ViewKeyMainFragment extends Fragment implements
         startActivityForResult(intent, 0);
     }
 
-    private void certifyKey(Uri dataUri) {
-        Intent signIntent = new Intent(getActivity(), CertifyKeyActivity.class);
-        signIntent.setData(dataUri);
-        startActivity(signIntent);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callbacks = (ViewKeyCallbacks)activity;
     }
-
 }

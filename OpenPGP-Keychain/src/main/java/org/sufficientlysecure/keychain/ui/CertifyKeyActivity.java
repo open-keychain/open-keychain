@@ -52,6 +52,7 @@ import java.util.Iterator;
  */
 public class CertifyKeyActivity extends ActionBarActivity implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
+    public  String mSignMasterKey;
     private BootstrapButton mSignButton;
     private CheckBox mUploadKeyCheckbox;
     private Spinner mSelectKeyserverSpinner;
@@ -72,12 +73,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
+        mDataUri = getIntent().getData();
+        mSignMasterKey = getIntent().getStringExtra(ViewKeyMainFragment.ARG_MASTER_KEY_ID);
 
         mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.sign_key_select_key_fragment);
         mSelectKeyFragment.setCallback(this);
         mSelectKeyFragment.setFilterCertify(true);
-
+        mSelectKeyFragment.setToSignMasterKeyId(mSignMasterKey);
         mSelectKeyserverSpinner = (Spinner) findViewById(R.id.sign_key_keyserver);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, Preferences.getPreferences(this)
@@ -119,7 +122,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             }
         });
 
-        mDataUri = getIntent().getData();
+
         if (mDataUri == null) {
             Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
             finish();
