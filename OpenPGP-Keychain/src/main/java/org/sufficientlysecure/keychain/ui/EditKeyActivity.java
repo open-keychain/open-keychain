@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,6 +52,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.CloseActivityDialog;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -68,7 +71,7 @@ public class EditKeyActivity extends ActionBarActivity {
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
     public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
-
+    public String ACTION;
     // possible extra keys
     public static final String EXTRA_USER_IDS = "user_ids";
     public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
@@ -116,8 +119,10 @@ public class EditKeyActivity extends ActionBarActivity {
         Intent intent = getIntent();
         String action = intent.getAction();
         if (ACTION_CREATE_KEY.equals(action)) {
+            ACTION = ACTION_CREATE_KEY;
             handleActionCreateKey(intent);
         } else if (ACTION_EDIT_KEY.equals(action)) {
+            ACTION = ACTION_EDIT_KEY;
             handleActionEditKey(intent);
         }
     }
@@ -691,6 +696,17 @@ public class EditKeyActivity extends ActionBarActivity {
     private void updatePassPhraseButtonText() {
         mChangePassphrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(ACTION.equals(ACTION_CREATE_KEY)) {
+            CloseActivityDialog dialog = new CloseActivityDialog();
+            getSupportFragmentManager().beginTransaction().add(dialog, "Close Dialog").commit();
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 
 }
