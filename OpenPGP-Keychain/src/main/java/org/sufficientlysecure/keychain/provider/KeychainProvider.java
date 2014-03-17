@@ -82,6 +82,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int CERTS_BY_KEY_ROW_ID = 404;
     private static final int CERTS_BY_KEY_ROW_ID_ALL = 405;
     private static final int CERTS_BY_CERTIFIER_ID = 406;
+    private static final int CERTS_BY_KEY_ROW_ID_HAS_SECRET = 407;
 
     // private static final int DATA_STREAM = 401;
 
@@ -256,6 +257,8 @@ public class KeychainProvider extends ContentProvider {
                 + KeychainContract.PATH_BY_KEY_ROW_ID + "/#", CERTS_BY_KEY_ROW_ID);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
                 + KeychainContract.PATH_BY_KEY_ROW_ID + "/#/all", CERTS_BY_KEY_ROW_ID_ALL);
+        matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
+                + KeychainContract.PATH_BY_KEY_ROW_ID + "/#/has_secret", CERTS_BY_KEY_ROW_ID_HAS_SECRET);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
                 + KeychainContract.PATH_BY_KEY_ID + "/#", CERTS_BY_KEY_ID);
         matcher.addURI(authority, KeychainContract.BASE_CERTS + "/"
@@ -456,6 +459,23 @@ public class KeychainProvider extends ContentProvider {
 
         return projectionMap;
     }
+    private HashMap<String, String> getProjectionMapForCerts() {
+
+        HashMap<String, String> pmap = new HashMap<String, String>();
+        pmap.put(Certs._ID, Tables.CERTS + "." + Certs._ID);
+        pmap.put(Certs.KEY_ID, Tables.CERTS + "." + Certs.KEY_ID);
+        pmap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
+        pmap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
+        pmap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
+        pmap.put(Certs.KEY_DATA, Tables.CERTS + "." + Certs.KEY_DATA);
+        pmap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
+        // verified key data
+        pmap.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
+        // verifying key data
+        pmap.put("signer_uid", "signer." + UserIds.USER_ID + " AS signer_uid");
+
+        return pmap;
+    }
 
     /**
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
@@ -521,7 +541,6 @@ public class KeychainProvider extends ContentProvider {
 
         // all query() parameters, for good measure
         String groupBy = null, having = null;
-        boolean all = false;
 
         switch (match) {
             case UNIFIED_KEY_RING:
@@ -709,7 +728,7 @@ public class KeychainProvider extends ContentProvider {
 
             case CERTS_BY_ROW_ID:
             case CERTS_BY_KEY_ROW_ID_ALL:
-                all = true;
+            case CERTS_BY_KEY_ROW_ID_HAS_SECRET:
             case CERTS_BY_KEY_ROW_ID:
                 qb.setTables(Tables.CERTS
                     + " JOIN " + Tables.USER_IDS + " ON ("
@@ -719,10 +738,13 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.CERTS + "." + Certs.RANK + " = "
                             + Tables.USER_IDS + "." + UserIds.RANK
                     // noooooooot sure about this~ database design
-                    + ")" + (all ? " LEFT" : "")
+                    + ")" + (match == CERTS_BY_KEY_ROW_ID_ALL ? " LEFT" : "")
                         + " JOIN " + Tables.KEYS + " ON ("
                             + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
                             + Tables.KEYS + "." + Keys.KEY_ID
+                        + (match == CERTS_BY_KEY_ROW_ID_HAS_SECRET ?
+                            " AND " + Tables.KEYS + "." + Keys.TYPE + " = " + KeyTypes.SECRET : ""
+                        )
                     + ") LEFT JOIN " + Tables.USER_IDS + " AS signer ON ("
                             + Tables.KEYS + "." + Keys.KEY_RING_ROW_ID + " = "
                             + "signer." + UserIds.KEY_RING_ROW_ID
@@ -730,22 +752,10 @@ public class KeychainProvider extends ContentProvider {
                             + "signer." + Keys.RANK + " = 0"
                     + ")");
 
+                qb.setProjectionMap(getProjectionMapForCerts());
+
                 groupBy = Tables.CERTS + "." + Certs.RANK + ", "
                         + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER;
-
-                HashMap<String, String> pmap2 = new HashMap<String, String>();
-                pmap2.put(Certs._ID, Tables.CERTS + "." + Certs._ID);
-                pmap2.put(Certs.KEY_ID, Tables.CERTS + "." + Certs.KEY_ID);
-                pmap2.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
-                pmap2.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
-                pmap2.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
-                pmap2.put(Certs.KEY_DATA, Tables.CERTS + "." + Certs.KEY_DATA);
-                pmap2.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
-                // verified key data
-                pmap2.put(UserIds.USER_ID, Tables.USER_IDS + "." + UserIds.USER_ID);
-                // verifying key data
-                pmap2.put("signer_uid", "signer." + UserIds.USER_ID + " AS signer_uid");
-                qb.setProjectionMap(pmap2);
 
                 if(match == CERTS_BY_ROW_ID) {
                     qb.appendWhere(Tables.CERTS + "." + Certs._ID + " = ");
@@ -867,10 +877,11 @@ public class KeychainProvider extends ContentProvider {
                     rowUri = ApiApps.buildIdUri(Long.toString(rowId));
 
                     break;
-                case CERTS_BY_ROW_ID:
+                case CERTS_BY_KEY_ROW_ID:
                     rowId = db.insertOrThrow(Tables.CERTS, null, values);
                     // kinda useless.. should this be buildCertsByKeyRowIdUri?
-                    rowUri = Certs.buildCertsUri(Long.toString(rowId));
+                    // rowUri = Certs.buildCertsUri(Long.toString(rowId));
+                    rowUri = uri;
 
                     break;
                 default:

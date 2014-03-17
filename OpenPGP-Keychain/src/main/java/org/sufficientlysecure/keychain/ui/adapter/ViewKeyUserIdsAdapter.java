@@ -63,8 +63,11 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
                 int count = newCursor.getCount();
                 mCheckStates.ensureCapacity(count);
                 // initialize to true (use case knowledge: we usually want to sign all uids)
-                for(int i = 0; i < count; i++)
-                    mCheckStates.add(true);
+                for(int i = 0; i < count; i++) {
+                    newCursor.moveToPosition(i);
+                    int verified = newCursor.getInt(mVerifiedId);
+                    mCheckStates.add(verified == 0);
+                }
             }
         }
 
@@ -116,7 +119,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
         final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
         final int position = cursor.getPosition();
-        vCheckBox.setClickable(false);
+        vCheckBox.setOnCheckedChangeListener(null);
         vCheckBox.setChecked(mCheckStates.get(position));
         vCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

@@ -480,5 +480,8 @@
     <string name="empty_certs">No certificates for this key</string>
     <string name="section_uids_to_sign">User IDs to sign</string>
     <string name="progress_re_adding_certs">Reapplying certificates</string>
+    <string name="certs_list_known_secret">Show by known secret keys</string>
+    <string name="certs_list_known">Show by known public keys</string>
+    <string name="certs_list_all">Show all certificates</string>
 
 </resources>
