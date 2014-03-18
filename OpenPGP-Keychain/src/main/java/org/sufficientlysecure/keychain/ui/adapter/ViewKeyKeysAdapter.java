@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     private int mIndexCanCertify;
     private int mIndexCanEncrypt;
     private int mIndexCanSign;
+    private int mIndexRevokedKey;
 
     public ViewKeyKeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -70,6 +72,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             mIndexCanCertify = cursor.getColumnIndexOrThrow(Keys.CAN_CERTIFY);
             mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
             mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
+            mIndexRevokedKey = cursor.getColumnIndexOrThrow(Keys.IS_REVOKED);
         }
     }
 
@@ -81,13 +84,13 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
         ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
         ImageView signIcon = (ImageView) view.findViewById(R.id.ic_signKey);
+        ImageView revokedKeyIcon = (ImageView) view.findViewById(R.id.ic_revokedKey);
 
         String keyIdStr = PgpKeyHelper.convertKeyIdToHex(cursor.getLong(mIndexKeyId));
         String algorithmStr = PgpKeyHelper.getAlgorithmInfo(cursor.getInt(mIndexAlgorithm),
                 cursor.getInt(mIndexKeySize));
 
         keyId.setText(keyIdStr);
-
         keyDetails.setText("(" + algorithmStr + ")");
 
         if (cursor.getInt(mIndexIsMasterKey) != 1) {
@@ -112,6 +115,14 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             signIcon.setVisibility(View.GONE);
         } else {
             signIcon.setVisibility(View.VISIBLE);
+        }
+
+        if (cursor.getInt(mIndexRevokedKey) > 0) {
+            revokedKeyIcon.setVisibility(View.VISIBLE);
+            keyId.setTextColor(Color.RED);
+            keyDetails.setTextColor(Color.RED);
+        } else {
+            revokedKeyIcon.setVisibility(View.GONE);
         }
     }
 

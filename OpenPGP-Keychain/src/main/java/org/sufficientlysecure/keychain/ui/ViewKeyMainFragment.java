@@ -211,8 +211,8 @@ public class ViewKeyMainFragment extends Fragment implements
             KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
             KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
             KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
-            KeychainContract.Keys.CREATION, KeychainContract.Keys.EXPIRY,
-            KeychainContract.Keys.FINGERPRINT};
+            KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
+            KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -222,9 +222,10 @@ public class ViewKeyMainFragment extends Fragment implements
     static final int KEYS_INDEX_CAN_CERTIFY = 5;
     static final int KEYS_INDEX_CAN_SIGN = 6;
     static final int KEYS_INDEX_CAN_ENCRYPT = 7;
-    static final int KEYS_INDEX_CREATION = 8;
-    static final int KEYS_INDEX_EXPIRY = 9;
-    static final int KEYS_INDEX_FINGERPRINT = 10;
+    static final int KEYS_INDEX_IS_REVOKED = 8;
+    static final int KEYS_INDEX_CREATION = 9;
+    static final int KEYS_INDEX_EXPIRY = 10;
+    static final int KEYS_INDEX_FINGERPRINT = 11;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
