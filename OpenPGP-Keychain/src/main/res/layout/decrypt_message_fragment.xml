@@ -37,6 +37,8 @@
                 android:src="@drawable/overlay_error" />
         </LinearLayout>
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +79,21 @@
                 android:text="Main User Id Rest"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
+
     </LinearLayout>
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/decrypt_copy_from_clipboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/btn_copy_from_clipboard"
+        bootstrapbutton:bb_icon_left="fa-key"
+        bootstrapbutton:bb_size="default"
+        bootstrapbutton:bb_type="default" />
+
         <LinearLayout
             android:id="@+id/sourceMessage"
             android:layout_width="match_parent"
@@ -90,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:text="Message" />
+                android:text="@string/label_message" />
 
             <EditText
                 android:id="@+id/message"
@@ -99,8 +115,8 @@
                 android:scrollbars="vertical"
                 android:gravity="top"
                 android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-                android:lines="10"
-                android:minLines="11"
+                android:minLines="6"
+                android:maxLines="8"
                 android:scrollHorizontally="true" />
         </LinearLayout>
 
