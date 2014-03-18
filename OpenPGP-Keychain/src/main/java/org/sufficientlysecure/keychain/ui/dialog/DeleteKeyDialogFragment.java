@@ -49,7 +49,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_KEY_RING_ROW_IDS = "delete_file";
 
     public static final int MESSAGE_OKAY = 1;
-    public static final int MESSAGE_ERROR=0;
+    public static final int MESSAGE_ERROR = 0;
     public static final String MESSAGE_NOT_DELETED = "not_deleted";
     private boolean isSingleSelection = false;
 
@@ -181,7 +181,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
                             //Check if the selected rows have actually been deleted
                             cursor = activity.getContentResolver().query(queryUri, projection, selection, null, null);
-                            if (cursor == null || cursor.getCount() == 0) {
+                            if (cursor == null || cursor.getCount() == 0 || !checkDeleteSecret.isChecked()) {
                                 isSuccessfullyDeleted = true;
                             }
 
