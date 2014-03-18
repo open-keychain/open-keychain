@@ -39,6 +39,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
     private TextView mKeyMasterKeyIdHex;
+    private TextView mKeySignMasterKeyIdHex;
     private BootstrapButton mSelectKeyButton;
     private Boolean mFilterCertify;
 
@@ -60,6 +61,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
     public void selectKey(long secretKeyId) {
         if (secretKeyId == Id.key.none) {
+
             mKeyMasterKeyIdHex.setText(R.string.api_settings_no_key);
             mKeyUserIdRest.setText("");
             mKeyUserId.setVisibility(View.GONE);
@@ -90,7 +92,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                         userEmail = getActivity().getResources().getString(R.string.error_user_id_no_email);
                     }
 
-                    mKeyMasterKeyIdHex.setText(masterkeyIdHex);
+                    mKeyMasterKeyIdHex.setText("Signed by: "+masterkeyIdHex);
                     mKeyUserId.setText(userName);
                     mKeyUserIdRest.setText(userEmail);
                     mKeyUserId.setVisibility(View.VISIBLE);
@@ -127,6 +129,8 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
         mKeyMasterKeyIdHex = (TextView) view.findViewById(R.id.select_secret_key_master_key_hex);
+        mKeySignMasterKeyIdHex = (TextView) view.findViewById(
+                R.id.select_secret_key_toSign_master_key_hex);
         mSelectKeyButton = (BootstrapButton) view
                 .findViewById(R.id.select_secret_key_select_key_button);
         mFilterCertify = false;
@@ -136,6 +140,8 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                 startSelectKeyActivity();
             }
         });
+        Bundle bundle = getArguments();
+
 
         return view;
     }
@@ -172,5 +178,14 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
 
                 break;
         }
+    }
+    public void setToSignMasterKeyId(String toSignMasterKeyId){
+        if(toSignMasterKeyId != null){
+            mKeySignMasterKeyIdHex.setText("Sign: "+toSignMasterKeyId);
+        }
+        else{
+            mKeySignMasterKeyIdHex.setText(getActivity().getString(R.string.error_no_key_to_be_signed));
+        }
+
     }
 }

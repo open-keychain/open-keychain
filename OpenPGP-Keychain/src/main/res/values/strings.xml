@@ -219,7 +219,8 @@
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
-
+    <string name="closing_edit_key_activity">The key generated will be lost, Do you want to quit?</string>
+    <string name="closing_activity">Do you want to close this Window?</string>
     <plurals name="keys_added_and_updated_1">
         <item quantity="one">Successfully added %d key</item>
         <item quantity="other">Successfully added %d keys</item>
@@ -308,6 +309,7 @@
     <string name="error_keyserver_too_many_responses">Too many responses</string>
     <string name="error_import_file_no_content">File has no content</string>
     <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
+    <string name="error_no_key_to_be_signed">Key to be signed not found</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>

@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -45,16 +46,18 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-public class ViewKeyActivity extends ActionBarActivity {
+public class ViewKeyActivity extends ActionBarActivity implements ViewKeyCertsFragment.ViewKeyCallbacks, ViewKeyMainFragment.ViewKeyCallbacks {
+
 
     ExportHelper mExportHelper;
 
     protected Uri mDataUri;
 
     public static final String EXTRA_SELECTED_TAB = "selectedTab";
-
+    private String mSignMasterKeyId;
     ViewPager mViewPager;
     TabsAdapter mTabsAdapter;
+    private String mMasterKeyid;
 
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
 
@@ -254,5 +257,13 @@ public class ViewKeyActivity extends ActionBarActivity {
 
         mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
     }
+
+    public String getSignMasterKeyId(){
+        return mMasterKeyid;
+    }
+    public void setMasterKeyId(String MasterKeyid){
+        mMasterKeyid = MasterKeyid;
+    }
+
 
 }

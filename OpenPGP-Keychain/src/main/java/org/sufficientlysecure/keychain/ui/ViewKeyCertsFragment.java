@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,8 +33,13 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyCertsFragment extends Fragment {
 
-    public static final String ARG_DATA_URI = "uri";
+    public interface ViewKeyCallbacks{
+        public String getSignMasterKeyId();
+    }
 
+    public ViewKeyCallbacks callbacks;
+    public static final String ARG_DATA_URI = "uri";
+    private String mMasterKeyId;
     private BootstrapButton mActionCertify;
 
     private Uri mDataUri;
@@ -41,8 +47,8 @@ public class ViewKeyCertsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_certs_fragment, container, false);
-
         mActionCertify = (BootstrapButton) view.findViewById(R.id.action_certify);
+
 
         return view;
     }
@@ -82,9 +88,22 @@ public class ViewKeyCertsFragment extends Fragment {
     }
 
     private void certifyKey(Uri dataUri) {
+        //Dont Change this 'callbacks.getSignMasterKeyId()' to 'OnCreateView()' by any chance, ViewMain
+        // Fragment has to initialize and set the key. Else you will get Null Pointer.
+        
+        mMasterKeyId = callbacks.getSignMasterKeyId();
+        Log.i("MASTERKEYID_CERTS", mMasterKeyId);
         Intent signIntent = new Intent(getActivity(), CertifyKeyActivity.class);
+        signIntent.putExtra(ViewKeyMainFragment.ARG_MASTER_KEY_ID,mMasterKeyId);
         signIntent.setData(dataUri);
         startActivity(signIntent);
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callbacks = (ViewKeyCallbacks)activity;
+    }
+
 
 }
