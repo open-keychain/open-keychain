@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.SparseArray;
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -171,20 +172,31 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
                 .getFingerprint(), true);
         this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
-        int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
-        if (algorithm == PGPPublicKey.RSA_ENCRYPT || algorithm == PGPPublicKey.RSA_GENERAL
-                || algorithm == PGPPublicKey.RSA_SIGN) {
-            this.algorithm = "RSA";
-        } else if (algorithm == PGPPublicKey.DSA) {
-            this.algorithm = "DSA";
-        } else if (algorithm == PGPPublicKey.ELGAMAL_ENCRYPT
-                || algorithm == PGPPublicKey.ELGAMAL_GENERAL) {
-            this.algorithm = "ElGamal";
-        } else if (algorithm == PGPPublicKey.EC || algorithm == PGPPublicKey.ECDSA) {
-            this.algorithm = "ECC";
-        } else {
-            // TODO: with resources
-            this.algorithm = "unknown";
-        }
+        final int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
+        this.algorithm = getAlgorithmFromId(algorithm);
+    }
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    private final static SparseArray<String> ALGORITHM_IDS = new SparseArray<String>() {{
+        put(-1, "unknown"); // TODO: with resources
+        put(0, "unencrypted");
+        put(PGPPublicKey.RSA_GENERAL, "RSA");
+        put(PGPPublicKey.RSA_ENCRYPT, "RSA");
+        put(PGPPublicKey.RSA_SIGN, "RSA");
+        put(PGPPublicKey.ELGAMAL_ENCRYPT, "ElGamal");
+        put(PGPPublicKey.ELGAMAL_GENERAL, "ElGamal");
+        put(PGPPublicKey.DSA, "DSA");
+        put(PGPPublicKey.EC, "ECC");
+        put(PGPPublicKey.ECDSA, "ECC");
+        put(PGPPublicKey.ECDH, "ECC");
+    }};
+
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    public static String getAlgorithmFromId(int algorithmId) {
+        return (ALGORITHM_IDS.get(algorithmId) != null ? ALGORITHM_IDS.get(algorithmId) : ALGORITHM_IDS.get(-1));
     }
 }

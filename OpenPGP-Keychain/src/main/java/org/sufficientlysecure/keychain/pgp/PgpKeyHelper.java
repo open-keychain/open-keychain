@@ -477,7 +477,7 @@ public class PgpKeyHelper {
      * @return
      */
     public static String convertKeyIdToHex(long keyId) {
-        return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
+        return "0x" + ((keyId >> 32) > 0 ? convertKeyIdToHex32bit(keyId >> 32) : "") + convertKeyIdToHex32bit(keyId);
     }
 
     private static String convertKeyIdToHex32bit(long keyId) {
@@ -498,7 +498,7 @@ public class PgpKeyHelper {
         int len = hexString.length();
         String s2 = hexString.substring(len - 8);
         String s1 = hexString.substring(0, len - 8);
-        return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
+        return ((!s1.isEmpty() ? Long.parseLong(s1, 16) << 32 : 0) | Long.parseLong(s2, 16));
     }
 
     /**
