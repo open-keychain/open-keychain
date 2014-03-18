@@ -266,7 +266,10 @@ public class ViewKeyMainFragment extends Fragment implements
                 if (data.moveToFirst()) {
                     // get key id from MASTER_KEY_ID
                     long keyId = data.getLong(KEYS_INDEX_KEY_ID);
-
+                    long can_encrypt = data.getLong(KEYS_INDEX_CAN_ENCRYPT);
+                    if(can_encrypt == 0){
+                        mActionEncrypt.setVisibility(View.GONE);
+                    }
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
                     mKeyId.setText(keyIdStr);
 
