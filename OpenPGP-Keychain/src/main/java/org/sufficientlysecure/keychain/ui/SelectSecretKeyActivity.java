@@ -1,35 +1,31 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import org.sufficientlysecure.keychain.Constants;
+
 import org.sufficientlysecure.keychain.R;
 
 public class SelectSecretKeyActivity extends ActionBarActivity {
-
-    // Actions for internal use only:
-    public static final String ACTION_SELECT_SECRET_KEY = Constants.INTENT_PREFIX
-            + "SELECT_SECRET_KEYRING";
 
     public static final String EXTRA_FILTER_CERTIFY = "filter_certify";
 
@@ -50,22 +46,7 @@ public class SelectSecretKeyActivity extends ActionBarActivity {
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setHomeButtonEnabled(false);
 
-        setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
-
-        // TODO: reimplement!
-        // mFilterLayout = findViewById(R.id.layout_filter);
-        // mFilterInfo = (TextView) mFilterLayout.findViewById(R.id.filterInfo);
-        // mClearFilterButton = (Button) mFilterLayout.findViewById(R.id.btn_clear);
-        //
-        // mClearFilterButton.setOnClickListener(new OnClickListener() {
-        // public void onClick(View v) {
-        // handleIntent(new Intent());
-        // }
-        // });
-
         mFilterCertify = getIntent().getBooleanExtra(EXTRA_FILTER_CERTIFY, false);
-
-        handleIntent(getIntent());
 
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -90,48 +71,18 @@ public class SelectSecretKeyActivity extends ActionBarActivity {
     /**
      * This is executed by SelectSecretKeyFragment after clicking on an item
      *
-     * @param masterKeyId
-     * @param userId
+     * @param selectedUri
      */
-    public void afterListSelection(long masterKeyId, String userId) {
+    public void afterListSelection(Uri selectedUri) {
         Intent data = new Intent();
+        data.setData(selectedUri);
+
+        // TODO: deprecate RESULT_EXTRA_MASTER_KEY_ID!
+        long masterKeyId = Long.valueOf(selectedUri.getLastPathSegment());
         data.putExtra(RESULT_EXTRA_MASTER_KEY_ID, masterKeyId);
-        data.putExtra(RESULT_EXTRA_USER_ID, (String) userId);
+
         setResult(RESULT_OK, data);
         finish();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        // TODO: reimplement!
-
-        // String searchString = null;
-        // if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-        // searchString = intent.getStringExtra(SearchManager.QUERY);
-        // if (searchString != null && searchString.trim().length() == 0) {
-        // searchString = null;
-        // }
-        // }
-
-        // if (searchString == null) {
-        // mFilterLayout.setVisibility(View.GONE);
-        // } else {
-        // mFilterLayout.setVisibility(View.VISIBLE);
-        // mFilterInfo.setText(getString(R.string.filterInfo, searchString));
-        // }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // TODO: reimplement!
-        // menu.add(0, Id.menu.option.search, 0, R.string.menu_search).setIcon(
-        // android.R.drawable.ic_menu_search);
-        return true;
     }
 
 }

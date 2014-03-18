@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -55,10 +56,9 @@ public class SelectSecretKeyFragment extends ListFragment implements
      */
     public static SelectSecretKeyFragment newInstance(boolean filterCertify) {
         SelectSecretKeyFragment frag = new SelectSecretKeyFragment();
+
         Bundle args = new Bundle();
-
         args.putBoolean(ARG_FILTER_CERTIFY, filterCertify);
-
         frag.setArguments(args);
 
         return frag;
@@ -85,10 +85,10 @@ public class SelectSecretKeyFragment extends ListFragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 long masterKeyId = mAdapter.getMasterKeyId(position);
-                String userId = mAdapter.getUserId(position);
+                Uri result = KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(masterKeyId));
 
                 // return data to activity, which results in finishing it
-                mActivity.afterListSelection(masterKeyId, userId);
+                mActivity.afterListSelection(result);
             }
         });
 
@@ -141,7 +141,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
                         + Keys.IS_REVOKED + " = '0' AND valid_keys." + Keys.CAN_SIGN
                         + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
                         + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
-                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,};
 
         String orderBy = UserIds.USER_ID + " ASC";
 
