@@ -52,7 +52,7 @@
         android:id="@+id/menu_key_keyserver"
         android:icon="@drawable/ic_action_import_export"
         app:showAsAction="always"
-        android:title="@string/menu_share">
+        android:title="@string/menu_key_server">
         <menu>
             <item
                 android:id="@+id/menu_key_view_update"
