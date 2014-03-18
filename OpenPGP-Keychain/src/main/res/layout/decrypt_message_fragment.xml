@@ -78,16 +78,10 @@
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
     </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
         <LinearLayout
             android:id="@+id/sourceMessage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="4dp">
 
@@ -101,15 +95,15 @@
             <EditText
                 android:id="@+id/message"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
                 android:gravity="top"
                 android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+                android:lines="11"
                 android:minLines="10"
                 android:scrollHorizontally="true" />
         </LinearLayout>
 
-
-    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

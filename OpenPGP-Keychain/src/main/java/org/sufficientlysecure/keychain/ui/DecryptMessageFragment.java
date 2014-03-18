@@ -16,10 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
@@ -63,13 +65,14 @@ public class DecryptMessageFragment extends Fragment {
     private final int mDecryptTarget = Id.target.message;
     private Uri mContentUri = null;
     private String mInputFilename = null;
-    private String mOutputFilename = null;
+    private String mOutputFilename = null;;
     private boolean mAssumeSymmetricEncryption = false;
 
     private void initView(){
 
         mMessage = (EditText)mMainView.findViewById(R.id.message);
         mSignatureLayout = (LinearLayout) mMainView.findViewById(R.id.signature);
+        mSignatureLayout.setVisibility(View.GONE);
         mSignatureStatusImage = (ImageView) mMainView.findViewById(R.id.ic_signature_status);
         mUserId = (TextView) mMainView.findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) mMainView.findViewById(R.id.mainUserIdRest);
@@ -112,6 +115,7 @@ public class DecryptMessageFragment extends Fragment {
             handleArguments(getArguments());
         }
         initView();
+        checkforClipboardContent();
         return mMainView;
     }
 
@@ -186,12 +190,30 @@ public class DecryptMessageFragment extends Fragment {
             }
         } else if (ACTION_DECRYPT.equals(action) && uri != null) {
             // get file path from uri
-
-           Log.i("Decrypt Experiment","Wrong Fragment");
         } else {
             Log.e(Constants.TAG,
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }
+
+    }
+
+    private void checkforClipboardContent(){
+        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+
+        String data = "";
+        if (clipboardText != null) {
+            Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
+            if (!matcher.matches()) {
+                matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(clipboardText);
+            }
+            if (matcher.matches()) {
+                data = matcher.group(1);
+                mMessage.setText(data);
+                AppMsg.makeText(getActivity(), R.string.using_clipboard_content, AppMsg.STYLE_INFO)
+                        .show();
+            }
+        }
+
 
     }
 

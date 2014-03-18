@@ -77,6 +77,7 @@ public class DecryptFileFragment extends Fragment{
         mFilename = (EditText) mMainView.findViewById(R.id.filename);
         mBrowse = (BootstrapButton) mMainView.findViewById(R.id.btn_browse);
         mSignatureLayout = (LinearLayout) mMainView.findViewById(R.id.signature);
+        mSignatureLayout.setVisibility(View.GONE);
         mSignatureStatusImage = (ImageView) mMainView.findViewById(R.id.ic_signature_status);
         mUserId = (TextView) mMainView.findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) mMainView.findViewById(R.id.mainUserIdRest);
