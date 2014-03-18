@@ -142,6 +142,7 @@ public class KeychainIntentService extends IntentService
     // sign key
     public static final String CERTIFY_KEY_MASTER_KEY_ID = "sign_key_master_key_id";
     public static final String CERTIFY_KEY_PUB_KEY_ID = "sign_key_pub_key_id";
+    public static final String CERTIFY_KEY_UIDS = "sign_key_uids";
 
     /*
      * possible data keys as result send over messenger
@@ -541,8 +542,9 @@ public class KeychainIntentService extends IntentService
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates, masterKeyId,
-                            oldPassPhrase, newPassPhrase);
+                    PGPPublicKey pubkey = ProviderHelper.getPGPPublicKeyByKeyId(this, masterKeyId);
+                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
+                            pubkey, oldPassPhrase, newPassPhrase);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
@@ -806,6 +808,7 @@ public class KeychainIntentService extends IntentService
                 /* Input */
                 long masterKeyId = data.getLong(CERTIFY_KEY_MASTER_KEY_ID);
                 long pubKeyId = data.getLong(CERTIFY_KEY_PUB_KEY_ID);
+                ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
 
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
@@ -813,7 +816,7 @@ public class KeychainIntentService extends IntentService
 
                 PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
                 PGPPublicKeyRing signedPubKeyRing = keyOperation.certifyKey(masterKeyId, pubKeyId,
-                        signaturePassPhrase);
+                        userIds, signaturePassPhrase);
 
                 // store the signed key in our local cache
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
