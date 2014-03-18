@@ -257,8 +257,7 @@ public class HkpKeyServer extends KeyServer {
             final String uidLines = matcher.group(7);
             final Matcher uidMatcher = UID_LINE.matcher(uidLines);
             while (uidMatcher.find()) {
-                String tmp = uidMatcher.group(1).replaceAll("<.*?>", "");
-                tmp = Html.fromHtml(tmp).toString().trim();
+                String tmp = uidMatcher.group(1).trim();
                 if (tmp.contains("%")) {
                     try {
                         // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
