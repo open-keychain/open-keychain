@@ -173,33 +173,30 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
         final int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
-		this.algorithm = getAlgorithmFromId(algorithm);
+        this.algorithm = getAlgorithmFromId(algorithm);
     }
 
-	/**
-	 * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
-	 */
-	private final static SparseArray<String> ALGORITHM_IDS = new SparseArray<String>() {{
-		put(-1, "unknown"); // TODO: with resources
-		put(0, "unencrypted");
-		put(PGPPublicKey.RSA_GENERAL, "RSA");
-		put(PGPPublicKey.RSA_ENCRYPT, "RSA");
-		put(PGPPublicKey.RSA_SIGN, "RSA");
-		put(PGPPublicKey.ELGAMAL_ENCRYPT, "ElGamal");
-		put(PGPPublicKey.ELGAMAL_GENERAL, "ElGamal");
-		put(PGPPublicKey.DSA, "DSA");
-		put(PGPPublicKey.EC, "ECC");
-		put(PGPPublicKey.ECDSA, "ECC");
-		put(PGPPublicKey.ECDH, "ECC");
-	}};
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    private final static SparseArray<String> ALGORITHM_IDS = new SparseArray<String>() {{
+        put(-1, "unknown"); // TODO: with resources
+        put(0, "unencrypted");
+        put(PGPPublicKey.RSA_GENERAL, "RSA");
+        put(PGPPublicKey.RSA_ENCRYPT, "RSA");
+        put(PGPPublicKey.RSA_SIGN, "RSA");
+        put(PGPPublicKey.ELGAMAL_ENCRYPT, "ElGamal");
+        put(PGPPublicKey.ELGAMAL_GENERAL, "ElGamal");
+        put(PGPPublicKey.DSA, "DSA");
+        put(PGPPublicKey.EC, "ECC");
+        put(PGPPublicKey.ECDSA, "ECC");
+        put(PGPPublicKey.ECDH, "ECC");
+    }};
 
-	/**
-	 * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
-	 */
-	public static String getAlgorithmFromId(int algorithmId) {
-		return (ALGORITHM_IDS.get(algorithmId) != null ? ALGORITHM_IDS.get(algorithmId) : ALGORITHM_IDS.get(-1));
-	}
-
+    /**
+     * Based on <a href="http://tools.ietf.org/html/rfc2440#section-9.1">OpenPGP Message Format</a>
+     */
+    public static String getAlgorithmFromId(int algorithmId) {
+        return (ALGORITHM_IDS.get(algorithmId) != null ? ALGORITHM_IDS.get(algorithmId) : ALGORITHM_IDS.get(-1));
+    }
 }
-
-

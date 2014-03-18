@@ -69,55 +69,64 @@ public class HkpKeyServer extends KeyServer {
     private String mHost;
     private short mPort;
 
-	/**
-	 * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
-	 * <ul>
-	 *     <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key.
-	 *     		Either the 16-digit or 8-digit key IDs are acceptable, but obviously the fingerprint is best.</li>
-	 *     <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc). See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
-	 *     <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
-	 *     <li>%<b>creationdate</b>% = creation date of the key in standard <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since 1/1/1970 UTC time)</li>
-	 *     <li>%<b>expirationdate</b>% = expiration date of the key in standard <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since 1/1/1970 UTC time)</li>
-	 *     <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-	 *     		meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-	 *     		the absence of a given flag does not necessarily mean the absence of the detail.
-	 *     		<ul>
-	 *     		    <li>r == revoked</li>
-	 *     		    <li>d == disabled</li>
-	 *     		    <li>e == expired</li>
-	 *     		</ul>
-	 *     </li>
-	 * </ul>
-	 *
-	 *
-	 * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">5.2. Machine Readable Indexes</a> in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
-	 */
-	public static final Pattern PUB_KEY_LINE = Pattern
-			.compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
-							+ "(uid:(.*):([0-9]+):([0-9]*):([rde]*))+", // one or more uid lines
-					Pattern.CASE_INSENSITIVE);
+    /**
+     * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
+     * <ul>
+     *     <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key. Either the 16-digit or 8-digit
+     *          key IDs are acceptable, but obviously the fingerprint is best.</li>
+     *     <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc).
+     *          See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
+     *     <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
+     *     <li>%<b>creationdate</b>% = creation date of the key in standard
+     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     *          1/1/1970 UTC time)</li>
+     *     <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     *          1/1/1970 UTC time)</li>
+     *     <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     *          meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     *          the absence of a given flag does not necessarily mean the absence of the detail.
+     *          <ul>
+     *              <li>r == revoked</li>
+     *              <li>d == disabled</li>
+     *              <li>e == expired</li>
+     *          </ul>
+     *     </li>
+     * </ul>
+     *
+     * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">5.2. Machine Readable Indexes</a>
+     * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
+     */
+    public static final Pattern PUB_KEY_LINE = Pattern
+            .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
+                    + "(uid:(.*):([0-9]+):([0-9]*):([rde]*))+", // one or more uid lines
+                    Pattern.CASE_INSENSITIVE);
 
-	/**
-	 *  uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
-	 *  <ul>
-	 *      <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
-	 *      	safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
-	 *     <li>%<b>creationdate</b>% = creation date of the key in standard <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since 1/1/1970 UTC time)</li>
-	 *     <li>%<b>expirationdate</b>% = expiration date of the key in standard <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since 1/1/1970 UTC time)</li>
-	 *     <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-	 *     		meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-	 *     		the absence of a given flag does not necessarily mean the absence of the detail.
-	 *     		<ul>
-	 *     		    <li>r == revoked</li>
-	 *     		    <li>d == disabled</li>
-	 *     		    <li>e == expired</li>
-	 *     		</ul>
-	 *     </li>
-	 *  </ul>
-	 */
-	public static final Pattern UID_LINE = Pattern
-			.compile("uid:(.*):([0-9]+):([0-9]*):([rde]*)",
-					Pattern.CASE_INSENSITIVE);
+    /**
+     * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
+     * <ul>
+     *      <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
+     *          safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
+     *      <li>%<b>creationdate</b>% = creation date of the key in standard
+     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     *          1/1/1970 UTC time)</li>
+     *      <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     *          1/1/1970 UTC time)</li>
+     *      <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     *          meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     *          the absence of a given flag does not necessarily mean the absence of the detail.
+     *          <ul>
+     *              <li>r == revoked</li>
+     *              <li>d == disabled</li>
+     *              <li>e == expired</li>
+     *          </ul>
+     *      </li>
+     * </ul>
+     */
+    public static final Pattern UID_LINE = Pattern
+            .compile("uid:(.*):([0-9]+):([0-9]*):([rde]*)",
+                    Pattern.CASE_INSENSITIVE);
 
     private static final short PORT_DEFAULT = 11371;
 
@@ -192,77 +201,78 @@ public class HkpKeyServer extends KeyServer {
         throw new QueryException("querying server(s) for '" + mHost + "' failed");
     }
 
-	@Override
-	public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
-			InsufficientQuery {
-		ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
+    @Override
+    public ArrayList<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
+            InsufficientQuery {
+        ArrayList<ImportKeysListEntry> results = new ArrayList<ImportKeysListEntry>();
 
-		if (query.length() < 3) {
-			throw new InsufficientQuery();
-		}
+        if (query.length() < 3) {
+            throw new InsufficientQuery();
+        }
 
-		String encodedQuery;
-		try {
-			encodedQuery = URLEncoder.encode(query, "utf8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-		String request = "/pks/lookup?op=index&search=" + encodedQuery + "&options=mr";
+        String encodedQuery;
+        try {
+            encodedQuery = URLEncoder.encode(query, "utf8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+        String request = "/pks/lookup?op=index&search=" + encodedQuery + "&options=mr";
 
-		String data = null;
-		try {
-			data = query(request);
-		} catch (HttpError e) {
-			if (e.getCode() == 404) {
-				return results;
-			} else {
-				if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
-					return results;
-				} else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
-					throw new TooManyResponses();
-				} else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
-					throw new InsufficientQuery();
-				}
-			}
-			throw new QueryException("querying server(s) for '" + mHost + "' failed");
-		}
+        String data = null;
+        try {
+            data = query(request);
+        } catch (HttpError e) {
+            if (e.getCode() == 404) {
+                return results;
+            } else {
+                if (e.getData().toLowerCase(Locale.US).contains("no keys found")) {
+                    return results;
+                } else if (e.getData().toLowerCase(Locale.US).contains("too many")) {
+                    throw new TooManyResponses();
+                } else if (e.getData().toLowerCase(Locale.US).contains("insufficient")) {
+                    throw new InsufficientQuery();
+                }
+            }
+            throw new QueryException("querying server(s) for '" + mHost + "' failed");
+        }
 
-		final Matcher matcher = PUB_KEY_LINE.matcher(data);
-		while (matcher.find()) {
-			final ImportKeysListEntry info = new ImportKeysListEntry();
-			info.bitStrength = Integer.parseInt(matcher.group(3));
-			final int algorithmId = Integer.decode(matcher.group(2));
-			info.algorithm = getAlgorithmFromId(algorithmId);
+        final Matcher matcher = PUB_KEY_LINE.matcher(data);
+        while (matcher.find()) {
+            final ImportKeysListEntry info = new ImportKeysListEntry();
+            info.bitStrength = Integer.parseInt(matcher.group(3));
+            final int algorithmId = Integer.decode(matcher.group(2));
+            info.algorithm = getAlgorithmFromId(algorithmId);
 
-			info.hexKeyId = "0x" + matcher.group(1);
-			info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(1));
+            info.hexKeyId = "0x" + matcher.group(1);
+            info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(1));
 
-			final long creationDate = Long.parseLong(matcher.group(4));
-			final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-			tmpGreg.setTimeInMillis(creationDate*1000);
-			info.date = tmpGreg.getTime();
+            final long creationDate = Long.parseLong(matcher.group(4));
+            final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            tmpGreg.setTimeInMillis(creationDate * 1000);
+            info.date = tmpGreg.getTime();
 
-			info.revoked = matcher.group(6).contains("r");
-			info.userIds = new ArrayList<String>();
+            info.revoked = matcher.group(6).contains("r");
+            info.userIds = new ArrayList<String>();
 
-			final String uidLines = matcher.group(7);
-			final Matcher uidMatcher = UID_LINE.matcher(uidLines);
-			while (uidMatcher.find()) {
-				String tmp = uidMatcher.group(1).replaceAll("<.*?>", "");
-				tmp = Html.fromHtml(tmp).toString().trim();
-				if (tmp.contains("%"))
-				{
-					try {
-						tmp = (URLDecoder.decode(tmp, "UTF8")); // converts String like "Universit%C3%A4t" to a proper form "Universität".
-					} catch (UnsupportedEncodingException ignored) {
-					}
-				}
-				info.userIds.add(tmp);
-			}
-			results.add(info);
-		}
-		return results;
-	}
+            final String uidLines = matcher.group(7);
+            final Matcher uidMatcher = UID_LINE.matcher(uidLines);
+            while (uidMatcher.find()) {
+                String tmp = uidMatcher.group(1).replaceAll("<.*?>", "");
+                tmp = Html.fromHtml(tmp).toString().trim();
+                if (tmp.contains("%")) {
+                    try {
+                        // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
+                        tmp = (URLDecoder.decode(tmp, "UTF8"));
+                    } catch (UnsupportedEncodingException ignored) {
+                        // will never happen, because "UTF8" is supported
+                    }
+                }
+                info.userIds.add(tmp);
+            }
+            results.add(info);
+        }
+        return results;
+    }
 
     @Override
     public String get(long keyId) throws QueryException {
