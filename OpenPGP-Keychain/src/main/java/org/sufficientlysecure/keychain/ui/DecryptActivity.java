@@ -222,16 +222,16 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 
 
 
-    public void decryptClicked(View Fragment_view, int code) {
-        initiateDecryption(Fragment_view, code);
+    public void decryptClicked(View mFragment_View, int mCode) {
+        initiateDecryption(mFragment_View, mCode);
     }
 
-    private void initiateDecryption(View Fragment_View, int code) {
+    private void initiateDecryption(View mFragment_View, int mCode) {
 
-        mDecryptTarget = code;
+        mDecryptTarget = mCode;
 
         if (mDecryptTarget == Id.target.file) {
-            EditText mFilename = (EditText)Fragment_View.findViewById(R.id.filename);
+            EditText mFilename = (EditText)mFragment_View.findViewById(R.id.filename);
             String currentFilename = mFilename.getText().toString();
             if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
                 guessOutputFilename(mFilename);
@@ -256,7 +256,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         }
 
         if (mDecryptTarget == Id.target.message) {
-            EditText mMessage = (EditText)Fragment_View.findViewById(R.id.message);
+            EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
             String messageData = mMessage.getText().toString();
             if(messageData.equals("")){
                 AppMsg.makeText(this, R.string.error_no_message_data,
@@ -267,26 +267,27 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 
             if (matcher.matches()) {
                 mSignedOnly = true;
-                decryptStart(Fragment_View, code);
+                decryptStart(mFragment_View, mCode);
                 return;
             }
         }
 
         // else treat it as an decrypted message/file
         mSignedOnly = false;
-        EditText mMessage = (EditText)Fragment_View.findViewById(R.id.message);
-        //If decryption is successful, output is true.
-        Boolean output = getDecryptionKeyFromInputStream(mMessage);
+        EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
+
+            //If decryption is successful, output is true.
+        Boolean output = getDecryptionKeyFromInputStream(mFragment_View, mCode);
 
         // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
         if (mSecretKeyId == Id.key.symmetric
                 || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
-            showPassphraseDialog(Fragment_View);
+            showPassphraseDialog(mFragment_View);
         } else {
             if (mDecryptTarget == Id.target.file) {
-                askForOutputFilename(Fragment_View, code);
+                askForOutputFilename(mFragment_View, mCode);
             } else { // mDecryptTarget == Id.target.message
-                decryptStart(Fragment_View, code);
+                decryptStart(mFragment_View, mCode);
             }
         }
     }
@@ -329,7 +330,9 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
     /**
      * TODO: Rework function, remove global variables
      */
-    private boolean getDecryptionKeyFromInputStream(EditText mMessage){
+    private boolean getDecryptionKeyFromInputStream(View mFragment_View, int mCode){
+        final EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
+        final EditText mFilename = (EditText)mFragment_View.findViewById(R.id.filename);
         InputStream inStream = null;
         if (mContentUri != null) {
             try {
@@ -370,6 +373,9 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         // get decryption key for this inStream
         try {
             try {
+                if(mCode == Id.target.file) {
+                    inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
+                }
                 if (inStream.markSupported()) {
                     inStream.mark(200); // should probably set this to the max size of two pgpF
                     // objects, if it even needs to be anything other than 0.
@@ -410,7 +416,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         startActivity(intent);
     }
 
-    public void askForOutputFilename(final View fragment_view, final int code) {
+    public void askForOutputFilename(final View mFragment_View, final int mCode) {
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
@@ -418,7 +424,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
                     mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-                    decryptStart(fragment_view, code);
+                    decryptStart(mFragment_View, mCode);
                 }
             }
         };
@@ -434,27 +440,27 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
     }
 
 
-    public void decryptStart(final View fragment_view, int code) {
+    public void decryptStart(final View mFragment_View, int mCode) {
         Log.d(Constants.TAG, "decryptStart");
         final EditText mFilename;
         final EditText mMessage;
-        final LinearLayout mSignatureLayout = (LinearLayout)fragment_view.findViewById(R.id.signature);
+        final LinearLayout mSignatureLayout = (LinearLayout)mFragment_View.findViewById(R.id.signature);
         final CheckBox mDeleteAfter;
-        final BootstrapButton mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
-        final TextView mUserId = (TextView) fragment_view.findViewById(R.id.mainUserId);
-        final TextView mUserIdRest = (TextView) fragment_view.findViewById(R.id.mainUserIdRest);
-        final ImageView mSignatureStatusImage = (ImageView) fragment_view.findViewById(R.id.ic_signature_status);
-        if (code == Id.target.file) {
+        final BootstrapButton mLookupKey = (BootstrapButton) mFragment_View.findViewById(R.id.lookup_key);
+        final TextView mUserId = (TextView) mFragment_View.findViewById(R.id.mainUserId);
+        final TextView mUserIdRest = (TextView) mFragment_View.findViewById(R.id.mainUserIdRest);
+        final ImageView mSignatureStatusImage = (ImageView) mFragment_View.findViewById(R.id.ic_signature_status);
+        if (mCode == Id.target.file) {
             try {
-                mFilename = (EditText) fragment_view.findViewById(R.id.filename);
+                mFilename = (EditText) mFragment_View.findViewById(R.id.filename);
                 mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
             }
             catch(Exception e){
                 e.printStackTrace();
             }
         }
-        else if(code == Id.target.message){
-                mMessage = (EditText) fragment_view.findViewById(R.id.message);
+        else if(mCode == Id.target.message){
+                mMessage = (EditText) mFragment_View.findViewById(R.id.message);
         }
         // Send all information needed to service to decrypt in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
@@ -479,7 +485,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
             data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
         } else {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-            EditText mMessage1 = (EditText)fragment_view.findViewById(R.id.message);
+            EditText mMessage1 = (EditText)mFragment_View.findViewById(R.id.message);
             String message = mMessage1.getText().toString();
             data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
         }
@@ -519,7 +525,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                         case Id.target.message:
                             String decryptedMessage = returnData
                                     .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-                            EditText mMessage1 = (EditText) fragment_view.findViewById(R.id.message);
+                            EditText mMessage1 = (EditText) mFragment_View.findViewById(R.id.message);
                             mMessage1.setText(decryptedMessage);
                             mMessage1.setHorizontallyScrolling(false);
 

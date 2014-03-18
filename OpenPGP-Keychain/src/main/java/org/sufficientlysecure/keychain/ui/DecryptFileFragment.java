@@ -39,7 +39,7 @@ public class DecryptFileFragment extends Fragment{
         public void guessOutputFilename(EditText v);
         public void showPassphraseDialog(View v);
         public void askForOutputFilename(View v, int code);
-        public void decryptClicked(View fragment_view, int code);
+        public void decryptClicked(View mFragment_View, int code);
         public void decryptStart(View view, int code);
         public void mSignatureLayout_OnClick();
         public void lookupUnknownKey(long id);

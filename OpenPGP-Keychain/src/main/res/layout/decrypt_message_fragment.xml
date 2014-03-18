@@ -99,8 +99,8 @@
                 android:scrollbars="vertical"
                 android:gravity="top"
                 android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-                android:lines="11"
-                android:minLines="10"
+                android:lines="10"
+                android:minLines="11"
                 android:scrollHorizontally="true" />
         </LinearLayout>
 
