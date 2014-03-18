@@ -119,8 +119,8 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     }
 
     public void setError(String error) {
-        mKeyUserId.requestFocus();
-        mKeyUserId.setError(error);
+        mNoKeySelected.requestFocus();
+        mNoKeySelected.setError(error);
     }
 
     /**
