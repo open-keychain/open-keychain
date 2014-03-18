@@ -36,6 +36,7 @@ import org.sufficientlysecure.keychain.util.KeyServer.AddKeyException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.security.Provider;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,60 +159,68 @@ public class PgpImportExport {
         return returnData;
     }
 
-    public Bundle exportKeyRings(ArrayList<Long> keyRingRowIds, int keyType,
+    public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds, ArrayList<Long> secretKeyRingMasterIds,
                                  OutputStream outStream) throws PgpGeneralException,
             PGPException, IOException {
         Bundle returnData = new Bundle();
 
-        int rowIdsSize = keyRingRowIds.size();
+        int masterKeyIdsSize = publicKeyRingMasterIds.size() + secretKeyRingMasterIds.size();
+        int progress = 0;
 
         updateProgress(
                 mContext.getResources().getQuantityString(R.plurals.progress_exporting_key,
-                        rowIdsSize), 0, 100);
+                        masterKeyIdsSize), 0, 100);
 
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             throw new PgpGeneralException(
                     mContext.getString(R.string.error_external_storage_not_ready));
         }
-        // For each row id
-        for (int i = 0; i < rowIdsSize; ++i) {
+        // For each public masterKey id
+        for (long pubKeyMasterId : publicKeyRingMasterIds) {
+            progress++;
             // Create an output stream
             ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
             arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
 
-            // If the keyType is secret get the PGPSecretKeyRing
-            // based on the row id and encode it to the output
-            if (keyType == Id.type.secret_key) {
-                updateProgress(i * 100 / rowIdsSize / 2, 100);
-                PGPSecretKeyRing secretKeyRing =
-                        ProviderHelper.getPGPSecretKeyRingByRowId(mContext, keyRingRowIds.get(i));
+            updateProgress(progress * 100 / masterKeyIdsSize, 100);
+            PGPPublicKeyRing publicKeyRing =
+                    ProviderHelper.getPGPPublicKeyRingByMasterKeyId(mContext, pubKeyMasterId);
 
-                if (secretKeyRing != null) {
-                    secretKeyRing.encode(arOutStream);
-                }
-                if (mKeychainServiceListener.hasServiceStopped()) {
-                    arOutStream.close();
-                    return null;
-                }
-            } else {
-                updateProgress(i * 100 / rowIdsSize, 100);
-                PGPPublicKeyRing publicKeyRing =
-                        ProviderHelper.getPGPPublicKeyRingByRowId(mContext, keyRingRowIds.get(i));
+            if (publicKeyRing != null) {
+                publicKeyRing.encode(arOutStream);
+            }
 
-                if (publicKeyRing != null) {
-                    publicKeyRing.encode(arOutStream);
-                }
-
-                if (mKeychainServiceListener.hasServiceStopped()) {
-                    arOutStream.close();
-                    return null;
-                }
+            if (mKeychainServiceListener.hasServiceStopped()) {
+                arOutStream.close();
+                return null;
             }
 
             arOutStream.close();
         }
 
-        returnData.putInt(KeychainIntentService.RESULT_EXPORT, rowIdsSize);
+        // For each secret masterKey id
+        for (long secretKeyMasterId : secretKeyRingMasterIds) {
+            progress++;
+            // Create an output stream
+            ArmoredOutputStream arOutStream = new ArmoredOutputStream(outStream);
+            arOutStream.setHeader("Version", PgpHelper.getFullVersion(mContext));
+
+            updateProgress(progress * 100 / masterKeyIdsSize, 100);
+            PGPSecretKeyRing secretKeyRing =
+                    ProviderHelper.getPGPSecretKeyRingByMasterKeyId(mContext, secretKeyMasterId);
+
+            if (secretKeyRing != null) {
+                secretKeyRing.encode(arOutStream);
+            }
+            if (mKeychainServiceListener.hasServiceStopped()) {
+                arOutStream.close();
+                return null;
+            }
+
+            arOutStream.close();
+        }
+
+        returnData.putInt(KeychainIntentService.RESULT_EXPORT, masterKeyIdsSize);
 
         updateProgress(R.string.progress_done, 100, 100);
 

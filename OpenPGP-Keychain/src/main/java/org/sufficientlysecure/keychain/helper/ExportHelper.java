@@ -30,11 +30,17 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.lang.reflect.Array;
+import java.security.Provider;
+import java.util.ArrayList;
 
 public class ExportHelper {
     protected FileDialogFragment mFileDialog;
@@ -62,8 +68,8 @@ public class ExportHelper {
     /**
      * Show dialog where to export keys
      */
-    public void showExportKeysDialog(final long[] rowIds, final int keyType,
-                                     final String exportFilename) {
+    public void showExportKeysDialog(final long[] masterKeyIds, final int keyType,
+                                     final String exportFilename, final String checkboxString) {
         mExportFilename = exportFilename;
 
         // Message is received after file is selected
@@ -72,9 +78,14 @@ public class ExportHelper {
             public void handleMessage(Message message) {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
+                    int type = keyType;
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    exportKeys(rowIds, keyType);
+                    if( data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED) ) {
+                        type = Id.type.public_secret_key;
+                    }
+
+                    exportKeys(masterKeyIds, type);
                 }
             }
         };
@@ -85,7 +96,7 @@ public class ExportHelper {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {
                 String title = null;
-                if (rowIds == null) {
+                if (masterKeyIds == null) {
                     // export all keys
                     title = mActivity.getString(R.string.title_export_keys);
                 } else {
@@ -93,15 +104,10 @@ public class ExportHelper {
                     title = mActivity.getString(R.string.title_export_key);
                 }
 
-                String message = null;
-                if (keyType == Id.type.public_key) {
-                    message = mActivity.getString(R.string.specify_file_to_export_to);
-                } else {
-                    message = mActivity.getString(R.string.specify_file_to_export_secret_keys_to);
-                }
+                String message = mActivity.getString(R.string.specify_file_to_export_to);
 
                 mFileDialog = FileDialogFragment.newInstance(messenger, title, message,
-                        exportFilename, null);
+                        exportFilename, checkboxString);
 
                 mFileDialog.show(mActivity.getSupportFragmentManager(), "fileDialog");
             }
@@ -111,7 +117,7 @@ public class ExportHelper {
     /**
      * Export keys
      */
-    public void exportKeys(long[] rowIds, int keyType) {
+    public void exportKeys(long[] masterKeyIds, int keyType) {
         Log.d(Constants.TAG, "exportKeys started");
 
         // Send all information needed to service to export key in other thread
@@ -125,10 +131,10 @@ public class ExportHelper {
         data.putString(KeychainIntentService.EXPORT_FILENAME, mExportFilename);
         data.putInt(KeychainIntentService.EXPORT_KEY_TYPE, keyType);
 
-        if (rowIds == null) {
+        if (masterKeyIds == null) {
             data.putBoolean(KeychainIntentService.EXPORT_ALL, true);
         } else {
-            data.putLongArray(KeychainIntentService.EXPORT_KEY_RING_ROW_ID, rowIds);
+            data.putLongArray(KeychainIntentService.EXPORT_KEY_RING_MASTER_KEY_ID, masterKeyIds);
         }
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
