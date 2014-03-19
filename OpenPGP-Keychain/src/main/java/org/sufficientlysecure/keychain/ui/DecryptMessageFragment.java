@@ -39,7 +39,7 @@ public class DecryptMessageFragment extends Fragment {
         public void guessOutputFilename(EditText v);
         public void showPassphraseDialog(View v);
         public void askForOutputFilename(View v, int code);
-        public void decryptClicked(View mFragment_View, int code);
+        public void decryptClicked(View fragmentView, int code);
         public void decryptStart(View view, int code);
         public void mSignatureLayout_OnClick();
         public void lookupUnknownKey(long id);
@@ -59,7 +59,7 @@ public class DecryptMessageFragment extends Fragment {
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
     private BootstrapButton mLookupKey = null;
     private BootstrapButton mDecryptButton;
-    private BootstrapButton mCopyfromClipboard;
+    private BootstrapButton mPastefromClipboard;
     private EditText mMessage = null;
     private long mSignatureKeyId = 0;
     private final int mDecryptTarget = Id.target.message;
@@ -77,13 +77,13 @@ public class DecryptMessageFragment extends Fragment {
         mSignatureStatusImage = (ImageView) mMainView.findViewById(R.id.ic_signature_status);
         mUserId = (TextView) mMainView.findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) mMainView.findViewById(R.id.mainUserIdRest);
-        mCopyfromClipboard = (BootstrapButton) mMainView.findViewById(R.id.decrypt_copy_from_clipboard);
-        mCopyfromClipboard.setOnClickListener(new View.OnClickListener(){
+        mPastefromClipboard = (BootstrapButton) mMainView.findViewById(R.id.decrypt_paste_from_clipboard);
+        mPastefromClipboard.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                CopyContentfromClipboard();
+                PasteContentfromClipboard();
             }
         });
-
+        mLookupKey = (BootstrapButton) mMainView.findViewById(R.id.lookup_key);
         mLookupKey.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,7 +202,7 @@ public class DecryptMessageFragment extends Fragment {
 
     }
 
-    private void CopyContentfromClipboard(){
+    private void PasteContentfromClipboard(){
         CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
         String data = "";

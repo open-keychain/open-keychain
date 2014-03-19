@@ -210,8 +210,8 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         }
     }
 
-    public void guessOutputFilename(EditText mFilename) {
-        mInputFilename = mFilename.getText().toString();
+    public void guessOutputFilename(EditText _filename) {
+        mInputFilename = _filename.getText().toString();
         File file = new File(mInputFilename);
         String filename = file.getName();
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
@@ -222,19 +222,19 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 
 
 
-    public void decryptClicked(View mFragment_View, int mCode) {
-        initiateDecryption(mFragment_View, mCode);
+    public void decryptClicked(View fragmentView, int targetCode) {
+        initiateDecryption(fragmentView, targetCode);
     }
 
-    private void initiateDecryption(View mFragment_View, int mCode) {
+    private void initiateDecryption(View fragmentView, int targetCode) {
 
-        mDecryptTarget = mCode;
+        mDecryptTarget = targetCode;
 
         if (mDecryptTarget == Id.target.file) {
-            EditText mFilename = (EditText)mFragment_View.findViewById(R.id.filename);
-            String currentFilename = mFilename.getText().toString();
+            EditText filename = (EditText)fragmentView.findViewById(R.id.filename);
+            String currentFilename = filename.getText().toString();
             if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
-                guessOutputFilename(mFilename);
+                guessOutputFilename(filename);
             }
 
             if (mInputFilename.equals("")) {
@@ -256,8 +256,8 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         }
 
         if (mDecryptTarget == Id.target.message) {
-            EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
-            String messageData = mMessage.getText().toString();
+            EditText message = (EditText)fragmentView.findViewById(R.id.message);
+            String messageData = message.getText().toString();
             if(messageData.equals("")){
                 AppMsg.makeText(this, R.string.error_no_message_data,
                         AppMsg.STYLE_ALERT).show();
@@ -267,27 +267,27 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 
             if (matcher.matches()) {
                 mSignedOnly = true;
-                decryptStart(mFragment_View, mCode);
+                decryptStart(fragmentView, targetCode);
                 return;
             }
         }
 
         // else treat it as an decrypted message/file
         mSignedOnly = false;
-        EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
+        EditText message = (EditText)fragmentView.findViewById(R.id.message);
 
             //If decryption is successful, output is true.
-        Boolean output = getDecryptionKeyFromInputStream(mFragment_View, mCode);
+        Boolean output = getDecryptionKeyFromInputStream(fragmentView, targetCode);
 
         // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
         if (mSecretKeyId == Id.key.symmetric
                 || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
-            showPassphraseDialog(mFragment_View);
+            showPassphraseDialog(fragmentView);
         } else {
             if (mDecryptTarget == Id.target.file) {
-                askForOutputFilename(mFragment_View, mCode);
+                askForOutputFilename(fragmentView, targetCode);
             } else { // mDecryptTarget == Id.target.message
-                decryptStart(mFragment_View, mCode);
+                decryptStart(fragmentView, targetCode);
             }
         }
     }
@@ -330,9 +330,9 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
     /**
      * TODO: Rework function, remove global variables
      */
-    private boolean getDecryptionKeyFromInputStream(View mFragment_View, int mCode){
-        final EditText mMessage = (EditText)mFragment_View.findViewById(R.id.message);
-        final EditText mFilename = (EditText)mFragment_View.findViewById(R.id.filename);
+    private boolean getDecryptionKeyFromInputStream(View fragmentView, int targetCode){
+        final EditText message = (EditText)fragmentView.findViewById(R.id.message);
+        final EditText filename = (EditText)fragmentView.findViewById(R.id.filename);
         InputStream inStream = null;
         if (mContentUri != null) {
             try {
@@ -367,13 +367,13 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                 }
             }
         } else {
-            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+            inStream = new ByteArrayInputStream(message.getText().toString().getBytes());
         }
 
         // get decryption key for this inStream
         try {
             try {
-                if(mCode == Id.target.file) {
+                if(targetCode == Id.target.file) {
                     inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
                 }
                 if (inStream.markSupported()) {
@@ -404,10 +404,10 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         return true;
     }
 
-    private void replyClicked(EditText mMessage) {
+    private void replyClicked(EditText message) {
         Intent intent = new Intent(this, EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        String data = mMessage.getText().toString();
+        String data = message.getText().toString();
         data = data.replaceAll("(?m)^", "> ");
         data = "\n\n" + data;
         intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
@@ -416,7 +416,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         startActivity(intent);
     }
 
-    public void askForOutputFilename(final View mFragment_View, final int mCode) {
+    public void askForOutputFilename(final View fragmentView, final int targetCode) {
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
@@ -424,7 +424,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
                     mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-                    decryptStart(mFragment_View, mCode);
+                    decryptStart(fragmentView, targetCode);
                 }
             }
         };
@@ -440,27 +440,27 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
     }
 
 
-    public void decryptStart(final View mFragment_View, int mCode) {
+    public void decryptStart(final View fragmentView, int targetCode) {
         Log.d(Constants.TAG, "decryptStart");
-        final EditText mFilename;
-        final EditText mMessage;
-        final LinearLayout mSignatureLayout = (LinearLayout)mFragment_View.findViewById(R.id.signature);
-        final CheckBox mDeleteAfter;
-        final BootstrapButton mLookupKey = (BootstrapButton) mFragment_View.findViewById(R.id.lookup_key);
-        final TextView mUserId = (TextView) mFragment_View.findViewById(R.id.mainUserId);
-        final TextView mUserIdRest = (TextView) mFragment_View.findViewById(R.id.mainUserIdRest);
-        final ImageView mSignatureStatusImage = (ImageView) mFragment_View.findViewById(R.id.ic_signature_status);
-        if (mCode == Id.target.file) {
+        final EditText filename;
+        final EditText message;
+        final LinearLayout signatureLayout = (LinearLayout)fragmentView.findViewById(R.id.signature);
+        final CheckBox deleteAfter;
+        final BootstrapButton lookupKey = (BootstrapButton) fragmentView.findViewById(R.id.lookup_key);
+        final TextView userId = (TextView) fragmentView.findViewById(R.id.mainUserId);
+        final TextView userIdRest = (TextView) fragmentView.findViewById(R.id.mainUserIdRest);
+        final ImageView signatureStatusImage = (ImageView) fragmentView.findViewById(R.id.ic_signature_status);
+        if (targetCode == Id.target.file) {
             try {
-                mFilename = (EditText) mFragment_View.findViewById(R.id.filename);
-                mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
+                filename = (EditText) fragmentView.findViewById(R.id.filename);
+                deleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
             }
             catch(Exception e){
                 e.printStackTrace();
             }
         }
-        else if(mCode == Id.target.message){
-                mMessage = (EditText) mFragment_View.findViewById(R.id.message);
+        else if(targetCode == Id.target.message){
+                message = (EditText) fragmentView.findViewById(R.id.message);
         }
         // Send all information needed to service to decrypt in other thread
         Intent intent = new Intent(this, KeychainIntentService.class);
@@ -485,9 +485,9 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
             data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
         } else {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-            EditText mMessage1 = (EditText)mFragment_View.findViewById(R.id.message);
-            String message = mMessage1.getText().toString();
-            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
+            EditText message1 = (EditText)fragmentView.findViewById(R.id.message);
+            String message_text = message1.getText().toString();
+            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message_text.getBytes());
         }
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
@@ -509,7 +509,7 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                     Bundle returnData = message.getData();
 
                     mSignatureKeyId = 0;
-                    mSignatureLayout.setVisibility(View.GONE);
+                    signatureLayout.setVisibility(View.GONE);
 
                     AppMsg.makeText(DecryptActivity.this, R.string.decryption_successful,
                             AppMsg.STYLE_INFO).show();
@@ -525,9 +525,9 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                         case Id.target.message:
                             String decryptedMessage = returnData
                                     .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-                            EditText mMessage1 = (EditText) mFragment_View.findViewById(R.id.message);
-                            mMessage1.setText(decryptedMessage);
-                            mMessage1.setHorizontallyScrolling(false);
+                            EditText message1 = (EditText) fragmentView.findViewById(R.id.message);
+                            message1.setText(decryptedMessage);
+                            message1.setHorizontallyScrolling(false);
 
                             break;
 
@@ -554,24 +554,23 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 
                     if (signatureResult != null) {
 
-                        String userId = signatureResult.getUserId();
+                        String userId_text = signatureResult.getUserId();
                         mSignatureKeyId = signatureResult.getKeyId();
-                        mUserIdRest.setText("id: "
+                        userIdRest.setText("id: "
                                 + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
-                        if (userId == null) {
-                            userId = getResources().getString(R.string.user_id_no_name);
+                        if (userId_text == null) {
+                            userId_text = getResources().getString(R.string.user_id_no_name);
                         }
-                        String chunks[] = userId.split(" <", 2);
-                        userId = chunks[0];
+                        String chunks[] = userId_text.split(" <", 2);
+                        userId_text = chunks[0];
                         if (chunks.length > 1) {
-                            mUserIdRest.setText("<" + chunks[1]);
+                            userIdRest.setText("<" + chunks[1]);
                         }
-                        mUserId.setText(userId);
-
+                        userId.setText(userId_text);
                         switch (signatureResult.getStatus()) {
                             case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
-                                mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                                mLookupKey.setVisibility(View.GONE);
+                                signatureStatusImage.setImageResource(R.drawable.overlay_ok);
+                                lookupKey.setVisibility(View.GONE);
                                 break;
                             }
 
@@ -581,8 +580,8 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
 //                            }
 
                             case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
-                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                                mLookupKey.setVisibility(View.VISIBLE);
+                                signatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                lookupKey.setVisibility(View.VISIBLE);
                                 AppMsg.makeText(DecryptActivity.this,
                                         R.string.unknown_signature,
                                         AppMsg.STYLE_ALERT).show();
@@ -590,12 +589,12 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                             }
 
                             default: {
-                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                                mLookupKey.setVisibility(View.GONE);
+                                signatureStatusImage.setImageResource(R.drawable.overlay_error);
+                                lookupKey.setVisibility(View.GONE);
                                 break;
                             }
                         }
-                        mSignatureLayout.setVisibility(View.VISIBLE);
+                        signatureLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -624,8 +623,8 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                         Fragment fileFragment = (DecryptFileFragment)getSupportFragmentManager().findFragmentByTag
                                 ("android:switcher:" + R.id.decrypt_pager + ":" +
                                         decrypt_pager.getCurrentItem());
-                        EditText mFilename= (EditText)fileFragment.getView().findViewById(R.id.filename);
-                        mFilename.setText(path);
+                        EditText filename= (EditText)fileFragment.getView().findViewById(R.id.filename);
+                        filename.setText(path);
                     } catch (NullPointerException e) {
                         Log.e(Constants.TAG, "Nullpointer while retrieving path!");
                     }
@@ -642,15 +641,15 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
                     Fragment fragment = getSupportFragmentManager().findFragmentByTag
                             ("android:switcher:" + R.id.decrypt_pager + ":" +
                                     decrypt_pager.getCurrentItem());
-                    EditText mMessage1 = null;
+                    EditText message1 = null;
                     try {
 
-                        mMessage1 = (EditText) fragment.getView().findViewById(R.id.message);
+                        message1 = (EditText) fragment.getView().findViewById(R.id.message);
                     }
                     catch(Exception e){
                         e.printStackTrace();
                     }
-                    if(mMessage1 == null) {
+                    if(message1 == null) {
                         decryptStart(fragment.getView(), Id.target.file);
                     }
                     else{

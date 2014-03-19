@@ -82,14 +82,14 @@
 
     </LinearLayout>
     <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/decrypt_copy_from_clipboard"
+        android:id="@+id/decrypt_paste_from_clipboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginBottom="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="12dp"
-        android:text="@string/btn_copy_from_clipboard"
+        android:text="@string/btn_paste_from_clipboard"
         bootstrapbutton:bb_icon_left="fa-key"
         bootstrapbutton:bb_size="default"
         bootstrapbutton:bb_type="default" />
