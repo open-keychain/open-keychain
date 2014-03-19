@@ -71,7 +71,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
                     getActivity(), secretKeyId);
             if (keyRing != null) {
                 PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
-                String masterkeyIdHex = PgpKeyHelper.convertKeyIdToHex(secretKeyId);
+                String masterkeyIdHex = PgpKeyHelper.convertKeyIdToHexShort(secretKeyId);
 
                 if (key != null) {
                     String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
