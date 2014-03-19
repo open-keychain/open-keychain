@@ -30,9 +30,8 @@ public class SelectSecretKeyActivity extends ActionBarActivity {
     public static final String EXTRA_FILTER_CERTIFY = "filter_certify";
 
     public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
-    public static final String RESULT_EXTRA_USER_ID = "user_id";
 
-    private boolean mFilterCertify = false;
+    private boolean mFilterCertify;
     private SelectSecretKeyFragment mSelectFragment;
 
     @Override
