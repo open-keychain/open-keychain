@@ -302,7 +302,6 @@
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
-  <string name="progress_generating">генерується ключ, вона може тривати до 3 хвилин…</string>
   <string name="progress_building_key">будується ключ…</string>
   <string name="progress_preparing_master_key">підготовка основного ключа…</string>
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
@@ -313,6 +312,9 @@
     <item quantity="one">експортується ключ…</item>
     <item quantity="few">експортуються ключі…</item>
     <item quantity="other">експортуються ключі…</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="other">генерується ключ, вона може тривати до 3 хвилин…</item>
   </plurals>
   <string name="progress_extracting_signature_key">видобування ключа підпису…</string>
   <string name="progress_extracting_key">видобувається ключа…</string>
