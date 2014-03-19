@@ -282,7 +282,6 @@
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">インポート...</string>
   <string name="progress_exporting">エクスポート...</string>
-  <string name="progress_generating">鍵の生成、3分ほどかかります...</string>
   <string name="progress_building_key">鍵の構築中...</string>
   <string name="progress_preparing_master_key">主鍵の準備中...</string>
   <string name="progress_certifying_master_key">主鍵の検証中...</string>
@@ -291,6 +290,9 @@
   <string name="progress_saving_key_ring">鍵の保存...</string>
   <plurals name="progress_exporting_key">
     <item quantity="other">鍵のエクスポート...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="other">鍵の生成、3分ほどかかります...</item>
   </plurals>
   <string name="progress_extracting_signature_key">署名鍵の取り出し中...</string>
   <string name="progress_extracting_key">鍵の取り出し中...</string>

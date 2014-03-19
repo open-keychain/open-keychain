@@ -290,7 +290,6 @@
   <string name="progress_saving">сохранение...</string>
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>
-  <string name="progress_generating">создание ключа. это может занять до 3 минут...</string>
   <string name="progress_building_key">создание ключа...</string>
   <string name="progress_preparing_master_key">подготовка основного ключа...</string>
   <string name="progress_certifying_master_key">сертификация основного ключа...</string>
@@ -301,6 +300,9 @@
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>
     <item quantity="other">экспорт ключей...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="other">создание ключа. это может занять до 3 минут...</item>
   </plurals>
   <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
   <string name="progress_extracting_key">извлечение ключа...</string>

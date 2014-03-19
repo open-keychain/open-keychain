@@ -276,7 +276,6 @@
   <string name="progress_saving">speichern...</string>
   <string name="progress_importing">importieren...</string>
   <string name="progress_exporting">exportieren...</string>
-  <string name="progress_generating">erstelle Schlüssel, dies kann bis zu 3 Minuten dauern...</string>
   <string name="progress_building_key">erstelle Schlüssel...</string>
   <string name="progress_preparing_master_key">Hauptschlüssel wird vorbereitet...</string>
   <string name="progress_certifying_master_key">Hauptschlüssel wird beglaubigt...</string>
@@ -286,6 +285,10 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">Schlüssel wird exportiert…</item>
     <item quantity="other">Schlüssel werden exportiert…</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">erstelle Schlüssel, dies kann bis zu 3 Minuten dauern…</item>
+    <item quantity="other">erstelle Schlüssel, dies kann bis zu 3 Minuten dauern…</item>
   </plurals>
   <string name="progress_extracting_signature_key">extrahiere Signaturschlüssel...</string>
   <string name="progress_extracting_key">extrahiere Schlüssel...</string>

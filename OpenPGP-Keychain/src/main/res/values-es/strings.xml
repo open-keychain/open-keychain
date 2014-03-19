@@ -281,7 +281,6 @@
   <string name="progress_saving">guardando...</string>
   <string name="progress_importing">importando...</string>
   <string name="progress_exporting">exportando...</string>
-  <string name="progress_generating">generando la clave, esto puede tardar más de 3 minutos...</string>
   <string name="progress_building_key">construyendo la clave...</string>
   <string name="progress_preparing_master_key">preparando la clave maestra...</string>
   <string name="progress_certifying_master_key">certificando la clave maestra...</string>
@@ -291,6 +290,9 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">exportando clave...</item>
     <item quantity="other">exportando claves...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="other">generando la clave, esto puede tardar más de 3 minutos...</item>
   </plurals>
   <string name="progress_extracting_signature_key">extrayendo la clave de firma...</string>
   <string name="progress_extracting_key">extrayendo la clave...</string>
