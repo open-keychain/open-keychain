@@ -199,7 +199,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 // the first key here is our master key
                 if (data.moveToFirst()) {
                     long keyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(keyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);

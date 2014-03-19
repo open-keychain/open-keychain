@@ -115,7 +115,7 @@ public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
         // TODO: needed to key id to no?
         keyId.setText(R.string.no_key);
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+        keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
 
         // TODO: needed to set unknown_status?
         status.setText(R.string.unknown_status);
