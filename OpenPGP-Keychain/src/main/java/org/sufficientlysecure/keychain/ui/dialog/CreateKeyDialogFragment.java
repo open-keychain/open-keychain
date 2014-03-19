@@ -25,6 +25,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import org.sufficientlysecure.keychain.Id;
@@ -113,21 +114,8 @@ public class CreateKeyDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface di, int id) {
                         di.dismiss();
                         try {
-                            int nKeyIndex = keySize.getSelectedItemPosition();
-                            switch (nKeyIndex) {
-                                case 0:
-                                    mNewKeySize = 512;
-                                    break;
-                                case 1:
-                                    mNewKeySize = 1024;
-                                    break;
-                                case 2:
-                                    mNewKeySize = 2048;
-                                    break;
-                                case 3:
-                                    mNewKeySize = 4096;
-                                    break;
-                            }
+                            final String selectedItem = (String) keySize.getSelectedItem();
+                            mNewKeySize = Integer.parseInt(selectedItem);
                         } catch (NumberFormatException e) {
                             mNewKeySize = 0;
                         }
@@ -145,7 +133,26 @@ public class CreateKeyDialogFragment extends DialogFragment {
                     }
                 });
 
-        return dialog.create();
+        final AlertDialog alertDialog = dialog.create();
+
+        final AdapterView.OnItemSelectedListener weakRsaListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final Choice selectedAlgorithm = (Choice)algorithm.getSelectedItem();
+                final int selectedKeySize = Integer.parseInt((String)keySize.getSelectedItem());
+                final boolean isWeakRsa = (selectedAlgorithm.getId() == Id.choice.algorithm.rsa && selectedKeySize <= 1024);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!isWeakRsa);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        };
+
+        keySize.setOnItemSelectedListener(weakRsaListener);
+        algorithm.setOnItemSelectedListener(weakRsaListener);
+
+        return alertDialog;
     }
 
 }
