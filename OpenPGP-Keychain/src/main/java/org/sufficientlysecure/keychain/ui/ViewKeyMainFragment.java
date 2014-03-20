@@ -322,7 +322,7 @@ public class ViewKeyMainFragment extends Fragment implements
                     }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
 
-                    mFingerprint.setText(OtherHelper.colorizeFingerprint(fingerprint));
+                    mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
 
                 mKeysAdapter.swapCursor(data);
