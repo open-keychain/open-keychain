@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
 import org.spongycastle.openpgp.*;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -692,11 +693,11 @@ public class KeychainIntentService extends IntentService
 
                     for (long masterKeyId : masterKeyIds) {
                         if ((keyType == Id.type.public_key || keyType == Id.type.public_secret_key)
-                                                                && allPublicMasterKeyIds.contains(masterKeyId)) {
+                                && allPublicMasterKeyIds.contains(masterKeyId)) {
                             publicMasterKeyIds.add(masterKeyId);
                         }
                         if ((keyType == Id.type.secret_key || keyType == Id.type.public_secret_key)
-                                                                && allSecretMasterKeyIds.contains(masterKeyId)) {
+                                && allSecretMasterKeyIds.contains(masterKeyId)) {
                             secretMasterKeyIds.add(masterKeyId);
                         }
                     }
@@ -745,48 +746,57 @@ public class KeychainIntentService extends IntentService
                 ArrayList<ImportKeysListEntry> entries = data.getParcelableArrayList(DOWNLOAD_KEY_LIST);
                 String keyServer = data.getString(DOWNLOAD_KEY_SERVER);
 
+                // TODO: add extra which requires fingerprint suport and force verification!
+                // only supported by newer sks keyserver versions
+
                 // this downloads the keys and places them into the ImportKeysListEntry entries
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
                 for (ImportKeysListEntry entry : entries) {
-                    byte[] downloadedKey = server.get(entry.getKeyIdHex()).getBytes();
+                    // if available use complete fingerprint for get request
+                    byte[] downloadedKeyBytes;
+                    if (entry.getFingerPrintHex() != null) {
+                        downloadedKeyBytes = server.get(entry.getFingerPrintHex()).getBytes();
+                    } else {
+                        downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
+                    }
 
-                    /**
-                     * TODO: copied from ImportKeysListLoader
-                     *
-                     *
-                     * this parses the downloaded key
-                     */
-                    // need to have access to the bufferedInput, so we can reuse it for the possible
-                    // PGPObject chunks after the first one, e.g. files with several consecutive ASCII
-                    // armor blocks
+                    // create PGPKeyRing object based on downloaded armored key
+                    PGPKeyRing downloadedKey = null;
                     BufferedInputStream bufferedInput =
-                            new BufferedInputStream(new ByteArrayInputStream(downloadedKey));
-                    try {
+                            new BufferedInputStream(new ByteArrayInputStream(downloadedKeyBytes));
+                    if (bufferedInput.available() > 0) {
+                        InputStream in = PGPUtil.getDecoderStream(bufferedInput);
+                        PGPObjectFactory objectFactory = new PGPObjectFactory(in);
 
-                        // read all available blocks... (asc files can contain many blocks with BEGIN END)
-                        while (bufferedInput.available() > 0) {
-                            InputStream in = PGPUtil.getDecoderStream(bufferedInput);
-                            PGPObjectFactory objectFactory = new PGPObjectFactory(in);
+                        // get first object in block
+                        Object obj;
+                        if ((obj = objectFactory.nextObject()) != null) {
+                            Log.d(Constants.TAG, "Found class: " + obj.getClass());
 
-                            // go through all objects in this block
-                            Object obj;
-                            while ((obj = objectFactory.nextObject()) != null) {
-                                Log.d(Constants.TAG, "Found class: " + obj.getClass());
-
-                                if (obj instanceof PGPKeyRing) {
-                                    PGPKeyRing newKeyring = (PGPKeyRing) obj;
-
-                                    entry.setBytes(newKeyring.getEncoded());
-                                } else {
-                                    Log.e(Constants.TAG, "Object not recognized as PGPKeyRing!");
-                                }
+                            if (obj instanceof PGPKeyRing) {
+                                downloadedKey = (PGPKeyRing) obj;
+                            } else {
+                                throw new PgpGeneralException("Object not recognized as PGPKeyRing!");
                             }
                         }
-                    } catch (Exception e) {
-                        Log.e(Constants.TAG, "Exception on parsing key file!", e);
                     }
+
+                    // verify downloaded key by comparing fingerprints
+                    if (entry.getFingerPrintHex() != null) {
+                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(downloadedKey.getPublicKey().getFingerprint(), false);
+                        if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
+                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as the requested fingerprint!");
+                        } else {
+                            throw new PgpGeneralException("fingerprint of downloaded key is NOT the same as the requested fingerprint!");
+                        }
+                    }
+
+                    // save key bytes in entry object for doing the
+                    // actual import afterwards
+                    entry.setBytes(downloadedKey.getEncoded());
                 }
+
 
                 Intent importIntent = new Intent(this, KeychainIntentService.class);
                 importIntent.setAction(ACTION_IMPORT_KEYRING);
