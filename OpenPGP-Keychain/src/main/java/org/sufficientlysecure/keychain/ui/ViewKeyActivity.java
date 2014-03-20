@@ -237,25 +237,12 @@ public class ViewKeyActivity extends ActionBarActivity {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
-                        Toast.makeText(ViewKeyActivity.this,
-                                getString(R.string.error_can_not_delete_contact)
-                                + getResources()
-                                        .getQuantityString(R.plurals.error_can_not_delete_info, 1),
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    }
-                }
+                setResult(RESULT_CANCELED);
+                finish();
             }
         };
 
-        mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
+        mExportHelper.deleteKey(dataUri, returnHandler);
     }
 
 }

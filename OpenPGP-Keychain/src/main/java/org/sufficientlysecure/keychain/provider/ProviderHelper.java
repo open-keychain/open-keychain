@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik SchÃ¼rmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,7 +230,7 @@ public class ProviderHelper {
         // get current _ID of key
         long currentRowId = -1;
         Cursor oldQuery = context.getContentResolver()
-                    .query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
+                .query(deleteUri, new String[]{KeyRings._ID}, null, null, null);
         if (oldQuery != null && oldQuery.moveToFirst()) {
             currentRowId = oldQuery.getLong(0);
         } else {
@@ -288,7 +288,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildPublicKeyOperations(Context context,
-                        long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
+                                                                     long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
         values.put(Keys.KEY_ID, key.getKeyID());
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
@@ -316,7 +316,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildPublicUserIdOperations(Context context,
-                           long keyRingRowId, String userId, int rank) {
+                                                                        long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -331,7 +331,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add PGPSecretKey to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildSecretKeyOperations(Context context,
-                                  long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
+                                                                     long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
 
         boolean hasPrivate = true;
@@ -368,7 +368,7 @@ public class ProviderHelper {
      * Build ContentProviderOperation to add SecretUserIds to database corresponding to a keyRing
      */
     private static ContentProviderOperation buildSecretUserIdOperations(Context context,
-                                            long keyRingRowId, String userId, int rank) {
+                                                                        long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -467,6 +467,15 @@ public class ProviderHelper {
     public static void deleteSecretKeyRing(Context context, long rowId) {
         ContentResolver cr = context.getContentResolver();
         cr.delete(KeyRings.buildSecretKeyRingsUri(Long.toString(rowId)), null, null);
+    }
+
+    public static void deleteUnifiedKeyRing(Context context,String masterKeyId,boolean isSecretKey){
+        ContentResolver cr= context.getContentResolver();
+        cr.delete(KeyRings.buildPublicKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
+        if(isSecretKey){
+            cr.delete(KeyRings.buildSecretKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
+        }
+
     }
 
     /**

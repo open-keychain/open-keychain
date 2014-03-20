@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2013 Dominik SchÃ¼rmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -58,7 +59,6 @@ import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
-
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Vector;
@@ -325,9 +325,13 @@ public class EditKeyActivity extends ActionBarActivity {
                 long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
                 long[] ids = new long[]{masterKeyId};
                 mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
-                                                            null);
+                        null);
                 return true;
             case R.id.menu_key_edit_delete: {
+                //Convert the uri to one based on rowId
+                long rowId= ProviderHelper.getRowId(this,mDataUri);
+                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+
                 // Message is received after key is deleted
                 Handler returnHandler = new Handler() {
                     @Override
@@ -339,7 +343,7 @@ public class EditKeyActivity extends ActionBarActivity {
                     }
                 };
 
-                mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+                mExportHelper.deleteKey(convertUri, returnHandler);
                 return true;
             }
         }

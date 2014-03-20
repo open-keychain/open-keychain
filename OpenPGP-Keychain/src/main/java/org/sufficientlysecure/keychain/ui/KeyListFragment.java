@@ -355,25 +355,7 @@ public class KeyListFragment extends Fragment
             @Override
             public void handleMessage(Message message) {
                 if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        ArrayList<String> notDeleted =
-                                returnData.getStringArrayList(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED);
-                        String notDeletedMsg = "";
-                        for (String userId : notDeleted) {
-                            notDeletedMsg += userId + "\n";
-                        }
-                        Toast.makeText(getActivity(),
-                                getString(R.string.error_can_not_delete_contacts, notDeletedMsg)
-                                + getResources()
-                                        .getQuantityString(
-                                                R.plurals.error_can_not_delete_info,
-                                                notDeleted.size()),
-                                Toast.LENGTH_LONG).show();
-
-                        mode.finish();
-                    }
+                    mode.finish();
                 }
             }
         };
@@ -382,7 +364,7 @@ public class KeyListFragment extends Fragment
         Messenger messenger = new Messenger(returnHandler);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                keyRingRowIds, Id.type.public_key);
+                keyRingRowIds);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
