@@ -36,11 +36,10 @@ import java.util.Date;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
-    public ArrayList<String> userIds;
 
+    public ArrayList<String> userIds;
     public long keyId;
     public String keyIdHex;
-
     public boolean revoked;
     public Date date; // TODO: not displayed
     public String fingerPrintHex;
@@ -129,6 +128,74 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setSelected(boolean selected) {
         this.mSelected = selected;
+    }
+
+    public long getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(long keyId) {
+        this.keyId = keyId;
+    }
+
+    public void setKeyIdHex(String keyIdHex) {
+        this.keyIdHex = keyIdHex;
+    }
+
+    public boolean isRevoked() {
+        return revoked;
+    }
+
+    public void setRevoked(boolean revoked) {
+        this.revoked = revoked;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getFingerPrintHex() {
+        return fingerPrintHex;
+    }
+
+    public void setFingerPrintHex(String fingerPrintHex) {
+        this.fingerPrintHex = fingerPrintHex;
+    }
+
+    public int getBitStrength() {
+        return bitStrength;
+    }
+
+    public void setBitStrength(int bitStrength) {
+        this.bitStrength = bitStrength;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public boolean isSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(boolean secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public ArrayList<String> getUserIds() {
+        return userIds;
+    }
+
+    public void setUserIds(ArrayList<String> userIds) {
+        this.userIds = userIds;
     }
 
     /**

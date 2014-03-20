@@ -239,32 +239,35 @@ public class HkpKeyServer extends KeyServer {
 
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
-            final ImportKeysListEntry info = new ImportKeysListEntry();
-            info.bitStrength = Integer.parseInt(matcher.group(3));
+            final ImportKeysListEntry entry = new ImportKeysListEntry();
+
+            entry.setBitStrength(Integer.parseInt(matcher.group(3)));
+
             final int algorithmId = Integer.decode(matcher.group(2));
-            info.algorithm = getAlgorithmFromId(algorithmId);
+            entry.setAlgorithm(getAlgorithmFromId(algorithmId));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
             // and https://github.com/openpgp-keychain/openpgp-keychain/issues/259#issuecomment-38168176
             String fingerprintOrKeyId = matcher.group(1);
             if (fingerprintOrKeyId.length() > 16) {
-                info.fingerPrintHex = "0x" + PgpKeyHelper.splitFingerprintHex(fingerprintOrKeyId);
-                info.keyIdHex = "0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
-                        - 16, fingerprintOrKeyId.length());
+                entry.setFingerPrintHex(PgpKeyHelper.splitFingerprintHex(
+                        fingerprintOrKeyId.toLowerCase(Locale.US)));
+                entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
+                        - 16, fingerprintOrKeyId.length()));
             } else {
                 // set key id only
-                info.keyIdHex = "0x" + fingerprintOrKeyId;
+                entry.setKeyIdHex("0x" + fingerprintOrKeyId);
             }
 
             final long creationDate = Long.parseLong(matcher.group(4));
             final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
             tmpGreg.setTimeInMillis(creationDate * 1000);
-            info.date = tmpGreg.getTime();
+            entry.setDate(tmpGreg.getTime());
 
-            info.revoked = matcher.group(6).contains("r");
-            info.userIds = new ArrayList<String>();
+            entry.setRevoked(matcher.group(6).contains("r"));
 
+            ArrayList<String> userIds = new ArrayList<String>();
             final String uidLines = matcher.group(7);
             final Matcher uidMatcher = UID_LINE.matcher(uidLines);
             while (uidMatcher.find()) {
@@ -277,9 +280,11 @@ public class HkpKeyServer extends KeyServer {
                         // will never happen, because "UTF8" is supported
                     }
                 }
-                info.userIds.add(tmp);
+                userIds.add(tmp);
             }
-            results.add(info);
+            entry.setUserIds(userIds);
+
+            results.add(entry);
         }
         return results;
     }
