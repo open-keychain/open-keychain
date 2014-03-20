@@ -50,9 +50,8 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     private SelectSecretKeyCallback mCallback;
 
     private static final int REQUEST_CODE_SELECT_KEY = 8882;
-
-    //Loader ID needs to be different from the usual 0
-    private static final int LOADER_ID = 2;
+        
+    private static final int LOADER_ID = 0;
 
     //The Projection we will retrieve, Master Key ID is for convenience sake,
     //to avoid having to pass the Key Around
