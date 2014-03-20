@@ -63,7 +63,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
 
     public interface SelectSecretKeyCallback {
         void onKeySelected(long secretKeyId);
-
     }
 
     public void setCallback(SelectSecretKeyCallback callback) {
