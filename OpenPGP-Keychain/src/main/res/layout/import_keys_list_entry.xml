@@ -52,13 +52,6 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
-                android:id="@+id/fingerprint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="fingerprint"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
                 android:id="@+id/mainUserIdRest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -87,6 +80,13 @@
                 android:id="@+id/algorithm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <TextView
+                android:id="@+id/fingerprint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="fingerprint"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
