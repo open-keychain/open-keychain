@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
@@ -41,6 +42,8 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     private int mIndexCanEncrypt;
     private int mIndexCanSign;
     private int mIndexRevokedKey;
+
+    private ColorStateList mDefaultTextColor;
 
     public ViewKeyKeysAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
@@ -122,13 +125,20 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             keyId.setTextColor(Color.RED);
             keyDetails.setTextColor(Color.RED);
         } else {
+            keyId.setTextColor(mDefaultTextColor);
+            keyDetails.setTextColor(mDefaultTextColor);
             revokedKeyIcon.setVisibility(View.GONE);
         }
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.view_key_keys_item, null);
+        View view = mInflater.inflate(R.layout.view_key_keys_item, null);
+        if (mDefaultTextColor == null) {
+            TextView keyId = (TextView) view.findViewById(R.id.keyId);
+            mDefaultTextColor = keyId.getTextColors();
+        }
+        return view;
     }
 
 }
