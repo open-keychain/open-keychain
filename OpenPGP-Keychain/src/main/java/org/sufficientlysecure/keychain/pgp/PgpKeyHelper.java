@@ -511,6 +511,11 @@ public class PgpKeyHelper {
 
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
+        // add line breaks to have a consistent "image" that can be recognized
+        char[] chars = fingerprint.toCharArray();
+        chars[24] = '\n';
+        fingerprint = String.valueOf(chars);
+
         SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
         try {
             // for each 4 characters of the fingerprint + 1 space
