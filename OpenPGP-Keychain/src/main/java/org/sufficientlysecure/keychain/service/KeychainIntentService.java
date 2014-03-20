@@ -749,7 +749,7 @@ public class KeychainIntentService extends IntentService
                 HkpKeyServer server = new HkpKeyServer(keyServer);
 
                 for (ImportKeysListEntry entry : entries) {
-                    byte[] downloadedKey = server.get(entry.getKeyId()).getBytes();
+                    byte[] downloadedKey = server.get(entry.getKeyIdHex()).getBytes();
 
                     /**
                      * TODO: copied from ImportKeysListLoader

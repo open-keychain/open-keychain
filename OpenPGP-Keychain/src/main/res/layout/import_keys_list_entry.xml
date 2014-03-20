@@ -77,10 +77,11 @@
             <TextView
                 android:id="@+id/keyId"
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="BBBBBBBB"
+                android:layout_height="wrap_content"
+                android:text="0xBBBBBBBBBBBBBBBB"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:typeface="monospace" />
+                android:typeface="monospace"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/algorithm"

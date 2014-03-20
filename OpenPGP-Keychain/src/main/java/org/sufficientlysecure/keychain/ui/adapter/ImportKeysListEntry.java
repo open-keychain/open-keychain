@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.SparseArray;
+
 import org.spongycastle.openpgp.PGPKeyRing;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
@@ -38,10 +39,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     public ArrayList<String> userIds;
 
     public long keyId;
+    public String keyIdHex;
+
     public boolean revoked;
     public Date date; // TODO: not displayed
-    public String fingerPrint;
-    public String hexKeyId;
+    public String fingerPrintHex;
     public int bitStrength;
     public String algorithm;
     public boolean secretKey;
@@ -55,8 +57,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         this.keyId = b.keyId;
         this.revoked = b.revoked;
         this.date = b.date;
-        this.fingerPrint = b.fingerPrint;
-        this.hexKeyId = b.hexKeyId;
+        this.fingerPrintHex = b.fingerPrintHex;
+        this.keyIdHex = b.keyIdHex;
         this.bitStrength = b.bitStrength;
         this.algorithm = b.algorithm;
         this.secretKey = b.secretKey;
@@ -74,8 +76,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeLong(keyId);
         dest.writeByte((byte) (revoked ? 1 : 0));
         dest.writeSerializable(date);
-        dest.writeString(fingerPrint);
-        dest.writeString(hexKeyId);
+        dest.writeString(fingerPrintHex);
+        dest.writeString(keyIdHex);
         dest.writeInt(bitStrength);
         dest.writeString(algorithm);
         dest.writeByte((byte) (secretKey ? 1 : 0));
@@ -92,8 +94,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.keyId = source.readLong();
             vr.revoked = source.readByte() == 1;
             vr.date = (Date) source.readSerializable();
-            vr.fingerPrint = source.readString();
-            vr.hexKeyId = source.readString();
+            vr.fingerPrintHex = source.readString();
+            vr.keyIdHex = source.readString();
             vr.bitStrength = source.readInt();
             vr.algorithm = source.readString();
             vr.secretKey = source.readByte() == 1;
@@ -109,8 +111,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         }
     };
 
-    public long getKeyId() {
-        return keyId;
+    public String getKeyIdHex() {
+        return keyIdHex;
     }
 
     public byte[] getBytes() {
@@ -119,6 +121,14 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     public void setBytes(byte[] bytes) {
         this.mBytes = bytes;
+    }
+
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.mSelected = selected;
     }
 
     /**
@@ -130,14 +140,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         // do not select by default
         mSelected = false;
         userIds = new ArrayList<String>();
-    }
-
-    public boolean isSelected() {
-        return mSelected;
-    }
-
-    public void setSelected(boolean selected) {
-        this.mSelected = selected;
     }
 
     /**
@@ -165,12 +167,13 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         for (String userId : new IterableIterator<String>(pgpKeyRing.getPublicKey().getUserIDs())) {
             userIds.add(userId);
         }
+
         this.keyId = pgpKeyRing.getPublicKey().getKeyID();
+        this.keyIdHex = PgpKeyHelper.convertKeyIdToHex(keyId);
 
         this.revoked = pgpKeyRing.getPublicKey().isRevoked();
-        this.fingerPrint = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
+        this.fingerPrintHex = PgpKeyHelper.convertFingerprintToHex(pgpKeyRing.getPublicKey()
                 .getFingerprint(), true);
-        this.hexKeyId = PgpKeyHelper.convertKeyIdToHex(keyId);
         this.bitStrength = pgpKeyRing.getPublicKey().getBitStrength();
         final int algorithm = pgpKeyRing.getPublicKey().getAlgorithm();
         this.algorithm = getAlgorithmFromId(algorithm);

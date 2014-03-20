@@ -18,7 +18,6 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import android.text.Html;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -34,7 +33,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,26 +72,26 @@ public class HkpKeyServer extends KeyServer {
     /**
      * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
      * <ul>
-     *     <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key. Either the 16-digit or 8-digit
-     *          key IDs are acceptable, but obviously the fingerprint is best.</li>
-     *     <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc).
-     *          See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
-     *     <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
-     *     <li>%<b>creationdate</b>% = creation date of the key in standard
-     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     *          1/1/1970 UTC time)</li>
-     *     <li>%<b>expirationdate</b>% = expiration date of the key in standard
-     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     *          1/1/1970 UTC time)</li>
-     *     <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-     *          meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-     *          the absence of a given flag does not necessarily mean the absence of the detail.
-     *          <ul>
-     *              <li>r == revoked</li>
-     *              <li>d == disabled</li>
-     *              <li>e == expired</li>
-     *          </ul>
-     *     </li>
+     * <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key. Either the 16-digit or 8-digit
+     * key IDs are acceptable, but obviously the fingerprint is best.</li>
+     * <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc).
+     * See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
+     * <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
+     * <li>%<b>creationdate</b>% = creation date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <ul>
+     * <li>r == revoked</li>
+     * <li>d == disabled</li>
+     * <li>e == expired</li>
+     * </ul>
+     * </li>
      * </ul>
      *
      * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">5.2. Machine Readable Indexes</a>
@@ -107,23 +105,23 @@ public class HkpKeyServer extends KeyServer {
     /**
      * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
      * <ul>
-     *      <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
-     *          safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
-     *      <li>%<b>creationdate</b>% = creation date of the key in standard
-     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     *          1/1/1970 UTC time)</li>
-     *      <li>%<b>expirationdate</b>% = expiration date of the key in standard
-     *          <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     *          1/1/1970 UTC time)</li>
-     *      <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-     *          meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-     *          the absence of a given flag does not necessarily mean the absence of the detail.
-     *          <ul>
-     *              <li>r == revoked</li>
-     *              <li>d == disabled</li>
-     *              <li>e == expired</li>
-     *          </ul>
-     *      </li>
+     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
+     * safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
+     * <li>%<b>creationdate</b>% = creation date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <ul>
+     * <li>r == revoked</li>
+     * <li>d == disabled</li>
+     * <li>e == expired</li>
+     * </ul>
+     * </li>
      * </ul>
      */
     public static final Pattern UID_LINE = Pattern
@@ -246,8 +244,18 @@ public class HkpKeyServer extends KeyServer {
             final int algorithmId = Integer.decode(matcher.group(2));
             info.algorithm = getAlgorithmFromId(algorithmId);
 
-            info.hexKeyId = "0x" + matcher.group(1);
-            info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(1));
+            // group 1 contains the full fingerprint (v4) or the long key id if available
+            // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
+            // and https://github.com/openpgp-keychain/openpgp-keychain/issues/259#issuecomment-38168176
+            String fingerprintOrKeyId = matcher.group(1);
+            if (fingerprintOrKeyId.length() > 16) {
+                info.fingerPrintHex = "0x" + PgpKeyHelper.splitFingerprintHex(fingerprintOrKeyId);
+                info.keyIdHex = "0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
+                        - 16, fingerprintOrKeyId.length());
+            } else {
+                // set key id only
+                info.keyIdHex = "0x" + fingerprintOrKeyId;
+            }
 
             final long creationDate = Long.parseLong(matcher.group(4));
             final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -277,11 +285,11 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public String get(long keyId) throws QueryException {
+    public String get(String keyIdHex) throws QueryException {
         HttpClient client = new DefaultHttpClient();
         try {
             String query = "http://" + mHost + ":" + mPort +
-                "/pks/lookup?op=get&options=mr&search=" + PgpKeyHelper.convertKeyIdToHex(keyId);
+                    "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
             Log.d(Constants.TAG, "hkp keyserver get: " + query);
             HttpGet get = new HttpGet(query);
             HttpResponse response = client.execute(get);
@@ -306,14 +314,14 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public void add(String armoredText) throws AddKeyException {
+    public void add(String armoredKey) throws AddKeyException {
         HttpClient client = new DefaultHttpClient();
         try {
             String query = "http://" + mHost + ":" + mPort + "/pks/add";
             HttpPost post = new HttpPost(query);
             Log.d(Constants.TAG, "hkp keyserver add: " + query);
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("keytext", armoredText));
+            nameValuePairs.add(new BasicNameValuePair("keytext", armoredKey));
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             HttpResponse response = client.execute(post);

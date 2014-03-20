@@ -460,10 +460,14 @@ public class PgpKeyHelper {
     public static String convertFingerprintToHex(byte[] fingerprint, boolean split) {
         String hexString = Hex.toHexString(fingerprint);
         if (split) {
-            hexString = hexString.replaceAll("(.{4})(?!$)", "$1 ");
+            hexString = splitFingerprintHex(hexString);
         }
 
         return hexString;
+    }
+
+    public static String splitFingerprintHex(String hexString) {
+        return hexString.replaceAll("(.{4})(?!$)", "$1 ");
     }
 
     /**
@@ -495,19 +499,6 @@ public class PgpKeyHelper {
             hexString = "0" + hexString;
         }
         return hexString;
-    }
-
-    /**
-     * Used in HkpKeyServer to convert hex encoded key ids back to long.
-     *
-     * @param hexString
-     * @return
-     */
-    public static long convertHexToKeyId(String hexString) {
-        int len = hexString.length();
-        String s2 = hexString.substring(len - 8);
-        String s1 = hexString.substring(0, len - 8);
-        return ((!s1.isEmpty() ? Long.parseLong(s1, 16) << 32 : 0) | Long.parseLong(s2, 16));
     }
 
     /**
