@@ -477,6 +477,11 @@ public class PgpKeyHelper {
      * @return
      */
     public static String convertKeyIdToHex(long keyId) {
+        long upper = keyId >> 32;
+        if (upper == 0) {
+            // this is a short key id
+            return convertKeyIdToHexShort(keyId);
+        }
         return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
     }
 
