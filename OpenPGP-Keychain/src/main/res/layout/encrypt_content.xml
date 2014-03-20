@@ -215,7 +215,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="top"
-                        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"/>
+                        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+                        android:hint="@string/encrypt_content_edit_text_hint"/>
             </LinearLayout>
 
             <LinearLayout
@@ -371,7 +372,7 @@
                     android:padding="4dp"
                     android:layout_weight="1"
                     android:text="@string/btn_share"
-                    bootstrapbutton:bb_icon_left="fa-lock"
+                    bootstrapbutton:bb_icon_left="fa-share-square"
                     bootstrapbutton:bb_type="info"/>
 
             <com.beardedhen.androidbootstrap.BootstrapButton
@@ -381,7 +382,7 @@
                     android:padding="4dp"
                     android:layout_weight="1"
                     android:text="@string/btn_clipboard"
-                    bootstrapbutton:bb_icon_left="fa-lock"
+                    bootstrapbutton:bb_icon_left="fa-clipboard"
                     bootstrapbutton:bb_type="info"/>
 
             <com.beardedhen.androidbootstrap.BootstrapButton
