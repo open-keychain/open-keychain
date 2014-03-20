@@ -30,7 +30,9 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import java.util.ArrayList;
@@ -136,7 +138,7 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
         holder.keyId.setText(entry.keyIdHex);
 
         if (entry.fingerPrintHex != null) {
-            holder.fingerprint.setText(mActivity.getString(R.string.fingerprint) + " " + entry.fingerPrintHex);
+            holder.fingerprint.setText(OtherHelper.colorizeFingerprint(entry.fingerPrintHex));
             holder.fingerprint.setVisibility(View.VISIBLE);
         } else {
             holder.fingerprint.setVisibility(View.GONE);
