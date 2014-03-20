@@ -90,7 +90,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
             alert.setPositiveButton(R.string.btn_okay, null);
 
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
             mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
 

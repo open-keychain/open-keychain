@@ -182,7 +182,7 @@ public class ViewKeyActivity extends ActionBarActivity {
         String content;
         if (fingerprintOnly) {
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
             content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
         } else {

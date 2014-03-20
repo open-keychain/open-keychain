@@ -198,6 +198,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
             case LOADER_ID_KEYRING:
                 // the first key here is our master key
                 if (data.moveToFirst()) {
+                    // TODO: put findViewById in onCreate!
+
                     long keyId = data.getLong(INDEX_MASTER_KEY_ID);
                     String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(keyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
@@ -210,7 +212,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         // FALLBACK for old database entries
                         fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
                     }
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
+                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
                     ((TextView) findViewById(R.id.fingerprint)).setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;

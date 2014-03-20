@@ -251,8 +251,7 @@ public class HkpKeyServer extends KeyServer {
             // and https://github.com/openpgp-keychain/openpgp-keychain/issues/259#issuecomment-38168176
             String fingerprintOrKeyId = matcher.group(1);
             if (fingerprintOrKeyId.length() > 16) {
-                entry.setFingerPrintHex(PgpKeyHelper.splitFingerprintHex(
-                        fingerprintOrKeyId.toLowerCase(Locale.US)));
+                entry.setFingerPrintHex(fingerprintOrKeyId.toLowerCase(Locale.US));
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
                         - 16, fingerprintOrKeyId.length()));
             } else {

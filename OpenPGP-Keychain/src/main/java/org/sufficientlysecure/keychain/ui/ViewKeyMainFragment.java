@@ -320,7 +320,7 @@ public class ViewKeyMainFragment extends Fragment implements
                         // FALLBACK for old database entries
                         fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), mDataUri);
                     }
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
+                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
                     mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }

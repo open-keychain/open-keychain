@@ -452,7 +452,7 @@ public class PgpKeyHelper {
             key = secretKey.getPublicKey();
         }
 
-        return convertFingerprintToHex(key.getFingerprint(), true);
+        return convertFingerprintToHex(key.getFingerprint());
     }
 
     /**
@@ -465,17 +465,10 @@ public class PgpKeyHelper {
      * @param split       split into 4 character chunks
      * @return
      */
-    public static String convertFingerprintToHex(byte[] fingerprint, boolean split) {
+    public static String convertFingerprintToHex(byte[] fingerprint) {
         String hexString = Hex.toHexString(fingerprint);
-        if (split) {
-            hexString = splitFingerprintHex(hexString);
-        }
 
         return hexString;
-    }
-
-    public static String splitFingerprintHex(String hexString) {
-        return hexString.replaceAll("(.{4})(?!$)", "$1 ");
     }
 
     /**
@@ -511,6 +504,9 @@ public class PgpKeyHelper {
 
 
     public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
+        // split by 4 characters
+        fingerprint = fingerprint.replaceAll("(.{4})(?!$)", "$1 ");
+
         // add line breaks to have a consistent "image" that can be recognized
         char[] chars = fingerprint.toCharArray();
         chars[24] = '\n';

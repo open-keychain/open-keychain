@@ -756,7 +756,7 @@ public class KeychainIntentService extends IntentService
                     // if available use complete fingerprint for get request
                     byte[] downloadedKeyBytes;
                     if (entry.getFingerPrintHex() != null) {
-                        downloadedKeyBytes = server.get(entry.getFingerPrintHex()).getBytes();
+                        downloadedKeyBytes = server.get("0x" + entry.getFingerPrintHex()).getBytes();
                     } else {
                         downloadedKeyBytes = server.get(entry.getKeyIdHex()).getBytes();
                     }
@@ -784,7 +784,7 @@ public class KeychainIntentService extends IntentService
 
                     // verify downloaded key by comparing fingerprints
                     if (entry.getFingerPrintHex() != null) {
-                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(downloadedKey.getPublicKey().getFingerprint(), false);
+                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(downloadedKey.getPublicKey().getFingerprint());
                         if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
                             Log.d(Constants.TAG, "fingerprint of downloaded key is the same as the requested fingerprint!");
                         } else {
