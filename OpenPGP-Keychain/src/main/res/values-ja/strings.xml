@@ -62,8 +62,10 @@
   <string name="btn_next">次</string>
   <string name="btn_back">戻る</string>
   <string name="btn_clipboard">クリップボード</string>
-  <string name="btn_share">共有...</string>
+  <string name="btn_share">...で共有</string>
   <string name="btn_lookup_key">鍵検出</string>
+  <string name="btn_encryption_advanced_settings_show">拡張設定を表示</string>
+  <string name="btn_encryption_advanced_settings_hide">拡張設定を隠す</string>
   <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
@@ -72,15 +74,17 @@
   <string name="menu_import">インポート</string>
   <string name="menu_import_from_nfc">NFCからインポート</string>
   <string name="menu_export_keys">すべての鍵のエクスポート</string>
+  <string name="menu_export_secret_keys">すべての秘密鍵のエクスポート</string>
   <string name="menu_export_key">ファイルへのエクスポート</string>
   <string name="menu_delete_key">鍵の削除</string>
   <string name="menu_create_key">鍵の生成</string>
   <string name="menu_create_key_expert">鍵の生成(上級)</string>
   <string name="menu_search">検索</string>
-  <string name="menu_key_server">鍵サーバからのインポート</string>
+  <string name="menu_import_from_key_server">鍵サーバ</string>
+  <string name="menu_key_server">鍵サーバ...</string>
   <string name="menu_update_key">鍵サーバからの更新</string>
   <string name="menu_export_key_to_server">鍵サーバへのアップロード</string>
-  <string name="menu_share">共有</string>
+  <string name="menu_share">共有...</string>
   <string name="menu_share_title_fingerprint">指紋の共有...</string>
   <string name="menu_share_title">すべての鍵の共有...</string>
   <string name="menu_share_default_fingerprint">...(指紋)</string>
@@ -137,12 +141,16 @@
   <string name="user_id_no_name">&lt;名前なし&gt;</string>
   <string name="none">&lt;無し&gt;</string>
   <string name="no_key">&lt;鍵無し&gt;</string>
+  <string name="no_email">&lt;メールなし&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">暗号化可能</string>
   <string name="can_sign">署名可能</string>
   <string name="expired">期限切れ</string>
   <string name="revoked">破棄</string>
   <string name="user_id">ユーザーID</string>
+  <plurals name="n_contacts">
+    <item quantity="other">%d個の連絡先</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="other">%d の鍵サーバ</item>
   </plurals>
@@ -197,6 +205,7 @@
   <string name="key_deletion_confirmation">鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?\nこれは元に戻せません。</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
+  <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="other">%d の鍵を追加しました</item>
   </plurals>
@@ -214,6 +223,7 @@
   <string name="keys_exported">%d の鍵をエクスポートしました。</string>
   <string name="no_keys_exported">鍵をエクスポートしていません。</string>
   <string name="key_creation_el_gamal_info">備考: 副鍵として ElGamalだけがサポートされ, ElGamal は鍵サイズとして1536, 2048, 3072, 4096, 8192 だけが使えます。</string>
+  <string name="key_creation_weak_rsa_info">付記: 長さ1024bitかそれ以下で生成されたRSA鍵は安全とはみなされず、新な鍵の生成は無効にされています。</string>
   <string name="key_not_found">鍵 %08X は見付かりませんでした。</string>
   <plurals name="keys_found">
     <item quantity="other">%d の鍵を発見。</item>
@@ -243,6 +253,7 @@
   <string name="error_master_key_must_not_be_el_gamal">主鍵を ElGamal にすることはできません</string>
   <string name="error_unknown_algorithm_choice">未知のアルゴリズムを選択しています</string>
   <string name="error_user_id_needs_a_name">名前を特定する必要があります</string>
+  <string name="error_user_id_no_email">メールが見付かりません</string>
   <string name="error_user_id_needs_an_email_address">Eメールアドレスを特定する必要があります</string>
   <string name="error_key_needs_a_user_id">最低でも1つのユーザIDが必要です</string>
   <string name="error_main_user_id_must_not_be_empty">主ユーザIDは空にすることはできません</string>
@@ -282,7 +293,6 @@
   <string name="progress_saving">保存...</string>
   <string name="progress_importing">インポート...</string>
   <string name="progress_exporting">エクスポート...</string>
-  <string name="progress_generating">鍵の生成、3分ほどかかります...</string>
   <string name="progress_building_key">鍵の構築中...</string>
   <string name="progress_preparing_master_key">主鍵の準備中...</string>
   <string name="progress_certifying_master_key">主鍵の検証中...</string>
@@ -291,6 +301,9 @@
   <string name="progress_saving_key_ring">鍵の保存...</string>
   <plurals name="progress_exporting_key">
     <item quantity="other">鍵のエクスポート...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="other">鍵の生成中、最大3分ほどかかります...</item>
   </plurals>
   <string name="progress_extracting_signature_key">署名鍵の取り出し中...</string>
   <string name="progress_extracting_key">鍵の取り出し中...</string>
@@ -311,7 +324,7 @@
   <!--action strings-->
   <string name="hint_public_keys">公開鍵の検索</string>
   <string name="hint_secret_keys">秘密鍵の検索</string>
-  <string name="action_share_key_with">鍵の共有...</string>
+  <string name="action_share_key_with">...で鍵の共有</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -322,6 +335,7 @@
   <string name="compression_very_slow">とても遅い</string>
   <!--Help-->
   <string name="help_tab_start">開始</string>
+  <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Changelog</string>
   <string name="help_tab_about">これについて</string>
@@ -349,7 +363,7 @@
   <!--Remote API-->
   <string name="api_no_apps">登録されていないアプリケーション!\n\nサードパーティアプリケーションはOpenKeychainにアクセスを要求できます。アクセスを与えた後、それらはここにリストされます。</string>
   <string name="api_settings_show_advanced">拡張設定を表示</string>
-  <string name="api_settings_hide_advanced">拡張設定を非表示</string>
+  <string name="api_settings_hide_advanced">拡張設定を隠す</string>
   <string name="api_settings_no_key">鍵が選択されていない</string>
   <string name="api_settings_select_key">鍵の選択</string>
   <string name="api_settings_save">保存</string>
@@ -381,6 +395,7 @@
   <string name="key_list_empty_button_create">あなた所有の鍵を作る</string>
   <string name="key_list_empty_button_import">鍵のインポート。</string>
   <!--Key view-->
+  <string name="key_view_action_edit">この鍵の編集</string>
   <string name="key_view_action_encrypt">この連絡先を暗号化</string>
   <string name="key_view_action_certify">この連絡先の鍵を検証</string>
   <string name="key_view_tab_main">情報</string>
@@ -394,4 +409,12 @@
   <string name="nav_apps">登録済みのアプリ</string>
   <string name="drawer_open">ナビゲーションドロワーを開く</string>
   <string name="drawer_close">ナビゲーションドロワーを閉める</string>
+  <string name="edit">編集</string>
+  <string name="my_keys">自分の鍵</string>
+  <string name="label_secret_key">秘密鍵</string>
+  <string name="secret_key_yes">存在する</string>
+  <string name="secret_key_no">存在しない</string>
+  <string name="section_uids_to_sign">署名に使うユーザーID</string>
+  <string name="progress_re_adding_certs">検証を再適用する</string>
+  <!--hints-->
 </resources>

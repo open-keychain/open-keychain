@@ -16,6 +16,7 @@
   <string name="title_change_passphrase">Cambiar frase de contraseña</string>
   <string name="title_set_passphrase">Establecer frase de contraseña</string>
   <string name="title_send_email">Enviar email...</string>
+  <string name="title_send_file">Enviar archivo...</string>
   <string name="title_encrypt_to_file">Cifrar hacia archivo</string>
   <string name="title_decrypt_to_file">Descifrar hacia archivo</string>
   <string name="title_import_keys">Importar claves</string>
@@ -63,6 +64,8 @@
   <string name="btn_clipboard">Portapapeles</string>
   <string name="btn_share">Compartir con...</string>
   <string name="btn_lookup_key">Buscar clave</string>
+  <string name="btn_encryption_advanced_settings_show">Mostrar ajustes avanzados</string>
+  <string name="btn_encryption_advanced_settings_hide">Ocultar ajustes avanzados</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
   <string name="menu_help">Ayuda</string>
@@ -71,15 +74,17 @@
   <string name="menu_import">Importar</string>
   <string name="menu_import_from_nfc">Importar desde NFC</string>
   <string name="menu_export_keys">Exportar todas las claves</string>
+  <string name="menu_export_secret_keys">Exportar todas las claves secretas</string>
   <string name="menu_export_key">Exportar hacia archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
   <string name="menu_create_key">Crear clave</string>
   <string name="menu_create_key_expert">Crear clave (experto)</string>
   <string name="menu_search">Buscar</string>
-  <string name="menu_key_server">Importar desde servidor de claves</string>
+  <string name="menu_import_from_key_server">Servidor de claves...</string>
+  <string name="menu_key_server">Servidor de claves...</string>
   <string name="menu_update_key">Actualizar desde servidor de claves</string>
   <string name="menu_export_key_to_server">Cargar al servidor de claves</string>
-  <string name="menu_share">Compartir</string>
+  <string name="menu_share">Compartir...</string>
   <string name="menu_share_title_fingerprint">Compartir la huella digital...</string>
   <string name="menu_share_title">Compartir la clave completa...</string>
   <string name="menu_share_default_fingerprint">con...</string>
@@ -105,6 +110,7 @@
   <string name="label_select_public_keys">Destinatarios</string>
   <string name="label_delete_after_encryption">Borrar después del cifrado</string>
   <string name="label_delete_after_decryption">Borrar después del descifrado</string>
+  <string name="label_share_after_encryption">Compartir después del cifrado</string>
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo de Hash</string>
   <string name="label_asymmetric">Clave pública</string>
@@ -123,6 +129,8 @@
   <string name="label_name">Nombre</string>
   <string name="label_comment">Comentario</string>
   <string name="label_email">Email</string>
+  <string name="label_sign_user_id">Firmar Id de usuario</string>
+  <string name="label_sign_email">Firmar correo</string>
   <string name="label_send_key">Cargar clave al servidor de claves seleccionado después de la certificación</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="select_keys_button_default">Seleccionar</string>
@@ -134,11 +142,17 @@
   <string name="user_id_no_name">&lt;sin nombre&gt;</string>
   <string name="none">&lt;ninguna&gt;</string>
   <string name="no_key">&lt;sin clave&gt;</string>
+  <string name="no_email">&lt;No hay un email&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">se puede cifrar</string>
   <string name="can_sign">se puede firmar</string>
   <string name="expired">caducado</string>
   <string name="revoked">revocado</string>
+  <string name="user_id">ID de usuario</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 contacto</item>
+    <item quantity="other">%d contactos</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d servidor de claves</item>
     <item quantity="other">%d servidores de claves</item>
@@ -194,6 +208,7 @@
   <string name="key_deletion_confirmation">¿Quieres realmente borrar la clave \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="key_deletion_confirmation_multi">¿Quieres realmente borrar todas las claves seleccionadas?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_deletion_confirmation">¿Quieres realmente borrar la clave SECRETA \'%s\'?\n¡No podrás deshacerlo!</string>
+  <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clave añadida satisfactoriamente</item>
     <item quantity="other">%d claves añadidas satisfactoriamente</item>
@@ -215,6 +230,7 @@
   <string name="keys_exported">%d claves exportadas satisfactoriamente.</string>
   <string name="no_keys_exported">No se han exportado claves.</string>
   <string name="key_creation_el_gamal_info">Nota: solo las subclaves son compatibles con ElGamal, y para ElGamal debe usarse el tamaño de clave más próximo de 1536, 2048, 3072, 4096, o 8192.</string>
+  <string name="key_creation_weak_rsa_info">Nota: generar una clave RSA de longitud 1024-bit o menos está considerado inseguro y desactivado para generar nuevas claves.</string>
   <string name="key_not_found">No se puede encontrar la clave %08X.</string>
   <plurals name="keys_found">
     <item quantity="one">Se ha encontrado %d clave.</item>
@@ -246,6 +262,7 @@
   <string name="error_master_key_must_not_be_el_gamal">la clave maestra no puede ser una clave ElGamal</string>
   <string name="error_unknown_algorithm_choice">elegido algoritmo desconocido</string>
   <string name="error_user_id_needs_a_name">necesitas determinar un nombre</string>
+  <string name="error_user_id_no_email">no se ha encontrado un email</string>
   <string name="error_user_id_needs_an_email_address">tienes que determinar una dirección de email</string>
   <string name="error_key_needs_a_user_id">necesitas al menos una ID de usuario</string>
   <string name="error_main_user_id_must_not_be_empty">la ID del usuario principal no puede estar vacía</string>
@@ -271,17 +288,22 @@
   <string name="error_keyserver_insufficient_query">Consulta al servidor insuficiente</string>
   <string name="error_keyserver_query">La consulta al servidor de claves ha fallado</string>
   <string name="error_keyserver_too_many_responses">Demasiadas respuestas</string>
+  <string name="error_import_file_no_content">El archivo está vacio</string>
+  <string name="error_generic_report_bug">Ha ocurrido un error genérico, por favor, informa de este bug a OpenKeychain</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Por favor, bórralo desde la pantalla \'Mis claves\'!</item>
     <item quantity="other">Por favor, bórralos desde la pantalla \'Mis claves\'!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">parte del archivo cargado es un objeto OpenPGP válido pero no una clave OpenPGP</item>
+    <item quantity="other">partes del archivo cargado son objetos OpenPGP válidos pero no claves OpenPGP</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">hecho.</string>
-  <string name="progress_cancel">cancelar</string>
+  <string name="progress_done">Hecho.</string>
+  <string name="progress_cancel">Cancelar</string>
   <string name="progress_saving">guardando...</string>
   <string name="progress_importing">importando...</string>
   <string name="progress_exporting">exportando...</string>
-  <string name="progress_generating">generando la clave, esto puede tardar más de 3 minutos...</string>
   <string name="progress_building_key">construyendo la clave...</string>
   <string name="progress_preparing_master_key">preparando la clave maestra...</string>
   <string name="progress_certifying_master_key">certificando la clave maestra...</string>
@@ -291,6 +313,10 @@
   <plurals name="progress_exporting_key">
     <item quantity="one">exportando clave...</item>
     <item quantity="other">exportando claves...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">generando clave, esto puede tardar más de 3 minutos...</item>
+    <item quantity="other">generando claves, esto puede tardar más de 3 minutos...</item>
   </plurals>
   <string name="progress_extracting_signature_key">extrayendo la clave de firma...</string>
   <string name="progress_extracting_key">extrayendo la clave...</string>
@@ -322,6 +348,7 @@
   <string name="compression_very_slow">muy lento</string>
   <!--Help-->
   <string name="help_tab_start">Comenzar</string>
+  <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Registro de cambios</string>
   <string name="help_tab_about">A cerca de</string>
@@ -383,6 +410,7 @@
   <string name="key_list_empty_button_create">crear tu propia clave</string>
   <string name="key_list_empty_button_import">importar claves</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Editar esta clave</string>
   <string name="key_view_action_encrypt">Cifrar hacia este contacto</string>
   <string name="key_view_action_certify">Certificar la clave de este contacto</string>
   <string name="key_view_tab_main">Información</string>
@@ -396,4 +424,12 @@
   <string name="nav_apps">Aplicaciones registradas</string>
   <string name="drawer_open">Abrir el Navigation Drawer</string>
   <string name="drawer_close">Cerrar el Navigation Drawer</string>
+  <string name="edit">Editar</string>
+  <string name="my_keys">Mis claves</string>
+  <string name="label_secret_key">Claves secretas</string>
+  <string name="secret_key_yes">disponible</string>
+  <string name="secret_key_no">no disponible</string>
+  <string name="section_uids_to_sign">IDs de usuario para firmar</string>
+  <string name="progress_re_adding_certs">Nueva aplicación de certificados</string>
+  <!--hints-->
 </resources>

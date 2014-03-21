@@ -170,7 +170,6 @@
   <string name="error_nfc_needed">Uw apparaat biedt geen ondersteuning voor NFC</string>
   <string name="error_nothing_import">Niets te importeren</string>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">gereed.</string>
   <string name="progress_saving">opslaan...</string>
   <string name="progress_importing">importeren...</string>
   <string name="progress_exporting">exporteren...</string>
@@ -236,4 +235,5 @@
   <!--Key list-->
   <!--Key view-->
   <!--Navigation Drawer-->
+  <!--hints-->
 </resources>

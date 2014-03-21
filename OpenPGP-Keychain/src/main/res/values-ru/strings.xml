@@ -16,6 +16,7 @@
   <string name="title_change_passphrase">Изменить пароль</string>
   <string name="title_set_passphrase">Задать пароль</string>
   <string name="title_send_email">Отправить...</string>
+  <string name="title_send_file">Отправить файл</string>
   <string name="title_encrypt_to_file">Зашифровать в файл</string>
   <string name="title_decrypt_to_file">Расшифровать в файл</string>
   <string name="title_import_keys">Импорт ключей</string>
@@ -63,6 +64,8 @@
   <string name="btn_clipboard">Буфер обмена</string>
   <string name="btn_share">Поделиться...</string>
   <string name="btn_lookup_key">Найти ключ</string>
+  <string name="btn_encryption_advanced_settings_show">Показать расширенные настройки</string>
+  <string name="btn_encryption_advanced_settings_hide">Скрыть расширенные настройки</string>
   <!--menu-->
   <string name="menu_preferences">Настройки</string>
   <string name="menu_help">Помощь</string>
@@ -76,10 +79,8 @@
   <string name="menu_create_key">Создать ключ</string>
   <string name="menu_create_key_expert">Создать ключ (эксперт)</string>
   <string name="menu_search">Поиск</string>
-  <string name="menu_key_server">Импорт с сервера ключей</string>
   <string name="menu_update_key">Обновить с сервера ключей</string>
   <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
-  <string name="menu_share">Отправить...</string>
   <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
   <string name="menu_share_title">Отправить ключ...</string>
   <string name="menu_share_default_fingerprint">Отправить</string>
@@ -105,6 +106,7 @@
   <string name="label_select_public_keys">Получатели</string>
   <string name="label_delete_after_encryption">Удалить после шифрования</string>
   <string name="label_delete_after_decryption">Удалить после расшифровки</string>
+  <string name="label_share_after_encryption">Отправить после шифрования</string>
   <string name="label_encryption_algorithm">Алгоритм шифрования</string>
   <string name="label_hash_algorithm">Hash-алгоритм</string>
   <string name="label_asymmetric">Публичный ключ</string>
@@ -135,6 +137,7 @@
   <string name="user_id_no_name">&lt;нет имени&gt;</string>
   <string name="none">&lt;нет&gt;</string>
   <string name="no_key">&lt;нет ключа&gt;</string>
+  <string name="no_email">&lt;нет email&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">шифрование</string>
   <string name="can_sign">подпись</string>
@@ -254,6 +257,7 @@
   <string name="error_master_key_must_not_be_el_gamal">ключ ElGamal не может быть основным</string>
   <string name="error_unknown_algorithm_choice">выбран неизвестный алгоритм</string>
   <string name="error_user_id_needs_a_name">необходимо указать имя</string>
+  <string name="error_user_id_no_email">email не найден</string>
   <string name="error_user_id_needs_an_email_address">необходимо указать email</string>
   <string name="error_key_needs_a_user_id">необходим хотя бы один id пользователя</string>
   <string name="error_main_user_id_must_not_be_empty">основная запись пользователя не может быть пустой</string>
@@ -279,18 +283,24 @@
   <string name="error_keyserver_insufficient_query">Ограничение запроса сервера</string>
   <string name="error_keyserver_query">Сбой запроса сервера ключей</string>
   <string name="error_keyserver_too_many_responses">Слишком много ответов</string>
+  <string name="error_import_file_no_content">Файл пуст</string>
+  <string name="error_generic_report_bug">Выявлена ошибка. Пожалуйста, сообщите о ней разработчику.</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Пожалуйста, удалите его в разделе \'Мои ключи\'!</item>
     <item quantity="few">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
     <item quantity="other">Пожалуйста, удалите их в разделе \'Мои ключи\'!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">часть загруженного файла содержит данные OpenPGP, но это не ключ</item>
+    <item quantity="few">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
+    <item quantity="other">части загруженного файла содержат данные OpenPGP, но это не ключ</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">готово.</string>
-  <string name="progress_cancel">отмена</string>
+  <string name="progress_done">Готово.</string>
+  <string name="progress_cancel">Отмена</string>
   <string name="progress_saving">сохранение...</string>
   <string name="progress_importing">импорт...</string>
   <string name="progress_exporting">экспорт...</string>
-  <string name="progress_generating">создание ключа. это может занять до 3 минут...</string>
   <string name="progress_building_key">создание ключа...</string>
   <string name="progress_preparing_master_key">подготовка основного ключа...</string>
   <string name="progress_certifying_master_key">сертификация основного ключа...</string>
@@ -301,6 +311,11 @@
     <item quantity="one">экспорт ключа...</item>
     <item quantity="few">экспорт ключей...</item>
     <item quantity="other">экспорт ключей...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">создание ключа. это может занять до 3 минут...</item>
+    <item quantity="few">создание ключей. это может занять до 3 минут...</item>
+    <item quantity="other">создание ключей. это может занять до 3 минут...</item>
   </plurals>
   <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
   <string name="progress_extracting_key">извлечение ключа...</string>
@@ -408,4 +423,5 @@
   <string name="nav_apps">Связанные приложения</string>
   <string name="drawer_open">Открыть панель навигации</string>
   <string name="drawer_close">Закрыть панель навигации</string>
+  <!--hints-->
 </resources>
