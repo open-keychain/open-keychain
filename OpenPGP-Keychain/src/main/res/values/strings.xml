@@ -471,4 +471,7 @@
     <string name="section_uids_to_sign">User IDs to sign</string>
     <string name="progress_re_adding_certs">Reapplying certificates</string>
 
+    <!-- hints -->
+    <string name="encrypt_content_edit_text_hint">Write message here to encrypt…</string>
+
 </resources>
