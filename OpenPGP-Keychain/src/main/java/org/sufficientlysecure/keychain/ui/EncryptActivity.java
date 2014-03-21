@@ -1002,8 +1002,8 @@ public class EncryptActivity extends DrawerActivity {
 
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
+                    Uri uri_master_key = data.getData();
+                    mSecretKeyId = Long.valueOf(uri_master_key.getLastPathSegment());
                 } else {
                     mSecretKeyId = Id.key.none;
                 }
