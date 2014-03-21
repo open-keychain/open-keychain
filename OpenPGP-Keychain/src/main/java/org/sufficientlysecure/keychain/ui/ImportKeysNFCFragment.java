@@ -57,7 +57,7 @@ public class ImportKeysNFCFragment extends Fragment {
             public void onClick(View v) {
                 // show nfc help
                 Intent intent = new Intent(getActivity(), HelpActivity.class);
-                intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, 1);
+                intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, 2);
                 startActivityForResult(intent, 0);
             }
         });
