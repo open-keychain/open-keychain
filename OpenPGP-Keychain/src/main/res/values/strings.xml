@@ -220,6 +220,8 @@
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="secret_key_delete_text">Delete Secret Keys ?</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
 
     <plurals name="keys_added_and_updated_1">
