@@ -31,7 +31,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -50,7 +52,7 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     private SelectSecretKeyCallback mCallback;
 
     private static final int REQUEST_CODE_SELECT_KEY = 8882;
-        
+
     private static final int LOADER_ID = 0;
 
     //The Projection we will retrieve, Master Key ID is for convenience sake,
@@ -123,9 +125,9 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     }
 
     //For AppSettingsFragment
-    public void selectKey(long masterKeyId){
+    public void selectKey(long masterKeyId) {
         Uri buildUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(masterKeyId));
-        mReceivedUri=buildUri;
+        mReceivedUri = buildUri;
         getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 

@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.app.AlertDialog;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -39,11 +41,12 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
+
 import java.util.ArrayList;
 
 public class DeleteKeyDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
-    private static final String ARG_DELETE_KEY_RING_ROW_IDS = "delete_file";
+    private static final String ARG_DELETE_KEY_RING_ROW_IDS = "delete_key_ring_row_ids";
 
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_ERROR = 0;
@@ -131,74 +134,74 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
         builder.setIcon(R.drawable.ic_dialog_alert_holo_light);
         builder.setPositiveButton(R.string.btn_delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Uri queryUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
-                        String[] projection = new String[]{
-                                KeychainContract.KeyRings.MASTER_KEY_ID, // 0
-                                KeychainContract.KeyRings.TYPE// 1
-                        };
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri queryUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
+                String[] projection = new String[]{
+                        KeychainContract.KeyRings.MASTER_KEY_ID, // 0
+                        KeychainContract.KeyRings.TYPE// 1
+                };
 
-                        // make selection with all entries where _ID is one of the given row ids
-                        String selection = KeychainDatabase.Tables.KEY_RINGS + "." +
-                                KeychainContract.KeyRings._ID + " IN(";
-                        String selectionIDs = "";
-                        for (int i = 0; i < keyRingRowIds.length; i++) {
-                            selectionIDs += "'" + String.valueOf(keyRingRowIds[i]) + "'";
-                            if (i + 1 < keyRingRowIds.length)
-                                selectionIDs += ",";
-                        }
-                        selection += selectionIDs + ")";
+                // make selection with all entries where _ID is one of the given row ids
+                String selection = KeychainDatabase.Tables.KEY_RINGS + "." +
+                        KeychainContract.KeyRings._ID + " IN(";
+                String selectionIDs = "";
+                for (int i = 0; i < keyRingRowIds.length; i++) {
+                    selectionIDs += "'" + String.valueOf(keyRingRowIds[i]) + "'";
+                    if (i + 1 < keyRingRowIds.length)
+                        selectionIDs += ",";
+                }
+                selection += selectionIDs + ")";
 
-                        Cursor cursor = activity.getContentResolver().query(queryUri, projection,
-                                selection, null, null);
-
-
-                        long masterKeyId;
-                        long keyType;
-                        boolean isSuccessfullyDeleted;
-                        try {
-                            isSuccessfullyDeleted = false;
-                            while (cursor != null && cursor.moveToNext()) {
-                                masterKeyId = cursor.getLong(0);
-                                keyType = cursor.getLong(1);
-
-                                Log.d(Constants.TAG, "masterKeyId: " + masterKeyId
-                                        + ", keyType:" + (keyType == KeychainContract.KeyTypes.PUBLIC ? "Public" : "Private"));
+                Cursor cursor = activity.getContentResolver().query(queryUri, projection,
+                        selection, null, null);
 
 
-                                if (keyType == KeychainContract.KeyTypes.SECRET) {
-                                    if (checkDeleteSecret.isChecked() || isSingleSelection) {
-                                        ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), true);
-                                    }
-                                } else {
-                                    ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), false);
-                                }
+                long masterKeyId;
+                long keyType;
+                boolean isSuccessfullyDeleted;
+                try {
+                    isSuccessfullyDeleted = false;
+                    while (cursor != null && cursor.moveToNext()) {
+                        masterKeyId = cursor.getLong(0);
+                        keyType = cursor.getLong(1);
+
+                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId
+                                + ", keyType:" + (keyType == KeychainContract.KeyTypes.PUBLIC ? "Public" : "Private"));
+
+
+                        if (keyType == KeychainContract.KeyTypes.SECRET) {
+                            if (checkDeleteSecret.isChecked() || isSingleSelection) {
+                                ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), true);
                             }
-
-                            //Check if the selected rows have actually been deleted
-                            cursor = activity.getContentResolver().query(queryUri, projection, selection, null, null);
-                            if (cursor == null || cursor.getCount() == 0 || !checkDeleteSecret.isChecked()) {
-                                isSuccessfullyDeleted = true;
-                            }
-
-                        } finally {
-                            if (cursor != null) {
-                                cursor.close();
-                            }
-
-                        }
-
-                        dismiss();
-
-                        if (isSuccessfullyDeleted) {
-                            sendMessageToHandler(MESSAGE_OKAY, null);
                         } else {
-                            sendMessageToHandler(MESSAGE_ERROR, null);
+                            ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), false);
                         }
                     }
 
+                    //Check if the selected rows have actually been deleted
+                    cursor = activity.getContentResolver().query(queryUri, projection, selection, null, null);
+                    if (cursor == null || cursor.getCount() == 0 || !checkDeleteSecret.isChecked()) {
+                        isSuccessfullyDeleted = true;
+                    }
+
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+
                 }
+
+                dismiss();
+
+                if (isSuccessfullyDeleted) {
+                    sendMessageToHandler(MESSAGE_OKAY, null);
+                } else {
+                    sendMessageToHandler(MESSAGE_ERROR, null);
+                }
+            }
+
+        }
         );
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
