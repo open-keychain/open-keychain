@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:fontawesometext="http://schemas.android.com/apk/res-auto"
-        xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto" android:id="@+id/content_frame"
+        xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/content_frame"
         android:layout_marginLeft="@dimen/drawer_content_padding"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -254,101 +255,18 @@
                             bootstrapbutton:bb_type="default"/>
                 </LinearLayout>
 
-                <LinearLayout
-                        android:id="@+id/advancedSettingsControl"
+                <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:clickable="true">
+                        android:layout_height="match_parent"
+                        custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
+                        custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
+                        custom:foldedIcon="fa-chevron-right"
+                        custom:unFoldedIcon="fa-chevron-down">
 
-                    <com.beardedhen.androidbootstrap.FontAwesomeText
-                            android:id="@+id/advancedSettingsIcon"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="10dp"
-                            android:textSize="12sp"
-                            android:paddingTop="@dimen/padding_medium"
-                            android:paddingBottom="@dimen/padding_medium"
-                            fontawesometext:fa_icon="fa-chevron-right"/>
+                    <include layout="@layout/encrypt_content_adv_settings"/>
 
-                    <TextView
-                            android:id="@+id/advancedSettings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/btn_encryption_advanced_settings_show"
-                            android:paddingTop="@dimen/padding_medium"
-                            android:paddingBottom="@dimen/padding_medium"
-                            android:textColor="@color/emphasis"/>
-                </LinearLayout>
+                </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
 
-                <LinearLayout
-                        android:id="@+id/fileAdvancedSettingsContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <TextView
-                                android:id="@+id/label_fileCompression"
-                                android:layout_width="0dip"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:layout_weight="1"
-                                android:paddingRight="10dip"
-                                android:text="@string/label_file_compression"
-                                android:textAppearance="?android:attr/textAppearanceSmall"/>
-
-                        <Spinner
-                                android:id="@+id/fileCompression"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <CheckBox
-                                android:id="@+id/deleteAfterEncryption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@string/label_delete_after_encryption"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <CheckBox
-                                android:id="@+id/shareAfterEncryption"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@string/label_share_after_encryption"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                        <CheckBox
-                                android:id="@+id/asciiArmour"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="@string/label_ascii_armor"/>
-                    </LinearLayout>
-                </LinearLayout>
             </LinearLayout>
         </ViewFlipper>
 
