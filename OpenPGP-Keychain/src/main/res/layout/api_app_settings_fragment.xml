@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -42,24 +43,13 @@
         android:layout_height="wrap_content"
         tools:layout="@layout/select_secret_key_layout_fragment" />
 
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/api_app_settings_advanced_button"
+    <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/api_settings_show_advanced"
-        bootstrapbutton:bb_icon_left="fa-caret-up"
-        bootstrapbutton:bb_size="default"
-        bootstrapbutton:bb_type="default" />
-
-    <LinearLayout
-        android:id="@+id/api_app_settings_advanced"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent"
+        custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
+        custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
+        custom:foldedIcon="fa-chevron-right"
+        custom:unFoldedIcon="fa-chevron-down">
 
         <TextView
             android:layout_width="match_parent"
@@ -119,5 +109,7 @@
             android:layout_height="wrap_content"
             android:text="Base64 encoded signature"
             android:textAppearance="?android:attr/textAppearanceSmall" />
-    </LinearLayout>
+
+    </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
+
 </LinearLayout>
