@@ -108,11 +108,6 @@ public class EncryptActivity extends DrawerActivity {
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
-    private Integer mShortAnimationDuration = null;
-    private boolean mFileAdvancedSettingsVisible = false;
-    private TextView mFileAdvancedSettings = null;
-    private LinearLayout mFileAdvancedSettingsContainer = null;
-    private FontAwesomeText mAdvancedSettingsIcon;
     private boolean mAsciiArmorDemand = false;
     private boolean mOverrideAsciiArmor = false;
 
@@ -147,9 +142,6 @@ public class EncryptActivity extends DrawerActivity {
         updateMode();
 
         updateActionBarButtons();
-
-        // retrieve and cache the system's short animation time
-        mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
     }
 
     /**
@@ -795,49 +787,10 @@ public class EncryptActivity extends DrawerActivity {
             }
         });
 
-        mAdvancedSettingsIcon = (FontAwesomeText) findViewById(R.id.advancedSettingsIcon);
-        mFileAdvancedSettingsContainer = (LinearLayout) findViewById(R.id.fileAdvancedSettingsContainer);
-        mFileAdvancedSettings = (TextView) findViewById(R.id.advancedSettings);
 
-        LinearLayout advancedSettingsControl = (LinearLayout) findViewById(R.id.advancedSettingsControl);
-        advancedSettingsControl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mFileAdvancedSettingsVisible = !mFileAdvancedSettingsVisible;
-                if (mFileAdvancedSettingsVisible) {
-                    mAdvancedSettingsIcon.setIcon("fa-chevron-down");
-                    mFileAdvancedSettingsContainer.setVisibility(View.VISIBLE);
-                    AlphaAnimation animation = new AlphaAnimation(0f, 1f);
-                    animation.setDuration(mShortAnimationDuration);
-                    mFileAdvancedSettingsContainer.startAnimation(animation);
-                    mFileAdvancedSettings.setText(R.string.btn_encryption_advanced_settings_hide);
 
-                } else {
-                    mAdvancedSettingsIcon.setIcon("fa-chevron-right");
-                    AlphaAnimation animation = new AlphaAnimation(1f, 0f);
-                    animation.setDuration(mShortAnimationDuration);
-                    animation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                            // do nothing
-                        }
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            // making sure that at the end the container is completely removed from view
-                            mFileAdvancedSettingsContainer.setVisibility(View.GONE);
-                        }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                            // do nothing
-                        }
-                    });
-                    mFileAdvancedSettingsContainer.startAnimation(animation);
-                    mFileAdvancedSettings.setText(R.string.btn_encryption_advanced_settings_show);
-                }
-            }
-        });
 
         mFileCompression = (Spinner) findViewById(R.id.fileCompression);
         Choice[] choices = new Choice[]{
