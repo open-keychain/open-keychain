@@ -17,13 +17,19 @@
 
 package org.sufficientlysecure.keychain.pgp.exception;
 
-public class PgpGeneralException extends Exception {
-    static final long serialVersionUID = 0xf812773342L;
+import android.content.Context;
 
-    public PgpGeneralException(String message) {
-        super(message);
+public class PgpGeneralMsgIdException extends Exception {
+    static final long serialVersionUID = 0xf812773343L;
+
+    private final int msgId;
+
+    public PgpGeneralMsgIdException(int msgId) {
+        super("msg[" + msgId + "]");
+        this.msgId = msgId;
     }
-    public PgpGeneralException(String message, Throwable cause) {
-        super(message, cause);
+
+    public PgpGeneralException getContextualized(Context context) {
+        return new PgpGeneralException(context.getString(msgId), this);
     }
 }
