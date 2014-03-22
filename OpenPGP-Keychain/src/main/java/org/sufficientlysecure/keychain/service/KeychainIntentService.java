@@ -543,7 +543,15 @@ public class KeychainIntentService extends IntentService
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    PGPPublicKey pubkey = ProviderHelper.getPGPPublicKeyByKeyId(this, masterKeyId);
+                    //TODO: Workaround due to ProviderHelper.getPGPPublicKeyByKeyId can not resolve public key of master-key id with uri/cursor
+                    PGPPublicKey pubkey = null;
+                    for(PGPSecretKey key : keys) {
+                        PGPPublicKey tempKey = key.getPublicKey();
+                        if (tempKey.getKeyID() == masterKeyId) {
+                            pubkey = tempKey;
+                        }
+                    }
+                    //PGPPublicKey pubkey = ProviderHelper.getPGPPublicKeyByKeyId(this, masterKeyId);
                     keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
                             pubkey, oldPassPhrase, newPassPhrase);
                 }
