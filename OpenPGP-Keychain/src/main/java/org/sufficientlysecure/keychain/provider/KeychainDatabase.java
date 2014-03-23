@@ -23,6 +23,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
@@ -30,13 +31,14 @@ import org.sufficientlysecure.keychain.util.Log;
 
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "apg.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     public interface Tables {
         String KEY_RINGS = "key_rings";
         String KEYS = "keys";
         String USER_IDS = "user_ids";
         String API_APPS = "api_apps";
+        String API_APPS_ACCOUNTS = "api_apps_accounts";
     }
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
@@ -76,11 +78,17 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, "
-            + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB, "
-            + ApiAppsColumns.KEY_ID + " INT64, "
-            + ApiAppsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
-            + ApiAppsColumns.HASH_ALORITHM + " INTEGER, "
-            + ApiAppsColumns.COMPRESSION + " INTEGER)";
+            + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB)";
+
+    private static final String CREATE_API_APPS_ACCOUNTS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS_ACCOUNTS
+            + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + ApiAppsAccountsColumns.KEY_ID + " INT64, "
+            + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
+            + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
+            + ApiAppsAccountsColumns.COMPRESSION + " INTEGER"
+            + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, FOREIGN KEY("
+            + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES " + Tables.API_APPS + "("
+            + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -94,6 +102,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_IDS);
         db.execSQL(CREATE_API_APPS);
+        db.execSQL(CREATE_API_APPS_ACCOUNTS);
     }
 
     @Override
@@ -132,6 +141,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     // new column: fingerprint
                     db.execSQL("ALTER TABLE " + Tables.KEYS + " ADD COLUMN " + KeysColumns.FINGERPRINT
                             + " BLOB;");
+                    break;
+                case 7:
+                    // new db layout for api apps
+                    db.execSQL("DROP TABLE IF EXISTS " + Tables.API_APPS);
+                    db.execSQL(CREATE_API_APPS);
+                    db.execSQL(CREATE_API_APPS_ACCOUNTS);
                     break;
                 default:
                     break;
