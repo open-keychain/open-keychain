@@ -497,12 +497,69 @@ public class PgpKeyOperation {
         for (int i = 0; i < saveParcel.keys.size(); ++i) {
             updateProgress(40 + 50 * (i - 1) / (saveParcel.keys.size() - 1), 100);
             if (saveParcel.moddedKeys[i]) {
+                //to make public key, use a keygen and temp.publickeyring?
+
+                PGPSecretKey subKey = saveParcel.keys.get(i);
+                PGPPublicKey subPublicKey = subKey.getPublicKey();
+
+                PBESecretKeyDecryptor keyDecryptor2;
+                if (saveParcel.newKeys[i]) {
+                    keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                    "".toCharArray());
+                } else {
+                    keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
+                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                                saveParcel.oldPassPhrase.toCharArray());
+                }
+                PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
+
+                // TODO: now used without algorithm and creation time?! (APG 1)
+                PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
+
+                hashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
+
+                usageId = saveParcel.keysUsages.get(i);
+                canSign = (usageId & KeyFlags.SIGN_DATA) > 0; //todo - separate function for this
+                if (canSign) {
+                    Date todayDate = new Date(); //both sig times the same
+                    // cross-certify signing keys
+                    hashedPacketsGen.setSignatureCreationTime(false, todayDate); //set outer creation time
+                    PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
+                    subHashedPacketsGen.setSignatureCreationTime(false, todayDate); //set inner creation time
+                    PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
+                            subPublicKey.getAlgorithm(), PGPUtil.SHA1)
+                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
+                    sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
+                    sGen.setHashedSubpackets(subHashedPacketsGen.generate());
+                    PGPSignature certification = sGen.generateCertification(masterPublicKey,
+                            subPublicKey);
+                    unhashedPacketsGen.setEmbeddedSignature(false, certification);
+                }
+                hashedPacketsGen.setKeyFlags(false, usageId);
+
+                if (saveParcel.keysExpiryDates.get(i) != null) {
+                    GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                    creationDate.setTime(subPublicKey.getCreationTime());
+                    GregorianCalendar expiryDate = saveParcel.keysExpiryDates.get(i);
+                    //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
+                    //here we purposefully ignore partial days in each date - long type has no fractional part!
+                    long numDays = (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
+                    if (numDays <= 0)
+                        throw new PgpGeneralException(mContext.getString(R.string.error_expiry_must_come_after_creation));
+                    hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
+                } else {
+                    hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
+                    //this happens anyway
+                }
+
+                keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
+                //discard only certain certs
 //secretkey.replacepublickey with updated public key
-//secretkeyring.insertsecretkey with newly signed secret key
-            } else {
-//else nothing, right?
             }
-            if (saveParcel.newKeys[i]) {
+            if (saveParcel.newKeys[i]) { //might not be necessary
                 //set the passphrase to the old one, so we can update the whole keyring passphrase later
                 PBESecretKeyEncryptor keyEncryptorOld = new JcePBESecretKeyEncryptorBuilder(
                         PGPEncryptedData.CAST5, sha1Calc)
@@ -519,61 +576,6 @@ public class PgpKeyOperation {
             pKR = PGPPublicKeyRing.insertPublicKey(pKR, saveParcel.keys.get(i).getPublicKey());
         }
         updateProgress(R.string.progress_adding_sub_keys, 40, 100);
-
-        for (int i = 1; i < saveParcel.keys.size(); ++i) {
-            updateProgress(40 + 50 * (i - 1) / (saveParcel.keys.size() - 1), 100);
-
-            PGPSecretKey subKey = saveParcel.keys.get(i);
-            PGPPublicKey subPublicKey = subKey.getPublicKey();
-
-            PBESecretKeyDecryptor keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                            saveParcel.oldPassPhrase.toCharArray());
-            PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
-
-            // TODO: now used without algorithm and creation time?! (APG 1)
-            PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
-
-            hashedPacketsGen = new PGPSignatureSubpacketGenerator();
-            unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
-
-            usageId = saveParcel.keysUsages.get(i);
-            canSign = (usageId & KeyFlags.SIGN_DATA) > 0; //todo - separate function for this
-            if (canSign) {
-                Date todayDate = new Date(); //both sig times the same
-                // cross-certify signing keys
-                hashedPacketsGen.setSignatureCreationTime(false, todayDate); //set outer creation time
-                PGPSignatureSubpacketGenerator subHashedPacketsGen = new PGPSignatureSubpacketGenerator();
-                subHashedPacketsGen.setSignatureCreationTime(false, todayDate); //set inner creation time
-                PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
-                        subPublicKey.getAlgorithm(), PGPUtil.SHA1)
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                PGPSignatureGenerator sGen = new PGPSignatureGenerator(signerBuilder);
-                sGen.init(PGPSignature.PRIMARYKEY_BINDING, subPrivateKey);
-                sGen.setHashedSubpackets(subHashedPacketsGen.generate());
-                PGPSignature certification = sGen.generateCertification(masterPublicKey,
-                        subPublicKey);
-                unhashedPacketsGen.setEmbeddedSignature(false, certification);
-            }
-            hashedPacketsGen.setKeyFlags(false, usageId);
-
-            if (saveParcel.keysExpiryDates.get(i) != null) {
-                GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                creationDate.setTime(subPublicKey.getCreationTime());
-                GregorianCalendar expiryDate = saveParcel.keysExpiryDates.get(i);
-                //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
-                //here we purposefully ignore partial days in each date - long type has no fractional part!
-                long numDays = (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
-                if (numDays <= 0)
-                    throw new PgpGeneralException(mContext.getString(R.string.error_expiry_must_come_after_creation));
-                hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
-            } else {
-                hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
-                                                                 //this happens anyway
-            }
-
-            keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
-        }
 
         //update the passphrase
         mKR = PGPSecretKeyRing.copyWithNewPassword(mKR, keyDecryptor, keyEncryptor);
