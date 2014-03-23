@@ -324,7 +324,17 @@ public class ViewKeyMainFragment extends Fragment implements
 
                     mFingerprint.setText(OtherHelper.colorizeFingerprint(fingerprint));
                 }
-
+                int valid_keys = 0;
+                data.moveToFirst();
+                do{
+                    if(data.getInt(KEYS_INDEX_CAN_ENCRYPT) == 1){
+                        valid_keys++;
+                    }
+                }while(data.moveToNext());
+                if(valid_keys == 0){
+                    mActionEncrypt.setVisibility(View.GONE);
+                }
+                Log.i("Valid Encryption keys", Integer.toString(valid_keys));
                 mKeysAdapter.swapCursor(data);
                 break;
 
