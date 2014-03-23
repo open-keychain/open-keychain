@@ -180,7 +180,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
                     serviceIntent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-                    // Message is received after generating is done in ApgService
+                    // Message is received after generating is done in KeychainIntentService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                             this, getResources().getQuantityString(R.plurals.progress_generating, 1),
                             ProgressDialog.STYLE_HORIZONTAL, true,
@@ -197,7 +197,7 @@ public class EditKeyActivity extends ActionBarActivity {
 
                         @Override
                         public void handleMessage(Message message) {
-                            // handle messages by standard ApgHandler first
+                            // handle messages by standard KeychainIntentServiceHandler first
                             super.handleMessage(message);
 
                             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -540,11 +540,11 @@ public class EditKeyActivity extends ActionBarActivity {
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-            // Message is received after saving is done in ApgService
+            // Message is received after saving is done in KeychainIntentService
             KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                     getString(R.string.progress_saving), ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
-                    // handle messages by standard ApgHandler first
+                    // handle messages by standard KeychainIntentServiceHandler first
                     super.handleMessage(message);
 
                     if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {

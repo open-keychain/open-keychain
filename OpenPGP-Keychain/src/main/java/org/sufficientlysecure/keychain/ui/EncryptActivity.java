@@ -597,11 +597,11 @@ public class EncryptActivity extends DrawerActivity {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in ApgService
+        // Message is received after encrypting is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
