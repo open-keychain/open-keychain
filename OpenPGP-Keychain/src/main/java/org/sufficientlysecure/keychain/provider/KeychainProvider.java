@@ -247,7 +247,7 @@ public class KeychainProvider extends ContentProvider {
         return matcher;
     }
 
-    private KeychainDatabase mApgDatabase;
+    private KeychainDatabase mKeychainDatabase;
 
     /**
      * {@inheritDoc}
@@ -255,7 +255,7 @@ public class KeychainProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mUriMatcher = buildUriMatcher();
-        mApgDatabase = new KeychainDatabase(getContext());
+        mKeychainDatabase = new KeychainDatabase(getContext());
         return true;
     }
 
@@ -486,7 +486,7 @@ public class KeychainProvider extends ContentProvider {
         Log.v(Constants.TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        SQLiteDatabase db = mApgDatabase.getReadableDatabase();
+        SQLiteDatabase db = mKeychainDatabase.getReadableDatabase();
 
         int match = mUriMatcher.match(uri);
 
@@ -715,7 +715,7 @@ public class KeychainProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(Constants.TAG, "insert(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         Uri rowUri = null;
         long rowId = -1;
@@ -792,7 +792,7 @@ public class KeychainProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         Log.v(Constants.TAG, "delete(uri=" + uri + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         int count;
         final int match = mUriMatcher.match(uri);
@@ -853,7 +853,7 @@ public class KeychainProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         String defaultSelection = null;
         int count = 0;
