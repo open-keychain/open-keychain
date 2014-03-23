@@ -327,11 +327,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after signing is done in ApgService
+        // Message is received after signing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_signing), ProgressDialog.STYLE_SPINNER) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -380,11 +380,11 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after uploading is done in ApgService
+        // Message is received after uploading is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_exporting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {

@@ -855,7 +855,7 @@ public class KeychainIntentService extends IntentService
         if (this.mIsCanceled) {
             return;
         }
-        Log.e(Constants.TAG, "ApgService Exception: ", e);
+        Log.e(Constants.TAG, "KeychainIntentService Exception: ", e);
         e.printStackTrace();
 
         Bundle data = new Bundle();

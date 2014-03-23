@@ -363,7 +363,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
      * Import keys with mImportData
      */
     public void importKeys() {
-        // Message is received after importing is done in ApgService
+        // Message is received after importing is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
                 this,
                 getString(R.string.progress_importing),
