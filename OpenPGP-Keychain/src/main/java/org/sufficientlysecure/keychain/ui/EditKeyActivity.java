@@ -54,6 +54,7 @@ import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.UploadKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.KeyEditor;
 import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
@@ -68,7 +69,7 @@ public class EditKeyActivity extends ActionBarActivity {
     // Actions for internal use only:
     public static final String ACTION_CREATE_KEY = Constants.INTENT_PREFIX + "CREATE_KEY";
     public static final String ACTION_EDIT_KEY = Constants.INTENT_PREFIX + "EDIT_KEY";
-
+    public static final String ARG_DATA_URI = "ARG_DATA_URI";
     // possible extra keys
     public static final String EXTRA_USER_IDS = "user_ids";
     public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
@@ -558,7 +559,9 @@ public class EditKeyActivity extends ActionBarActivity {
                         }
                         data.putExtra(RESULT_EXTRA_USER_ID, userIds.get(0));
                         setResult(RESULT_OK, data);
-                        finish();
+                        Uri datauri = KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri
+                                (Long.toString(getMasterKeyId()));
+                        askforUpload(datauri);
                     }
                 }
             };
@@ -697,5 +700,24 @@ public class EditKeyActivity extends ActionBarActivity {
         mChangePassphrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
     }
+
+    public void uploadToKeyserver(Uri dataUri) {
+        Intent uploadIntent = new Intent(this, UploadKeyActivity.class);
+        uploadIntent.setData(dataUri);
+        try {
+            startActivityForResult(uploadIntent, Id.request.export_to_server);
+        }
+        catch (Exception e){}
+        finally {
+            finish();
+        }
+
+    }
+
+    private void askforUpload(Uri dataUri){
+        UploadKeyDialogFragment dialog = UploadKeyDialogFragment.newInstance(dataUri);
+        getSupportFragmentManager().beginTransaction().add(dialog, "UploadKey").commit();
+    }
+
 
 }
