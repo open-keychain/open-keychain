@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.service.remote.AppSettings;
+import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -801,10 +801,10 @@ public class ProviderHelper {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
         values.put(ApiApps.PACKAGE_SIGNATURE, appSettings.getPackageSignature());
-        values.put(ApiApps.KEY_ID, appSettings.getKeyId());
-        values.put(ApiApps.COMPRESSION, appSettings.getCompression());
-        values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
-        values.put(ApiApps.HASH_ALORITHM, appSettings.getHashAlgorithm());
+//        values.put(ApiApps.KEY_ID, appSettings.getKeyId());
+//        values.put(ApiApps.COMPRESSION, appSettings.getCompression());
+//        values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
+//        values.put(ApiApps.HASH_ALORITHM, appSettings.getHashAlgorithm());
 
         return values;
     }

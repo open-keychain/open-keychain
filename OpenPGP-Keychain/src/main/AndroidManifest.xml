@@ -384,24 +384,24 @@
 
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.RemoteServiceActivity"
+            android:name="org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity"
             android:exported="false"
             android:label="@string/app_name" />
         <!--android:launchMode="singleTop"-->
         <!--android:process=":remote_api"-->
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity"
+            android:name="org.sufficientlysecure.keychain.remote.ui.RegisteredAppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
             android:label="@string/title_api_registered_apps" />
         <activity
-            android:name="org.sufficientlysecure.keychain.service.remote.AppSettingsActivity"
+            android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false" />
 
         <!-- OpenPGP Remote API -->
         <service
-            android:name="org.sufficientlysecure.keychain.service.remote.OpenPgpService"
+            android:name="org.sufficientlysecure.keychain.remote.OpenPgpService"
             android:enabled="true"
             android:exported="true"
             android:process=":remote_api">
