@@ -38,7 +38,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEYS = "keys";
         String USER_IDS = "user_ids";
         String API_APPS = "api_apps";
-        String API_APPS_ACCOUNTS = "api_apps_accounts";
+        String API_ACCOUNTS = "api_accounts";
     }
 
     private static final String CREATE_KEY_RINGS = "CREATE TABLE IF NOT EXISTS " + Tables.KEY_RINGS
@@ -80,14 +80,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, "
             + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB)";
 
-    private static final String CREATE_API_APPS_ACCOUNTS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS_ACCOUNTS
+    private static final String CREATE_API_APPS_ACCOUNTS = "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + ApiAppsAccountsColumns.KEY_ID + " INT64, "
             + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.COMPRESSION + " INTEGER"
-            + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, FOREIGN KEY("
-            + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES " + Tables.API_APPS + "("
+            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + " TEXT NOT NULL, FOREIGN KEY("
+            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + ") REFERENCES " + Tables.API_APPS + "("
             + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
 
     KeychainDatabase(Context context) {

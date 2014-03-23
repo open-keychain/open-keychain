@@ -809,44 +809,62 @@ public class ProviderHelper {
         return values;
     }
 
-    public static void insertApiApp(Context context, AppSettings appSettings) {
-        context.getContentResolver().insert(ApiApps.CONTENT_URI,
+    private static ContentValues contentValueForApiAccounts(AppSettings appSettings) {
+        ContentValues values = new ContentValues();
+        values.put(KeychainContract.ApiAccounts.PACKAGE_NAME_FK, appSettings.getPackageName());
+        values.put(KeychainContract.ApiAccounts.KEY_ID, appSettings.getKeyId());
+        values.put(KeychainContract.ApiAccounts.COMPRESSION, appSettings.getCompression());
+        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
+        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM, appSettings.getHashAlgorithm());
+
+        return values;
+    }
+
+    public static void insertApi(Context context, AppSettings appSettings) {
+        context.getContentResolver().insert(KeychainContract.ApiApps.CONTENT_URI,
+                contentValueForApiApps(appSettings));
+        context.getContentResolver().insert(KeychainContract.ApiAccounts.CONTENT_URI,
                 contentValueForApiApps(appSettings));
     }
 
+    // TODO: uri not working because it is used for both tables
     public static void updateApiApp(Context context, AppSettings appSettings, Uri uri) {
         if (context.getContentResolver().update(uri, contentValueForApiApps(appSettings), null,
                 null) <= 0) {
             throw new RuntimeException();
         }
+        if (context.getContentResolver().update(uri, contentValueForApiAccounts(appSettings), null,
+                null) <= 0) {
+            throw new RuntimeException();
+        }
     }
 
-    public static AppSettings getApiAppSettings(Context context, Uri uri) {
+    public static AppSettings getApiSettings(Context context, Uri uri) {
         AppSettings settings = null;
 
         Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
         if (cur != null && cur.moveToFirst()) {
             settings = new AppSettings();
             settings.setPackageName(cur.getString(cur
-                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+                    .getColumnIndex(KeychainContract.Api.PACKAGE_NAME)));
             settings.setPackageSignature(cur.getBlob(cur
-                    .getColumnIndex(KeychainContract.ApiApps.PACKAGE_SIGNATURE)));
-            settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.ApiApps.KEY_ID)));
+                    .getColumnIndex(KeychainContract.Api.PACKAGE_SIGNATURE)));
+            settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.Api.KEY_ID)));
             settings.setCompression(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.ApiApps.COMPRESSION)));
+                    .getColumnIndexOrThrow(KeychainContract.Api.COMPRESSION)));
             settings.setHashAlgorithm(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.ApiApps.HASH_ALORITHM)));
+                    .getColumnIndexOrThrow(KeychainContract.Api.HASH_ALORITHM)));
             settings.setEncryptionAlgorithm(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.ApiApps.ENCRYPTION_ALGORITHM)));
+                    .getColumnIndexOrThrow(KeychainContract.Api.ENCRYPTION_ALGORITHM)));
         }
 
         return settings;
     }
 
-    public static byte[] getApiAppSignature(Context context, String packageName) {
-        Uri queryUri = KeychainContract.ApiApps.buildByPackageNameUri(packageName);
+    public static byte[] getApiSignature(Context context, String packageName) {
+        Uri queryUri = KeychainContract.Api.buildByPackageNameUri(packageName);
 
-        String[] projection = new String[]{ApiApps.PACKAGE_SIGNATURE};
+        String[] projection = new String[]{KeychainContract.Api.PACKAGE_SIGNATURE};
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);

@@ -63,7 +63,7 @@ public class KeychainContract {
         String ENCRYPTION_ALGORITHM = "encryption_algorithm";
         String HASH_ALORITHM = "hash_algorithm";
         String COMPRESSION = "compression";
-        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
+        String PACKAGE_NAME_FK = "package_name"; // foreign key to api_apps.package_name
     }
 
     public static final class KeyTypes {
@@ -90,7 +90,10 @@ public class KeychainContract {
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
 
-    public static final String BASE_API_APPS = "api_apps";
+    public static final String BASE_API = "api";
+    public static final String PATH_APPS = "apps";
+    public static final String PATH_ACCOUNTS = "accounts";
+
     public static final String PATH_BY_PACKAGE_NAME = "package_name";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
@@ -254,19 +257,70 @@ public class KeychainContract {
         }
     }
 
-    public static class ApiApps implements ApiAppsColumns, BaseColumns {
+    /**
+     * Join over ApiApps with ApiAppsAccounts
+     */
+    public static class Api implements ApiAppsColumns, ApiAppsAccountsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_API_APPS).build();
+                .appendPath(BASE_API).build();
 
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_apps";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.apis";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_apps";
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api";
+
+        public static Uri buildIdUri(String rowId) {
+            return CONTENT_URI.buildUpon().appendPath(rowId).build();
+        }
+
+        public static Uri buildByPackageNameUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName)
+                    .build();
+        }
+    }
+
+    public static class ApiApps implements ApiAppsColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_API).appendPath(PATH_APPS).build();
+
+        /**
+         * Use if multiple items get returned
+         */
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api.app";
+
+        /**
+         * Use if a single item is returned
+         */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api.apps";
+
+        public static Uri buildIdUri(String rowId) {
+            return CONTENT_URI.buildUpon().appendPath(rowId).build();
+        }
+
+        public static Uri buildByPackageNameUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName)
+                    .build();
+        }
+    }
+
+    public static class ApiAccounts implements ApiAppsAccountsColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_API).appendPath(PATH_ACCOUNTS).build();
+
+        /**
+         * Use if multiple items get returned
+         */
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api.acoounts";
+
+        /**
+         * Use if a single item is returned
+         */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api.account";
 
         public static Uri buildIdUri(String rowId) {
             return CONTENT_URI.buildUpon().appendPath(rowId).build();
