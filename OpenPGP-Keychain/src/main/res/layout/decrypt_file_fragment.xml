@@ -51,10 +51,7 @@
                 android:text="@string/btn_lookup_key"
                 bootstrapbutton:bb_icon_left="fa-download"
                 bootstrapbutton:bb_type="info"
-                bootstrapbutton:bb_size="small"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                bootstrapbutton:bb_size="small" />
 
             <TextView
                 android:id="@+id/mainUserId"
@@ -63,18 +60,16 @@
                 android:layout_gravity="left"
                 android:text="@string/label_main_user_id"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:layout_alignTop="@+id/linearLayout"
-                android:layout_toRightOf="@+id/relativeLayout" />
+                 />
 
             <TextView
                 android:id="@+id/mainUserIdRest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Main User Id Rest"
+                android:text="@string/label_main_user_id_rest"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:layout_below="@+id/mainUserId"
-                android:layout_toRightOf="@+id/relativeLayout" />
+                 />
         </LinearLayout>
     </LinearLayout>
     <ScrollView
@@ -84,7 +79,7 @@
         <LinearLayout
             android:id="@+id/sourceFile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="4dp">
 

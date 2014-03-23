@@ -2,18 +2,18 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
@@ -22,63 +22,39 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.ui.DecryptFileFragment.DecryptionFunctions;
 
 import java.util.regex.Matcher;
 
 
 public class DecryptMessageFragment extends Fragment {
 
-
     DecryptionFunctions decryptionfunctions;
 
-    public interface DecryptionFunctions{
-        public void guessOutputFilename(EditText v);
-        public void showPassphraseDialog(View v);
-        public void askForOutputFilename(View v, int code);
-        public void decryptClicked(View fragmentView, int code);
-        public void decryptStart(View view, int code);
-        public void mSignatureLayout_OnClick();
-        public void lookupUnknownKey(long id);
-    }
-
     public View mMainView;
-    private boolean mReturnBinary = false;
-    private boolean mReturnResult = false;
     private LinearLayout mSignatureLayout = null;
-    private ImageView mSignatureStatusImage = null;
-    private TextView mUserId = null;
-    private TextView mUserIdRest = null;
-    private long mSecretKeyId = Id.key.none;
-    private boolean mSignedOnly = false;
-    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
-    private static final int RESULT_CODE_FILE = 0x00007003;
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
     private BootstrapButton mLookupKey = null;
     private BootstrapButton mDecryptButton;
     private BootstrapButton mPastefromClipboard;
+    private TextView mDecryptButtonheader;
     private EditText mMessage = null;
     private long mSignatureKeyId = 0;
     private final int mDecryptTarget = Id.target.message;
-    private Uri mContentUri = null;
-    private String mInputFilename = null;
-    private String mOutputFilename = null;;
-    private boolean mAssumeSymmetricEncryption = false;
 
-    private void initView(){
 
-        mMessage = (EditText)mMainView.findViewById(R.id.message);
+    private void initView() {
+
+        mMessage = (EditText) mMainView.findViewById(R.id.message);
+        mDecryptButton = (BootstrapButton) mMainView.findViewById(R.id.action_decrypt);
+        mDecryptButtonheader = (TextView)mMainView.findViewById(R.id.decrypt_message_section_verify);
         mSignatureLayout = (LinearLayout) mMainView.findViewById(R.id.signature);
         mLookupKey = (BootstrapButton) mMainView.findViewById(R.id.lookup_key);
         mSignatureLayout.setVisibility(View.GONE);
-        mSignatureStatusImage = (ImageView) mMainView.findViewById(R.id.ic_signature_status);
-        mUserId = (TextView) mMainView.findViewById(R.id.mainUserId);
-        mUserIdRest = (TextView) mMainView.findViewById(R.id.mainUserIdRest);
         mPastefromClipboard = (BootstrapButton) mMainView.findViewById(R.id.decrypt_paste_from_clipboard);
-        mPastefromClipboard.setOnClickListener(new View.OnClickListener(){
+        mPastefromClipboard.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 PasteContentfromClipboard();
             }
@@ -91,7 +67,7 @@ public class DecryptMessageFragment extends Fragment {
             }
         });
 
-        mDecryptButton = (BootstrapButton) mMainView.findViewById(R.id.action_decrypt);
+
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,14 +85,12 @@ public class DecryptMessageFragment extends Fragment {
     }
 
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         mMainView = inflater.inflate(R.layout.decrypt_message_fragment, null);
         Bundle bundle = getArguments();
-        if(bundle != null) {
+        if (bundle != null) {
             handleArguments(getArguments());
         }
         initView();
@@ -136,10 +110,10 @@ public class DecryptMessageFragment extends Fragment {
     }
 
 
-    private void handleArguments(Bundle arguments){
+    private void handleArguments(Bundle arguments) {
         String action = arguments.getString(DecryptActivity.FRAGMENT_BUNDLE_ACTION);
         Uri uri = arguments.getParcelable(DecryptActivity.FRAGMENT_BUNDLE_URI);
-        String type= arguments.getString(DecryptActivity.FRAGMENT_BUNDLE_TYPE);
+        String type = arguments.getString(DecryptActivity.FRAGMENT_BUNDLE_TYPE);
         String extratext = arguments.getString(DecryptActivity.FRAGMENT_BUNDLE_EXTRATEXT);
         Bundle extras = new Bundle();
 
@@ -202,7 +176,7 @@ public class DecryptMessageFragment extends Fragment {
 
     }
 
-    private void PasteContentfromClipboard(){
+    private void PasteContentfromClipboard() {
         CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
         String data = "";
@@ -220,7 +194,6 @@ public class DecryptMessageFragment extends Fragment {
                 decryptionfunctions.decryptClicked(mMainView, mDecryptTarget);
             }
         }
-
 
 
     }

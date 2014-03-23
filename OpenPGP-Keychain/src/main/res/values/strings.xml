@@ -131,6 +131,7 @@
     <string name="label_usage">Usage</string>
     <string name="label_key_size">Key Size</string>
     <string name="label_main_user_id">Main User ID</string>
+    <string name="label_main_user_id_rest">Main User ID Rest</string>
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>

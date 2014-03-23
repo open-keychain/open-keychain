@@ -1,148 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/signature"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:clickable="true"
-        android:orientation="horizontal"
-        android:padding="4dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
-
-        <LinearLayout
-            android:id="@+id/relativeLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/ic_signature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/signed_large" />
-
-            <ImageView
-                android:id="@+id/ic_signature_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="-30dip"
-                android:src="@drawable/overlay_error" />
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:orientation="vertical">
-
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/lookup_key"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:padding="4dp"
-                android:text="@string/btn_lookup_key"
-                android:visibility="gone"
-                bootstrapbutton:bb_icon_left="fa-download"
-                bootstrapbutton:bb_size="small"
-                bootstrapbutton:bb_type="info" />
-
-            <TextView
-                android:id="@+id/mainUserId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/linearLayout"
-                android:layout_gravity="left"
-                android:layout_toRightOf="@+id/relativeLayout"
-                android:text="@string/label_main_user_id"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/mainUserIdRest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/mainUserId"
-                android:layout_gravity="left"
-                android:layout_toRightOf="@+id/relativeLayout"
-                android:text="Main User Id Rest"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-        </LinearLayout>
-
-    </LinearLayout>
-    <com.beardedhen.androidbootstrap.BootstrapButton
-        android:id="@+id/decrypt_paste_from_clipboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="12dp"
-        android:text="@string/btn_paste_from_clipboard"
-        bootstrapbutton:bb_icon_left="fa-key"
-        bootstrapbutton:bb_size="default"
-        bootstrapbutton:bb_type="default" />
-
-        <LinearLayout
-            android:id="@+id/sourceMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="4dp">
-
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="@string/label_message" />
-
-            <EditText
-                android:id="@+id/message"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="vertical"
-                android:gravity="top"
-                android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-                android:minLines="6"
-                android:maxLines="8"
-                android:scrollHorizontally="true" />
-        </LinearLayout>
-
-
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/decrypt_message_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom"
-        android:orientation="vertical"
-        android:padding="4dp">
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/decrypt_message_section_verify">
+
+        <LinearLayout
+            android:id="@+id/signature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip"
+            android:clickable="true"
+            android:orientation="horizontal"
+            android:padding="4dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+            <LinearLayout
+                android:id="@+id/relativeLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ic_signature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/signed_large" />
+
+                <ImageView
+                    android:id="@+id/ic_signature_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="-30dip"
+                    android:src="@drawable/overlay_error" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:orientation="vertical">
+
+                <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/lookup_key"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:padding="4dp"
+                    android:text="@string/btn_lookup_key"
+                    android:visibility="gone"
+                    bootstrapbutton:bb_icon_left="fa-download"
+                    bootstrapbutton:bb_size="small"
+                    bootstrapbutton:bb_type="info" />
+
+                <TextView
+                    android:id="@+id/mainUserId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:text="@string/label_main_user_id"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/mainUserIdRest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:text="@string/label_main_user_id_rest"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.beardedhen.androidbootstrap.BootstrapButton
+            android:id="@+id/decrypt_paste_from_clipboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/signature"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/btn_paste_from_clipboard"
+            bootstrapbutton:bb_icon_left="fa-key"
+            bootstrapbutton:bb_size="default"
+            bootstrapbutton:bb_type="default" />
 
         <TextView
+            android:id="@+id/decrypt_message_section_message"
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/decrypt_paste_from_clipboard"
             android:layout_marginBottom="4dp"
-            android:text="@string/section_decrypt_verify" />
+            android:text="@string/label_message" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/action_decrypt"
+        <EditText
+            android:id="@+id/message"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:padding="4dp"
-            android:text="@string/btn_decrypt_verify"
-            bootstrapbutton:bb_icon_left="fa-unlock"
-            bootstrapbutton:bb_type="info" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_below="@id/decrypt_message_section_message"
+            android:gravity="top"
+            android:imeOptions="actionDone"
+            android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+            android:maxLines="8"
+            android:minLines="6"
+            android:scrollHorizontally="true"
+            android:scrollbars="vertical" />
 
-</LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/decrypt_message_section_verify"
+        style="@style/SectionHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/action_decrypt"
+        android:layout_marginBottom="4dp"
+        android:text="@string/section_decrypt_verify" />
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/action_decrypt"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:padding="4dp"
+        android:text="@string/btn_decrypt_verify"
+        bootstrapbutton:bb_icon_left="fa-unlock"
+        bootstrapbutton:bb_type="info" />
+
+</RelativeLayout>

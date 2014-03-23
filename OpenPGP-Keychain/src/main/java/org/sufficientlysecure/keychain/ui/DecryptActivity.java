@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -73,7 +72,7 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 
 @SuppressLint("NewApi")
-public class DecryptActivity extends DrawerActivity implements  DecryptFileFragment.DecryptionFunctions, DecryptMessageFragment.DecryptionFunctions{
+public class DecryptActivity extends DrawerActivity implements  DecryptFileFragment.DecryptionFunctions{
 
     /* Intents */
     // without permissiong
@@ -115,11 +114,6 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
     private long mSecretKeyId = Id.key.none;
 
     private FileDialogFragment mFileDialog;
-
-    private boolean mDecryptImmediately = false;
-
-    private BootstrapButton mDecryptButton;
-
     private DecryptActivityPagerAdapter pager_adapter;
     private ActionBar mActionBar;
     private ViewPager decrypt_pager;
@@ -210,8 +204,8 @@ public class DecryptActivity extends DrawerActivity implements  DecryptFileFragm
         }
     }
 
-    public void guessOutputFilename(EditText _filename) {
-        mInputFilename = _filename.getText().toString();
+    public void guessOutputFilename(EditText filenameBox) {
+        mInputFilename = filenameBox.getText().toString();
         File file = new File(mInputFilename);
         String filename = file.getName();
         if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
