@@ -382,6 +382,8 @@ public class PgpKeyOperation {
                 do we need to remove and add in?
          */
 
+        //todo: flag changes of master key if IDs changed maybe?
+
         for (PGPSecretKey dKey : saveParcel.deletedKeys) {
             mKR = PGPSecretKeyRing.removeSecretKey(mKR, dKey);
         }
@@ -484,11 +486,11 @@ public class PgpKeyOperation {
         PGPContentSignerBuilder certificationSignerBuilder = new JcaPGPContentSignerBuilder(
                 masterKeyPair.getPublicKey().getAlgorithm(), HashAlgorithmTags.SHA1);
 
-        // Build key encrypter based on passphrase
+        // Build key encryptor based on old passphrase, as some keys may be unchanged
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        saveParcel.newPassPhrase.toCharArray());
+                        saveParcel.oldPassPhrase.toCharArray());
 
         PGPKeyRingGenerator keyGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
@@ -497,8 +499,6 @@ public class PgpKeyOperation {
         for (int i = 0; i < saveParcel.keys.size(); ++i) {
             updateProgress(40 + 50 * (i - 1) / (saveParcel.keys.size() - 1), 100);
             if (saveParcel.moddedKeys[i]) {
-                //to make public key, use a keygen and temp.publickeyring?
-
                 PGPSecretKey subKey = saveParcel.keys.get(i);
                 PGPPublicKey subPublicKey = subKey.getPublicKey();
 
@@ -513,8 +513,6 @@ public class PgpKeyOperation {
                                 saveParcel.oldPassPhrase.toCharArray());
                 }
                 PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
-
-                // TODO: now used without algorithm and creation time?! (APG 1)
                 PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
 
                 hashedPacketsGen = new PGPSignatureSubpacketGenerator();
@@ -557,28 +555,31 @@ public class PgpKeyOperation {
 
                 keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
                 //discard only certain certs
-//secretkey.replacepublickey with updated public key
             }
-            if (saveParcel.newKeys[i]) { //might not be necessary
-                //set the passphrase to the old one, so we can update the whole keyring passphrase later
-                PBESecretKeyEncryptor keyEncryptorOld = new JcePBESecretKeyEncryptorBuilder(
-                        PGPEncryptedData.CAST5, sha1Calc)
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                saveParcel.oldPassPhrase.toCharArray());
-                PBESecretKeyDecryptor keyDecryptorBlank = new JcePBESecretKeyDecryptorBuilder()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                saveParcel.oldPassPhrase.toCharArray());
-                saveParcel.keys.set(i, PGPSecretKey.copyWithNewPassword(saveParcel.keys.get(i),
-                        keyDecryptorBlank, keyEncryptorOld));
-            }
-            //finally, update the keyrings
-            mKR = PGPSecretKeyRing.insertSecretKey(mKR, saveParcel.keys.get(i));
-            pKR = PGPPublicKeyRing.insertPublicKey(pKR, saveParcel.keys.get(i).getPublicKey());
         }
+
+        PGPSecretKeyRing updatedSecretKeyRing = keyGen.generateSecretKeyRing();
+        //finally, update the keyrings
+        Iterator<PGPSecretKey> itr = updatedSecretKeyRing.getSecretKeys();
+        while (itr.hasNext()) {
+            PGPSecretKey theNextKey = itr.next();
+            if ((theNextKey.isMasterKey() && saveParcel.moddedKeys[0]) || !theNextKey.isMasterKey()) {
+                mKR = PGPSecretKeyRing.insertSecretKey(mKR, theNextKey);
+                pKR = PGPPublicKeyRing.insertPublicKey(pKR, theNextKey.getPublicKey());
+            }
+        }
+
+
         updateProgress(R.string.progress_adding_sub_keys, 40, 100);
 
+        // Build key encryptor based on new passphrase
+        PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
+                PGPEncryptedData.CAST5, sha1Calc)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
+                        saveParcel.newPassPhrase.toCharArray());
+
         //update the passphrase
-        mKR = PGPSecretKeyRing.copyWithNewPassword(mKR, keyDecryptor, keyEncryptor);
+        mKR = PGPSecretKeyRing.copyWithNewPassword(mKR, keyDecryptor, keyEncryptorNew);
         updateProgress(R.string.progress_saving_key_ring, 90, 100);
 
         ProviderHelper.saveKeyRing(mContext, mKR);
