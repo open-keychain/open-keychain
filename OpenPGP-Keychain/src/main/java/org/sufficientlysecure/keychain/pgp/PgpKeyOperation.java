@@ -380,6 +380,10 @@ public class PgpKeyOperation {
             remove deleted keys
             if a key is modified, re-sign it
                 do we need to remove and add in?
+
+        Todo
+            identify more things which need to be preserved - e.g. trust levels?
+                    user attributes
          */
 
         for (PGPSecretKey dKey : saveParcel.deletedKeys) {
@@ -504,7 +508,7 @@ public class PgpKeyOperation {
                 unhashedPacketsGen.generate(), certificationSignerBuilder, keyEncryptor);
 
         for (int i = 0; i < saveParcel.keys.size(); ++i) {
-            updateProgress(40 + 50 * (i - 1) / (saveParcel.keys.size() - 1), 100);
+            updateProgress(40 + 50 * i/ saveParcel.keys.size(), 100);
             if (saveParcel.moddedKeys[i]) {
                 PGPSecretKey subKey = saveParcel.keys.get(i);
                 PGPPublicKey subPublicKey = subKey.getPublicKey();
@@ -561,7 +565,11 @@ public class PgpKeyOperation {
                 }
 
                 keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
-                //discard only certain certs
+                //certifications will be discarded if the key is changed, because I think, for a start,
+                //they will be invalid. Binding certs are regenerated anyway, and other certs which
+                //need to be kept are on IDs and attributes
+                //TODO: don't let revoked keys be edited, other than removed - changing one would result in the
+                //revocation being wrong?
             }
         }
 
@@ -575,10 +583,6 @@ public class PgpKeyOperation {
                 pKR = PGPPublicKeyRing.insertPublicKey(pKR, theNextKey.getPublicKey());
             }
         }
-
-
-        updateProgress(R.string.progress_adding_sub_keys, 40, 100);
-
         // Build key encryptor based on new passphrase
         PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
