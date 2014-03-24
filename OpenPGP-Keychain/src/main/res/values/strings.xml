@@ -223,6 +223,7 @@
     <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secret_key_delete_text">Delete Secret Keys ?</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
+    <string name="upload_key_dialog_message">Do you want to upload your edited key to the server?</string>
 
     <plurals name="keys_added_and_updated_1">
         <item quantity="one">Successfully added %d key</item>
