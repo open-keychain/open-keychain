@@ -21,7 +21,7 @@ import android.os.Bundle;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.DrawerActivity;
 
-public class RegisteredAppsListActivity extends DrawerActivity {
+public class AppsListActivity extends DrawerActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

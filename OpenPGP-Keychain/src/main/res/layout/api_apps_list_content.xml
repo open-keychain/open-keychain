@@ -8,7 +8,7 @@
 
     <fragment
             android:id="@+id/crypto_consumers_list_fragment"
-            android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListFragment"
+            android:name="org.sufficientlysecure.keychain.remote.ui.AppsListFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 </FrameLayout>

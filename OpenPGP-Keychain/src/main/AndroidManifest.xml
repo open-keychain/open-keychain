@@ -390,7 +390,7 @@
         <!--android:launchMode="singleTop"-->
         <!--android:process=":remote_api"-->
         <activity
-            android:name="org.sufficientlysecure.keychain.remote.ui.RegisteredAppsListActivity"
+            android:name=".remote.ui.AppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:exported="false"
             android:label="@string/title_api_registered_apps" />

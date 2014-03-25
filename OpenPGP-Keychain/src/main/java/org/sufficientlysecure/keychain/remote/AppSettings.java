@@ -24,10 +24,6 @@ import org.sufficientlysecure.keychain.Id;
 public class AppSettings {
     private String mPackageName;
     private byte[] mPackageSignature;
-    private long mKeyId = Id.key.none;
-    private int mEncryptionAlgorithm;
-    private int mHashAlgorithm;
-    private int mCompression;
 
     public AppSettings() {
 
@@ -37,10 +33,6 @@ public class AppSettings {
         super();
         this.mPackageName = packageName;
         this.mPackageSignature = packageSignature;
-        // defaults:
-        this.mEncryptionAlgorithm = PGPEncryptedData.AES_256;
-        this.mHashAlgorithm = HashAlgorithmTags.SHA512;
-        this.mCompression = Id.choice.compression.zlib;
     }
 
     public String getPackageName() {
@@ -57,38 +49,6 @@ public class AppSettings {
 
     public void setPackageSignature(byte[] packageSignature) {
         this.mPackageSignature = packageSignature;
-    }
-
-    public long getKeyId() {
-        return mKeyId;
-    }
-
-    public void setKeyId(long scretKeyId) {
-        this.mKeyId = scretKeyId;
-    }
-
-    public int getEncryptionAlgorithm() {
-        return mEncryptionAlgorithm;
-    }
-
-    public void setEncryptionAlgorithm(int encryptionAlgorithm) {
-        this.mEncryptionAlgorithm = encryptionAlgorithm;
-    }
-
-    public int getHashAlgorithm() {
-        return mHashAlgorithm;
-    }
-
-    public void setHashAlgorithm(int hashAlgorithm) {
-        this.mHashAlgorithm = hashAlgorithm;
-    }
-
-    public int getCompression() {
-        return mCompression;
-    }
-
-    public void setCompression(int compression) {
-        this.mCompression = compression;
     }
 
 }

@@ -10,17 +10,9 @@
         android:padding="16dp"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/api_register_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="3dip"
-            android:text="@string/api_register_text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
         <fragment
-            android:id="@+id/api_app_settings_fragment"
-            android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsFragment"
+            android:id="@+id/api_account_settings_fragment"
+            android:name="org.sufficientlysecure.keychain.remote.ui.AccountSettingsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/api_app_settings_fragment" />

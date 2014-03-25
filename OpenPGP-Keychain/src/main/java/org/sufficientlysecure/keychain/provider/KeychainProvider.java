@@ -30,10 +30,8 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Api;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
@@ -81,15 +79,12 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID = 221;
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
-    private static final int API = 301;
-    private static final int API_BY_ROW_ID = 302;
-    private static final int API_BY_PACKAGE_NAME = 303;
-    private static final int API_APPS = 304;
-    private static final int API_APPS_BY_ROW_ID = 305;
-    private static final int API_APPS_BY_PACKAGE_NAME = 306;
-    private static final int API_ACCOUNTS = 307;
-    private static final int API_ACCOUNTS_BY_ROW_ID = 308;
-    private static final int API_ACCOUNTS_BY_PACKAGE_NAME = 309;
+    private static final int API_APPS = 301;
+    private static final int API_APPS_BY_ROW_ID = 302;
+    private static final int API_APPS_BY_PACKAGE_NAME = 303;
+    private static final int API_ACCOUNTS = 304;
+    private static final int API_ACCOUNTS_BY_ROW_ID = 305;
+    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 306;
 
     private static final int UNIFIED_KEY_RING = 401;
 
@@ -247,26 +242,18 @@ public class KeychainProvider extends ContentProvider {
         /**
          * API apps
          */
-        matcher.addURI(authority, KeychainContract.BASE_API, API);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/#", API_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_BY_PACKAGE_NAME);
-
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
-                + KeychainContract.PATH_APPS, API_APPS);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
-                + KeychainContract.PATH_APPS + "/#", API_APPS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
-                + KeychainContract.PATH_APPS + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
 
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_ACCOUNTS + "/#", API_ACCOUNTS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
                 + KeychainContract.PATH_ACCOUNTS + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_ACCOUNTS_BY_PACKAGE_NAME);
+                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
 
         /**
          * data stream
@@ -332,13 +319,6 @@ public class KeychainProvider extends ContentProvider {
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
                 return UserIds.CONTENT_ITEM_TYPE;
 
-            case API:
-                return Api.CONTENT_TYPE;
-
-            case API_BY_ROW_ID:
-            case API_BY_PACKAGE_NAME:
-                return Api.CONTENT_ITEM_TYPE;
-
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
 
@@ -350,7 +330,7 @@ public class KeychainProvider extends ContentProvider {
                 return ApiAccounts.CONTENT_TYPE;
 
             case API_ACCOUNTS_BY_ROW_ID:
-            case API_ACCOUNTS_BY_PACKAGE_NAME:
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 return ApiAccounts.CONTENT_ITEM_TYPE;
 
             default:
@@ -696,28 +676,6 @@ public class KeychainProvider extends ContentProvider {
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
-            case API:
-                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
-                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
-                        + ApiAccounts.PACKAGE_NAME_FK + " )");
-
-                break;
-            case API_BY_ROW_ID:
-                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
-                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
-                        + ApiAccounts.PACKAGE_NAME_FK + " )");
-                qb.appendWhere(Tables.API_APPS + "." + BaseColumns._ID + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-                break;
-            case API_BY_PACKAGE_NAME:
-                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
-                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
-                        + ApiAccounts.PACKAGE_NAME_FK + " )");
-                qb.appendWhere(Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-                break;
             case API_APPS:
                 qb.setTables(Tables.API_APPS);
 
@@ -740,15 +698,24 @@ public class KeychainProvider extends ContentProvider {
 
                 break;
             case API_ACCOUNTS_BY_ROW_ID:
-                qb.setTables(Tables.API_ACCOUNTS);
+                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
+                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
+                        + ApiAccounts.PACKAGE_NAME_FK + " )");
+                qb.appendWhere(Tables.API_APPS + "." + BaseColumns._ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
-                qb.appendWhere(BaseColumns._ID + " = ");
+                qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + BaseColumns._ID + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
-            case API_ACCOUNTS_BY_PACKAGE_NAME:
-                qb.setTables(Tables.API_ACCOUNTS);
-                qb.appendWhere(ApiAppsAccountsColumns.PACKAGE_NAME_FK + " = ");
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
+                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
+                        + ApiAccounts.PACKAGE_NAME_FK + " )");
+                qb.appendWhere(Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+
+                qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
@@ -808,13 +775,15 @@ public class KeychainProvider extends ContentProvider {
                     values.put(Keys.TYPE, KeyTypes.PUBLIC);
 
                     rowId = db.insertOrThrow(Tables.KEYS, null, values);
-                    rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
+                    // TODO: this is wrong:
+//                    rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                     break;
                 case PUBLIC_KEY_RING_USER_ID:
                     rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
-                    rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
+                    // TODO: this is wrong:
+//                    rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                     break;
@@ -830,13 +799,15 @@ public class KeychainProvider extends ContentProvider {
                     values.put(Keys.TYPE, KeyTypes.SECRET);
 
                     rowId = db.insertOrThrow(Tables.KEYS, null, values);
-                    rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
+                    // TODO: this is wrong:
+//                    rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                     break;
                 case SECRET_KEY_RING_USER_ID:
                     rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
-                    rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
+                    // TODO: this is wrong:
+//                    rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
 
                     break;
                 case API_APPS:
@@ -846,7 +817,8 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 case API_ACCOUNTS:
                     rowId = db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
-                    rowUri = ApiAccounts.buildIdUri(Long.toString(rowId));
+                    // TODO: this is wrong:
+//                    rowUri = ApiAccounts.buildIdUri(Long.toString(rowId));
 
                     break;
                 default:
@@ -918,7 +890,7 @@ public class KeychainProvider extends ContentProvider {
                 count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, false, selection),
                         selectionArgs);
                 break;
-            case API_ACCOUNTS_BY_PACKAGE_NAME:
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, true, selection),
                         selectionArgs);
                 break;
@@ -996,7 +968,7 @@ public class KeychainProvider extends ContentProvider {
                     count = db.update(Tables.API_ACCOUNTS, values,
                             buildDefaultApiAccountsSelection(uri, false, selection), selectionArgs);
                     break;
-                case API_ACCOUNTS_BY_PACKAGE_NAME:
+                case API_ACCOUNTS_BY_ACCOUNT_NAME:
                     count = db.update(Tables.API_ACCOUNTS, values,
                             buildDefaultApiAccountsSelection(uri, true, selection), selectionArgs);
                     break;

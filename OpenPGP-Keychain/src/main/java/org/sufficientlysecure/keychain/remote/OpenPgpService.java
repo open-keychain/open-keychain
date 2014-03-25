@@ -138,7 +138,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent signImpl(Intent data, ParcelFileDescriptor input,
-                            ParcelFileDescriptor output, AppSettings appSettings) {
+                            ParcelFileDescriptor output, AccountSettings accSettings) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
@@ -147,11 +147,11 @@ public class OpenPgpService extends RemoteService {
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
             } else {
-                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), appSettings.getKeyId());
+                passphrase = PassphraseCacheService.getCachedPassphrase(getContext(), accSettings.getKeyId());
             }
             if (passphrase == null) {
                 // get PendingIntent for passphrase input, add it to given params and return to client
-                Intent passphraseBundle = getPassphraseBundleIntent(data, appSettings.getKeyId());
+                Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
                 return passphraseBundle;
             }
 
@@ -165,9 +165,9 @@ public class OpenPgpService extends RemoteService {
                 // sign-only
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
-                        .signatureHashAlgorithm(appSettings.getHashAlgorithm())
+                        .signatureHashAlgorithm(accSettings.getHashAlgorithm())
                         .signatureForceV3(false)
-                        .signatureKeyId(appSettings.getKeyId())
+                        .signatureKeyId(accSettings.getKeyId())
                         .signaturePassphrase(passphrase);
                 builder.build().execute();
             } finally {
@@ -188,7 +188,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent encryptAndSignImpl(Intent data, ParcelFileDescriptor input,
-                                      ParcelFileDescriptor output, AppSettings appSettings, boolean sign) {
+                                      ParcelFileDescriptor output, AccountSettings accSettings, boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
@@ -218,7 +218,7 @@ public class OpenPgpService extends RemoteService {
 
             // add own key for encryption
             keyIds = Arrays.copyOf(keyIds, keyIds.length + 1);
-            keyIds[keyIds.length - 1] = appSettings.getKeyId();
+            keyIds[keyIds.length - 1] = accSettings.getKeyId();
 
             // build InputData and write into OutputStream
             // Get Input- and OutputStream from ParcelFileDescriptor
@@ -230,8 +230,8 @@ public class OpenPgpService extends RemoteService {
 
                 PgpSignEncrypt.Builder builder = new PgpSignEncrypt.Builder(getContext(), inputData, os);
                 builder.enableAsciiArmorOutput(asciiArmor)
-                        .compressionId(appSettings.getCompression())
-                        .symmetricEncryptionAlgorithm(appSettings.getEncryptionAlgorithm())
+                        .compressionId(accSettings.getCompression())
+                        .symmetricEncryptionAlgorithm(accSettings.getEncryptionAlgorithm())
                         .encryptionKeyIds(keyIds);
 
                 if (sign) {
@@ -240,18 +240,18 @@ public class OpenPgpService extends RemoteService {
                         passphrase = data.getStringExtra(OpenPgpApi.EXTRA_PASSPHRASE);
                     } else {
                         passphrase = PassphraseCacheService.getCachedPassphrase(getContext(),
-                                appSettings.getKeyId());
+                                accSettings.getKeyId());
                     }
                     if (passphrase == null) {
                         // get PendingIntent for passphrase input, add it to given params and return to client
-                        Intent passphraseBundle = getPassphraseBundleIntent(data, appSettings.getKeyId());
+                        Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
                         return passphraseBundle;
                     }
 
                     // sign and encrypt
-                    builder.signatureHashAlgorithm(appSettings.getHashAlgorithm())
+                    builder.signatureHashAlgorithm(accSettings.getHashAlgorithm())
                             .signatureForceV3(false)
-                            .signatureKeyId(appSettings.getKeyId())
+                            .signatureKeyId(accSettings.getKeyId())
                             .signaturePassphrase(passphrase);
                 } else {
                     // encrypt only
@@ -277,7 +277,7 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent decryptAndVerifyImpl(Intent data, ParcelFileDescriptor input,
-                                        ParcelFileDescriptor output, AppSettings appSettings) {
+                                        ParcelFileDescriptor output, AccountSettings accSettings) {
         try {
             // Get Input- and OutputStream from ParcelFileDescriptor
             InputStream is = new ParcelFileDescriptor.AutoCloseInputStream(input);
@@ -293,7 +293,7 @@ public class OpenPgpService extends RemoteService {
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
                 builder.assumeSymmetric(false) // no support for symmetric encryption
                         // allow only the private key for this app for decryption
-                        .enforcedKeyId(appSettings.getKeyId())
+                        .enforcedKeyId(accSettings.getKeyId())
                         .passphrase(passphrase);
 
                 // TODO: currently does not support binary signed-only content
@@ -301,7 +301,7 @@ public class OpenPgpService extends RemoteService {
 
                 if (decryptVerifyResult.isKeyPassphraseNeeded()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
-                    Intent passphraseBundle = getPassphraseBundleIntent(data, appSettings.getKeyId());
+                    Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
                     return passphraseBundle;
                 } else if (decryptVerifyResult.isSymmetricPassphraseNeeded()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
@@ -433,17 +433,23 @@ public class OpenPgpService extends RemoteService {
                 return errorResult;
             }
 
-            final AppSettings appSettings = getAppSettings();
+            String accName;
+            if (data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME) != null) {
+                accName = data.getStringExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME);
+            } else {
+                accName = "default";
+            }
+            final AccountSettings accSettings = getAccSettings(accName);
 
             String action = data.getAction();
             if (OpenPgpApi.ACTION_SIGN.equals(action)) {
-                return signImpl(data, input, output, appSettings);
+                return signImpl(data, input, output, accSettings);
             } else if (OpenPgpApi.ACTION_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, appSettings, false);
+                return encryptAndSignImpl(data, input, output, accSettings, false);
             } else if (OpenPgpApi.ACTION_SIGN_AND_ENCRYPT.equals(action)) {
-                return encryptAndSignImpl(data, input, output, appSettings, true);
+                return encryptAndSignImpl(data, input, output, accSettings, true);
             } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
-                return decryptAndVerifyImpl(data, input, output, appSettings);
+                return decryptAndVerifyImpl(data, input, output, accSettings);
             } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
                 return getKeyImpl(data);
             } else if (OpenPgpApi.ACTION_GET_KEY_IDS.equals(action)) {

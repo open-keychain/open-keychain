@@ -44,8 +44,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class AppSettingsFragment extends Fragment implements
-        SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
+public class AppSettingsFragment extends Fragment {
 
     // model
     private AppSettings mAppSettings;
@@ -53,17 +52,8 @@ public class AppSettingsFragment extends Fragment implements
     // view
     private TextView mAppNameView;
     private ImageView mAppIconView;
-    private Spinner mEncryptionAlgorithm;
-    private Spinner mHashAlgorithm;
-    private Spinner mCompression;
     private TextView mPackageName;
     private TextView mPackageSignature;
-
-    private SelectSecretKeyLayoutFragment mSelectKeyFragment;
-
-    KeyValueSpinnerAdapter mEncryptionAdapter;
-    KeyValueSpinnerAdapter mHashAdapter;
-    KeyValueSpinnerAdapter mCompressionAdapter;
 
     public AppSettings getAppSettings() {
         return mAppSettings;
@@ -85,11 +75,6 @@ public class AppSettingsFragment extends Fragment implements
             Log.e(Constants.TAG, "Should not happen!", e);
         }
 
-        mSelectKeyFragment.selectKey(appSettings.getKeyId());
-        mEncryptionAlgorithm.setSelection(mEncryptionAdapter.getPosition(appSettings
-                .getEncryptionAlgorithm()));
-        mHashAlgorithm.setSelection(mHashAdapter.getPosition(appSettings.getHashAlgorithm()));
-        mCompression.setSelection(mCompressionAdapter.getPosition(appSettings.getCompression()));
     }
 
     /**
@@ -102,74 +87,13 @@ public class AppSettingsFragment extends Fragment implements
         return view;
     }
 
-    /**
-     * Set error String on key selection
-     *
-     * @param error
-     */
-    public void setErrorOnSelectKeyFragment(String error) {
-        mSelectKeyFragment.setError(error);
-    }
 
     private void initView(View view) {
-        mSelectKeyFragment = (SelectSecretKeyLayoutFragment) getFragmentManager().findFragmentById(
-                R.id.api_app_settings_select_key_fragment);
-        mSelectKeyFragment.setCallback(this);
-
         mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
         mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
-        mEncryptionAlgorithm = (Spinner) view
-                .findViewById(R.id.api_app_settings_encryption_algorithm);
-        mHashAlgorithm = (Spinner) view.findViewById(R.id.api_app_settings_hash_algorithm);
-        mCompression = (Spinner) view.findViewById(R.id.api_app_settings_compression);
+
         mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
         mPackageSignature = (TextView) view.findViewById(R.id.api_app_settings_package_signature);
-
-        AlgorithmNames algorithmNames = new AlgorithmNames(getActivity());
-
-        mEncryptionAdapter = new KeyValueSpinnerAdapter(getActivity(),
-                algorithmNames.getEncryptionNames());
-        mEncryptionAlgorithm.setAdapter(mEncryptionAdapter);
-        mEncryptionAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mAppSettings.setEncryptionAlgorithm((int) id);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mHashAdapter = new KeyValueSpinnerAdapter(getActivity(), algorithmNames.getHashNames());
-        mHashAlgorithm.setAdapter(mHashAdapter);
-        mHashAlgorithm.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mAppSettings.setHashAlgorithm((int) id);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        mCompressionAdapter = new KeyValueSpinnerAdapter(getActivity(),
-                algorithmNames.getCompressionNames());
-        mCompression.setAdapter(mCompressionAdapter);
-        mCompression.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mAppSettings.setCompression((int) id);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
     }
 
     private void setPackage(String packageName) {
@@ -191,12 +115,5 @@ public class AppSettingsFragment extends Fragment implements
         mAppIconView.setImageDrawable(appIcon);
     }
 
-    /**
-     * callback from select secret key fragment
-     */
-    @Override
-    public void onKeySelected(long secretKeyId) {
-        mAppSettings.setKeyId(secretKeyId);
-    }
 
 }

@@ -24,6 +24,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 import org.sufficientlysecure.keychain.Constants;
@@ -31,7 +32,9 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.SelectPublicKeyFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -42,6 +45,8 @@ import java.util.ArrayList;
 public class RemoteServiceActivity extends ActionBarActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
+    public static final String ACTION_REGISTER_ACCOUNT = Constants.INTENT_PREFIX
+            + "API_ACTIVITY_REGISTER_ACCOUNT";
     public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
             + "API_ACTIVITY_CACHE_PASSPHRASE";
     public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
@@ -58,6 +63,8 @@ public class RemoteServiceActivity extends ActionBarActivity {
     // register action
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
+    // create acc action
+    public static final String EXTRA_ACC_NAME = "acc_name";
     // select pub keys action
     public static final String EXTRA_SELECTED_MASTER_KEY_IDS = "master_key_ids";
     public static final String EXTRA_MISSING_USER_IDS = "missing_user_ids";
@@ -66,7 +73,9 @@ public class RemoteServiceActivity extends ActionBarActivity {
     public static final String EXTRA_ERROR_MESSAGE = "error_message";
 
     // register view
-    private AppSettingsFragment mSettingsFragment;
+    private AppSettingsFragment mAppSettingsFragment;
+    // create acc view
+    private AccountSettingsFragment mAccSettingsFragment;
     // select pub keys view
     private SelectPublicKeyFragment mSelectFragment;
 
@@ -95,13 +104,52 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         public void onClick(View v) {
                             // Allow
 
+                            ProviderHelper.insertApiApp(RemoteServiceActivity.this,
+                                    mAppSettingsFragment.getAppSettings());
+
+                            // give data through for new service call
+                            Intent resultData = extras.getParcelable(EXTRA_DATA);
+                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
+                            RemoteServiceActivity.this.finish();
+                        }
+                    }, R.string.api_register_disallow, R.drawable.ic_action_cancel,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Disallow
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                            RemoteServiceActivity.this.finish();
+                        }
+                    }
+            );
+
+            setContentView(R.layout.api_app_register_activity);
+
+            mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
+                    R.id.api_app_settings_fragment);
+
+            AppSettings settings = new AppSettings(packageName, packageSignature);
+            mAppSettingsFragment.setAppSettings(settings);
+        } else if (ACTION_REGISTER_ACCOUNT.equals(action)) {
+            final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
+            final String accName = extras.getString(EXTRA_ACC_NAME);
+
+            // Inflate a "Done"/"Cancel" custom action bar view
+            ActionBarHelper.setTwoButtonView(getSupportActionBar(),
+                    R.string.api_settings_save, R.drawable.ic_action_done,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Save
+
                             // user needs to select a key!
-                            if (mSettingsFragment.getAppSettings().getKeyId() == Id.key.none) {
-                                mSettingsFragment.setErrorOnSelectKeyFragment(
+                            if (mAccSettingsFragment.getAccSettings().getKeyId() == Id.key.none) {
+                                mAccSettingsFragment.setErrorOnSelectKeyFragment(
                                         getString(R.string.api_register_error_select_key));
                             } else {
-                                ProviderHelper.insertApiApp(RemoteServiceActivity.this,
-                                        mSettingsFragment.getAppSettings());
+                                ProviderHelper.insertApiAccount(RemoteServiceActivity.this,
+                                        KeychainContract.ApiAccounts.buildBaseUri(packageName),
+                                        mAccSettingsFragment.getAccSettings());
 
                                 // give data through for new service call
                                 Intent resultData = extras.getParcelable(EXTRA_DATA);
@@ -109,24 +157,24 @@ public class RemoteServiceActivity extends ActionBarActivity {
                                 RemoteServiceActivity.this.finish();
                             }
                         }
-                    }, R.string.api_register_disallow, R.drawable.ic_action_cancel,
-                        new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Disallow
-                                    RemoteServiceActivity.this.setResult(RESULT_CANCELED);
-                                    RemoteServiceActivity.this.finish();
-                                }
+                    }, R.string.api_settings_cancel, R.drawable.ic_action_cancel,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Cancel
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                            RemoteServiceActivity.this.finish();
+                        }
                     }
             );
 
-            setContentView(R.layout.api_app_register_activity);
+            setContentView(R.layout.api_account_create_activity);
 
-            mSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
-                    R.id.api_app_settings_fragment);
+            mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
+                    R.id.api_account_settings_fragment);
 
-            AppSettings settings = new AppSettings(packageName, packageSignature);
-            mSettingsFragment.setAppSettings(settings);
+            AccountSettings settings = new AccountSettings(accName);
+            mAccSettingsFragment.setAccSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
             Intent resultData = extras.getParcelable(EXTRA_DATA);

@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain;
 import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.service.remote.RegisteredAppsListActivity;
+import org.sufficientlysecure.keychain.remote.ui.AppsListActivity;
 import org.sufficientlysecure.keychain.ui.DecryptActivity;
 import org.sufficientlysecure.keychain.ui.EncryptActivity;
 import org.sufficientlysecure.keychain.ui.ImportKeysActivity;
@@ -73,7 +73,7 @@ public final class Constants {
         public static final Class ENCRYPT = EncryptActivity.class;
         public static final Class DECRYPT = DecryptActivity.class;
         public static final Class IMPORT_KEYS = ImportKeysActivity.class;
-        public static final Class REGISTERED_APPS_LIST = RegisteredAppsListActivity.class;
+        public static final Class REGISTERED_APPS_LIST = AppsListActivity.class;
         public static final Class[] ARRAY = new Class[]{KEY_LIST, ENCRYPT, DECRYPT,
                                                 IMPORT_KEYS, REGISTERED_APPS_LIST};
     }

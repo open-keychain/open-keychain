@@ -130,16 +130,16 @@ public abstract class RemoteService extends Service {
      *
      * @return
      */
-    protected AppSettings getAppSettings() {
+    protected AccountSettings getAccSettings(String accountName) {
         String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
 
         // get app settings for this package
         for (int i = 0; i < callingPackages.length; i++) {
             String currentPkg = callingPackages[i];
 
-            Uri uri = KeychainContract.ApiApps.buildByPackageNameUri(currentPkg);
+            Uri uri = KeychainContract.ApiAccounts.buildByPackageAndAccountUri(currentPkg, accountName);
 
-            AppSettings settings = ProviderHelper.getApiAppSettings(this, uri);
+            AccountSettings settings = ProviderHelper.getApiAccountSettings(this, uri);
 
             if (settings != null) {
                 return settings;
@@ -210,7 +210,7 @@ public abstract class RemoteService extends Service {
                 throw new WrongPackageSignatureException(e.getMessage());
             }
 
-            byte[] storedSig = ProviderHelper.getApiAppSignature(this, packageName);
+            byte[] storedSig = ProviderHelper.getApiSignature(this, packageName);
             if (Arrays.equals(currentSig, storedSig)) {
                 Log.d(Constants.TAG,
                         "Package signature is correct! (equals signature from database)");

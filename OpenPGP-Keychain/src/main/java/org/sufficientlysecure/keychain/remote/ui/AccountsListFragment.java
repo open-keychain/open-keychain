@@ -17,27 +17,51 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.annotation.TargetApi;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 
-public class RegisteredAppsListFragment extends ListFragment implements
+// TODO: make compat with < 11
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+public class AccountsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     // This is the Adapter being used to display the list's data.
-    RegisteredAppsAdapter mAdapter;
+    SimpleCursorAdapter mAdapter;
+
+    private String mPackageName;
+
+    public String getPackageName() {
+        return mPackageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.mPackageName = packageName;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -48,7 +72,7 @@ public class RegisteredAppsListFragment extends ListFragment implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // edit app settings
                 Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                intent.setData(ContentUris.withAppendedId(KeychainContract.ApiApps.CONTENT_URI, id));
+                intent.setData(ContentUris.withAppendedId(ApiApps.CONTENT_URI, id));
                 startActivity(intent);
             }
         });
@@ -61,7 +85,12 @@ public class RegisteredAppsListFragment extends ListFragment implements
         setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new RegisteredAppsAdapter(getActivity(), null, 0);
+        mAdapter = new SimpleCursorAdapter(getActivity(),
+                android.R.layout.simple_list_item_1,
+                null,
+                new String[]{KeychainContract.ApiAccounts.ACCOUNT_NAME},
+                new int[]{android.R.id.text1},
+                0);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -70,19 +99,21 @@ public class RegisteredAppsListFragment extends ListFragment implements
     }
 
     // These are the Contacts rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{ApiApps._ID, ApiApps.PACKAGE_NAME};
+    static final String[] PROJECTION = new String[]{
+            KeychainContract.ApiAccounts._ID,
+            KeychainContract.ApiAccounts.ACCOUNT_NAME};
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
         // First, pick the base URI to use depending on whether we are
         // currently filtering.
-        Uri baseUri = ApiApps.CONTENT_URI;
+        Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(mPackageName);
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
         return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null,
-                ApiApps.PACKAGE_NAME + " COLLATE LOCALIZED ASC");
+                KeychainContract.ApiAccounts.ACCOUNT_NAME + " COLLATE LOCALIZED ASC");
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -97,5 +128,47 @@ public class RegisteredAppsListFragment extends ListFragment implements
         // longer using it.
         mAdapter.swapCursor(null);
     }
+
+//    private class RegisteredAppsAdapter extends CursorAdapter {
+//
+//        private LayoutInflater mInflater;
+//        private PackageManager mPM;
+//
+//        public RegisteredAppsAdapter(Context context, Cursor c, int flags) {
+//            super(context, c, flags);
+//
+//            mInflater = LayoutInflater.from(context);
+//            mPM = context.getApplicationContext().getPackageManager();
+//        }
+//
+//        @Override
+//        public void bindView(View view, Context context, Cursor cursor) {
+//            TextView text = (TextView) view.findViewById(R.id.api_apps_adapter_item_name);
+//            ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
+//
+//            String packageName = cursor.getString(cursor.getColumnIndex(ApiApps.PACKAGE_NAME));
+//            if (packageName != null) {
+//                // get application name
+//                try {
+//                    ApplicationInfo ai = mPM.getApplicationInfo(packageName, 0);
+//
+//                    text.setText(mPM.getApplicationLabel(ai));
+//                    icon.setImageDrawable(mPM.getApplicationIcon(ai));
+//                } catch (final PackageManager.NameNotFoundException e) {
+//                    // fallback
+//                    text.setText(packageName);
+//                }
+//            } else {
+//                // fallback
+//                text.setText(packageName);
+//            }
+//
+//        }
+//
+//        @Override
+//        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+//            return mInflater.inflate(R.layout.api_apps_adapter_list_item, null);
+//        }
+//    }
 
 }

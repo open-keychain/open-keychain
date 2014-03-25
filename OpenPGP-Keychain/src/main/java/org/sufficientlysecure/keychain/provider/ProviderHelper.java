@@ -22,6 +22,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.openpgp.*;
 import org.sufficientlysecure.keychain.Constants;
@@ -33,6 +34,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
@@ -469,11 +471,11 @@ public class ProviderHelper {
         cr.delete(KeyRings.buildSecretKeyRingsUri(Long.toString(rowId)), null, null);
     }
 
-    public static void deleteUnifiedKeyRing(Context context,String masterKeyId,boolean isSecretKey){
-        ContentResolver cr= context.getContentResolver();
-        cr.delete(KeyRings.buildPublicKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
-        if(isSecretKey){
-            cr.delete(KeyRings.buildSecretKeyRingsByMasterKeyIdUri(masterKeyId),null,null);
+    public static void deleteUnifiedKeyRing(Context context, String masterKeyId, boolean isSecretKey) {
+        ContentResolver cr = context.getContentResolver();
+        cr.delete(KeyRings.buildPublicKeyRingsByMasterKeyIdUri(masterKeyId), null, null);
+        if (isSecretKey) {
+            cr.delete(KeyRings.buildSecretKeyRingsByMasterKeyIdUri(masterKeyId), null, null);
         }
 
     }
@@ -504,7 +506,7 @@ public class ProviderHelper {
                         + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
                         + " AND sign_keys." + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY
-                        + " = 1) AS sign", };
+                        + " = 1) AS sign",};
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);
@@ -801,70 +803,93 @@ public class ProviderHelper {
         ContentValues values = new ContentValues();
         values.put(ApiApps.PACKAGE_NAME, appSettings.getPackageName());
         values.put(ApiApps.PACKAGE_SIGNATURE, appSettings.getPackageSignature());
-//        values.put(ApiApps.KEY_ID, appSettings.getKeyId());
-//        values.put(ApiApps.COMPRESSION, appSettings.getCompression());
-//        values.put(ApiApps.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
-//        values.put(ApiApps.HASH_ALORITHM, appSettings.getHashAlgorithm());
-
         return values;
     }
 
-    private static ContentValues contentValueForApiAccounts(AppSettings appSettings) {
+    private static ContentValues contentValueForApiAccounts(AccountSettings accSettings) {
         ContentValues values = new ContentValues();
-        values.put(KeychainContract.ApiAccounts.PACKAGE_NAME_FK, appSettings.getPackageName());
-        values.put(KeychainContract.ApiAccounts.KEY_ID, appSettings.getKeyId());
-        values.put(KeychainContract.ApiAccounts.COMPRESSION, appSettings.getCompression());
-        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM, appSettings.getEncryptionAlgorithm());
-        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM, appSettings.getHashAlgorithm());
-
+        values.put(KeychainContract.ApiAccounts.ACCOUNT_NAME, accSettings.getAccountName());
+        values.put(KeychainContract.ApiAccounts.KEY_ID, accSettings.getKeyId());
+        values.put(KeychainContract.ApiAccounts.COMPRESSION, accSettings.getCompression());
+        values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM, accSettings.getEncryptionAlgorithm());
+        values.put(KeychainContract.ApiAccounts.HASH_ALORITHM, accSettings.getHashAlgorithm());
+//        values.put(KeychainContract.ApiAccounts.PACKAGE_NAME_FK, accSettings.getPackageName());
         return values;
     }
 
-    public static void insertApi(Context context, AppSettings appSettings) {
+    public static void insertApiApp(Context context, AppSettings appSettings) {
         context.getContentResolver().insert(KeychainContract.ApiApps.CONTENT_URI,
                 contentValueForApiApps(appSettings));
-        context.getContentResolver().insert(KeychainContract.ApiAccounts.CONTENT_URI,
-                contentValueForApiApps(appSettings));
     }
 
-    // TODO: uri not working because it is used for both tables
+    public static void insertApiAccount(Context context, Uri uri, AccountSettings accSettings) {
+        context.getContentResolver().insert(uri,
+                contentValueForApiAccounts(accSettings));
+    }
+
     public static void updateApiApp(Context context, AppSettings appSettings, Uri uri) {
         if (context.getContentResolver().update(uri, contentValueForApiApps(appSettings), null,
                 null) <= 0) {
             throw new RuntimeException();
         }
-        if (context.getContentResolver().update(uri, contentValueForApiAccounts(appSettings), null,
+    }
+
+    public static void updateApiAccount(Context context, AccountSettings accSettings, Uri uri) {
+        if (context.getContentResolver().update(uri, contentValueForApiAccounts(accSettings), null,
                 null) <= 0) {
             throw new RuntimeException();
         }
     }
 
-    public static AppSettings getApiSettings(Context context, Uri uri) {
+
+    /**
+     * Must be an uri pointing to an account
+     *
+     * @param context
+     * @param uri
+     * @return
+     */
+    public static AppSettings getApiAppSettings(Context context, Uri uri) {
         AppSettings settings = null;
 
         Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
         if (cur != null && cur.moveToFirst()) {
             settings = new AppSettings();
-            settings.setPackageName(cur.getString(cur
-                    .getColumnIndex(KeychainContract.Api.PACKAGE_NAME)));
-            settings.setPackageSignature(cur.getBlob(cur
-                    .getColumnIndex(KeychainContract.Api.PACKAGE_SIGNATURE)));
-            settings.setKeyId(cur.getLong(cur.getColumnIndex(KeychainContract.Api.KEY_ID)));
-            settings.setCompression(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.Api.COMPRESSION)));
-            settings.setHashAlgorithm(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.Api.HASH_ALORITHM)));
-            settings.setEncryptionAlgorithm(cur.getInt(cur
-                    .getColumnIndexOrThrow(KeychainContract.Api.ENCRYPTION_ALGORITHM)));
+            settings.setPackageName(cur.getString(
+                    cur.getColumnIndex(KeychainContract.ApiApps.PACKAGE_NAME)));
+            settings.setPackageSignature(cur.getBlob(
+                    cur.getColumnIndex(KeychainContract.ApiApps.PACKAGE_SIGNATURE)));
+        }
+
+        return settings;
+    }
+
+    public static AccountSettings getApiAccountSettings(Context context, Uri uri) {
+        AccountSettings settings = null;
+
+        Cursor cur = context.getContentResolver().query(uri, null, null, null, null);
+        if (cur != null && cur.moveToFirst()) {
+            settings = new AccountSettings();
+
+            settings.setAccountName(cur.getString(
+                    cur.getColumnIndex(KeychainContract.ApiAccounts.ACCOUNT_NAME)));
+            settings.setKeyId(cur.getLong(
+                    cur.getColumnIndex(KeychainContract.ApiAccounts.KEY_ID)));
+            settings.setCompression(cur.getInt(
+                    cur.getColumnIndexOrThrow(KeychainContract.ApiAccounts.COMPRESSION)));
+            settings.setHashAlgorithm(cur.getInt(
+                    cur.getColumnIndexOrThrow(KeychainContract.ApiAccounts.HASH_ALORITHM)));
+            settings.setEncryptionAlgorithm(cur.getInt(
+                    cur.getColumnIndexOrThrow(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM)));
         }
 
         return settings;
     }
 
     public static byte[] getApiSignature(Context context, String packageName) {
-        Uri queryUri = KeychainContract.Api.buildByPackageNameUri(packageName);
+        Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
 
-        String[] projection = new String[]{KeychainContract.Api.PACKAGE_SIGNATURE};
+        String[] projection = new String[]{ApiApps.PACKAGE_SIGNATURE};
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);
