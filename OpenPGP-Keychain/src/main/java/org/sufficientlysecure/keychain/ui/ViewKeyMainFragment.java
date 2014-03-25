@@ -32,7 +32,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.OtherHelper;
@@ -143,7 +145,7 @@ public class ViewKeyMainFragment extends Fragment implements
                         editIntent.setData(
                                 KeychainContract
                                         .KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
-                                                                Long.toString(masterKeyId)));
+                                        Long.toString(masterKeyId)));
                         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                         startActivityForResult(editIntent, 0);
                     }
@@ -192,27 +194,27 @@ public class ViewKeyMainFragment extends Fragment implements
 
     static final String[] KEYRING_PROJECTION =
             new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.UserIds.USER_ID};
+                    KeychainContract.UserIds.USER_ID};
     static final int KEYRING_INDEX_ID = 0;
     static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
     static final int KEYRING_INDEX_USER_ID = 2;
 
     static final String[] USER_IDS_PROJECTION =
             new String[]{
-                KeychainContract.UserIds._ID,
-                KeychainContract.UserIds.USER_ID,
-                KeychainContract.UserIds.RANK,
+                    KeychainContract.UserIds._ID,
+                    KeychainContract.UserIds.USER_ID,
+                    KeychainContract.UserIds.RANK,
             };
     static final String USER_IDS_SORT_ORDER =
             KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
     static final String[] KEYS_PROJECTION =
             new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
-            KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
-            KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
-            KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
-            KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
-            KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
+                    KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
+                    KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
+                    KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
+                    KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
+                    KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -297,7 +299,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
                         mCreation.setText(
                                 DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
-                                creationDate));
+                                        creationDate));
                     }
 
                     // get expiry date from EXPIRY
@@ -308,7 +310,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
                         mExpiry.setText(
                                 DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
-                                expiryDate));
+                                        expiryDate));
                     }
 
                     String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
@@ -324,17 +326,20 @@ public class ViewKeyMainFragment extends Fragment implements
 
                     mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
-                int valid_keys = 0;
+
+                // hide encrypt button if no encryption key is available
+                boolean canEncrypt = false;
                 data.moveToFirst();
-                do{
-                    if(data.getInt(KEYS_INDEX_CAN_ENCRYPT) == 1){
-                        valid_keys++;
+                do {
+                    if (data.getInt(KEYS_INDEX_CAN_ENCRYPT) == 1) {
+                        canEncrypt = true;
+                        break;
                     }
-                }while(data.moveToNext());
-                if(valid_keys == 0){
+                } while (data.moveToNext());
+                if (!canEncrypt) {
                     mActionEncrypt.setVisibility(View.GONE);
                 }
-                Log.i("Valid Encryption keys", Integer.toString(valid_keys));
+
                 mKeysAdapter.swapCursor(data);
                 break;
 
