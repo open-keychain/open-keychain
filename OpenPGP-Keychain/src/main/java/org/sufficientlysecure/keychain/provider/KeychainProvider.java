@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.v4.database.DatabaseUtilsCompat;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -860,11 +861,11 @@ public class KeychainProvider extends ContentProvider {
                         selectionArgs);
                 break;
             case API_APPS_BY_PACKAGE_NAME:
-                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, true, selection),
+                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, selection),
                         selectionArgs);
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
-                count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, true, selection),
+                count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, selection),
                         selectionArgs);
                 break;
             default:
@@ -931,11 +932,11 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 case API_APPS_BY_PACKAGE_NAME:
                     count = db.update(Tables.API_APPS, values,
-                            buildDefaultApiAppsSelection(uri, true, selection), selectionArgs);
+                            buildDefaultApiAppsSelection(uri, selection), selectionArgs);
                     break;
                 case API_ACCOUNTS_BY_ACCOUNT_NAME:
                     count = db.update(Tables.API_ACCOUNTS, values,
-                            buildDefaultApiAccountsSelection(uri, true, selection), selectionArgs);
+                            buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -1034,34 +1035,29 @@ public class KeychainProvider extends ContentProvider {
      * @param selection
      * @return
      */
-    private String buildDefaultApiAppsSelection(Uri uri, boolean packageSelection, String selection) {
-        String lastPathSegment = uri.getLastPathSegment();
+    private String buildDefaultApiAppsSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
 
         String andSelection = "";
         if (!TextUtils.isEmpty(selection)) {
             andSelection = " AND (" + selection + ")";
         }
 
-        if (packageSelection) {
-            return ApiApps.PACKAGE_NAME + "=" + lastPathSegment + andSelection;
-        } else {
-            return BaseColumns._ID + "=" + lastPathSegment + andSelection;
-        }
+        return ApiApps.PACKAGE_NAME + "=" + packageName + andSelection;
     }
 
-    private String buildDefaultApiAccountsSelection(Uri uri, boolean packageSelection, String selection) {
-        String lastPathSegment = uri.getLastPathSegment();
+    private String buildDefaultApiAccountsSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(2));
+        String accountName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
 
         String andSelection = "";
         if (!TextUtils.isEmpty(selection)) {
             andSelection = " AND (" + selection + ")";
         }
 
-        if (packageSelection) {
-            return ApiAccounts.PACKAGE_NAME_FK + "=" + lastPathSegment + andSelection;
-        } else {
-            return BaseColumns._ID + "=" + lastPathSegment + andSelection;
-        }
+        return ApiAccounts.PACKAGE_NAME_FK + "=" + packageName + " AND "
+                + ApiAccounts.ACCOUNT_NAME + "=" + accountName
+                + andSelection;
     }
 
     // @Override
