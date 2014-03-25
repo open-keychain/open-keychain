@@ -405,12 +405,13 @@ public class PgpKeyOperation {
 
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
 
+        boolean anyIDChanged = false;
         for (String delID : saveParcel.deletedIDs) {
+            anyIDChanged = true;
             masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, delID);
         }
 
         int user_id_index = 0;
-        boolean anyIDChanged = false;
 
         PGPSignatureSubpacketGenerator hashedPacketsGen = new PGPSignatureSubpacketGenerator();
         PGPSignatureSubpacketGenerator unhashedPacketsGen = new PGPSignatureSubpacketGenerator();
