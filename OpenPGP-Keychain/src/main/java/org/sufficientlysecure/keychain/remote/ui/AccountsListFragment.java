@@ -19,10 +19,7 @@ package org.sufficientlysecure.keychain.remote.ui;
 
 import android.annotation.TargetApi;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -31,15 +28,10 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -50,36 +42,46 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 public class AccountsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final String ARG_DATA_URI = "uri";
+
     // This is the Adapter being used to display the list's data.
     SimpleCursorAdapter mAdapter;
 
-    private String mPackageName;
+    private Uri mDataUri;
 
-    public String getPackageName() {
-        return mPackageName;
-    }
+    /**
+     * Creates new instance of this fragment
+     */
+    public static AccountsListFragment newInstance(Uri dataUri) {
+        AccountsListFragment frag = new AccountsListFragment();
 
-    public void setPackageName(String packageName) {
-        this.mPackageName = packageName;
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_DATA_URI, dataUri);
+
+        frag.setArguments(args);
+
+        return frag;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mDataUri = getArguments().getParcelable(ARG_DATA_URI);
+
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // edit app settings
-                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-                intent.setData(ContentUris.withAppendedId(ApiApps.CONTENT_URI, id));
-                startActivity(intent);
+//                // edit app settings
+//                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
+//                intent.setData(ContentUris.withAppendedId(ApiApps.CONTENT_URI, id));
+//                startActivity(intent);
             }
         });
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
-        setEmptyText(getString(R.string.api_no_apps));
+        setEmptyText(getString(R.string.api_settings_accounts_empty));
 
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
@@ -108,11 +110,11 @@ public class AccountsListFragment extends ListFragment implements
         // sample only has one Loader, so we don't care about the ID.
         // First, pick the base URI to use depending on whether we are
         // currently filtering.
-        Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(mPackageName);
+//        Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(mPackageName);
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, null, null,
+        return new CursorLoader(getActivity(), mDataUri, PROJECTION, null, null,
                 KeychainContract.ApiAccounts.ACCOUNT_NAME + " COLLATE LOCALIZED ASC");
     }
 

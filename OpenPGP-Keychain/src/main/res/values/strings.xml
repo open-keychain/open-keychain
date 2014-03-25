@@ -412,6 +412,8 @@
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
+    <string name="api_settings_show_info">Show advanced information</string>
+    <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
     <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
@@ -421,6 +423,8 @@
     <string name="api_settings_revoke">Revoke access</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
+    <string name="api_settings_accounts">Accounts</string>
+    <string name="api_settings_accounts_empty">No accounts attached to this application.</string>
     <string name="api_register_text">The displayed application requests access to OpenKeychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>

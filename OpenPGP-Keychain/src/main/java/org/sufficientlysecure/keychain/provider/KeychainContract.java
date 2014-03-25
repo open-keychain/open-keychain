@@ -95,8 +95,6 @@ public class KeychainContract {
     public static final String BASE_API_APPS = "api_apps";
     public static final String PATH_ACCOUNTS = "accounts";
 
-    public static final String PATH_BY_PACKAGE_NAME = "package_name";
-
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
@@ -272,13 +270,12 @@ public class KeychainContract {
          */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api.apps";
 
-        public static Uri buildIdUri(String rowId) {
-            return CONTENT_URI.buildUpon().appendPath(rowId).build();
-        }
+//        public static Uri buildIdUri(String rowId) {
+//            return CONTENT_URI.buildUpon().appendPath(rowId).build();
+//        }
 
         public static Uri buildByPackageNameUri(String packageName) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME)
-                    .appendEncodedPath(packageName).build();
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
         }
     }
 

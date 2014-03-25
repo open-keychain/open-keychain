@@ -80,10 +80,8 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
     private static final int API_APPS = 301;
-    private static final int API_APPS_BY_ROW_ID = 302;
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
     private static final int API_ACCOUNTS = 304;
-    private static final int API_ACCOUNTS_BY_ROW_ID = 305;
     private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 306;
 
     private static final int UNIFIED_KEY_RING = 401;
@@ -241,19 +239,22 @@ public class KeychainProvider extends ContentProvider {
 
         /**
          * API apps
+         *
+         * <pre>
+         * api_apps
+         * api_apps/_
+         *
+         * api_apps/_/accounts
+         * api_apps/_/accounts/_
+         * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
 
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
-                + KeychainContract.PATH_ACCOUNTS + "/#", API_ACCOUNTS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
-                + KeychainContract.PATH_ACCOUNTS + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
+                + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
 
         /**
          * data stream
@@ -322,14 +323,12 @@ public class KeychainProvider extends ContentProvider {
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
 
-            case API_APPS_BY_ROW_ID:
             case API_APPS_BY_PACKAGE_NAME:
                 return ApiApps.CONTENT_ITEM_TYPE;
 
             case API_ACCOUNTS:
                 return ApiAccounts.CONTENT_TYPE;
 
-            case API_ACCOUNTS_BY_ROW_ID:
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
                 return ApiAccounts.CONTENT_ITEM_TYPE;
 
@@ -680,13 +679,6 @@ public class KeychainProvider extends ContentProvider {
                 qb.setTables(Tables.API_APPS);
 
                 break;
-            case API_APPS_BY_ROW_ID:
-                qb.setTables(Tables.API_APPS);
-
-                qb.appendWhere(BaseColumns._ID + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-                break;
             case API_APPS_BY_PACKAGE_NAME:
                 qb.setTables(Tables.API_APPS);
                 qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
@@ -695,17 +687,6 @@ public class KeychainProvider extends ContentProvider {
                 break;
             case API_ACCOUNTS:
                 qb.setTables(Tables.API_ACCOUNTS);
-
-                break;
-            case API_ACCOUNTS_BY_ROW_ID:
-                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
-                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
-                        + ApiAccounts.PACKAGE_NAME_FK + " )");
-                qb.appendWhere(Tables.API_APPS + "." + BaseColumns._ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
-
-                qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + BaseColumns._ID + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
@@ -812,7 +793,7 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 case API_APPS:
                     rowId = db.insertOrThrow(Tables.API_APPS, null, values);
-                    rowUri = ApiApps.buildIdUri(Long.toString(rowId));
+//                    rowUri = ApiApps.buildIdUri(Long.toString(rowId));
 
                     break;
                 case API_ACCOUNTS:
@@ -878,16 +859,8 @@ public class KeychainProvider extends ContentProvider {
                 count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
                         selectionArgs);
                 break;
-            case API_APPS_BY_ROW_ID:
-                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, false, selection),
-                        selectionArgs);
-                break;
             case API_APPS_BY_PACKAGE_NAME:
                 count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, true, selection),
-                        selectionArgs);
-                break;
-            case API_ACCOUNTS_BY_ROW_ID:
-                count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, false, selection),
                         selectionArgs);
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
@@ -956,17 +929,9 @@ public class KeychainProvider extends ContentProvider {
                     count = db.update(Tables.USER_IDS, values,
                             buildDefaultUserIdsSelection(uri, selection), selectionArgs);
                     break;
-                case API_APPS_BY_ROW_ID:
-                    count = db.update(Tables.API_APPS, values,
-                            buildDefaultApiAppsSelection(uri, false, selection), selectionArgs);
-                    break;
                 case API_APPS_BY_PACKAGE_NAME:
                     count = db.update(Tables.API_APPS, values,
                             buildDefaultApiAppsSelection(uri, true, selection), selectionArgs);
-                    break;
-                case API_ACCOUNTS_BY_ROW_ID:
-                    count = db.update(Tables.API_ACCOUNTS, values,
-                            buildDefaultApiAccountsSelection(uri, false, selection), selectionArgs);
                     break;
                 case API_ACCOUNTS_BY_ACCOUNT_NAME:
                     count = db.update(Tables.API_ACCOUNTS, values,
