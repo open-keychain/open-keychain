@@ -376,6 +376,9 @@ public class PgpKeyOperation {
             else
                 remove changed IDs and add in with new certs
 
+            if the master key changed, we need to remove the primary ID certification, so we can add
+            the new one when it is generated, and they don't conflict
+
         Keys
             remove deleted keys
             if a key is modified, re-sign it
@@ -493,6 +496,11 @@ public class PgpKeyOperation {
                 }
                 user_id_index++;
             }
+        }
+
+        if (saveParcel.moddedKeys[0]) {
+            masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, saveParcel.originalIDs.get(0));
+            anyIDChanged = true;
         }
 
         //update the keyring with the new ID information
