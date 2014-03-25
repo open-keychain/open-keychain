@@ -813,7 +813,6 @@ public class ProviderHelper {
         values.put(KeychainContract.ApiAccounts.COMPRESSION, accSettings.getCompression());
         values.put(KeychainContract.ApiAccounts.ENCRYPTION_ALGORITHM, accSettings.getEncryptionAlgorithm());
         values.put(KeychainContract.ApiAccounts.HASH_ALORITHM, accSettings.getHashAlgorithm());
-//        values.put(KeychainContract.ApiAccounts.PACKAGE_NAME_FK, accSettings.getPackageName());
         return values;
     }
 
@@ -823,8 +822,7 @@ public class ProviderHelper {
     }
 
     public static void insertApiAccount(Context context, Uri uri, AccountSettings accSettings) {
-        context.getContentResolver().insert(uri,
-                contentValueForApiAccounts(accSettings));
+        context.getContentResolver().insert(uri, contentValueForApiAccounts(accSettings));
     }
 
     public static void updateApiApp(Context context, AppSettings appSettings, Uri uri) {
@@ -840,7 +838,6 @@ public class ProviderHelper {
             throw new RuntimeException();
         }
     }
-
 
     /**
      * Must be an uri pointing to an account
@@ -886,7 +883,7 @@ public class ProviderHelper {
         return settings;
     }
 
-    public static byte[] getApiSignature(Context context, String packageName) {
+    public static byte[] getApiAppSignature(Context context, String packageName) {
         Uri queryUri = ApiApps.buildByPackageNameUri(packageName);
 
         String[] projection = new String[]{ApiApps.PACKAGE_SIGNATURE};

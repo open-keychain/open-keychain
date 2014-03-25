@@ -21,6 +21,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAccountsColumns;
@@ -63,33 +64,35 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + KeysColumns.KEY_DATA + " BLOB,"
             + KeysColumns.RANK + " INTEGER, "
             + KeysColumns.FINGERPRINT + " BLOB, "
-            + KeysColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
-            + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
-            + BaseColumns._ID + ") ON DELETE CASCADE)";
+            + KeysColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, "
+            + "FOREIGN KEY(" + KeysColumns.KEY_RING_ROW_ID + ") REFERENCES "
+            + Tables.KEY_RINGS + "(" + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_USER_IDS = "CREATE TABLE IF NOT EXISTS " + Tables.USER_IDS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + UserIdsColumns.USER_ID + " TEXT, "
             + UserIdsColumns.RANK + " INTEGER, "
-            + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, FOREIGN KEY("
-            + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES " + Tables.KEY_RINGS + "("
-            + BaseColumns._ID + ") ON DELETE CASCADE)";
+            + UserIdsColumns.KEY_RING_ROW_ID + " INTEGER NOT NULL, "
+            + "FOREIGN KEY(" + UserIdsColumns.KEY_RING_ROW_ID + ") REFERENCES "
+            + Tables.KEY_RINGS + "(" + BaseColumns._ID + ") ON DELETE CASCADE)";
 
     private static final String CREATE_API_APPS = "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsColumns.PACKAGE_NAME + " TEXT UNIQUE, "
+            + ApiAppsColumns.PACKAGE_NAME + " TEXT NOT NULL UNIQUE, "
             + ApiAppsColumns.PACKAGE_SIGNATURE + " BLOB)";
 
     private static final String CREATE_API_APPS_ACCOUNTS = "CREATE TABLE IF NOT EXISTS " + Tables.API_ACCOUNTS
             + " (" + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT UNIQUE, "
+            + ApiAppsAccountsColumns.ACCOUNT_NAME + " TEXT NOT NULL, "
             + ApiAppsAccountsColumns.KEY_ID + " INT64, "
             + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
-            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + " TEXT NOT NULL, FOREIGN KEY("
-            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + ") REFERENCES " + Tables.API_APPS + "("
-            + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
+            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + " TEXT NOT NULL, "
+            + "UNIQUE(" + ApiAppsAccountsColumns.ACCOUNT_NAME + ", "
+            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + "), "
+            + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME_FK + ") REFERENCES "
+            + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
 
     KeychainDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

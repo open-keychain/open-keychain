@@ -694,7 +694,7 @@ public class KeychainProvider extends ContentProvider {
                         + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
                         + ApiAccounts.PACKAGE_NAME_FK + " )");
                 qb.appendWhere(Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
@@ -797,6 +797,13 @@ public class KeychainProvider extends ContentProvider {
 
                     break;
                 case API_ACCOUNTS:
+                    // set foreign key automatically based on given uri
+                    // e.g., api_apps/com.example.app/accounts/
+                    String packageName = uri.getPathSegments().get(1);
+                    values.put(ApiAccounts.PACKAGE_NAME_FK, packageName);
+
+                    Log.d(Constants.TAG, "provider packageName: " + packageName);
+
                     rowId = db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
                     // TODO: this is wrong:
 //                    rowUri = ApiAccounts.buildIdUri(Long.toString(rowId));
@@ -1046,7 +1053,7 @@ public class KeychainProvider extends ContentProvider {
     }
 
     private String buildDefaultApiAccountsSelection(Uri uri, String selection) {
-        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(2));
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
         String accountName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
 
         String andSelection = "";

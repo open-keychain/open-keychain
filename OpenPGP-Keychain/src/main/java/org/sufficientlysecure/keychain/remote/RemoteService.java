@@ -235,7 +235,7 @@ public abstract class RemoteService extends Service {
                 throw new WrongPackageSignatureException(e.getMessage());
             }
 
-            byte[] storedSig = ProviderHelper.getApiSignature(this, packageName);
+            byte[] storedSig = ProviderHelper.getApiAppSignature(this, packageName);
             if (Arrays.equals(currentSig, storedSig)) {
                 Log.d(Constants.TAG,
                         "Package signature is correct! (equals signature from database)");
