@@ -28,7 +28,15 @@
         android:id="@+id/keyDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingRight="5dip"
         android:text="(RSA, 1024bit)"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/keyExpiry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/label_expiry"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout

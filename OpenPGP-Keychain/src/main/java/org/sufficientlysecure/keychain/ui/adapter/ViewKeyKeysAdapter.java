@@ -22,6 +22,7 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v4.widget.CursorAdapter;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+
+import java.util.Date;
 
 public class ViewKeyKeysAdapter extends CursorAdapter {
     private LayoutInflater mInflater;
@@ -42,6 +45,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     private int mIndexCanEncrypt;
     private int mIndexCanSign;
     private int mIndexRevokedKey;
+    private int mIndexExpiry;
 
     private ColorStateList mDefaultTextColor;
 
@@ -76,6 +80,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
             mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
             mIndexRevokedKey = cursor.getColumnIndexOrThrow(Keys.IS_REVOKED);
+            mIndexExpiry = cursor.getColumnIndexOrThrow(Keys.EXPIRY);
         }
     }
 
@@ -83,6 +88,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         TextView keyId = (TextView) view.findViewById(R.id.keyId);
         TextView keyDetails = (TextView) view.findViewById(R.id.keyDetails);
+        TextView keyExpiry = (TextView) view.findViewById(R.id.keyExpiry);
         ImageView masterKeyIcon = (ImageView) view.findViewById(R.id.ic_masterKey);
         ImageView certifyIcon = (ImageView) view.findViewById(R.id.ic_certifyKey);
         ImageView encryptIcon = (ImageView) view.findViewById(R.id.ic_encryptKey);
@@ -129,6 +135,22 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             keyDetails.setTextColor(mDefaultTextColor);
             revokedKeyIcon.setVisibility(View.GONE);
         }
+
+        boolean valid = true;
+        if (!cursor.isNull(mIndexExpiry)) {
+            Date expiryDate = new Date(cursor.getLong(mIndexExpiry) * 1000);
+            valid = expiryDate.after(new Date());
+            keyExpiry.setText("(" +
+                context.getString(R.string.label_expiry) + ": " +
+                DateFormat.getDateFormat(context).format(expiryDate) + ")");
+            keyExpiry.setVisibility(View.VISIBLE);
+        }
+        else {
+            keyExpiry.setVisibility(View.GONE);
+        }
+        keyId.setEnabled(valid);
+        keyDetails.setEnabled(valid);
+        keyExpiry.setEnabled(valid);
     }
 
     @Override
