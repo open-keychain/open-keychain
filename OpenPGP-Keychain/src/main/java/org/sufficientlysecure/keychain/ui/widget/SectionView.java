@@ -256,11 +256,11 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     }
                 });
 
-        // Message is received after generating is done in ApgService
+        // Message is received after generating is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
                 mGeneratingDialog) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {

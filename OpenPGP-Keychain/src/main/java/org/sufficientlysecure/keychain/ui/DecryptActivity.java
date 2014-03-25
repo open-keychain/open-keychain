@@ -443,8 +443,7 @@ public class DecryptActivity extends DrawerActivity {
         getDecryptionKeyFromInputStream();
 
         // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
-        if (mSecretKeyId == Id.key.symmetric
-                || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
+        if (mAssumeSymmetricEncryption || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
             showPassphraseDialog();
         } else {
             if (mDecryptTarget == Id.target.file) {
@@ -494,6 +493,7 @@ public class DecryptActivity extends DrawerActivity {
      * TODO: Rework function, remove global variables
      */
     private void getDecryptionKeyFromInputStream() {
+        mAssumeSymmetricEncryption = false;
         InputStream inStream = null;
         if (mContentUri != null) {
             try {
@@ -517,13 +517,6 @@ public class DecryptActivity extends DrawerActivity {
                 Log.e(Constants.TAG, "File not found!", e);
                 AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
                         AppMsg.STYLE_ALERT).show();
-            } finally {
-                try {
-                    if (inStream != null) {
-                        inStream.close();
-                    }
-                } catch (Exception e) {
-                }
             }
         } else {
             inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
@@ -540,7 +533,6 @@ public class DecryptActivity extends DrawerActivity {
                 if (mSecretKeyId == Id.key.none) {
                     throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
                 }
-                mAssumeSymmetricEncryption = false;
             } catch (NoAsymmetricEncryptionException e) {
                 if (inStream.markSupported()) {
                     inStream.reset();
@@ -553,6 +545,7 @@ public class DecryptActivity extends DrawerActivity {
                 mAssumeSymmetricEncryption = true;
             }
         } catch (Exception e) {
+            Log.e(Constants.TAG, "error while reading decryption key from input stream", e);
             AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
                     AppMsg.STYLE_ALERT).show();
         }
@@ -638,11 +631,11 @@ public class DecryptActivity extends DrawerActivity {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in ApgService
+        // Message is received after encrypting is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
                 getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
