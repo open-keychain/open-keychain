@@ -45,8 +45,8 @@ import java.util.ArrayList;
 public class RemoteServiceActivity extends ActionBarActivity {
 
     public static final String ACTION_REGISTER = Constants.INTENT_PREFIX + "API_ACTIVITY_REGISTER";
-    public static final String ACTION_REGISTER_ACCOUNT = Constants.INTENT_PREFIX
-            + "API_ACTIVITY_REGISTER_ACCOUNT";
+    public static final String ACTION_CREATE_ACCOUNT = Constants.INTENT_PREFIX
+            + "API_ACTIVITY_CREATE_ACCOUNT";
     public static final String ACTION_CACHE_PASSPHRASE = Constants.INTENT_PREFIX
             + "API_ACTIVITY_CACHE_PASSPHRASE";
     public static final String ACTION_SELECT_PUB_KEYS = Constants.INTENT_PREFIX
@@ -130,7 +130,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
 
             AppSettings settings = new AppSettings(packageName, packageSignature);
             mAppSettingsFragment.setAppSettings(settings);
-        } else if (ACTION_REGISTER_ACCOUNT.equals(action)) {
+        } else if (ACTION_CREATE_ACCOUNT.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
             final String accName = extras.getString(EXTRA_ACC_NAME);
 

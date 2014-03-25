@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.support.v4.database.DatabaseUtilsCompat;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -243,10 +242,10 @@ public class KeychainProvider extends ContentProvider {
          *
          * <pre>
          * api_apps
-         * api_apps/_
+         * api_apps/_ (package name)
          *
          * api_apps/_/accounts
-         * api_apps/_/accounts/_
+         * api_apps/_/accounts/_ (account name)
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);

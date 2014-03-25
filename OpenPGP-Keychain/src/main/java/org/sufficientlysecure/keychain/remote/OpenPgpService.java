@@ -440,6 +440,9 @@ public class OpenPgpService extends RemoteService {
                 accName = "default";
             }
             final AccountSettings accSettings = getAccSettings(accName);
+            if (accSettings == null) {
+                return getCreateAccountIntent(data, accName);
+            }
 
             String action = data.getAction();
             if (OpenPgpApi.ACTION_SIGN.equals(action)) {

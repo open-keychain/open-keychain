@@ -160,6 +160,7 @@ public class KeychainContract {
         }
 
         public static Uri buildSecretKeyRingsByEmailsUri(String emails) {
+            // TODO: encoded?
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_EMAILS)
                     .appendPath(emails).build();
         }
@@ -263,16 +264,12 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api.app";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_apps";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api.apps";
-
-//        public static Uri buildIdUri(String rowId) {
-//            return CONTENT_URI.buildUpon().appendPath(rowId).build();
-//        }
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_app";
 
         public static Uri buildByPackageNameUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
@@ -286,22 +283,12 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api.acoounts";
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_app.accounts";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api.account";
-
-//        public static Uri buildUri(String rowIdApp) {
-//            return CONTENT_URI.buildUpon().appendPath(rowIdApp).appendPath(PATH_ACCOUNTS)
-//                    .build();
-//        }
-//
-//        public static Uri buildIdUri(String rowIdApp, String rowId) {
-//            return CONTENT_URI.buildUpon().appendPath(rowIdApp).appendPath(PATH_ACCOUNTS)
-//                    .appendPath(rowId).build();
-//        }
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_app.account";
 
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
