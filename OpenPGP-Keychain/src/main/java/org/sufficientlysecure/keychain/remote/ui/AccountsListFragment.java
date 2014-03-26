@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,35 +17,35 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
-import android.annotation.TargetApi;
-import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.util.Log;
 
-// TODO: make compat with < 11
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class AccountsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String ARG_DATA_URI = "uri";
 
     // This is the Adapter being used to display the list's data.
-    SimpleCursorAdapter mAdapter;
+    AccountsAdapter mAdapter;
 
     private Uri mDataUri;
 
@@ -72,10 +72,14 @@ public class AccountsListFragment extends ListFragment implements
         getListView().setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                // edit app settings
-//                Intent intent = new Intent(getActivity(), AppSettingsActivity.class);
-//                intent.setData(ContentUris.withAppendedId(ApiApps.CONTENT_URI, id));
-//                startActivity(intent);
+                String selectedAccountName = mAdapter.getItemAccountName(position);
+                Uri accountUri = mDataUri.buildUpon().appendEncodedPath(selectedAccountName).build();
+                Log.d(Constants.TAG, "accountUri: " + accountUri);
+
+                // edit account settings
+                Intent intent = new Intent(getActivity(), AccountSettingsActivity.class);
+                intent.setData(accountUri);
+                startActivity(intent);
             }
         });
 
@@ -87,12 +91,7 @@ public class AccountsListFragment extends ListFragment implements
         setHasOptionsMenu(true);
 
         // Create an empty adapter we will use to display the loaded data.
-        mAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_1,
-                null,
-                new String[]{KeychainContract.ApiAccounts.ACCOUNT_NAME},
-                new int[]{android.R.id.text1},
-                0);
+        mAdapter = new AccountsAdapter(getActivity(), null, 0);
         setListAdapter(mAdapter);
 
         // Prepare the loader. Either re-connect with an existing one,
@@ -102,15 +101,13 @@ public class AccountsListFragment extends ListFragment implements
 
     // These are the Contacts rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
-            KeychainContract.ApiAccounts._ID,
-            KeychainContract.ApiAccounts.ACCOUNT_NAME};
+            KeychainContract.ApiAccounts._ID, // 0
+            KeychainContract.ApiAccounts.ACCOUNT_NAME // 1
+    };
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        // First, pick the base URI to use depending on whether we are
-        // currently filtering.
-//        Uri baseUri = KeychainContract.ApiAccounts.buildBaseUri(mPackageName);
 
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
@@ -131,46 +128,46 @@ public class AccountsListFragment extends ListFragment implements
         mAdapter.swapCursor(null);
     }
 
-//    private class RegisteredAppsAdapter extends CursorAdapter {
-//
-//        private LayoutInflater mInflater;
-//        private PackageManager mPM;
-//
-//        public RegisteredAppsAdapter(Context context, Cursor c, int flags) {
-//            super(context, c, flags);
-//
-//            mInflater = LayoutInflater.from(context);
-//            mPM = context.getApplicationContext().getPackageManager();
-//        }
-//
-//        @Override
-//        public void bindView(View view, Context context, Cursor cursor) {
-//            TextView text = (TextView) view.findViewById(R.id.api_apps_adapter_item_name);
-//            ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
-//
-//            String packageName = cursor.getString(cursor.getColumnIndex(ApiApps.PACKAGE_NAME));
-//            if (packageName != null) {
-//                // get application name
-//                try {
-//                    ApplicationInfo ai = mPM.getApplicationInfo(packageName, 0);
-//
-//                    text.setText(mPM.getApplicationLabel(ai));
-//                    icon.setImageDrawable(mPM.getApplicationIcon(ai));
-//                } catch (final PackageManager.NameNotFoundException e) {
-//                    // fallback
-//                    text.setText(packageName);
-//                }
-//            } else {
-//                // fallback
-//                text.setText(packageName);
-//            }
-//
-//        }
-//
-//        @Override
-//        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-//            return mInflater.inflate(R.layout.api_apps_adapter_list_item, null);
-//        }
-//    }
+    private class AccountsAdapter extends CursorAdapter {
+        private LayoutInflater mInflater;
+
+        public AccountsAdapter(Context context, Cursor c, int flags) {
+            super(context, c, flags);
+
+            mInflater = LayoutInflater.from(context);
+        }
+
+        /**
+         * Similar to CursorAdapter.getItemId().
+         * Required to build Uris for api app view, which is not based on row ids
+         *
+         * @param position
+         * @return
+         */
+        public String getItemAccountName(int position) {
+            if (mDataValid && mCursor != null) {
+                if (mCursor.moveToPosition(position)) {
+                    return mCursor.getString(1);
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            TextView text = (TextView) view.findViewById(R.id.api_accounts_adapter_item_name);
+
+            String accountName = cursor.getString(1);
+            text.setText(accountName);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater.inflate(R.layout.api_accounts_adapter_list_item, null);
+        }
+    }
 
 }

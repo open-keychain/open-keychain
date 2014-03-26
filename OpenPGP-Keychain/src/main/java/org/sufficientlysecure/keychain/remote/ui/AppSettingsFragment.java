@@ -26,19 +26,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
-import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
-import org.sufficientlysecure.keychain.util.AlgorithmNames;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.security.MessageDigest;
@@ -100,14 +94,14 @@ public class AppSettingsFragment extends Fragment {
         PackageManager pm = getActivity().getApplicationContext().getPackageManager();
 
         // get application name and icon from package manager
-        String appName = null;
+        String appName;
         Drawable appIcon = null;
         try {
             ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
 
             appName = (String) pm.getApplicationLabel(ai);
             appIcon = pm.getApplicationIcon(ai);
-        } catch (final NameNotFoundException e) {
+        } catch (NameNotFoundException e) {
             // fallback
             appName = packageName;
         }
