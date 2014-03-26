@@ -498,11 +498,15 @@ public class KeyListFragment extends Fragment
             }
 
             { // set edit button and revoked info, specific by key type
+                View statusDivider = (View) view.findViewById(R.id.status_divider);
+                FrameLayout statusLayout = (FrameLayout) view.findViewById(R.id.status_layout);
                 Button button = (Button) view.findViewById(R.id.edit);
                 TextView revoked = (TextView) view.findViewById(R.id.revoked);
 
                 if (cursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
                     // this is a secret key - show the edit button
+                    statusDivider.setVisibility(View.VISIBLE);
+                    statusLayout.setVisibility(View.VISIBLE);
                     revoked.setVisibility(View.GONE);
                     button.setVisibility(View.VISIBLE);
 
@@ -519,9 +523,11 @@ public class KeyListFragment extends Fragment
                     });
                 } else {
                     // this is a public key - hide the edit button, show if it's revoked
+                    statusDivider.setVisibility(View.GONE);
                     button.setVisibility(View.GONE);
 
                     boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+                    statusLayout.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
                     revoked.setVisibility(isRevoked ? View.VISIBLE : View.GONE);
                 }
             }
