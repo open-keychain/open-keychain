@@ -418,9 +418,11 @@
     <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
     <string name="api_settings_select_key">Select key</string>
+    <string name="api_settings_create_key">Create new key for this account</string>
     <string name="api_settings_save">Save</string>
     <string name="api_settings_cancel">Cancel</string>
     <string name="api_settings_revoke">Revoke access</string>
+    <string name="api_settings_delete_account">Delete account</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
     <string name="api_settings_accounts">Accounts</string>

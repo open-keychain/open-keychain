@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -32,11 +33,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.beardedhen.androidbootstrap.BootstrapButton;
+
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.ui.EditKeyActivity;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
 import org.sufficientlysecure.keychain.ui.adapter.KeyValueSpinnerAdapter;
 import org.sufficientlysecure.keychain.util.AlgorithmNames;
@@ -52,15 +56,13 @@ public class AccountSettingsFragment extends Fragment implements
     private AccountSettings mAccSettings;
 
     // view
-    private TextView mAppNameView;
-    private ImageView mAppIconView;
+    private TextView mAccNameView;
     private Spinner mEncryptionAlgorithm;
     private Spinner mHashAlgorithm;
     private Spinner mCompression;
-    private TextView mPackageName;
-    private TextView mPackageSignature;
 
     private SelectSecretKeyLayoutFragment mSelectKeyFragment;
+    private BootstrapButton mCreateKeyButton;
 
     KeyValueSpinnerAdapter mEncryptionAdapter;
     KeyValueSpinnerAdapter mHashAdapter;
@@ -70,27 +72,15 @@ public class AccountSettingsFragment extends Fragment implements
         return mAccSettings;
     }
 
-    public void setAccSettings(AccountSettings appSettings) {
-        this.mAccSettings = appSettings;
-//        setPackage(appSettings.getPackageName());
-//        mPackageName.setText(appSettings.getPackageName());
+    public void setAccSettings(AccountSettings accountSettings) {
+        this.mAccSettings = accountSettings;
 
-//        try {
-//            MessageDigest md = MessageDigest.getInstance("SHA-256");
-//            md.update(appSettings.getPackageSignature());
-//            byte[] digest = md.digest();
-//            String signature = new String(Hex.encode(digest));
-//
-//            mPackageSignature.setText(signature);
-//        } catch (NoSuchAlgorithmException e) {
-//            Log.e(Constants.TAG, "Should not happen!", e);
-//        }
-
-        mSelectKeyFragment.selectKey(appSettings.getKeyId());
-        mEncryptionAlgorithm.setSelection(mEncryptionAdapter.getPosition(appSettings
+        mAccNameView.setText(accountSettings.getAccountName());
+        mSelectKeyFragment.selectKey(accountSettings.getKeyId());
+        mEncryptionAlgorithm.setSelection(mEncryptionAdapter.getPosition(accountSettings
                 .getEncryptionAlgorithm()));
-        mHashAlgorithm.setSelection(mHashAdapter.getPosition(appSettings.getHashAlgorithm()));
-        mCompression.setSelection(mCompressionAdapter.getPosition(appSettings.getCompression()));
+        mHashAlgorithm.setSelection(mHashAdapter.getPosition(accountSettings.getHashAlgorithm()));
+        mCompression.setSelection(mCompressionAdapter.getPosition(accountSettings.getCompression()));
     }
 
     /**
@@ -117,14 +107,19 @@ public class AccountSettingsFragment extends Fragment implements
                 R.id.api_account_settings_select_key_fragment);
         mSelectKeyFragment.setCallback(this);
 
-        mAppNameView = (TextView) view.findViewById(R.id.api_account_settings_app_name);
-        mAppIconView = (ImageView) view.findViewById(R.id.api_account_settings_app_icon);
+        mAccNameView = (TextView) view.findViewById(R.id.api_account_settings_acc_name);
         mEncryptionAlgorithm = (Spinner) view
                 .findViewById(R.id.api_account_settings_encryption_algorithm);
         mHashAlgorithm = (Spinner) view.findViewById(R.id.api_account_settings_hash_algorithm);
         mCompression = (Spinner) view.findViewById(R.id.api_account_settings_compression);
-        mPackageName = (TextView) view.findViewById(R.id.api_account_settings_package_name);
-        mPackageSignature = (TextView) view.findViewById(R.id.api_account_settings_package_signature);
+        mCreateKeyButton = (BootstrapButton) view.findViewById(R.id.api_account_settings_create_key);
+
+        mCreateKeyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createKey();
+            }
+        });
 
         AlgorithmNames algorithmNames = new AlgorithmNames(getActivity());
 
@@ -172,25 +167,15 @@ public class AccountSettingsFragment extends Fragment implements
             }
         });
     }
-//
-//    private void setPackage(String packageName) {
-//        PackageManager pm = getActivity().getApplicationContext().getPackageManager();
-//
-//        // get application name and icon from package manager
-//        String appName = null;
-//        Drawable appIcon = null;
-//        try {
-//            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
-//
-//            appName = (String) pm.getApplicationLabel(ai);
-//            appIcon = pm.getApplicationIcon(ai);
-//        } catch (final NameNotFoundException e) {
-//            // fallback
-//            appName = packageName;
-//        }
-//        mAppNameView.setText(appName);
-//        mAppIconView.setImageDrawable(appIcon);
-//    }
+
+    private void createKey() {
+        Intent intent = new Intent(getActivity(), EditKeyActivity.class);
+        intent.setAction(EditKeyActivity.ACTION_CREATE_KEY);
+        intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
+        // set default user id to account name TODO: not working currently in EditKey
+        intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, mAccSettings.getAccountName());
+        startActivityForResult(intent, 0);
+    }
 
     /**
      * callback from select secret key fragment
