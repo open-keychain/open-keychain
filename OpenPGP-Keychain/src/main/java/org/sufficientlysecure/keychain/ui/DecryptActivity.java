@@ -79,6 +79,11 @@ public class DecryptActivity extends DrawerActivity {
     private boolean mSignedOnly = false;
     private boolean mAssumeSymmetricEncryption = false;
 
+    /**
+     * Contains text that should be in {@link #mMessage}, but must be temporally hidden from user
+     * @see <a href="https://github.com/openpgp-keychain/openpgp-keychain/issues/428">Issue #428</a>
+     */
+    private String mMessageText = null;
     private EditText mMessage = null;
     private RelativeLayout mSignatureLayout = null;
     private ImageView mSignatureStatusImage = null;
@@ -222,7 +227,8 @@ public class DecryptActivity extends DrawerActivity {
                 }
                 if (matcher.matches()) {
                     data = matcher.group(1);
-                    mMessage.setText(data);
+                    //mMessage.setText(data);
+                    mMessageText = data;
                     AppMsg.makeText(this, R.string.using_clipboard_content, AppMsg.STYLE_INFO)
                             .show();
                 }
@@ -262,8 +268,8 @@ public class DecryptActivity extends DrawerActivity {
         updateSource();
 
         if (mDecryptImmediately
-                || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                .length() > 0 || mContentUri != null))) {
+                || (mSource.getCurrentView().getId() == R.id.sourceMessage &&
+                (mMessage.getText().length() > 0 || mMessageText.length() > 0 || mContentUri != null))) {
             decryptClicked();
         }
     }
@@ -429,6 +435,8 @@ public class DecryptActivity extends DrawerActivity {
 
         if (mDecryptTarget == Id.target.message) {
             String messageData = mMessage.getText().toString();
+            if (messageData == null || messageData.isEmpty())
+                messageData = mMessageText;
             Matcher matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(messageData);
             if (matcher.matches()) {
                 mSignedOnly = true;
@@ -519,7 +527,10 @@ public class DecryptActivity extends DrawerActivity {
                         AppMsg.STYLE_ALERT).show();
             }
         } else {
-            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+            String s = mMessage.getText().toString();
+            if (s == null || s.isEmpty())
+                s = mMessageText;
+            inStream = new ByteArrayInputStream(s.getBytes());
         }
 
         // get decryption key for this inStream
@@ -621,6 +632,8 @@ public class DecryptActivity extends DrawerActivity {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
 
             String message = mMessage.getText().toString();
+            if (message == null || message.isEmpty())
+                message = mMessageText;
             data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
         }
 
