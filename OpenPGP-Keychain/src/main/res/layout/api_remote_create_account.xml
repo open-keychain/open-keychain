@@ -10,6 +10,14 @@
         android:padding="16dp"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/api_remote_create_account_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="3dip"
+            android:text="@string/api_create_account_text"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
         <fragment
             android:id="@+id/api_account_settings_fragment"
             android:name="org.sufficientlysecure.keychain.remote.ui.AccountSettingsFragment"

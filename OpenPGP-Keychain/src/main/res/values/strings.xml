@@ -427,6 +427,7 @@
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
     <string name="api_settings_accounts">Accounts</string>
     <string name="api_settings_accounts_empty">No accounts attached to this application.</string>
+    <string name="api_create_account_text">The application requests the creation of a new account. Please select an existing private key or create a new one.\nApplications are restricted to the usage of keys you select here!</string>
     <string name="api_register_text">The displayed application requests access to OpenKeychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
