@@ -41,6 +41,7 @@ public class SaveKeyringParcel implements Parcelable {
     public String oldPassPhrase;
     public boolean[] newKeys;
     public ArrayList<PGPSecretKey> keys;
+    public String originalPrimaryID;
 
     public SaveKeyringParcel() {}
 
@@ -62,6 +63,7 @@ public class SaveKeyringParcel implements Parcelable {
         oldPassPhrase = source.readString();
         newKeys = source.createBooleanArray();
         keys = PgpConversionHelper.BytesToPGPSecretKeyList(source.createByteArray());
+        originalPrimaryID = source.readString();
     }
 
     @Override
@@ -82,6 +84,7 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeString(oldPassPhrase);
         destination.writeBooleanArray(newKeys);
         destination.writeByteArray(PgpConversionHelper.PGPSecretKeyArrayListToBytes(keys));
+        destination.writeString(originalPrimaryID);
     }
 
     public static final Creator<SaveKeyringParcel> CREATOR = new Creator<SaveKeyringParcel>() {
