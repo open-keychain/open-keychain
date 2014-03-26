@@ -32,14 +32,14 @@ public class UploadKeyDialogFragment extends DialogFragment {
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setTitle(getString(R.string.section_upload_key))
                 .setMessage(getString(R.string.upload_key_dialog_message))
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton(getString(R.string.choice_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ((EditKeyActivity) getActivity()).uploadToKeyserver(dataUri);
                     }
 
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener(){
+                .setNegativeButton(getString(R.string.choice_no), new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ((EditKeyActivity) getActivity()).finish();
