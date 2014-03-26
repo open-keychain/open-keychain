@@ -205,6 +205,8 @@
   <string name="key_deletion_confirmation">鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
   <string name="key_deletion_confirmation_multi">選択したすべての鍵を本当に削除してよいですか?\nこれは元に戻せません。</string>
   <string name="secret_key_deletion_confirmation">秘密鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
+  <string name="public_key_deletetion_confirmation">公開鍵\'%s\'を本当に削除してもよいですか?\nこれは元に戻せません!</string>
+  <string name="secret_key_delete_text">秘密鍵を削除しますか?</string>
   <string name="also_export_secret_keys">秘密鍵もエクスポートしますか?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="other">%d の鍵を追加しました</item>
@@ -417,4 +419,5 @@
   <string name="section_uids_to_sign">署名に使うユーザーID</string>
   <string name="progress_re_adding_certs">検証を再適用する</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">ここに書いたメッセージを暗号化..</string>
 </resources>

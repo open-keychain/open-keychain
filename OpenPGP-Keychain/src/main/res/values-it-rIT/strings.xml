@@ -208,6 +208,8 @@
   <string name="key_deletion_confirmation">Vuoi veramente eliminare la chiave \'%s\'?\nNon potrai annullare!</string>
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare le chiavi selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
+  <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave PUBBLICA \'%s\'?\nNon potrai annullare!</string>
+  <string name="secret_key_delete_text">Eliminare le Chiavi Segrete?</string>
   <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d chiave aggiunta correttamente</item>
@@ -432,4 +434,5 @@
   <string name="section_uids_to_sign">ID Utente da firmare</string>
   <string name="progress_re_adding_certs">Riapplicazione certificati</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Scrivi qui il messaggio da codificare...</string>
 </resources>

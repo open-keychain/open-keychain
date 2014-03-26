@@ -208,6 +208,8 @@
   <string name="key_deletion_confirmation">Voulez-vous vraiment supprimer la clef %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
+  <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef PUBLIQUE « %s » ?\nVous ne pourrez pas la restituer !</string>
+  <string name="secret_key_delete_text">Supprimer les clefs privées ?</string>
   <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clef ajoutée avec succès</item>
@@ -376,6 +378,8 @@
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Aucune application enregistrée !\n\nLes applications tierces peuvent demander l\'accès à OpenKeychain. Après avoir autorisé l\'accès, elles seront listées ici.</string>
+  <string name="api_settings_show_info">Afficher les informations avancées</string>
+  <string name="api_settings_hide_info">Masquer les informations avancées</string>
   <string name="api_settings_show_advanced">Afficher les paramètres avancés</string>
   <string name="api_settings_hide_advanced">Masquer les paramètres avancés</string>
   <string name="api_settings_no_key">Aucune clef choisie</string>
@@ -385,6 +389,8 @@
   <string name="api_settings_revoke">Révoquer l\'accès</string>
   <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_signature">SHA-256 de la signature du paquet</string>
+  <string name="api_settings_accounts">Comptes</string>
+  <string name="api_settings_accounts_empty">Aucun compte n\'est attaché à cette application.</string>
   <string name="api_register_text">L\'application affichée demande l\'accès à OpenKeychain.\nPermettre l\'accès ?\n\nAvertissement : si vous ne savez pas pourquoi cet écran est apparu, refusez l\'accès ! Vous pourrez révoquer l\'accès plus tard en utilisant l\'écran « Applications enregistrées ».</string>
   <string name="api_register_allow">Permettre l\'accès</string>
   <string name="api_register_disallow">Enlever l\'accès</string>
@@ -432,4 +438,5 @@
   <string name="section_uids_to_sign">ID utilisateur pour signer</string>
   <string name="progress_re_adding_certs">Nouvel application des certificats</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Écrire le message à chiffrer ici...</string>
 </resources>

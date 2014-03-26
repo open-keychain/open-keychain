@@ -211,6 +211,8 @@
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
+  <string name="public_key_deletetion_confirmation">Справді волієте вилучити ВІДКРИТИЙ ключ \'%s\'?\nВи е зможете відмінити цю дію!</string>
+  <string name="secret_key_delete_text">Видалити секретні ключі?</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успішно додано %d ключ</item>
@@ -390,6 +392,8 @@
   <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
+  <string name="api_settings_show_info">Показати додаткову інформацію</string>
+  <string name="api_settings_hide_info">Приховати додаткову інформацію</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
   <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
@@ -399,6 +403,8 @@
   <string name="api_settings_revoke">Відкликати доступ</string>
   <string name="api_settings_package_name">Назва пакунку</string>
   <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
+  <string name="api_settings_accounts">Облікові записи</string>
+  <string name="api_settings_accounts_empty">Немає облікового запису приєднаного до цієї програми.</string>
   <string name="api_register_text">Показана програма запитує доступ до OpenPGP Keychain.\nДозволити доступ?\n\nУВАГА: якщо ви не знаєте, чому цей екран появився, не дозволяйте доступ! Ви можете відкликати доступ пізніше, використовуючи екран \'Зареєстровані програми\'.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
@@ -447,4 +453,5 @@
   <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
   <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування…</string>
 </resources>

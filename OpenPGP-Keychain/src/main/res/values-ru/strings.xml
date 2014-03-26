@@ -74,13 +74,17 @@
   <string name="menu_import">Импорт</string>
   <string name="menu_import_from_nfc">Импорт из NFC</string>
   <string name="menu_export_keys">Экспорт всех ключей</string>
+  <string name="menu_export_secret_keys">Экспорт всех секретных ключей</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
   <string name="menu_create_key">Создать ключ</string>
   <string name="menu_create_key_expert">Создать ключ (эксперт)</string>
   <string name="menu_search">Поиск</string>
+  <string name="menu_import_from_key_server">Сервер ключей</string>
+  <string name="menu_key_server">Сервер ключей...</string>
   <string name="menu_update_key">Обновить с сервера ключей</string>
   <string name="menu_export_key_to_server">Загрузить на сервер ключей</string>
+  <string name="menu_share">Отправить...</string>
   <string name="menu_share_title_fingerprint">Отправить отпечаток...</string>
   <string name="menu_share_title">Отправить ключ...</string>
   <string name="menu_share_default_fingerprint">Отправить</string>
@@ -143,6 +147,12 @@
   <string name="can_sign">подпись</string>
   <string name="expired">просрочен</string>
   <string name="revoked">отозван</string>
+  <string name="user_id">ID пользователя</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 контакт</item>
+    <item quantity="few">%d контактов</item>
+    <item quantity="other">%d контактов</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключей</item>
     <item quantity="few">%d серверов ключей</item>
@@ -199,6 +209,9 @@
   <string name="key_deletion_confirmation">Вы уверены, что ходите удалить ключ \'%s\'?\nЭто действие нельзя отменить!</string>
   <string name="key_deletion_confirmation_multi">Вы уверены, что хотите удалить ВСЕ выбранные ключи?\nЭто действие нельзя отменить!</string>
   <string name="secret_key_deletion_confirmation">Вы уверены, что ходите удалить СЕКРЕТНЫЙ ключ \'%s\'?\nЭто действие нельзя отменить!</string>
+  <string name="public_key_deletetion_confirmation">Вы правда хотите удалить ПУБЛИЧНЫЙ ключ \'%s\'?\nЭто нельзя отменить!</string>
+  <string name="secret_key_delete_text">Удалить секретные ключи?</string>
+  <string name="also_export_secret_keys">Экспортировать секретные ключи?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успешно добавлено %d ключ</item>
     <item quantity="few">Успешно добавлено %d ключей</item>
@@ -224,6 +237,7 @@
   <string name="keys_exported">Экспортировано %d ключей.</string>
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
   <string name="key_creation_el_gamal_info">Инфо: ElGamal подходит только для дополнительных ключей. При создании ключа будет использован ближайший из размеров: 1536, 2048, 3072, 4096, или 8192.</string>
+  <string name="key_creation_weak_rsa_info">Внимание: создание ключей RSA длиной 1024 бита и менее признано небезопасным. Данная возможность отключена.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
   <plurals name="keys_found">
     <item quantity="one">Найден %d ключ.</item>
@@ -347,6 +361,7 @@
   <string name="compression_very_slow">очень медленно</string>
   <!--Help-->
   <string name="help_tab_start">Начать</string>
+  <string name="help_tab_faq">ЧаВо</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Изменения</string>
   <string name="help_tab_about">О программе</string>
@@ -410,6 +425,7 @@
   <string name="key_list_empty_button_create">создать свой ключ</string>
   <string name="key_list_empty_button_import">Импортировать ключи</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Изменить ключ</string>
   <string name="key_view_action_encrypt">Зашифровать для этого получателя</string>
   <string name="key_view_action_certify">Сертифицировать ключ этого контакта</string>
   <string name="key_view_tab_main">Информация</string>
@@ -423,5 +439,11 @@
   <string name="nav_apps">Связанные приложения</string>
   <string name="drawer_open">Открыть панель навигации</string>
   <string name="drawer_close">Закрыть панель навигации</string>
+  <string name="edit">Изменить</string>
+  <string name="my_keys">Мои ключи</string>
+  <string name="label_secret_key">Секретный ключ</string>
+  <string name="secret_key_yes">доступен</string>
+  <string name="secret_key_no">не доступен</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать...</string>
 </resources>

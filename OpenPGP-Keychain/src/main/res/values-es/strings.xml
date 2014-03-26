@@ -208,6 +208,8 @@
   <string name="key_deletion_confirmation">¿Quieres realmente borrar la clave \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="key_deletion_confirmation_multi">¿Quieres realmente borrar todas las claves seleccionadas?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_deletion_confirmation">¿Quieres realmente borrar la clave SECRETA \'%s\'?\n¡No podrás deshacerlo!</string>
+  <string name="public_key_deletetion_confirmation">¿Quieres realmente borrar la clave PÚBLICA \'%s\'?\n¡No podrás deshacerlo!</string>
+  <string name="secret_key_delete_text">¿Borrar claves secretas?</string>
   <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d clave añadida satisfactoriamente</item>
@@ -376,6 +378,8 @@
   <string name="intent_send_decrypt">Descifrar con OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">¡No hay aplicaciones registradas!\n\nLas aplicaciones de terceros pueden pedir permiso de acceso a OpenKeychain. Después de obtener acceso, serán enumeradas aquí.</string>
+  <string name="api_settings_show_info">Mostrar información avanzada</string>
+  <string name="api_settings_hide_info">Ocultar información avanzada</string>
   <string name="api_settings_show_advanced">Mostrar la configuración avanzada</string>
   <string name="api_settings_hide_advanced">Ocultar la configuración avanzada</string>
   <string name="api_settings_no_key">No se ha seleccionado ninguna clave</string>
@@ -385,6 +389,8 @@
   <string name="api_settings_revoke">Revocar acceso</string>
   <string name="api_settings_package_name">Nombre de paquete</string>
   <string name="api_settings_package_signature">SHA-256 de firma de paquete</string>
+  <string name="api_settings_accounts">Cuentas</string>
+  <string name="api_settings_accounts_empty">No hay cuentas asociadas a esta aplicación.</string>
   <string name="api_register_text">La aplicación mostrada solicita acceso a OpenKeychain.\n¿Permitir el acceso?\n\nAVISO: Si no sabes por qué aparece esta pantalla, ¡deniega el acceso! Puedes revocarlo después usando la pantalla \'Aplicaciones registradas\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
@@ -432,4 +438,5 @@
   <string name="section_uids_to_sign">IDs de usuario para firmar</string>
   <string name="progress_re_adding_certs">Nueva aplicación de certificados</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Escribe aquí el mensaje que quieras cifrar...</string>
 </resources>
