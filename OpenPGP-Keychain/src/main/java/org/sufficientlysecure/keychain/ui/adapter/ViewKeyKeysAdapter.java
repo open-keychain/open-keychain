@@ -131,10 +131,6 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         if (cursor.getInt(mIndexRevokedKey) > 0) {
             revokedKeyIcon.setVisibility(View.VISIBLE);
 
-            keyId.setTextColor(Color.RED);
-            keyDetails.setTextColor(Color.RED);
-            keyExpiry.setTextColor(Color.RED);
-
             valid = false;
         } else {
             keyId.setTextColor(mDefaultTextColor);
