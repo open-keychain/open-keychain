@@ -124,7 +124,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     }
             );
 
-            setContentView(R.layout.api_app_register_activity);
+            setContentView(R.layout.api_remote_register_app);
 
             mAppSettingsFragment = (AppSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_app_settings_fragment);
@@ -169,7 +169,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     }
             );
 
-            setContentView(R.layout.api_account_create_activity);
+            setContentView(R.layout.api_remote_create_account);
 
             mAccSettingsFragment = (AccountSettingsFragment) getSupportFragmentManager().findFragmentById(
                     R.id.api_account_settings_fragment);
@@ -235,7 +235,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                     }
             );
 
-            setContentView(R.layout.api_app_select_pub_keys_activity);
+            setContentView(R.layout.api_remote_select_pub_keys);
 
             // set text on view
             HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_select_pub_keys_text);
@@ -277,7 +277,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
                         }
                     });
 
-            setContentView(R.layout.api_app_error_message);
+            setContentView(R.layout.api_remote_error_message);
 
             // set text on view
             HtmlTextView textView = (HtmlTextView) findViewById(R.id.api_app_error_message_text);
