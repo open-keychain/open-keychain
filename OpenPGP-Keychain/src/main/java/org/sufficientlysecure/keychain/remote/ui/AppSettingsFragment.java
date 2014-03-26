@@ -55,9 +55,43 @@ public class AppSettingsFragment extends Fragment {
 
     public void setAppSettings(AppSettings appSettings) {
         this.mAppSettings = appSettings;
-        setPackage(appSettings.getPackageName());
+        updateView(appSettings);
+    }
+
+    /**
+     * Inflate the layout for this fragment
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.api_app_settings_fragment, container, false);
+        mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
+        mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
+        mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
+        mPackageSignature = (TextView) view.findViewById(R.id.api_app_settings_package_signature);
+        return view;
+    }
+
+    private void updateView(AppSettings appSettings) {
+        // get application name and icon from package manager
+        String appName;
+        Drawable appIcon = null;
+        PackageManager pm = getActivity().getApplicationContext().getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(appSettings.getPackageName(), 0);
+
+            appName = (String) pm.getApplicationLabel(ai);
+            appIcon = pm.getApplicationIcon(ai);
+        } catch (NameNotFoundException e) {
+            // fallback
+            appName = appSettings.getPackageName();
+        }
+        mAppNameView.setText(appName);
+        mAppIconView.setImageDrawable(appIcon);
+
+        // advanced info: package name
         mPackageName.setText(appSettings.getPackageName());
 
+        // advanced info: package signature SHA-256
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(appSettings.getPackageSignature());
@@ -68,45 +102,6 @@ public class AppSettingsFragment extends Fragment {
         } catch (NoSuchAlgorithmException e) {
             Log.e(Constants.TAG, "Should not happen!", e);
         }
-
-    }
-
-    /**
-     * Inflate the layout for this fragment
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.api_app_settings_fragment, container, false);
-        initView(view);
-        return view;
-    }
-
-
-    private void initView(View view) {
-        mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
-        mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
-
-        mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
-        mPackageSignature = (TextView) view.findViewById(R.id.api_app_settings_package_signature);
-    }
-
-    private void setPackage(String packageName) {
-        PackageManager pm = getActivity().getApplicationContext().getPackageManager();
-
-        // get application name and icon from package manager
-        String appName;
-        Drawable appIcon = null;
-        try {
-            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
-
-            appName = (String) pm.getApplicationLabel(ai);
-            appIcon = pm.getApplicationIcon(ai);
-        } catch (NameNotFoundException e) {
-            // fallback
-            appName = packageName;
-        }
-        mAppNameView.setText(appName);
-        mAppIconView.setImageDrawable(appIcon);
     }
 
 

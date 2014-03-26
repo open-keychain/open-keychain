@@ -46,9 +46,6 @@ import java.util.Arrays;
 public abstract class RemoteService extends Service {
     Context mContext;
 
-    private static final int PRIVATE_REQUEST_CODE_REGISTER = 651;
-    private static final int PRIVATE_REQUEST_CODE_ERROR = 652;
-
     public Context getContext() {
         return mContext;
     }
@@ -59,6 +56,7 @@ public abstract class RemoteService extends Service {
                 return null;
             } else {
                 String packageName = getCurrentCallingPackage();
+                Log.d(Constants.TAG, "isAllowed packageName: " + packageName);
 
                 byte[] packageSignature;
                 try {
@@ -80,8 +78,9 @@ public abstract class RemoteService extends Service {
                 intent.putExtra(RemoteServiceActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
                 intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-                PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
-                        PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
+                PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                        intent,
+                        PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
                 // return PendingIntent to be executed by client
                 Intent result = new Intent();
@@ -99,8 +98,9 @@ public abstract class RemoteService extends Service {
                     getString(R.string.api_error_wrong_signature));
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-            PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
-                    PRIVATE_REQUEST_CODE_ERROR, intent, 0);
+            PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                    intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -163,8 +163,9 @@ public abstract class RemoteService extends Service {
         intent.putExtra(RemoteServiceActivity.EXTRA_ACC_NAME, accountName);
         intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
-        PendingIntent pi = PendingIntent.getActivity(getBaseContext(),
-                PRIVATE_REQUEST_CODE_REGISTER, intent, 0);
+        PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         // return PendingIntent to be executed by client
         Intent result = new Intent();
@@ -206,7 +207,7 @@ public abstract class RemoteService extends Service {
             }
         }
 
-        Log.d(Constants.TAG, "Caller is NOT allowed!");
+        Log.d(Constants.TAG, "Uid is NOT allowed!");
         return false;
     }
 
@@ -218,7 +219,7 @@ public abstract class RemoteService extends Service {
      * @throws WrongPackageSignatureException
      */
     private boolean isPackageAllowed(String packageName) throws WrongPackageSignatureException {
-        Log.d(Constants.TAG, "packageName: " + packageName);
+        Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
 
         ArrayList<String> allowedPkgs = ProviderHelper.getRegisteredApiApps(this);
         Log.d(Constants.TAG, "allowed: " + allowedPkgs);
@@ -246,6 +247,7 @@ public abstract class RemoteService extends Service {
             }
         }
 
+        Log.d(Constants.TAG, "Package is NOT allowed! packageName: " + packageName);
         return false;
     }
 

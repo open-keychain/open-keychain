@@ -384,9 +384,9 @@
         <activity
             android:name=".remote.ui.RemoteServiceActivity"
             android:exported="false"
-            android:label="@string/app_name" />
-        <!--android:launchMode="singleTop"-->
-        <!--android:process=":remote_api"-->
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:process=":remote_api" />
         <activity
             android:name=".remote.ui.AppsListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
