@@ -687,13 +687,13 @@ public class KeychainProvider extends ContentProvider {
                 break;
             case API_ACCOUNTS:
                 qb.setTables(Tables.API_ACCOUNTS);
+                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
             case API_ACCOUNTS_BY_ACCOUNT_NAME:
-                qb.setTables(Tables.API_ACCOUNTS + " INNER JOIN " + Tables.API_APPS + " ON " + "("
-                        + Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = " + Tables.API_ACCOUNTS + "."
-                        + ApiAccounts.PACKAGE_NAME_FK + " )");
-                qb.appendWhere(Tables.API_APPS + "." + ApiApps.PACKAGE_NAME + " = ");
+                qb.setTables(Tables.API_ACCOUNTS);
+                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
@@ -800,7 +800,7 @@ public class KeychainProvider extends ContentProvider {
                     // set foreign key automatically based on given uri
                     // e.g., api_apps/com.example.app/accounts/
                     String packageName = uri.getPathSegments().get(1);
-                    values.put(ApiAccounts.PACKAGE_NAME_FK, packageName);
+                    values.put(ApiAccounts.PACKAGE_NAME, packageName);
 
                     Log.d(Constants.TAG, "provider packageName: " + packageName);
 
@@ -1061,7 +1061,7 @@ public class KeychainProvider extends ContentProvider {
             andSelection = " AND (" + selection + ")";
         }
 
-        return ApiAccounts.PACKAGE_NAME_FK + "=" + packageName + " AND "
+        return ApiAccounts.PACKAGE_NAME + "=" + packageName + " AND "
                 + ApiAccounts.ACCOUNT_NAME + "=" + accountName
                 + andSelection;
     }

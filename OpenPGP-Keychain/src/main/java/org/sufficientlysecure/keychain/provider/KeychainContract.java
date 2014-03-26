@@ -65,7 +65,7 @@ public class KeychainContract {
         String ENCRYPTION_ALGORITHM = "encryption_algorithm";
         String HASH_ALORITHM = "hash_algorithm";
         String COMPRESSION = "compression";
-        String PACKAGE_NAME_FK = "package_name"; // foreign key to api_apps.package_name
+        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
     public static final class KeyTypes {

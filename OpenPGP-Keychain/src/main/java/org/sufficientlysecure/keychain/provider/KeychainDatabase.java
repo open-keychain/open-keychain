@@ -88,10 +88,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             + ApiAppsAccountsColumns.ENCRYPTION_ALGORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.HASH_ALORITHM + " INTEGER, "
             + ApiAppsAccountsColumns.COMPRESSION + " INTEGER, "
-            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + " TEXT NOT NULL, "
+            + ApiAppsAccountsColumns.PACKAGE_NAME + " TEXT NOT NULL, "
             + "UNIQUE(" + ApiAppsAccountsColumns.ACCOUNT_NAME + ", "
-            + ApiAppsAccountsColumns.PACKAGE_NAME_FK + "), "
-            + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME_FK + ") REFERENCES "
+            + ApiAppsAccountsColumns.PACKAGE_NAME + "), "
+            + "FOREIGN KEY(" + ApiAppsAccountsColumns.PACKAGE_NAME + ") REFERENCES "
             + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE)";
 
     KeychainDatabase(Context context) {
