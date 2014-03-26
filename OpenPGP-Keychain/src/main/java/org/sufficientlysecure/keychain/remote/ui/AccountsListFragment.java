@@ -32,11 +32,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.ui.widget.FixedListView;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class AccountsListFragment extends ListFragment implements
@@ -61,6 +65,29 @@ public class AccountsListFragment extends ListFragment implements
         frag.setArguments(args);
 
         return frag;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View layout = super.onCreateView(inflater, container,
+                savedInstanceState);
+        ListView lv = (ListView) layout.findViewById(android.R.id.list);
+        ViewGroup parent = (ViewGroup) lv.getParent();
+
+        /*
+         * http://stackoverflow.com/a/15880684
+         * Remove ListView and add FixedListView in its place.
+         * This is done here programatically to be still able to use the progressBar of ListFragment.
+         *
+         * We want FixedListView to be able to put this ListFragment inside a ScrollView
+         */
+        int lvIndex = parent.indexOfChild(lv);
+        parent.removeViewAt(lvIndex);
+        FixedListView newLv = new FixedListView(getActivity());
+        newLv.setId(android.R.id.list);
+        parent.addView(newLv, lvIndex, lv.getLayoutParams());
+        return layout;
     }
 
     @Override

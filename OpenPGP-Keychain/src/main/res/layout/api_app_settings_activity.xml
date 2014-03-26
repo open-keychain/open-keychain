@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="16dp"
         android:orientation="vertical">
 
@@ -27,9 +27,7 @@
             android:id="@+id/api_accounts_list_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp" />
+            android:orientation="vertical" />
 
     </LinearLayout>
 </ScrollView>

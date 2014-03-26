@@ -103,7 +103,6 @@ public class AppSettingsActivity extends ActionBarActivity {
         }
         setTitle(appName);
 
-
         Uri accountsUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ACCOUNTS).build();
         Log.d(Constants.TAG, "accountsUri: " + accountsUri);
         startListFragment(savedInstanceState, accountsUri);
