@@ -46,6 +46,7 @@
                 android:scrollHorizontally="true"
                 android:scrollbars="vertical"
                 android:text="message"
+                android:hint="cleartext message"
                 android:textAppearance="@android:style/TextAppearance.Small" />
         </ScrollView>
 
@@ -66,6 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="ciphertext"
+                android:hint="ciphertext"
                 android:textAppearance="@android:style/TextAppearance.Small" />
         </ScrollView>
 
@@ -103,6 +105,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Decrypt and Verify" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account ID:"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/textView" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alice &lt;alice@example.com&gt;"
+            android:id="@+id/crypto_provider_demo_account" />
 
     </LinearLayout>
 </ScrollView>
