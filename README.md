@@ -1,6 +1,6 @@
 # OpenKeychain (for Android)
 
-OpenKeychain is an OpenPGP implementation for Android.
+OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to http://www.openkeychain.org .
 
 ### Travis CI Build Status
@@ -31,9 +31,9 @@ Development mailinglist at http://groups.google.com/d/forum/openpgp-keychain-dev
 ### Build with Gradle
 
 1. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
-2. Open the Android SDK Manager (shell command: ``android``).
-Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".
-Expand the Extras directory and install "Android Support Repository"
+2. Open the Android SDK Manager (shell command: ``android``).  
+Expand the Tools directory and select "Android SDK Build-tools (Version 19.0.3)".  
+Expand the Extras directory and install "Android Support Repository"  
 Select everything for the newest SDK (API-Level 19)
 3. Export ANDROID_HOME pointing to your Android SDK
 4. Execute ``./gradlew build``
@@ -59,11 +59,11 @@ I am using the newest [Android Studio](http://developer.android.com/sdk/installi
 
 OpenKeychain provides two APIs, namely the Intent API and the Remote OpenPGP API.
 The Intent API can be used without permissions to start OpenKeychain's activities for cryptographic operations, import of keys, etc.
-However, it always requires user input, so that no malicious application can use this API without user intervention.
+However, it always requires user input, so that no malicious application can use this API without user intervention.  
 The Remote OpenPGP API is more sophisticated and allows to to operations without user interaction in the background.
 When utilizing this API, OpenKeychain asks the user on first use to grant access for the calling client application.
 
-More technical information and examples about these APIs can be found in the project's wiki:
+More technical information and examples about these APIs can be found in the project's wiki:  
 * [Intent API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/Intent-API)
 * [Remote OpenPGP API](https://github.com/openpgp-keychain/openpgp-keychain/wiki/OpenPGP-API)
 
@@ -110,7 +110,7 @@ see
 
 ### Gradle Build System
 
-We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.
+We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 When changing build files or dependencies, respect the following requirements:
 * No precompiled libraries. All libraries should be provided as sourcecode in "libraries" folder (you never know what pre-compiled jar files really contain! The library files are currently directly commited, because git submodules/git subtree are too much of a hassle for new contributors. This could change in the future!)
 * No dependencies from Maven (also a soft requirement for inclusion in [F-Droid](https://f-droid.org))
@@ -180,55 +180,59 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 > it under the terms of the GNU General Public License as published by
 > the Free Software Foundation, either version 3 of the License, or
 > (at your option) any later version.
->
+> 
 > This program is distributed in the hope that it will be useful,
 > but WITHOUT ANY WARRANTY; without even the implied warranty of
 > MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 > GNU General Public License for more details.
->
+> 
 > You should have received a copy of the GNU General Public License
 > along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ### Libraries
 
-* SpongyCastle
-  https://github.com/rtyley/spongycastle
+* SpongyCastle  
+  https://github.com/rtyley/spongycastle  
   MIT X11 License
 
-* Android Support Library v4
-  http://developer.android.com/tools/support-library/index.html
+* Android Support Library v4  
+  http://developer.android.com/tools/support-library/index.html  
+  Apache License v2
+  
+* Android Support Library v7 'appcompat'  
+  http://developer.android.com/tools/support-library/index.html  
   Apache License v2
 
-* Android Support Library v7 'appcompat'
-  http://developer.android.com/tools/support-library/index.html
+* HtmlTextView  
+  https://github.com/dschuermann/html-textview  
   Apache License v2
 
-* HtmlTextView
-  https://github.com/dschuermann/html-textview
+* ZXing  
+  https://github.com/zxing/zxing  
   Apache License v2
-
-* ZXing
-  https://github.com/zxing/zxing
+  
+* StickyListHeaders  
+  https://github.com/emilsjolander/StickyListHeaders  
   Apache License v2
-
-* StickyListHeaders
-  https://github.com/emilsjolander/StickyListHeaders
-  Apache License v2
-
-* Android-Bootstrap
-  https://github.com/Bearded-Hen/Android-Bootstrap
+  
+* Android-Bootstrap  
+  https://github.com/Bearded-Hen/Android-Bootstrap  
   MIT License
 
-* Android AppMsg
-  https://github.com/johnkil/Android-AppMsg
+* Android AppMsg  
+  https://github.com/johnkil/Android-AppMsg  
   Apache License v2
 
 ### Images
-* icon.svg
+* icon.svg  
   modified version of kgpg_key2_kopete.svgz
 
-* Menu icons
+* key.svg  
+  http://rrze-icon-set.berlios.de/  
+  Creative Commons Attribution Share-Alike licence 3.0
+  
+* Menu icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
 
 
