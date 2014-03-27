@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,8 +25,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+
+import java.util.Locale;
 
 public class ImportKeysClipboardFragment extends Fragment {
 
@@ -60,6 +65,10 @@ public class ImportKeysClipboardFragment extends Fragment {
                 String sendText = "";
                 if (clipboardText != null) {
                     sendText = clipboardText.toString();
+                    if(sendText.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                        mImportActivity.loadFromFingerprintUri(null, Uri.parse(sendText));
+                        return;
+                    }
                 }
                 mImportActivity.loadCallback(sendText.getBytes(), null, null, null);
             }
