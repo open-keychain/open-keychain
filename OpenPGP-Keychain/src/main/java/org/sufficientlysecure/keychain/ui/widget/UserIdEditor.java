@@ -229,6 +229,11 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         return retval;
     }
 
+    public  boolean getIsOriginallyMainUserID()
+    {
+        return mOriginallyMainUserID;
+    }
+
     public boolean primarySwapped()
     {
         return (mOriginallyMainUserID != isMainUserId());

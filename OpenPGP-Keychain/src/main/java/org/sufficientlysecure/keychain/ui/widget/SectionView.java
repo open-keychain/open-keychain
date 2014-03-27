@@ -198,6 +198,21 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return ret;
     }
 
+    public String getOriginalPrimaryID()
+    { //NB: this will have to change when we change how Primary IDs are chosen, and so we need to be
+      //    careful about where Master key capabilities are stored... multiple primaries and
+      //    revoked ones make this harder than the simple case we are continuing to assume here
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            if (mType == Id.type.user_id) {
+                if(((UserIdEditor)editor).getIsOriginallyMainUserID()) {
+                    return ((UserIdEditor)editor).getOriginalID();
+                }
+            }
+        }
+        return null;
+    }
+
     public ArrayList<String> getOriginalIDs()
     {
         ArrayList<String> orig = new ArrayList<String>();
