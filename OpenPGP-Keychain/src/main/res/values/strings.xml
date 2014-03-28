@@ -194,6 +194,8 @@
     <string name="warning">Warning</string>
     <string name="error">Error</string>
     <string name="error_message">Error: %s</string>
+    <string name="choice_yes">Yes</string>
+    <string name="choice_no">No</string>
 
     <!-- sentences -->
     <string name="wrong_passphrase">Wrong passphrase.</string>
@@ -223,6 +225,7 @@
     <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secret_key_delete_text">Delete Secret Keys ?</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
+    <string name="upload_key_dialog_message">Secret Key has been edited! Do you want to upload your public key to the keyserver?</string>
 
     <plurals name="keys_added_and_updated_1">
         <item quantity="one">Successfully added %d key</item>
