@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/decrypt_pager"
+        android:layout_width="match_parent"
+        android:layout_height="220dp">
+
+        <android.support.v4.view.PagerTabStrip
+            android:id="@+id/decrypt_pager_tab_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@color/emphasis"
+            android:textColor="#fff" />
+    </android.support.v4.view.ViewPager>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
         android:id="@+id/content_frame"
         android:layout_marginLeft="@dimen/drawer_content_padding"
@@ -9,7 +28,7 @@
         android:fillViewport="true"
         android:orientation="vertical">
 
-    <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -17,80 +36,20 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
-        <RelativeLayout
-                android:id="@+id/signature"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:orientation="horizontal"
-                android:padding="4dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp">
+            <include layout="@layout/decrypt_signature_include" />
 
-            <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/relativeLayout">
-
-                <ImageView
-                        android:id="@+id/ic_signature"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/signed_large"/>
-
-                <ImageView
-                        android:id="@+id/ic_signature_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/overlay_error"/>
-            </RelativeLayout>
-
-            <com.beardedhen.androidbootstrap.BootstrapButton
-                    android:id="@+id/lookup_key"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:padding="4dp"
-                    android:text="@string/btn_lookup_key"
-                    bootstrapbutton:bb_icon_left="fa-download"
-                    bootstrapbutton:bb_type="info"
-                    bootstrapbutton:bb_size="small"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"/>
-
-            <TextView
-                    android:id="@+id/mainUserId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:text="@string/label_main_user_id"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:layout_toRightOf="@+id/relativeLayout"/>
-
-            <TextView
-                    android:id="@+id/mainUserIdRest"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:text="Main User Id Rest"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:layout_below="@+id/mainUserId"
-                    android:layout_toRightOf="@+id/relativeLayout"/>
-        </RelativeLayout>
-
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-            <ImageView
+                <ImageView
                     android:id="@+id/sourcePrevious"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_previous"/>
+                    android:src="@drawable/ic_previous" />
 
-            <TextView
+                <TextView
                     android:id="@+id/sourceLabel"
                     style="@style/SectionHeader"
                     android:layout_width="0dip"
@@ -98,50 +57,50 @@
                     android:layout_weight="1"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="@string/label_message"
-                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
-            <ImageView
+                <ImageView
                     android:id="@+id/sourceNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_next"/>
-        </LinearLayout>
+                    android:src="@drawable/ic_next" />
+            </LinearLayout>
 
-        <ViewFlipper
+            <ViewFlipper
                 android:id="@+id/source"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1">
 
-            <LinearLayout
+                <LinearLayout
                     android:id="@+id/sourceMessage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:padding="4dp">
 
-                <EditText
+                    <EditText
                         android:id="@+id/message"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="top"
                         android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-                        android:scrollHorizontally="true"/>
-            </LinearLayout>
+                        android:scrollHorizontally="true" />
+                </LinearLayout>
 
-            <LinearLayout
+                <LinearLayout
                     android:id="@+id/sourceFile"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:padding="4dp">
 
-                <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                    <EditText
+                        <EditText
                             android:id="@+id/filename"
                             android:layout_width="0dip"
                             android:layout_height="wrap_content"
@@ -151,9 +110,9 @@
                             android:lines="4"
                             android:maxLines="10"
                             android:minLines="2"
-                            android:scrollbars="vertical"/>
+                            android:scrollbars="vertical" />
 
-                    <com.beardedhen.androidbootstrap.BootstrapButton
+                        <com.beardedhen.androidbootstrap.BootstrapButton
                             android:id="@+id/btn_browse"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -161,45 +120,46 @@
                             bootstrapbutton:bb_icon_left="fa-folder-open"
                             bootstrapbutton:bb_roundedCorners="true"
                             bootstrapbutton:bb_size="default"
-                            bootstrapbutton:bb_type="default"/>
-                </LinearLayout>
+                            bootstrapbutton:bb_type="default" />
+                    </LinearLayout>
 
-                <LinearLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                    <CheckBox
+                        <CheckBox
                             android:id="@+id/deleteAfterDecryption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:text="@string/label_delete_after_decryption"/>
+                            android:text="@string/label_delete_after_decryption" />
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
-        </ViewFlipper>
+            </ViewFlipper>
 
-        <TextView
+            <TextView
                 style="@style/SectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:text="@string/section_decrypt_verify"/>
+                android:text="@string/section_decrypt_verify" />
 
-        <LinearLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="4dp">
 
-            <com.beardedhen.androidbootstrap.BootstrapButton
+                <com.beardedhen.androidbootstrap.BootstrapButton
                     android:id="@+id/action_decrypt"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:padding="4dp"
                     android:text="@string/btn_decrypt_verify"
                     bootstrapbutton:bb_icon_left="fa-unlock"
-                    bootstrapbutton:bb_type="info"/>
+                    bootstrapbutton:bb_type="info" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

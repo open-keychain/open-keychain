@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/signature"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:orientation="horizontal"
+    android:padding="4dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/relativeLayout">
+
+        <ImageView
+            android:id="@+id/ic_signature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/signed_large" />
+
+        <ImageView
+            android:id="@+id/ic_signature_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/overlay_error" />
+    </RelativeLayout>
+
+    <com.beardedhen.androidbootstrap.BootstrapButton
+        android:id="@+id/lookup_key"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:padding="4dp"
+        android:text="@string/btn_lookup_key"
+        bootstrapbutton:bb_icon_left="fa-download"
+        bootstrapbutton:bb_type="info"
+        bootstrapbutton:bb_size="small"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/mainUserId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="@string/label_main_user_id"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_toRightOf="@+id/relativeLayout" />
+
+    <TextView
+        android:id="@+id/mainUserIdRest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:text="Main User Id Rest"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_below="@+id/mainUserId"
+        android:layout_toRightOf="@+id/relativeLayout" />
+</RelativeLayout>

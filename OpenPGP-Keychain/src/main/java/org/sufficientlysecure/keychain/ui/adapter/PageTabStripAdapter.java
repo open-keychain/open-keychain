@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -28,38 +29,30 @@ import android.support.v7.app.ActionBarActivity;
 
 import java.util.ArrayList;
 
-public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.TabListener,
-        ViewPager.OnPageChangeListener {
+public class PageTabStripAdapter extends FragmentPagerAdapter {
     private final Context mContext;
-    private final ActionBar mActionBar;
-    private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
         private final Class<?> clss;
         private final Bundle args;
+        private final String title;
 
-        TabInfo(Class<?> clss, Bundle args) {
+        TabInfo(Class<?> clss, Bundle args, String title) {
             this.clss = clss;
             this.args = args;
+            this.title = title;
         }
     }
 
-    public TabsAdapter(ActionBarActivity activity, ViewPager pager) {
+    public PageTabStripAdapter(ActionBarActivity activity) {
         super(activity.getSupportFragmentManager());
         mContext = activity;
-        mActionBar = activity.getSupportActionBar();
-        mViewPager = pager;
-        mViewPager.setAdapter(this);
-        mViewPager.setOnPageChangeListener(this);
     }
 
-    public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args, boolean selected) {
-        TabInfo info = new TabInfo(clss, args);
-        tab.setTag(info);
-        tab.setTabListener(this);
+    public void addTab(Class<?> clss, Bundle args, String title) {
+        TabInfo info = new TabInfo(clss, args, title);
         mTabs.add(info);
-        mActionBar.addTab(tab, selected);
         notifyDataSetChanged();
     }
 
@@ -74,28 +67,8 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
         return Fragment.instantiate(mContext, info.clss.getName(), info.args);
     }
 
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-    }
-
-    public void onPageSelected(int position) {
-        mActionBar.setSelectedNavigationItem(position);
-    }
-
-    public void onPageScrollStateChanged(int state) {
-    }
-
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        Object tag = tab.getTag();
-        for (int i = 0; i < mTabs.size(); i++) {
-            if (mTabs.get(i) == tag) {
-                mViewPager.setCurrentItem(i);
-            }
-        }
-    }
-
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-    }
-
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return mTabs.get(position).title;
     }
 }

@@ -25,12 +25,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
+
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -49,6 +54,7 @@ import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.adapter.PageTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
@@ -57,7 +63,7 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.io.*;
 import java.util.regex.Matcher;
 
-@SuppressLint("NewApi")
+//@SuppressLint("NewApi")
 public class DecryptActivity extends DrawerActivity {
 
     /* Intents */
@@ -67,28 +73,30 @@ public class DecryptActivity extends DrawerActivity {
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
 
+    public static final String EXTRA_SELECTED_TAB = "selected_tab";
+
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
     private static final int RESULT_CODE_FILE = 0x00007003;
 
     private long mSignatureKeyId = 0;
 
-    private boolean mReturnResult = false;
+//    private boolean mReturnResult = false;
 
     // TODO: replace signed only checks with something more intelligent
     // PgpDecryptVerify should handle all automatically!!!
     private boolean mSignedOnly = false;
     private boolean mAssumeSymmetricEncryption = false;
 
-    private EditText mMessage = null;
+    //    private EditText mMessage = null;
     private RelativeLayout mSignatureLayout = null;
     private ImageView mSignatureStatusImage = null;
     private TextView mUserId = null;
     private TextView mUserIdRest = null;
 
-    private ViewFlipper mSource = null;
-    private TextView mSourceLabel = null;
-    private ImageView mSourcePrevious = null;
-    private ImageView mSourceNext = null;
+//    private ViewFlipper mSource = null;
+//    private TextView mSourceLabel = null;
+//    private ImageView mSourcePrevious = null;
+//    private ImageView mSourceNext = null;
 
     private int mDecryptTarget;
 
@@ -107,45 +115,50 @@ public class DecryptActivity extends DrawerActivity {
 
     private FileDialogFragment mFileDialog;
 
-    private boolean mDecryptImmediately = false;
+//    private boolean mDecryptImmediately = false;
 
     private BootstrapButton mDecryptButton;
 
+    ViewPager mViewPager;
+    PagerTabStrip mPagerTabStrip;
+    PageTabStripAdapter mTabsAdapter;
+    DecryptMessageFragment mMessageFragment;
+    DecryptFileFragment mFileFragment;
+
     private void initView() {
-        mSource = (ViewFlipper) findViewById(R.id.source);
-        mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
-        mSourcePrevious = (ImageView) findViewById(R.id.sourcePrevious);
-        mSourceNext = (ImageView) findViewById(R.id.sourceNext);
+//        mSource = (ViewFlipper) findViewById(R.id.source);
+//        mSourceLabel = (TextView) findViewById(R.id.sourceLabel);
+//        mSourcePrevious = (ImageView) findViewById(R.id.sourcePrevious);
+//        mSourceNext = (ImageView) findViewById(R.id.sourceNext);
+//
+//        mSourcePrevious.setClickable(true);
+//        mSourcePrevious.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//                mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
+//                        R.anim.push_right_in));
+//                mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
+//                        R.anim.push_right_out));
+//                mSource.showPrevious();
+//                updateSource();
+//            }
+//        });
+//
+//        mSourceNext.setClickable(true);
+//        OnClickListener nextSourceClickListener = new OnClickListener() {
+//            public void onClick(View v) {
+//                mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
+//                        R.anim.push_left_in));
+//                mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
+//                        R.anim.push_left_out));
+//                mSource.showNext();
+//                updateSource();
+//            }
+//        };
+//        mSourceNext.setOnClickListener(nextSourceClickListener);
+//
+//        mSourceLabel.setClickable(true);
+//        mSourceLabel.setOnClickListener(nextSourceClickListener);
 
-        mSourcePrevious.setClickable(true);
-        mSourcePrevious.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                        R.anim.push_right_in));
-                mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                        R.anim.push_right_out));
-                mSource.showPrevious();
-                updateSource();
-            }
-        });
-
-        mSourceNext.setClickable(true);
-        OnClickListener nextSourceClickListener = new OnClickListener() {
-            public void onClick(View v) {
-                mSource.setInAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                        R.anim.push_left_in));
-                mSource.setOutAnimation(AnimationUtils.loadAnimation(DecryptActivity.this,
-                        R.anim.push_left_out));
-                mSource.showNext();
-                updateSource();
-            }
-        };
-        mSourceNext.setOnClickListener(nextSourceClickListener);
-
-        mSourceLabel.setClickable(true);
-        mSourceLabel.setOnClickListener(nextSourceClickListener);
-
-        mMessage = (EditText) findViewById(R.id.message);
         mSignatureLayout = (RelativeLayout) findViewById(R.id.signature);
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
@@ -153,10 +166,10 @@ public class DecryptActivity extends DrawerActivity {
 
         // measure the height of the source_file view and set the message view's min height to that,
         // so it fills mSource fully... bit of a hack.
-        View tmp = findViewById(R.id.sourceFile);
-        tmp.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        int height = tmp.getMeasuredHeight();
-        mMessage.setMinimumHeight(height);
+//        View tmp = findViewById(R.id.sourceFile);
+//        tmp.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+//        int height = tmp.getMeasuredHeight();
+//        mMessage.setMinimumHeight(height);
 
         mFilename = (EditText) findViewById(R.id.filename);
         mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
@@ -178,11 +191,11 @@ public class DecryptActivity extends DrawerActivity {
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
 
         // default: message source
-        mSource.setInAnimation(null);
-        mSource.setOutAnimation(null);
-        while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
-            mSource.showNext();
-        }
+//        mSource.setInAnimation(null);
+//        mSource.setOutAnimation(null);
+//        while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
+//            mSource.showNext();
+//        }
 
         mDecryptButton = (BootstrapButton) findViewById(R.id.action_decrypt);
         mDecryptButton.setOnClickListener(new OnClickListener() {
@@ -191,6 +204,49 @@ public class DecryptActivity extends DrawerActivity {
                 decryptClicked();
             }
         });
+
+        mViewPager = (ViewPager) findViewById(R.id.decrypt_pager);
+        mPagerTabStrip = (PagerTabStrip) findViewById(R.id.decrypt_pager_tab_strip);
+        initPager();
+    }
+
+    private static final int PAGER_TAB_MESSAGE = 0;
+    private static final int PAGER_TAB_FILE = 1;
+
+    private void initPager() {
+        mTabsAdapter = new PageTabStripAdapter(this);
+        mViewPager.setAdapter(mTabsAdapter);
+
+        Bundle messageBundle = new Bundle();
+        mTabsAdapter.addTab(DecryptMessageFragment.class, messageBundle, getString(R.string.label_message));
+
+        Bundle fileBundle = new Bundle();
+        mTabsAdapter.addTab(DecryptFileFragment.class, fileBundle, getString(R.string.label_file));
+
+//        mPagerTabStrip.
+        getSupportFragmentManager().executePendingTransactions();
+//        for (Fragment f : getSupportFragmentManager().getFragments()) {
+//            Log.d(Constants.TAG, "f: "+f.getTag());
+//        }
+
+        DecryptMessageFragment messageFragment = (DecryptMessageFragment) getFragmentByPosition(PAGER_TAB_MESSAGE);
+//        mFileFragment = (DecryptFileFragment) getFragmentByPosition(PAGER_TAB_FILE);
+
+//        Log.d(Constants.TAG, fr.getTag());
+//
+    }
+
+    /**
+     * find fragment
+     *
+     * @param pos
+     * @return
+     */
+    public Fragment getFragmentByPosition(int pos) {
+        // based on FragmentPagerAdapter.makeFragmentName()
+        String tag = "android:switcher:" + mViewPager.getId() + ":" + pos;
+        Log.d(Constants.TAG, "findFragmentByTag: "+tag);
+        return getSupportFragmentManager().findFragmentByTag(tag);
     }
 
     @Override
@@ -209,25 +265,25 @@ public class DecryptActivity extends DrawerActivity {
         // Handle intent actions
         handleActions(getIntent());
 
-        if (mSource.getCurrentView().getId() == R.id.sourceMessage
-                && mMessage.getText().length() == 0) {
-
-            CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
-
-            String data = "";
-            if (clipboardText != null) {
-                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
-                if (!matcher.matches()) {
-                    matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(clipboardText);
-                }
-                if (matcher.matches()) {
-                    data = matcher.group(1);
-                    mMessage.setText(data);
-                    AppMsg.makeText(this, R.string.using_clipboard_content, AppMsg.STYLE_INFO)
-                            .show();
-                }
-            }
-        }
+//        if (mSource.getCurrentView().getId() == R.id.sourceMessage
+//                && mMessage.getText().length() == 0) {
+//
+//            CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
+//
+//            String data = "";
+//            if (clipboardText != null) {
+//                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
+//                if (!matcher.matches()) {
+//                    matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(clipboardText);
+//                }
+//                if (matcher.matches()) {
+//                    data = matcher.group(1);
+//                    mMessage.setText(data);
+//                    AppMsg.makeText(this, R.string.using_clipboard_content, AppMsg.STYLE_INFO)
+//                            .show();
+//                }
+//            }
+//        }
 
         mSignatureLayout.setVisibility(View.GONE);
         mSignatureLayout.setOnClickListener(new OnClickListener() {
@@ -246,27 +302,28 @@ public class DecryptActivity extends DrawerActivity {
             }
         });
 
-        if (mReturnResult) {
-            mSourcePrevious.setClickable(false);
-            mSourcePrevious.setEnabled(false);
-            mSourcePrevious.setVisibility(View.INVISIBLE);
+//        if (mReturnResult) {
+//            mSourcePrevious.setClickable(false);
+//            mSourcePrevious.setEnabled(false);
+//            mSourcePrevious.setVisibility(View.INVISIBLE);
+//
+//            mSourceNext.setClickable(false);
+//            mSourceNext.setEnabled(false);
+//            mSourceNext.setVisibility(View.INVISIBLE);
+//
+//            mSourceLabel.setClickable(false);
+//            mSourceLabel.setEnabled(false);
+//        }
+//
+//        updateSource();
 
-            mSourceNext.setClickable(false);
-            mSourceNext.setEnabled(false);
-            mSourceNext.setVisibility(View.INVISIBLE);
-
-            mSourceLabel.setClickable(false);
-            mSourceLabel.setEnabled(false);
-        }
-
-        updateSource();
-
-        if (mDecryptImmediately
-                || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
-                .length() > 0 || mContentUri != null))) {
-            decryptClicked();
-        }
+//        if (mDecryptImmediately
+//                || (mSource.getCurrentView().getId() == R.id.sourceMessage && (mMessage.getText()
+//                .length() > 0 || mContentUri != null))) {
+//            decryptClicked();
+//        }
     }
+
 
     /**
      * Handles all actions with this intent
@@ -316,14 +373,17 @@ public class DecryptActivity extends DrawerActivity {
          * Main Actions
          */
         if (ACTION_DECRYPT.equals(action) && textData != null) {
-            Log.d(Constants.TAG, "textData null, matching text ...");
+            Log.d(Constants.TAG, "textData not null, matching text ...");
             Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(textData);
             if (matcher.matches()) {
                 Log.d(Constants.TAG, "PGP_MESSAGE matched");
                 textData = matcher.group(1);
                 // replace non breakable spaces
                 textData = textData.replaceAll("\\xa0", " ");
-                mMessage.setText(textData);
+
+                mViewPager.setCurrentItem(PAGER_TAB_MESSAGE, false);
+                mMessageFragment.setText(textData);
+//                mMessage.setText(textData);
             } else {
                 matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(textData);
                 if (matcher.matches()) {
@@ -331,7 +391,10 @@ public class DecryptActivity extends DrawerActivity {
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
-                    mMessage.setText(textData);
+//                    mMessage.setText(textData);
+                    mViewPager.setCurrentItem(PAGER_TAB_MESSAGE, false);
+                    mMessageFragment = (DecryptMessageFragment) getFragmentByPosition(mViewPager.getCurrentItem());
+                    mMessageFragment.setText(textData);
                 } else {
                     Log.d(Constants.TAG, "Nothing matched!");
                 }
@@ -344,14 +407,14 @@ public class DecryptActivity extends DrawerActivity {
                 mInputFilename = path;
                 mFilename.setText(mInputFilename);
                 guessOutputFilename();
-                mSource.setInAnimation(null);
-                mSource.setOutAnimation(null);
-                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
-                    mSource.showNext();
-                }
+//                mSource.setInAnimation(null);
+//                mSource.setOutAnimation(null);
+//                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
+//                    mSource.showNext();
+//                }
             } else {
                 Log.e(Constants.TAG,
-                "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
+                        "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
                 Toast.makeText(this, R.string.error_only_files_are_supported, Toast.LENGTH_LONG)
                         .show();
                 // end activity
@@ -373,28 +436,28 @@ public class DecryptActivity extends DrawerActivity {
         mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
     }
 
-    private void updateSource() {
-        switch (mSource.getCurrentView().getId()) {
-            case R.id.sourceFile: {
-                mSourceLabel.setText(R.string.label_file);
-                mDecryptButton.setText(getString(R.string.btn_decrypt));
-                break;
-            }
-
-            case R.id.sourceMessage: {
-                mSourceLabel.setText(R.string.label_message);
-                mDecryptButton.setText(getString(R.string.btn_decrypt));
-                break;
-            }
-
-            default: {
-                break;
-            }
-        }
-    }
+//    private void updateSource() {
+//        switch (mSource.getCurrentView().getId()) {
+//            case R.id.sourceFile: {
+//                mSourceLabel.setText(R.string.label_file);
+//                mDecryptButton.setText(getString(R.string.btn_decrypt));
+//                break;
+//            }
+//
+//            case R.id.sourceMessage: {
+//                mSourceLabel.setText(R.string.label_message);
+//                mDecryptButton.setText(getString(R.string.btn_decrypt));
+//                break;
+//            }
+//
+//            default: {
+//                break;
+//            }
+//        }
+//    }
 
     private void decryptClicked() {
-        if (mSource.getCurrentView().getId() == R.id.sourceFile) {
+        if (mViewPager.getCurrentItem() == PAGER_TAB_FILE) {
             mDecryptTarget = Id.target.file;
         } else {
             mDecryptTarget = Id.target.message;
@@ -428,13 +491,13 @@ public class DecryptActivity extends DrawerActivity {
         }
 
         if (mDecryptTarget == Id.target.message) {
-            String messageData = mMessage.getText().toString();
-            Matcher matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(messageData);
-            if (matcher.matches()) {
-                mSignedOnly = true;
-                decryptStart();
-                return;
-            }
+//            String messageData = mMessage.getText().toString();
+//            Matcher matcher = PgpHelper.PGP_SIGNED_MESSAGE.matcher(messageData);
+//            if (matcher.matches()) {
+//                mSignedOnly = true;
+//                decryptStart();
+//                return;
+//            }
         }
 
         // else treat it as an decrypted message/file
@@ -519,7 +582,8 @@ public class DecryptActivity extends DrawerActivity {
                         AppMsg.STYLE_ALERT).show();
             }
         } else {
-            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
+
+//            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
         }
 
         // get decryption key for this inStream
@@ -549,18 +613,6 @@ public class DecryptActivity extends DrawerActivity {
             AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
                     AppMsg.STYLE_ALERT).show();
         }
-    }
-
-    private void replyClicked() {
-        Intent intent = new Intent(this, EncryptActivity.class);
-        intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        String data = mMessage.getText().toString();
-        data = data.replaceAll("(?m)^", "> ");
-        data = "\n\n" + data;
-        intent.putExtra(EncryptActivity.EXTRA_TEXT, data);
-        intent.putExtra(EncryptActivity.EXTRA_SIGNATURE_KEY_ID, mSecretKeyId);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, new long[]{mSignatureKeyId});
-        startActivity(intent);
     }
 
     private void askForOutputFilename() {
@@ -620,8 +672,8 @@ public class DecryptActivity extends DrawerActivity {
         } else {
             data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
 
-            String message = mMessage.getText().toString();
-            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
+//            String message = mMessage.getText().toString();
+//            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
         }
 
         data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
@@ -647,20 +699,20 @@ public class DecryptActivity extends DrawerActivity {
 
                     AppMsg.makeText(DecryptActivity.this, R.string.decryption_successful,
                             AppMsg.STYLE_INFO).show();
-                    if (mReturnResult) {
-                        Intent intent = new Intent();
-                        intent.putExtras(returnData);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                        return;
-                    }
+//                    if (mReturnResult) {
+//                        Intent intent = new Intent();
+//                        intent.putExtras(returnData);
+//                        setResult(RESULT_OK, intent);
+//                        finish();
+//                        return;
+//                    }
 
                     switch (mDecryptTarget) {
                         case Id.target.message:
                             String decryptedMessage = returnData
                                     .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-                            mMessage.setText(decryptedMessage);
-                            mMessage.setHorizontallyScrolling(false);
+//                            mMessage.setText(decryptedMessage);
+//                            mMessage.setHorizontallyScrolling(false);
 
                             break;
 
