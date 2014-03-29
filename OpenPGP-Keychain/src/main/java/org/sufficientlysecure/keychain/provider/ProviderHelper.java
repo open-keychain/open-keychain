@@ -354,7 +354,7 @@ public class ProviderHelper {
         values.put(Keys.KEY_SIZE, key.getPublicKey().getBitStrength());
         values.put(Keys.CAN_CERTIFY, (PgpKeyHelper.isCertificationKey(key) && hasPrivate));
         values.put(Keys.CAN_SIGN, (PgpKeyHelper.isSigningKey(key) && hasPrivate));
-        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key) && hasPrivate);
+        values.put(Keys.CAN_ENCRYPT, PgpKeyHelper.isEncryptionKey(key));
         values.put(Keys.IS_REVOKED, key.getPublicKey().isRevoked());
         values.put(Keys.CREATION, PgpKeyHelper.getCreationDate(key).getTime() / 1000);
         Date expiryDate = PgpKeyHelper.getExpiryDate(key);
