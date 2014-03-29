@@ -1,5 +1,6 @@
 include ':OpenPGP-Keychain'
-include ':OpenPGP-Keychain-API:libraries:keychain-api-library'
+include ':OpenPGP-Keychain-API:libraries:openpgp-api-library'
+include ':OpenPGP-Keychain-API:libraries:openkeychain-api-library'
 include ':libraries:HtmlTextView'
 include ':libraries:StickyListHeaders:library'
 include ':libraries:AndroidBootstrap'

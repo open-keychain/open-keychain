@@ -29,13 +29,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.TabsAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
@@ -83,17 +83,23 @@ public class ViewKeyActivity extends ActionBarActivity {
             selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        mDataUri = getIntent().getData();
+        {
+            // normalize mDataUri to a "by row id" query, to ensure it works with any
+            // given valid /public/ query
+            long rowId = ProviderHelper.getRowId(this, getIntent().getData());
+            // TODO: handle (rowId == 0) with something else than a crash
+            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
+        }
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_main)),
-                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0 ? true : false));
+                ViewKeyMainFragment.class, mainBundle, (selectedTab == 0));
 
         Bundle certBundle = new Bundle();
         certBundle.putParcelable(ViewKeyCertsFragment.ARG_DATA_URI, mDataUri);
         mTabsAdapter.addTab(actionBar.newTab().setText(getString(R.string.key_view_tab_certs)),
-                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1 ? true : false));
+                ViewKeyCertsFragment.class, certBundle, (selectedTab == 1));
     }
 
     @Override
@@ -107,7 +113,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent homeIntent = new Intent(this, KeyListPublicActivity.class);
+                Intent homeIntent = new Intent(this, KeyListActivity.class);
                 homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(homeIntent);
                 return true;
@@ -118,8 +124,11 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                mExportHelper.showExportKeysDialog(mDataUri, Id.type.public_key, Constants.path.APP_DIR
-                        + "/pubexport.asc");
+                long masterKeyId =
+                        ProviderHelper.getPublicMasterKeyId(this, Long.valueOf(mDataUri.getLastPathSegment()));
+                long[] ids = new long[]{masterKeyId};
+                mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
+                        Constants.Path.APP_DIR_FILE_PUB, null);
                 return true;
             case R.id.menu_key_view_share_default_fingerprint:
                 shareKey(mDataUri, true);
@@ -154,7 +163,7 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, mDataUri);
+        long updateKeyId = ProviderHelper.getMasterKeyId(ViewKeyActivity.this, dataUri);
 
         if (updateKeyId == 0) {
             Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
@@ -173,7 +182,7 @@ public class ViewKeyActivity extends ActionBarActivity {
         String content;
         if (fingerprintOnly) {
             byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, false);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
             content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
         } else {
@@ -228,24 +237,12 @@ public class ViewKeyActivity extends ActionBarActivity {
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
-                if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                    Bundle returnData = message.getData();
-                    if (returnData != null
-                            && returnData.containsKey(DeleteKeyDialogFragment.MESSAGE_NOT_DELETED)) {
-                        // we delete only this key, so MESSAGE_NOT_DELETED will solely contain this key
-                        Toast.makeText(ViewKeyActivity.this,
-                                getString(R.string.error_can_not_delete_contact)
-                                        + getResources().getQuantityString(R.plurals.error_can_not_delete_info, 1),
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    }
-                }
+                setResult(RESULT_CANCELED);
+                finish();
             }
         };
 
-        mExportHelper.deleteKey(dataUri, Id.type.public_key, returnHandler);
+        mExportHelper.deleteKey(dataUri, returnHandler);
     }
 
 }

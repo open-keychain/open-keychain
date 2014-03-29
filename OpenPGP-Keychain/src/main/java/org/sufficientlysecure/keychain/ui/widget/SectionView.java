@@ -48,9 +48,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
-
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -75,10 +73,10 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
-    private boolean canEdit = true;
     private boolean oldItemDeleted = false;
     private ArrayList<String> mDeletedIDs = new ArrayList<String>();
     private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
+    private boolean mCanEdit = true;
 
     private ActionBarActivity mActivity;
 
@@ -105,30 +103,32 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public void setType(int type) {
         mType = type;
         switch (type) {
-        case Id.type.user_id: {
-            mTitle.setText(R.string.section_user_ids);
-            break;
-        }
+            case Id.type.user_id: {
+                mTitle.setText(R.string.section_user_ids);
+                break;
+            }
 
-        case Id.type.key: {
-            mTitle.setText(R.string.section_keys);
-            break;
-        }
+            case Id.type.key: {
+                mTitle.setText(R.string.section_keys);
+                break;
+            }
 
-        default: {
-            break;
-        }
+            default: {
+                break;
+            }
         }
     }
 
     public void setCanEdit(boolean bCanEdit) {
-        canEdit = bCanEdit;
-        if (!canEdit) {
+        mCanEdit = bCanEdit;
+        if (!mCanEdit) {
             mPlusButton.setVisibility(View.INVISIBLE);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onFinishInflate() {
         mInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -146,7 +146,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         super.onFinishInflate();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void onDeleted(Editor editor, boolean wasNewItem) {
         oldItemDeleted |= !wasNewItem;
         if (oldItemDeleted) {
@@ -262,39 +264,44 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return mList;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void onClick(View v) {
-        if (canEdit) {
+        if (mCanEdit) {
             switch (mType) {
-            case Id.type.user_id: {
-                UserIdEditor view = (UserIdEditor) mInflater.inflate(
-                        R.layout.edit_key_user_id_item, mEditors, false);
-                view.setEditorListener(this);
-                view.setValue("", mEditors.getChildCount() == 0, true);
-                mEditors.addView(view);
-                if (mEditorListener != null) {
-                    mEditorListener.onEdited();
-                }
-                break;
-            }
-
-            case Id.type.key: {
-                CreateKeyDialogFragment mCreateKeyDialogFragment = CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
-                mCreateKeyDialogFragment.setOnAlgorithmSelectedListener(new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
-                    @Override
-                    public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
-                        mNewKeyAlgorithmChoice = algorithmChoice;
-                        mNewKeySize = keySize;
-                        createKey();
+                case Id.type.user_id: {
+                    UserIdEditor view = (UserIdEditor) mInflater.inflate(
+                            R.layout.edit_key_user_id_item, mEditors, false);
+                    view.setEditorListener(this);
+                    view.setValue("", mEditors.getChildCount() == 0, true);
+                    mEditors.addView(view);
+                    if (mEditorListener != null) {
+                        mEditorListener.onEdited();
                     }
-                });
-                mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
-                break;
-            }
+                    break;
+                }
 
-            default: {
-                break;
-            }
+                case Id.type.key: {
+                    CreateKeyDialogFragment mCreateKeyDialogFragment =
+                            CreateKeyDialogFragment.newInstance(mEditors.getChildCount());
+                    mCreateKeyDialogFragment
+                            .setOnAlgorithmSelectedListener(
+                                    new CreateKeyDialogFragment.OnAlgorithmSelectedListener() {
+                                        @Override
+                                        public void onAlgorithmSelected(Choice algorithmChoice, int keySize) {
+                                            mNewKeyAlgorithmChoice = algorithmChoice;
+                                            mNewKeySize = keySize;
+                                            createKey();
+                                        }
+                                    });
+                    mCreateKeyDialogFragment.show(mActivity.getSupportFragmentManager(), "createKeyDialog");
+                    break;
+                }
+
+                default: {
+                    break;
+                }
             }
             this.updateEditorsVisible();
         }
@@ -311,7 +318,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     mEditors, false);
             view.setEditorListener(this);
             view.setValue(userId, mEditors.getChildCount() == 0, false);
-            view.setCanEdit(canEdit);
+            view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
 
@@ -332,7 +339,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
             view.setValue(list.get(i), isMasterKey, usages.get(i), newKeys);
-            view.setCanEdit(canEdit);
+            view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
 
@@ -367,19 +374,22 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // show progress dialog
-        mGeneratingDialog = ProgressDialogFragment.newInstance(R.string.progress_generating,
-                ProgressDialog.STYLE_SPINNER, true, new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                mActivity.stopService(intent);
-            }
-        });
+        mGeneratingDialog = ProgressDialogFragment.newInstance(
+                getResources().getQuantityString(R.plurals.progress_generating, 1),
+                ProgressDialog.STYLE_SPINNER,
+                true,
+                new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        mActivity.stopService(intent);
+                    }
+                });
 
-        // Message is received after generating is done in ApgService
+        // Message is received after generating is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(mActivity,
                 mGeneratingDialog) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -390,7 +400,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                                     .getByteArray(KeychainIntentService.RESULT_NEW_KEY));
                     addGeneratedKeyToView(newKey);
                 }
-            };
+            }
         };
 
         // Create a new Messenger for the communication back

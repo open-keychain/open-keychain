@@ -17,11 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.R;
-
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +25,8 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
 public class KeychainIntentServiceHandler extends Handler {
 
@@ -51,25 +49,31 @@ public class KeychainIntentServiceHandler extends Handler {
         this.mActivity = activity;
     }
 
-    public KeychainIntentServiceHandler(Activity activity, ProgressDialogFragment progressDialogFragment) {
+    public KeychainIntentServiceHandler(Activity activity,
+                                        ProgressDialogFragment progressDialogFragment) {
         this.mActivity = activity;
         this.mProgressDialogFragment = progressDialogFragment;
     }
 
-    public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId, int progressDialogStyle) {
-        this(activity, progressDialogMessageId, progressDialogStyle, false, null);
+    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
+                                        int progressDialogStyle) {
+        this(activity, progressDialogMessage, progressDialogStyle, false, null);
     }
 
-    public KeychainIntentServiceHandler(Activity activity, int progressDialogMessageId,
+    public KeychainIntentServiceHandler(Activity activity, String progressDialogMessage,
                                         int progressDialogStyle, boolean cancelable,
                                         OnCancelListener onCancelListener) {
         this.mActivity = activity;
-        this.mProgressDialogFragment = ProgressDialogFragment.newInstance(progressDialogMessageId,
-                progressDialogStyle, cancelable, onCancelListener);
+        this.mProgressDialogFragment = ProgressDialogFragment.newInstance(
+                progressDialogMessage,
+                progressDialogStyle,
+                cancelable,
+                onCancelListener);
     }
 
     public void showProgressDialog(FragmentActivity activity) {
-        // TODO: This is a hack!, see http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
+        // TODO: This is a hack!, see
+        // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
         Handler handler = new Handler();
         handler.post(new Runnable() {
@@ -84,43 +88,43 @@ public class KeychainIntentServiceHandler extends Handler {
         Bundle data = message.getData();
 
         switch (message.arg1) {
-        case MESSAGE_OKAY:
-            mProgressDialogFragment.dismissAllowingStateLoss();
+            case MESSAGE_OKAY:
+                mProgressDialogFragment.dismissAllowingStateLoss();
 
-            break;
+                break;
 
-        case MESSAGE_EXCEPTION:
-            mProgressDialogFragment.dismissAllowingStateLoss();
+            case MESSAGE_EXCEPTION:
+                mProgressDialogFragment.dismissAllowingStateLoss();
 
-            // show error from service
-            if (data.containsKey(DATA_ERROR)) {
-                Toast.makeText(mActivity,
-                        mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            break;
-
-        case MESSAGE_UPDATE_PROGRESS:
-            if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
-
-                // update progress from service
-                if (data.containsKey(DATA_MESSAGE)) {
-                    mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
-                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                } else if (data.containsKey(DATA_MESSAGE_ID)) {
-                    mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
-                            data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
-                } else {
-                    mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
-                            data.getInt(DATA_PROGRESS_MAX));
+                // show error from service
+                if (data.containsKey(DATA_ERROR)) {
+                    Toast.makeText(mActivity,
+                            mActivity.getString(R.string.error_message, data.getString(DATA_ERROR)),
+                            Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            break;
+                break;
 
-        default:
-            break;
+            case MESSAGE_UPDATE_PROGRESS:
+                if (data.containsKey(DATA_PROGRESS) && data.containsKey(DATA_PROGRESS_MAX)) {
+
+                    // update progress from service
+                    if (data.containsKey(DATA_MESSAGE)) {
+                        mProgressDialogFragment.setProgress(data.getString(DATA_MESSAGE),
+                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                    } else if (data.containsKey(DATA_MESSAGE_ID)) {
+                        mProgressDialogFragment.setProgress(data.getInt(DATA_MESSAGE_ID),
+                                data.getInt(DATA_PROGRESS), data.getInt(DATA_PROGRESS_MAX));
+                    } else {
+                        mProgressDialogFragment.setProgress(data.getInt(DATA_PROGRESS),
+                                data.getInt(DATA_PROGRESS_MAX));
+                    }
+                }
+
+                break;
+
+            default:
+                break;
         }
     }
 }

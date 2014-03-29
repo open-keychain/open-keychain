@@ -18,12 +18,12 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.util.List;
-
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
+import java.util.List;
+
 public abstract class KeyServer {
-    static public class QueryException extends Exception {
+    public static class QueryException extends Exception {
         private static final long serialVersionUID = 2703768928624654512L;
 
         public QueryException(String message) {
@@ -31,22 +31,22 @@ public abstract class KeyServer {
         }
     }
 
-    static public class TooManyResponses extends Exception {
+    public static class TooManyResponses extends Exception {
         private static final long serialVersionUID = 2703768928624654513L;
     }
 
-    static public class InsufficientQuery extends Exception {
+    public static class InsufficientQuery extends Exception {
         private static final long serialVersionUID = 2703768928624654514L;
     }
 
-    static public class AddKeyException extends Exception {
+    public static class AddKeyException extends Exception {
         private static final long serialVersionUID = -507574859137295530L;
     }
 
     abstract List<ImportKeysListEntry> search(String query) throws QueryException, TooManyResponses,
             InsufficientQuery;
 
-    abstract String get(long keyId) throws QueryException;
+    abstract String get(String keyIdHex) throws QueryException;
 
-    abstract void add(String armoredText) throws AddKeyException;
+    abstract void add(String armoredKey) throws AddKeyException;
 }

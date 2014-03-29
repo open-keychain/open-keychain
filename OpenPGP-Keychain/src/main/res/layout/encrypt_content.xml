@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/content_frame"
+        android:layout_marginLeft="@dimen/drawer_content_padding"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+            <ImageView
+                    android:id="@+id/modePrevious"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_previous"/>
+
+            <TextView
+                    android:id="@+id/modeLabel"
+                    style="@style/SectionHeader"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/label_asymmetric"/>
+
+            <ImageView
+                    android:id="@+id/modeNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_next"/>
+        </LinearLayout>
+
+        <ViewFlipper
+                android:id="@+id/mode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <LinearLayout
+                    android:id="@+id/modeAsymmetric"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <CheckBox
+                            android:id="@+id/sign"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/label_sign"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="4dip">
+
+                        <TextView
+                                android:id="@+id/mainUserId"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:ellipsize="end"
+                                android:singleLine="true"
+                                android:text="@string/label_sign_user_id"
+                                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                        <TextView
+                                android:id="@+id/mainUserIdRest"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="right"
+                                android:ellipsize="end"
+                                android:singleLine="true"
+                                android:text="@string/label_sign_email"
+                                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="3dip">
+
+                    <TextView
+                            android:id="@+id/label_selectPublicKeys"
+                            android:layout_width="0dip"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:text="@string/label_select_public_keys"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                            android:id="@+id/btn_selectEncryptKeys"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_margin="4dp"
+                            android:text="@string/btn_select_encrypt_keys"
+                            bootstrapbutton:bb_icon_left="fa-user"
+                            bootstrapbutton:bb_size="default"
+                            bootstrapbutton:bb_type="default"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TableLayout
+                    android:id="@+id/modeSymmetric"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:stretchColumns="1">
+
+                <TableRow>
+
+                    <TextView
+                            android:id="@+id/label_passphrase"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingRight="10dip"
+                            android:text="@string/label_passphrase"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <EditText
+                            android:id="@+id/passphrase"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                            android:id="@+id/label_passphraseAgain"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingRight="10dip"
+                            android:text="@string/label_passphrase_again"
+                            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+                    <EditText
+                            android:id="@+id/passphraseAgain"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"/>
+                </TableRow>
+            </TableLayout>
+        </ViewFlipper>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+            <ImageView
+                    android:id="@+id/sourcePrevious"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_previous"/>
+
+            <TextView
+                    android:id="@+id/sourceLabel"
+                    style="@style/SectionHeader"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/label_message"
+                    android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+            <ImageView
+                    android:id="@+id/sourceNext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_next"/>
+        </LinearLayout>
+
+        <ViewFlipper
+                android:id="@+id/source"
+                android:layout_width="match_parent"
+                android:layout_height="0dip"
+                android:layout_weight="1">
+
+            <LinearLayout
+                    android:id="@+id/sourceMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                <EditText
+                        android:id="@+id/message"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="top"
+                        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+                        android:hint="@string/encrypt_content_edit_text_hint"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:id="@+id/sourceFile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="4dp">
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <EditText
+                            android:id="@+id/filename"
+                            android:layout_width="0dip"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="top|left"
+                            android:inputType="textMultiLine|textUri"
+                            android:lines="4"
+                            android:maxLines="10"
+                            android:minLines="2"
+                            android:scrollbars="vertical"/>
+
+                    <com.beardedhen.androidbootstrap.BootstrapButton
+                            android:id="@+id/btn_browse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            bootstrapbutton:bb_icon_left="fa-folder-open"
+                            bootstrapbutton:bb_roundedCorners="true"
+                            bootstrapbutton:bb_size="default"
+                            bootstrapbutton:bb_type="default"/>
+                </LinearLayout>
+
+                <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
+                        custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
+                        custom:foldedIcon="fa-chevron-right"
+                        custom:unFoldedIcon="fa-chevron-down">
+
+                    <include layout="@layout/encrypt_content_adv_settings"/>
+
+                </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
+
+            </LinearLayout>
+        </ViewFlipper>
+
+        <TextView
+                style="@style/SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="@string/section_encrypt_and_or_sign"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/action_encrypt_share"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:padding="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_share"
+                    bootstrapbutton:bb_icon_left="fa-share-square"
+                    bootstrapbutton:bb_type="info"/>
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/action_encrypt_clipboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:padding="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/btn_clipboard"
+                    bootstrapbutton:bb_icon_left="fa-clipboard"
+                    bootstrapbutton:bb_type="info"/>
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                    android:id="@+id/action_encrypt_file"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:padding="4dp"
+                    android:visibility="gone"
+                    android:text="@string/btn_encrypt_file"
+                    bootstrapbutton:bb_icon_left="fa-lock"
+                    bootstrapbutton:bb_type="info"/>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

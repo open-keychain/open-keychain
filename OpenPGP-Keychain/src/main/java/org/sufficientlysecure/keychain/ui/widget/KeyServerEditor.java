@@ -16,8 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import org.sufficientlysecure.keychain.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -25,8 +23,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.R;
 
 public class KeyServerEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;

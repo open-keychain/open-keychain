@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,21 +17,6 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -43,6 +28,22 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.TextUtils;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.util.Log;
+
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class KeychainProvider extends ContentProvider {
     // public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
@@ -63,6 +64,7 @@ public class KeychainProvider extends ContentProvider {
 
     private static final int PUBLIC_KEY_RING_USER_ID = 121;
     private static final int PUBLIC_KEY_RING_USER_ID_BY_ROW_ID = 122;
+    private static final int PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID = 123;
 
     private static final int SECRET_KEY_RING = 201;
     private static final int SECRET_KEY_RING_BY_ROW_ID = 202;
@@ -78,8 +80,11 @@ public class KeychainProvider extends ContentProvider {
     private static final int SECRET_KEY_RING_USER_ID_BY_ROW_ID = 222;
 
     private static final int API_APPS = 301;
-    private static final int API_APPS_BY_ROW_ID = 302;
     private static final int API_APPS_BY_PACKAGE_NAME = 303;
+    private static final int API_ACCOUNTS = 304;
+    private static final int API_ACCOUNTS_BY_ACCOUNT_NAME = 306;
+
+    private static final int UNIFIED_KEY_RING = 401;
 
     // private static final int DATA_STREAM = 401;
 
@@ -93,6 +98,15 @@ public class KeychainProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority = KeychainContract.CONTENT_AUTHORITY;
+
+        /**
+         * unified key rings
+         *
+         * <pre>
+         * key_rings
+         * </pre>
+         */
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS, UNIFIED_KEY_RING);
 
         /**
          * public key rings
@@ -147,6 +161,7 @@ public class KeychainProvider extends ContentProvider {
          * <pre>
          * key_rings/public/#/user_ids
          * key_rings/public/#/user_ids/#
+         * key_rings/public/master_key_id/#/user_ids
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
@@ -155,6 +170,10 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_PUBLIC + "/#/" + KeychainContract.PATH_USER_IDS + "/#",
                 PUBLIC_KEY_RING_USER_ID_BY_ROW_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                + KeychainContract.PATH_PUBLIC + "/"
+                + KeychainContract.PATH_BY_MASTER_KEY_ID + "/*/" + KeychainContract.PATH_USER_IDS,
+                PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID);
 
         /**
          * secret key rings
@@ -220,11 +239,22 @@ public class KeychainProvider extends ContentProvider {
 
         /**
          * API apps
+         *
+         * <pre>
+         * api_apps
+         * api_apps/_ (package name)
+         *
+         * api_apps/_/accounts
+         * api_apps/_/accounts/_ (account name)
+         * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/#", API_APPS_BY_ROW_ID);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/"
-                + KeychainContract.PATH_BY_PACKAGE_NAME + "/*", API_APPS_BY_PACKAGE_NAME);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
+
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
+                + KeychainContract.PATH_ACCOUNTS, API_ACCOUNTS);
+        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
+                + KeychainContract.PATH_ACCOUNTS + "/*", API_ACCOUNTS_BY_ACCOUNT_NAME);
 
         /**
          * data stream
@@ -238,7 +268,7 @@ public class KeychainProvider extends ContentProvider {
         return matcher;
     }
 
-    private KeychainDatabase mApgDatabase;
+    private KeychainDatabase mKeychainDatabase;
 
     /**
      * {@inheritDoc}
@@ -246,7 +276,7 @@ public class KeychainProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mUriMatcher = buildUriMatcher();
-        mApgDatabase = new KeychainDatabase(getContext());
+        mKeychainDatabase = new KeychainDatabase(getContext());
         return true;
     }
 
@@ -282,6 +312,7 @@ public class KeychainProvider extends ContentProvider {
                 return Keys.CONTENT_ITEM_TYPE;
 
             case PUBLIC_KEY_RING_USER_ID:
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
             case SECRET_KEY_RING_USER_ID:
                 return UserIds.CONTENT_TYPE;
 
@@ -292,9 +323,14 @@ public class KeychainProvider extends ContentProvider {
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
 
-            case API_APPS_BY_ROW_ID:
             case API_APPS_BY_PACKAGE_NAME:
                 return ApiApps.CONTENT_ITEM_TYPE;
+
+            case API_ACCOUNTS:
+                return ApiAccounts.CONTENT_TYPE;
+
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                return ApiAccounts.CONTENT_ITEM_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -304,7 +340,7 @@ public class KeychainProvider extends ContentProvider {
     /**
      * Returns type of the query (secret/public)
      *
-     * @param uri
+     * @param match
      * @return
      */
     private int getKeyType(int match) {
@@ -319,6 +355,7 @@ public class KeychainProvider extends ContentProvider {
             case PUBLIC_KEY_RING_KEY:
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
             case PUBLIC_KEY_RING_USER_ID:
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
                 type = KeyTypes.PUBLIC;
                 break;
@@ -356,14 +393,24 @@ public class KeychainProvider extends ContentProvider {
         projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS + "." + BaseColumns._ID);
         projectionMap.put(KeyRingsColumns.KEY_RING_DATA, Tables.KEY_RINGS + "."
                 + KeyRingsColumns.KEY_RING_DATA);
-        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
         // TODO: deprecated master key id
         //projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.KEY_ID);
 
+        projectionMap.put(KeysColumns.ALGORITHM, Tables.KEYS + "." + KeysColumns.ALGORITHM);
+        projectionMap.put(KeysColumns.KEY_SIZE, Tables.KEYS + "." + KeysColumns.KEY_SIZE);
+        projectionMap.put(KeysColumns.CREATION, Tables.KEYS + "." + KeysColumns.CREATION);
+        projectionMap.put(KeysColumns.EXPIRY, Tables.KEYS + "." + KeysColumns.EXPIRY);
+        projectionMap.put(KeysColumns.KEY_RING_ROW_ID, Tables.KEYS + "." + KeysColumns.KEY_RING_ROW_ID);
         projectionMap.put(KeysColumns.FINGERPRINT, Tables.KEYS + "." + KeysColumns.FINGERPRINT);
         projectionMap.put(KeysColumns.IS_REVOKED, Tables.KEYS + "." + KeysColumns.IS_REVOKED);
 
         projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+
+        // type attribute is special: if there is any grouping, choose secret over public type
+        projectionMap.put(KeyRingsColumns.TYPE,
+                "MAX(" + Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + ") AS " + KeyRingsColumns.TYPE);
 
         return projectionMap;
     }
@@ -395,13 +442,27 @@ public class KeychainProvider extends ContentProvider {
         return projectionMap;
     }
 
+    private HashMap<String, String> getProjectionMapForUserIds() {
+        HashMap<String, String> projectionMap = new HashMap<String, String>();
+
+        projectionMap.put(BaseColumns._ID, Tables.USER_IDS + "." + BaseColumns._ID);
+        projectionMap.put(UserIdsColumns.USER_ID, Tables.USER_IDS + "." + UserIdsColumns.USER_ID);
+        projectionMap.put(UserIdsColumns.RANK, Tables.USER_IDS + "." + UserIdsColumns.RANK);
+        projectionMap.put(KeyRingsColumns.MASTER_KEY_ID, Tables.KEY_RINGS + "."
+                + KeyRingsColumns.MASTER_KEY_ID);
+
+        return projectionMap;
+    }
+
     /**
      * Builds default query for keyRings: KeyRings table is joined with UserIds and Keys
      */
     private SQLiteQueryBuilder buildKeyRingQuery(SQLiteQueryBuilder qb, int match) {
-        // public or secret keyring
-        qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
-        qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        if (match != UNIFIED_KEY_RING) {
+            // public or secret keyring
+            qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.TYPE + " = ");
+            qb.appendWhereEscapeString(Integer.toString(getKeyType(match)));
+        }
 
         // join keyrings with keys and userIds
         // Only get user id and key with rank 0 (main user id and main key)
@@ -451,11 +512,26 @@ public class KeychainProvider extends ContentProvider {
         Log.v(Constants.TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        SQLiteDatabase db = mApgDatabase.getReadableDatabase();
+        SQLiteDatabase db = mKeychainDatabase.getReadableDatabase();
 
         int match = mUriMatcher.match(uri);
 
+        // all query() parameters, for good measure
+        String groupBy = null, having = null;
+
         switch (match) {
+            case UNIFIED_KEY_RING:
+                qb = buildKeyRingQuery(qb, match);
+
+                // GROUP BY so we don't get duplicates
+                groupBy = Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID;
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = KeyRings.TYPE + " DESC, " +
+                            Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                }
+
+                break;
             case PUBLIC_KEY_RING:
             case SECRET_KEY_RING:
                 qb = buildKeyRingQuery(qb, match);
@@ -465,7 +541,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             case PUBLIC_KEY_RING_BY_ROW_ID:
             case SECRET_KEY_RING_BY_ROW_ID:
                 qb = buildKeyRingQuery(qb, match);
@@ -478,7 +553,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             case PUBLIC_KEY_RING_BY_MASTER_KEY_ID:
             case SECRET_KEY_RING_BY_MASTER_KEY_ID:
                 qb = buildKeyRingQuery(qb, match);
@@ -491,7 +565,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             case SECRET_KEY_RING_BY_KEY_ID:
             case PUBLIC_KEY_RING_BY_KEY_ID:
                 qb = buildKeyRingQueryWithSpecificKey(qb, match);
@@ -504,7 +577,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             case SECRET_KEY_RING_BY_EMAILS:
             case PUBLIC_KEY_RING_BY_EMAILS:
                 qb = buildKeyRingQuery(qb, match);
@@ -534,7 +606,6 @@ public class KeychainProvider extends ContentProvider {
                 }
 
                 break;
-
             case SECRET_KEY_RING_BY_LIKE_EMAIL:
             case PUBLIC_KEY_RING_BY_LIKE_EMAIL:
                 qb = buildKeyRingQuery(qb, match);
@@ -550,7 +621,6 @@ public class KeychainProvider extends ContentProvider {
                         + "))");
 
                 break;
-
             case PUBLIC_KEY_RING_KEY:
             case SECRET_KEY_RING_KEY:
                 qb.setTables(Tables.KEYS);
@@ -563,7 +633,6 @@ public class KeychainProvider extends ContentProvider {
                 qb.setProjectionMap(getProjectionMapForKeys());
 
                 break;
-
             case PUBLIC_KEY_RING_KEY_BY_ROW_ID:
             case SECRET_KEY_RING_KEY_BY_ROW_ID:
                 qb.setTables(Tables.KEYS);
@@ -579,7 +648,16 @@ public class KeychainProvider extends ContentProvider {
                 qb.setProjectionMap(getProjectionMapForKeys());
 
                 break;
+            case PUBLIC_KEY_RING_BY_MASTER_KEY_ID_USER_ID:
+                qb.setTables(Tables.USER_IDS + " INNER JOIN " + Tables.KEY_RINGS + " ON " + "("
+                        + Tables.KEY_RINGS + "." + BaseColumns._ID + " = " + Tables.USER_IDS + "."
+                        + KeysColumns.KEY_RING_ROW_ID + " )");
+                qb.appendWhere(Tables.KEY_RINGS + "." + KeyRingsColumns.MASTER_KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(3));
 
+                qb.setProjectionMap(getProjectionMapForUserIds());
+
+                break;
             case PUBLIC_KEY_RING_USER_ID:
             case SECRET_KEY_RING_USER_ID:
                 qb.setTables(Tables.USER_IDS);
@@ -587,7 +665,6 @@ public class KeychainProvider extends ContentProvider {
                 qb.appendWhereEscapeString(uri.getPathSegments().get(2));
 
                 break;
-
             case PUBLIC_KEY_RING_USER_ID_BY_ROW_ID:
             case SECRET_KEY_RING_USER_ID_BY_ROW_ID:
                 qb.setTables(Tables.USER_IDS);
@@ -598,25 +675,31 @@ public class KeychainProvider extends ContentProvider {
                 qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
-
             case API_APPS:
                 qb.setTables(Tables.API_APPS);
-
-                break;
-            case API_APPS_BY_ROW_ID:
-                qb.setTables(Tables.API_APPS);
-
-                qb.appendWhere(BaseColumns._ID + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
             case API_APPS_BY_PACKAGE_NAME:
                 qb.setTables(Tables.API_APPS);
                 qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(2));
+                qb.appendWhereEscapeString(uri.getLastPathSegment());
 
                 break;
+            case API_ACCOUNTS:
+                qb.setTables(Tables.API_ACCOUNTS);
+                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
+                break;
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                qb.setTables(Tables.API_ACCOUNTS);
+                qb.appendWhere(Tables.API_ACCOUNTS + "." + ApiAccounts.PACKAGE_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+
+                qb.appendWhere(" AND " + Tables.API_ACCOUNTS + "." + ApiAccounts.ACCOUNT_NAME + " = ");
+                qb.appendWhereEscapeString(uri.getLastPathSegment());
+
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
 
@@ -630,7 +713,7 @@ public class KeychainProvider extends ContentProvider {
             orderBy = sortOrder;
         }
 
-        Cursor c = qb.query(db, projection, selection, selectionArgs, null, null, orderBy);
+        Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
         c.setNotificationUri(getContext().getContentResolver(), uri);
@@ -653,7 +736,7 @@ public class KeychainProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(Constants.TAG, "insert(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         Uri rowUri = null;
         long rowId = -1;
@@ -673,12 +756,14 @@ public class KeychainProvider extends ContentProvider {
                     values.put(Keys.TYPE, KeyTypes.PUBLIC);
 
                     rowId = db.insertOrThrow(Tables.KEYS, null, values);
+                    // TODO: this is wrong:
                     rowUri = Keys.buildPublicKeysUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                     break;
                 case PUBLIC_KEY_RING_USER_ID:
                     rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
+                    // TODO: this is wrong:
                     rowUri = UserIds.buildPublicUserIdsUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
@@ -695,18 +780,33 @@ public class KeychainProvider extends ContentProvider {
                     values.put(Keys.TYPE, KeyTypes.SECRET);
 
                     rowId = db.insertOrThrow(Tables.KEYS, null, values);
+                    // TODO: this is wrong:
                     rowUri = Keys.buildSecretKeysUri(Long.toString(rowId));
                     sendBroadcastDatabaseChange(getKeyType(match), getType(uri));
 
                     break;
                 case SECRET_KEY_RING_USER_ID:
                     rowId = db.insertOrThrow(Tables.USER_IDS, null, values);
+                    // TODO: this is wrong:
                     rowUri = UserIds.buildSecretUserIdsUri(Long.toString(rowId));
 
                     break;
                 case API_APPS:
                     rowId = db.insertOrThrow(Tables.API_APPS, null, values);
-                    rowUri = ApiApps.buildIdUri(Long.toString(rowId));
+//                    rowUri = ApiApps.buildIdUri(Long.toString(rowId));
+
+                    break;
+                case API_ACCOUNTS:
+                    // set foreign key automatically based on given uri
+                    // e.g., api_apps/com.example.app/accounts/
+                    String packageName = uri.getPathSegments().get(1);
+                    values.put(ApiAccounts.PACKAGE_NAME, packageName);
+
+                    Log.d(Constants.TAG, "provider packageName: " + packageName);
+
+                    rowId = db.insertOrThrow(Tables.API_ACCOUNTS, null, values);
+                    // TODO: this is wrong:
+//                    rowUri = ApiAccounts.buildIdUri(Long.toString(rowId));
 
                     break;
                 default:
@@ -730,7 +830,7 @@ public class KeychainProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         Log.v(Constants.TAG, "delete(uri=" + uri + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         int count;
         final int match = mUriMatcher.match(uri);
@@ -766,12 +866,12 @@ public class KeychainProvider extends ContentProvider {
                 count = db.delete(Tables.KEYS, buildDefaultUserIdsSelection(uri, selection),
                         selectionArgs);
                 break;
-            case API_APPS_BY_ROW_ID:
-                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, false, selection),
+            case API_APPS_BY_PACKAGE_NAME:
+                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, selection),
                         selectionArgs);
                 break;
-            case API_APPS_BY_PACKAGE_NAME:
-                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, true, selection),
+            case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                count = db.delete(Tables.API_ACCOUNTS, buildDefaultApiAccountsSelection(uri, selection),
                         selectionArgs);
                 break;
             default:
@@ -791,7 +891,7 @@ public class KeychainProvider extends ContentProvider {
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mApgDatabase.getWritableDatabase();
+        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
 
         String defaultSelection = null;
         int count = 0;
@@ -836,13 +936,13 @@ public class KeychainProvider extends ContentProvider {
                     count = db.update(Tables.USER_IDS, values,
                             buildDefaultUserIdsSelection(uri, selection), selectionArgs);
                     break;
-                case API_APPS_BY_ROW_ID:
-                    count = db.update(Tables.API_APPS, values,
-                            buildDefaultApiAppsSelection(uri, false, selection), selectionArgs);
-                    break;
                 case API_APPS_BY_PACKAGE_NAME:
                     count = db.update(Tables.API_APPS, values,
-                            buildDefaultApiAppsSelection(uri, true, selection), selectionArgs);
+                            buildDefaultApiAppsSelection(uri, selection), selectionArgs);
+                    break;
+                case API_ACCOUNTS_BY_ACCOUNT_NAME:
+                    count = db.update(Tables.API_ACCOUNTS, values,
+                            buildDefaultApiAccountsSelection(uri, selection), selectionArgs);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -862,7 +962,8 @@ public class KeychainProvider extends ContentProvider {
      * Build default selection statement for KeyRings. If no extra selection is specified only build
      * where clause with rowId
      *
-     * @param uri
+     * @param defaultSelection
+     * @param keyType
      * @param selection
      * @return
      */
@@ -940,19 +1041,29 @@ public class KeychainProvider extends ContentProvider {
      * @param selection
      * @return
      */
-    private String buildDefaultApiAppsSelection(Uri uri, boolean packageSelection, String selection) {
-        String lastPathSegment = uri.getLastPathSegment();
+    private String buildDefaultApiAppsSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
 
         String andSelection = "";
         if (!TextUtils.isEmpty(selection)) {
             andSelection = " AND (" + selection + ")";
         }
 
-        if (packageSelection) {
-            return ApiApps.PACKAGE_NAME + "=" + lastPathSegment + andSelection;
-        } else {
-            return BaseColumns._ID + "=" + lastPathSegment + andSelection;
+        return ApiApps.PACKAGE_NAME + "=" + packageName + andSelection;
+    }
+
+    private String buildDefaultApiAccountsSelection(Uri uri, String selection) {
+        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
+        String accountName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
+
+        String andSelection = "";
+        if (!TextUtils.isEmpty(selection)) {
+            andSelection = " AND (" + selection + ")";
         }
+
+        return ApiAccounts.PACKAGE_NAME + "=" + packageName + " AND "
+                + ApiAccounts.ACCOUNT_NAME + "=" + accountName
+                + andSelection;
     }
 
     // @Override

@@ -4,16 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <fragment
-            android:id="@+id/crypto_consumers_list_fragment"
-            android:name="org.sufficientlysecure.keychain.service.remote.RegisteredAppsListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+    <include layout="@layout/api_apps_list_content"/>
 
     <include layout="@layout/drawer_list" />
 

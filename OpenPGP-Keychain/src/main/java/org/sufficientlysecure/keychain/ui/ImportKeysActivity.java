@@ -34,10 +34,8 @@ import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -161,7 +159,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             } else if (extras.containsKey(EXTRA_KEY_ID)) {
                 long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
                 if (keyId != 0) {
-                    query = "0x" + PgpKeyHelper.convertKeyToHex(keyId);
+                    query = PgpKeyHelper.convertKeyIdToHex(keyId);
                 }
             } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
                 String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
@@ -169,7 +167,8 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                     query = "0x" + fingerprint;
                 }
             } else {
-                Log.e(Constants.TAG, "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or 'fingerprint' extra!");
+                Log.e(Constants.TAG,
+                "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or 'fingerprint' extra!");
                 return;
             }
 
@@ -338,7 +337,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     // } else {
     // status.putString(
     // EXTRA_ERROR,
-    // "Scanned fingerprint does NOT match the fingerprint of the received key.  You shouldnt trust this key.");
+    // "Scanned fingerprint does NOT match the fingerprint of the received key. You shouldnt trust this key.");
     // }
     // }
     // } catch (QueryException e) {
@@ -360,51 +359,54 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     // }
 
 
-    // Message is received after importing is done in ApgService
-    KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-            R.string.progress_importing, ProgressDialog.STYLE_HORIZONTAL) {
-        public void handleMessage(Message message) {
-            // handle messages by standard ApgHandler first
-            super.handleMessage(message);
-
-            if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                // get returned data bundle
-                Bundle returnData = message.getData();
-
-                int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
-                int updated = returnData
-                        .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
-                int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
-                String toastMessage;
-                if (added > 0 && updated > 0) {
-                    String addedStr = getResources().getQuantityString(
-                            R.plurals.keys_added_and_updated_1, added, added);
-                    String updatedStr = getResources().getQuantityString(
-                            R.plurals.keys_added_and_updated_2, updated, updated);
-                    toastMessage = addedStr + updatedStr;
-                } else if (added > 0) {
-                    toastMessage = getResources().getQuantityString(R.plurals.keys_added,
-                            added, added);
-                } else if (updated > 0) {
-                    toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
-                            updated, updated);
-                } else {
-                    toastMessage = getString(R.string.no_keys_added_or_updated);
-                }
-                AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
-                        .show();
-                if (bad > 0) {
-                    BadImportKeyDialogFragment badImportKeyDialogFragment = BadImportKeyDialogFragment.newInstance(bad);
-                    badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
-                }
-            }
-        }
-    };
-
     /**
      * Import keys with mImportData
      */
     public void importKeys() {
+        // Message is received after importing is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
+                this,
+                getString(R.string.progress_importing),
+                ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+                    int added = returnData.getInt(KeychainIntentService.RESULT_IMPORT_ADDED);
+                    int updated = returnData
+                            .getInt(KeychainIntentService.RESULT_IMPORT_UPDATED);
+                    int bad = returnData.getInt(KeychainIntentService.RESULT_IMPORT_BAD);
+                    String toastMessage;
+                    if (added > 0 && updated > 0) {
+                        String addedStr = getResources().getQuantityString(
+                                R.plurals.keys_added_and_updated_1, added, added);
+                        String updatedStr = getResources().getQuantityString(
+                                R.plurals.keys_added_and_updated_2, updated, updated);
+                        toastMessage = addedStr + updatedStr;
+                    } else if (added > 0) {
+                        toastMessage = getResources().getQuantityString(R.plurals.keys_added,
+                                added, added);
+                    } else if (updated > 0) {
+                        toastMessage = getResources().getQuantityString(R.plurals.keys_updated,
+                                updated, updated);
+                    } else {
+                        toastMessage = getString(R.string.no_keys_added_or_updated);
+                    }
+                    AppMsg.makeText(ImportKeysActivity.this, toastMessage, AppMsg.STYLE_INFO)
+                            .show();
+                    if (bad > 0) {
+                        BadImportKeyDialogFragment badImportKeyDialogFragment =
+                                BadImportKeyDialogFragment.newInstance(bad);
+                        badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
+                    }
+                }
+            }
+        };
+
         if (mListFragment.getKeyBytes() != null || mListFragment.getDataUri() != null) {
             Log.d(Constants.TAG, "importKeys started");
 

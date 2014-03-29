@@ -51,7 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingRight="5dip"
-                    android:text="Name" />
+                    android:text="@string/label_name" />
             </TableRow>
 
             <TableRow>

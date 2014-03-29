@@ -17,21 +17,22 @@
 
 package org.sufficientlysecure.keychain.helper;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Set;
+import android.os.Bundle;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 
+import android.text.style.StrikethroughSpan;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.os.Bundle;
+import java.util.Iterator;
+import java.util.Set;
 
 public class OtherHelper {
 
     /**
      * Logs bundle content to debug for inspecting the content
-     * 
+     *
      * @param bundle
      * @param bundleName
      */
@@ -58,6 +59,12 @@ public class OtherHelper {
                 Log.d(Constants.TAG, "Bundle " + bundleName + ": null");
             }
         }
+    }
+
+    public static SpannableStringBuilder strikeOutText(CharSequence text) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(text);
+        sb.setSpan(new StrikethroughSpan(), 0, text.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        return sb;
     }
 
 }

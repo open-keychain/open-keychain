@@ -48,6 +48,7 @@ public class OpenPgpProviderActivity extends Activity {
     private Button mEncrypt;
     private Button mSignAndEncrypt;
     private Button mDecryptAndVerify;
+    private EditText mAccount;
 
     private OpenPgpServiceConnection mServiceConnection;
 
@@ -68,6 +69,7 @@ public class OpenPgpProviderActivity extends Activity {
         mEncrypt = (Button) findViewById(R.id.crypto_provider_demo_encrypt);
         mSignAndEncrypt = (Button) findViewById(R.id.crypto_provider_demo_sign_and_encrypt);
         mDecryptAndVerify = (Button) findViewById(R.id.crypto_provider_demo_decrypt_and_verify);
+        mAccount = (EditText) findViewById(R.id.crypto_provider_demo_account);
 
         mSign.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +144,7 @@ public class OpenPgpProviderActivity extends Activity {
     private InputStream getInputstream(boolean ciphertext) {
         InputStream is = null;
         try {
-            String inputStr = null;
+            String inputStr;
             if (ciphertext) {
                 inputStr = mCiphertext.getText().toString();
             } else {
@@ -213,6 +215,7 @@ public class OpenPgpProviderActivity extends Activity {
     public void sign(Intent data) {
         data.setAction(OpenPgpApi.ACTION_SIGN);
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -225,6 +228,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.setAction(OpenPgpApi.ACTION_ENCRYPT);
         data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -237,6 +241,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.setAction(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
         data.putExtra(OpenPgpApi.EXTRA_USER_IDS, mEncryptUserIds.getText().toString().split(","));
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -248,6 +253,7 @@ public class OpenPgpProviderActivity extends Activity {
     public void decryptAndVerify(Intent data) {
         data.setAction(OpenPgpApi.ACTION_DECRYPT_VERIFY);
         data.putExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+        data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(true);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -264,13 +270,11 @@ public class OpenPgpProviderActivity extends Activity {
         // try again after user interaction
         if (resultCode == RESULT_OK) {
             /*
-             * The data originally given to the pgp method are are again
-             * returned here to be used when calling again after user interaction.
-             *
-             * They also contain results from the user interaction which happened,
-             * for example selected key ids.
+             * The data originally given to one of the methods above, is again
+             * returned here to be used when calling the method again after user
+             * interaction. The Intent now also contains results from the user
+             * interaction, for example selected key ids.
              */
-
             switch (requestCode) {
                 case REQUEST_CODE_SIGN: {
                     sign(data);

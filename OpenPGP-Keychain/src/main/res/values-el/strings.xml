@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--title-->
+  <string name="title_select_recipients">Επιλογή Δημόσιου Κλειδιού</string>
+  <string name="title_select_secret_key">Επιλογή Ιδιωτικού Κλειδιού</string>
+  <string name="title_authentication">Κωδικός</string>
+  <string name="title_create_key">Δημιουργία Κλειδιού</string>
+  <string name="title_edit_key">Επεξεργασία Κλειδιού</string>
+  <string name="title_preferences">Επιλογές</string>
+  <!--section-->
+  <!--button-->
+  <string name="btn_sign">Υπόγραψε</string>
+  <string name="btn_save">Αποθήκευση</string>
+  <string name="btn_do_not_save">Ακύρωση</string>
+  <string name="btn_delete">Διαγραφή</string>
+  <string name="btn_no_date">Κανένα</string>
+  <string name="btn_okay">ΟΚ</string>
+  <string name="btn_change_passphrase">Αλλαγή κωδικού</string>
+  <string name="btn_set_passphrase">Επέλεξε Κωδικό</string>
+  <!--menu-->
+  <string name="menu_delete_key">Διαγραφής κλειδιού</string>
+  <string name="menu_create_key">Δημιουργίας κλειδιού</string>
+  <!--label-->
+  <string name="label_sign">Υπόγραψε</string>
+  <string name="label_message">Μήνυμα</string>
+  <string name="label_file">Αρχείο</string>
+  <string name="label_passphrase">Κωδικός</string>
+  <string name="label_passphrase_again">Ξανά</string>
+  <string name="label_algorithm">Αλγόριθμος</string>
+  <string name="label_encryption_algorithm">Αλγόριθμος κρυπτογράφησης</string>
+  <string name="label_asymmetric">Δημόσιο κλειδί</string>
+  <string name="label_symmetric">Κωδικός</string>
+  <string name="label_key_size">Μέγεθος κλειδιού</string>
+  <string name="label_email">Ηλεκτρονικό ταχυδρομίο</string>
+  <string name="unknown_status"></string>
+  <!--choice-->
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+</resources>

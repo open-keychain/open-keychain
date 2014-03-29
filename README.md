@@ -145,15 +145,26 @@ see http://help.transifex.net/features/client/index.html#user-client
 * Opening braces don't go on their own line
 * Field names: Non-public, non-static fields start with m.
 * Acronyms are words: Treat acronyms as words in names, yielding !XmlHttpRequest, getUrl(), etc.
+* Fully Qualify Imports: Do *not* use wildcard-imports such as ``import foo.*;``
 
-See http://source.android.com/source/code-style.html
+The full coding style can be found at http://source.android.com/source/code-style.html
 
-### XML Eclipse Settings
-* XML Maximum line width 999
-* XML: Split multiple attributes each on a new line (Eclipse: Properties -> XML -> XML Files -> Editor)
-* XML: Indent using spaces with Indention size 4 (Eclipse: Properties -> XML -> XML Files -> Editor)
+### Automated syntax check with CheckStyle
 
-See http://www.androidpolice.com/2009/11/04/auto-formatting-android-xml-files-with-eclipse/
+####Linux
+1. Paste the `tools/checkstyle.xml` file to `~/.AndroidStudioPreview/config/codestyles/`
+2. Go to Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
+3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
+
+####Mac OSX
+1. Paste the `tools/checkstyle.xml` file to `~/Library/Preferences/AndroidStudioPreview/codestyles`
+2. Go to Preferences > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
+3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
+
+####Windows
+1. Paste the `tools/checkstyle.xml` file to `C:\Users\<UserName>\.AndroidStudioPreview\config\codestyles`
+2. Go to File > Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
+3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio.
 
 ## Licenses
 OpenPGP Kechain is licensed under GPLv3+.
@@ -210,10 +221,6 @@ Some parts (older parts and some libraries are Apache License v2, MIT X11 Licens
 ### Images
 * icon.svg  
   modified version of kgpg_key2_kopete.svgz
-
-* key.svg  
-  http://rrze-icon-set.berlios.de/  
-  Creative Commons Attribution Share-Alike licence 3.0
   
 * Menu icons  
   http://developer.android.com/design/downloads/index.html#action-bar-icon-pack

@@ -13,9 +13,10 @@
   <string name="title_preferences">Preferenze</string>
   <string name="title_api_registered_apps">App Registrate</string>
   <string name="title_key_server_preference">Preferenze Server delle Chiavi</string>
-  <string name="title_change_passphrase">Cambia Frase di Accesso</string>
+  <string name="title_change_passphrase">Cambia Frase Di Accesso</string>
   <string name="title_set_passphrase">Imposta Frase di Accesso</string>
-  <string name="title_send_email">Invia Mail…</string>
+  <string name="title_send_email">Invia Mail...</string>
+  <string name="title_send_file">Invia file...</string>
   <string name="title_encrypt_to_file">Codifica File</string>
   <string name="title_decrypt_to_file">Decodifica File</string>
   <string name="title_import_keys">Importa Chiavi</string>
@@ -61,8 +62,10 @@
   <string name="btn_next">Prossimo</string>
   <string name="btn_back">Precedente</string>
   <string name="btn_clipboard">Appunti</string>
-  <string name="btn_share">Condividi con…</string>
+  <string name="btn_share">Condividi con...</string>
   <string name="btn_lookup_key">Chiave di ricerca</string>
+  <string name="btn_encryption_advanced_settings_show">Mostra impostazioni avanzate</string>
+  <string name="btn_encryption_advanced_settings_hide">Nascondi impostazioni avanzate</string>
   <!--menu-->
   <string name="menu_preferences">Impostazioni</string>
   <string name="menu_help">Aiuto</string>
@@ -71,19 +74,21 @@
   <string name="menu_import">Importa</string>
   <string name="menu_import_from_nfc">Importa tramite NFC</string>
   <string name="menu_export_keys">Esporta tutte le chiavi</string>
+  <string name="menu_export_secret_keys">Esporta tutte le chiavi segrete</string>
   <string name="menu_export_key">Esporta su un file</string>
   <string name="menu_delete_key">Cancella chiave</string>
   <string name="menu_create_key">Crea chiave</string>
   <string name="menu_create_key_expert">Crea chiave (esperto)</string>
   <string name="menu_search">Cerca</string>
-  <string name="menu_key_server">Importa dal server delle chiavi</string>
+  <string name="menu_import_from_key_server">Server delle Chiavi</string>
+  <string name="menu_key_server">Server delle Chiavi...</string>
   <string name="menu_update_key">Aggiorna dal server delle chiavi</string>
   <string name="menu_export_key_to_server">Carica chiave nel server</string>
-  <string name="menu_share">Condividi</string>
-  <string name="menu_share_title_fingerprint">Condivi impronta…</string>
-  <string name="menu_share_title">Condividi intera chiave…</string>
+  <string name="menu_share">Condividi...</string>
+  <string name="menu_share_title_fingerprint">Condivi impronta...</string>
+  <string name="menu_share_title">Condividi intera chiave...</string>
   <string name="menu_share_default_fingerprint">con..</string>
-  <string name="menu_share_default">con…</string>
+  <string name="menu_share_default">con...</string>
   <string name="menu_share_qr_code">con Codice QR</string>
   <string name="menu_share_qr_code_fingerprint">con Codice QR</string>
   <string name="menu_share_nfc">con NFC</string>
@@ -91,7 +96,8 @@
   <string name="menu_sign_key">Firma chiave</string>
   <string name="menu_beam_preferences">Impostazioni Beam</string>
   <string name="menu_key_edit_cancel">Annulla</string>
-  <string name="menu_encrypt_to">Codifica su…</string>
+  <string name="menu_encrypt_to">Codifica su...</string>
+  <string name="menu_select_all">Seleziona tutto</string>
   <!--label-->
   <string name="label_sign">Firma</string>
   <string name="label_message">Messaggio</string>
@@ -104,6 +110,7 @@
   <string name="label_select_public_keys">Destinatari</string>
   <string name="label_delete_after_encryption">Cancella Dopo Codifica</string>
   <string name="label_delete_after_decryption">Cancella Dopo Decodifica</string>
+  <string name="label_share_after_encryption">Condividi Dopo la Codifica</string>
   <string name="label_encryption_algorithm">Algoritmo di Codifica</string>
   <string name="label_hash_algorithm">Algoritmo di Hash</string>
   <string name="label_asymmetric">Chiave Pubblica</string>
@@ -122,9 +129,12 @@
   <string name="label_name">Nome</string>
   <string name="label_comment">Commento</string>
   <string name="label_email">Email</string>
+  <string name="label_sign_user_id">Firma ID Utente</string>
+  <string name="label_sign_email">Firma email</string>
   <string name="label_send_key">Carica chiave nel server delle chiavi selezionati dopo la certificazione</string>
   <string name="label_fingerprint">Impronta</string>
   <string name="select_keys_button_default">Seleziona</string>
+  <string name="expiry_date_dialog_title">Impostare la data di scadenza</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d selezionato</item>
     <item quantity="other">%d selezionati</item>
@@ -132,11 +142,17 @@
   <string name="user_id_no_name">&lt;nessun nome&gt;</string>
   <string name="none">&lt;nessuno&gt;</string>
   <string name="no_key">&lt;nessuna chiave&gt;</string>
+  <string name="no_email">&lt;Nessuna Email&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">puo\'; codificare</string>
   <string name="can_sign">puo\' firmare</string>
   <string name="expired">scaduto</string>
   <string name="revoked">revocato</string>
+  <string name="user_id">ID Utente</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 contatto</item>
+    <item quantity="other">%d contatti</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d server delle chiavi</item>
     <item quantity="other">%d server delle chiavi</item>
@@ -163,7 +179,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Apri…</string>
+  <string name="filemanager_title_open">Apri...</string>
   <string name="warning">Attenzione</string>
   <string name="error">Errore</string>
   <string name="error_message">Errore: %s</string>
@@ -192,6 +208,9 @@
   <string name="key_deletion_confirmation">Vuoi veramente eliminare la chiave \'%s\'?\nNon potrai annullare!</string>
   <string name="key_deletion_confirmation_multi">Vuoi veramente eliminare le chiavi selezionate?\nNon potrai annullare!</string>
   <string name="secret_key_deletion_confirmation">Vuoi veramente eliminare la chiave PRIVATA \'%s\'?\nNon potrai annullare!</string>
+  <string name="public_key_deletetion_confirmation">Vuoi veramente eliminare la chiave PUBBLICA \'%s\'?\nNon potrai annullare!</string>
+  <string name="secret_key_delete_text">Eliminare le Chiavi Segrete?</string>
+  <string name="also_export_secret_keys">Esportare anche le chiavi segrete?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">%d chiave aggiunta correttamente</item>
     <item quantity="other">%d chiavi aggiunte correttamente</item>
@@ -213,6 +232,7 @@
   <string name="keys_exported">%d chiavi esportate correttamente.</string>
   <string name="no_keys_exported">Nessuna chiave esportata.</string>
   <string name="key_creation_el_gamal_info">Nota: solo le sottochiavi supportano ElGamal, e per ElGamal verra\' usata la grandezza chiave piu\' vicina a 1536, 2048, 3072, 4096 o 8192.</string>
+  <string name="key_creation_weak_rsa_info">Nota: la generazione di chiavi RSA con lunghezza pari a 1024 bit o inferiore è considerata non sicura ed è disabilitata per la generazione di nuove chiavi.</string>
   <string name="key_not_found">Impossibile trovare la chiave %08X.</string>
   <plurals name="keys_found">
     <item quantity="one">Trovata %d chiave.</item>
@@ -244,6 +264,7 @@
   <string name="error_master_key_must_not_be_el_gamal">La chiave principale non puo\' essere ElGamal</string>
   <string name="error_unknown_algorithm_choice">opzione algoritmo sconosciuta</string>
   <string name="error_user_id_needs_a_name">devi specificare un nome</string>
+  <string name="error_user_id_no_email">Nessuna email trovata</string>
   <string name="error_user_id_needs_an_email_address">devi specificare un indirizzo email</string>
   <string name="error_key_needs_a_user_id">necessario almeno un id utente</string>
   <string name="error_main_user_id_must_not_be_empty">id utente principale non puo\' essere vuoto</string>
@@ -269,46 +290,56 @@
   <string name="error_keyserver_insufficient_query">Query di server insufficiente</string>
   <string name="error_keyserver_query">Interrogazione del server delle chiavi fallita</string>
   <string name="error_keyserver_too_many_responses">Troppi responsi</string>
+  <string name="error_import_file_no_content">Il File non ha contenuti</string>
+  <string name="error_generic_report_bug">Si è verificato un errore generico, si prega di creare una nuova segnalazione di errore per OpenKeychain.</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Per favore cancellala dalla schermata \'Mie Chavi\'</item>
     <item quantity="other">Per favore cancellatele dalla schermata \'Mie Chavi\'</item>
   </plurals>
-  <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">fatto.</string>
-  <string name="progress_saving">salvataggio…</string>
-  <string name="progress_importing">importazione…</string>
-  <string name="progress_exporting">esportazione…</string>
-  <string name="progress_generating">generazione chiave, richiede fino a 3 minuti…</string>
-  <string name="progress_building_key">fabbricazione chiave…</string>
-  <string name="progress_preparing_master_key">preparazione chiave principale…</string>
-  <string name="progress_certifying_master_key">certificazione chiave principale…</string>
-  <string name="progress_building_master_key">fabbricazione portachiavi principale…</string>
-  <string name="progress_adding_sub_keys">aggiunta sottochiavi…</string>
-  <string name="progress_saving_key_ring">salvataggio chiavi…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">esportazione chiave…</item>
-    <item quantity="other">esportazione chiavi…</item>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">parte del file caricato e\' un oggetto OpenPGP valido, ma non una chave OpenPGP</item>
+    <item quantity="other">parti del file caricato sono oggetti OpenPGP validi, ma non chavi OpenPGP</item>
   </plurals>
-  <string name="progress_extracting_signature_key">estrazione chiavi di firma…</string>
-  <string name="progress_extracting_key">estrazione chiave…</string>
-  <string name="progress_preparing_streams">preparazione flussi…</string>
-  <string name="progress_encrypting">codifica dati…</string>
-  <string name="progress_decrypting">decodifica dati…</string>
-  <string name="progress_preparing_signature">preparazione firma…</string>
-  <string name="progress_generating_signature">generazione firma…</string>
-  <string name="progress_processing_signature">elaborazione firma…</string>
-  <string name="progress_verifying_signature">verifica firma…</string>
-  <string name="progress_signing">firma…</string>
-  <string name="progress_reading_data">lettura dati…</string>
-  <string name="progress_finding_key">ricerca chiave…</string>
-  <string name="progress_decompressing_data">decompressione dati…</string>
-  <string name="progress_verifying_integrity">verifica integrita\'…</string>
-  <string name="progress_deleting_securely">eliminazione sicura di \'%s\'…</string>
-  <string name="progress_querying">interrogazione…</string>
+  <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">Fatto.</string>
+  <string name="progress_cancel">Annulla</string>
+  <string name="progress_saving">salvataggio...</string>
+  <string name="progress_importing">importazione...</string>
+  <string name="progress_exporting">esportazione...</string>
+  <string name="progress_building_key">fabbricazione chiave...</string>
+  <string name="progress_preparing_master_key">preparazione chiave principale...</string>
+  <string name="progress_certifying_master_key">certificazione chiave principale...</string>
+  <string name="progress_building_master_key">fabbricazione portachiavi principale...</string>
+  <string name="progress_adding_sub_keys">aggiunta sottochiavi...</string>
+  <string name="progress_saving_key_ring">salvataggio chiavi...</string>
+  <plurals name="progress_exporting_key">
+    <item quantity="one">esportazione chiave...</item>
+    <item quantity="other">esportazione chiavi...</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">generazione chiave, sono necessari fino a 3 minuti...</item>
+    <item quantity="other">generazione chiavi, sono necessari fino a 3 minuti...</item>
+  </plurals>
+  <string name="progress_extracting_signature_key">estrazione chiavi di firma...</string>
+  <string name="progress_extracting_key">estrazione chiave...</string>
+  <string name="progress_preparing_streams">preparazione flussi...</string>
+  <string name="progress_encrypting">codifica dati...</string>
+  <string name="progress_decrypting">decodifica dati...</string>
+  <string name="progress_preparing_signature">preparazione firma...</string>
+  <string name="progress_generating_signature">generazione firma...</string>
+  <string name="progress_processing_signature">elaborazione firma...</string>
+  <string name="progress_verifying_signature">verifica firma...</string>
+  <string name="progress_signing">firma...</string>
+  <string name="progress_reading_data">lettura dati...</string>
+  <string name="progress_finding_key">ricerca chiave...</string>
+  <string name="progress_decompressing_data">decompressione dati...</string>
+  <string name="progress_verifying_integrity">verifica integrita\'...</string>
+  <string name="progress_deleting_securely">eliminazione sicura di \'%s\'...</string>
+  <string name="progress_querying">interrogazione...</string>
   <!--action strings-->
   <string name="hint_public_keys">Ricerca Chiavi Pubbliche</string>
   <string name="hint_secret_keys">Cerca Chiave Privata</string>
-  <string name="action_share_key_with">Condividi chiave con…</string>
+  <string name="action_share_key_with">Condividi chiave con...</string>
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
   <string name="key_size_1024">1024</string>
@@ -319,6 +350,7 @@
   <string name="compression_very_slow">molto lento</string>
   <!--Help-->
   <string name="help_tab_start">Inizia</string>
+  <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Novita\'</string>
   <string name="help_tab_about">Info</string>
@@ -374,12 +406,13 @@
     <item quantity="one">1 chiave selezionata.</item>
     <item quantity="other">%d chiavi selezionate.</item>
   </plurals>
-  <string name="key_list_empty_text1">Nessuna chiave disponibile…</string>
+  <string name="key_list_empty_text1">Nessuna chiave disponibile...</string>
   <string name="key_list_empty_text2">Puoi iniziare da</string>
   <string name="key_list_empty_text3">o</string>
   <string name="key_list_empty_button_create">creazione della tua chiave</string>
   <string name="key_list_empty_button_import">importazione chiavi.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Modifica chiave</string>
   <string name="key_view_action_encrypt">Codifica a questo contatto</string>
   <string name="key_view_action_certify">Certifica la chiave di questo contatto</string>
   <string name="key_view_tab_main">Info</string>
@@ -393,4 +426,13 @@
   <string name="nav_apps">App Registrate</string>
   <string name="drawer_open">Apri drawer di navigazione</string>
   <string name="drawer_close">Chiudi drawer di navigazione</string>
+  <string name="edit">Modifica</string>
+  <string name="my_keys">Le Mie Chiavi</string>
+  <string name="label_secret_key">Chiave Segreta</string>
+  <string name="secret_key_yes">disponibile</string>
+  <string name="secret_key_no">non disponibile</string>
+  <string name="section_uids_to_sign">ID Utente da firmare</string>
+  <string name="progress_re_adding_certs">Riapplicazione certificati</string>
+  <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Scrivi qui il messaggio da codificare...</string>
 </resources>

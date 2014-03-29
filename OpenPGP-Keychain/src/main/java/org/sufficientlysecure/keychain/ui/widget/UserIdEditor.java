@@ -21,19 +21,18 @@ import java.util.regex.Pattern;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-
+import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
+
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
@@ -43,20 +42,12 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     private String mOriginalID;
     private EditText mName;
     private String mOriginalName;
-    private EditText mEmail;
+    private AutoCompleteTextView mEmail;
     private String mOriginalEmail;
     private EditText mComment;
     private String mOriginalComment;
     private boolean mOriginallyMainUserID;
     private boolean mIsNewId;
-
-    // see http://www.regular-expressions.info/email.html
-    // RFC 2822 if we omit the syntax using double quotes and square brackets
-    // android.util.Patterns.EMAIL_ADDRESS is only available as of Android 2.2+
-    private static final Pattern EMAIL_PATTERN = Pattern
-            .compile(
-                    "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-                    Pattern.CASE_INSENSITIVE);
 
     public void setCanEdit(boolean bCanEdit) {
         if (!bCanEdit) {
@@ -114,10 +105,45 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
 
         mName = (EditText) findViewById(R.id.name);
         mName.addTextChangedListener(mTextWatcher);
-        mEmail = (EditText) findViewById(R.id.email);
-        mEmail.addTextChangedListener(mTextWatcher);
+        mEmail = (AutoCompleteTextView) findViewById(R.id.email);
         mComment = (EditText) findViewById(R.id.comment);
         mComment.addTextChangedListener(mTextWatcher);
+
+
+        mEmail.setThreshold(1); // Start working from first character
+        mEmail.setAdapter(
+                new ArrayAdapter<String>
+                        (this.getContext(), android.R.layout.simple_dropdown_item_1line,
+                                ContactHelper.getMailAccounts(getContext())
+                        ));
+        mEmail.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String email = editable.toString();
+                if (email.length() > 0) {
+                    Matcher emailMatcher = Patterns.EMAIL_ADDRESS.matcher(email);
+                    if (emailMatcher.matches()) {
+                        mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                                    android.R.drawable.presence_online, 0);
+                    } else {
+                        mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                                    android.R.drawable.presence_offline, 0);
+                    }
+                } else {
+                    // remove drawable if email is empty
+                    mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
+                if (mEditorListener != null) {
+                    mEditorListener.onEdited();
+                }
+            }
+        });
 
         super.onFinishInflate();
     }
@@ -151,18 +177,10 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         setIsMainUserId(isMainID);
     }
 
-    public String getValue() throws InvalidEmailException {
+    public String getValue() {
         String name = ("" + mName.getText()).trim();
         String email = ("" + mEmail.getText()).trim();
         String comment = ("" + mComment.getText()).trim();
-
-        if (email.length() > 0) {
-            Matcher emailMatcher = EMAIL_PATTERN.matcher(email);
-            if (!emailMatcher.matches()) {
-                throw new InvalidEmailException(getContext().getString(R.string.error_invalid_email,
-                        email));
-            }
-        }
 
         String userId = name;
         if (comment.length() > 0) {

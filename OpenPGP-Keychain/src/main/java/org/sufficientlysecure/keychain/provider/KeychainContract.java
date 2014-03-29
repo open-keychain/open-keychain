@@ -17,10 +17,10 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import org.sufficientlysecure.keychain.Constants;
-
 import android.net.Uri;
 import android.provider.BaseColumns;
+
+import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainContract {
 
@@ -57,10 +57,15 @@ public class KeychainContract {
     interface ApiAppsColumns {
         String PACKAGE_NAME = "package_name";
         String PACKAGE_SIGNATURE = "package_signature";
+    }
+
+    interface ApiAppsAccountsColumns {
+        String ACCOUNT_NAME = "account_name";
         String KEY_ID = "key_id"; // not a database id
         String ENCRYPTION_ALGORITHM = "encryption_algorithm";
         String HASH_ALORITHM = "hash_algorithm";
         String COMPRESSION = "compression";
+        String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
     public static final class KeyTypes {
@@ -88,17 +93,25 @@ public class KeychainContract {
     public static final String PATH_KEYS = "keys";
 
     public static final String BASE_API_APPS = "api_apps";
-    public static final String PATH_BY_PACKAGE_NAME = "package_name";
+    public static final String PATH_ACCOUNTS = "accounts";
 
     public static class KeyRings implements KeyRingsColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key_ring";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key_ring";
+
+        public static Uri buildUnifiedKeyRingsUri() {
+            return CONTENT_URI;
+        }
 
         public static Uri buildPublicKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
@@ -147,6 +160,7 @@ public class KeychainContract {
         }
 
         public static Uri buildSecretKeyRingsByEmailsUri(String emails) {
+            // TODO: encoded?
             return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).appendPath(PATH_BY_EMAILS)
                     .appendPath(emails).build();
         }
@@ -161,10 +175,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.key";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.key";
 
         public static Uri buildPublicKeysUri(String keyRingRowId) {
@@ -200,10 +218,14 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.user_id";
 
-        /** Use if a single item is returned */
+        /**
+         * Use if a single item is returned
+         */
         public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.user_id";
 
         public static Uri buildPublicUserIdsUri(String keyRingRowId) {
@@ -239,19 +261,43 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_API_APPS).build();
 
-        /** Use if multiple items get returned */
+        /**
+         * Use if multiple items get returned
+         */
         public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_apps";
 
-        /** Use if a single item is returned */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_apps";
-
-        public static Uri buildIdUri(String rowId) {
-            return CONTENT_URI.buildUpon().appendPath(rowId).build();
-        }
+        /**
+         * Use if a single item is returned
+         */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_app";
 
         public static Uri buildByPackageNameUri(String packageName) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName)
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).build();
+        }
+    }
+
+    public static class ApiAccounts implements ApiAppsAccountsColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_API_APPS).build();
+
+        /**
+         * Use if multiple items get returned
+         */
+        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_app.accounts";
+
+        /**
+         * Use if a single item is returned
+         */
+        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_app.account";
+
+        public static Uri buildBaseUri(String packageName) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
                     .build();
+        }
+
+        public static Uri buildByPackageAndAccountUri(String packageName, String accountName) {
+            return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)
+                    .appendEncodedPath(accountName).build();
         }
     }
 

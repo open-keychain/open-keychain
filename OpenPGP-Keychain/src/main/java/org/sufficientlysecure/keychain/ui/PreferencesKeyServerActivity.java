@@ -16,14 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.Vector;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-import org.sufficientlysecure.keychain.ui.widget.Editor;
-import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
-import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +25,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
+import org.sufficientlysecure.keychain.ui.widget.Editor;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
+import org.sufficientlysecure.keychain.ui.widget.KeyServerEditor;
+
+import java.util.Vector;
 
 public class PreferencesKeyServerActivity extends ActionBarActivity implements OnClickListener,
         EditorListener {
@@ -50,20 +49,21 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
+        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // ok
                         okClicked();
                     }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
+                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // cancel
                         cancelClicked();
                     }
-                });
+                }
+        );
 
         setContentView(R.layout.key_server_preference);
 
@@ -81,11 +81,11 @@ public class PreferencesKeyServerActivity extends ActionBarActivity implements O
         Intent intent = getIntent();
         String servers[] = intent.getStringArrayExtra(EXTRA_KEY_SERVERS);
         if (servers != null) {
-            for (int i = 0; i < servers.length; ++i) {
+            for (String serv : servers) {
                 KeyServerEditor view = (KeyServerEditor) mInflater.inflate(
                         R.layout.key_server_editor, mEditors, false);
                 view.setEditorListener(this);
-                view.setValue(servers[i]);
+                view.setValue(serv);
                 mEditors.addView(view);
             }
         }

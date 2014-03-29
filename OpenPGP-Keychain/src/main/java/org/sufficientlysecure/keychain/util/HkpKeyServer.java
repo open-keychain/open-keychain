@@ -18,24 +18,6 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.Locale;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -47,19 +29,22 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
-import android.text.Html;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * TODO:
- * rewrite to use machine readable output.
- * <p/>
- * see http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5
- * https://github.com/openpgp-keychain/openpgp-keychain/issues/259
- */
+import static org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry.getAlgorithmFromId;
+
 public class HkpKeyServer extends KeyServer {
     private static class HttpError extends Exception {
         private static final long serialVersionUID = 1718783705229428893L;
@@ -82,21 +67,86 @@ public class HkpKeyServer extends KeyServer {
     }
 
     private String mHost;
-    private short mPort = 11371;
+    private short mPort;
 
-    // example:
-    // pub 2048R/<a href="/pks/lookup?op=get&search=0x887DF4BE9F5C9090">9F5C9090</a> 2009-08-17 <a
-    // href="/pks/lookup?op=vindex&search=0x887DF4BE9F5C9090">Jörg Runge
-    // &lt;joerg@joergrunge.de&gt;</a>
-    public static Pattern PUB_KEY_LINE = Pattern
-            .compile(
-                    "pub +([0-9]+)([a-z]+)/.*?0x([0-9a-z]+).*? +([0-9-]+) +(.+)[\n\r]+((?:    +.+[\n\r]+)*)",
+    /**
+     * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
+     * <ul>
+     * <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key. Either the 16-digit or 8-digit
+     * key IDs are acceptable, but obviously the fingerprint is best.</li>
+     * <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc).
+     * See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
+     * <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
+     * <li>%<b>creationdate</b>% = creation date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <ul>
+     * <li>r == revoked</li>
+     * <li>d == disabled</li>
+     * <li>e == expired</li>
+     * </ul>
+     * </li>
+     * </ul>
+     *
+     * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">5.2. Machine Readable Indexes</a>
+     * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
+     */
+    public static final Pattern PUB_KEY_LINE = Pattern
+            .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
+                    + "(uid:(.*):([0-9]+):([0-9]*):([rde]*))+", // one or more uid lines
                     Pattern.CASE_INSENSITIVE);
-    public static Pattern USER_ID_LINE = Pattern.compile("^   +(.+)$", Pattern.MULTILINE
-            | Pattern.CASE_INSENSITIVE);
 
-    public HkpKeyServer(String host) {
+    /**
+     * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
+     * <ul>
+     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
+     * safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
+     * <li>%<b>creationdate</b>% = creation date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
+     * 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
+     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
+     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <ul>
+     * <li>r == revoked</li>
+     * <li>d == disabled</li>
+     * <li>e == expired</li>
+     * </ul>
+     * </li>
+     * </ul>
+     */
+    public static final Pattern UID_LINE = Pattern
+            .compile("uid:(.*):([0-9]+):([0-9]*):([rde]*)",
+                    Pattern.CASE_INSENSITIVE);
+
+    private static final short PORT_DEFAULT = 11371;
+
+    /**
+     * @param hostAndPort may be just
+     *                    "<code>hostname</code>" (eg. "<code>pool.sks-keyservers.net</code>"), then it will
+     *                    connect using {@link #PORT_DEFAULT}. However, port may be specified after colon
+     *                    ("<code>hostname:port</code>", eg. "<code>p80.pool.sks-keyservers.net:80</code>").
+     */
+    public HkpKeyServer(String hostAndPort) {
+        String host = hostAndPort;
+        short port = PORT_DEFAULT;
+        final int colonPosition = hostAndPort.lastIndexOf(':');
+        if (colonPosition > 0) {
+            host = hostAndPort.substring(0, colonPosition);
+            final String portStr = hostAndPort.substring(colonPosition + 1);
+            port = Short.decode(portStr);
+        }
         mHost = host;
+        mPort = port;
     }
 
     public HkpKeyServer(String host, short port) {
@@ -104,7 +154,7 @@ public class HkpKeyServer extends KeyServer {
         mPort = port;
     }
 
-    static private String readAll(InputStream in, String encoding) throws IOException {
+    private static String readAll(InputStream in, String encoding) throws IOException {
         ByteArrayOutputStream raw = new ByteArrayOutputStream();
 
         byte buffer[] = new byte[1 << 16];
@@ -129,6 +179,7 @@ public class HkpKeyServer extends KeyServer {
         for (int i = 0; i < ips.length; ++i) {
             try {
                 String url = "http://" + ips[i].getHostAddress() + ":" + mPort + request;
+                Log.d(Constants.TAG, "hkp keyserver query: " + url);
                 URL realUrl = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) realUrl.openConnection();
                 conn.setConnectTimeout(5000);
@@ -166,9 +217,9 @@ public class HkpKeyServer extends KeyServer {
         } catch (UnsupportedEncodingException e) {
             return null;
         }
-        String request = "/pks/lookup?op=index&search=" + encodedQuery;
+        String request = "/pks/lookup?op=index&options=mr&search=" + encodedQuery;
 
-        String data = null;
+        String data;
         try {
             data = query(request);
         } catch (HttpError e) {
@@ -186,48 +237,65 @@ public class HkpKeyServer extends KeyServer {
             throw new QueryException("querying server(s) for '" + mHost + "' failed");
         }
 
-        Matcher matcher = PUB_KEY_LINE.matcher(data);
+        final Matcher matcher = PUB_KEY_LINE.matcher(data);
         while (matcher.find()) {
-            ImportKeysListEntry info = new ImportKeysListEntry();
-            info.bitStrength = Integer.parseInt(matcher.group(1));
-            info.algorithm = matcher.group(2);
-            info.hexKeyId = "0x" + matcher.group(3);
-            info.keyId = PgpKeyHelper.convertHexToKeyId(matcher.group(3));
-            String chunks[] = matcher.group(4).split("-");
+            final ImportKeysListEntry entry = new ImportKeysListEntry();
 
-            GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-            tmpGreg.set(Integer.parseInt(chunks[0]), Integer.parseInt(chunks[1]),
-                    Integer.parseInt(chunks[2]));
-            info.date = tmpGreg.getTime();
-            info.userIds = new ArrayList<String>();
-            if (matcher.group(5).startsWith("*** KEY")) {
-                info.revoked = true;
+            entry.setBitStrength(Integer.parseInt(matcher.group(3)));
+
+            final int algorithmId = Integer.decode(matcher.group(2));
+            entry.setAlgorithm(getAlgorithmFromId(algorithmId));
+
+            // group 1 contains the full fingerprint (v4) or the long key id if available
+            // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
+            // and https://github.com/openpgp-keychain/openpgp-keychain/issues/259#issuecomment-38168176
+            String fingerprintOrKeyId = matcher.group(1);
+            if (fingerprintOrKeyId.length() > 16) {
+                entry.setFingerPrintHex(fingerprintOrKeyId.toLowerCase(Locale.US));
+                entry.setKeyIdHex("0x" + fingerprintOrKeyId.substring(fingerprintOrKeyId.length()
+                        - 16, fingerprintOrKeyId.length()));
             } else {
-                String tmp = matcher.group(5).replaceAll("<.*?>", "");
-                tmp = Html.fromHtml(tmp).toString();
-                info.userIds.add(tmp);
+                // set key id only
+                entry.setKeyIdHex("0x" + fingerprintOrKeyId);
             }
-            if (matcher.group(6).length() > 0) {
-                Matcher matcher2 = USER_ID_LINE.matcher(matcher.group(6));
-                while (matcher2.find()) {
-                    String tmp = matcher2.group(1).replaceAll("<.*?>", "");
-                    tmp = Html.fromHtml(tmp).toString();
-                    info.userIds.add(tmp);
-                }
-            }
-            results.add(info);
-        }
 
+            final long creationDate = Long.parseLong(matcher.group(4));
+            final GregorianCalendar tmpGreg = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+            tmpGreg.setTimeInMillis(creationDate * 1000);
+            entry.setDate(tmpGreg.getTime());
+
+            entry.setRevoked(matcher.group(6).contains("r"));
+
+            ArrayList<String> userIds = new ArrayList<String>();
+            final String uidLines = matcher.group(7);
+            final Matcher uidMatcher = UID_LINE.matcher(uidLines);
+            while (uidMatcher.find()) {
+                String tmp = uidMatcher.group(1).trim();
+                if (tmp.contains("%")) {
+                    try {
+                        // converts Strings like "Universit%C3%A4t" to a proper encoding form "Universität".
+                        tmp = (URLDecoder.decode(tmp, "UTF8"));
+                    } catch (UnsupportedEncodingException ignored) {
+                        // will never happen, because "UTF8" is supported
+                    }
+                }
+                userIds.add(tmp);
+            }
+            entry.setUserIds(userIds);
+
+            results.add(entry);
+        }
         return results;
     }
 
     @Override
-    public String get(long keyId) throws QueryException {
+    public String get(String keyIdHex) throws QueryException {
         HttpClient client = new DefaultHttpClient();
         try {
-            HttpGet get = new HttpGet("http://" + mHost + ":" + mPort
-                    + "/pks/lookup?op=get&search=0x" + PgpKeyHelper.convertKeyToHex(keyId));
-
+            String query = "http://" + mHost + ":" + mPort +
+                    "/pks/lookup?op=get&options=mr&search=" + keyIdHex;
+            Log.d(Constants.TAG, "hkp keyserver get: " + query);
+            HttpGet get = new HttpGet(query);
             HttpResponse response = client.execute(get);
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                 throw new QueryException("not found");
@@ -250,13 +318,14 @@ public class HkpKeyServer extends KeyServer {
     }
 
     @Override
-    public void add(String armoredText) throws AddKeyException {
+    public void add(String armoredKey) throws AddKeyException {
         HttpClient client = new DefaultHttpClient();
         try {
-            HttpPost post = new HttpPost("http://" + mHost + ":" + mPort + "/pks/add");
-
+            String query = "http://" + mHost + ":" + mPort + "/pks/add";
+            HttpPost post = new HttpPost(query);
+            Log.d(Constants.TAG, "hkp keyserver add: " + query);
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-            nameValuePairs.add(new BasicNameValuePair("keytext", armoredText));
+            nameValuePairs.add(new BasicNameValuePair("keytext", armoredKey));
             post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
             HttpResponse response = client.execute(post);

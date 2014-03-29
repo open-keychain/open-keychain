@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
@@ -46,8 +48,8 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.Date;
 
 
-public class ViewKeyMainFragment extends Fragment  implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+public class ViewKeyMainFragment extends Fragment implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String ARG_DATA_URI = "uri";
 
@@ -59,7 +61,10 @@ public class ViewKeyMainFragment extends Fragment  implements
     private TextView mExpiry;
     private TextView mCreation;
     private TextView mFingerprint;
+    private TextView mSecretKey;
+    private BootstrapButton mActionEdit;
     private BootstrapButton mActionEncrypt;
+    private BootstrapButton mActionCertify;
 
     private ListView mUserIds;
     private ListView mKeys;
@@ -85,9 +90,12 @@ public class ViewKeyMainFragment extends Fragment  implements
         mCreation = (TextView) view.findViewById(R.id.creation);
         mExpiry = (TextView) view.findViewById(R.id.expiry);
         mFingerprint = (TextView) view.findViewById(R.id.fingerprint);
+        mSecretKey = (TextView) view.findViewById(R.id.secret_key);
         mUserIds = (ListView) view.findViewById(R.id.user_ids);
         mKeys = (ListView) view.findViewById(R.id.keys);
+        mActionEdit = (BootstrapButton) view.findViewById(R.id.action_edit);
         mActionEncrypt = (BootstrapButton) view.findViewById(R.id.action_encrypt);
+        mActionCertify = (BootstrapButton) view.findViewById(R.id.action_certify);
 
         return view;
     }
@@ -116,6 +124,53 @@ public class ViewKeyMainFragment extends Fragment  implements
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
+        { // label whether secret key is available, and edit button if it is
+            final long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), mDataUri);
+            if (ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
+                // set this attribute. this is a LITTLE unclean, but we have the info available
+                // right here, so why not.
+                mSecretKey.setTextColor(getResources().getColor(R.color.emphasis));
+                mSecretKey.setText(R.string.secret_key_yes);
+
+                // certify button
+                // TODO this button MIGHT be useful if the user wants to
+                // certify a private key with another...
+                // mActionCertify.setVisibility(View.GONE);
+
+                // edit button
+                mActionEdit.setVisibility(View.VISIBLE);
+                mActionEdit.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View view) {
+                        Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
+                        editIntent.setData(
+                                KeychainContract
+                                        .KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
+                                        Long.toString(masterKeyId)));
+                        editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
+                        startActivityForResult(editIntent, 0);
+                    }
+                });
+            } else {
+                mSecretKey.setTextColor(Color.BLACK);
+                mSecretKey.setText(getResources().getString(R.string.secret_key_no));
+
+                // certify button
+                mActionCertify.setVisibility(View.VISIBLE);
+                // edit button
+                mActionEdit.setVisibility(View.GONE);
+            }
+
+            // TODO see todo note above, doing this here for now
+            mActionCertify.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    certifyKey(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                            Long.toString(masterKeyId)
+                    ));
+                }
+            });
+
+        }
+
         mActionEncrypt.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -137,21 +192,29 @@ public class ViewKeyMainFragment extends Fragment  implements
         getActivity().getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
     }
 
-    static final String[] KEYRING_PROJECTION = new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.UserIds.USER_ID};
+    static final String[] KEYRING_PROJECTION =
+            new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.UserIds.USER_ID};
     static final int KEYRING_INDEX_ID = 0;
     static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
     static final int KEYRING_INDEX_USER_ID = 2;
 
-    static final String[] USER_IDS_PROJECTION = new String[]{KeychainContract.UserIds._ID, KeychainContract.UserIds.USER_ID,
-            KeychainContract.UserIds.RANK,};
-    // not the main user id
-    static final String USER_IDS_SELECTION = KeychainContract.UserIds.RANK + " > 0 ";
-    static final String USER_IDS_SORT_ORDER = KeychainContract.UserIds.USER_ID + " COLLATE LOCALIZED ASC";
+    static final String[] USER_IDS_PROJECTION =
+            new String[]{
+                    KeychainContract.UserIds._ID,
+                    KeychainContract.UserIds.USER_ID,
+                    KeychainContract.UserIds.RANK,
+            };
+    static final String USER_IDS_SORT_ORDER =
+            KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
-    static final String[] KEYS_PROJECTION = new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
-            KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM, KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY, KeychainContract.Keys.CAN_SIGN,
-            KeychainContract.Keys.CAN_ENCRYPT, KeychainContract.Keys.CREATION, KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
+    static final String[] KEYS_PROJECTION =
+            new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
+                    KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
+                    KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
+                    KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
+                    KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
+                    KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
     static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
@@ -161,9 +224,10 @@ public class ViewKeyMainFragment extends Fragment  implements
     static final int KEYS_INDEX_CAN_CERTIFY = 5;
     static final int KEYS_INDEX_CAN_SIGN = 6;
     static final int KEYS_INDEX_CAN_ENCRYPT = 7;
-    static final int KEYS_INDEX_CREATION = 8;
-    static final int KEYS_INDEX_EXPIRY = 9;
-    static final int KEYS_INDEX_FINGERPRINT = 10;
+    static final int KEYS_INDEX_IS_REVOKED = 8;
+    static final int KEYS_INDEX_CREATION = 9;
+    static final int KEYS_INDEX_EXPIRY = 10;
+    static final int KEYS_INDEX_FINGERPRINT = 11;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
@@ -179,7 +243,7 @@ public class ViewKeyMainFragment extends Fragment  implements
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, USER_IDS_SELECTION, null,
+                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null,
                         USER_IDS_SORT_ORDER);
             }
             case LOADER_ID_KEYS: {
@@ -224,8 +288,7 @@ public class ViewKeyMainFragment extends Fragment  implements
                 if (data.moveToFirst()) {
                     // get key id from MASTER_KEY_ID
                     long keyId = data.getLong(KEYS_INDEX_KEY_ID);
-
-                    String keyIdStr = "0x" + PgpKeyHelper.convertKeyIdToHex(keyId);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHex(keyId);
                     mKeyId.setText(keyIdStr);
 
                     // get creation date from CREATION
@@ -234,8 +297,9 @@ public class ViewKeyMainFragment extends Fragment  implements
                     } else {
                         Date creationDate = new Date(data.getLong(KEYS_INDEX_CREATION) * 1000);
 
-                        mCreation.setText(DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
-                                creationDate));
+                        mCreation.setText(
+                                DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
+                                        creationDate));
                     }
 
                     // get expiry date from EXPIRY
@@ -244,8 +308,9 @@ public class ViewKeyMainFragment extends Fragment  implements
                     } else {
                         Date expiryDate = new Date(data.getLong(KEYS_INDEX_EXPIRY) * 1000);
 
-                        mExpiry.setText(DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
-                                expiryDate));
+                        mExpiry.setText(
+                                DateFormat.getDateFormat(getActivity().getApplicationContext()).format(
+                                        expiryDate));
                     }
 
                     String algorithmStr = PgpKeyHelper.getAlgorithmInfo(
@@ -257,10 +322,22 @@ public class ViewKeyMainFragment extends Fragment  implements
                         // FALLBACK for old database entries
                         fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), mDataUri);
                     }
-                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob, true);
-                    fingerprint = fingerprint.replace("  ", "\n");
+                    String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
-                    mFingerprint.setText(fingerprint);
+                    mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                }
+
+                // hide encrypt button if no encryption key is available
+                boolean canEncrypt = false;
+                data.moveToFirst();
+                do {
+                    if (data.getInt(KEYS_INDEX_CAN_ENCRYPT) == 1) {
+                        canEncrypt = true;
+                        break;
+                    }
+                } while (data.moveToNext());
+                if (!canEncrypt) {
+                    mActionEncrypt.setVisibility(View.GONE);
                 }
 
                 mKeysAdapter.swapCursor(data);
@@ -308,6 +385,5 @@ public class ViewKeyMainFragment extends Fragment  implements
         signIntent.setData(dataUri);
         startActivity(signIntent);
     }
-
 
 }

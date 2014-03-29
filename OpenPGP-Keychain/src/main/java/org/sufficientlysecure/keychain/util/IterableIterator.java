@@ -16,13 +16,21 @@
 
 package org.sufficientlysecure.keychain.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class IterableIterator<T> implements Iterable<T> {
     private Iterator<T> mIter;
 
-    public IterableIterator(Iterator<T> iter) {
+    public IterableIterator(Iterator<T> iter, boolean failsafe) {
         mIter = iter;
+        if(failsafe && mIter == null) {
+            // is there a better way?
+            mIter = new ArrayList<T>().iterator();
+        }
+    }
+    public IterableIterator(Iterator<T> iter) {
+        this(iter, false);
     }
 
     public Iterator<T> iterator() {

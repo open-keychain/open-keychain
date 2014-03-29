@@ -17,28 +17,26 @@
 
 package org.sufficientlysecure.keychain.helper;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class ActionBarHelper {
 
     /**
      * Set actionbar without home button if called from another app
-     * 
+     *
      * @param activity
      */
     public static void setBackButton(ActionBarActivity activity) {
-        // set actionbar without home button if called from another app
         final ActionBar actionBar = activity.getSupportActionBar();
         Log.d(Constants.TAG, "calling package (only set when using startActivityForResult)="
                 + activity.getCallingPackage());
@@ -54,30 +52,35 @@ public class ActionBarHelper {
 
     /**
      * Sets custom view on ActionBar for Done/Cancel activities
-     * 
+     *
      * @param actionBar
-     * @param doneText
-     * @param doneOnClickListener
-     * @param cancelText
-     * @param cancelOnClickListener
+     * @param firstText
+     * @param firstDrawableId
+     * @param firstOnClickListener
+     * @param secondText
+     * @param secondDrawableId
+     * @param secondOnClickListener
      */
-    public static void setDoneCancelView(ActionBar actionBar, int doneText,
-            OnClickListener doneOnClickListener, int cancelText,
-            OnClickListener cancelOnClickListener) {
+    public static void setTwoButtonView(ActionBar actionBar,
+                                int firstText, int firstDrawableId, OnClickListener firstOnClickListener,
+                                int secondText, int secondDrawableId, OnClickListener secondOnClickListener) {
 
-        // Inflate a "Done"/"Cancel" custom action bar view
+        // Inflate the custom action bar view
         final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         final View customActionBarView = inflater.inflate(
                 R.layout.actionbar_custom_view_done_cancel, null);
 
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text)).setText(doneText);
+        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text));
+        firstTextView.setText(firstText);
+        firstTextView.setCompoundDrawablesWithIntrinsicBounds(firstDrawableId, 0, 0, 0);
         customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
-                doneOnClickListener);
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text))
-                .setText(cancelText);
+                firstOnClickListener);
+        TextView secondTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text));
+        secondTextView.setText(secondText);
+        secondTextView.setCompoundDrawablesWithIntrinsicBounds(secondDrawableId, 0, 0, 0);
         customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(
-                cancelOnClickListener);
+                secondOnClickListener);
 
         // Show the custom action bar view and hide the normal Home icon and title.
         actionBar.setDisplayShowTitleEnabled(false);
@@ -89,22 +92,24 @@ public class ActionBarHelper {
 
     /**
      * Sets custom view on ActionBar for Done activities
-     * 
+     *
      * @param actionBar
-     * @param doneText
-     * @param doneOnClickListener
+     * @param firstText
+     * @param firstOnClickListener
      */
-    public static void setDoneView(ActionBar actionBar, int doneText,
-            OnClickListener doneOnClickListener) {
+    public static void setOneButtonView(ActionBar actionBar, int firstText, int firstDrawableId,
+                                        OnClickListener firstOnClickListener) {
         // Inflate a "Done" custom action bar view to serve as the "Up" affordance.
         final LayoutInflater inflater = (LayoutInflater) actionBar.getThemedContext()
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         final View customActionBarView = inflater
                 .inflate(R.layout.actionbar_custom_view_done, null);
 
-        ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text)).setText(doneText);
+        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text));
+        firstTextView.setText(firstText);
+        firstTextView.setCompoundDrawablesWithIntrinsicBounds(firstDrawableId, 0, 0, 0);
         customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
-                doneOnClickListener);
+                firstOnClickListener);
 
         // Show the custom action bar view and hide the normal Home icon and title.
         actionBar.setDisplayShowTitleEnabled(false);
@@ -112,5 +117,4 @@ public class ActionBarHelper {
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(customActionBarView);
     }
-
 }

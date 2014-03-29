@@ -6,16 +6,28 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="16dp"
         android:orientation="vertical">
 
         <fragment
             android:id="@+id/api_app_settings_fragment"
-            android:name="org.sufficientlysecure.keychain.service.remote.AppSettingsFragment"
+            android:name="org.sufficientlysecure.keychain.remote.ui.AppSettingsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/api_app_settings_fragment" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/api_settings_accounts"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <FrameLayout
+            android:id="@+id/api_accounts_list_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
 
     </LinearLayout>
 </ScrollView>

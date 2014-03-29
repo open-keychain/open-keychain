@@ -17,17 +17,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,16 +34,33 @@ import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
-public class SelectSecretKeyLayoutFragment extends Fragment {
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+
+public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
+    private TextView mKeyMasterKeyIdHex;
+    private TextView mNoKeySelected;
     private BootstrapButton mSelectKeyButton;
     private Boolean mFilterCertify;
+
+    private Uri mReceivedUri = null;
 
     private SelectSecretKeyCallback mCallback;
 
     private static final int REQUEST_CODE_SELECT_KEY = 8882;
+
+    private static final int LOADER_ID = 0;
+
+    //The Projection we will retrieve, Master Key ID is for convenience sake,
+    //to avoid having to pass the Key Around
+    final String[] PROJECTION = new String[]{KeychainContract.UserIds.USER_ID
+            , KeychainContract.KeyRings.MASTER_KEY_ID};
+    final int INDEX_USER_ID = 0;
+    final int INDEX_MASTER_KEY_ID = 1;
 
     public interface SelectSecretKeyCallback {
         void onKeySelected(long secretKeyId);
@@ -59,34 +74,30 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         mFilterCertify = filterCertify;
     }
 
-    public void selectKey(long secretKeyId) {
-        if (secretKeyId == Id.key.none) {
-            mKeyUserId.setText(R.string.api_settings_no_key);
-            mKeyUserIdRest.setText("");
-        } else {
-            String uid = getResources().getString(R.string.user_id_no_name);
-            String uidExtra = "";
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(
-                    getActivity(), secretKeyId);
-            if (keyRing != null) {
-                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
-                if (key != null) {
-                    String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
-                    String chunks[] = userId.split(" <", 2);
-                    uid = chunks[0];
-                    if (chunks.length > 1) {
-                        uidExtra = "<" + chunks[1];
-                    }
-                }
-            }
-            mKeyUserId.setText(uid);
-            mKeyUserIdRest.setText(uidExtra);
-        }
+    public void setNoKeySelected() {
+        mNoKeySelected.setVisibility(View.VISIBLE);
+        mKeyUserId.setVisibility(View.GONE);
+        mKeyUserIdRest.setVisibility(View.GONE);
+        mKeyMasterKeyIdHex.setVisibility(View.GONE);
+    }
+
+    public void setSelectedKeyData(String userName, String email, String masterKeyHex) {
+
+        mNoKeySelected.setVisibility(View.GONE);
+
+        mKeyUserId.setText(userName);
+        mKeyUserIdRest.setText(email);
+        mKeyMasterKeyIdHex.setText(masterKeyHex);
+
+        mKeyUserId.setVisibility(View.VISIBLE);
+        mKeyUserIdRest.setVisibility(View.VISIBLE);
+        mKeyMasterKeyIdHex.setVisibility(View.VISIBLE);
+
     }
 
     public void setError(String error) {
-        mKeyUserId.requestFocus();
-        mKeyUserId.setError(error);
+        mNoKeySelected.requestFocus();
+        mNoKeySelected.setError(error);
     }
 
     /**
@@ -96,8 +107,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.select_secret_key_layout_fragment, container, false);
 
+        mNoKeySelected = (TextView) view.findViewById(R.id.no_key_selected);
         mKeyUserId = (TextView) view.findViewById(R.id.select_secret_key_user_id);
         mKeyUserIdRest = (TextView) view.findViewById(R.id.select_secret_key_user_id_rest);
+        mKeyMasterKeyIdHex = (TextView) view.findViewById(R.id.select_secret_key_master_key_hex);
         mSelectKeyButton = (BootstrapButton) view
                 .findViewById(R.id.select_secret_key_select_key_button);
         mFilterCertify = false;
@@ -111,6 +124,13 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
         return view;
     }
 
+    //For AppSettingsFragment
+    public void selectKey(long masterKeyId) {
+        Uri buildUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(masterKeyId));
+        mReceivedUri = buildUri;
+        getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+    }
+
     private void startSelectKeyActivity() {
         Intent intent = new Intent(getActivity(), SelectSecretKeyActivity.class);
         intent.putExtra(SelectSecretKeyActivity.EXTRA_FILTER_CERTIFY, mFilterCertify);
@@ -118,29 +138,74 @@ public class SelectSecretKeyLayoutFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode & 0xFFFF) {
-        case REQUEST_CODE_SELECT_KEY: {
-            long secretKeyId;
-            if (resultCode == Activity.RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                secretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        //We don't care about the Loader id
+        return new CursorLoader(getActivity(), mReceivedUri, PROJECTION, null, null, null);
+    }
 
-                selectKey(secretKeyId);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data.moveToFirst()) {
+            String userName, email, masterKeyHex;
+            String userID = data.getString(INDEX_USER_ID);
+            long masterKeyID = data.getLong(INDEX_MASTER_KEY_ID);
 
-                // remove displayed errors
-                mKeyUserId.setError(null);
+            String splitUserID[] = PgpKeyHelper.splitUserId(userID);
 
-                // give value back to callback
-                mCallback.onKeySelected(secretKeyId);
+            if (splitUserID[0] != null) {
+                userName = splitUserID[0];
+            } else {
+                userName = getActivity().getResources().getString(R.string.user_id_no_name);
             }
-            break;
+
+            if (splitUserID[1] != null) {
+                email = splitUserID[1];
+            } else {
+                email = getActivity().getResources().getString(R.string.error_user_id_no_email);
+            }
+
+            //TODO Can the cursor return invalid values for the Master Key ?
+            masterKeyHex = PgpKeyHelper.convertKeyIdToHexShort(masterKeyID);
+
+            //Set the data
+            setSelectedKeyData(userName, email, masterKeyHex);
+
+            //Give value to the callback
+            mCallback.onKeySelected(masterKeyID);
+        } else {
+            //Set The empty View
+            setNoKeySelected();
         }
 
-        default:
-            super.onActivityResult(requestCode, resultCode, data);
+    }
 
-            break;
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        return;
+    }
+
+    // Select Secret Key Activity delivers the intent which was sent by it using interface to Select
+    // Secret Key Fragment.Intent contains the passed Uri
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode & 0xFFFF) {
+            case REQUEST_CODE_SELECT_KEY: {
+                if (resultCode == Activity.RESULT_OK) {
+                    mReceivedUri = data.getData();
+
+                    //Must be restartLoader() or the data will not be updated on selecting a new key
+                    getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+
+                    mKeyUserId.setError(null);
+
+                }
+                break;
+            }
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
         }
     }
 }

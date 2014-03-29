@@ -23,6 +23,25 @@ import java.util.List;
 import java.util.Vector;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v7.app.ActionBarActivity;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPSecretKey;
 import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Constants;
@@ -32,6 +51,7 @@ import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
@@ -49,31 +69,12 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
 import android.app.AlertDialog;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
 
 public class EditKeyActivity extends ActionBarActivity implements EditorListener {
 
@@ -113,7 +114,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     Vector<String> mUserIds;
     Vector<PGPSecretKey> mKeys;
     Vector<Integer> mKeysUsages;
-    boolean masterCanSign = true;
+    boolean mMasterCanSign = true;
 
     ExportHelper mExportHelper;
 
@@ -169,7 +170,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     /**
      * Handle intent action to create new key
-     * 
+     *
      * @param intent
      */
     private void handleActionCreateKey(Intent intent) {
@@ -211,9 +212,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
                     serviceIntent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-                    // Message is received after generating is done in ApgService
+                    // Message is received after generating is done in KeychainIntentService
                     KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(
-                            this, R.string.progress_generating, ProgressDialog.STYLE_SPINNER, true,
+                            this, getResources().getQuantityString(R.plurals.progress_generating, 1),
+                            ProgressDialog.STYLE_HORIZONTAL, true,
 
                             new DialogInterface.OnCancelListener() {
                                 @Override
@@ -227,7 +229,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
                         @Override
                         public void handleMessage(Message message) {
-                            // handle messages by standard ApgHandler first
+                            // handle messages by standard KeychainIntentServiceHandler first
                             super.handleMessage(message);
 
                             if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -272,7 +274,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     /**
      * Handle intent action to edit existing key
-     * 
+     *
      * @param intent
      */
     private void handleActionEditKey(Intent intent) {
@@ -283,12 +285,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         } else {
             Log.d(Constants.TAG, "uri: " + mDataUri);
 
-            long keyRingRowId = Long.valueOf(mDataUri.getLastPathSegment());
-
             // get master key id using row id
-            long masterKeyId = ProviderHelper.getSecretMasterKeyId(this, keyRingRowId);
+            long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
 
-            masterCanSign = ProviderHelper.getSecretMasterKeyCanCertify(this, keyRingRowId);
+            mMasterCanSign = ProviderHelper.getMasterKeyCanCertify(this, mDataUri);
             finallyEdit(masterKeyId);
         }
     }
@@ -350,11 +350,16 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             if (needsSaving()) {
                 Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
             } else {
-                mExportHelper.showExportKeysDialog(mDataUri, Id.type.secret_key, Constants.path.APP_DIR
-                        + "/secexport.asc");
+                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+                long[] ids = new long[]{masterKeyId};
+                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
+                        null);
+                return true;
             }
             return true;
-        case R.id.menu_key_edit_delete: {
+        case R.id.menu_key_edit_delete:
+            long rowId= ProviderHelper.getRowId(this,mDataUri);
+            Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
             // Message is received after key is deleted
             Handler returnHandler = new Handler() {
                 @Override
@@ -363,12 +368,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                         setResult(RESULT_CANCELED);
                         finish();
                     }
-                }
-            };
-
-            mExportHelper.deleteKey(mDataUri, Id.type.secret_key, returnHandler);
+                }};
+            mExportHelper.deleteKey(convertUri, returnHandler);
             return true;
-        }
+
         case R.id.menu_key_edit_save:
             saveClicked();
             return true;
@@ -407,8 +410,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
 
         mCurrentPassphrase = "";
-
         buildLayout(false);
+
         mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
         if (!mIsPassPhraseSet) {
             // check "no passphrase" checkbox and remove button
@@ -466,20 +469,23 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         // find views
         mChangePassphrase = (BootstrapButton) findViewById(R.id.edit_key_btn_change_passphrase);
         mNoPassphrase = (CheckBox) findViewById(R.id.edit_key_no_passphrase);
-
         // Build layout based on given userIds and keys
+
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
+        if(mIsPassPhraseSet){
+            mChangePassphrase.setText(getString(R.string.btn_change_passphrase));
+        }
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mUserIdsView.setType(Id.type.user_id);
-        mUserIdsView.setCanEdit(masterCanSign);
+        mUserIdsView.setCanEdit(mMasterCanSign);
         mUserIdsView.setUserIds(mUserIds);
         mUserIdsView.setEditorListener(this);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
-        mKeysView.setCanEdit(masterCanSign);
+        mKeysView.setCanEdit(mMasterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages, newKeys);
         mKeysView.setEditorListener(this);
         container.addView(mKeysView);
@@ -602,17 +608,16 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             // fill values for this action
             Bundle data = new Bundle();
-
-            data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, masterCanSign);
+            data.putBoolean(KeychainIntentService.SAVE_KEYRING_CAN_SIGN, mMasterCanSign);
             data.putParcelable(KeychainIntentService.SAVE_KEYRING_PARCEL, saveParams);
 
             intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-            // Message is received after saving is done in ApgService
+            // Message is received after saving is done in KeychainIntentService
             KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                    R.string.progress_saving, ProgressDialog.STYLE_HORIZONTAL) {
+                    getString(R.string.progress_saving), ProgressDialog.STYLE_HORIZONTAL) {
                 public void handleMessage(Message message) {
-                    // handle messages by standard ApgHandler first
+                    // handle messages by standard KeychainIntentServiceHandler first
                     super.handleMessage(message);
 
                     if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -640,8 +645,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             // start service with intent
             startService(intent);
         } catch (PgpGeneralException e) {
+            Log.e(Constants.TAG, getString(R.string.error_message, e.getMessage()));
             Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
-                   Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -679,7 +685,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     /**
      * Returns user ids from the SectionView
-     * 
+     *
      * @param userIdsView
      * @return
      */
@@ -692,11 +698,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         for (int i = 0; i < userIdEditors.getChildCount(); ++i) {
             UserIdEditor editor = (UserIdEditor) userIdEditors.getChildAt(i);
             String userId;
-            try {
-                userId = editor.getValue();
-            } catch (UserIdEditor.InvalidEmailException e) {
-                throw new PgpGeneralException(e.getMessage());
-            }
+            userId = editor.getValue();
 
             if (editor.isMainUserId()) {
                 userIds.add(0, userId);
@@ -719,7 +721,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     /**
      * Returns keys from the SectionView
-     * 
+     *
      * @param keysView
      * @return
      */
@@ -742,7 +744,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     /**
      * Returns usage selections of keys from the SectionView
-     * 
+     *
      * @param keysView
      * @return
      */

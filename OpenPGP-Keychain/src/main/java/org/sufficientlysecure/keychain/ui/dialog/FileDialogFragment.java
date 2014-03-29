@@ -17,11 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,14 +28,16 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.util.Log;
 
 public class FileDialogFragment extends DialogFragment {
     private static final String ARG_MESSENGER = "messenger";
@@ -67,7 +64,7 @@ public class FileDialogFragment extends DialogFragment {
      * Creates new instance of this file dialog fragment
      */
     public static FileDialogFragment newInstance(Messenger messenger, String title, String message,
-            String defaultFile, String checkboxText) {
+                                                 String defaultFile, String checkboxText) {
         FileDialogFragment frag = new FileDialogFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_MESSENGER, messenger);
@@ -177,34 +174,33 @@ public class FileDialogFragment extends DialogFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode & 0xFFFF) {
-        case REQUEST_CODE: {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                try {
-                    String path = data.getData().getPath();
-                    Log.d(Constants.TAG, "path=" + path);
+            case REQUEST_CODE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    try {
+                        String path = data.getData().getPath();
+                        Log.d(Constants.TAG, "path=" + path);
 
-                    // set filename used in export/import dialogs
-                    setFilename(path);
-                } catch (NullPointerException e) {
-                    Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                        // set filename used in export/import dialogs
+                        setFilename(path);
+                    } catch (NullPointerException e) {
+                        Log.e(Constants.TAG, "Nullpointer while retrieving path!", e);
+                    }
                 }
+
+                break;
             }
 
-            break;
-        }
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
 
-        default:
-            super.onActivityResult(requestCode, resultCode, data);
-
-            break;
+                break;
         }
     }
 
     /**
      * Send message back to handler which is initialized in a activity
-     * 
-     * @param what
-     *            Message integer you want to send
+     *
+     * @param what Message integer you want to send
      */
     private void sendMessageToHandler(Integer what, Bundle data) {
         Message msg = Message.obtain();

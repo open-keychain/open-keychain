@@ -17,14 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import android.content.Context;
 import android.widget.ArrayAdapter;
+
+import java.util.*;
 
 public class KeyValueSpinnerAdapter extends ArrayAdapter<String> {
     private final HashMap<Integer, String> mData;

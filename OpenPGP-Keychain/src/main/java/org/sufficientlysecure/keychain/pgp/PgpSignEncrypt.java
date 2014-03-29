@@ -18,28 +18,11 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
-
 import org.spongycastle.bcpg.ArmoredOutputStream;
 import org.spongycastle.bcpg.BCPGOutputStream;
-import org.spongycastle.openpgp.PGPCompressedDataGenerator;
-import org.spongycastle.openpgp.PGPEncryptedDataGenerator;
-import org.spongycastle.openpgp.PGPException;
-import org.spongycastle.openpgp.PGPLiteralData;
-import org.spongycastle.openpgp.PGPLiteralDataGenerator;
-import org.spongycastle.openpgp.PGPPrivateKey;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureGenerator;
-import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
-import org.spongycastle.openpgp.PGPV3SignatureGenerator;
+import org.spongycastle.openpgp.*;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePBEKeyEncryptionMethodGenerator;
-import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePGPDataEncryptorBuilder;
-import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+import org.spongycastle.openpgp.operator.jcajce.*;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -49,11 +32,7 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -63,110 +42,110 @@ import java.util.Date;
  * This class uses a Builder pattern!
  */
 public class PgpSignEncrypt {
-    private Context context;
-    private InputData data;
-    private OutputStream outStream;
+    private Context mContext;
+    private InputData mData;
+    private OutputStream mOutStream;
 
-    private ProgressDialogUpdater progress;
-    private boolean enableAsciiArmorOutput;
-    private int compressionId;
-    private long[] encryptionKeyIds;
-    private String encryptionPassphrase;
-    private int symmetricEncryptionAlgorithm;
-    private long signatureKeyId;
-    private int signatureHashAlgorithm;
-    private boolean signatureForceV3;
-    private String signaturePassphrase;
+    private ProgressDialogUpdater mProgress;
+    private boolean mEnableAsciiArmorOutput;
+    private int mCompressionId;
+    private long[] mEncryptionKeyIds;
+    private String mEncryptionPassphrase;
+    private int mSymmetricEncryptionAlgorithm;
+    private long mSignatureKeyId;
+    private int mSignatureHashAlgorithm;
+    private boolean mSignatureForceV3;
+    private String mSignaturePassphrase;
 
     private PgpSignEncrypt(Builder builder) {
         // private Constructor can only be called from Builder
-        this.context = builder.context;
-        this.data = builder.data;
-        this.outStream = builder.outStream;
+        this.mContext = builder.mContext;
+        this.mData = builder.mData;
+        this.mOutStream = builder.mOutStream;
 
-        this.progress = builder.progress;
-        this.enableAsciiArmorOutput = builder.enableAsciiArmorOutput;
-        this.compressionId = builder.compressionId;
-        this.encryptionKeyIds = builder.encryptionKeyIds;
-        this.encryptionPassphrase = builder.encryptionPassphrase;
-        this.symmetricEncryptionAlgorithm = builder.symmetricEncryptionAlgorithm;
-        this.signatureKeyId = builder.signatureKeyId;
-        this.signatureHashAlgorithm = builder.signatureHashAlgorithm;
-        this.signatureForceV3 = builder.signatureForceV3;
-        this.signaturePassphrase = builder.signaturePassphrase;
+        this.mProgress = builder.mProgress;
+        this.mEnableAsciiArmorOutput = builder.mEnableAsciiArmorOutput;
+        this.mCompressionId = builder.mCompressionId;
+        this.mEncryptionKeyIds = builder.mEncryptionKeyIds;
+        this.mEncryptionPassphrase = builder.mEncryptionPassphrase;
+        this.mSymmetricEncryptionAlgorithm = builder.mSymmetricEncryptionAlgorithm;
+        this.mSignatureKeyId = builder.mSignatureKeyId;
+        this.mSignatureHashAlgorithm = builder.mSignatureHashAlgorithm;
+        this.mSignatureForceV3 = builder.mSignatureForceV3;
+        this.mSignaturePassphrase = builder.mSignaturePassphrase;
     }
 
     public static class Builder {
         // mandatory parameter
-        private Context context;
-        private InputData data;
-        private OutputStream outStream;
+        private Context mContext;
+        private InputData mData;
+        private OutputStream mOutStream;
 
         // optional
-        private ProgressDialogUpdater progress = null;
-        private boolean enableAsciiArmorOutput = false;
-        private int compressionId = Id.choice.compression.none;
-        private long[] encryptionKeyIds = new long[0];
-        private String encryptionPassphrase = null;
-        private int symmetricEncryptionAlgorithm = 0;
-        private long signatureKeyId = Id.key.none;
-        private int signatureHashAlgorithm = 0;
-        private boolean signatureForceV3 = false;
-        private String signaturePassphrase = null;
+        private ProgressDialogUpdater mProgress = null;
+        private boolean mEnableAsciiArmorOutput = false;
+        private int mCompressionId = Id.choice.compression.none;
+        private long[] mEncryptionKeyIds = new long[0];
+        private String mEncryptionPassphrase = null;
+        private int mSymmetricEncryptionAlgorithm = 0;
+        private long mSignatureKeyId = Id.key.none;
+        private int mSignatureHashAlgorithm = 0;
+        private boolean mSignatureForceV3 = false;
+        private String mSignaturePassphrase = null;
 
         public Builder(Context context, InputData data, OutputStream outStream) {
-            this.context = context;
-            this.data = data;
-            this.outStream = outStream;
+            this.mContext = context;
+            this.mData = data;
+            this.mOutStream = outStream;
         }
 
         public Builder progress(ProgressDialogUpdater progress) {
-            this.progress = progress;
+            this.mProgress = progress;
             return this;
         }
 
         public Builder enableAsciiArmorOutput(boolean enableAsciiArmorOutput) {
-            this.enableAsciiArmorOutput = enableAsciiArmorOutput;
+            this.mEnableAsciiArmorOutput = enableAsciiArmorOutput;
             return this;
         }
 
         public Builder compressionId(int compressionId) {
-            this.compressionId = compressionId;
+            this.mCompressionId = compressionId;
             return this;
         }
 
         public Builder encryptionKeyIds(long[] encryptionKeyIds) {
-            this.encryptionKeyIds = encryptionKeyIds;
+            this.mEncryptionKeyIds = encryptionKeyIds;
             return this;
         }
 
         public Builder encryptionPassphrase(String encryptionPassphrase) {
-            this.encryptionPassphrase = encryptionPassphrase;
+            this.mEncryptionPassphrase = encryptionPassphrase;
             return this;
         }
 
         public Builder symmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm) {
-            this.symmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
+            this.mSymmetricEncryptionAlgorithm = symmetricEncryptionAlgorithm;
             return this;
         }
 
         public Builder signatureKeyId(long signatureKeyId) {
-            this.signatureKeyId = signatureKeyId;
+            this.mSignatureKeyId = signatureKeyId;
             return this;
         }
 
         public Builder signatureHashAlgorithm(int signatureHashAlgorithm) {
-            this.signatureHashAlgorithm = signatureHashAlgorithm;
+            this.mSignatureHashAlgorithm = signatureHashAlgorithm;
             return this;
         }
 
         public Builder signatureForceV3(boolean signatureForceV3) {
-            this.signatureForceV3 = signatureForceV3;
+            this.mSignatureForceV3 = signatureForceV3;
             return this;
         }
 
         public Builder signaturePassphrase(String signaturePassphrase) {
-            this.signaturePassphrase = signaturePassphrase;
+            this.mSignaturePassphrase = signaturePassphrase;
             return this;
         }
 
@@ -176,14 +155,14 @@ public class PgpSignEncrypt {
     }
 
     public void updateProgress(int message, int current, int total) {
-        if (progress != null) {
-            progress.setProgress(message, current, total);
+        if (mProgress != null) {
+            mProgress.setProgress(message, current, total);
         }
     }
 
     public void updateProgress(int current, int total) {
-        if (progress != null) {
-            progress.setProgress(current, total);
+        if (mProgress != null) {
+            mProgress.setProgress(current, total);
         }
     }
 
@@ -201,17 +180,17 @@ public class PgpSignEncrypt {
             throws IOException, PgpGeneralException, PGPException, NoSuchProviderException,
             NoSuchAlgorithmException, SignatureException {
 
-        boolean enableSignature = signatureKeyId != Id.key.none;
-        boolean enableEncryption = (encryptionKeyIds.length != 0 || encryptionPassphrase != null);
-        boolean enableCompression = (enableEncryption && compressionId != Id.choice.compression.none);
+        boolean enableSignature = mSignatureKeyId != Id.key.none;
+        boolean enableEncryption = (mEncryptionKeyIds.length != 0 || mEncryptionPassphrase != null);
+        boolean enableCompression = (enableEncryption && mCompressionId != Id.choice.compression.none);
 
         Log.d(Constants.TAG, "enableSignature:" + enableSignature
                 + "\nenableEncryption:" + enableEncryption
                 + "\nenableCompression:" + enableCompression
-                + "\nenableAsciiArmorOutput:" + enableAsciiArmorOutput);
+                + "\nenableAsciiArmorOutput:" + mEnableAsciiArmorOutput);
 
         int signatureType;
-        if (enableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
+        if (mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
             // for sign-only ascii text
             signatureType = PGPSignature.CANONICAL_TEXT_DOCUMENT;
         } else {
@@ -220,12 +199,12 @@ public class PgpSignEncrypt {
 
         ArmoredOutputStream armorOut = null;
         OutputStream out;
-        if (enableAsciiArmorOutput) {
-            armorOut = new ArmoredOutputStream(outStream);
-            armorOut.setHeader("Version", PgpHelper.getFullVersion(context));
+        if (mEnableAsciiArmorOutput) {
+            armorOut = new ArmoredOutputStream(mOutStream);
+            armorOut.setHeader("Version", PgpHelper.getFullVersion(mContext));
             out = armorOut;
         } else {
-            out = outStream;
+            out = mOutStream;
         }
 
         /* Get keys for signature generation for later usage */
@@ -233,25 +212,25 @@ public class PgpSignEncrypt {
         PGPSecretKeyRing signingKeyRing = null;
         PGPPrivateKey signaturePrivateKey = null;
         if (enableSignature) {
-            signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(context, signatureKeyId);
-            signingKey = PgpKeyHelper.getSigningKey(context, signatureKeyId);
+            signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, mSignatureKeyId);
+            signingKey = PgpKeyHelper.getSigningKey(mContext, mSignatureKeyId);
             if (signingKey == null) {
-                throw new PgpGeneralException(context.getString(R.string.error_signature_failed));
+                throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
             }
 
-            if (signaturePassphrase == null) {
+            if (mSignaturePassphrase == null) {
                 throw new PgpGeneralException(
-                        context.getString(R.string.error_no_signature_passphrase));
+                        mContext.getString(R.string.error_no_signature_passphrase));
             }
 
             updateProgress(R.string.progress_extracting_signature_key, 0, 100);
 
             PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassphrase.toCharArray());
+                    Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mSignaturePassphrase.toCharArray());
             signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
             if (signaturePrivateKey == null) {
                 throw new PgpGeneralException(
-                        context.getString(R.string.error_could_not_extract_private_key));
+                        mContext.getString(R.string.error_could_not_extract_private_key));
             }
         }
         updateProgress(R.string.progress_preparing_streams, 5, 100);
@@ -261,23 +240,23 @@ public class PgpSignEncrypt {
         if (enableEncryption) {
             // has Integrity packet enabled!
             JcePGPDataEncryptorBuilder encryptorBuilder =
-                    new JcePGPDataEncryptorBuilder(symmetricEncryptionAlgorithm)
+                    new JcePGPDataEncryptorBuilder(mSymmetricEncryptionAlgorithm)
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
                             .setWithIntegrityPacket(true);
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
 
-            if (encryptionKeyIds.length == 0) {
+            if (mEncryptionKeyIds.length == 0) {
                 // Symmetric encryption
                 Log.d(Constants.TAG, "encryptionKeyIds length is 0 -> symmetric encryption");
 
                 JcePBEKeyEncryptionMethodGenerator symmetricEncryptionGenerator =
-                        new JcePBEKeyEncryptionMethodGenerator(encryptionPassphrase.toCharArray());
+                        new JcePBEKeyEncryptionMethodGenerator(mEncryptionPassphrase.toCharArray());
                 cPk.addMethod(symmetricEncryptionGenerator);
             } else {
                 // Asymmetric encryption
-                for (long id : encryptionKeyIds) {
-                    PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(context, id);
+                for (long id : mEncryptionKeyIds) {
+                    PGPPublicKey key = PgpKeyHelper.getEncryptPublicKey(mContext, id);
                     if (key != null) {
                         JcePublicKeyKeyEncryptionMethodGenerator pubKeyEncryptionGenerator =
                                 new JcePublicKeyKeyEncryptionMethodGenerator(key);
@@ -295,10 +274,10 @@ public class PgpSignEncrypt {
 
             // content signer based on signing key algorithm and chosen hash algorithm
             JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(
-                    signingKey.getPublicKey().getAlgorithm(), signatureHashAlgorithm)
+                    signingKey.getPublicKey().getAlgorithm(), mSignatureHashAlgorithm)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
-            if (signatureForceV3) {
+            if (mSignatureForceV3) {
                 signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
                 signatureV3Generator.init(signatureType, signaturePrivateKey);
             } else {
@@ -322,14 +301,14 @@ public class PgpSignEncrypt {
             encryptionOut = cPk.open(out, new byte[1 << 16]);
 
             if (enableCompression) {
-                compressGen = new PGPCompressedDataGenerator(compressionId);
+                compressGen = new PGPCompressedDataGenerator(mCompressionId);
                 bcpgOut = new BCPGOutputStream(compressGen.open(encryptionOut));
             } else {
                 bcpgOut = new BCPGOutputStream(encryptionOut);
             }
 
             if (enableSignature) {
-                if (signatureForceV3) {
+                if (mSignatureForceV3) {
                     signatureV3Generator.generateOnePassVersion(false).encode(bcpgOut);
                 } else {
                     signatureGenerator.generateOnePassVersion(false).encode(bcpgOut);
@@ -345,13 +324,13 @@ public class PgpSignEncrypt {
             long progress = 0;
             int n;
             byte[] buffer = new byte[1 << 16];
-            InputStream in = data.getInputStream();
+            InputStream in = mData.getInputStream();
             while ((n = in.read(buffer)) > 0) {
                 pOut.write(buffer, 0, n);
 
                 // update signature buffer if signature is requested
                 if (enableSignature) {
-                    if (signatureForceV3) {
+                    if (mSignatureForceV3) {
                         signatureV3Generator.update(buffer, 0, n);
                     } else {
                         signatureGenerator.update(buffer, 0, n);
@@ -359,26 +338,26 @@ public class PgpSignEncrypt {
                 }
 
                 progress += n;
-                if (data.getSize() != 0) {
-                    updateProgress((int) (20 + (95 - 20) * progress / data.getSize()), 100);
+                if (mData.getSize() != 0) {
+                    updateProgress((int) (20 + (95 - 20) * progress / mData.getSize()), 100);
                 }
             }
 
             literalGen.close();
-        } else if (enableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
+        } else if (mEnableAsciiArmorOutput && enableSignature && !enableEncryption && !enableCompression) {
             /* sign-only of ascii text */
 
             updateProgress(R.string.progress_signing, 40, 100);
 
             // write directly on armor output stream
-            armorOut.beginClearText(signatureHashAlgorithm);
+            armorOut.beginClearText(mSignatureHashAlgorithm);
 
-            InputStream in = data.getInputStream();
+            InputStream in = mData.getInputStream();
             final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
             final byte[] newline = "\r\n".getBytes("UTF-8");
 
-            if (signatureForceV3) {
+            if (mSignatureForceV3) {
                 processLine(reader.readLine(), armorOut, signatureV3Generator);
             } else {
                 processLine(reader.readLine(), armorOut, signatureGenerator);
@@ -395,7 +374,7 @@ public class PgpSignEncrypt {
                 armorOut.write(newline);
 
                 // update signature buffer with input line
-                if (signatureForceV3) {
+                if (mSignatureForceV3) {
                     signatureV3Generator.update(newline);
                     processLine(line, armorOut, signatureV3Generator);
                 } else {
@@ -415,7 +394,7 @@ public class PgpSignEncrypt {
 
         if (enableSignature) {
             updateProgress(R.string.progress_generating_signature, 95, 100);
-            if (signatureForceV3) {
+            if (mSignatureForceV3) {
                 signatureV3Generator.generate().encode(pOut);
             } else {
                 signatureGenerator.generate().encode(pOut);
@@ -432,12 +411,12 @@ public class PgpSignEncrypt {
 
             encryptionOut.close();
         }
-        if (enableAsciiArmorOutput) {
+        if (mEnableAsciiArmorOutput) {
             armorOut.close();
         }
 
         out.close();
-        outStream.close();
+        mOutStream.close();
 
         updateProgress(R.string.progress_done, 100, 100);
     }
@@ -449,35 +428,36 @@ public class PgpSignEncrypt {
             SignatureException {
 
         OutputStream out;
-        if (enableAsciiArmorOutput) {
+        if (mEnableAsciiArmorOutput) {
             // Ascii Armor (Radix-64)
-            ArmoredOutputStream armorOut = new ArmoredOutputStream(outStream);
-            armorOut.setHeader("Version", PgpHelper.getFullVersion(context));
+            ArmoredOutputStream armorOut = new ArmoredOutputStream(mOutStream);
+            armorOut.setHeader("Version", PgpHelper.getFullVersion(mContext));
             out = armorOut;
         } else {
-            out = outStream;
+            out = mOutStream;
         }
 
-        if (signatureKeyId == 0) {
-            throw new PgpGeneralException(context.getString(R.string.error_no_signature_key));
+        if (mSignatureKeyId == 0) {
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_key));
         }
 
-        PGPSecretKeyRing signingKeyRing = ProviderHelper.getPGPSecretKeyRingByKeyId(context, signatureKeyId);
-        PGPSecretKey signingKey = PgpKeyHelper.getSigningKey(context, signatureKeyId);
+        PGPSecretKeyRing signingKeyRing =
+                ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, mSignatureKeyId);
+        PGPSecretKey signingKey = PgpKeyHelper.getSigningKey(mContext, mSignatureKeyId);
         if (signingKey == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_signature_failed));
+            throw new PgpGeneralException(mContext.getString(R.string.error_signature_failed));
         }
 
-        if (signaturePassphrase == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_no_signature_passphrase));
+        if (mSignaturePassphrase == null) {
+            throw new PgpGeneralException(mContext.getString(R.string.error_no_signature_passphrase));
         }
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(signaturePassphrase.toCharArray());
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(mSignaturePassphrase.toCharArray());
         PGPPrivateKey signaturePrivateKey = signingKey.extractPrivateKey(keyDecryptor);
         if (signaturePrivateKey == null) {
             throw new PgpGeneralException(
-                    context.getString(R.string.error_could_not_extract_private_key));
+                    mContext.getString(R.string.error_could_not_extract_private_key));
         }
         updateProgress(R.string.progress_preparing_streams, 0, 100);
 
@@ -490,12 +470,12 @@ public class PgpSignEncrypt {
 
         // content signer based on signing key algorithm and chosen hash algorithm
         JcaPGPContentSignerBuilder contentSignerBuilder = new JcaPGPContentSignerBuilder(signingKey
-                .getPublicKey().getAlgorithm(), signatureHashAlgorithm)
+                .getPublicKey().getAlgorithm(), mSignatureHashAlgorithm)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
         PGPSignatureGenerator signatureGenerator = null;
         PGPV3SignatureGenerator signatureV3Generator = null;
-        if (signatureForceV3) {
+        if (mSignatureForceV3) {
             signatureV3Generator = new PGPV3SignatureGenerator(contentSignerBuilder);
             signatureV3Generator.init(type, signaturePrivateKey);
         } else {
@@ -510,7 +490,7 @@ public class PgpSignEncrypt {
 
         updateProgress(R.string.progress_signing, 40, 100);
 
-        InputStream inStream = data.getInputStream();
+        InputStream inStream = mData.getInputStream();
 //        if (binary) {
 //            byte[] buffer = new byte[1 << 16];
 //            int n = 0;
@@ -527,7 +507,7 @@ public class PgpSignEncrypt {
 
         String line;
         while ((line = reader.readLine()) != null) {
-            if (signatureForceV3) {
+            if (mSignatureForceV3) {
                 processLine(line, null, signatureV3Generator);
                 signatureV3Generator.update(newline);
             } else {
@@ -538,13 +518,13 @@ public class PgpSignEncrypt {
 //        }
 
         BCPGOutputStream bOut = new BCPGOutputStream(out);
-        if (signatureForceV3) {
+        if (mSignatureForceV3) {
             signatureV3Generator.generate().encode(bOut);
         } else {
             signatureGenerator.generate().encode(bOut);
         }
         out.close();
-        outStream.close();
+        mOutStream.close();
 
         updateProgress(R.string.progress_done, 100, 100);
     }

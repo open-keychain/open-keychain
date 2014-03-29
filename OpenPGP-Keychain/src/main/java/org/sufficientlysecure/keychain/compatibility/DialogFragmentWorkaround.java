@@ -37,8 +37,9 @@ import android.os.Handler;
  * </code>
  */
 public class DialogFragmentWorkaround {
-    public static final SDKLevel17Interface INTERFACE = ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) ? new SDKLevel17Impl()
-            : new SDKLevelPriorLevel17Impl());
+    public static final SDKLevel17Interface INTERFACE =
+                ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) ? new SDKLevel17Impl()
+                 : new SDKLevelPriorLevel17Impl());
 
     private static final int RUNNABLE_DELAY = 300;
 

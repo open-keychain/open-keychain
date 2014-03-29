@@ -18,10 +18,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-
 import android.annotation.TargetApi;
 import android.net.Uri;
 import android.nfc.NdefMessage;
@@ -35,6 +31,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMessageCallback,
@@ -66,7 +65,7 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
                 // get public keyring as byte array
                 long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
                 mSharedKeyringBytes = ProviderHelper.getKeyRingsAsByteArray(this, dataUri,
-                        new long[] { masterKeyId });
+                        new long[]{masterKeyId});
 
                 // Register callback to set NDEF message
                 mNfcAdapter.setNdefPushMessageCallback(this, this);
@@ -109,10 +108,10 @@ public class ViewKeyActivityJB extends ViewKeyActivity implements CreateNdefMess
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-            case NFC_SENT:
-                Toast.makeText(getApplicationContext(), R.string.nfc_successfull, Toast.LENGTH_LONG)
-                        .show();
-                break;
+                case NFC_SENT:
+                    Toast.makeText(getApplicationContext(), R.string.nfc_successfull, Toast.LENGTH_LONG)
+                            .show();
+                    break;
             }
         }
     };

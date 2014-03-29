@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainIntentService;
-import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -32,6 +28,9 @@ import android.os.Messenger;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 
 public class DeleteFileDialogFragment extends DialogFragment {
     private static final String ARG_DELETE_FILE = "delete_file";
@@ -67,7 +66,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
         alert.setMessage(this.getString(R.string.file_delete_confirmation, deleteFile));
 
         alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            
+
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dismiss();
@@ -83,19 +82,23 @@ public class DeleteFileDialogFragment extends DialogFragment {
                 intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
                 ProgressDialogFragment deletingDialog = ProgressDialogFragment.newInstance(
-                        R.string.progress_deleting_securely, ProgressDialog.STYLE_HORIZONTAL, false, null);
+                        getString(R.string.progress_deleting_securely),
+                        ProgressDialog.STYLE_HORIZONTAL,
+                        false,
+                        null);
 
-                // Message is received after deleting is done in ApgService
-                KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(activity, deletingDialog) {
+                // Message is received after deleting is done in KeychainIntentService
+                KeychainIntentServiceHandler saveHandler =
+                        new KeychainIntentServiceHandler(activity, deletingDialog) {
                     public void handleMessage(Message message) {
-                        // handle messages by standard ApgHandler first
+                        // handle messages by standard KeychainIntentHandler first
                         super.handleMessage(message);
 
                         if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                             Toast.makeText(activity, R.string.file_delete_successful,
                                     Toast.LENGTH_SHORT).show();
                         }
-                    };
+                    }
                 };
 
                 // Create a new Messenger for the communication back

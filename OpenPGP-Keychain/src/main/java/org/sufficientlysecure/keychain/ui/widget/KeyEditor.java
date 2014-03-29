@@ -30,7 +30,7 @@ import org.spongycastle.openpgp.PGPSecretKey;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.util.Choice;
-
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -47,8 +47,16 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
 import com.beardedhen.androidbootstrap.BootstrapButton;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.util.Choice;
+
+import java.text.DateFormat;
+import java.util.*;
 
 public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     private PGPSecretKey mKey;
@@ -85,7 +93,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
 
     private int mDatePickerResultCount = 0;
-    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener = new DatePickerDialog.OnDateSetListener() {
+    private DatePickerDialog.OnDateSetListener mExpiryDateSetListener =
+            new DatePickerDialog.OnDateSetListener() {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // Note: Ignore results after the first one - android sends multiples.
             if (mDatePickerResultCount++ == 0) {
@@ -139,6 +148,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         setExpiryDate(null);
 
         mExpiryDateButton.setOnClickListener(new OnClickListener() {
+            @TargetApi(11)
             public void onClick(View v) {
                 GregorianCalendar date = mExpiryDate;
                 if (date == null) {
@@ -169,16 +179,18 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                         });
 
                 // setCalendarViewShown() is supported from API 11 onwards.
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                     // Hide calendarView in tablets because of the unix warparound bug.
                     dialog.getDatePicker().setCalendarViewShown(false);
-
+                }
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-                    if ( dialog != null && mCreatedDate != null ) {
-                        dialog.getDatePicker().setMinDate(mCreatedDate.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                    if (dialog != null && mCreatedDate != null) {
+                        dialog.getDatePicker()
+                                .setMinDate(
+                                        mCreatedDate.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     } else {
                         //When created date isn't available
-                        dialog.getDatePicker().setMinDate(date.getTime().getTime()+ DateUtils.DAY_IN_MILLIS);
+                        dialog.getDatePicker().setMinDate(date.getTime().getTime() + DateUtils.DAY_IN_MILLIS);
                     }
                 }
 
@@ -208,9 +220,8 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         }
 
         mAlgorithm.setText(PgpKeyHelper.getAlgorithmInfo(key));
-        String keyId1Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
-        String keyId2Str = PgpKeyHelper.convertKeyIdToHex(key.getKeyID() >> 32);
-        mKeyId.setText(keyId1Str + " " + keyId2Str);
+        String keyIdStr = PgpKeyHelper.convertKeyIdToHex(key.getKeyID());
+        mKeyId.setText(keyIdStr);
 
         Vector<Choice> choices = new Vector<Choice>();
         boolean isElGamalKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.ELGAMAL_ENCRYPT);
@@ -353,9 +364,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
 
 class ExpiryDatePickerDialog extends DatePickerDialog {
 
-    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack, int year, int monthOfYear, int dayOfMonth) {
+    public ExpiryDatePickerDialog(Context context, OnDateSetListener callBack,
+                                  int year, int monthOfYear, int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
+
     //Set permanent title.
     public void setTitle(CharSequence title) {
         super.setTitle(getContext().getString(R.string.expiry_date_dialog_title));

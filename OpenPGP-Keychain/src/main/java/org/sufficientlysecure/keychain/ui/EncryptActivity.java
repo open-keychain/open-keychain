@@ -17,9 +17,22 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.io.File;
-import java.util.Vector;
-
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.*;
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.beardedhen.androidbootstrap.FontAwesomeText;
+import com.devspark.appmsg.AppMsg;
 import org.spongycastle.openpgp.PGPPublicKey;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.spongycastle.openpgp.PGPSecretKey;
@@ -43,27 +56,8 @@ import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Choice;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ViewFlipper;
-
-import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.devspark.appmsg.AppMsg;
+import java.io.File;
+import java.util.Vector;
 
 public class EncryptActivity extends DrawerActivity {
 
@@ -108,6 +102,7 @@ public class EncryptActivity extends DrawerActivity {
 
     private EditText mFilename = null;
     private CheckBox mDeleteAfter = null;
+    private CheckBox mShareAfter = null;
     private BootstrapButton mBrowse = null;
 
     private String mInputFilename = null;
@@ -602,11 +597,11 @@ public class EncryptActivity extends DrawerActivity {
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
-        // Message is received after encrypting is done in ApgService
+        // Message is received after encrypting is done in KeychainIntentService
         KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-                R.string.progress_encrypting, ProgressDialog.STYLE_HORIZONTAL) {
+                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
             public void handleMessage(Message message) {
-                // handle messages by standard ApgHandler first
+                // handle messages by standard KeychainIntentServiceHandler first
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
@@ -650,6 +645,15 @@ public class EncryptActivity extends DrawerActivity {
                                         .newInstance(mInputFilename);
                                 deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
                             }
+
+                            if (mShareAfter.isChecked()) {
+                                // Share encrypted file
+                                Intent sendFileIntent = new Intent(Intent.ACTION_SEND);
+                                sendFileIntent.setType("*/*");
+                                sendFileIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(mOutputFilename));
+                                startActivity(Intent.createChooser(sendFileIntent,
+                                        getString(R.string.title_send_file)));
+                            }
                             break;
 
                         default:
@@ -659,8 +663,6 @@ public class EncryptActivity extends DrawerActivity {
                     }
                 }
             }
-
-            ;
         };
 
         // Create a new Messenger for the communication back
@@ -785,6 +787,11 @@ public class EncryptActivity extends DrawerActivity {
             }
         });
 
+
+
+
+
+
         mFileCompression = (Spinner) findViewById(R.id.fileCompression);
         Choice[] choices = new Choice[]{
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
@@ -794,7 +801,7 @@ public class EncryptActivity extends DrawerActivity {
                 new Choice(Id.choice.compression.zlib, "ZLIB ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.bzip2, "BZIP2 ("
-                        + getString(R.string.compression_very_slow) + ")"),};
+                        + getString(R.string.compression_very_slow) + ")"), };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(this,
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -809,6 +816,7 @@ public class EncryptActivity extends DrawerActivity {
         }
 
         mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterEncryption);
+        mShareAfter = (CheckBox) findViewById(R.id.shareAfterEncryption);
 
         mAsciiArmor = (CheckBox) findViewById(R.id.asciiArmour);
         mAsciiArmor.setChecked(Preferences.getPreferences(this).getDefaultAsciiArmour());
@@ -947,8 +955,8 @@ public class EncryptActivity extends DrawerActivity {
 
             case Id.request.secret_keys: {
                 if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    mSecretKeyId = bundle.getLong(SelectSecretKeyActivity.RESULT_EXTRA_MASTER_KEY_ID);
+                    Uri uri_master_key = data.getData();
+                    mSecretKeyId = Long.valueOf(uri_master_key.getLastPathSegment());
                 } else {
                     mSecretKeyId = Id.key.none;
                 }

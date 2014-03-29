@@ -17,6 +17,7 @@
     <string name="title_change_passphrase">Change Passphrase</string>
     <string name="title_set_passphrase">Set Passphrase</string>
     <string name="title_send_email">"Send Mail…"</string>
+    <string name="title_send_file">"Send File…"</string>
     <string name="title_encrypt_to_file">Encrypt To File</string>
     <string name="title_decrypt_to_file">Decrypt To File</string>
     <string name="title_import_keys">Import Keys</string>
@@ -66,6 +67,8 @@
     <string name="btn_clipboard">Clipboard</string>
     <string name="btn_share">Share with…</string>
     <string name="btn_lookup_key">Lookup key</string>
+    <string name="btn_encryption_advanced_settings_show">Show advanced settings</string>
+    <string name="btn_encryption_advanced_settings_hide">Hide advanced settings</string>
 
     <!-- menu -->
     <string name="menu_preferences">Settings</string>
@@ -75,15 +78,17 @@
     <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
     <string name="menu_export_keys">Export all keys</string>
+    <string name="menu_export_secret_keys">Export all secret keys</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
     <string name="menu_create_key">Create key</string>
     <string name="menu_create_key_expert">Create key (expert)</string>
     <string name="menu_search">Search</string>
-    <string name="menu_key_server">Import from keyserver</string>
+    <string name="menu_import_from_key_server">Keyserver</string>
+    <string name="menu_key_server">Keyserver…</string>
     <string name="menu_update_key">Update from keyserver</string>
     <string name="menu_export_key_to_server">Upload to key server</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_share">Share…</string>
     <string name="menu_share_title_fingerprint">Share fingerprint…</string>
     <string name="menu_share_title">Share whole key…</string>
     <string name="menu_share_default_fingerprint">with…</string>
@@ -110,6 +115,7 @@
     <string name="label_select_public_keys">Recipients</string>
     <string name="label_delete_after_encryption">Delete After Encryption</string>
     <string name="label_delete_after_decryption">Delete After Decryption</string>
+    <string name="label_share_after_encryption">Share After Encryption</string>
     <string name="label_encryption_algorithm">Encryption Algorithm</string>
     <string name="label_hash_algorithm">Hash Algorithm</string>
     <string name="label_asymmetric">Public Key</string>
@@ -128,6 +134,8 @@
     <string name="label_name">Name</string>
     <string name="label_comment">Comment</string>
     <string name="label_email">Email</string>
+    <string name="label_sign_user_id">Sign User Id</string>
+    <string name="label_sign_email">Sign email</string>
     <string name="label_send_key">Upload key to selected keyserver after certification</string>
     <string name="label_fingerprint">Fingerprint</string>
     <string name="select_keys_button_default">Select</string>
@@ -141,11 +149,18 @@
     <string name="user_id_no_name">&lt;no name&gt;</string>
     <string name="none">&lt;none&gt;</string>
     <string name="no_key">&lt;no key&gt;</string>
+    <string name="no_email">&lt;No Email&gt;</string>
     <string name="unknown_status"></string>
     <string name="can_encrypt">can encrypt</string>
     <string name="can_sign">can sign</string>
     <string name="expired">expired</string>
     <string name="revoked">revoked</string>
+    <string name="user_id">User ID</string>
+
+    <plurals name="n_contacts">
+        <item quantity="one">1 contact</item>
+        <item quantity="other">%d contacts</item>
+    </plurals>
 
     <plurals name="n_key_servers">
         <item quantity="one">%d keyserver</item>
@@ -209,6 +224,9 @@
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
     <string name="ask_save_changed_key">You have made changes to the keyring, would you like to save it?</string>
+    <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="secret_key_delete_text">Delete Secret Keys ?</string>
+    <string name="also_export_secret_keys">Also export secret keys?</string>
 
     <plurals name="keys_added_and_updated_1">
         <item quantity="one">Successfully added %d key</item>
@@ -232,6 +250,7 @@
     <string name="keys_exported">Successfully exported %d keys.</string>
     <string name="no_keys_exported">No keys exported.</string>
     <string name="key_creation_el_gamal_info">Note: only subkeys support ElGamal, and for ElGamal the nearest keysize of 1536, 2048, 3072, 4096, or 8192 will be used.</string>
+    <string name="key_creation_weak_rsa_info">Note: generating RSA key with length 1024-bit and less is considered unsafe and it\'s disabled for generating new keys.</string>
     <string name="key_not_found">Couldn\'t find key %08X.</string>
 
     <plurals name="keys_found">
@@ -270,6 +289,7 @@
     <string name="error_master_key_must_not_be_el_gamal">the master key cannot be an ElGamal key</string>
     <string name="error_unknown_algorithm_choice">unknown algorithm choice</string>
     <string name="error_user_id_needs_a_name">you need to specify a name</string>
+    <string name="error_user_id_no_email">no email found</string>
     <string name="error_user_id_needs_an_email_address">you need to specify an email address</string>
     <string name="error_key_needs_a_user_id">need at least one user id</string>
     <string name="error_main_user_id_must_not_be_empty">main user id must not be empty</string>
@@ -296,18 +316,23 @@
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
     <string name="error_keyserver_query">Querying keyserver failed</string>
     <string name="error_keyserver_too_many_responses">Too many responses</string>
+    <string name="error_import_file_no_content">File has no content</string>
+    <string name="error_generic_report_bug">A generic error occurred, please create a new bug report for OpenKeychain.</string>
     <plurals name="error_can_not_delete_info">
         <item quantity="one">Please delete it from the \'My Keys\' screen!</item>
         <item quantity="other">Please delete them from the \'My Keys\' screen!</item>
     </plurals>
+    <plurals name="error_import_non_pgp_part">
+        <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
+        <item quantity="other">parts of the loaded file are valid OpenPGP objects but not OpenPGP keys</item>
+    </plurals>
 
     <!-- progress dialogs, usually ending in '…' -->
-    <string name="progress_done">done.</string>
-    <string name="progress_cancel">cancel</string>
+    <string name="progress_done">Done.</string>
+    <string name="progress_cancel">Cancel</string>
     <string name="progress_saving">saving…</string>
     <string name="progress_importing">importing…</string>
     <string name="progress_exporting">exporting…</string>
-    <string name="progress_generating">generating key, this can take up to 3 minutes…</string>
     <string name="progress_building_key">building key…</string>
     <string name="progress_preparing_master_key">preparing master key…</string>
     <string name="progress_certifying_master_key">certifying master key…</string>
@@ -318,6 +343,11 @@
     <plurals name="progress_exporting_key">
         <item quantity="one">exporting key…</item>
         <item quantity="other">exporting keys…</item>
+    </plurals>
+
+    <plurals name="progress_generating">
+        <item quantity="one">generating key, this can take up to 3 minutes…</item>
+        <item quantity="other">generating keys, this can take up to 3 minutes…</item>
     </plurals>
 
     <string name="progress_extracting_signature_key">extracting signature key…</string>
@@ -354,6 +384,7 @@
 
     <!-- Help -->
     <string name="help_tab_start">Start</string>
+    <string name="help_tab_faq">FAQ</string>
     <string name="help_tab_nfc_beam">NFC Beam</string>
     <string name="help_tab_changelog">Changelog</string>
     <string name="help_tab_about">About</string>
@@ -386,15 +417,22 @@
 
     <!-- Remote API -->
     <string name="api_no_apps">No registered applications!\n\nThird-party applications can request access to OpenKeychain. After granting access, they will be listed here.</string>
+    <string name="api_settings_show_info">Show advanced information</string>
+    <string name="api_settings_hide_info">Hide advanced information</string>
     <string name="api_settings_show_advanced">Show advanced settings</string>
     <string name="api_settings_hide_advanced">Hide advanced settings</string>
     <string name="api_settings_no_key">No key selected</string>
     <string name="api_settings_select_key">Select key</string>
+    <string name="api_settings_create_key">Create new key for this account</string>
     <string name="api_settings_save">Save</string>
     <string name="api_settings_cancel">Cancel</string>
     <string name="api_settings_revoke">Revoke access</string>
+    <string name="api_settings_delete_account">Delete account</string>
     <string name="api_settings_package_name">Package Name</string>
     <string name="api_settings_package_signature">SHA-256 of Package Signature</string>
+    <string name="api_settings_accounts">Accounts</string>
+    <string name="api_settings_accounts_empty">No accounts attached to this application.</string>
+    <string name="api_create_account_text">The application requests the creation of a new account. Please select an existing private key or create a new one.\nApplications are restricted to the usage of keys you select here!</string>
     <string name="api_register_text">The displayed application requests access to OpenKeychain.\nAllow access?\n\nWARNING: If you do not know why this screen appeared, disallow access! You can revoke access later using the \'Registered Applications\' screen.</string>
     <string name="api_register_allow">Allow access</string>
     <string name="api_register_disallow">Disallow access</string>
@@ -424,6 +462,7 @@
     <string name="key_list_empty_button_import">importing keys.</string>
 
     <!-- Key view -->
+    <string name="key_view_action_edit">Edit this key</string>
     <string name="key_view_action_encrypt">Encrypt to this contact</string>
     <string name="key_view_action_certify">Certify this contact\'s key</string>
     <string name="key_view_tab_main">Info</string>
@@ -438,5 +477,15 @@
     <string name="nav_apps">Registered Apps</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="edit">Edit</string>
+    <string name="my_keys">My Keys</string>
+    <string name="label_secret_key">Secret Key</string>
+    <string name="secret_key_yes">available</string>
+    <string name="secret_key_no">unavailable</string>
+    <string name="section_uids_to_sign">User IDs to sign</string>
+    <string name="progress_re_adding_certs">Reapplying certificates</string>
+
+    <!-- hints -->
+    <string name="encrypt_content_edit_text_hint">Write message here to encrypt…</string>
 
 </resources>

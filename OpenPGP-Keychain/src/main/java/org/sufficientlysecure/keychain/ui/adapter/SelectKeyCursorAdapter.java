@@ -17,23 +17,22 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import org.sufficientlysecure.keychain.Id;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
 
-public class SelectKeyCursorAdapter extends CursorAdapter {
+
+public class SelectKeyCursorAdapter extends HighlightQueryCursorAdapter {
 
     protected int mKeyType;
 
@@ -45,17 +44,16 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
     private int mIndexProjectionValid;
     private int mIndexProjectionAvailable;
 
-    public final static String PROJECTION_ROW_AVAILABLE = "available";
-    public final static String PROJECTION_ROW_VALID = "valid";
+    public static final String PROJECTION_ROW_AVAILABLE = "available";
+    public static final String PROJECTION_ROW_VALID = "valid";
 
     public SelectKeyCursorAdapter(Context context, Cursor c, int flags, ListView listView,
-            int keyType) {
+                                  int keyType) {
         super(context, c, flags);
 
         mInflater = LayoutInflater.from(context);
         mListView = listView;
         mKeyType = keyType;
-
         initIndex(c);
     }
 
@@ -69,7 +67,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
     /**
      * Get column indexes for performance reasons just once in constructor and swapCursor. For a
      * performance comparison see http://stackoverflow.com/a/17999582
-     * 
+     *
      * @param cursor
      */
     private void initIndex(Cursor cursor) {
@@ -104,12 +102,12 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
 
         if (userIdSplit[0] != null) {
-            mainUserId.setText(userIdSplit[0]);
+            mainUserId.setText(highlightSearchQuery(userIdSplit[0]));
         } else {
             mainUserId.setText(R.string.user_id_no_name);
         }
         if (userIdSplit[1] != null) {
-            mainUserIdRest.setText(userIdSplit[1]);
+            mainUserIdRest.setText(highlightSearchQuery(userIdSplit[1]));
         } else {
             mainUserIdRest.setText("");
         }
@@ -117,7 +115,7 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
         // TODO: needed to key id to no?
         keyId.setText(R.string.no_key);
         long masterKeyId = cursor.getLong(mIndexMasterKeyId);
-        keyId.setText(PgpKeyHelper.convertKeyIdToHex(masterKeyId));
+        keyId.setText(PgpKeyHelper.convertKeyIdToHexShort(masterKeyId));
 
         // TODO: needed to set unknown_status?
         status.setText(R.string.unknown_status);
@@ -164,5 +162,4 @@ public class SelectKeyCursorAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.select_key_item, null);
     }
-
 }

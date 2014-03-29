@@ -17,14 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.ActionBarHelper;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 
 public class SelectPublicKeyActivity extends ActionBarActivity {
 
@@ -39,27 +38,28 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
 
     SelectPublicKeyFragment mSelectFragment;
 
-    long selectedMasterKeyIds[];
+    long mSelectedMasterKeyIds[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Inflate a "Done"/"Cancel" custom action bar view
-        ActionBarHelper.setDoneCancelView(getSupportActionBar(), R.string.btn_okay,
+        ActionBarHelper.setTwoButtonView(getSupportActionBar(), R.string.btn_okay, R.drawable.ic_action_done,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // ok
                         okClicked();
                     }
-                }, R.string.btn_do_not_save, new View.OnClickListener() {
+                }, R.string.btn_do_not_save, R.drawable.ic_action_cancel, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         // cancel
                         cancelClicked();
                     }
-                });
+                }
+        );
 
         setContentView(R.layout.select_public_key_activity);
 
@@ -79,7 +79,7 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
             }
 
             // Create an instance of the fragment
-            mSelectFragment = SelectPublicKeyFragment.newInstance(selectedMasterKeyIds);
+            mSelectFragment = SelectPublicKeyFragment.newInstance(mSelectedMasterKeyIds);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
@@ -124,7 +124,7 @@ public class SelectPublicKeyActivity extends ActionBarActivity {
         // }
 
         // preselected master keys
-        selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
+        mSelectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
     }
 
     private void cancelClicked() {

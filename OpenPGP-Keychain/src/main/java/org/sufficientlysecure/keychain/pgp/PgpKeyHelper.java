@@ -17,28 +17,27 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import android.content.Context;
+import android.graphics.Color;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.PGPPublicKey;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
-import org.spongycastle.openpgp.PGPSecretKey;
-import org.spongycastle.openpgp.PGPSecretKeyRing;
-import org.spongycastle.openpgp.PGPSignature;
-import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
+import org.spongycastle.openpgp.*;
+import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.content.Context;
+import java.security.DigestException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PgpKeyHelper {
 
@@ -466,55 +465,30 @@ public class PgpKeyHelper {
         String algorithmStr;
 
         switch (algorithm) {
-        case PGPPublicKey.RSA_ENCRYPT:
-        case PGPPublicKey.RSA_GENERAL:
-        case PGPPublicKey.RSA_SIGN: {
-            algorithmStr = "RSA";
-            break;
-        }
+            case PGPPublicKey.RSA_ENCRYPT:
+            case PGPPublicKey.RSA_GENERAL:
+            case PGPPublicKey.RSA_SIGN: {
+                algorithmStr = "RSA";
+                break;
+            }
 
-        case PGPPublicKey.DSA: {
-            algorithmStr = "DSA";
-            break;
-        }
+            case PGPPublicKey.DSA: {
+                algorithmStr = "DSA";
+                break;
+            }
 
-        case PGPPublicKey.ELGAMAL_ENCRYPT:
-        case PGPPublicKey.ELGAMAL_GENERAL: {
-            algorithmStr = "ElGamal";
-            break;
-        }
+            case PGPPublicKey.ELGAMAL_ENCRYPT:
+            case PGPPublicKey.ELGAMAL_GENERAL: {
+                algorithmStr = "ElGamal";
+                break;
+            }
 
-        default: {
-            algorithmStr = "Unknown";
-            break;
-        }
+            default: {
+                algorithmStr = "Unknown";
+                break;
+            }
         }
         return algorithmStr + ", " + keySize + " bit";
-    }
-
-    /**
-     * Converts fingerprint to hex with whitespaces after 4 characters
-     * 
-     * @param fp
-     * @return
-     */
-    public static String convertFingerprintToHex(byte[] fp, boolean chunked) {
-        String fingerPrint = "";
-        for (int i = 0; i < fp.length; ++i) {
-            if (chunked && i != 0 && i % 10 == 0) {
-                fingerPrint += "  ";
-            } else if (chunked && i != 0 && i % 2 == 0) {
-                fingerPrint += " ";
-            }
-            String chunk = Integer.toHexString((fp[i] + 256) % 256).toUpperCase(Locale.US);
-            while (chunk.length() < 2) {
-                chunk = "0" + chunk;
-            }
-            fingerPrint += chunk;
-        }
-
-        return fingerPrint;
-
     }
 
     public static String getFingerPrint(Context context, long keyId) {
@@ -529,55 +503,150 @@ public class PgpKeyHelper {
             key = secretKey.getPublicKey();
         }
 
-        return convertFingerprintToHex(key.getFingerprint(), true);
-    }
-
-    public static boolean isSecretKeyPrivateEmpty(PGPSecretKey secretKey) {
-        return secretKey.isPrivateKeyEmpty();
-    }
-
-//    public static boolean isSecretKeyPrivateEmpty(Context context, long keyId) {
-//        PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-//        if (secretKey == null) {
-//            Log.e(Constants.TAG, "Key could not be found!");
-//            return false; // could be a public key, assume it is not empty
-//        }
-//        return isSecretKeyPrivateEmpty(secretKey);
-//    }
-
-    public static String convertKeyIdToHex(long keyId) {
-        String fingerPrint = Long.toHexString(keyId & 0xffffffffL).toUpperCase(Locale.US);
-        while (fingerPrint.length() < 8) {
-            fingerPrint = "0" + fingerPrint;
-        }
-        return fingerPrint;
+        return convertFingerprintToHex(key.getFingerprint());
     }
 
     /**
-     * TODO: documentation
-     * 
+     * Converts fingerprint to hex (optional: with whitespaces after 4 characters)
+     * <p/>
+     * Fingerprint is shown using lowercase characters. Studies have shown that humans can
+     * better differentiate between numbers and letters when letters are lowercase.
+     *
+     * @param fingerprint
+     * @param split       split into 4 character chunks
+     * @return
+     */
+    public static String convertFingerprintToHex(byte[] fingerprint) {
+        String hexString = Hex.toHexString(fingerprint);
+
+        return hexString;
+    }
+
+    /**
+     * Convert key id from long to 64 bit hex string
+     * <p/>
+     * V4: "The Key ID is the low-order 64 bits of the fingerprint"
+     * <p/>
+     * see http://tools.ietf.org/html/rfc4880#section-12.2
+     *
      * @param keyId
      * @return
      */
-    public static String convertKeyToHex(long keyId) {
-        return convertKeyIdToHex(keyId >> 32) + convertKeyIdToHex(keyId);
+    public static String convertKeyIdToHex(long keyId) {
+        long upper = keyId >> 32;
+        if (upper == 0) {
+            // this is a short key id
+            return convertKeyIdToHexShort(keyId);
+        }
+        return "0x" + convertKeyIdToHex32bit(keyId >> 32) + convertKeyIdToHex32bit(keyId);
     }
 
-    public static long convertHexToKeyId(String data) {
-        int len = data.length();
-        String s2 = data.substring(len - 8);
-        String s1 = data.substring(0, len - 8);
-        return (Long.parseLong(s1, 16) << 32) | Long.parseLong(s2, 16);
+    public static String convertKeyIdToHexShort(long keyId) {
+        return "0x" + convertKeyIdToHex32bit(keyId);
+    }
+
+    private static String convertKeyIdToHex32bit(long keyId) {
+        String hexString = Long.toHexString(keyId & 0xffffffffL).toLowerCase(Locale.US);
+        while (hexString.length() < 8) {
+            hexString = "0" + hexString;
+        }
+        return hexString;
+    }
+
+
+    public static SpannableStringBuilder colorizeFingerprint(String fingerprint) {
+        // split by 4 characters
+        fingerprint = fingerprint.replaceAll("(.{4})(?!$)", "$1 ");
+
+        // add line breaks to have a consistent "image" that can be recognized
+        char[] chars = fingerprint.toCharArray();
+        chars[24] = '\n';
+        fingerprint = String.valueOf(chars);
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(fingerprint);
+        try {
+            // for each 4 characters of the fingerprint + 1 space
+            for (int i = 0; i < fingerprint.length(); i += 5) {
+                int spanEnd = Math.min(i + 4, fingerprint.length());
+                String fourChars = fingerprint.substring(i, spanEnd);
+
+                int raw = Integer.parseInt(fourChars, 16);
+                byte[] bytes = {(byte) ((raw >> 8) & 0xff - 128), (byte) (raw & 0xff - 128)};
+                int[] color = getRgbForData(bytes);
+                int r = color[0];
+                int g = color[1];
+                int b = color[2];
+
+                // we cannot change black by multiplication, so adjust it to an almost-black grey,
+                // which will then be brightened to the minimal brightness level
+                if (r == 0 && g == 0 && b == 0) {
+                    r = 1;
+                    g = 1;
+                    b = 1;
+                }
+
+                // Convert rgb to brightness
+                double brightness = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+                // If a color is too dark to be seen on black,
+                // then brighten it up to a minimal brightness.
+                if (brightness < 80) {
+                    double factor = 80.0 / brightness;
+                    r = Math.min(255, (int) (r * factor));
+                    g = Math.min(255, (int) (g * factor));
+                    b = Math.min(255, (int) (b * factor));
+
+                    // If it is too light, then darken it to a respective maximal brightness.
+                } else if (brightness > 180) {
+                    double factor = 180.0 / brightness;
+                    r = (int) (r * factor);
+                    g = (int) (g * factor);
+                    b = (int) (b * factor);
+                }
+
+                // Create a foreground color with the 3 digest integers as RGB
+                // and then converting that int to hex to use as a color
+                sb.setSpan(new ForegroundColorSpan(Color.rgb(r, g, b)),
+                        i, spanEnd, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        } catch (Exception e) {
+            Log.e(Constants.TAG, "Colorization failed", e);
+            // if anything goes wrong, then just display the fingerprint without colour,
+            // instead of partially correct colour or wrong colours
+            return new SpannableStringBuilder(fingerprint);
+        }
+
+        return sb;
+    }
+
+    /**
+     * Converts the given bytes to a unique RGB color using SHA1 algorithm
+     *
+     * @param bytes
+     * @return an integer array containing 3 numeric color representations (Red, Green, Black)
+     * @throws java.security.NoSuchAlgorithmException
+     * @throws java.security.DigestException
+     */
+    private static int[] getRgbForData(byte[] bytes) throws NoSuchAlgorithmException, DigestException {
+        MessageDigest md = MessageDigest.getInstance("SHA1");
+
+        md.update(bytes);
+        byte[] digest = md.digest();
+
+        int[] result = {((int) digest[0] + 256) % 256,
+                ((int) digest[1] + 256) % 256,
+                ((int) digest[2] + 256) % 256};
+        return result;
     }
 
     /**
      * Splits userId string into naming part, email part, and comment part
-     * 
+     *
      * @param userId
      * @return array with naming (0), email (1), comment (2)
      */
     public static String[] splitUserId(String userId) {
-        String[] result = new String[] { null, null, null };
+        String[] result = new String[]{null, null, null};
 
         if (userId == null || userId.equals("")) {
             return result;
@@ -598,7 +667,6 @@ public class PgpKeyHelper {
             result[0] = matcher.group(1);
             result[1] = matcher.group(3);
             result[2] = matcher.group(2);
-            return result;
         }
 
         return result;

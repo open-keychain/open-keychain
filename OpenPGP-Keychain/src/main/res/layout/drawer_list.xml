@@ -9,10 +9,10 @@
 -->
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/left_drawer"
-    android:layout_width="240dp"
+    android:layout_width="@dimen/drawer_size"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="#fff"
+    android:background="@color/white"
     android:choiceMode="singleChoice"
     android:divider="@color/bg_gray"
     android:dividerHeight="1dp" />

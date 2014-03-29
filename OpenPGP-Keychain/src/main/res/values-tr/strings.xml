@@ -76,7 +76,7 @@
   <string name="dsa">DSA</string>
   <string name="elgamal">ElGamal</string>
   <string name="rsa">RSA</string>
-  <string name="filemanager_title_open">Aç…</string>
+  <string name="filemanager_title_open">Aç...</string>
   <string name="warning">Uyarı</string>
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
@@ -95,18 +95,17 @@
   <string name="error_key_size_minimum512bit">anahtar uzunluğu en az 512bit olmalı</string>
   <string name="error_corrupt_data">bozuk veri</string>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">bitti.</string>
-  <string name="progress_saving">kaydediliyor…</string>
-  <string name="progress_importing">alıyor…</string>
-  <string name="progress_exporting">veriyor…</string>
-  <string name="progress_building_key">anahtar oluşturuluyor…</string>
-  <string name="progress_preparing_signature">imza hazırlanıyor…</string>
-  <string name="progress_generating_signature">imza oluşturuluyor…</string>
-  <string name="progress_processing_signature">imza işleniyor…</string>
-  <string name="progress_verifying_signature">imza doğrulanıyor…</string>
-  <string name="progress_signing">imzalanıyor…</string>
-  <string name="progress_reading_data">veri okunuyor…</string>
-  <string name="progress_finding_key">anahtar bulunuyor…</string>
+  <string name="progress_saving">kaydediliyor...</string>
+  <string name="progress_importing">alıyor...</string>
+  <string name="progress_exporting">veriyor...</string>
+  <string name="progress_building_key">anahtar oluşturuluyor...</string>
+  <string name="progress_preparing_signature">imza hazırlanıyor...</string>
+  <string name="progress_generating_signature">imza oluşturuluyor...</string>
+  <string name="progress_processing_signature">imza işleniyor...</string>
+  <string name="progress_verifying_signature">imza doğrulanıyor...</string>
+  <string name="progress_signing">imzalanıyor...</string>
+  <string name="progress_reading_data">veri okunuyor...</string>
+  <string name="progress_finding_key">anahtar bulunuyor...</string>
   <!--action strings-->
   <!--key bit length selections-->
   <string name="key_size_512">512</string>
@@ -135,4 +134,5 @@
   <!--Key list-->
   <!--Key view-->
   <!--Navigation Drawer-->
+  <!--hints-->
 </resources>

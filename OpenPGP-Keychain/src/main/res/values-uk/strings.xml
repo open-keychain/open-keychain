@@ -16,6 +16,7 @@
   <string name="title_change_passphrase">Змінити парольну фразу</string>
   <string name="title_set_passphrase">Задати парольну фразу</string>
   <string name="title_send_email">Надіслати листа…</string>
+  <string name="title_send_file">Надіслати файл…</string>
   <string name="title_encrypt_to_file">Зашифрувати до файлу</string>
   <string name="title_decrypt_to_file">Розшифрувати до файлу</string>
   <string name="title_import_keys">Імпортувати ключі</string>
@@ -63,6 +64,8 @@
   <string name="btn_clipboard">Буфер обміну</string>
   <string name="btn_share">Поділитися через…</string>
   <string name="btn_lookup_key">Шукати ключ</string>
+  <string name="btn_encryption_advanced_settings_show">Показати додаткові налаштування</string>
+  <string name="btn_encryption_advanced_settings_hide">Приховати додаткові налаштування</string>
   <!--menu-->
   <string name="menu_preferences">Параметри</string>
   <string name="menu_help">Довідка</string>
@@ -71,15 +74,17 @@
   <string name="menu_import">Імпорт</string>
   <string name="menu_import_from_nfc">Імпорт з NFC</string>
   <string name="menu_export_keys">Експортувати усі ключі</string>
+  <string name="menu_export_secret_keys">Експортувати усі секретні ключі</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
   <string name="menu_create_key">Створити ключ</string>
   <string name="menu_create_key_expert">Створити ключ (експерт)</string>
   <string name="menu_search">Пошук</string>
-  <string name="menu_key_server">Імпорт з сервера ключів</string>
+  <string name="menu_import_from_key_server">Сервер ключів</string>
+  <string name="menu_key_server">Сервер ключів…</string>
   <string name="menu_update_key">Оновити з сервера ключів</string>
   <string name="menu_export_key_to_server">Завантажити на сервер ключів</string>
-  <string name="menu_share">Поділитися</string>
+  <string name="menu_share">Поділитися…</string>
   <string name="menu_share_title_fingerprint">Поділитися відбитком…</string>
   <string name="menu_share_title">Поділитися цілим ключем…</string>
   <string name="menu_share_default_fingerprint">з…</string>
@@ -92,6 +97,7 @@
   <string name="menu_beam_preferences">Налаштування променя</string>
   <string name="menu_key_edit_cancel">Скасувати</string>
   <string name="menu_encrypt_to">Зашифрувати…</string>
+  <string name="menu_select_all">Вибрати усе</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -104,6 +110,7 @@
   <string name="label_select_public_keys">Отримувачі</string>
   <string name="label_delete_after_encryption">Вилучити після шифрування</string>
   <string name="label_delete_after_decryption">Вилучити після розшифрування</string>
+  <string name="label_share_after_encryption">Поширити після шифрування</string>
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
   <string name="label_asymmetric">Публічний ключ</string>
@@ -122,9 +129,12 @@
   <string name="label_name">Назва</string>
   <string name="label_comment">Коментар</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_sign_user_id">Ід підпису користувача</string>
+  <string name="label_sign_email">Підписати листа</string>
   <string name="label_send_key">Завантажити ключ до вибраного сервера ключів після сертифікації</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="select_keys_button_default">Вибрати</string>
+  <string name="expiry_date_dialog_title">Задати термін дії</string>
   <plurals name="select_keys_button">
     <item quantity="one">%d вибраний</item>
     <item quantity="few">%d вибрані</item>
@@ -133,11 +143,18 @@
   <string name="user_id_no_name">&lt;без імені&gt;</string>
   <string name="none">&lt;жоден&gt;</string>
   <string name="no_key">&lt;без ключа&gt;</string>
+  <string name="no_email">&lt;Немає ел. пошти&gt;</string>
   <string name="unknown_status"></string>
   <string name="can_encrypt">можна зашифрувати</string>
   <string name="can_sign">можна підписати</string>
   <string name="expired">закінчився</string>
   <string name="revoked">скасовано</string>
+  <string name="user_id">ІД користувача</string>
+  <plurals name="n_contacts">
+    <item quantity="one">1 контакт</item>
+    <item quantity="few">%d контакти</item>
+    <item quantity="other">%d контактів</item>
+  </plurals>
   <plurals name="n_key_servers">
     <item quantity="one">%d сервер ключів</item>
     <item quantity="few">%d сервери ключів</item>
@@ -194,6 +211,9 @@
   <string name="key_deletion_confirmation">Ви справді хочете вилучити ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
+  <string name="public_key_deletetion_confirmation">Справді волієте вилучити ВІДКРИТИЙ ключ \'%s\'?\nВи е зможете відмінити цю дію!</string>
+  <string name="secret_key_delete_text">Видалити секретні ключі?</string>
+  <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
   <plurals name="keys_added_and_updated_1">
     <item quantity="one">Успішно додано %d ключ</item>
     <item quantity="few">Успішно додано %d ключі</item>
@@ -219,6 +239,7 @@
   <string name="keys_exported">Успішно експортовано %d ключів.</string>
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: тільки підключі підтримують ElGamal, а для ElGamal буде використаний найближчий розмір ключа з 1536, 2048, 3072, 4096, або 8192.</string>
+  <string name="key_creation_weak_rsa_info">Примітка: генерація ключа RSA з довжиною 1024 біти і менше вважається небезпечною і вона вимкнена для генерації нових ключів.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
   <plurals name="keys_found">
     <item quantity="one">Знайдено %d ключ.</item>
@@ -252,6 +273,7 @@
   <string name="error_master_key_must_not_be_el_gamal">основний ключ не може бути ключем ElGamal</string>
   <string name="error_unknown_algorithm_choice">вибір невідомого алгоритму</string>
   <string name="error_user_id_needs_a_name">вам потрібно вказати назву</string>
+  <string name="error_user_id_no_email">жодного листа не знайдено</string>
   <string name="error_user_id_needs_an_email_address">вам потрібно вказати електронну адресу</string>
   <string name="error_key_needs_a_user_id">потрібний хоча б один ІД користувача</string>
   <string name="error_main_user_id_must_not_be_empty">ІД основного користувача не має бути порожнім</string>
@@ -277,17 +299,24 @@
   <string name="error_keyserver_insufficient_query">Запит обмеженого сервера</string>
   <string name="error_keyserver_query">Збій сервера ключа запиту</string>
   <string name="error_keyserver_too_many_responses">Забагато відповідей</string>
+  <string name="error_import_file_no_content">Файл не має вмісту</string>
+  <string name="error_generic_report_bug">Трапилася загальна помилка, будь ласка, створіть новий звіт про помилку для OpenKeychain.</string>
   <plurals name="error_can_not_delete_info">
     <item quantity="one">Будь ласка, вилучіть його з екрану „Мої ключі“!</item>
     <item quantity="few">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
     <item quantity="other">Будь ласка, вилучіть їх з екрану „Мої ключі“!</item>
   </plurals>
+  <plurals name="error_import_non_pgp_part">
+    <item quantity="one">частина завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+    <item quantity="few">частини завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+    <item quantity="other">частин завантаженого файлу є вірним об\'єктом OpenPGP, але не ключем OpenPGP</item>
+  </plurals>
   <!--progress dialogs, usually ending in '…'-->
-  <string name="progress_done">готово.</string>
+  <string name="progress_done">Готово.</string>
+  <string name="progress_cancel">Скасувати</string>
   <string name="progress_saving">збереження…</string>
   <string name="progress_importing">імпортується…</string>
   <string name="progress_exporting">експортується…</string>
-  <string name="progress_generating">генерується ключ, вона може тривати до 3 хвилин…</string>
   <string name="progress_building_key">будується ключ…</string>
   <string name="progress_preparing_master_key">підготовка основного ключа…</string>
   <string name="progress_certifying_master_key">сертифікація основного ключа…</string>
@@ -298,6 +327,11 @@
     <item quantity="one">експортується ключ…</item>
     <item quantity="few">експортуються ключі…</item>
     <item quantity="other">експортуються ключі…</item>
+  </plurals>
+  <plurals name="progress_generating">
+    <item quantity="one">генерується ключ, це може тривати до 3 хвилини</item>
+    <item quantity="few">генеруються ключі, це може тривати до 3 хвилини</item>
+    <item quantity="other">генеруються ключі, це може тривати до 3 хвилини</item>
   </plurals>
   <string name="progress_extracting_signature_key">видобування ключа підпису…</string>
   <string name="progress_extracting_key">видобувається ключа…</string>
@@ -329,6 +363,7 @@
   <string name="compression_very_slow">дуже повільне</string>
   <!--Help-->
   <string name="help_tab_start">Початок</string>
+  <string name="help_tab_faq">ЧАП</string>
   <string name="help_tab_nfc_beam">NFC промінь</string>
   <string name="help_tab_changelog">Журнал змін</string>
   <string name="help_tab_about">Про</string>
@@ -357,6 +392,8 @@
   <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
   <!--Remote API-->
   <string name="api_no_apps">Нема зареєстрованих програм!\n\nСтороні програми можуть вимагати доступ до OpenPGP Keychain. Після надання доступу вони будуть наведені тут.</string>
+  <string name="api_settings_show_info">Показати додаткову інформацію</string>
+  <string name="api_settings_hide_info">Приховати додаткову інформацію</string>
   <string name="api_settings_show_advanced">Показати додаткові налаштування</string>
   <string name="api_settings_hide_advanced">Приховати додаткові налаштування</string>
   <string name="api_settings_no_key">Не вибрано ключа</string>
@@ -366,6 +403,8 @@
   <string name="api_settings_revoke">Відкликати доступ</string>
   <string name="api_settings_package_name">Назва пакунку</string>
   <string name="api_settings_package_signature">SHA-256 підписку пакунку</string>
+  <string name="api_settings_accounts">Облікові записи</string>
+  <string name="api_settings_accounts_empty">Немає облікового запису приєднаного до цієї програми.</string>
   <string name="api_register_text">Показана програма запитує доступ до OpenPGP Keychain.\nДозволити доступ?\n\nУВАГА: якщо ви не знаєте, чому цей екран появився, не дозволяйте доступ! Ви можете відкликати доступ пізніше, використовуючи екран \'Зареєстровані програми\'.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
@@ -392,6 +431,7 @@
   <string name="key_list_empty_button_create">створюється ваш власний ключ</string>
   <string name="key_list_empty_button_import">імпортуюся ключі.</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Редагувати цей ключ</string>
   <string name="key_view_action_encrypt">Зашифрувати у цей контакт</string>
   <string name="key_view_action_certify">Сертифікувати ключ цього контакту</string>
   <string name="key_view_tab_main">Інформація</string>
@@ -405,4 +445,13 @@
   <string name="nav_apps">Зареєстровані програми</string>
   <string name="drawer_open">Відкрити панель навігації</string>
   <string name="drawer_close">Закрити панель навігації</string>
+  <string name="edit">Редагувати</string>
+  <string name="my_keys">Мої ключі</string>
+  <string name="label_secret_key">Секретний ключ</string>
+  <string name="secret_key_yes">доступний</string>
+  <string name="secret_key_no">недоступний</string>
+  <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
+  <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
+  <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування…</string>
 </resources>

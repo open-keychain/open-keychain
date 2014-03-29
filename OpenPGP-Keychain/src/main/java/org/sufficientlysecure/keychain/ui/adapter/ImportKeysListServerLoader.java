@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.HkpKeyServer;
 import org.sufficientlysecure.keychain.util.KeyServer;
@@ -27,14 +26,15 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.ArrayList;
 
-public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
+public class ImportKeysListServerLoader
+        extends AsyncTaskLoader<AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>> {
     Context mContext;
 
     String mServerQuery;
     String mKeyServer;
 
-    private ArrayList<ImportKeysListEntry> entryList = new ArrayList<ImportKeysListEntry>();
-    private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> entryListWrapper;
+    private ArrayList<ImportKeysListEntry> mEntryList = new ArrayList<ImportKeysListEntry>();
+    private AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> mEntryListWrapper;
 
     public ImportKeysListServerLoader(Context context, String serverQuery, String keyServer) {
         super(context);
@@ -46,16 +46,16 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultW
     @Override
     public AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>> loadInBackground() {
 
-        entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
+        mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
 
         if (mServerQuery == null) {
             Log.e(Constants.TAG, "mServerQuery is null!");
-            return entryListWrapper;
+            return mEntryListWrapper;
         }
 
         queryServer(mServerQuery, mKeyServer);
 
-        return entryListWrapper;
+        return mEntryListWrapper;
     }
 
     @Override
@@ -89,18 +89,19 @@ public class ImportKeysListServerLoader extends AsyncTaskLoader<AsyncTaskResultW
         try {
             ArrayList<ImportKeysListEntry> searchResult = server.search(query);
 
+            mEntryList.clear();
             // add result to data
-            entryList.addAll(searchResult);
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, null);
+            mEntryList.addAll(searchResult);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, null);
         } catch (KeyServer.InsufficientQuery e) {
             Log.e(Constants.TAG, "InsufficientQuery", e);
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.QueryException e) {
             Log.e(Constants.TAG, "QueryException", e);
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         } catch (KeyServer.TooManyResponses e) {
             Log.e(Constants.TAG, "TooManyResponses", e);
-            entryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(entryList, e);
+            mEntryListWrapper = new AsyncTaskResultWrapper<ArrayList<ImportKeysListEntry>>(mEntryList, e);
         }
     }
 

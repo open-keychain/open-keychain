@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 /**
  * Copied from StickyListHeaders lib example
- * 
+ *
  * @author Eric Frohnhoefer
  */
 public class UnderlineTextView extends TextView {
