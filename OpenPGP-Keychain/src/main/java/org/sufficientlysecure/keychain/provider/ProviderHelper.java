@@ -24,7 +24,12 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 import org.spongycastle.bcpg.ArmoredOutputStream;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPKeyRing;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
@@ -491,21 +496,22 @@ public class ProviderHelper {
     /**
      * Get empty status of master key of keyring by its row id
      */
-    public static boolean getSecretMasterKeyCanSign(Context context, long keyRingRowId) {
+    public static boolean getSecretMasterKeyCanCertify(Context context, long keyRingRowId) {
         Uri queryUri = KeyRings.buildSecretKeyRingsUri(String.valueOf(keyRingRowId));
-        return getMasterKeyCanSign(context, queryUri);
+        return getMasterKeyCanCertify(context, queryUri);
     }
 
     /**
      * Private helper method to get master key private empty status of keyring by its row id
      */
-    public static boolean getMasterKeyCanSign(Context context, Uri queryUri) {
+
+    public static boolean getMasterKeyCanCertify(Context context, Uri queryUri) {
         String[] projection = new String[]{
                 KeyRings.MASTER_KEY_ID,
                 "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
                         + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                        + " AND sign_keys." + Keys.CAN_SIGN + " = '1' AND " + Keys.IS_MASTER_KEY
+                        + " AND sign_keys." + Keys.CAN_CERTIFY + " = '1' AND " + Keys.IS_MASTER_KEY
                         + " = 1) AS sign",};
 
         ContentResolver cr = context.getContentResolver();

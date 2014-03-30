@@ -59,13 +59,30 @@ public class PgpConversionHelper {
      * @return
      */
     public static ArrayList<PGPSecretKey> BytesToPGPSecretKeyList(byte[] keysBytes) {
-        PGPSecretKeyRing keyRing = (PGPSecretKeyRing) BytesToPGPKeyRing(keysBytes);
+        PGPObjectFactory factory = new PGPObjectFactory(keysBytes);
+        Object obj = null;
         ArrayList<PGPSecretKey> keys = new ArrayList<PGPSecretKey>();
-
-        @SuppressWarnings("unchecked")
-        Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
-        while (itr.hasNext()) {
-            keys.add(itr.next());
+        try {
+            while ((obj = factory.nextObject()) != null) {
+                PGPSecretKey secKey = null;
+                if(obj instanceof PGPSecretKey) {
+                    if ((secKey = (PGPSecretKey)obj ) == null) {
+                        Log.e(Constants.TAG, "No keys given!");
+                    }
+                    keys.add(secKey);
+                } else if(obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
+                    PGPSecretKeyRing keyRing = null;
+                    if ((keyRing = (PGPSecretKeyRing)obj) == null) {
+                        Log.e(Constants.TAG, "No keys given!");
+                    }
+                    @SuppressWarnings("unchecked")
+                    Iterator<PGPSecretKey> itr = keyRing.getSecretKeys();
+                    while (itr.hasNext()) {
+                        keys.add(itr.next());
+                    }
+                }
+            }
+        } catch (IOException e) {
         }
 
         return keys;

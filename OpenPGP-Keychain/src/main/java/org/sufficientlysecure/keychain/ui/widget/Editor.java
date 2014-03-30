@@ -18,8 +18,10 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 public interface Editor {
     public interface EditorListener {
-        public void onDeleted(Editor editor);
+        public void onDeleted(Editor editor, boolean wasNewItem);
+        public void onEdited();
     }
 
     public void setEditorListener(EditorListener listener);
+    public boolean needsSaving();
 }

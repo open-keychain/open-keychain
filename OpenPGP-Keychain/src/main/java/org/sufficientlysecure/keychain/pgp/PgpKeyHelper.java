@@ -210,9 +210,8 @@ public class PgpKeyHelper {
         Calendar calendar = GregorianCalendar.getInstance();
         calendar.setTime(creationDate);
         calendar.add(Calendar.DATE, key.getValidDays());
-        Date expiryDate = calendar.getTime();
 
-        return expiryDate;
+        return calendar.getTime();
     }
 
     public static Date getExpiryDate(PGPSecretKey key) {
@@ -290,6 +289,28 @@ public class PgpKeyHelper {
             userId = context.getString(R.string.user_id_no_name);
         }
         return userId;
+    }
+
+    public static int getKeyUsage(PGPSecretKey key)
+    {
+        return getKeyUsage(key.getPublicKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    private static int getKeyUsage(PGPPublicKey key) {
+        int usage = 0;
+        if (key.getVersion() >= 4) {
+            for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) continue;
+
+                PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+                if (hashed != null) usage |= hashed.getKeyFlags();
+
+                PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+                if (unhashed != null) usage |= unhashed.getKeyFlags();
+            }
+        }
+        return usage;
     }
 
     @SuppressWarnings("unchecked")
@@ -398,6 +419,36 @@ public class PgpKeyHelper {
         return false;
     }
 
+    public static boolean isAuthenticationKey(PGPSecretKey key) {
+        return isAuthenticationKey(key.getPublicKey());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isAuthenticationKey(PGPPublicKey key) {
+        if (key.getVersion() <= 3) {
+            return true;
+        }
+
+        for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
+            if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                continue;
+            }
+            PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
+
+            if (hashed != null && (hashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+
+            PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
+
+            if (unhashed != null && (unhashed.getKeyFlags() & KeyFlags.AUTHENTICATION) != 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static boolean isCertificationKey(PGPSecretKey key) {
         return isCertificationKey(key.getPublicKey());
     }
@@ -411,7 +462,7 @@ public class PgpKeyHelper {
     }
 
     public static String getAlgorithmInfo(int algorithm, int keySize) {
-        String algorithmStr = null;
+        String algorithmStr;
 
         switch (algorithm) {
             case PGPPublicKey.RSA_ENCRYPT:
