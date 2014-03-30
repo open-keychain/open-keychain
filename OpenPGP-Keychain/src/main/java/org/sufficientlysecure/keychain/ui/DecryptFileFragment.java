@@ -49,6 +49,8 @@ public class DecryptFileFragment extends Fragment {
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
+    private FileDialogFragment mFileDialog;
+
     private static final int RESULT_CODE_FILE = 0x00007003;
 
 
@@ -71,15 +73,15 @@ public class DecryptFileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_file_fragment, container, false);
 
-        mFilename = (EditText) findViewById(R.id.filename);
-        mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
+        mFilename = (EditText) view.findViewById(R.id.filename);
+        mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
+                FileHelper.openFile(getActivity(), mFilename.getText().toString(), "*/*",
                         RESULT_CODE_FILE);
             }
         });
-        mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
+        mDeleteAfter = (CheckBox) view.findViewById(R.id.deleteAfterDecryption);
         mDecryptButton = (BootstrapButton) view.findViewById(R.id.action_decrypt);
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +154,7 @@ public class DecryptFileFragment extends Fragment {
                 getString(R.string.title_decrypt_to_file),
                 getString(R.string.specify_file_to_decrypt_to), mOutputFilename, null);
 
-        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
+        mFileDialog.show(getActivity().getSupportFragmentManager(), "fileDialog");
     }
 
 }
