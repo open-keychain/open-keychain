@@ -82,6 +82,9 @@ public class AccountSettingsActivity extends ActionBarActivity {
             case R.id.menu_account_settings_delete:
                 deleteAccount();
                 return true;
+            case R.id.menu_account_settings_cancel:
+                finish();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -6,5 +6,9 @@
         android:id="@+id/menu_account_settings_delete"
         android:title="@string/api_settings_delete_account"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menu_account_settings_cancel"
+        android:title="@string/api_settings_cancel"
+        app:showAsAction="never" />
 
 </menu>
