@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,20 +38,16 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 
-public class DecryptFileFragment extends Fragment {
+public class DecryptFileFragment extends DecryptFragment {
     public static final String ARG_FILENAME = "filename";
-
-    DecryptSignatureResultDisplay mSignatureResultDisplay;
 
     private EditText mFilename;
     private CheckBox mDeleteAfter;
@@ -100,16 +95,6 @@ public class DecryptFileFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mSignatureResultDisplay = (DecryptSignatureResultDisplay) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement DecryptSignatureResultDisplay");
-        }
-    }
-
     private void guessOutputFilename() {
         mInputFilename = mFilename.getText().toString();
         File file = new File(mInputFilename);
@@ -118,11 +103,6 @@ public class DecryptFileFragment extends Fragment {
             filename = filename.substring(0, filename.length() - 4);
         }
         mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
     }
 
     private void decryptAction() {
@@ -174,7 +154,8 @@ public class DecryptFileFragment extends Fragment {
         mFileDialog.show(getActivity().getSupportFragmentManager(), "fileDialog");
     }
 
-    private void decryptStart(String passphrase) {
+    @Override
+    protected void decryptStart(String passphrase) {
         Log.d(Constants.TAG, "decryptStart");
 
         // Send all information needed to service to decrypt in other thread
@@ -231,7 +212,7 @@ public class DecryptFileFragment extends Fragment {
                         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
 
                         // display signature result in activity
-                        mSignatureResultDisplay.onSignatureResult(signatureResult);
+                        onSignatureResult(signatureResult);
                     }
 
                 }
@@ -247,34 +228,6 @@ public class DecryptFileFragment extends Fragment {
 
         // start service with intent
         getActivity().startService(intent);
-    }
-
-    private void showPassphraseDialog(long keyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    String passphrase =
-                            message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
-                    decryptStart(passphrase);
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(getActivity(),
-                    messenger, keyId);
-
-            passphraseDialog.show(getActivity().getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
     }
 
     @Override

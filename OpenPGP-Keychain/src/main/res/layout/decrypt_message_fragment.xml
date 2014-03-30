@@ -5,13 +5,15 @@
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="4dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:orientation="vertical">
+
+        <include layout="@layout/decrypt_signature_include" />
 
         <EditText
             android:id="@+id/message"
@@ -20,16 +22,13 @@
             android:gravity="top"
             android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
             android:scrollHorizontally="true"
-            android:layout_above="@+id/decrypt_message_section"
-            android:layout_alignParentStart="true" />
+            android:layout_weight="1" />
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/section_decrypt_verify"
-            android:layout_above="@+id/decrypt_buttons"
-            android:layout_alignParentEnd="true"
             android:id="@+id/decrypt_message_section" />
 
         <LinearLayout
@@ -37,8 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="4dp"
-            android:layout_alignParentBottom="true">
+            android:padding="4dp">
 
             <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/action_decrypt"
@@ -60,5 +58,5 @@
                 bootstrapbutton:bb_icon_left="fa-unlock"
                 bootstrapbutton:bb_type="info" />
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

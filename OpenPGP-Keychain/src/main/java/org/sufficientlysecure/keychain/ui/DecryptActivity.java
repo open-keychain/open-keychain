@@ -44,7 +44,7 @@ import org.sufficientlysecure.keychain.util.Log;
 
 import java.util.regex.Matcher;
 
-public class DecryptActivity extends DrawerActivity implements DecryptSignatureResultDisplay {
+public class DecryptActivity extends DrawerActivity {
 
     /* Intents */
     // without permission
@@ -52,17 +52,6 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
 
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
-
-    private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
-
-    private long mSignatureKeyId = 0;
-
-    private RelativeLayout mSignatureLayout = null;
-    private ImageView mSignatureStatusImage = null;
-    private TextView mUserId = null;
-    private TextView mUserIdRest = null;
-
-    private BootstrapButton mLookupKey = null;
 
     ViewPager mViewPager;
     PagerTabStrip mPagerTabStrip;
@@ -77,18 +66,6 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
 
 
     private void initView() {
-        mSignatureLayout = (RelativeLayout) findViewById(R.id.signature);
-        mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
-        mUserId = (TextView) findViewById(R.id.mainUserId);
-        mUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
-        mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
-        mLookupKey.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lookupUnknownKey(mSignatureKeyId);
-            }
-        });
-
         // Pager
         mViewPager = (ViewPager) findViewById(R.id.decrypt_pager);
         mPagerTabStrip = (PagerTabStrip) findViewById(R.id.decrypt_pager_tab_strip);
@@ -116,13 +93,6 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
         mTabsAdapter.addTab(DecryptMessageFragment.class, mMessageFragmentBundle, getString(R.string.label_message));
         mTabsAdapter.addTab(DecryptFileFragment.class, mFileFragmentBundle, getString(R.string.label_file));
         mViewPager.setCurrentItem(mSwitchToTab);
-
-        mSignatureLayout.setVisibility(View.GONE);
-        mSignatureLayout.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                lookupUnknownKey(mSignatureKeyId);
-            }
-        });
     }
 
 
@@ -219,86 +189,4 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
         }
     }
 
-    private void lookupUnknownKey(long unknownKeyId) {
-        Intent intent = new Intent(this, ImportKeysActivity.class);
-        intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-        intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, unknownKeyId);
-        startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-
-            // this request is returned after LookupUnknownKeyDialogFragment started
-            // ImportKeysActivity and user looked uo key
-            case RESULT_CODE_LOOKUP_KEY: {
-                Log.d(Constants.TAG, "Returning from Lookup Key...");
-                if (resultCode == RESULT_OK) {
-                    // decrypt again
-//                    decryptStart();
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onSignatureResult(OpenPgpSignatureResult signatureResult) {
-        mSignatureKeyId = 0;
-        mSignatureLayout.setVisibility(View.GONE);
-        if (signatureResult != null) {
-
-            mSignatureKeyId = signatureResult.getKeyId();
-
-            String userId = signatureResult.getUserId();
-            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
-            if (userIdSplit[0] != null) {
-                mUserId.setText(userId);
-            } else {
-                mUserId.setText(R.string.user_id_no_name);
-            }
-            if (userIdSplit[1] != null) {
-                mUserIdRest.setText(userIdSplit[1]);
-            } else {
-                mUserIdRest.setText(getString(R.string.label_key_id) + ": "
-                        + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
-            }
-
-            switch (signatureResult.getStatus()) {
-                case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-                    mLookupKey.setVisibility(View.GONE);
-                    break;
-                }
-
-                // TODO!
-//                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
-//                                break;
-//                            }
-
-                case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                    mLookupKey.setVisibility(View.VISIBLE);
-                    AppMsg.makeText(DecryptActivity.this,
-                            R.string.unknown_signature,
-                            AppMsg.STYLE_ALERT).show();
-                    break;
-                }
-
-                default: {
-                    mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-                    mLookupKey.setVisibility(View.GONE);
-                    break;
-                }
-            }
-            mSignatureLayout.setVisibility(View.VISIBLE);
-        }
-    }
 }

@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/decrypt_signature_include" />
-
     <android.support.v4.view.ViewPager
         android:id="@+id/decrypt_pager"
         android:layout_width="match_parent"
