@@ -80,9 +80,6 @@ public class AppSettingsActivity extends ActionBarActivity {
             case R.id.menu_api_settings_revoke:
                 revokeAccess();
                 return true;
-            case R.id.menu_api_settings_cancel:
-                finish();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
