@@ -16,6 +16,23 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import org.spongycastle.openpgp.PGPKeyFlags;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.sufficientlysecure.keychain.Id;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpConversionHelper;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
+import org.sufficientlysecure.keychain.util.Choice;
+
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -44,22 +61,30 @@ import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.util.Choice;
 
-import java.util.Vector;
 
-public class SectionView extends LinearLayout implements OnClickListener, EditorListener {
+
+public class SectionView extends LinearLayout implements OnClickListener, EditorListener, Editor {
     private LayoutInflater mInflater;
     private BootstrapButton mPlusButton;
     private ViewGroup mEditors;
     private TextView mTitle;
     private int mType = 0;
+    private EditorListener mEditorListener = null;
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
+    private boolean oldItemDeleted = false;
+    private ArrayList<String> mDeletedIDs = new ArrayList<String>();
+    private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
     private boolean mCanEdit = true;
 
     private ActionBarActivity mActivity;
 
     private ProgressDialogFragment mGeneratingDialog;
+
+    public void setEditorListener(EditorListener listener) {
+        mEditorListener = listener;
+    }
 
     public SectionView(Context context) {
         super(context);
@@ -124,13 +149,119 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     /**
      * {@inheritDoc}
      */
-    public void onDeleted(Editor editor) {
+    public void onDeleted(Editor editor, boolean wasNewItem) {
+        oldItemDeleted |= !wasNewItem;
+        if (oldItemDeleted) {
+            if (mType == Id.type.user_id)
+                mDeletedIDs.add(((UserIdEditor)editor).getOriginalID());
+            else if (mType == Id.type.key)
+                mDeletedKeys.add(((KeyEditor)editor).getValue());
+
+        }
         this.updateEditorsVisible();
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
+    }
+
+    @Override
+    public void onEdited() {
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
     }
 
     protected void updateEditorsVisible() {
         final boolean hasChildren = mEditors.getChildCount() > 0;
         mEditors.setVisibility(hasChildren ? View.VISIBLE : View.GONE);
+    }
+
+    public boolean needsSaving()
+    {
+        //check each view for needs saving, take account of deleted items
+        boolean ret = oldItemDeleted;
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            ret |= editor.needsSaving();
+            if (mType == Id.type.user_id)
+                ret |= ((UserIdEditor)editor).primarySwapped();
+        }
+        return ret;
+    }
+
+    public boolean primaryChanged()
+    {
+        boolean ret = false;
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            if (mType == Id.type.user_id)
+                ret |= ((UserIdEditor)editor).primarySwapped();
+        }
+        return ret;
+    }
+
+    public String getOriginalPrimaryID()
+    { //NB: this will have to change when we change how Primary IDs are chosen, and so we need to be
+      //    careful about where Master key capabilities are stored... multiple primaries and
+      //    revoked ones make this harder than the simple case we are continuing to assume here
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            if (mType == Id.type.user_id) {
+                if(((UserIdEditor)editor).getIsOriginallyMainUserID()) {
+                    return ((UserIdEditor)editor).getOriginalID();
+                }
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<String> getOriginalIDs()
+    {
+        ArrayList<String> orig = new ArrayList<String>();
+        if (mType == Id.type.user_id) {
+            for (int i = 0; i < mEditors.getChildCount(); ++i) {
+                UserIdEditor editor = (UserIdEditor) mEditors.getChildAt(i);
+                if (editor.isMainUserId())
+                    orig.add(0, editor.getOriginalID());
+                else
+                    orig.add(editor.getOriginalID());
+            }
+            return orig;
+        } else {
+            return null;
+        }
+    }
+
+    public ArrayList<String> getDeletedIDs()
+    {
+        return mDeletedIDs;
+    }
+
+    public ArrayList<PGPSecretKey> getDeletedKeys()
+    {
+        return mDeletedKeys;
+    }
+
+    public List<Boolean> getNeedsSavingArray()
+    {
+        ArrayList<Boolean> mList = new ArrayList<Boolean>();
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            mList.add(editor.needsSaving());
+        }
+        return mList;
+    }
+
+    public List<Boolean> getNewKeysArray()
+    {
+        ArrayList<Boolean> mList = new ArrayList<Boolean>();
+        if (mType == Id.type.key) {
+            for (int i = 0; i < mEditors.getChildCount(); ++i) {
+                KeyEditor editor = (KeyEditor) mEditors.getChildAt(i);
+                mList.add(editor.getIsNewKey());
+            }
+        }
+        return mList;
     }
 
     /**
@@ -143,10 +274,11 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     UserIdEditor view = (UserIdEditor) mInflater.inflate(
                             R.layout.edit_key_user_id_item, mEditors, false);
                     view.setEditorListener(this);
-                    if (mEditors.getChildCount() == 0) {
-                        view.setIsMainUserId(true);
-                    }
+                    view.setValue("", mEditors.getChildCount() == 0, true);
                     mEditors.addView(view);
+                    if (mEditorListener != null) {
+                        mEditorListener.onEdited();
+                    }
                     break;
                 }
 
@@ -185,10 +317,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             UserIdEditor view = (UserIdEditor) mInflater.inflate(R.layout.edit_key_user_id_item,
                     mEditors, false);
             view.setEditorListener(this);
-            view.setValue(userId);
-            if (mEditors.getChildCount() == 0) {
-                view.setIsMainUserId(true);
-            }
+            view.setValue(userId, mEditors.getChildCount() == 0, false);
             view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
@@ -196,7 +325,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         this.updateEditorsVisible();
     }
 
-    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages) {
+    public void setKeys(Vector<PGPSecretKey> list, Vector<Integer> usages, boolean newKeys) {
         if (mType != Id.type.key) {
             return;
         }
@@ -209,7 +338,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     false);
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
-            view.setValue(list.get(i), isMasterKey, usages.get(i));
+            view.setValue(list.get(i), isMasterKey, usages.get(i), newKeys);
             view.setCanEdit(mCanEdit);
             mEditors.addView(view);
         }
@@ -289,8 +418,14 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         KeyEditor view = (KeyEditor) mInflater.inflate(R.layout.edit_key_key_item,
                 mEditors, false);
         view.setEditorListener(SectionView.this);
-        view.setValue(newKey, newKey.isMasterKey(), -1);
+        int usage = 0;
+        if (mEditors.getChildCount() == 0)
+            usage = PGPKeyFlags.CAN_CERTIFY;
+        view.setValue(newKey, newKey.isMasterKey(), usage, true);
         mEditors.addView(view);
         SectionView.this.updateEditorsVisible();
+        if (mEditorListener != null) {
+            mEditorListener.onEdited();
+        }
     }
 }

@@ -16,6 +16,11 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,28 +31,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ContactHelper;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
 
     private BootstrapButton mDeleteButton;
     private RadioButton mIsMainUserId;
+    private String mOriginalID;
     private EditText mName;
+    private String mOriginalName;
     private AutoCompleteTextView mEmail;
+    private String mOriginalEmail;
     private EditText mComment;
-
-    public static class NoNameException extends Exception {
-        static final long serialVersionUID = 0xf812773343L;
-
-        public NoNameException(String message) {
-            super(message);
-        }
-    }
+    private String mOriginalComment;
+    private boolean mOriginallyMainUserID;
+    private boolean mIsNewId;
 
     public void setCanEdit(boolean bCanEdit) {
         if (!bCanEdit) {
@@ -56,14 +56,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             mIsMainUserId.setEnabled(false);
             mEmail.setEnabled(false);
             mComment.setEnabled(false);
-        }
-    }
-
-    public static class NoEmailException extends Exception {
-        static final long serialVersionUID = 0xf812773344L;
-
-        public NoEmailException(String message) {
-            super(message);
         }
     }
 
@@ -83,6 +75,24 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         super(context, attrs);
     }
 
+    TextWatcher mTextWatcher = new TextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s)
+        {
+            if (mEditorListener != null) {
+                mEditorListener.onEdited();
+            }
+        }
+    };
+
     @Override
     protected void onFinishInflate() {
         setDrawingCacheEnabled(true);
@@ -94,8 +104,10 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         mIsMainUserId.setOnClickListener(this);
 
         mName = (EditText) findViewById(R.id.name);
+        mName.addTextChangedListener(mTextWatcher);
         mEmail = (AutoCompleteTextView) findViewById(R.id.email);
         mComment = (EditText) findViewById(R.id.comment);
+        mComment.addTextChangedListener(mTextWatcher);
 
 
         mEmail.setThreshold(1); // Start working from first character
@@ -127,36 +139,45 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
                     // remove drawable if email is empty
                     mEmail.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
                 }
+                if (mEditorListener != null) {
+                    mEditorListener.onEdited();
+                }
             }
         });
 
         super.onFinishInflate();
     }
 
-    public void setValue(String userId) {
+    public void setValue(String userId, boolean isMainID, boolean isNewId) {
+
         mName.setText("");
+        mOriginalName = "";
         mComment.setText("");
+        mOriginalComment = "";
         mEmail.setText("");
+        mOriginalEmail = "";
+        mIsNewId = isNewId;
+        mOriginalID = userId;
 
-        Pattern withComment = Pattern.compile("^(.*) [(](.*)[)] <(.*)>$");
-        Matcher matcher = withComment.matcher(userId);
-        if (matcher.matches()) {
-            mName.setText(matcher.group(1));
-            mComment.setText(matcher.group(2));
-            mEmail.setText(matcher.group(3));
-            return;
+        String[] result = PgpKeyHelper.splitUserId(userId);
+        if (result[0] != null) {
+            mName.setText(result[0]);
+            mOriginalName = result[0];
+        }
+        if (result[1] != null) {
+            mEmail.setText(result[1]);
+            mOriginalEmail = result[1];
+        }
+        if (result[2] != null) {
+            mComment.setText(result[2]);
+            mOriginalComment = result[2];
         }
 
-        Pattern withoutComment = Pattern.compile("^(.*) <(.*)>$");
-        matcher = withoutComment.matcher(userId);
-        if (matcher.matches()) {
-            mName.setText(matcher.group(1));
-            mEmail.setText(matcher.group(2));
-            return;
-        }
+        mOriginallyMainUserID = isMainID;
+        setIsMainUserId(isMainID);
     }
 
-    public String getValue() throws NoNameException, NoEmailException {
+    public String getValue() {
         String name = ("" + mName.getText()).trim();
         String email = ("" + mEmail.getText()).trim();
         String comment = ("" + mComment.getText()).trim();
@@ -173,16 +194,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             // ok, empty one...
             return userId;
         }
-
-        // otherwise make sure that name and email exist
-        if (name.equals("")) {
-            throw new NoNameException("need a name");
-        }
-
-        if (email.equals("")) {
-            throw new NoEmailException("need an email");
-        }
-
+        //TODO: check gpg accepts an entirely empty ID packet. specs say this is allowed
         return userId;
     }
 
@@ -192,7 +204,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
             boolean wasMainUserId = mIsMainUserId.isChecked();
             parent.removeView(this);
             if (mEditorListener != null) {
-                mEditorListener.onDeleted(this);
+                mEditorListener.onDeleted(this, mIsNewId);
             }
             if (wasMainUserId && parent.getChildCount() > 0) {
                 UserIdEditor editor = (UserIdEditor) parent.getChildAt(0);
@@ -207,6 +219,9 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
                     editor.setIsMainUserId(false);
                 }
             }
+            if (mEditorListener != null) {
+                mEditorListener.onEdited();
+            }
         }
     }
 
@@ -220,5 +235,30 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
 
     public void setEditorListener(EditorListener listener) {
         mEditorListener = listener;
+    }
+
+    @Override
+    public boolean needsSaving() {
+        boolean retval = false; //(mOriginallyMainUserID != isMainUserId());
+        retval |= !(mOriginalName.equals( ("" + mName.getText()).trim() ) );
+        retval |= !(mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
+        retval |= !(mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
+        retval |= mIsNewId;
+        return retval;
+    }
+
+    public  boolean getIsOriginallyMainUserID()
+    {
+        return mOriginallyMainUserID;
+    }
+
+    public boolean primarySwapped()
+    {
+        return (mOriginallyMainUserID != isMainUserId());
+    }
+
+    public String getOriginalID()
+    {
+        return mOriginalID;
     }
 }

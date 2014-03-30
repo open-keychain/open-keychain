@@ -105,14 +105,9 @@ public class KeychainIntentService extends IntentService
     public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
 
     // save keyring
-    public static final String SAVE_KEYRING_NEW_PASSPHRASE = "new_passphrase";
-    public static final String SAVE_KEYRING_CURRENT_PASSPHRASE = "current_passphrase";
-    public static final String SAVE_KEYRING_USER_IDS = "user_ids";
-    public static final String SAVE_KEYRING_KEYS = "keys";
-    public static final String SAVE_KEYRING_KEYS_USAGES = "keys_usages";
-    public static final String SAVE_KEYRING_KEYS_EXPIRY_DATES = "keys_expiry_dates";
-    public static final String SAVE_KEYRING_MASTER_KEY_ID = "master_key_id";
+    public static final String SAVE_KEYRING_PARCEL = "save_parcel";
     public static final String SAVE_KEYRING_CAN_SIGN = "can_sign";
+
 
     // generate key
     public static final String GENERATE_KEY_ALGORITHM = "algorithm";
@@ -516,8 +511,9 @@ public class KeychainIntentService extends IntentService
         } else if (ACTION_SAVE_KEYRING.equals(action)) {
             try {
                 /* Input */
-                String oldPassPhrase = data.getString(SAVE_KEYRING_CURRENT_PASSPHRASE);
-                String newPassPhrase = data.getString(SAVE_KEYRING_NEW_PASSPHRASE);
+                SaveKeyringParcel saveParams = data.getParcelable(SAVE_KEYRING_PARCEL);
+                String oldPassPhrase = saveParams.oldPassPhrase;
+                String newPassPhrase = saveParams.newPassPhrase;
                 boolean canSign = true;
 
                 if (data.containsKey(SAVE_KEYRING_CAN_SIGN)) {
@@ -527,14 +523,8 @@ public class KeychainIntentService extends IntentService
                 if (newPassPhrase == null) {
                     newPassPhrase = oldPassPhrase;
                 }
-                ArrayList<String> userIds = data.getStringArrayList(SAVE_KEYRING_USER_IDS);
-                ArrayList<PGPSecretKey> keys = PgpConversionHelper.BytesToPGPSecretKeyList(data
-                        .getByteArray(SAVE_KEYRING_KEYS));
-                ArrayList<Integer> keysUsages = data.getIntegerArrayList(SAVE_KEYRING_KEYS_USAGES);
-                ArrayList<GregorianCalendar> keysExpiryDates =
-                        (ArrayList<GregorianCalendar>) data.getSerializable(SAVE_KEYRING_KEYS_EXPIRY_DATES);
 
-                long masterKeyId = data.getLong(SAVE_KEYRING_MASTER_KEY_ID);
+                long masterKeyId = saveParams.keys.get(0).getKeyID();
 
                 PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
                 /* Operation */
@@ -543,17 +533,7 @@ public class KeychainIntentService extends IntentService
                             ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
                             oldPassPhrase, newPassPhrase);
                 } else {
-                    //TODO: Workaround due to ProviderHelper.getPGPPublicKeyByKeyId can not resolve public key of master-key id with uri/cursor
-                    PGPPublicKey pubkey = null;
-                    for(PGPSecretKey key : keys) {
-                        PGPPublicKey tempKey = key.getPublicKey();
-                        if (tempKey.getKeyID() == masterKeyId) {
-                            pubkey = tempKey;
-                        }
-                    }
-                    //PGPPublicKey pubkey = ProviderHelper.getPGPPublicKeyByKeyId(this, masterKeyId);
-                    keyOperations.buildSecretKey(userIds, keys, keysUsages, keysExpiryDates,
-                            pubkey, oldPassPhrase, newPassPhrase);
+                    keyOperations.buildSecretKey(saveParams);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 

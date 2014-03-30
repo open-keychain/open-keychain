@@ -58,8 +58,8 @@
     <string name="btn_delete">Delete</string>
     <string name="btn_no_date">None</string>
     <string name="btn_okay">Okay</string>
-    <string name="btn_change_passphrase">Change Passphrase</string>
-    <string name="btn_set_passphrase">Set Passphrase</string>
+    <string name="btn_change_passphrase">Change New Passphrase</string>
+    <string name="btn_set_passphrase">Set New Passphrase</string>
     <string name="btn_search">Search</string>
     <string name="btn_export_to_server">Upload To Keyserver</string>
     <string name="btn_next">Next</string>
@@ -172,9 +172,6 @@
 
     <!-- choice -->
     <string name="choice_none">None</string>
-    <string name="choice_sign_only">Sign only</string>
-    <string name="choice_encrypt_only">Encrypt only</string>
-    <string name="choice_sign_and_encrypt">Sign and Encrypt</string>
     <string name="choice_15secs">15 secs</string>
     <string name="choice_1min">1 min</string>
     <string name="choice_3mins">3 mins</string>
@@ -194,6 +191,12 @@
     <string name="warning">Warning</string>
     <string name="error">Error</string>
     <string name="error_message">Error: %s</string>
+
+    <!-- key flags -->
+    <string name="flag_certify">Certify</string>
+    <string name="flag_sign">Sign</string>
+    <string name="flag_encrypt">Encrypt</string>
+    <string name="flag_authenticate">Authenticate</string>
 
     <!-- sentences -->
     <string name="wrong_passphrase">Wrong passphrase.</string>
@@ -220,6 +223,7 @@
     <string name="key_deletion_confirmation">Do you really want to delete the key \'%s\'?\nYou can\'t undo this!</string>
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
+    <string name="ask_save_changed_key">You have made changes to the keyring, would you like to save it?</string>
     <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secret_key_delete_text">Delete Secret Keys ?</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
@@ -306,6 +310,7 @@
     <string name="error_nfc_needed">NFC is not available on your device!</string>
     <string name="error_nothing_import">Nothing to import!</string>
     <string name="error_expiry_must_come_after_creation">expiry date must come after creation date</string>
+    <string name="error_save_first">please save the keyring first</string>
     <string name="error_can_not_delete_contact">you can not delete this contact because it is your own.</string>
     <string name="error_can_not_delete_contacts">you can not delete the following contacts because they are your own:\n%s</string>
     <string name="error_keyserver_insufficient_query">Insufficient server query</string>
