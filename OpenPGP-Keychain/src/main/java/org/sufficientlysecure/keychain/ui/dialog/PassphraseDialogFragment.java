@@ -59,6 +59,8 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_CANCEL = 2;
 
+    public static final String MESSAGE_DATA_PASSPHRASE = "passphrase";
+
     private Messenger mMessenger;
     private EditText mPassphraseEditText;
     private boolean mCanKB;
@@ -209,7 +211,11 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                             passphrase);
                 }
 
-                sendMessageToHandler(MESSAGE_OKAY);
+                // also return passphrase back to activity
+                Bundle data = new Bundle();
+                data.putString(MESSAGE_DATA_PASSPHRASE, passphrase);
+
+                sendMessageToHandler(MESSAGE_OKAY, data);
             }
         });
 
@@ -268,6 +274,27 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
     private void sendMessageToHandler(Integer what) {
         Message msg = Message.obtain();
         msg.what = what;
+
+        try {
+            mMessenger.send(msg);
+        } catch (RemoteException e) {
+            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+        } catch (NullPointerException e) {
+            Log.w(Constants.TAG, "Messenger is null!", e);
+        }
+    }
+
+    /**
+     * Send message back to handler which is initialized in a activity
+     *
+     * @param what Message integer you want to send
+     */
+    private void sendMessageToHandler(Integer what, Bundle data) {
+        Message msg = Message.obtain();
+        msg.what = what;
+        if (data != null) {
+            msg.setData(data);
+        }
 
         try {
             mMessenger.send(msg);

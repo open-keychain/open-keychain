@@ -75,7 +75,7 @@ public class PgpDecryptVerify {
         // optional
         private ProgressDialogUpdater mProgressDialogUpdater = null;
         private boolean mAssumeSymmetric = false;
-        private String mPassphrase = "";
+        private String mPassphrase = null;
         private long mEnforcedKeyId = 0;
 
         public Builder(Context context, InputData data, OutputStream outStream) {
@@ -253,8 +253,6 @@ public class PgpDecryptVerify {
             encryptedData = pbe;
             currentProgress += 5;
         } else {
-            updateProgress(R.string.progress_finding_key, currentProgress, 100);
-
             PGPPublicKeyEncryptedData pbe = null;
             PGPSecretKey secretKey = null;
             Iterator<?> it = enc.getEncryptedDataObjects();
@@ -262,6 +260,8 @@ public class PgpDecryptVerify {
             while (it.hasNext()) {
                 Object obj = it.next();
                 if (obj instanceof PGPPublicKeyEncryptedData) {
+                    updateProgress(R.string.progress_finding_key, currentProgress, 100);
+
                     PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
                     secretKey = ProviderHelper.getPGPSecretKeyByKeyId(mContext, encData.getKeyID());
                     if (secretKey != null) {
@@ -294,14 +294,15 @@ public class PgpDecryptVerify {
                             // if passphrase was not cached, return here
                             // indicating that a passphrase is missing!
                             if (mPassphrase == null) {
-                                returnData.setKeyPassphraseNeeded(true);
+                                returnData.setKeyIdPassphraseNeeded(encData.getKeyID());
+                                returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
                                 return returnData;
                             }
                         }
 
                         break;
                     }
-
+                } else if (obj instanceof PGPPBEEncryptedData) {
 
                 }
             }

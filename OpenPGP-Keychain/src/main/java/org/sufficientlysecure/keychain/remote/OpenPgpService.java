@@ -298,11 +298,11 @@ public class OpenPgpService extends RemoteService {
                 // TODO: currently does not support binary signed-only content
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
-                if (decryptVerifyResult.isKeyPassphraseNeeded()) {
+                if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
                     Intent passphraseBundle = getPassphraseBundleIntent(data, accSettings.getKeyId());
                     return passphraseBundle;
-                } else if (decryptVerifyResult.isSymmetricPassphraseNeeded()) {
+                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
                 }
 

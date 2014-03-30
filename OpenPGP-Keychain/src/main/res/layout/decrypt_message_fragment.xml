@@ -1,15 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/message"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="top"
-        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-        android:scrollHorizontally="true" />
-</LinearLayout>
+        android:paddingTop="4dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top"
+            android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
+            android:scrollHorizontally="true"
+            android:layout_above="@+id/decrypt_message_section"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            style="@style/SectionHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/section_decrypt_verify"
+            android:layout_above="@+id/decrypt_buttons"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/decrypt_message_section" />
+
+        <LinearLayout
+            android:id="@+id/decrypt_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="4dp"
+            android:layout_alignParentBottom="true">
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/action_decrypt"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:text="@string/btn_decrypt_verify"
+                bootstrapbutton:bb_icon_left="fa-unlock"
+                bootstrapbutton:bb_type="info" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/action_decrypt_from_clipboard"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:padding="4dp"
+                android:text="@string/btn_decrypt_verify_clipboard"
+                bootstrapbutton:bb_icon_left="fa-unlock"
+                bootstrapbutton:bb_type="info" />
+        </LinearLayout>
+    </RelativeLayout>
+</ScrollView>

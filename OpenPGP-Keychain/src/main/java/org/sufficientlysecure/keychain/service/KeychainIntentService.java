@@ -100,9 +100,9 @@ public class KeychainIntentService extends IntentService
     public static final String ENCRYPT_PROVIDER_URI = "provider_uri";
 
     // decrypt/verify
-    public static final String DECRYPT_RETURN_BYTES = "return_binary";
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
     public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
+    public static final String DECRYPT_PASSPHRASE = "passphrase";
 
     // save keyring
     public static final String SAVE_KEYRING_PARCEL = "save_parcel";
@@ -155,7 +155,6 @@ public class KeychainIntentService extends IntentService
     public static final String RESULT_URI = "result_uri";
 
     // decrypt/verify
-    public static final String RESULT_DECRYPTED_STRING = "decrypted_message";
     public static final String RESULT_DECRYPTED_BYTES = "decrypted_data";
     public static final String RESULT_DECRYPT_VERIFY_RESULT = "signature";
 
@@ -387,15 +386,14 @@ public class KeychainIntentService extends IntentService
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
                 byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
-                boolean returnBytes = data.getBoolean(DECRYPT_RETURN_BYTES);
                 boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
+                String passphrase = data.getString(DECRYPT_PASSPHRASE);
 
-                InputStream inStream = null;
-                long inLength = -1;
-                InputData inputData = null;
-                OutputStream outStream = null;
+                InputStream inStream;
+                long inLength;
+                InputData inputData;
+                OutputStream outStream;
                 String streamFilename = null;
                 switch (target) {
                     case TARGET_BYTES: /* decrypting bytes directly */
@@ -469,7 +467,7 @@ public class KeychainIntentService extends IntentService
                 builder.progressDialogUpdater(this);
 
                 builder.assumeSymmetric(assumeSymmetricEncryption)
-                        .passphrase(PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                        .passphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();
 
@@ -481,15 +479,8 @@ public class KeychainIntentService extends IntentService
 
                 switch (target) {
                     case TARGET_BYTES:
-                        if (returnBytes) {
-                            byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                            resultData.putByteArray(RESULT_DECRYPTED_BYTES, output);
-                        } else {
-                            String output = new String(
-                                    ((ByteArrayOutputStream) outStream).toByteArray());
-                            resultData.putString(RESULT_DECRYPTED_STRING, output);
-                        }
-
+                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+                        resultData.putByteArray(RESULT_DECRYPTED_BYTES, output);
                         break;
                     case TARGET_URI:
                         // nothing, file was written, just send okay and verification bundle

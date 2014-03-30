@@ -8,7 +8,7 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/decrypt_pager"
         android:layout_width="match_parent"
-        android:layout_height="220dp">
+        android:layout_height="match_parent">
 
         <android.support.v4.view.PagerTabStrip
             android:id="@+id/decrypt_pager_tab_strip"
@@ -38,128 +38,107 @@
 
             <include layout="@layout/decrypt_signature_include" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal">-->
 
-                <ImageView
-                    android:id="@+id/sourcePrevious"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_previous" />
+                <!--<ImageView-->
+                    <!--android:id="@+id/sourcePrevious"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:src="@drawable/ic_previous" />-->
 
-                <TextView
-                    android:id="@+id/sourceLabel"
-                    style="@style/SectionHeader"
-                    android:layout_width="0dip"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text="@string/label_message"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                <!--<TextView-->
+                    <!--android:id="@+id/sourceLabel"-->
+                    <!--style="@style/SectionHeader"-->
+                    <!--android:layout_width="0dip"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:gravity="center_horizontal|center_vertical"-->
+                    <!--android:text="@string/label_message"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
 
-                <ImageView
-                    android:id="@+id/sourceNext"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_next" />
-            </LinearLayout>
+                <!--<ImageView-->
+                    <!--android:id="@+id/sourceNext"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:src="@drawable/ic_next" />-->
+            <!--</LinearLayout>-->
 
-            <ViewFlipper
-                android:id="@+id/source"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_weight="1">
+            <!--<ViewFlipper-->
+                <!--android:id="@+id/source"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="0dip"-->
+                <!--android:layout_weight="1">-->
 
-                <LinearLayout
-                    android:id="@+id/sourceMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="4dp">
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/sourceMessage"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:padding="4dp">-->
 
-                    <EditText
-                        android:id="@+id/message"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="top"
-                        android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-                        android:scrollHorizontally="true" />
-                </LinearLayout>
+                    <!--<EditText-->
+                        <!--android:id="@+id/message"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:gravity="top"-->
+                        <!--android:inputType="text|textCapSentences|textMultiLine|textLongMessage"-->
+                        <!--android:scrollHorizontally="true" />-->
+                <!--</LinearLayout>-->
 
-                <LinearLayout
-                    android:id="@+id/sourceFile"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:padding="4dp">
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/sourceFile"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:padding="4dp">-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
 
-                        <EditText
-                            android:id="@+id/filename"
-                            android:layout_width="0dip"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="top|left"
-                            android:inputType="textMultiLine|textUri"
-                            android:lines="4"
-                            android:maxLines="10"
-                            android:minLines="2"
-                            android:scrollbars="vertical" />
+                        <!--<EditText-->
+                            <!--android:id="@+id/filename"-->
+                            <!--android:layout_width="0dip"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:gravity="top|left"-->
+                            <!--android:inputType="textMultiLine|textUri"-->
+                            <!--android:lines="4"-->
+                            <!--android:maxLines="10"-->
+                            <!--android:minLines="2"-->
+                            <!--android:scrollbars="vertical" />-->
 
-                        <com.beardedhen.androidbootstrap.BootstrapButton
-                            android:id="@+id/btn_browse"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="4dp"
-                            bootstrapbutton:bb_icon_left="fa-folder-open"
-                            bootstrapbutton:bb_roundedCorners="true"
-                            bootstrapbutton:bb_size="default"
-                            bootstrapbutton:bb_type="default" />
-                    </LinearLayout>
+                        <!--<com.beardedhen.androidbootstrap.BootstrapButton-->
+                            <!--android:id="@+id/btn_browse"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_margin="4dp"-->
+                            <!--bootstrapbutton:bb_icon_left="fa-folder-open"-->
+                            <!--bootstrapbutton:bb_roundedCorners="true"-->
+                            <!--bootstrapbutton:bb_size="default"-->
+                            <!--bootstrapbutton:bb_type="default" />-->
+                    <!--</LinearLayout>-->
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="horizontal">-->
 
-                        <CheckBox
-                            android:id="@+id/deleteAfterDecryption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:text="@string/label_delete_after_decryption" />
-                    </LinearLayout>
-                </LinearLayout>
-            </ViewFlipper>
+                        <!--<CheckBox-->
+                            <!--android:id="@+id/deleteAfterDecryption"-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:layout_gravity="center_vertical"-->
+                            <!--android:text="@string/label_delete_after_decryption" />-->
+                    <!--</LinearLayout>-->
+                <!--</LinearLayout>-->
+            <!--</ViewFlipper>-->
 
-            <TextView
-                style="@style/SectionHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="@string/section_decrypt_verify" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="4dp">
-
-                <com.beardedhen.androidbootstrap.BootstrapButton
-                    android:id="@+id/action_decrypt"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:padding="4dp"
-                    android:text="@string/btn_decrypt_verify"
-                    bootstrapbutton:bb_icon_left="fa-unlock"
-                    bootstrapbutton:bb_type="info" />
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
