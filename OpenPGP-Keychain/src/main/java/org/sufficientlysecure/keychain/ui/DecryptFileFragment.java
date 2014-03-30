@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,14 +34,25 @@ import android.widget.EditText;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
+import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.ui.dialog.DeleteFileDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 
 public class DecryptFileFragment extends Fragment {
+    public static final String ARG_FILENAME = "filename";
+
+    DecryptSignatureResultDisplay mSignatureResultDisplay;
 
     private EditText mFilename;
     private CheckBox mDeleteAfter;
@@ -55,34 +69,22 @@ public class DecryptFileFragment extends Fragment {
 
 
     /**
-     * Creates new instance of this fragment
-     */
-    public static DecryptFileFragment newInstance() {
-        DecryptFileFragment frag = new DecryptFileFragment();
-
-        Bundle args = new Bundle();
-        frag.setArguments(args);
-
-        return frag;
-    }
-
-    /**
      * Inflate the layout for this fragment
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_file_fragment, container, false);
 
-        mFilename = (EditText) view.findViewById(R.id.filename);
-        mBrowse = (BootstrapButton) view.findViewById(R.id.btn_browse);
+        mFilename = (EditText) view.findViewById(R.id.decrypt_file_filename);
+        mBrowse = (BootstrapButton) view.findViewById(R.id.decrypt_file_browse);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                FileHelper.openFile(getActivity(), mFilename.getText().toString(), "*/*",
+                FileHelper.openFile(DecryptFileFragment.this, mFilename.getText().toString(), "*/*",
                         RESULT_CODE_FILE);
             }
         });
-        mDeleteAfter = (CheckBox) view.findViewById(R.id.deleteAfterDecryption);
-        mDecryptButton = (BootstrapButton) view.findViewById(R.id.action_decrypt);
+        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
+        mDecryptButton = (BootstrapButton) view.findViewById(R.id.decrypt_file_action_decrypt);
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +92,22 @@ public class DecryptFileFragment extends Fragment {
             }
         });
 
+        String filename = getArguments().getString(ARG_FILENAME);
+        if (filename != null) {
+            mFilename.setText(filename);
+        }
+
         return view;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mSignatureResultDisplay = (DecryptSignatureResultDisplay) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement DecryptSignatureResultDisplay");
+        }
     }
 
     private void guessOutputFilename() {
@@ -142,7 +159,7 @@ public class DecryptFileFragment extends Fragment {
                 if (message.what == FileDialogFragment.MESSAGE_OKAY) {
                     Bundle data = message.getData();
                     mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-//                    decryptStart();
+                    decryptStart(null);
                 }
             }
         };
@@ -157,4 +174,131 @@ public class DecryptFileFragment extends Fragment {
         mFileDialog.show(getActivity().getSupportFragmentManager(), "fileDialog");
     }
 
+    private void decryptStart(String passphrase) {
+        Log.d(Constants.TAG, "decryptStart");
+
+        // Send all information needed to service to decrypt in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
+
+        // data
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
+
+        Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
+                + mOutputFilename);
+
+        data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
+        data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
+
+        data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
+
+        // TODO
+        data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, false);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after encrypting is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
+                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle returnData = message.getData();
+
+
+                    PgpDecryptVerifyResult decryptVerifyResult =
+                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
+
+                    if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                        showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
+                    } else {
+
+                        if (mDeleteAfter.isChecked()) {
+                            // Create and show dialog to delete original file
+                            DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
+                                    .newInstance(mInputFilename);
+                            deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
+                        }
+
+
+                        OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
+
+                        // display signature result in activity
+                        mSignatureResultDisplay.onSignatureResult(signatureResult);
+                    }
+
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
+    private void showPassphraseDialog(long keyId) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    String passphrase =
+                            message.getData().getString(PassphraseDialogFragment.MESSAGE_DATA_PASSPHRASE);
+                    decryptStart(passphrase);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(getActivity(),
+                    messenger, keyId);
+
+            passphraseDialog.show(getActivity().getSupportFragmentManager(), "passphraseDialog");
+        } catch (PgpGeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case RESULT_CODE_FILE: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    try {
+                        String path = FileHelper.getPath(getActivity(), data.getData());
+                        Log.d(Constants.TAG, "path=" + path);
+
+                        mFilename.setText(path);
+                    } catch (NullPointerException e) {
+                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
+                    }
+                }
+                return;
+            }
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+            }
+        }
+    }
 }

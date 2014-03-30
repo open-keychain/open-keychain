@@ -428,29 +428,30 @@ public class KeychainIntentService extends IntentService
 
                         break;
 
-                    case TARGET_STREAM: /* decrypting stream from content uri */
-                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-
-                        // InputStream
-                        InputStream in = getContentResolver().openInputStream(providerUri);
-                        inLength = PgpHelper.getLengthOfStream(in);
-                        inputData = new InputData(in, inLength);
-
-                        // OutputStream
-                        try {
-                            while (true) {
-                                streamFilename = PgpHelper.generateRandomFilename(32);
-                                if (streamFilename == null) {
-                                    throw new PgpGeneralException("couldn't generate random file name");
-                                }
-                                openFileInput(streamFilename).close();
-                            }
-                        } catch (FileNotFoundException e) {
-                            // found a name that isn't used yet
-                        }
-                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-
-                        break;
+                    // TODO: not used, maybe contains code useful for new decrypt method for files?
+//                    case TARGET_STREAM: /* decrypting stream from content uri */
+//                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
+//
+//                        // InputStream
+//                        InputStream in = getContentResolver().openInputStream(providerUri);
+//                        inLength = PgpHelper.getLengthOfStream(in);
+//                        inputData = new InputData(in, inLength);
+//
+//                        // OutputStream
+//                        try {
+//                            while (true) {
+//                                streamFilename = PgpHelper.generateRandomFilename(32);
+//                                if (streamFilename == null) {
+//                                    throw new PgpGeneralException("couldn't generate random file name");
+//                                }
+//                                openFileInput(streamFilename).close();
+//                            }
+//                        } catch (FileNotFoundException e) {
+//                            // found a name that isn't used yet
+//                        }
+//                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+//
+//                        break;
 
                     default:
                         throw new PgpGeneralException("No target choosen!");
@@ -486,11 +487,11 @@ public class KeychainIntentService extends IntentService
                         // nothing, file was written, just send okay and verification bundle
 
                         break;
-                    case TARGET_STREAM:
-                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-                        resultData.putString(RESULT_URI, uri);
-
-                        break;
+//                    case TARGET_STREAM:
+//                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
+//                        resultData.putString(RESULT_URI, uri);
+//
+//                        break;
                 }
 
                 OtherHelper.logDebugBundle(resultData, "resultData");

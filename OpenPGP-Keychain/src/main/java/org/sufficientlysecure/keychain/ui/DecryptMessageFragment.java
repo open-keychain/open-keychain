@@ -49,13 +49,14 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.util.regex.Matcher;
 
 public class DecryptMessageFragment extends Fragment {
+    public static final String ARG_CIPHERTEXT = "ciphertext";
+
     DecryptSignatureResultDisplay mSignatureResultDisplay;
 
     private EditText mMessage;
     private BootstrapButton mDecryptButton;
     private BootstrapButton mDecryptFromCLipboardButton;
 
-    public static final String EXTRA_CIPHERTEXT = "ciphertext";
 
     /**
      * Inflate the layout for this fragment
@@ -67,11 +68,6 @@ public class DecryptMessageFragment extends Fragment {
         mMessage = (EditText) view.findViewById(R.id.message);
         mDecryptButton = (BootstrapButton) view.findViewById(R.id.action_decrypt);
         mDecryptFromCLipboardButton = (BootstrapButton) view.findViewById(R.id.action_decrypt_from_clipboard);
-
-        String ciphertext = getArguments().getString(EXTRA_CIPHERTEXT);
-        if (ciphertext != null) {
-            mMessage.setText(ciphertext);
-        }
 
         mDecryptButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -105,9 +101,11 @@ public class DecryptMessageFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(Constants.TAG, "onActivityCreated tag: " + getTag());
-
-
+        String ciphertext = getArguments().getString(ARG_CIPHERTEXT);
+        if (ciphertext != null) {
+            mMessage.setText(ciphertext);
+            decryptStart(null);
+        }
     }
 
     private void decryptFromClipboard() {

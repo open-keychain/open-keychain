@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,44 +20,31 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
-import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.NoAsymmetricEncryptionException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
-import org.sufficientlysecure.keychain.ui.adapter.PageTabStripAdapter;
-import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
-import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.io.*;
 import java.util.regex.Matcher;
 
-//@SuppressLint("NewApi")
 public class DecryptActivity extends DrawerActivity implements DecryptSignatureResultDisplay {
-
 
     /* Intents */
     // without permission
@@ -66,56 +53,24 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
     /* EXTRA keys for input */
     public static final String EXTRA_TEXT = "text";
 
-    public static final String EXTRA_SELECTED_TAB = "selected_tab";
-
     private static final int RESULT_CODE_LOOKUP_KEY = 0x00007006;
-    private static final int RESULT_CODE_FILE = 0x00007003;
 
     private long mSignatureKeyId = 0;
 
-//    private boolean mReturnResult = false;
-
-    // TODO: replace signed only checks with something more intelligent
-    // PgpDecryptVerify should handle all automatically!!!
-    private boolean mSignedOnly = false;
-    private boolean mAssumeSymmetricEncryption = false;
-
-    //    private EditText mMessage = null;
     private RelativeLayout mSignatureLayout = null;
     private ImageView mSignatureStatusImage = null;
     private TextView mUserId = null;
     private TextView mUserIdRest = null;
 
-//    private ViewFlipper mSource = null;
-//    private TextView mSourceLabel = null;
-//    private ImageView mSourcePrevious = null;
-//    private ImageView mSourceNext = null;
-
-    private int mDecryptTarget;
-
-    private EditText mFilename = null;
-    private CheckBox mDeleteAfter = null;
-    private BootstrapButton mBrowse = null;
     private BootstrapButton mLookupKey = null;
-
-    private String mInputFilename = null;
-    private String mOutputFilename = null;
-
-    private Uri mContentUri = null;
-    private boolean mReturnBinary = false;
-
-    private long mSecretKeyId = Id.key.none;
-
-    private FileDialogFragment mFileDialog;
-
-//    private boolean mDecryptImmediately = false;
-
-    private BootstrapButton mDecryptButton;
 
     ViewPager mViewPager;
     PagerTabStrip mPagerTabStrip;
-    PageTabStripAdapter mTabsAdapter;
+    PagerTabStripAdapter mTabsAdapter;
 
+    Bundle mMessageFragmentBundle = new Bundle();
+    Bundle mFileFragmentBundle = new Bundle();
+    int mSwitchToTab = PAGER_TAB_MESSAGE;
 
     private static final int PAGER_TAB_MESSAGE = 0;
     private static final int PAGER_TAB_FILE = 1;
@@ -126,75 +81,20 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
         mSignatureStatusImage = (ImageView) findViewById(R.id.ic_signature_status);
         mUserId = (TextView) findViewById(R.id.mainUserId);
         mUserIdRest = (TextView) findViewById(R.id.mainUserIdRest);
-
-        // measure the height of the source_file view and set the message view's min height to that,
-        // so it fills mSource fully... bit of a hack.
-//        View tmp = findViewById(R.id.sourceFile);
-//        tmp.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-//        int height = tmp.getMeasuredHeight();
-//        mMessage.setMinimumHeight(height);
-
-//        mFilename = (EditText) findViewById(R.id.filename);
-//        mBrowse = (BootstrapButton) findViewById(R.id.btn_browse);
-//        mBrowse.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                FileHelper.openFile(DecryptActivity.this, mFilename.getText().toString(), "*/*",
-//                        RESULT_CODE_FILE);
-//            }
-//        });
-//
-//        mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
-//        mLookupKey.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                lookupUnknownKey(mSignatureKeyId);
-//            }
-//        });
-//
-//        mDeleteAfter = (CheckBox) findViewById(R.id.deleteAfterDecryption);
-
-        // default: message source
-//        mSource.setInAnimation(null);
-//        mSource.setOutAnimation(null);
-//        while (mSource.getCurrentView().getId() != R.id.sourceMessage) {
-//            mSource.showNext();
-//        }
-
-//        mDecryptButton = (BootstrapButton) findViewById(R.id.action_decrypt);
-//        mDecryptButton.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                decryptClicked();
-//            }
-//        });
-
+        mLookupKey = (BootstrapButton) findViewById(R.id.lookup_key);
+        mLookupKey.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lookupUnknownKey(mSignatureKeyId);
+            }
+        });
 
         // Pager
         mViewPager = (ViewPager) findViewById(R.id.decrypt_pager);
         mPagerTabStrip = (PagerTabStrip) findViewById(R.id.decrypt_pager_tab_strip);
 
-        mTabsAdapter = new PageTabStripAdapter(this);
+        mTabsAdapter = new PagerTabStripAdapter(this);
         mViewPager.setAdapter(mTabsAdapter);
-
-        Bundle messageBundle = new Bundle();
-        mTabsAdapter.addTab(DecryptMessageFragment.class, messageBundle, getString(R.string.label_message));
-
-        Bundle fileBundle = new Bundle();
-        mTabsAdapter.addTab(DecryptFileFragment.class, fileBundle, getString(R.string.label_file));
-    }
-
-
-    /**
-     * find fragment
-     *
-     * @param pos
-     * @return
-     */
-    public Fragment getFragmentByPosition(int pos) {
-        // based on FragmentPagerAdapter.makeFragmentName()
-        String tag = "android:switcher:" + mViewPager.getId() + ":" + pos;
-        Log.d(Constants.TAG, "findFragmentByTag: "+tag);
-        return getSupportFragmentManager().findFragmentByTag(tag);
     }
 
     @Override
@@ -210,23 +110,17 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
 
         setupDrawerNavigation(savedInstanceState);
 
-        // Handle intent actions
+        // Handle intent actions, maybe changes the bundles
         handleActions(getIntent());
+
+        mTabsAdapter.addTab(DecryptMessageFragment.class, mMessageFragmentBundle, getString(R.string.label_message));
+        mTabsAdapter.addTab(DecryptFileFragment.class, mFileFragmentBundle, getString(R.string.label_file));
+        mViewPager.setCurrentItem(mSwitchToTab);
 
         mSignatureLayout.setVisibility(View.GONE);
         mSignatureLayout.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                if (mSignatureKeyId == 0) {
-                    return;
-                }
-                PGPPublicKeyRing key = ProviderHelper.getPGPPublicKeyRingByKeyId(
-                        DecryptActivity.this, mSignatureKeyId);
-                if (key != null) {
-                    Intent intent = new Intent(DecryptActivity.this, ImportKeysActivity.class);
-                    intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
-                    intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, mSignatureKeyId);
-                    startActivity(intent);
-                }
+                lookupUnknownKey(mSignatureKeyId);
             }
         });
     }
@@ -288,9 +182,8 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
                 // replace non breakable spaces
                 textData = textData.replaceAll("\\xa0", " ");
 
-//                mViewPager.setCurrentItem(PAGER_TAB_MESSAGE, false);
-//                mMessageFragment.setText(textData);
-//                mMessage.setText(textData);
+                mMessageFragmentBundle.putString(DecryptMessageFragment.ARG_CIPHERTEXT, textData);
+                mSwitchToTab = PAGER_TAB_MESSAGE;
             } else {
                 matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(textData);
                 if (matcher.matches()) {
@@ -298,10 +191,9 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
                     textData = matcher.group(1);
                     // replace non breakable spaces
                     textData = textData.replaceAll("\\xa0", " ");
-//                    mMessage.setText(textData);
-//                    mViewPager.setCurrentItem(PAGER_TAB_MESSAGE, false);
-//                    mMessageFragment = (DecryptMessageFragment) getFragmentByPosition(mViewPager.getCurrentItem());
-//                    mMessageFragment.setText(textData);
+
+                    mMessageFragmentBundle.putString(DecryptMessageFragment.ARG_CIPHERTEXT, textData);
+                    mSwitchToTab = PAGER_TAB_MESSAGE;
                 } else {
                     Log.d(Constants.TAG, "Nothing matched!");
                 }
@@ -311,14 +203,8 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
             String path = FileHelper.getPath(this, uri);
 
             if (path != null) {
-                mInputFilename = path;
-                mFilename.setText(mInputFilename);
-//                guessOutputFilename();
-//                mSource.setInAnimation(null);
-//                mSource.setOutAnimation(null);
-//                while (mSource.getCurrentView().getId() != R.id.sourceFile) {
-//                    mSource.showNext();
-//                }
+                mFileFragmentBundle.putString(DecryptFileFragment.ARG_FILENAME, path);
+                mSwitchToTab = PAGER_TAB_FILE;
             } else {
                 Log.e(Constants.TAG,
                         "Direct binary data without actual file in filesystem is not supported. Please use the Remote Service API!");
@@ -333,198 +219,6 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
         }
     }
 
-//    private void guessOutputFilename() {
-//        mInputFilename = mFilename.getText().toString();
-//        File file = new File(mInputFilename);
-//        String filename = file.getName();
-//        if (filename.endsWith(".asc") || filename.endsWith(".gpg") || filename.endsWith(".pgp")) {
-//            filename = filename.substring(0, filename.length() - 4);
-//        }
-//        mOutputFilename = Constants.Path.APP_DIR + "/" + filename;
-//    }
-
-    private void decryptClicked() {
-        if (mViewPager.getCurrentItem() == PAGER_TAB_FILE) {
-            mDecryptTarget = Id.target.file;
-        } else {
-            mDecryptTarget = Id.target.message;
-        }
-        initiateDecryption();
-    }
-
-    private void initiateDecryption() {
-        if (mDecryptTarget == Id.target.file) {
-            String currentFilename = mFilename.getText().toString();
-            if (mInputFilename == null || !mInputFilename.equals(currentFilename)) {
-//                guessOutputFilename();
-            }
-
-            if (mInputFilename.equals("")) {
-                AppMsg.makeText(this, R.string.no_file_selected, AppMsg.STYLE_ALERT).show();
-                return;
-            }
-
-            if (mInputFilename.startsWith("file")) {
-                File file = new File(mInputFilename);
-                if (!file.exists() || !file.isFile()) {
-                    AppMsg.makeText(
-                            this,
-                            getString(R.string.error_message,
-                                    getString(R.string.error_file_not_found)), AppMsg.STYLE_ALERT)
-                            .show();
-                    return;
-                }
-            }
-        }
-
-        if (mDecryptTarget == Id.target.message) {
-//            String messageData = mMessage.getText().toString();
-//            Matcher matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(messageData);
-//            if (matcher.matches()) {
-//                mSignedOnly = true;
-//                decryptStart();
-//                return;
-//            }
-        }
-
-        // else treat it as an decrypted message/file
-        mSignedOnly = false;
-
-        getDecryptionKeyFromInputStream();
-
-        // if we need a symmetric passphrase or a passphrase to use a secret key ask for it
-        if (mAssumeSymmetricEncryption || PassphraseCacheService.getCachedPassphrase(this, mSecretKeyId) == null) {
-            showPassphraseDialog();
-        } else {
-            if (mDecryptTarget == Id.target.file) {
-                askForOutputFilename();
-            } else { // mDecryptTarget == Id.target.message
-//                decryptStart();
-            }
-        }
-    }
-
-    /**
-     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
-     * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
-     * for a symmetric passphrase
-     */
-    private void showPassphraseDialog() {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    if (mDecryptTarget == Id.target.file) {
-                        askForOutputFilename();
-                    } else {
-//                        decryptStart();
-                    }
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
-                    messenger, mSecretKeyId);
-
-            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
-    }
-
-    /**
-     * TODO: Rework function, remove global variables
-     */
-    private void getDecryptionKeyFromInputStream() {
-        mAssumeSymmetricEncryption = false;
-        InputStream inStream = null;
-        if (mContentUri != null) {
-            try {
-                inStream = getContentResolver().openInputStream(mContentUri);
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "File not found!", e);
-                AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
-                        AppMsg.STYLE_ALERT).show();
-            }
-        } else if (mDecryptTarget == Id.target.file) {
-            // check if storage is ready
-            if (!FileHelper.isStorageMounted(mInputFilename)) {
-                AppMsg.makeText(this, getString(R.string.error_external_storage_not_ready),
-                        AppMsg.STYLE_ALERT).show();
-                return;
-            }
-
-            try {
-                inStream = new BufferedInputStream(new FileInputStream(mInputFilename));
-            } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "File not found!", e);
-                AppMsg.makeText(this, getString(R.string.error_file_not_found, e.getMessage()),
-                        AppMsg.STYLE_ALERT).show();
-            }
-        } else {
-
-//            inStream = new ByteArrayInputStream(mMessage.getText().toString().getBytes());
-        }
-
-        // get decryption key for this inStream
-        try {
-            try {
-                if (inStream.markSupported()) {
-                    inStream.mark(200); // should probably set this to the max size of two pgpF
-                    // objects, if it even needs to be anything other than 0.
-                }
-                mSecretKeyId = PgpHelper.getDecryptionKeyId(this, inStream);
-                if (mSecretKeyId == Id.key.none) {
-                    throw new PgpGeneralException(getString(R.string.error_no_secret_key_found));
-                }
-            } catch (NoAsymmetricEncryptionException e) {
-                if (inStream.markSupported()) {
-                    inStream.reset();
-                }
-                mSecretKeyId = Id.key.symmetric;
-                if (!PgpDecryptVerify.hasSymmetricEncryption(this, inStream)) {
-                    throw new PgpGeneralException(
-                            getString(R.string.error_no_known_encryption_found));
-                }
-                mAssumeSymmetricEncryption = true;
-            }
-        } catch (Exception e) {
-            Log.e(Constants.TAG, "error while reading decryption key from input stream", e);
-            AppMsg.makeText(this, getString(R.string.error_message, e.getMessage()),
-                    AppMsg.STYLE_ALERT).show();
-        }
-    }
-
-    private void askForOutputFilename() {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == FileDialogFragment.MESSAGE_OKAY) {
-                    Bundle data = message.getData();
-                    mOutputFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
-//                    decryptStart();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        mFileDialog = FileDialogFragment.newInstance(messenger,
-                getString(R.string.title_decrypt_to_file),
-                getString(R.string.specify_file_to_decrypt_to), mOutputFilename, null);
-
-        mFileDialog.show(getSupportFragmentManager(), "fileDialog");
-    }
-
     private void lookupUnknownKey(long unknownKeyId) {
         Intent intent = new Intent(this, ImportKeysActivity.class);
         intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER);
@@ -532,173 +226,9 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
         startActivityForResult(intent, RESULT_CODE_LOOKUP_KEY);
     }
 
-//    private void decryptStart() {
-//        Log.d(Constants.TAG, "decryptStart");
-//
-//        // Send all information needed to service to decrypt in other thread
-//        Intent intent = new Intent(this, KeychainIntentService.class);
-//
-//        // fill values for this action
-//        Bundle data = new Bundle();
-//
-//        intent.setAction(KeychainIntentService.ACTION_DECRYPT_VERIFY);
-//
-//        // choose action based on input: decrypt stream, file or bytes
-//        if (mContentUri != null) {
-//            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_STREAM);
-//
-//            data.putParcelable(KeychainIntentService.ENCRYPT_PROVIDER_URI, mContentUri);
-//        } else if (mDecryptTarget == Id.target.file) {
-//            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
-//
-//            Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
-//                    + mOutputFilename);
-//
-//            data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
-//            data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
-//        } else {
-//            data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-//
-////            String message = mMessage.getText().toString();
-////            data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
-//        }
-//
-//        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyId);
-//
-//        data.putBoolean(KeychainIntentService.DECRYPT_RETURN_BYTES, mReturnBinary);
-//        data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, mAssumeSymmetricEncryption);
-//
-//        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
-//
-//        // Message is received after encrypting is done in KeychainIntentService
-//        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(this,
-//                getString(R.string.progress_decrypting), ProgressDialog.STYLE_HORIZONTAL) {
-//            public void handleMessage(Message message) {
-//                // handle messages by standard KeychainIntentServiceHandler first
-//                super.handleMessage(message);
-//
-//                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-//                    // get returned data bundle
-//                    Bundle returnData = message.getData();
-//
-//                    mSignatureKeyId = 0;
-//                    mSignatureLayout.setVisibility(View.GONE);
-//
-//                    AppMsg.makeText(DecryptActivity.this, R.string.decryption_successful,
-//                            AppMsg.STYLE_INFO).show();
-////                    if (mReturnResult) {
-////                        Intent intent = new Intent();
-////                        intent.putExtras(returnData);
-////                        setResult(RESULT_OK, intent);
-////                        finish();
-////                        return;
-////                    }
-//
-//                    switch (mDecryptTarget) {
-//                        case Id.target.message:
-//                            String decryptedMessage = returnData
-//                                    .getString(KeychainIntentService.RESULT_DECRYPTED_STRING);
-////                            mMessage.setText(decryptedMessage);
-////                            mMessage.setHorizontallyScrolling(false);
-//
-//                            break;
-//
-//                        case Id.target.file:
-//                            if (mDeleteAfter.isChecked()) {
-//                                // Create and show dialog to delete original file
-//                                DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
-//                                        .newInstance(mInputFilename);
-//                                deleteFileDialog.show(getSupportFragmentManager(), "deleteDialog");
-//                            }
-//                            break;
-//
-//                        default:
-//                            // shouldn't happen
-//                            break;
-//
-//                    }
-//
-//                    PgpDecryptVerifyResult decryptVerifyResult =
-//                            returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
-//
-//                    OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
-//
-//                    if (signatureResult != null) {
-//
-//                        String userId = signatureResult.getUserId();
-//                        mSignatureKeyId = signatureResult.getKeyId();
-//                        mUserIdRest.setText("id: "
-//                                + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
-//                        if (userId == null) {
-//                            userId = getResources().getString(R.string.user_id_no_name);
-//                        }
-//                        String chunks[] = userId.split(" <", 2);
-//                        userId = chunks[0];
-//                        if (chunks.length > 1) {
-//                            mUserIdRest.setText("<" + chunks[1]);
-//                        }
-//                        mUserId.setText(userId);
-//
-//                        switch (signatureResult.getStatus()) {
-//                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {
-//                                mSignatureStatusImage.setImageResource(R.drawable.overlay_ok);
-//                                mLookupKey.setVisibility(View.GONE);
-//                                break;
-//                            }
-//
-//                            // TODO!
-////                            case OpenPgpSignatureResult.SIGNATURE_SUCCESS_CERTIFIED: {
-////                                break;
-////                            }
-//
-//                            case OpenPgpSignatureResult.SIGNATURE_UNKNOWN_PUB_KEY: {
-//                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-//                                mLookupKey.setVisibility(View.VISIBLE);
-//                                AppMsg.makeText(DecryptActivity.this,
-//                                        R.string.unknown_signature,
-//                                        AppMsg.STYLE_ALERT).show();
-//                                break;
-//                            }
-//
-//                            default: {
-//                                mSignatureStatusImage.setImageResource(R.drawable.overlay_error);
-//                                mLookupKey.setVisibility(View.GONE);
-//                                break;
-//                            }
-//                        }
-//                        mSignatureLayout.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            }
-//        };
-//
-//        // Create a new Messenger for the communication back
-//        Messenger messenger = new Messenger(saveHandler);
-//        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
-//
-//        // show progress dialog
-//        saveHandler.showProgressDialog(this);
-//
-//        // start service with intent
-//        startService(intent);
-//    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case RESULT_CODE_FILE: {
-                if (resultCode == RESULT_OK && data != null) {
-                    try {
-                        String path = FileHelper.getPath(this, data.getData());
-                        Log.d(Constants.TAG, "path=" + path);
-
-                        mFilename.setText(path);
-                    } catch (NullPointerException e) {
-                        Log.e(Constants.TAG, "Nullpointer while retrieving path!");
-                    }
-                }
-                return;
-            }
 
             // this request is returned after LookupUnknownKeyDialogFragment started
             // ImportKeysActivity and user looked uo key
@@ -721,24 +251,25 @@ public class DecryptActivity extends DrawerActivity implements DecryptSignatureR
 
     @Override
     public void onSignatureResult(OpenPgpSignatureResult signatureResult) {
-
         mSignatureKeyId = 0;
         mSignatureLayout.setVisibility(View.GONE);
         if (signatureResult != null) {
 
-            String userId = signatureResult.getUserId();
             mSignatureKeyId = signatureResult.getKeyId();
-            mUserIdRest.setText("id: "
-                    + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
-            if (userId == null) {
-                userId = getResources().getString(R.string.user_id_no_name);
+
+            String userId = signatureResult.getUserId();
+            String[] userIdSplit = PgpKeyHelper.splitUserId(userId);
+            if (userIdSplit[0] != null) {
+                mUserId.setText(userId);
+            } else {
+                mUserId.setText(R.string.user_id_no_name);
             }
-            String chunks[] = userId.split(" <", 2);
-            userId = chunks[0];
-            if (chunks.length > 1) {
-                mUserIdRest.setText("<" + chunks[1]);
+            if (userIdSplit[1] != null) {
+                mUserIdRest.setText(userIdSplit[1]);
+            } else {
+                mUserIdRest.setText(getString(R.string.label_key_id) + ": "
+                        + PgpKeyHelper.convertKeyIdToHex(mSignatureKeyId));
             }
-            mUserId.setText(userId);
 
             switch (signatureResult.getStatus()) {
                 case OpenPgpSignatureResult.SIGNATURE_SUCCESS_UNCERTIFIED: {

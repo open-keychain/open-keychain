@@ -29,7 +29,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import java.util.ArrayList;
 
-public class PageTabStripAdapter extends FragmentPagerAdapter {
+public class PagerTabStripAdapter extends FragmentPagerAdapter {
     private final Context mContext;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
@@ -45,7 +45,7 @@ public class PageTabStripAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public PageTabStripAdapter(ActionBarActivity activity) {
+    public PagerTabStripAdapter(ActionBarActivity activity) {
         super(activity.getSupportFragmentManager());
         mContext = activity;
     }
