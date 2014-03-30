@@ -579,7 +579,7 @@ public class EncryptActivity extends DrawerActivity {
 
             String message = mMessage.getText().toString();
             if (signOnly) {
-                fixBadCharactersForGmail(message);
+                message = fixBadCharactersForGmail(message);
             }
             data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
         }
