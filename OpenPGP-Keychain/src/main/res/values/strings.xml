@@ -327,6 +327,7 @@
         <item quantity="one">part of the loaded file is a valid OpenPGP object but not a OpenPGP key</item>
         <item quantity="other">parts of the loaded file are valid OpenPGP objects but not OpenPGP keys</item>
     </plurals>
+    <string name="error_change_something_first">You must make changes to the keyring before you can save it</string>
 
     <!-- progress dialogs, usually ending in '…' -->
     <string name="progress_done">Done.</string>
