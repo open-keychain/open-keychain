@@ -13,50 +13,48 @@
         android:paddingRight="10dp"
         android:orientation="vertical">
 
-        <include layout="@layout/decrypt_signature_include" />
-
         <EditText
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:gravity="top"
             android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
-            android:scrollHorizontally="true"
+            android:hint="@string/encrypt_content_edit_text_hint"
             android:layout_weight="1" />
 
         <TextView
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/section_decrypt_verify"
-            android:id="@+id/decrypt_message_section" />
+            android:layout_marginBottom="4dp"
+            android:text="@string/section_encrypt_and_or_sign" />
 
         <LinearLayout
-            android:id="@+id/decrypt_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="4dp">
 
             <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/action_decrypt"
+                android:id="@+id/action_encrypt_share"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:padding="4dp"
-                android:text="@string/btn_decrypt_verify"
-                bootstrapbutton:bb_icon_left="fa-unlock"
+                android:layout_weight="1"
+                android:text="@string/btn_share"
+                bootstrapbutton:bb_icon_left="fa-share-square"
                 bootstrapbutton:bb_type="info" />
 
             <com.beardedhen.androidbootstrap.BootstrapButton
-                android:id="@+id/action_decrypt_from_clipboard"
+                android:id="@+id/action_encrypt_clipboard"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_weight="1"
                 android:padding="4dp"
-                android:text="@string/btn_decrypt_verify_clipboard"
-                bootstrapbutton:bb_icon_left="fa-unlock"
+                android:layout_weight="1"
+                android:text="@string/btn_clipboard"
+                bootstrapbutton:bb_icon_left="fa-clipboard"
                 bootstrapbutton:bb_type="info" />
+
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

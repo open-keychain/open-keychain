@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="4dp"
@@ -8,16 +9,13 @@
     android:paddingRight="10dp"
     android:orientation="vertical">
 
-    <include layout="@layout/decrypt_signature_include" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/linearLayout">
+        android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/decrypt_file_filename"
+            android:id="@+id/filename"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -29,7 +27,7 @@
             android:scrollbars="vertical" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/decrypt_file_browse"
+            android:id="@+id/btn_browse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -39,11 +37,17 @@
             bootstrapbutton:bb_type="default" />
     </LinearLayout>
 
-    <CheckBox
-        android:id="@+id/decrypt_file_delete_after_decryption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_delete_after_decryption" />
+    <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
+        custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
+        custom:foldedIcon="fa-chevron-right"
+        custom:unFoldedIcon="fa-chevron-down">
+
+        <include layout="@layout/encrypt_content_adv_settings" />
+
+    </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -54,22 +58,20 @@
             style="@style/SectionHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/section_decrypt_verify"
+            android:text="@string/section_encrypt_and_or_sign"
             android:layout_above="@+id/decrypt_file_action_decrypt"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/decrypt_file_action_decrypt"
+            android:id="@+id/action_encrypt_file"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:padding="4dp"
-            android:text="@string/btn_decrypt_verify"
-            bootstrapbutton:bb_icon_left="fa-unlock"
-            bootstrapbutton:bb_type="info"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:visibility="gone"
+            android:text="@string/btn_encrypt_file"
+            bootstrapbutton:bb_icon_left="fa-lock"
+            bootstrapbutton:bb_type="info" />
 
     </RelativeLayout>
 </LinearLayout>
