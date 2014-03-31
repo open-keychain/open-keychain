@@ -26,6 +26,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
+import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.openpgp.*;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -145,7 +146,7 @@ public class KeychainIntentService extends IntentService
      */
     // keys
     public static final String RESULT_NEW_KEY = "new_key";
-    public static final String RESULT_NEW_KEY2 = "new_key2";
+    public static final String RESULT_KEY_USAGES = "new_key_usages";
 
     // encrypt
     public static final String RESULT_SIGNATURE_BYTES = "signature_data";
@@ -563,6 +564,8 @@ public class KeychainIntentService extends IntentService
             try {
                 /* Input */
                 String passphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
+                ArrayList<PGPSecretKey> newKeys = new ArrayList<PGPSecretKey>();
+                ArrayList<Integer> keyUsageList = new ArrayList<Integer>();
 
                 /* Operation */
                 int keysTotal = 2;
@@ -576,11 +579,15 @@ public class KeychainIntentService extends IntentService
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, true);
+                newKeys.add(masterKey);
+                keyUsageList.add(KeyFlags.CERTIFY_OTHER);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
                 PGPSecretKey subKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, false);
+                newKeys.add(subKey);
+                keyUsageList.add(KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE);
                 keysCreated++;
                 setProgress(keysCreated, keysTotal);
 
@@ -588,11 +595,11 @@ public class KeychainIntentService extends IntentService
                 //       for sign
 
                 /* Output */
+
                 Bundle resultData = new Bundle();
                 resultData.putByteArray(RESULT_NEW_KEY,
-                        PgpConversionHelper.PGPSecretKeyToBytes(masterKey));
-                resultData.putByteArray(RESULT_NEW_KEY2,
-                        PgpConversionHelper.PGPSecretKeyToBytes(subKey));
+                        PgpConversionHelper.PGPSecretKeyArrayListToBytes(newKeys));
+                resultData.putIntegerArrayList(RESULT_KEY_USAGES, keyUsageList);
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
 

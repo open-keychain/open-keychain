@@ -252,11 +252,11 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         mIsNewKey = isNewKey;
         if (isNewKey) {
             mUsage = usage;
-            mChkCertify.setChecked((usage &= KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER);
-            mChkSign.setChecked((usage &= KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA);
-            mChkEncrypt.setChecked(((usage &= KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS) ||
-                    ((usage &= KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE));
-            mChkAuthenticate.setChecked((usage &= KeyFlags.AUTHENTICATION) == KeyFlags.AUTHENTICATION);
+            mChkCertify.setChecked((usage & KeyFlags.CERTIFY_OTHER) == KeyFlags.CERTIFY_OTHER);
+            mChkSign.setChecked((usage & KeyFlags.SIGN_DATA) == KeyFlags.SIGN_DATA);
+            mChkEncrypt.setChecked(((usage & KeyFlags.ENCRYPT_COMMS) == KeyFlags.ENCRYPT_COMMS) ||
+                    ((usage & KeyFlags.ENCRYPT_STORAGE) == KeyFlags.ENCRYPT_STORAGE));
+            mChkAuthenticate.setChecked((usage & KeyFlags.AUTHENTICATION) == KeyFlags.AUTHENTICATION);
         } else {
             mUsage = PgpKeyHelper.getKeyUsage(key);
             mOriginalUsage = mUsage;
