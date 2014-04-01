@@ -300,8 +300,7 @@ public class PgpKeyHelper {
         return userId;
     }
 
-    public static int getKeyUsage(PGPSecretKey key)
-    {
+    public static int getKeyUsage(PGPSecretKey key) {
         return getKeyUsage(key.getPublicKey());
     }
 
@@ -310,13 +309,19 @@ public class PgpKeyHelper {
         int usage = 0;
         if (key.getVersion() >= 4) {
             for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) continue;
+                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                    continue;
+                }
 
                 PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null) usage |= hashed.getKeyFlags();
+                if (hashed != null) {
+                    usage |= hashed.getKeyFlags();
+                }
 
                 PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-                if (unhashed != null) usage |= unhashed.getKeyFlags();
+                if (unhashed != null) {
+                    usage |= unhashed.getKeyFlags();
+                }
             }
         }
         return usage;

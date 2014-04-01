@@ -391,8 +391,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     if (!isSet) {
                         isSet = true;
                         String[] parts = PgpKeyHelper.splitUserId(userId);
-                        if (parts[0] != null)
+                        if (parts[0] != null) {
                             setTitle(parts[0]);
+                        }
                     }
                     mUserIds.add(userId);
                 }
@@ -547,10 +548,11 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
 
                 String passphrase;
-                if (mIsPassPhraseSet)
+                if (mIsPassPhraseSet) {
                     passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
-                else
+                } else {
                     passphrase = "";
+                }
                 if (passphrase == null) {
                     showPassphraseDialog(masterKeyId);
                 } else {

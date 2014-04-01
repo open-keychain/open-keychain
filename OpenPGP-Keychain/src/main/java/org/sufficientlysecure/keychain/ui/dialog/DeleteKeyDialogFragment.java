@@ -148,8 +148,9 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 String selectionIDs = "";
                 for (int i = 0; i < keyRingRowIds.length; i++) {
                     selectionIDs += "'" + String.valueOf(keyRingRowIds[i]) + "'";
-                    if (i + 1 < keyRingRowIds.length)
+                    if (i + 1 < keyRingRowIds.length) {
                         selectionIDs += ",";
+                    }
                 }
                 selection += selectionIDs + ")";
 

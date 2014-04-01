@@ -69,8 +69,7 @@ public class SaveKeyringParcel implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel destination, int flags)
-    {
+    public void writeToParcel(Parcel destination, int flags) {
         destination.writeSerializable(userIDs); //might not be the best method to store.
         destination.writeSerializable(originalIDs);
         destination.writeSerializable(deletedIDs);
@@ -78,8 +77,9 @@ public class SaveKeyringParcel implements Parcelable {
         destination.writeByte((byte) (primaryIDChanged ? 1 : 0));
         destination.writeBooleanArray(moddedKeys);
         byte[] tmp = null;
-        if (deletedKeys.size() != 0)
+        if (deletedKeys.size() != 0) {
             tmp = PgpConversionHelper.PGPSecretKeyArrayListToBytes(deletedKeys);
+        }
         destination.writeByteArray(tmp);
         destination.writeSerializable(keysExpiryDates);
         destination.writeList(keysUsages);
@@ -101,8 +101,7 @@ public class SaveKeyringParcel implements Parcelable {
     };
 
     @Override
-    public int describeContents()
-    {
+    public int describeContents() {
         return 0;
     }
 }

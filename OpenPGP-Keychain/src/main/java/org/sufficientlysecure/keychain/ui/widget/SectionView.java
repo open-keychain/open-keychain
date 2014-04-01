@@ -164,34 +164,34 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         mEditors.setVisibility(hasChildren ? View.VISIBLE : View.GONE);
     }
 
-    public boolean needsSaving()
-    {
+    public boolean needsSaving() {
         //check each view for needs saving, take account of deleted items
         boolean ret = mOldItemDeleted;
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
             ret |= editor.needsSaving();
-            if (mType == Id.type.user_id)
-                ret |= ((UserIdEditor)editor).primarySwapped();
+            if (mType == Id.type.user_id) {
+                ret |= ((UserIdEditor) editor).primarySwapped();
+            }
         }
         return ret;
     }
 
-    public boolean primaryChanged()
-    {
+    public boolean primaryChanged() {
         boolean ret = false;
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
-            if (mType == Id.type.user_id)
-                ret |= ((UserIdEditor)editor).primarySwapped();
+            if (mType == Id.type.user_id) {
+                ret |= ((UserIdEditor) editor).primarySwapped();
+            }
         }
         return ret;
     }
 
-    public String getOriginalPrimaryID()
-    { //NB: this will have to change when we change how Primary IDs are chosen, and so we need to be
-      //    careful about where Master key capabilities are stored... multiple primaries and
-      //    revoked ones make this harder than the simple case we are continuing to assume here
+    public String getOriginalPrimaryID() {
+        //NB: this will have to change when we change how Primary IDs are chosen, and so we need to be
+        //    careful about where Master key capabilities are stored... multiple primaries and
+        //    revoked ones make this harder than the simple case we are continuing to assume here
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
             if (mType == Id.type.user_id) {
@@ -203,16 +203,16 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return null;
     }
 
-    public ArrayList<String> getOriginalIDs()
-    {
+    public ArrayList<String> getOriginalIDs() {
         ArrayList<String> orig = new ArrayList<String>();
         if (mType == Id.type.user_id) {
             for (int i = 0; i < mEditors.getChildCount(); ++i) {
                 UserIdEditor editor = (UserIdEditor) mEditors.getChildAt(i);
-                if (editor.isMainUserId())
+                if (editor.isMainUserId()) {
                     orig.add(0, editor.getOriginalID());
-                else
+                } else {
                     orig.add(editor.getOriginalID());
+                }
             }
             return orig;
         } else {
@@ -220,18 +220,15 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         }
     }
 
-    public ArrayList<String> getDeletedIDs()
-    {
+    public ArrayList<String> getDeletedIDs() {
         return mDeletedIDs;
     }
 
-    public ArrayList<PGPSecretKey> getDeletedKeys()
-    {
+    public ArrayList<PGPSecretKey> getDeletedKeys() {
         return mDeletedKeys;
     }
 
-    public List<Boolean> getNeedsSavingArray()
-    {
+    public List<Boolean> getNeedsSavingArray() {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
@@ -240,21 +237,20 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return mList;
     }
 
-    public List<Boolean> getNewIDFlags()
-    {
+    public List<Boolean> getNewIDFlags() {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             UserIdEditor editor = (UserIdEditor) mEditors.getChildAt(i);
-            if (editor.isMainUserId())
+            if (editor.isMainUserId()) {
                 mList.add(0, editor.getIsNewID());
-            else
+            } else {
                 mList.add(editor.getIsNewID());
+            }
         }
         return mList;
     }
 
-    public List<Boolean> getNewKeysArray()
-    {
+    public List<Boolean> getNewKeysArray() {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();
         if (mType == Id.type.key) {
             for (int i = 0; i < mEditors.getChildCount(); ++i) {
@@ -420,8 +416,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                 mEditors, false);
         view.setEditorListener(SectionView.this);
         int usage = 0;
-        if (mEditors.getChildCount() == 0)
+        if (mEditors.getChildCount() == 0) {
             usage = PGPKeyFlags.CAN_CERTIFY;
+        }
         view.setValue(newKey, newKey.isMasterKey(), usage, true);
         mEditors.addView(view);
         SectionView.this.updateEditorsVisible();

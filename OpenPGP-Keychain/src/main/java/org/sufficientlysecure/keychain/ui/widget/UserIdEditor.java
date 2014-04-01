@@ -84,8 +84,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         }
 
         @Override
-        public void afterTextChanged(Editable s)
-        {
+        public void afterTextChanged(Editable s) {
             if (mEditorListener != null) {
                 mEditorListener.onEdited();
             }
@@ -246,18 +245,15 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         return retval;
     }
 
-    public  boolean getIsOriginallyMainUserID()
-    {
+    public  boolean getIsOriginallyMainUserID() {
         return mOriginallyMainUserID;
     }
 
-    public boolean primarySwapped()
-    {
+    public boolean primarySwapped() {
         return (mOriginallyMainUserID != isMainUserId());
     }
 
-    public String getOriginalID()
-    {
+    public String getOriginalID() {
         return mOriginalID;
     }
 

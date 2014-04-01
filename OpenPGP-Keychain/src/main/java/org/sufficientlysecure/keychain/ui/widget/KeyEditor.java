@@ -255,8 +255,9 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         } else {
             mUsage = PgpKeyHelper.getKeyUsage(key);
             mOriginalUsage = mUsage;
-            if (key.isMasterKey())
+            if (key.isMasterKey()) {
                 mChkCertify.setChecked(PgpKeyHelper.isCertificationKey(key));
+            }
             mChkSign.setChecked(PgpKeyHelper.isSigningKey(key));
             mChkEncrypt.setChecked(PgpKeyHelper.isEncryptionKey(key));
             mChkAuthenticate.setChecked(PgpKeyHelper.isAuthenticationKey(key));
@@ -332,10 +333,10 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         return mUsage;
     }
 
-    public boolean needsSaving()
-    {
-        if (mIsNewKey)
+    public boolean needsSaving() {
+        if (mIsNewKey) {
             return true;
+        }
 
         boolean retval = (getUsage() != mOriginalUsage);
 
@@ -345,21 +346,21 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         if (mOEDNull != mEDNull) {
             dateChanged = true;
         } else {
-            if(mOEDNull) //both null, no change
+            if (mOEDNull) {
+                //both null, no change
                 dateChanged = false;
-            else
+            } else {
                 dateChanged = ((mExpiryDate.compareTo(mOriginalExpiryDate)) != 0);
+            }
         }
         retval |= dateChanged;
 
         return retval;
     }
 
-    public boolean getIsNewKey()
-    {
+    public boolean getIsNewKey() {
         return mIsNewKey;
     }
-
 }
 
 class ExpiryDatePickerDialog extends DatePickerDialog {
