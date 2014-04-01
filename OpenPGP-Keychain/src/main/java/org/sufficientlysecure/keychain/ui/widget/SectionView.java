@@ -256,8 +256,11 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
-            Editor editor = (Editor) mEditors.getChildAt(i);
-            mList.add(((UserIdEditor)editor).getIsNewID());
+            UserIdEditor editor = (UserIdEditor) mEditors.getChildAt(i);
+            if (editor.isMainUserId())
+                mList.add(0, editor.getIsNewID());
+            else
+                mList.add(editor.getIsNewID());
         }
         return mList;
     }

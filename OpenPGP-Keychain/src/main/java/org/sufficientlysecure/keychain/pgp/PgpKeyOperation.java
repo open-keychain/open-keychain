@@ -458,7 +458,7 @@ public class PgpKeyOperation {
             ArrayList<Pair<String, PGPSignature>> sigList = new ArrayList<Pair<String, PGPSignature>>();
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (origID.equals(userId) && !userId.equals(saveParcel.originalPrimaryID) && userIDIndex != 0) {
+                if ((origID.equals(userId) && !saveParcel.newIDs[userIDIndex]) && !userId.equals(saveParcel.originalPrimaryID) && userIDIndex != 0) {
                     Iterator<PGPSignature> origSigs = masterPublicKey.getSignaturesForID(origID); //TODO: make sure this iterator only has signatures we are interested in
                     while (origSigs.hasNext()) {
                         PGPSignature origSig = origSigs.next();
@@ -489,7 +489,7 @@ public class PgpKeyOperation {
         } else {
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (!origID.equals(userId)) {
+                if (!origID.equals(userId) || saveParcel.newIDs[userIDIndex]) {
                     anyIDChanged = true;
                     PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                             masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA1)
@@ -516,7 +516,7 @@ public class PgpKeyOperation {
             userIDIndex = 0;
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (!(origID.equals(saveParcel.originalPrimaryID) && !saveParcel.primaryIDChanged)) {
+                if (!(origID.equals(saveParcel.originalPrimaryID) && !saveParcel.primaryIDChanged) || !saveParcel.newIDs[userIDIndex]) {
                     Iterator<PGPSignature> sigs = masterPublicKey.getSignaturesForID(userId); //TODO: make sure this iterator only has signatures we are interested in
                     while (sigs.hasNext()) {
                         PGPSignature sig = sigs.next();
