@@ -39,7 +39,7 @@
 
     <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
         custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
         custom:foldedIcon="fa-chevron-right"
