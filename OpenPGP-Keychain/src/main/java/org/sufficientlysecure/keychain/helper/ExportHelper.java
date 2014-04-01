@@ -75,7 +75,7 @@ public class ExportHelper {
                     int type = keyType;
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    if( data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED) ) {
+                    if (data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED)) {
                         type = Id.type.public_secret_key;
                     }
 

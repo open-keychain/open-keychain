@@ -219,7 +219,7 @@ public class PgpKeyOperation {
 
     }
 
-    private Pair<PGPSecretKeyRing,PGPPublicKeyRing> buildNewSecretKey(
+    private Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildNewSecretKey(
                                    ArrayList<String> userIds, ArrayList<PGPSecretKey> keys,
                                    ArrayList<GregorianCalendar> keysExpiryDates,
                                    ArrayList<Integer> keysUsages,
@@ -359,11 +359,11 @@ public class PgpKeyOperation {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        return new Pair<PGPSecretKeyRing,PGPPublicKeyRing>(secretKeyRing, publicKeyRing);
+        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(secretKeyRing, publicKeyRing);
 
     }
 
-    public Pair<PGPSecretKeyRing,PGPPublicKeyRing> buildSecretKey (PGPSecretKeyRing mKR,
+    public Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildSecretKey(PGPSecretKeyRing mKR,
                                                                    PGPPublicKeyRing pKR,
                                                                    SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
@@ -676,7 +676,7 @@ public class PgpKeyOperation {
 
         */
 
-        return new Pair<PGPSecretKeyRing,PGPPublicKeyRing>(mKR, pKR);
+        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(mKR, pKR);
 
     }
 
@@ -723,7 +723,7 @@ public class PgpKeyOperation {
         }
 
         // fetch public key ring, add the certification and return it
-        for(String userId : new IterableIterator<String>(userIds.iterator())) {
+        for (String userId : new IterableIterator<String>(userIds.iterator())) {
             PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
             publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
         }

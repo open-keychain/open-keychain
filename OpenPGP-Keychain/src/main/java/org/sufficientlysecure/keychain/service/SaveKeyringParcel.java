@@ -46,20 +46,20 @@ public class SaveKeyringParcel implements Parcelable {
 
     public SaveKeyringParcel() {}
 
-    private SaveKeyringParcel(Parcel source)
-    {
-        userIDs = (ArrayList<String>)source.readSerializable();
-        originalIDs = (ArrayList<String>)source.readSerializable();
-        deletedIDs = (ArrayList<String>)source.readSerializable();
+    private SaveKeyringParcel(Parcel source) {
+        userIDs = (ArrayList<String>) source.readSerializable();
+        originalIDs = (ArrayList<String>) source.readSerializable();
+        deletedIDs = (ArrayList<String>) source.readSerializable();
         newIDs = source.createBooleanArray();
         primaryIDChanged = source.readByte() != 0;
         moddedKeys = source.createBooleanArray();
         byte[] tmp = source.createByteArray();
-        if (tmp == null)
+        if (tmp == null) {
             deletedKeys = null;
-        else
+        } else {
             deletedKeys = PgpConversionHelper.BytesToPGPSecretKeyList(tmp);
-        keysExpiryDates = (ArrayList<GregorianCalendar>)source.readSerializable();
+        }
+        keysExpiryDates = (ArrayList<GregorianCalendar>) source.readSerializable();
         keysUsages = source.readArrayList(Integer.class.getClassLoader());
         newPassPhrase = source.readString();
         oldPassPhrase = source.readString();

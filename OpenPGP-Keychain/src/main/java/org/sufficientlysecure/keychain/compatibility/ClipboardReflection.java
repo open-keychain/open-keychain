@@ -30,7 +30,7 @@ public class ClipboardReflection {
 
     /**
      * Wrapper around ClipboardManager based on Android version using Reflection API
-     * 
+     *
      * @param context
      * @param text
      */
@@ -57,7 +57,7 @@ public class ClipboardReflection {
 
     /**
      * Wrapper around ClipboardManager based on Android version using Reflection API
-     * 
+     *
      * @param context
      */
     public static CharSequence getClipboardText(Context context) {

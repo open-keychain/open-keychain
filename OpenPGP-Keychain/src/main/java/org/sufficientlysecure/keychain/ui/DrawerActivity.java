@@ -58,7 +58,7 @@ public class DrawerActivity extends ActionBarActivity {
 
         // if the left margin of the loaded layout is close to the
         // one used in tablets then set drawer as open and locked
-        if( Math.abs(leftMarginLoaded - leftMarginInTablets) < errorInMarginAllowed) {
+        if (Math.abs(leftMarginLoaded - leftMarginInTablets) < errorInMarginAllowed) {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, mDrawerList);
             mDrawerLayout.setScrimColor(Color.TRANSPARENT);
             mIsDrawerLocked = true;
@@ -82,7 +82,7 @@ public class DrawerActivity extends ActionBarActivity {
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         // if the drawer is not locked
-        if ( !mIsDrawerLocked ) {
+        if (!mIsDrawerLocked) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
         }
@@ -109,7 +109,7 @@ public class DrawerActivity extends ActionBarActivity {
             }
         };
 
-        if ( !mIsDrawerLocked ) {
+        if (!mIsDrawerLocked) {
             mDrawerLayout.setDrawerListener(mDrawerToggle);
         } else {
             // If the drawer is locked open make it un-focusable
@@ -218,9 +218,9 @@ public class DrawerActivity extends ActionBarActivity {
         // setTitle(mDrawerTitles[position]);
         // If drawer isn't locked just close the drawer and
         // it will move to the selected item by itself (via drawer toggle listener)
-        if ( !mIsDrawerLocked ) {
+        if (!mIsDrawerLocked) {
             mDrawerLayout.closeDrawer(mDrawerList);
-        // else move to the selected item yourself
+            // else move to the selected item yourself
         } else {
             callIntentForDrawerItem(mSelectedItem);
         }

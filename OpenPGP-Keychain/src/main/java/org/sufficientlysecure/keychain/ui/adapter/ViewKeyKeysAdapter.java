@@ -148,8 +148,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
                     DateFormat.getDateFormat(context).format(expiryDate) + ")");
 
             keyExpiry.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             keyExpiry.setVisibility(View.GONE);
         }
         // if key is expired or revoked, strike through text

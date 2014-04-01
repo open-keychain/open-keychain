@@ -112,7 +112,7 @@ public class EncryptFileFragment extends Fragment {
         });
 
         mFileCompression = (Spinner) view.findViewById(R.id.fileCompression);
-        Choice[] choices = new Choice[]{
+        Choice[] choices = new Choice[] {
                 new Choice(Id.choice.compression.none, getString(R.string.choice_none) + " ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.zip, "ZIP ("
@@ -120,7 +120,8 @@ public class EncryptFileFragment extends Fragment {
                 new Choice(Id.choice.compression.zlib, "ZLIB ("
                         + getString(R.string.compression_fast) + ")"),
                 new Choice(Id.choice.compression.bzip2, "BZIP2 ("
-                        + getString(R.string.compression_very_slow) + ")"),};
+                        + getString(R.string.compression_very_slow) + ")"),
+        };
         ArrayAdapter<Choice> adapter = new ArrayAdapter<Choice>(getActivity(),
                 android.R.layout.simple_spinner_item, choices);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

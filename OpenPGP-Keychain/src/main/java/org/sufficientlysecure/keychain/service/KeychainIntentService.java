@@ -818,7 +818,7 @@ public class KeychainIntentService extends IntentService
             return;
         }
         // contextualize the exception, if necessary
-        if(e instanceof PgpGeneralMsgIdException) {
+        if (e instanceof PgpGeneralMsgIdException) {
             e = ((PgpGeneralMsgIdException) e).getContextualized(this);
         }
         Log.e(Constants.TAG, "ApgService Exception: ", e);

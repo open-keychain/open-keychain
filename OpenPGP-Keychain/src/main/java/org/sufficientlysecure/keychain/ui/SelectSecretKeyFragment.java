@@ -141,7 +141,8 @@ public class SelectSecretKeyFragment extends ListFragment implements
                         + Keys.IS_REVOKED + " = '0' AND valid_keys." + Keys.CAN_SIGN
                         + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
                         + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
-                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,};
+                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,
+        };
 
         String orderBy = UserIds.USER_ID + " ASC";
 

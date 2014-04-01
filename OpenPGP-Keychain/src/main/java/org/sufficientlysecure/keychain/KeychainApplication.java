@@ -41,14 +41,14 @@ public class KeychainApplication extends Application {
 
         /*
          * Sets Bouncy (Spongy) Castle as preferred security provider
-         * 
+         *
          * insertProviderAt() position starts from 1
          */
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
 
         /*
          * apply RNG fixes
-         * 
+         *
          * among other things, executes Security.insertProviderAt(new
          * LinuxPRNGSecureRandomProvider(), 1) for Android <= SDK 17
          */

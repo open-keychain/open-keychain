@@ -205,7 +205,7 @@ public class DecryptFileFragment extends DecryptFragment {
                     } else {
                         AppMsg.makeText(getActivity(), R.string.decryption_successful,
                                 AppMsg.STYLE_INFO).show();
-                        
+
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment

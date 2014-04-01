@@ -306,7 +306,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
-        if(userIds.isEmpty()) {
+        if (userIds.isEmpty()) {
             Toast.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
                     Toast.LENGTH_SHORT).show();
             return;

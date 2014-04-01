@@ -184,12 +184,10 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                     if (cursor == null || cursor.getCount() == 0 || !checkDeleteSecret.isChecked()) {
                         isSuccessfullyDeleted = true;
                     }
-
                 } finally {
                     if (cursor != null) {
                         cursor.close();
                     }
-
                 }
 
                 dismiss();
@@ -200,9 +198,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                     sendMessageToHandler(MESSAGE_ERROR, null);
                 }
             }
-
-        }
-        );
+        });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
             @Override
@@ -232,5 +228,4 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
     }
-
 }

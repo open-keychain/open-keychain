@@ -55,14 +55,15 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
     @Override
     public Cursor swapCursor(Cursor newCursor) {
         initIndex(newCursor);
-        if(mCheckStates != null) {
+        if (mCheckStates != null) {
             mCheckStates.clear();
-            if(newCursor != null) {
+            if (newCursor != null) {
                 int count = newCursor.getCount();
                 mCheckStates.ensureCapacity(count);
                 // initialize to true (use case knowledge: we usually want to sign all uids)
-                for(int i = 0; i < count; i++)
+                for (int i = 0; i < count; i++) {
                     mCheckStates.add(true);
+                }
             }
         }
 
@@ -100,8 +101,9 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
         vAddress.setText(userId[1]);
 
         // don't care further if checkboxes aren't shown
-        if(mCheckStates == null)
+        if (mCheckStates == null) {
             return;
+        }
 
         final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.checkBox);
         final int position = cursor.getPosition();
@@ -124,8 +126,8 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
     public ArrayList<String> getSelectedUserIds() {
         ArrayList<String> result = new ArrayList<String>();
-        for(int i = 0; i < mCheckStates.size(); i++) {
-            if(mCheckStates.get(i)) {
+        for (int i = 0; i < mCheckStates.size(); i++) {
+            if (mCheckStates.get(i)) {
                 mCursor.moveToPosition(i);
                 result.add(mCursor.getString(mIndexUserId));
             }

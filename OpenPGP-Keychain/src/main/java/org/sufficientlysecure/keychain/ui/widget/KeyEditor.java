@@ -148,7 +148,7 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                     date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 }
                 /*
-                 * Using custom DatePickerDialog which overrides the setTitle because 
+                 * Using custom DatePickerDialog which overrides the setTitle because
                  * the DatePickerDialog title is buggy (unix warparound bug).
                  * See: https://code.google.com/p/android/issues/detail?id=49066
                  */
@@ -221,23 +221,23 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
         boolean isDSAKey = (key.getPublicKey().getAlgorithm() == PGPPublicKey.DSA);
         if (isElGamalKey) {
             mChkSign.setVisibility(View.INVISIBLE);
-            TableLayout table = (TableLayout)findViewById(R.id.table_keylayout);
-            TableRow row = (TableRow)findViewById(R.id.row_sign);
+            TableLayout table = (TableLayout) findViewById(R.id.table_keylayout);
+            TableRow row = (TableRow) findViewById(R.id.row_sign);
             table.removeView(row);
         }
         if (isDSAKey) {
             mChkEncrypt.setVisibility(View.INVISIBLE);
-            TableLayout table = (TableLayout)findViewById(R.id.table_keylayout);
-            TableRow row = (TableRow)findViewById(R.id.row_encrypt);
+            TableLayout table = (TableLayout) findViewById(R.id.table_keylayout);
+            TableRow row = (TableRow) findViewById(R.id.row_encrypt);
             table.removeView(row);
         }
         if (!mIsMasterKey) {
             mChkCertify.setVisibility(View.INVISIBLE);
-            TableLayout table = (TableLayout)findViewById(R.id.table_keylayout);
-            TableRow row = (TableRow)findViewById(R.id.row_certify);
+            TableLayout table = (TableLayout) findViewById(R.id.table_keylayout);
+            TableRow row = (TableRow) findViewById(R.id.row_certify);
             table.removeView(row);
         } else {
-            TextView mLabelUsage2= (TextView) findViewById(R.id.label_usage2);
+            TextView mLabelUsage2 = (TextView) findViewById(R.id.label_usage2);
             mLabelUsage2.setVisibility(View.INVISIBLE);
         }
 
