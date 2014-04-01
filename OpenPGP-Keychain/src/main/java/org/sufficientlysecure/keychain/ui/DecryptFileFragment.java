@@ -203,6 +203,9 @@ public class DecryptFileFragment extends DecryptFragment {
                     } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(Id.key.symmetric);
                     } else {
+                        AppMsg.makeText(getActivity(), R.string.decryption_successful,
+                                AppMsg.STYLE_INFO).show();
+                        
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
