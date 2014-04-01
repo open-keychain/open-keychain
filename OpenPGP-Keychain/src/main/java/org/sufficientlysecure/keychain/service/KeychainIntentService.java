@@ -98,7 +98,6 @@ public class KeychainIntentService extends IntentService
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
-    public static final String DECRYPT_ASSUME_SYMMETRIC = "assume_symmetric";
     public static final String DECRYPT_PASSPHRASE = "passphrase";
 
     // save keyring
@@ -344,7 +343,6 @@ public class KeychainIntentService extends IntentService
                 int target = data.getInt(TARGET);
 
                 byte[] bytes = data.getByteArray(DECRYPT_CIPHERTEXT_BYTES);
-                boolean assumeSymmetricEncryption = data.getBoolean(DECRYPT_ASSUME_SYMMETRIC);
                 String passphrase = data.getString(DECRYPT_PASSPHRASE);
 
                 InputStream inStream;
@@ -424,7 +422,7 @@ public class KeychainIntentService extends IntentService
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, outStream);
                 builder.progressDialogUpdater(this);
 
-                builder.assumeSymmetric(assumeSymmetricEncryption)
+                builder.allowSymmetricDecryption(true)
                         .passphrase(passphrase);
 
                 PgpDecryptVerifyResult decryptVerifyResult = builder.build().execute();

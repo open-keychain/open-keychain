@@ -33,6 +33,7 @@ import com.devspark.appmsg.AppMsg;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
@@ -149,6 +150,8 @@ public class DecryptMessageFragment extends DecryptFragment {
 
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
+                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                        showPassphraseDialog(Id.key.symmetric);
                     } else {
                         AppMsg.makeText(getActivity(), R.string.decryption_successful,
                                 AppMsg.STYLE_INFO).show();

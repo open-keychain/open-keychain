@@ -290,9 +290,8 @@ public class OpenPgpService extends RemoteService {
                 InputData inputData = new InputData(is, inputLength);
 
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
-                builder.assumeSymmetric(false) // no support for symmetric encryption
-                        // allow only the private key for this app for decryption
-                        .enforcedKeyId(accSettings.getKeyId())
+                builder.allowSymmetricDecryption(false) // no support for symmetric encryption
+                        .enforcedKeyId(accSettings.getKeyId()) // allow only the private key for this app for decryption
                         .passphrase(passphrase);
 
                 // TODO: currently does not support binary signed-only content

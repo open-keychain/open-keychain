@@ -18,16 +18,38 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import android.content.Context;
+
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.spongycastle.bcpg.ArmoredInputStream;
 import org.spongycastle.bcpg.SignatureSubpacketTags;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPCompressedData;
+import org.spongycastle.openpgp.PGPEncryptedData;
+import org.spongycastle.openpgp.PGPEncryptedDataList;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPLiteralData;
+import org.spongycastle.openpgp.PGPObjectFactory;
+import org.spongycastle.openpgp.PGPOnePassSignature;
+import org.spongycastle.openpgp.PGPOnePassSignatureList;
+import org.spongycastle.openpgp.PGPPBEEncryptedData;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureList;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBEDataDecryptorFactory;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PGPDigestCalculatorProvider;
 import org.spongycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
-import org.spongycastle.openpgp.operator.jcajce.*;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBEDataDecryptorFactoryBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -37,7 +59,12 @@ import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.SignatureException;
 import java.util.Iterator;
 
@@ -50,7 +77,7 @@ public class PgpDecryptVerify {
     private OutputStream mOutStream;
 
     private ProgressDialogUpdater mProgressDialogUpdater;
-    private boolean mAssumeSymmetric;
+    private boolean mAllowSymmetricDecryption;
     private String mPassphrase;
     private long mEnforcedKeyId;
 
@@ -61,7 +88,7 @@ public class PgpDecryptVerify {
         this.mOutStream = builder.mOutStream;
 
         this.mProgressDialogUpdater = builder.mProgressDialogUpdater;
-        this.mAssumeSymmetric = builder.mAssumeSymmetric;
+        this.mAllowSymmetricDecryption = builder.mAllowSymmetricDecryption;
         this.mPassphrase = builder.mPassphrase;
         this.mEnforcedKeyId = builder.mEnforcedKeyId;
     }
@@ -74,7 +101,7 @@ public class PgpDecryptVerify {
 
         // optional
         private ProgressDialogUpdater mProgressDialogUpdater = null;
-        private boolean mAssumeSymmetric = false;
+        private boolean mAllowSymmetricDecryption = false;
         private String mPassphrase = null;
         private long mEnforcedKeyId = 0;
 
@@ -89,8 +116,8 @@ public class PgpDecryptVerify {
             return this;
         }
 
-        public Builder assumeSymmetric(boolean assumeSymmetric) {
-            this.mAssumeSymmetric = assumeSymmetric;
+        public Builder allowSymmetricDecryption(boolean allowSymmetricDecryption) {
+            this.mAllowSymmetricDecryption = allowSymmetricDecryption;
             return this;
         }
 
@@ -126,35 +153,6 @@ public class PgpDecryptVerify {
         if (mProgressDialogUpdater != null) {
             mProgressDialogUpdater.setProgress(current, total);
         }
-    }
-
-    public static boolean hasSymmetricEncryption(Context context, InputStream inputStream)
-            throws PgpGeneralException, IOException {
-        InputStream in = PGPUtil.getDecoderStream(inputStream);
-        PGPObjectFactory pgpF = new PGPObjectFactory(in);
-        PGPEncryptedDataList enc;
-        Object o = pgpF.nextObject();
-
-        // the first object might be a PGP marker packet.
-        if (o instanceof PGPEncryptedDataList) {
-            enc = (PGPEncryptedDataList) o;
-        } else {
-            enc = (PGPEncryptedDataList) pgpF.nextObject();
-        }
-
-        if (enc == null) {
-            throw new PgpGeneralException(context.getString(R.string.error_invalid_data));
-        }
-
-        Iterator<?> it = enc.getEncryptedDataObjects();
-        while (it.hasNext()) {
-            Object obj = it.next();
-            if (obj instanceof PGPPBEEncryptedData) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -221,25 +219,78 @@ public class PgpDecryptVerify {
 
         currentProgress += 5;
 
-        // TODO: currently we always only look at the first known key or symmetric encryption,
-        // there might be more...
-        if (mAssumeSymmetric) {
-            PGPPBEEncryptedData pbe = null;
-            Iterator<?> it = enc.getEncryptedDataObjects();
-            // find secret key
-            while (it.hasNext()) {
-                Object obj = it.next();
-                if (obj instanceof PGPPBEEncryptedData) {
-                    pbe = (PGPPBEEncryptedData) obj;
+        PGPPublicKeyEncryptedData encryptedDataAsymmetric = null;
+        PGPPBEEncryptedData encryptedDataSymmetric = null;
+        PGPSecretKey secretKey = null;
+        Iterator<?> it = enc.getEncryptedDataObjects();
+        boolean symmetricPacketFound = false;
+        // find secret key
+        while (it.hasNext()) {
+            Object obj = it.next();
+            if (obj instanceof PGPPublicKeyEncryptedData) {
+                updateProgress(R.string.progress_finding_key, currentProgress, 100);
+
+                PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
+                secretKey = ProviderHelper.getPGPSecretKeyByKeyId(mContext, encData.getKeyID());
+                if (secretKey != null) {
+                    // secret key exists in database
+
+                    // allow only a specific key for decryption?
+                    if (mEnforcedKeyId != 0) {
+                        // TODO: improve this code! get master key directly!
+                        PGPSecretKeyRing secretKeyRing =
+                                ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, encData.getKeyID());
+                        long masterKeyId = PgpKeyHelper.getMasterKey(secretKeyRing).getKeyID();
+                        Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
+                        Log.d(Constants.TAG, "enforcedKeyId: " + mEnforcedKeyId);
+                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+
+                        if (mEnforcedKeyId != masterKeyId) {
+                            throw new PgpGeneralException(
+                                    mContext.getString(R.string.error_no_secret_key_found));
+                        }
+                    }
+
+                    encryptedDataAsymmetric = encData;
+
+                    // if no passphrase was explicitly set try to get it from the cache service
+                    if (mPassphrase == null) {
+                        // returns "" if key has no passphrase
+                        mPassphrase =
+                                PassphraseCacheService.getCachedPassphrase(mContext, encData.getKeyID());
+
+                        // if passphrase was not cached, return here
+                        // indicating that a passphrase is missing!
+                        if (mPassphrase == null) {
+                            returnData.setKeyIdPassphraseNeeded(encData.getKeyID());
+                            returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
+                            return returnData;
+                        }
+                    }
+
+                    // break out of while, only get first object here
+                    // TODO???: There could be more pgp objects, which are not decrypted!
                     break;
                 }
-            }
+            } else if (mAllowSymmetricDecryption && obj instanceof PGPPBEEncryptedData) {
+                symmetricPacketFound = true;
 
-            if (pbe == null) {
-                throw new PgpGeneralException(
-                        mContext.getString(R.string.error_no_symmetric_encryption_packet));
-            }
+                encryptedDataSymmetric = (PGPPBEEncryptedData) obj;
 
+                // if no passphrase is given, return here
+                // indicating that a passphrase is missing!
+                if (mPassphrase == null) {
+                    returnData.setStatus(PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED);
+                    return returnData;
+                }
+
+                // break out of while, only get first object here
+                // TODO???: There could be more pgp objects, which are not decrypted!
+                break;
+            }
+        }
+
+        if (symmetricPacketFound) {
             updateProgress(R.string.progress_preparing_streams, currentProgress, 100);
 
             PGPDigestCalculatorProvider digestCalcProvider = new JcaPGPDigestCalculatorProviderBuilder()
@@ -248,65 +299,11 @@ public class PgpDecryptVerify {
                     digestCalcProvider).setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
                     mPassphrase.toCharArray());
 
-            clear = pbe.getDataStream(decryptorFactory);
+            clear = encryptedDataSymmetric.getDataStream(decryptorFactory);
 
-            encryptedData = pbe;
+            encryptedData = encryptedDataSymmetric;
             currentProgress += 5;
         } else {
-            PGPPublicKeyEncryptedData pbe = null;
-            PGPSecretKey secretKey = null;
-            Iterator<?> it = enc.getEncryptedDataObjects();
-            // find secret key
-            while (it.hasNext()) {
-                Object obj = it.next();
-                if (obj instanceof PGPPublicKeyEncryptedData) {
-                    updateProgress(R.string.progress_finding_key, currentProgress, 100);
-
-                    PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                    secretKey = ProviderHelper.getPGPSecretKeyByKeyId(mContext, encData.getKeyID());
-                    if (secretKey != null) {
-                        // secret key exists in database
-
-                        // allow only a specific key for decryption?
-                        if (mEnforcedKeyId != 0) {
-                            // TODO: improve this code! get master key directly!
-                            PGPSecretKeyRing secretKeyRing =
-                                    ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, encData.getKeyID());
-                            long masterKeyId = PgpKeyHelper.getMasterKey(secretKeyRing).getKeyID();
-                            Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
-                            Log.d(Constants.TAG, "enforcedKeyId: " + mEnforcedKeyId);
-                            Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
-
-                            if (mEnforcedKeyId != masterKeyId) {
-                                throw new PgpGeneralException(
-                                        mContext.getString(R.string.error_no_secret_key_found));
-                            }
-                        }
-
-                        pbe = encData;
-
-                        // if no passphrase was explicitly set try to get it from the cache service
-                        if (mPassphrase == null) {
-                            // returns "" if key has no passphrase
-                            mPassphrase =
-                                    PassphraseCacheService.getCachedPassphrase(mContext, encData.getKeyID());
-
-                            // if passphrase was not cached, return here
-                            // indicating that a passphrase is missing!
-                            if (mPassphrase == null) {
-                                returnData.setKeyIdPassphraseNeeded(encData.getKeyID());
-                                returnData.setStatus(PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED);
-                                return returnData;
-                            }
-                        }
-
-                        break;
-                    }
-                } else if (obj instanceof PGPPBEEncryptedData) {
-
-                }
-            }
-
             if (secretKey == null) {
                 throw new PgpGeneralException(mContext.getString(R.string.error_no_secret_key_found));
             }
@@ -332,9 +329,9 @@ public class PgpDecryptVerify {
             PublicKeyDataDecryptorFactory decryptorFactory = new JcePublicKeyDataDecryptorFactoryBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(privateKey);
 
-            clear = pbe.getDataStream(decryptorFactory);
+            clear = encryptedDataAsymmetric.getDataStream(decryptorFactory);
 
-            encryptedData = pbe;
+            encryptedData = encryptedDataAsymmetric;
             currentProgress += 5;
         }
 
@@ -389,7 +386,7 @@ public class PgpDecryptVerify {
             if (signature != null) {
                 JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                         new JcaPGPContentVerifierBuilderProvider()
-                        .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
 
                 signature.init(contentVerifierBuilderProvider, signatureKey);
             } else {
@@ -686,7 +683,7 @@ public class PgpDecryptVerify {
     }
 
     private static boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector pkts,
-                          PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+                                                   PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
         boolean validPrimaryKeyBinding = false;
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                 new JcaPGPContentVerifierBuilderProvider()
