@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="4dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:orientation="vertical">
 
         <include layout="@layout/decrypt_signature_include" />
@@ -35,15 +35,16 @@
             android:id="@+id/decrypt_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="4dp">
+            android:orientation="horizontal">
 
             <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/action_decrypt"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:layout_weight="1"
-                android:padding="4dp"
                 android:text="@string/btn_decrypt_verify"
                 bootstrapbutton:bb_icon_left="fa-unlock"
                 bootstrapbutton:bb_type="info" />
@@ -51,9 +52,11 @@
             <com.beardedhen.androidbootstrap.BootstrapButton
                 android:id="@+id/action_decrypt_from_clipboard"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:layout_weight="1"
-                android:padding="4dp"
                 android:text="@string/btn_decrypt_verify_clipboard"
                 bootstrapbutton:bb_icon_left="fa-unlock"
                 bootstrapbutton:bb_type="info" />
