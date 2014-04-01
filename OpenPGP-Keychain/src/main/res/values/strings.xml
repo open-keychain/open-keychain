@@ -203,15 +203,15 @@
     <string name="set_a_passphrase">Set a passphrase first.</string>
     <string name="no_filemanager_installed">No compatible file manager installed.</string>
     <string name="passphrases_do_not_match">The passphrases didn\'t match.</string>
-    <string name="passphrase_must_not_be_empty">Empty passphrases are not allowed.</string>
+    <string name="passphrase_must_not_be_empty">Please enter a passphrase.</string>
     <string name="passphrase_for_symmetric_encryption">Symmetric encryption.</string>
     <string name="passphrase_for">Enter passphrase for \'%s\'</string>
     <string name="file_delete_confirmation">Are you sure you want to delete\n%s?</string>
     <string name="file_delete_successful">Successfully deleted.</string>
     <string name="no_file_selected">Select a file first.</string>
-    <string name="decryption_successful">Successfully decrypted.</string>
-    <string name="encryption_successful">Successfully encrypted.</string>
-    <string name="encryption_to_clipboard_successful">Successfully encrypted to clipboard.</string>
+    <string name="decryption_successful">Successfully decrypted and/or verified.</string>
+    <string name="encryption_successful">Successfully encrypted and/or signed.</string>
+    <string name="encryption_to_clipboard_successful">Successfully encrypted and/or signed to clipboard.</string>
     <string name="enter_passphrase_twice">Enter the passphrase twice.</string>
     <string name="select_encryption_key">Select at least one encryption key.</string>
     <string name="select_encryption_or_signature_key">Select at least one encryption key or a signature key.</string>
@@ -470,8 +470,8 @@
 
     <!-- Navigation Drawer -->
     <string name="nav_contacts">Contacts</string>
-    <string name="nav_encrypt">Encrypt</string>
-    <string name="nav_decrypt">Decrypt</string>
+    <string name="nav_encrypt">Sign and Encrypt</string>
+    <string name="nav_decrypt">Decrypt and Verify</string>
     <string name="nav_import">Import Keys</string>
     <string name="nav_secret_keys">My Keys</string>
     <string name="nav_apps">Registered Apps</string>
@@ -486,6 +486,7 @@
     <string name="progress_re_adding_certs">Reapplying certificates</string>
 
     <!-- hints -->
-    <string name="encrypt_content_edit_text_hint">Write message here to encrypt…</string>
+    <string name="encrypt_content_edit_text_hint">Write message here to encrypt and/or sign…</string>
+    <string name="decrypt_content_edit_text_hint">Enter ciphertext here to decrypt and/or verify…</string>
 
 </resources>

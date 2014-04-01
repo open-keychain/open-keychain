@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_margin="4dp"
-            android:text="@string/btn_select_encrypt_keys"
+            android:text="@string/select_keys_button_default"
             bootstrapbutton:bb_icon_left="fa-user"
             bootstrapbutton:bb_size="default"
             bootstrapbutton:bb_type="default" />

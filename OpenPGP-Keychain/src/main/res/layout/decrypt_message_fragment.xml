@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:gravity="top"
+            android:hint="@string/decrypt_content_edit_text_hint"
             android:inputType="text|textCapSentences|textMultiLine|textLongMessage"
             android:scrollHorizontally="true"
             android:layout_weight="1" />
@@ -58,7 +59,7 @@
                 android:layout_marginBottom="4dp"
                 android:layout_weight="1"
                 android:text="@string/btn_decrypt_verify_clipboard"
-                bootstrapbutton:bb_icon_left="fa-unlock"
+                bootstrapbutton:bb_icon_left="fa-clipboard"
                 bootstrapbutton:bb_type="info" />
         </LinearLayout>
     </LinearLayout>
