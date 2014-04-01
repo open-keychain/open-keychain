@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -187,6 +187,10 @@ public class DecryptFragment extends Fragment {
         }
     }
 
+    /**
+     * Should be overridden by MessageFragment and FileFragment to start actual decryption
+     * @param passphrase
+     */
     protected void decryptStart(String passphrase) {
 
     }

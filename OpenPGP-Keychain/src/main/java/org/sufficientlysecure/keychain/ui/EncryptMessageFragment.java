@@ -1,0 +1,289 @@
+/*
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.ui;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+
+import com.beardedhen.androidbootstrap.BootstrapButton;
+import com.devspark.appmsg.AppMsg;
+
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.helper.Preferences;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.service.KeychainIntentService;
+import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
+import org.sufficientlysecure.keychain.util.Log;
+
+public class EncryptMessageFragment extends Fragment {
+    public static final String ARG_TEXT = "text";
+
+    private EditText mMessage = null;
+    private BootstrapButton mEncryptShare;
+    private BootstrapButton mEncryptClipboard;
+
+    private EncryptActivityInterface mEncryptInterface;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mEncryptInterface = (EncryptActivityInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement EncryptActivityInterface");
+        }
+    }
+
+    /**
+     * Inflate the layout for this fragment
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.encrypt_message_fragment, container, false);
+
+        mMessage = (EditText) view.findViewById(R.id.message);
+        mEncryptClipboard = (BootstrapButton) view.findViewById(R.id.action_encrypt_clipboard);
+        mEncryptShare = (BootstrapButton) view.findViewById(R.id.action_encrypt_share);
+        mEncryptClipboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked(true);
+            }
+        });
+        mEncryptShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                encryptClicked(false);
+            }
+        });
+
+        return view;
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        String text = getArguments().getString(ARG_TEXT);
+        if (text != null) {
+            mMessage.setText(text);
+        }
+    }
+
+    /**
+     * Fixes bad message characters for gmail
+     *
+     * @param message
+     * @return
+     */
+    private String fixBadCharactersForGmail(String message) {
+        // fix the message a bit, trailing spaces and newlines break stuff,
+        // because GMail sends as HTML and such things fuck up the
+        // signature,
+        // TODO: things like "<" and ">" also fuck up the signature
+        message = message.replaceAll(" +\n", "\n");
+        message = message.replaceAll("\n\n+", "\n\n");
+        message = message.replaceFirst("^\n+", "");
+        // make sure there'll be exactly one newline at the end
+        message = message.replaceFirst("\n*$", "\n");
+
+        return message;
+    }
+
+    private void encryptClicked(boolean toClipboard) {
+        if (mEncryptInterface.isModeSymmetric()) {
+            // symmetric encryption
+
+            boolean gotPassPhrase = false;
+            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
+                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                return;
+            }
+
+            gotPassPhrase = (mEncryptInterface.getPassphrase().length() != 0);
+            if (!gotPassPhrase) {
+                AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
+                        .show();
+                return;
+            }
+        } else {
+            // asymmetric encryption
+
+            boolean encryptIt = (mEncryptInterface.getEncryptionKeys() != null
+                    && mEncryptInterface.getEncryptionKeys().length > 0);
+
+            if (!encryptIt && mEncryptInterface.getSignatureKey() == 0) {
+                AppMsg.makeText(getActivity(), R.string.select_encryption_or_signature_key,
+                        AppMsg.STYLE_ALERT).show();
+                return;
+            }
+
+            if (mEncryptInterface.getSignatureKey() != 0
+                    && PassphraseCacheService.getCachedPassphrase(getActivity(), mEncryptInterface.getSignatureKey()) == null) {
+                showPassphraseDialog(toClipboard);
+
+                return;
+            }
+        }
+
+        encryptStart(toClipboard);
+    }
+
+    private void encryptStart(final boolean toClipboard) {
+        // Send all information needed to service to edit key in other thread
+        Intent intent = new Intent(getActivity(), KeychainIntentService.class);
+
+        // fill values for this action
+        Bundle data = new Bundle();
+
+        long encryptionKeyIds[] = null;
+        int compressionId = 0;
+        boolean signOnly = false;
+        long mSecretKeyIdToPass = 0;
+
+        if (mEncryptInterface.isModeSymmetric()) {
+            Log.d(Constants.TAG, "Symmetric encryption enabled!");
+            String passphrase = mEncryptInterface.getPassphrase();
+            if (passphrase.length() == 0) {
+                passphrase = null;
+            }
+            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
+        } else {
+            mSecretKeyIdToPass = mEncryptInterface.getSignatureKey();
+            encryptionKeyIds = mEncryptInterface.getEncryptionKeys();
+            signOnly = (mEncryptInterface.getEncryptionKeys() == null
+                    || mEncryptInterface.getEncryptionKeys().length == 0);
+        }
+
+        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
+
+        // choose default settings, target and data bundle by target
+        compressionId = Preferences.getPreferences(getActivity()).getDefaultMessageCompression();
+
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
+
+        String message = mMessage.getText().toString();
+        if (signOnly) {
+            message = fixBadCharactersForGmail(message);
+        }
+        data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
+
+        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyIdToPass);
+        data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, true);
+        data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
+        data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
+//        data.putBoolean(KeychainIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);
+        data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
+
+        intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
+
+        // Message is received after encrypting is done in KeychainIntentService
+        KeychainIntentServiceHandler saveHandler = new KeychainIntentServiceHandler(getActivity(),
+                getString(R.string.progress_encrypting), ProgressDialog.STYLE_HORIZONTAL) {
+            public void handleMessage(Message message) {
+                // handle messages by standard KeychainIntentServiceHandler first
+                super.handleMessage(message);
+
+                if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
+                    // get returned data bundle
+                    Bundle data = message.getData();
+
+                    String output;
+                    if (toClipboard) {
+                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
+                        Log.d(Constants.TAG, "output: " + output);
+                        ClipboardReflection.copyToClipboard(getActivity(), output);
+                        AppMsg.makeText(getActivity(),
+                                R.string.encryption_to_clipboard_successful, AppMsg.STYLE_INFO)
+                                .show();
+                    } else {
+                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
+                        Log.d(Constants.TAG, "output: " + output);
+
+                        Intent sendIntent = new Intent(Intent.ACTION_SEND);
+
+                        // Type is set to text/plain so that encrypted messages can
+                        // be sent with Whatsapp, Hangouts, SMS etc...
+                        sendIntent.setType("text/plain");
+
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, output);
+                        startActivity(Intent.createChooser(sendIntent,
+                                getString(R.string.title_send_email)));
+                    }
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(saveHandler);
+        intent.putExtra(KeychainIntentService.EXTRA_MESSENGER, messenger);
+
+        // show progress dialog
+        saveHandler.showProgressDialog(getActivity());
+
+        // start service with intent
+        getActivity().startService(intent);
+    }
+
+    /**
+     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
+     * encryption
+     */
+    private void showPassphraseDialog(final boolean toClipboard) {
+        // Message is received after passphrase is cached
+        Handler returnHandler = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                    encryptStart(toClipboard);
+                }
+            }
+        };
+
+        // Create a new Messenger for the communication back
+        Messenger messenger = new Messenger(returnHandler);
+
+        try {
+            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
+                    getActivity(), messenger, mEncryptInterface.getSignatureKey());
+
+            passphraseDialog.show(getActivity().getSupportFragmentManager(), "passphraseDialog");
+        } catch (PgpGeneralException e) {
+            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
+            // send message to handler to start encryption directly
+            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
+        }
+    }
+
+}

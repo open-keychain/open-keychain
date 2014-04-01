@@ -34,7 +34,7 @@
                 android:layout_gravity="right"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/label_sign_user_id"
+                android:text="Alice"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:layout_gravity="right"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="@string/label_sign_email"
+                android:text="alice@example.com"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
     </LinearLayout>

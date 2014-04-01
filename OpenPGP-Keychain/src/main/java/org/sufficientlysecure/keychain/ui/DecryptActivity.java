@@ -22,23 +22,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.devspark.appmsg.AppMsg;
-
-import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ActionBarHelper;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -47,7 +37,6 @@ import java.util.regex.Matcher;
 public class DecryptActivity extends DrawerActivity {
 
     /* Intents */
-    // without permission
     public static final String ACTION_DECRYPT = Constants.INTENT_PREFIX + "DECRYPT";
 
     /* EXTRA keys for input */
@@ -64,9 +53,7 @@ public class DecryptActivity extends DrawerActivity {
     private static final int PAGER_TAB_MESSAGE = 0;
     private static final int PAGER_TAB_FILE = 1;
 
-
     private void initView() {
-        // Pager
         mViewPager = (ViewPager) findViewById(R.id.decrypt_pager);
         mPagerTabStrip = (PagerTabStrip) findViewById(R.id.decrypt_pager_tab_strip);
 

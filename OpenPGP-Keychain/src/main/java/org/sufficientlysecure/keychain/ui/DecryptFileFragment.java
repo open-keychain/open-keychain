@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,19 +49,18 @@ import java.io.File;
 public class DecryptFileFragment extends DecryptFragment {
     public static final String ARG_FILENAME = "filename";
 
+    private static final int RESULT_CODE_FILE = 0x00007003;
+
+    // view
     private EditText mFilename;
     private CheckBox mDeleteAfter;
     private BootstrapButton mBrowse;
     private BootstrapButton mDecryptButton;
 
-
     private String mInputFilename = null;
     private String mOutputFilename = null;
 
     private FileDialogFragment mFileDialog;
-
-    private static final int RESULT_CODE_FILE = 0x00007003;
-
 
     /**
      * Inflate the layout for this fragment
@@ -72,14 +71,14 @@ public class DecryptFileFragment extends DecryptFragment {
 
         mFilename = (EditText) view.findViewById(R.id.decrypt_file_filename);
         mBrowse = (BootstrapButton) view.findViewById(R.id.decrypt_file_browse);
+        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
+        mDecryptButton = (BootstrapButton) view.findViewById(R.id.decrypt_file_action_decrypt);
         mBrowse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 FileHelper.openFile(DecryptFileFragment.this, mFilename.getText().toString(), "*/*",
                         RESULT_CODE_FILE);
             }
         });
-        mDeleteAfter = (CheckBox) view.findViewById(R.id.decrypt_file_delete_after_decryption);
-        mDecryptButton = (BootstrapButton) view.findViewById(R.id.decrypt_file_action_decrypt);
         mDecryptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,12 +86,17 @@ public class DecryptFileFragment extends DecryptFragment {
             }
         });
 
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         String filename = getArguments().getString(ARG_FILENAME);
         if (filename != null) {
             mFilename.setText(filename);
         }
-
-        return view;
     }
 
     private void guessOutputFilename() {
@@ -193,14 +197,12 @@ public class DecryptFileFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-
                     PgpDecryptVerifyResult decryptVerifyResult =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
                     } else {
-
                         if (mDeleteAfter.isChecked()) {
                             // Create and show dialog to delete original file
                             DeleteFileDialogFragment deleteFileDialog = DeleteFileDialogFragment
@@ -208,13 +210,11 @@ public class DecryptFileFragment extends DecryptFragment {
                             deleteFileDialog.show(getActivity().getSupportFragmentManager(), "deleteDialog");
                         }
 
-
                         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
 
                         // display signature result in activity
                         onSignatureResult(signatureResult);
                     }
-
                 }
             }
         };

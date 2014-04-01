@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ public class DecryptMessageFragment extends DecryptFragment {
     private BootstrapButton mDecryptButton;
     private BootstrapButton mDecryptFromCLipboardButton;
 
-
     /**
      * Inflate the layout for this fragment
      */
@@ -61,14 +60,12 @@ public class DecryptMessageFragment extends DecryptFragment {
         mMessage = (EditText) view.findViewById(R.id.message);
         mDecryptButton = (BootstrapButton) view.findViewById(R.id.action_decrypt);
         mDecryptFromCLipboardButton = (BootstrapButton) view.findViewById(R.id.action_decrypt_from_clipboard);
-
         mDecryptButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 decryptStart(null);
             }
         });
-
         mDecryptFromCLipboardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +90,7 @@ public class DecryptMessageFragment extends DecryptFragment {
     private void decryptFromClipboard() {
         CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
+        // only decrypt if clipboard content is available and a pgp message or cleartext signature
         if (clipboardText != null) {
             Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
             if (!matcher.matches()) {
@@ -146,14 +144,12 @@ public class DecryptMessageFragment extends DecryptFragment {
                     // get returned data bundle
                     Bundle returnData = message.getData();
 
-
                     PgpDecryptVerifyResult decryptVerifyResult =
                             returnData.getParcelable(KeychainIntentService.RESULT_DECRYPT_VERIFY_RESULT);
 
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
                     } else {
-
                         AppMsg.makeText(getActivity(), R.string.decryption_successful,
                                 AppMsg.STYLE_INFO).show();
 
@@ -162,13 +158,11 @@ public class DecryptMessageFragment extends DecryptFragment {
                         mMessage.setText(new String(decryptedMessage));
                         mMessage.setHorizontallyScrolling(false);
 
-
                         OpenPgpSignatureResult signatureResult = decryptVerifyResult.getSignatureResult();
 
                         // display signature result in activity
                         onSignatureResult(signatureResult);
                     }
-
                 }
             }
         };
@@ -183,6 +177,5 @@ public class DecryptMessageFragment extends DecryptFragment {
         // start service with intent
         getActivity().startService(intent);
     }
-
 
 }
