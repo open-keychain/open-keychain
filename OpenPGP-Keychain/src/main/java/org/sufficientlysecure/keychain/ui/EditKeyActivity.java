@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Dominik Schürmann <dominik@dominikschuermann.de>
+ * Copyright (C) 2012-2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2010 Thialfihar <thi@thialfihar.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import java.util.ArrayList;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Vector;
-
-import org.spongycastle.bcpg.sig.KeyFlags;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -33,14 +28,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
 
@@ -63,20 +64,17 @@ import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.widget.Editor;
+import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.ui.widget.KeyEditor;
 import org.sufficientlysecure.keychain.ui.widget.SectionView;
 import org.sufficientlysecure.keychain.ui.widget.UserIdEditor;
-import org.sufficientlysecure.keychain.ui.widget.Editor.EditorListener;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
 
-import android.app.AlertDialog;
-import android.support.v4.app.ActivityCompat;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Vector;
 
 public class EditKeyActivity extends ActionBarActivity implements EditorListener {
 
@@ -88,10 +86,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     public static final String EXTRA_USER_IDS = "user_ids";
     public static final String EXTRA_NO_PASSPHRASE = "no_passphrase";
     public static final String EXTRA_GENERATE_DEFAULT_KEYS = "generate_default_keys";
-
-    // results when saving key
-    public static final String RESULT_EXTRA_MASTER_KEY_ID = "master_key_id";
-    public static final String RESULT_EXTRA_USER_ID = "user_id";
 
     // EDIT
     private Uri mDataUri;
@@ -119,8 +113,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     ExportHelper mExportHelper;
 
-    public boolean needsSaving()
-    {
+    public boolean needsSaving() {
         mNeedsSaving = (mUserIdsView == null) ? false : mUserIdsView.needsSaving();
         mNeedsSaving |= (mKeysView == null) ? false : mKeysView.needsSaving();
         mNeedsSaving |= hasPassphraseChanged();
@@ -129,19 +122,16 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     }
 
 
-    public void somethingChanged()
-    {
+    public void somethingChanged() {
         ActivityCompat.invalidateOptionsMenu(this);
         //Toast.makeText(this, "Needs saving: " + Boolean.toString(mNeedsSaving) + "(" + Boolean.toString(mUserIdsView.needsSaving()) + ", " + Boolean.toString(mKeysView.needsSaving()) + ")", Toast.LENGTH_LONG).show();
     }
 
-    public void onDeleted(Editor e, boolean wasNewItem)
-    {
+    public void onDeleted(Editor e, boolean wasNewItem) {
         somethingChanged();
     }
 
-    public void onEdited()
-    {
+    public void onEdited() {
         somethingChanged();
     }
 
@@ -337,41 +327,42 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            cancelClicked(); //TODO: why isn't this triggered on my tablet - one of many ui problems I've had with this device. A code compatibility issue or a Samsung fail?
-            return true;
-        case R.id.menu_key_edit_cancel:
-            cancelClicked();
-            return true;
-        case R.id.menu_key_edit_export_file:
-            if (needsSaving()) {
-                Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
-            } else {
-                long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                long[] ids = new long[]{masterKeyId};
-                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
-                        null);
+            case android.R.id.home:
+                cancelClicked(); //TODO: why isn't this triggered on my tablet - one of many ui problems I've had with this device. A code compatibility issue or a Samsung fail?
                 return true;
-            }
-            return true;
-        case R.id.menu_key_edit_delete:
-            long rowId= ProviderHelper.getRowId(this,mDataUri);
-            Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
-            // Message is received after key is deleted
-            Handler returnHandler = new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-                    if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                        setResult(RESULT_CANCELED);
-                        finish();
+            case R.id.menu_key_edit_cancel:
+                cancelClicked();
+                return true;
+            case R.id.menu_key_edit_export_file:
+                if (needsSaving()) {
+                    Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
+                } else {
+                    long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
+                    long[] ids = new long[]{masterKeyId};
+                    mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
+                            null);
+                    return true;
+                }
+                return true;
+            case R.id.menu_key_edit_delete:
+                long rowId = ProviderHelper.getRowId(this, mDataUri);
+                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+                // Message is received after key is deleted
+                Handler returnHandler = new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        }
                     }
-                }};
-            mExportHelper.deleteKey(convertUri, returnHandler);
-            return true;
+                };
+                mExportHelper.deleteKey(convertUri, returnHandler);
+                return true;
 
-        case R.id.menu_key_edit_save:
-            saveClicked();
-            return true;
+            case R.id.menu_key_edit_save:
+                saveClicked();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -458,6 +449,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     /**
      * Build layout based on mUserId, mKeys and mKeysUsages Vectors. It creates Views for every user
      * id and key.
+     *
      * @param newKeys
      */
     private void buildLayout(boolean newKeys) {
@@ -471,7 +463,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
-        if(mIsPassPhraseSet){
+        if (mIsPassPhraseSet) {
             mChangePassphrase.setText(getString(R.string.btn_change_passphrase));
         }
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
@@ -532,15 +524,14 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
     }
 
-    public boolean hasPassphraseChanged()
-    {
+    public boolean hasPassphraseChanged() {
         if (mNoPassphrase != null) {
             if (mNoPassphrase.isChecked()) {
                 return mIsPassPhraseSet;
             } else {
                 return (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
             }
-        }else {
+        } else {
             return false;
         }
     }
@@ -622,21 +613,11 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                         Intent data = new Intent();
 
-                        // TODO: remove, now using uri!
-                        data.putExtra(RESULT_EXTRA_MASTER_KEY_ID, getMasterKeyId());
-
                         // return uri pointing to new created key
                         Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByKeyIdUri(
                                 String.valueOf(getMasterKeyId()));
                         data.setData(uri);
 
-                        ArrayList<String> userIds = null;
-                        try {
-                            userIds = getUserIds(mUserIdsView);
-                        } catch (PgpGeneralException e) {
-                            Log.e(Constants.TAG, "exception while getting user ids", e);
-                        }
-                        data.putExtra(RESULT_EXTRA_USER_ID, userIds.get(0));
                         setResult(RESULT_OK, data);
                         finish();
                     }

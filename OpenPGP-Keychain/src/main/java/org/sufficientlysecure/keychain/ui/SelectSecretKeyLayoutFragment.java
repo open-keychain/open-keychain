@@ -89,7 +89,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         mKeyUserId.setVisibility(View.VISIBLE);
         mKeyUserIdRest.setVisibility(View.VISIBLE);
         mKeyMasterKeyIdHex.setVisibility(View.VISIBLE);
-
     }
 
     public void setError(String error) {
@@ -134,7 +133,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        //We don't care about the Loader id
         return new CursorLoader(getActivity(), mReceivedUri, PROJECTION, null, null, null);
     }
 
@@ -179,8 +177,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         return;
     }
 
-    // Select Secret Key Activity delivers the intent which was sent by it using interface to Select
-    // Secret Key Fragment.Intent contains the passed Uri
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -192,7 +188,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
                     getActivity().getSupportLoaderManager().restartLoader(0, null, this);
 
                     mKeyUserId.setError(null);
-
                 }
                 break;
             }
