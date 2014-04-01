@@ -516,7 +516,7 @@ public class PgpKeyOperation {
             userIDIndex = 0;
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (!(origID.equals(saveParcel.originalPrimaryID) && !saveParcel.primaryIDChanged) || !saveParcel.newIDs[userIDIndex]) {
+                if (!(origID.equals(saveParcel.originalPrimaryID) && !saveParcel.primaryIDChanged)) {
                     Iterator<PGPSignature> sigs = masterPublicKey.getSignaturesForID(userId); //TODO: make sure this iterator only has signatures we are interested in
                     while (sigs.hasNext()) {
                         PGPSignature sig = sigs.next();
