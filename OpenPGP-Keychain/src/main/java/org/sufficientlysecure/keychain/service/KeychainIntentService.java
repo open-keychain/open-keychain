@@ -35,6 +35,8 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.*;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.*;
@@ -473,14 +475,26 @@ public class KeychainIntentService extends IntentService
 
                 long masterKeyId = saveParams.keys.get(0).getKeyID();
 
-                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
                 /* Operation */
                 if (!canSign) {
-                    keyOperations.changeSecretKeyPassphrase(
-                            ProviderHelper.getPGPSecretKeyRingByKeyId(this, masterKeyId),
+                    PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 50, 100));
+                    PGPSecretKeyRing keyRing = ProviderHelper
+                            .getPGPSecretKeyRingByKeyId(this, masterKeyId);
+                    keyRing = keyOperations.changeSecretKeyPassphrase(keyRing,
                             oldPassPhrase, newPassPhrase);
+                    setProgress(R.string.progress_saving_key_ring, 50, 100);
+                    ProviderHelper.saveKeyRing(this, keyRing);
+                    setProgress(R.string.progress_done, 100, 100);
                 } else {
-                    keyOperations.buildSecretKey(saveParams);
+                    PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
+                    PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
+                    PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, masterKeyId);
+                    PgpKeyOperation.Pair<PGPSecretKeyRing,PGPPublicKeyRing> pair =
+                        keyOperations.buildSecretKey(privkey, pubkey, saveParams);
+                    setProgress(R.string.progress_saving_key_ring, 90, 100);
+                    ProviderHelper.saveKeyRing(this, pair.first);
+                    ProviderHelper.saveKeyRing(this, pair.second);
+                    setProgress(R.string.progress_done, 100, 100);
                 }
                 PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
 
@@ -498,7 +512,7 @@ public class KeychainIntentService extends IntentService
                 boolean masterKey = data.getBoolean(GENERATE_KEY_MASTER_KEY);
 
                 /* Operation */
-                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
+                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
                 PGPSecretKey newKey = keyOperations.createKey(algorithm, keysize,
                         passphrase, masterKey);
 
@@ -529,7 +543,7 @@ public class KeychainIntentService extends IntentService
                                 getQuantityString(R.plurals.progress_generating, keysTotal),
                         keysCreated,
                         keysTotal);
-                PgpKeyOperation keyOperations = new PgpKeyOperation(this, this);
+                PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
 
                 PGPSecretKey masterKey = keyOperations.createKey(Id.choice.algorithm.rsa,
                         4096, passphrase, true);
@@ -771,14 +785,23 @@ public class KeychainIntentService extends IntentService
                 /* Operation */
                 String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
                         masterKeyId);
+                if (signaturePassPhrase == null) {
+                    throw new PgpGeneralException("Unable to obtain passphrase");
+                }
 
-                PgpKeyOperation keyOperation = new PgpKeyOperation(this, this);
-                PGPPublicKeyRing signedPubKeyRing = keyOperation.certifyKey(masterKeyId, pubKeyId,
+                PgpKeyOperation keyOperation = new PgpKeyOperation(new ProgressScaler(this, 0, 100, 100));
+                PGPPublicKeyRing publicRing = ProviderHelper
+                        .getPGPPublicKeyRingByKeyId(this, pubKeyId);
+                PGPPublicKey publicKey = publicRing.getPublicKey(pubKeyId);
+                PGPSecretKey certificationKey = PgpKeyHelper.getCertificationKey(this,
+                        masterKeyId);
+                publicKey = keyOperation.certifyKey(certificationKey, publicKey,
                         userIds, signaturePassPhrase);
+                publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
 
                 // store the signed key in our local cache
                 PgpImportExport pgpImportExport = new PgpImportExport(this, null);
-                int retval = pgpImportExport.storeKeyRingInCache(signedPubKeyRing);
+                int retval = pgpImportExport.storeKeyRingInCache(publicRing);
                 if (retval != Id.return_value.ok && retval != Id.return_value.updated) {
                     throw new PgpGeneralException("Failed to store signed key in local cache");
                 }
@@ -795,7 +818,11 @@ public class KeychainIntentService extends IntentService
         if (this.mIsCanceled) {
             return;
         }
-        Log.e(Constants.TAG, "KeychainIntentService Exception: ", e);
+        // contextualize the exception, if necessary
+        if(e instanceof PgpGeneralMsgIdException) {
+            e = ((PgpGeneralMsgIdException) e).getContextualized(this);
+        }
+        Log.e(Constants.TAG, "ApgService Exception: ", e);
         e.printStackTrace();
 
         Bundle data = new Bundle();
