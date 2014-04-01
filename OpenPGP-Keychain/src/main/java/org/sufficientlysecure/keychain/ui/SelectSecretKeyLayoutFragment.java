@@ -40,6 +40,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 
 public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int REQUEST_CODE_SELECT_KEY = 0x00008882;
+
     private TextView mKeyUserId;
     private TextView mKeyUserIdRest;
     private TextView mKeyMasterKeyIdHex;
@@ -51,14 +53,10 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
 
     private SelectSecretKeyCallback mCallback;
 
-    private static final int REQUEST_CODE_SELECT_KEY = 8882;
-
-    private static final int LOADER_ID = 0;
-
-    //The Projection we will retrieve, Master Key ID is for convenience sake,
-    //to avoid having to pass the Key Around
-    final String[] PROJECTION = new String[]{KeychainContract.UserIds.USER_ID
-            , KeychainContract.KeyRings.MASTER_KEY_ID};
+    final String[] PROJECTION = new String[]{
+            KeychainContract.UserIds.USER_ID,
+            KeychainContract.KeyRings.MASTER_KEY_ID
+    };
     final int INDEX_USER_ID = 0;
     final int INDEX_MASTER_KEY_ID = 1;
 
@@ -82,7 +80,6 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     }
 
     public void setSelectedKeyData(String userName, String email, String masterKeyHex) {
-
         mNoKeySelected.setVisibility(View.GONE);
 
         mKeyUserId.setText(userName);
@@ -124,11 +121,9 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         return view;
     }
 
-    //For AppSettingsFragment
-    public void selectKey(long masterKeyId) {
-        Uri buildUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(masterKeyId));
-        mReceivedUri = buildUri;
-        getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+    public void selectKey(Uri keyUri) {
+        mReceivedUri = keyUri;
+        getActivity().getSupportLoaderManager().restartLoader(0, null, this);
     }
 
     private void startSelectKeyActivity() {
@@ -188,13 +183,13 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
     // Secret Key Fragment.Intent contains the passed Uri
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode & 0xFFFF) {
+        switch (requestCode) {
             case REQUEST_CODE_SELECT_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     mReceivedUri = data.getData();
 
                     //Must be restartLoader() or the data will not be updated on selecting a new key
-                    getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+                    getActivity().getSupportLoaderManager().restartLoader(0, null, this);
 
                     mKeyUserId.setError(null);
 

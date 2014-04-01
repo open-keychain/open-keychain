@@ -621,7 +621,15 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
                     if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
                         Intent data = new Intent();
+
+                        // TODO: remove, now using uri!
                         data.putExtra(RESULT_EXTRA_MASTER_KEY_ID, getMasterKeyId());
+
+                        // return uri pointing to new created key
+                        Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByKeyIdUri(
+                                String.valueOf(getMasterKeyId()));
+                        data.setData(uri);
+
                         ArrayList<String> userIds = null;
                         try {
                             userIds = getUserIds(mUserIdsView);
