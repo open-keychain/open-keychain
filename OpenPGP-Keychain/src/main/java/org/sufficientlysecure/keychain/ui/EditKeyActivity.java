@@ -584,6 +584,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             saveParams.userIDs = getUserIds(mUserIdsView);
             saveParams.originalIDs = mUserIdsView.getOriginalIDs();
             saveParams.deletedIDs = mUserIdsView.getDeletedIDs();
+            saveParams.newIDs = toPrimitiveArray(mUserIdsView.getNewIDFlags());
             saveParams.primaryIDChanged = mUserIdsView.primaryChanged();
             saveParams.moddedKeys = toPrimitiveArray(mKeysView.getNeedsSavingArray());
             saveParams.deletedKeys = mKeysView.getDeletedKeys();

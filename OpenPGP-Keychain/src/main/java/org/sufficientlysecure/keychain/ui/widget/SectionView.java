@@ -252,6 +252,16 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         return mList;
     }
 
+    public List<Boolean> getNewIDFlags()
+    {
+        ArrayList<Boolean> mList = new ArrayList<Boolean>();
+        for (int i = 0; i < mEditors.getChildCount(); ++i) {
+            Editor editor = (Editor) mEditors.getChildAt(i);
+            mList.add(((UserIdEditor)editor).getIsNewID());
+        }
+        return mList;
+    }
+
     public List<Boolean> getNewKeysArray()
     {
         ArrayList<Boolean> mList = new ArrayList<Boolean>();

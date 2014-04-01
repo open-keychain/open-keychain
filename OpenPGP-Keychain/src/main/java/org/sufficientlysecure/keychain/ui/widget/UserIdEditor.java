@@ -261,4 +261,6 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     {
         return mOriginalID;
     }
+
+    public boolean getIsNewID() { return mIsNewId; }
 }
