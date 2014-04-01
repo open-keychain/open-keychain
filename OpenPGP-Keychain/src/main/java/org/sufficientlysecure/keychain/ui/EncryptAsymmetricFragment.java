@@ -26,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.beardedhen.androidbootstrap.BootstrapButton;
@@ -82,12 +81,14 @@ public class EncryptAsymmetricFragment extends Fragment {
         mSecretKeyId = signatureKeyId;
         // update key selection in EncryptActivity
         mKeySelectionListener.onSigningKeySelected(signatureKeyId);
+        updateView();
     }
 
     private void setEncryptionKeyIds(long[] encryptionKeyIds) {
         mEncryptionKeyIds = encryptionKeyIds;
         // update key selection in EncryptActivity
         mKeySelectionListener.onEncryptionKeysSelected(encryptionKeyIds);
+        updateView();
     }
 
     /**
@@ -113,7 +114,6 @@ public class EncryptAsymmetricFragment extends Fragment {
                     selectSecretKey();
                 } else {
                     setSignatureKeyId(Id.key.none);
-                    updateView();
                 }
             }
         });
@@ -259,7 +259,6 @@ public class EncryptAsymmetricFragment extends Fragment {
                     setEncryptionKeyIds(bundle
                             .getLongArray(SelectPublicKeyActivity.RESULT_EXTRA_MASTER_KEY_IDS));
                 }
-                updateView();
                 break;
             }
 
@@ -270,7 +269,6 @@ public class EncryptAsymmetricFragment extends Fragment {
                 } else {
                     setSignatureKeyId(Id.key.none);
                 }
-                updateView();
                 break;
             }
 
