@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
@@ -56,16 +57,16 @@ public class KeyListActivity extends DrawerActivity {
                 callIntentForDrawerItem(Constants.DrawerItems.IMPORT_KEYS);
 
                 return true;
-            case R.id.menu_key_list_export:
-                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
-
-                return true;
             case R.id.menu_key_list_create:
                 createKey();
 
                 return true;
             case R.id.menu_key_list_create_expert:
                 createKeyExpert();
+
+                return true;
+            case R.id.menu_key_list_export_public:
+                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
 
                 return true;
             case R.id.menu_key_list_secret_export:

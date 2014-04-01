@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/menu_key_list_import"
-        app:showAsAction="ifRoom|withText"
-        android:icon="@drawable/ic_action_add_person"
-        android:title="@string/menu_import" />
 
     <item
         android:id="@+id/menu_key_list_search"
@@ -16,23 +11,44 @@
         app:showAsAction="collapseActionView|ifRoom" />
 
     <item
-        android:id="@+id/menu_key_list_create"
-        app:showAsAction="never"
-        android:title="@string/menu_create_key" />
+        android:id="@+id/menu_key_list_add"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_action_add_person"
+        android:title="@string/menu_add_keys">
+        <menu>
+            <item
+                android:id="@+id/menu_key_list_import"
+                app:showAsAction="never"
+                android:title="@string/menu_import" />
 
-    <item
-        android:id="@+id/menu_key_list_create_expert"
-        app:showAsAction="never"
-        android:title="@string/menu_create_key_expert" />
+            <item
+                android:id="@+id/menu_key_list_create"
+                app:showAsAction="never"
+                android:title="@string/menu_create_key" />
+
+            <item
+                android:id="@+id/menu_key_list_create_expert"
+                app:showAsAction="never"
+                android:title="@string/menu_create_key_expert" />
+        </menu>
+    </item>
 
     <item
         android:id="@+id/menu_key_list_export"
-        app:showAsAction="never"
-        android:title="@string/menu_export_keys" />
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_action_import_export"
+        android:title="@string/menu_export_keys">
+        <menu>
+            <item
+                android:id="@+id/menu_key_list_export_public"
+                app:showAsAction="never"
+                android:title="@string/menu_export_public_keys" />
 
-    <item
-        android:id="@+id/menu_key_list_secret_export"
-        app:showAsAction="never"
-        android:title="@string/menu_export_secret_keys" />
+            <item
+                android:id="@+id/menu_key_list_secret_export"
+                app:showAsAction="never"
+                android:title="@string/menu_export_secret_keys" />
+        </menu>
+    </item>
 
 </menu>
