@@ -30,9 +30,9 @@ public class PagerTabStripAdapter extends FragmentPagerAdapter {
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
-        private final Class<?> clss;
-        private final Bundle args;
-        private final String title;
+        public final Class<?> clss;
+        public final Bundle args;
+        public final String title;
 
         TabInfo(Class<?> clss, Bundle args, String title) {
             this.clss = clss;

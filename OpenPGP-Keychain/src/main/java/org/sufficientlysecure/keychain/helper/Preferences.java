@@ -30,7 +30,7 @@ import java.util.Vector;
  * Singleton Implementation of a Preference Helper
  */
 public class Preferences {
-    private static Preferences mPreferences;
+    private static Preferences sPreferences;
     private SharedPreferences mSharedPreferences;
 
     public static synchronized Preferences getPreferences(Context context) {
@@ -38,10 +38,10 @@ public class Preferences {
     }
 
     public static synchronized Preferences getPreferences(Context context, boolean forceNew) {
-        if (mPreferences == null || forceNew) {
-            mPreferences = new Preferences(context);
+        if (sPreferences == null || forceNew) {
+            sPreferences = new Preferences(context);
         }
-        return mPreferences;
+        return sPreferences;
     }
 
     private Preferences(Context context) {

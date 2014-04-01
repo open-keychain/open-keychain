@@ -37,7 +37,7 @@ public class ViewKeyUserIdsAdapter extends CursorAdapter {
 
     private int mIndexUserId, mIndexRank;
 
-    final private ArrayList<Boolean> mCheckStates;
+    private final ArrayList<Boolean> mCheckStates;
 
     public ViewKeyUserIdsAdapter(Context context, Cursor c, int flags, boolean showCheckBoxes) {
         super(context, c, flags);

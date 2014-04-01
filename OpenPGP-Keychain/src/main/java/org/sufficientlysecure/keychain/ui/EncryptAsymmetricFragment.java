@@ -264,8 +264,8 @@ public class EncryptAsymmetricFragment extends Fragment {
 
             case RESULT_CODE_SECRET_KEYS: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Uri uri_master_key = data.getData();
-                    setSignatureKeyId(Long.valueOf(uri_master_key.getLastPathSegment()));
+                    Uri uriMasterKey = data.getData();
+                    setSignatureKeyId(Long.valueOf(uriMasterKey.getLastPathSegment()));
                 } else {
                     setSignatureKeyId(Id.key.none);
                 }

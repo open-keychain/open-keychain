@@ -61,7 +61,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
 
     private Choice mNewKeyAlgorithmChoice;
     private int mNewKeySize;
-    private boolean oldItemDeleted = false;
+    private boolean mOldItemDeleted = false;
     private ArrayList<String> mDeletedIDs = new ArrayList<String>();
     private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
     private boolean mCanEdit = true;
@@ -138,13 +138,13 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
      * {@inheritDoc}
      */
     public void onDeleted(Editor editor, boolean wasNewItem) {
-        oldItemDeleted |= !wasNewItem;
-        if (oldItemDeleted) {
-            if (mType == Id.type.user_id)
-                mDeletedIDs.add(((UserIdEditor)editor).getOriginalID());
-            else if (mType == Id.type.key)
-                mDeletedKeys.add(((KeyEditor)editor).getValue());
-
+        mOldItemDeleted |= !wasNewItem;
+        if (mOldItemDeleted) {
+            if (mType == Id.type.user_id) {
+                mDeletedIDs.add(((UserIdEditor) editor).getOriginalID());
+            } else if (mType == Id.type.key) {
+                mDeletedKeys.add(((KeyEditor) editor).getValue());
+            }
         }
         this.updateEditorsVisible();
         if (mEditorListener != null) {
@@ -167,7 +167,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     public boolean needsSaving()
     {
         //check each view for needs saving, take account of deleted items
-        boolean ret = oldItemDeleted;
+        boolean ret = mOldItemDeleted;
         for (int i = 0; i < mEditors.getChildCount(); ++i) {
             Editor editor = (Editor) mEditors.getChildAt(i);
             ret |= editor.needsSaving();
