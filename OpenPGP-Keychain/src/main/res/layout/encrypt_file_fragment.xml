@@ -1,80 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="4dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:paddingTop="4dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/filename"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="top|left"
-            android:inputType="textMultiLine|textUri"
-            android:lines="4"
-            android:maxLines="10"
-            android:minLines="2"
-            android:scrollbars="vertical" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/btn_browse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            bootstrapbutton:bb_icon_left="fa-folder-open"
-            bootstrapbutton:bb_roundedCorners="true"
-            bootstrapbutton:bb_size="default"
-            bootstrapbutton:bb_type="default" />
-    </LinearLayout>
-
-    <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
-        custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
-        custom:foldedIcon="fa-chevron-right"
-        custom:unFoldedIcon="fa-chevron-down">
-
-        <include layout="@layout/encrypt_content_adv_settings" />
-
-    </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/section_encrypt_and_or_sign"
-            android:layout_above="@+id/action_encrypt_file"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/action_encrypt_file"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:text="@string/btn_encrypt_file"
-            bootstrapbutton:bb_icon_left="fa-lock"
-            bootstrapbutton:bb_type="info"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    </RelativeLayout>
-</LinearLayout>
+            <EditText
+                android:id="@+id/filename"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="top|left"
+                android:inputType="textMultiLine|textUri"
+                android:lines="4"
+                android:maxLines="10"
+                android:minLines="2"
+                android:scrollbars="vertical" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/btn_browse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                bootstrapbutton:bb_icon_left="fa-folder-open"
+                bootstrapbutton:bb_roundedCorners="true"
+                bootstrapbutton:bb_size="default"
+                bootstrapbutton:bb_type="default" />
+        </LinearLayout>
+
+        <org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:foldedLabel="@string/btn_encryption_advanced_settings_show"
+            custom:unFoldedLabel="@string/btn_encryption_advanced_settings_hide"
+            custom:foldedIcon="fa-chevron-right"
+            custom:unFoldedIcon="fa-chevron-down">
+
+            <include layout="@layout/encrypt_content_adv_settings" />
+
+        </org.sufficientlysecure.keychain.ui.widget.FoldableLinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/section_encrypt_and_or_sign"
+                android:layout_above="@+id/action_encrypt_file"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/action_encrypt_file"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/btn_encrypt_file"
+                bootstrapbutton:bb_icon_left="fa-lock"
+                bootstrapbutton:bb_type="info"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
