@@ -182,12 +182,11 @@ public class EncryptMessageFragment extends Fragment {
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mEncryptInterface.getSignatureKey());
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mEncryptInterface.getSignatureKey());
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptInterface.getEncryptionKeys());
 
             boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
                     || mEncryptInterface.getEncryptionKeys().length == 0);
-            data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
             if (signOnly) {
                 message = fixBadCharactersForGmail(message);
             }
@@ -214,18 +213,15 @@ public class EncryptMessageFragment extends Fragment {
                     // get returned data bundle
                     Bundle data = message.getData();
 
-                    String output;
+                    String output = new String(data.getByteArray(KeychainIntentService.RESULT_BYTES));
+                    Log.d(Constants.TAG, "output: " + output);
+
                     if (toClipboard) {
-                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
-                        Log.d(Constants.TAG, "output: " + output);
                         ClipboardReflection.copyToClipboard(getActivity(), output);
                         AppMsg.makeText(getActivity(),
                                 R.string.encryption_to_clipboard_successful, AppMsg.STYLE_INFO)
                                 .show();
                     } else {
-                        output = data.getString(KeychainIntentService.RESULT_ENCRYPTED_STRING);
-                        Log.d(Constants.TAG, "output: " + output);
-
                         Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
                         // Type is set to text/plain so that encrypted messages can

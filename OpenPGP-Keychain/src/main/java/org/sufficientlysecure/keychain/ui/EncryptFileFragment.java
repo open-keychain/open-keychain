@@ -282,12 +282,8 @@ public class EncryptFileFragment extends Fragment {
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mEncryptInterface.getSignatureKey());
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mEncryptInterface.getSignatureKey());
             data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptInterface.getEncryptionKeys());
-
-            boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
-                    || mEncryptInterface.getEncryptionKeys().length == 0);
-            data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
         }
 
         Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
@@ -313,10 +309,6 @@ public class EncryptFileFragment extends Fragment {
                 super.handleMessage(message);
 
                 if (message.arg1 == KeychainIntentServiceHandler.MESSAGE_OKAY) {
-                    // get returned data bundle
-                    Bundle data = message.getData();
-
-                    String output;
                     AppMsg.makeText(getActivity(), R.string.encryption_successful,
                             AppMsg.STYLE_INFO).show();
 

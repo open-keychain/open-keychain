@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.*;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.*;
@@ -88,12 +86,10 @@ public class KeychainIntentService extends IntentService
     public static final int TARGET_STREAM = 3;
 
     // encrypt
-    public static final String ENCRYPT_SECRET_KEY_ID = "secret_key_id";
+    public static final String ENCRYPT_SIGNATURE_KEY_ID = "secret_key_id";
     public static final String ENCRYPT_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ENCRYPT_ENCRYPTION_KEYS_IDS = "encryption_keys_ids";
     public static final String ENCRYPT_COMPRESSION_ID = "compression_id";
-    public static final String ENCRYPT_GENERATE_SIGNATURE = "generate_signature";
-    public static final String ENCRYPT_SIGN_ONLY = "sign_only";
     public static final String ENCRYPT_MESSAGE_BYTES = "message_bytes";
     public static final String ENCRYPT_INPUT_FILE = "input_file";
     public static final String ENCRYPT_OUTPUT_FILE = "output_file";
@@ -152,7 +148,7 @@ public class KeychainIntentService extends IntentService
     public static final String RESULT_SIGNATURE_BYTES = "signature_data";
     public static final String RESULT_SIGNATURE_STRING = "signature_text";
     public static final String RESULT_ENCRYPTED_STRING = "encrypted_message";
-    public static final String RESULT_ENCRYPTED_BYTES = "encrypted_data";
+    public static final String RESULT_BYTES = "encrypted_data";
     public static final String RESULT_URI = "result_uri";
 
     // decrypt/verify
@@ -220,20 +216,17 @@ public class KeychainIntentService extends IntentService
                 /* Input */
                 int target = data.getInt(TARGET);
 
-                long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
+                long signatureKeyId = data.getLong(ENCRYPT_SIGNATURE_KEY_ID);
                 String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
                 int compressionId = data.getInt(ENCRYPT_COMPRESSION_ID);
-                boolean generateSignature = data.getBoolean(ENCRYPT_GENERATE_SIGNATURE);
-                boolean signOnly = data.getBoolean(ENCRYPT_SIGN_ONLY);
-
-                InputStream inStream = null;
-                long inLength = -1;
-                InputData inputData = null;
-                OutputStream outStream = null;
-                String streamFilename = null;
+                InputStream inStream;
+                long inLength;
+                InputData inputData;
+                OutputStream outStream;
+//                String streamFilename = null;
                 switch (target) {
                     case TARGET_BYTES: /* encrypting bytes directly */
                         byte[] bytes = data.getByteArray(ENCRYPT_MESSAGE_BYTES);
@@ -265,29 +258,30 @@ public class KeychainIntentService extends IntentService
 
                         break;
 
-                    case TARGET_STREAM: /* Encrypting stream from content uri */
-                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
-
-                        // InputStream
-                        InputStream in = getContentResolver().openInputStream(providerUri);
-                        inLength = PgpHelper.getLengthOfStream(in);
-                        inputData = new InputData(in, inLength);
-
-                        // OutputStream
-                        try {
-                            while (true) {
-                                streamFilename = PgpHelper.generateRandomFilename(32);
-                                if (streamFilename == null) {
-                                    throw new PgpGeneralException("couldn't generate random file name");
-                                }
-                                openFileInput(streamFilename).close();
-                            }
-                        } catch (FileNotFoundException e) {
-                            // found a name that isn't used yet
-                        }
-                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
-
-                        break;
+                    // TODO: not used currently
+//                    case TARGET_STREAM: /* Encrypting stream from content uri */
+//                        Uri providerUri = (Uri) data.getParcelable(ENCRYPT_PROVIDER_URI);
+//
+//                        // InputStream
+//                        InputStream in = getContentResolver().openInputStream(providerUri);
+//                        inLength = PgpHelper.getLengthOfStream(in);
+//                        inputData = new InputData(in, inLength);
+//
+//                        // OutputStream
+//                        try {
+//                            while (true) {
+//                                streamFilename = PgpHelper.generateRandomFilename(32);
+//                                if (streamFilename == null) {
+//                                    throw new PgpGeneralException("couldn't generate random file name");
+//                                }
+//                                openFileInput(streamFilename).close();
+//                            }
+//                        } catch (FileNotFoundException e) {
+//                            // found a name that isn't used yet
+//                        }
+//                        outStream = openFileOutput(streamFilename, Context.MODE_PRIVATE);
+//
+//                        break;
 
                     default:
                         throw new PgpGeneralException("No target choosen!");
@@ -299,45 +293,20 @@ public class KeychainIntentService extends IntentService
                         new PgpSignEncrypt.Builder(this, inputData, outStream);
                 builder.progress(this);
 
-                if (generateSignature) {
-                    Log.d(Constants.TAG, "generating signature...");
-                    builder.enableAsciiArmorOutput(useAsciiArmor)
-                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                            .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
+                builder.enableAsciiArmorOutput(useAsciiArmor)
+                        .compressionId(compressionId)
+                        .symmetricEncryptionAlgorithm(
+                                Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
+                        .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
+                        .encryptionKeyIds(encryptionKeyIds)
+                        .symmetricPassphrase(symmetricPassphrase)
+                        .signatureKeyId(signatureKeyId)
+                        .signatureHashAlgorithm(
+                                Preferences.getPreferences(this).getDefaultHashAlgorithm())
+                        .signaturePassphrase(
+                                PassphraseCacheService.getCachedPassphrase(this, signatureKeyId));
 
-                    builder.build().generateSignature();
-                } else if (signOnly) {
-                    Log.d(Constants.TAG, "sign only...");
-                    builder.enableAsciiArmorOutput(useAsciiArmor)
-                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                            .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
-
-                    builder.build().execute();
-                } else {
-                    Log.d(Constants.TAG, "encrypt...");
-                    builder.enableAsciiArmorOutput(useAsciiArmor)
-                            .compressionId(compressionId)
-                            .symmetricEncryptionAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
-                            .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
-                            .encryptionKeyIds(encryptionKeyIds)
-                            .symmetricPassphrase(symmetricPassphrase)
-                            .signatureKeyId(secretKeyId)
-                            .signatureHashAlgorithm(
-                                    Preferences.getPreferences(this).getDefaultHashAlgorithm())
-                            .signaturePassphrase(
-                                    PassphraseCacheService.getCachedPassphrase(this, secretKeyId));
-
-                    builder.build().execute();
-                }
+                builder.build().execute();
 
                 outStream.close();
 
@@ -347,33 +316,20 @@ public class KeychainIntentService extends IntentService
 
                 switch (target) {
                     case TARGET_BYTES:
-                        if (useAsciiArmor) {
-                            String output = new String(
-                                    ((ByteArrayOutputStream) outStream).toByteArray());
-                            if (generateSignature) {
-                                resultData.putString(RESULT_SIGNATURE_STRING, output);
-                            } else {
-                                resultData.putString(RESULT_ENCRYPTED_STRING, output);
-                            }
-                        } else {
-                            byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
-                            if (generateSignature) {
-                                resultData.putByteArray(RESULT_SIGNATURE_BYTES, output);
-                            } else {
-                                resultData.putByteArray(RESULT_ENCRYPTED_BYTES, output);
-                            }
-                        }
+                        byte output[] = ((ByteArrayOutputStream) outStream).toByteArray();
+
+                        resultData.putByteArray(RESULT_BYTES, output);
 
                         break;
                     case TARGET_URI:
                         // nothing, file was written, just send okay
 
                         break;
-                    case TARGET_STREAM:
-                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
-                        resultData.putString(RESULT_URI, uri);
-
-                        break;
+//                    case TARGET_STREAM:
+//                        String uri = DataStream.buildDataStreamUri(streamFilename).toString();
+//                        resultData.putString(RESULT_URI, uri);
+//
+//                        break;
                 }
 
                 OtherHelper.logDebugBundle(resultData, "resultData");
