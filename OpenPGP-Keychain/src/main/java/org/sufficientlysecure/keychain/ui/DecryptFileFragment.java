@@ -182,9 +182,6 @@ public class DecryptFileFragment extends DecryptFragment {
 
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
 
-        // TODO
-        data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, false);
-
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService

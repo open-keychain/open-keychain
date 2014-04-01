@@ -129,9 +129,6 @@ public class DecryptMessageFragment extends DecryptFragment {
         data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
 
-        // TODO
-        data.putBoolean(KeychainIntentService.DECRYPT_ASSUME_SYMMETRIC, false);
-
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 
         // Message is received after encrypting is done in KeychainIntentService
