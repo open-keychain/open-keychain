@@ -73,6 +73,7 @@ public class EncryptSymmetricFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                // update passphrase in EncryptActivity
                 mPassphraseUpdateListener.onPassphraseUpdate(s.toString());
             }
         });
@@ -87,6 +88,7 @@ public class EncryptSymmetricFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                // update passphrase in EncryptActivity
                 mPassphraseUpdateListener.onPassphraseAgainUpdate(s.toString());
             }
         });

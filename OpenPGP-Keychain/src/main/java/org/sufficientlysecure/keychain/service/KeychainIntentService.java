@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.util.*;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -99,6 +98,7 @@ public class KeychainIntentService extends IntentService
     public static final String ENCRYPT_INPUT_FILE = "input_file";
     public static final String ENCRYPT_OUTPUT_FILE = "output_file";
     public static final String ENCRYPT_PROVIDER_URI = "provider_uri";
+    public static final String ENCRYPT_SYMMETRIC_PASSPHRASE = "passphrase";
 
     // decrypt/verify
     public static final String DECRYPT_CIPHERTEXT_BYTES = "ciphertext_bytes";
@@ -221,7 +221,7 @@ public class KeychainIntentService extends IntentService
                 int target = data.getInt(TARGET);
 
                 long secretKeyId = data.getLong(ENCRYPT_SECRET_KEY_ID);
-                String encryptionPassphrase = data.getString(GENERATE_KEY_SYMMETRIC_PASSPHRASE);
+                String symmetricPassphrase = data.getString(ENCRYPT_SYMMETRIC_PASSPHRASE);
 
                 boolean useAsciiArmor = data.getBoolean(ENCRYPT_USE_ASCII_ARMOR);
                 long encryptionKeyIds[] = data.getLongArray(ENCRYPT_ENCRYPTION_KEYS_IDS);
@@ -329,7 +329,7 @@ public class KeychainIntentService extends IntentService
                                     Preferences.getPreferences(this).getDefaultEncryptionAlgorithm())
                             .signatureForceV3(Preferences.getPreferences(this).getForceV3Signatures())
                             .encryptionKeyIds(encryptionKeyIds)
-                            .encryptionPassphrase(encryptionPassphrase)
+                            .symmetricPassphrase(symmetricPassphrase)
                             .signatureKeyId(secretKeyId)
                             .signatureHashAlgorithm(
                                     Preferences.getPreferences(this).getDefaultHashAlgorithm())

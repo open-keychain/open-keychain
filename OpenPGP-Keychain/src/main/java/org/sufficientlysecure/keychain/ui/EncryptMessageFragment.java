@@ -125,25 +125,26 @@ public class EncryptMessageFragment extends Fragment {
         if (mEncryptInterface.isModeSymmetric()) {
             // symmetric encryption
 
-            boolean gotPassPhrase = false;
-            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
-                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
-                return;
-            }
-
-            gotPassPhrase = (mEncryptInterface.getPassphrase().length() != 0);
+            boolean gotPassPhrase = (mEncryptInterface.getPassphrase() != null
+                    && mEncryptInterface.getPassphrase().length() != 0);
             if (!gotPassPhrase) {
                 AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
                 return;
             }
+
+            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
+                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                return;
+            }
+
         } else {
             // asymmetric encryption
 
-            boolean encryptIt = (mEncryptInterface.getEncryptionKeys() != null
+            boolean gotEncryptionKeys = (mEncryptInterface.getEncryptionKeys() != null
                     && mEncryptInterface.getEncryptionKeys().length > 0);
 
-            if (!encryptIt && mEncryptInterface.getSignatureKey() == 0) {
+            if (!gotEncryptionKeys && mEncryptInterface.getSignatureKey() == 0) {
                 AppMsg.makeText(getActivity(), R.string.select_encryption_or_signature_key,
                         AppMsg.STYLE_ALERT).show();
                 return;
@@ -164,13 +165,14 @@ public class EncryptMessageFragment extends Fragment {
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
+        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
+
         // fill values for this action
         Bundle data = new Bundle();
 
-        long encryptionKeyIds[] = null;
-        int compressionId = 0;
-        boolean signOnly = false;
-        long mSecretKeyIdToPass = 0;
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
+
+        String message = mMessage.getText().toString();
 
         if (mEncryptInterface.isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -178,33 +180,26 @@ public class EncryptMessageFragment extends Fragment {
             if (passphrase.length() == 0) {
                 passphrase = null;
             }
-            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
+            data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            mSecretKeyIdToPass = mEncryptInterface.getSignatureKey();
-            encryptionKeyIds = mEncryptInterface.getEncryptionKeys();
-            signOnly = (mEncryptInterface.getEncryptionKeys() == null
+            data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mEncryptInterface.getSignatureKey());
+            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptInterface.getEncryptionKeys());
+
+            boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
                     || mEncryptInterface.getEncryptionKeys().length == 0);
+            data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
+            if (signOnly) {
+                message = fixBadCharactersForGmail(message);
+            }
         }
 
-        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
-
-        // choose default settings, target and data bundle by target
-        compressionId = Preferences.getPreferences(getActivity()).getDefaultMessageCompression();
-
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-
-        String message = mMessage.getText().toString();
-        if (signOnly) {
-            message = fixBadCharactersForGmail(message);
-        }
         data.putByteArray(KeychainIntentService.ENCRYPT_MESSAGE_BYTES, message.getBytes());
 
-        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyIdToPass);
         data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, true);
-        data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
+
+        int compressionId = Preferences.getPreferences(getActivity()).getDefaultMessageCompression();
         data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
 //        data.putBoolean(KeychainIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);
-        data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

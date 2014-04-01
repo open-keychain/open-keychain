@@ -79,14 +79,15 @@ public class EncryptAsymmetricFragment extends Fragment {
 
     private void setSignatureKeyId(long signatureKeyId) {
         mSecretKeyId = signatureKeyId;
+        // update key selection in EncryptActivity
         mKeySelectionListener.onSigningKeySelected(signatureKeyId);
     }
 
     private void setEncryptionKeyIds(long[] encryptionKeyIds) {
         mEncryptionKeyIds = encryptionKeyIds;
+        // update key selection in EncryptActivity
         mKeySelectionListener.onEncryptionKeysSelected(encryptionKeyIds);
     }
-
 
     /**
      * Inflate the layout for this fragment
@@ -138,6 +139,7 @@ public class EncryptAsymmetricFragment extends Fragment {
      */
     private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds) {
         if (preselectedSignatureKeyId != 0) {
+            // TODO: don't use bouncy castle objects!
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(getActivity(),
                     preselectedSignatureKeyId);
             PGPSecretKey masterKey;
@@ -155,6 +157,8 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
+                // TODO: don't use bouncy castle objects!
+
                 PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(getActivity(),
                         preselectedEncryptionKeyIds[i]);
                 PGPPublicKey masterKey;
@@ -197,7 +201,7 @@ public class EncryptAsymmetricFragment extends Fragment {
         } else {
             String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
-            // TODO: make it nice and use helper!
+            // TODO: don't use bouncy castle objects!
             PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(getActivity(),
                     mSecretKeyId);
             if (keyRing != null) {
@@ -215,9 +219,6 @@ public class EncryptAsymmetricFragment extends Fragment {
             mMainUserIdRest.setText(uidExtra);
             mSign.setChecked(true);
         }
-
-//TODO
-//        updateActionBarButtons();
     }
 
     private void selectPublicKeys() {

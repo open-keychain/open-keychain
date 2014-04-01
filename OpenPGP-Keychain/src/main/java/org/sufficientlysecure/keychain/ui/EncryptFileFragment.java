@@ -223,29 +223,30 @@ public class EncryptFileFragment extends Fragment {
         if (mEncryptInterface.isModeSymmetric()) {
             // symmetric encryption
 
-            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
-                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
-                return;
-            }
-
-            boolean gotPassPhrase = (mEncryptInterface.getPassphrase().length() != 0);
+            boolean gotPassPhrase = (mEncryptInterface.getPassphrase() != null
+                    && mEncryptInterface.getPassphrase().length() != 0);
             if (!gotPassPhrase) {
                 AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
                 return;
             }
+
+            if (!mEncryptInterface.getPassphrase().equals(mEncryptInterface.getPassphraseAgain())) {
+                AppMsg.makeText(getActivity(), R.string.passphrases_do_not_match, AppMsg.STYLE_ALERT).show();
+                return;
+            }
         } else {
             // asymmetric encryption
 
-            boolean encryptIt = (mEncryptInterface.getEncryptionKeys() != null
+            boolean gotEncryptionKeys = (mEncryptInterface.getEncryptionKeys() != null
                     && mEncryptInterface.getEncryptionKeys().length > 0);
-            // for now require at least one form of encryption for files
-            if (!encryptIt) {
+
+            if (!gotEncryptionKeys) {
                 AppMsg.makeText(getActivity(), R.string.select_encryption_key, AppMsg.STYLE_ALERT).show();
                 return;
             }
 
-            if (!encryptIt && mEncryptInterface.getSignatureKey() == 0) {
+            if (!gotEncryptionKeys && mEncryptInterface.getSignatureKey() == 0) {
                 AppMsg.makeText(getActivity(), R.string.select_encryption_or_signature_key,
                         AppMsg.STYLE_ALERT).show();
                 return;
@@ -266,14 +267,12 @@ public class EncryptFileFragment extends Fragment {
         // Send all information needed to service to edit key in other thread
         Intent intent = new Intent(getActivity(), KeychainIntentService.class);
 
+        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
+
         // fill values for this action
         Bundle data = new Bundle();
 
-        boolean useAsciiArmor = true;
-        long encryptionKeyIds[] = null;
-        int compressionId = 0;
-        boolean signOnly = false;
-        long mSecretKeyIdToPass = 0;
+        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
 
         if (mEncryptInterface.isModeSymmetric()) {
             Log.d(Constants.TAG, "Symmetric encryption enabled!");
@@ -281,21 +280,15 @@ public class EncryptFileFragment extends Fragment {
             if (passphrase.length() == 0) {
                 passphrase = null;
             }
-            data.putString(KeychainIntentService.GENERATE_KEY_SYMMETRIC_PASSPHRASE, passphrase);
+            data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            mSecretKeyIdToPass = mEncryptInterface.getSignatureKey();
-            encryptionKeyIds = mEncryptInterface.getEncryptionKeys();
-            signOnly = (mEncryptInterface.getEncryptionKeys() == null
+            data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mEncryptInterface.getSignatureKey());
+            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptInterface.getEncryptionKeys());
+
+            boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
                     || mEncryptInterface.getEncryptionKeys().length == 0);
+            data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
         }
-
-        intent.setAction(KeychainIntentService.ACTION_ENCRYPT_SIGN);
-
-        // choose default settings, target and data bundle by target
-        useAsciiArmor = mAsciiArmor.isChecked();
-        compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
-
-        data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_URI);
 
         Log.d(Constants.TAG, "mInputFilename=" + mInputFilename + ", mOutputFilename="
                 + mOutputFilename);
@@ -303,13 +296,12 @@ public class EncryptFileFragment extends Fragment {
         data.putString(KeychainIntentService.ENCRYPT_INPUT_FILE, mInputFilename);
         data.putString(KeychainIntentService.ENCRYPT_OUTPUT_FILE, mOutputFilename);
 
-
-        data.putLong(KeychainIntentService.ENCRYPT_SECRET_KEY_ID, mSecretKeyIdToPass);
+        boolean useAsciiArmor = mAsciiArmor.isChecked();
         data.putBoolean(KeychainIntentService.ENCRYPT_USE_ASCII_ARMOR, useAsciiArmor);
-        data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, encryptionKeyIds);
+
+        int compressionId = ((Choice) mFileCompression.getSelectedItem()).getId();
         data.putInt(KeychainIntentService.ENCRYPT_COMPRESSION_ID, compressionId);
 //        data.putBoolean(KeychainIntentService.ENCRYPT_GENERATE_SIGNATURE, mGenerateSignature);
-        data.putBoolean(KeychainIntentService.ENCRYPT_SIGN_ONLY, signOnly);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
 

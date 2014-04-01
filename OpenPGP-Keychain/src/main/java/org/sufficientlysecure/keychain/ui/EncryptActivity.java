@@ -71,17 +71,11 @@ public class EncryptActivity extends DrawerActivity implements
     private static final int PAGER_CONTENT_MESSAGE = 0;
     private static final int PAGER_CONTENT_FILE = 1;
 
-    // model
+    // model useb by message and file fragment
     private long mEncryptionKeyIds[] = null;
     private long mSigningKeyId = Id.key.none;
     private String mPassphrase;
     private String mPassphraseAgain;
-
-    private boolean mAsciiArmorDemand = false;
-    private boolean mOverrideAsciiArmor = false;
-
-    private boolean mGenerateSignature = false;
-
 
     @Override
     public void onSigningKeySelected(long signingKeyId) {
@@ -208,8 +202,8 @@ public class EncryptActivity extends DrawerActivity implements
         }
 
         if (extras.containsKey(EXTRA_ASCII_ARMOR)) {
-            mAsciiArmorDemand = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
-            mFileFragmentBundle.putBoolean(EncryptFileFragment.ARG_ASCII_ARMOR, mAsciiArmorDemand);
+            boolean requestAsciiArmor = extras.getBoolean(EXTRA_ASCII_ARMOR, true);
+            mFileFragmentBundle.putBoolean(EncryptFileFragment.ARG_ASCII_ARMOR, requestAsciiArmor);
         }
 
         String textData = extras.getString(EXTRA_TEXT);
@@ -251,52 +245,5 @@ public class EncryptActivity extends DrawerActivity implements
                     "Include the extra 'text' or an Uri with setData() in your Intent!");
         }
     }
-
-
-//    /**
-//     * Update ActionBar buttons based on current selection in view
-//     */
-//    private void updateActionBarButtons() {
-//        switch (mSource.getCurrentView().getId()) {
-//            case R.id.sourceFile: {
-//                mEncryptShare.setVisibility(View.GONE);
-//                mEncryptClipboard.setVisibility(View.GONE);
-//                mEncryptFile.setVisibility(View.VISIBLE);
-//                break;
-//            }
-//
-//            case R.id.sourceMessage: {
-//                mSourceLabel.setText(R.string.label_message);
-//
-//                mEncryptShare.setVisibility(View.VISIBLE);
-//                mEncryptClipboard.setVisibility(View.VISIBLE);
-//                mEncryptFile.setVisibility(View.GONE);
-//
-//                if (mMode.getCurrentView().getId() == R.id.modeSymmetric) {
-//                    mEncryptShare.setEnabled(true);
-//                    mEncryptClipboard.setEnabled(true);
-//                } else {
-//                    if (mEncryptionKeyIds == null || mEncryptionKeyIds.length == 0) {
-//                        if (mSecretKeyId == 0) {
-//                            mEncryptShare.setEnabled(false);
-//                            mEncryptClipboard.setEnabled(false);
-//                        } else {
-//                            mEncryptShare.setEnabled(true);
-//                            mEncryptClipboard.setEnabled(true);
-//                        }
-//                    } else {
-//                        mEncryptShare.setEnabled(true);
-//                        mEncryptClipboard.setEnabled(true);
-//                    }
-//                }
-//                break;
-//            }
-//
-//            default: {
-//                break;
-//            }
-//        }
-//
-//    }
 
 }
