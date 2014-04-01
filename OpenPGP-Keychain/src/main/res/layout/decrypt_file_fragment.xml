@@ -1,75 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bootstrapbutton="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="4dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:orientation="vertical">
-
-    <include layout="@layout/decrypt_signature_include" />
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:paddingTop="4dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/decrypt_file_filename"
-            android:layout_width="0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="top|left"
-            android:inputType="textMultiLine|textUri"
-            android:lines="4"
-            android:maxLines="10"
-            android:minLines="2"
-            android:scrollbars="vertical" />
+        <include layout="@layout/decrypt_signature_include" />
 
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/decrypt_file_browse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="4dp"
-            bootstrapbutton:bb_icon_left="fa-folder-open"
-            bootstrapbutton:bb_roundedCorners="true"
-            bootstrapbutton:bb_size="default"
-            bootstrapbutton:bb_type="default" />
-    </LinearLayout>
-
-    <CheckBox
-        android:id="@+id/decrypt_file_delete_after_decryption"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/label_delete_after_decryption" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            style="@style/SectionHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/section_decrypt_verify"
-            android:layout_above="@+id/decrypt_file_action_decrypt"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <com.beardedhen.androidbootstrap.BootstrapButton
-            android:id="@+id/decrypt_file_action_decrypt"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:text="@string/btn_decrypt_verify"
-            bootstrapbutton:bb_icon_left="fa-unlock"
-            bootstrapbutton:bb_type="info"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    </RelativeLayout>
-</LinearLayout>
+            <EditText
+                android:id="@+id/decrypt_file_filename"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="top|left"
+                android:inputType="textMultiLine|textUri"
+                android:lines="4"
+                android:maxLines="10"
+                android:minLines="2"
+                android:scrollbars="vertical" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/decrypt_file_browse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                bootstrapbutton:bb_icon_left="fa-folder-open"
+                bootstrapbutton:bb_roundedCorners="true"
+                bootstrapbutton:bb_size="default"
+                bootstrapbutton:bb_type="default" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/decrypt_file_delete_after_decryption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_delete_after_decryption" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                style="@style/SectionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/section_decrypt_verify"
+                android:layout_above="@+id/decrypt_file_action_decrypt"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <com.beardedhen.androidbootstrap.BootstrapButton
+                android:id="@+id/decrypt_file_action_decrypt"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:text="@string/btn_decrypt_verify"
+                bootstrapbutton:bb_icon_left="fa-unlock"
+                bootstrapbutton:bb_type="info"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
