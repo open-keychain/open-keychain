@@ -127,7 +127,7 @@ public abstract class RemoteService extends Service {
      *
      * @return package name
      */
-    private String getCurrentCallingPackage() {
+    protected String getCurrentCallingPackage() {
         // TODO:
         // callingPackages contains more than one entry when sharedUserId has been used...
         String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
