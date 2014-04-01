@@ -212,7 +212,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                         fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
                     }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    ((TextView) findViewById(R.id.fingerprint)).setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                    ((TextView) findViewById(R.id.fingerprint))
+                        .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;
             case LOADER_ID_USER_IDS:

@@ -124,7 +124,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                 return true;
             case R.id.menu_key_view_export_file:
                 long masterKeyId =
-                        ProviderHelper.getPublicMasterKeyId(this, Long.valueOf(mDataUri.getLastPathSegment()));
+                        ProviderHelper.getPublicMasterKeyId(this,
+                            Long.valueOf(mDataUri.getLastPathSegment()));
                 long[] ids = new long[] {masterKeyId};
                 mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
                         Constants.Path.APP_DIR_FILE_PUB, null);

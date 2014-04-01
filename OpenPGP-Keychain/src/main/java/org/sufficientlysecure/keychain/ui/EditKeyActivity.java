@@ -125,7 +125,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
     public void somethingChanged() {
         ActivityCompat.invalidateOptionsMenu(this);
-        //Toast.makeText(this, "Needs saving: " + Boolean.toString(mNeedsSaving) + "(" + Boolean.toString(mUserIdsView.needsSaving()) + ", " + Boolean.toString(mKeysView.needsSaving()) + ")", Toast.LENGTH_LONG).show();
     }
 
     public void onDeleted(Editor e, boolean wasNewItem) {
@@ -329,7 +328,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                cancelClicked(); //TODO: why isn't this triggered on my tablet - one of many ui problems I've had with this device. A code compatibility issue or a Samsung fail?
+                cancelClicked();
+                // TODO: why isn't this triggered on my tablet - one of many ui problems
+                // I've had with this device. A code compatibility issue or a Samsung fail?
                 return true;
             case R.id.menu_key_edit_cancel:
                 cancelClicked();
@@ -340,8 +341,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 } else {
                     long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
                     long[] ids = new long[] {masterKeyId};
-                    mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
-                            null);
+                    mExportHelper.showExportKeysDialog(
+                        ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC, null);
                     return true;
                 }
                 return true;

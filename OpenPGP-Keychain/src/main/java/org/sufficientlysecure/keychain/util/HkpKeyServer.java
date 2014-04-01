@@ -69,20 +69,22 @@ public class HkpKeyServer extends KeyServer {
     /**
      * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
      * <ul>
-     * <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key. Either the 16-digit or 8-digit
-     * key IDs are acceptable, but obviously the fingerprint is best.</li>
+     * <li>%<b>keyid</b>% = this is either the fingerprint or the key ID of the key.
+     * Either the 16-digit or 8-digit key IDs are acceptable, but obviously the fingerprint is best.
+     * </li>
      * <li>%<b>algo</b>% = the algorithm number, (i.e. 1==RSA, 17==DSA, etc).
      * See <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a></li>
      * <li>%<b>keylen</b>% = the key length (i.e. 1024, 2048, 4096, etc.)</li>
      * <li>%<b>creationdate</b>% = creation date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     * 1/1/1970 UTC time)</li>
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
      * <li>%<b>expirationdate</b>% = expiration date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     * 1/1/1970 UTC time)</li>
-     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any
+     * order. The meaning of "disabled" is implementation-specific. Note that individual flags may
+     * be unimplemented, so the absence of a given flag does not necessarily mean the absence of the
+     * detail.
      * <ul>
      * <li>r == revoked</li>
      * <li>d == disabled</li>
@@ -91,7 +93,8 @@ public class HkpKeyServer extends KeyServer {
      * </li>
      * </ul>
      *
-     * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">5.2. Machine Readable Indexes</a>
+     * @see <a href="http://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-5.2">
+     * 5.2. Machine Readable Indexes</a>
      * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
      */
     public static final Pattern PUB_KEY_LINE = Pattern
@@ -102,17 +105,19 @@ public class HkpKeyServer extends KeyServer {
     /**
      * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
      * <ul>
-     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that isn't 7-bit
-     * safe as well as for the ":" character.  Any other characters may be escaped, as desired.</li>
+     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that
+     * isn't 7-bit safe as well as for the ":" character.  Any other characters may be escaped, as
+     * desired.</li>
      * <li>%<b>creationdate</b>% = creation date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     * 1/1/1970 UTC time)</li>
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
      * <li>%<b>expirationdate</b>% = expiration date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of seconds since
-     * 1/1/1970 UTC time)</li>
-     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any order. The
-     * meaning of "disabled" is implementation-specific. Note that individual flags may be unimplemented, so
-     * the absence of a given flag does not necessarily mean the absence of the detail.
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any
+     * order. The meaning of "disabled" is implementation-specific. Note that individual flags may
+     * be unimplemented, so the absence of a given flag does not necessarily mean the absence of
+     * the detail.
      * <ul>
      * <li>r == revoked</li>
      * <li>d == disabled</li>
@@ -244,8 +249,7 @@ public class HkpKeyServer extends KeyServer {
             entry.setAlgorithm(ImportKeysListEntry.getAlgorithmFromId(algorithmId));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
-            // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
-            // and https://github.com/openpgp-keychain/openpgp-keychain/issues/259#issuecomment-38168176
+            // see http://bit.ly/1d4bxbk and http://bit.ly/1gD1wwr
             String fingerprintOrKeyId = matcher.group(1);
             if (fingerprintOrKeyId.length() > 16) {
                 entry.setFingerPrintHex(fingerprintOrKeyId.toLowerCase(Locale.US));

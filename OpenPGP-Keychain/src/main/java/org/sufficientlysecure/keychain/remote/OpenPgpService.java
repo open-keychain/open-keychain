@@ -188,7 +188,8 @@ public class OpenPgpService extends RemoteService {
     }
 
     private Intent encryptAndSignImpl(Intent data, ParcelFileDescriptor input,
-                                      ParcelFileDescriptor output, AccountSettings accSettings, boolean sign) {
+                                      ParcelFileDescriptor output, AccountSettings accSettings,
+                                      boolean sign) {
         try {
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
@@ -292,7 +293,8 @@ public class OpenPgpService extends RemoteService {
 
                 PgpDecryptVerify.Builder builder = new PgpDecryptVerify.Builder(this, inputData, os);
                 builder.allowSymmetricDecryption(false) // no support for symmetric encryption
-                        .allowedKeyIds(allowedKeyIds) // allow only private keys associated with accounts of this app
+                        .allowedKeyIds(allowedKeyIds) // allow only private keys associated with
+                                                      // accounts of this app
                         .passphrase(passphrase);
 
                 // TODO: currently does not support binary signed-only content
@@ -300,9 +302,11 @@ public class OpenPgpService extends RemoteService {
 
                 if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                     // get PendingIntent for passphrase input, add it to given params and return to client
-                    Intent passphraseBundle = getPassphraseBundleIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
+                    Intent passphraseBundle =
+                        getPassphraseBundleIntent(data, decryptVerifyResult.getKeyIdPassphraseNeeded());
                     return passphraseBundle;
-                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
+                                decryptVerifyResult.getStatus()) {
                     throw new PgpGeneralException("Decryption of symmetric content not supported by API!");
                 }
 
@@ -455,7 +459,8 @@ public class OpenPgpService extends RemoteService {
             } else if (OpenPgpApi.ACTION_DECRYPT_VERIFY.equals(action)) {
                 String currentPkg = getCurrentCallingPackage();
                 Set<Long> allowedKeyIds =
-                        ProviderHelper.getAllKeyIdsForApp(mContext, KeychainContract.ApiAccounts.buildBaseUri(currentPkg));
+                    ProviderHelper.getAllKeyIdsForApp(mContext,
+                        KeychainContract.ApiAccounts.buildBaseUri(currentPkg));
                 return decryptAndVerifyImpl(data, input, output, allowedKeyIds);
             } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
                 return getKeyImpl(data);

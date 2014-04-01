@@ -154,7 +154,8 @@ public class DecryptMessageFragment extends DecryptFragment {
 
                     if (PgpDecryptVerifyResult.KEY_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(decryptVerifyResult.getKeyIdPassphraseNeeded());
-                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED == decryptVerifyResult.getStatus()) {
+                    } else if (PgpDecryptVerifyResult.SYMMETRIC_PASSHRASE_NEEDED ==
+                                    decryptVerifyResult.getStatus()) {
                         showPassphraseDialog(Id.key.symmetric);
                     } else {
                         AppMsg.makeText(getActivity(), R.string.decryption_successful,

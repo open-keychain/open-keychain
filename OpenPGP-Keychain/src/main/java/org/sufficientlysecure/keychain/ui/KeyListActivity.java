@@ -66,11 +66,13 @@ public class KeyListActivity extends DrawerActivity {
 
                 return true;
             case R.id.menu_key_list_export_public:
-                mExportHelper.showExportKeysDialog(null, Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
+                mExportHelper.showExportKeysDialog(null,
+                    Id.type.public_key, Constants.Path.APP_DIR_FILE_PUB, null);
 
                 return true;
             case R.id.menu_key_list_secret_export:
-                mExportHelper.showExportKeysDialog(null, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC, null);
+                mExportHelper.showExportKeysDialog(null, Id.type.secret_key,
+                    Constants.Path.APP_DIR_FILE_SEC, null);
 
                 return true;
             default:

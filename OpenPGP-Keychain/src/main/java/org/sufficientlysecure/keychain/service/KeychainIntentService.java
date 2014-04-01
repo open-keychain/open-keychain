@@ -485,10 +485,13 @@ public class KeychainIntentService extends IntentService
                     ProviderHelper.saveKeyRing(this, keyRing);
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
-                    PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
-                    PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
-                    PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, masterKeyId);
-                    PgpKeyOperation.Pair<PGPSecretKeyRing,PGPPublicKeyRing> pair =
+                    PgpKeyOperation keyOperations =
+                        new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
+                    PGPSecretKeyRing privkey =
+                        ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
+                    PGPPublicKeyRing pubkey =
+                        ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, masterKeyId);
+                    PgpKeyOperation.Pair<PGPSecretKeyRing, PGPPublicKeyRing> pair =
                         keyOperations.buildSecretKey(privkey, pubkey, saveParams);
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     ProviderHelper.saveKeyRing(this, pair.first);
@@ -745,11 +748,14 @@ public class KeychainIntentService extends IntentService
 
                     // verify downloaded key by comparing fingerprints
                     if (entry.getFingerPrintHex() != null) {
-                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(downloadedKey.getPublicKey().getFingerprint());
+                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(
+                            downloadedKey.getPublicKey().getFingerprint());
                         if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
-                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as the requested fingerprint!");
+                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as " +
+                                    "the requested fingerprint!");
                         } else {
-                            throw new PgpGeneralException("fingerprint of downloaded key is NOT the same as the requested fingerprint!");
+                            throw new PgpGeneralException("fingerprint of downloaded key is " +
+                                "NOT the same as the requested fingerprint!");
                         }
                     }
 

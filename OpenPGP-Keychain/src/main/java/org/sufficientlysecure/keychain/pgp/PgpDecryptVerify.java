@@ -684,7 +684,8 @@ public class PgpDecryptVerify {
     }
 
     private static boolean verifyPrimaryKeyBinding(PGPSignatureSubpacketVector pkts,
-                                                   PGPPublicKey masterPublicKey, PGPPublicKey signingPublicKey) {
+                                                   PGPPublicKey masterPublicKey,
+                                                   PGPPublicKey signingPublicKey) {
         boolean validPrimaryKeyBinding = false;
         JcaPGPContentVerifierBuilderProvider contentVerifierBuilderProvider =
                 new JcaPGPContentVerifierBuilderProvider()

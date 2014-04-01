@@ -166,9 +166,10 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         masterKeyId = cursor.getLong(0);
                         keyType = cursor.getLong(1);
 
-                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId
-                                + ", keyType:" + (keyType == KeychainContract.KeyTypes.PUBLIC ? "Public" : "Private"));
-
+                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId +
+                                ", keyType:" +
+                                    (keyType == KeychainContract.KeyTypes.PUBLIC ?
+                                        "Public" : "Private"));
 
                         if (keyType == KeychainContract.KeyTypes.SECRET) {
                             if (mCheckDeleteSecret.isChecked() || mIsSingleSelection) {
@@ -176,7 +177,8 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                                     String.valueOf(masterKeyId), true);
                             }
                         } else {
-                            ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), false);
+                            ProviderHelper.deleteUnifiedKeyRing(activity,
+                                String.valueOf(masterKeyId), false);
                         }
                     }
 

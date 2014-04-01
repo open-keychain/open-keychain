@@ -190,12 +190,15 @@ public class KeyListFragment extends Fragment
                                     ProviderHelper.getPublicKeyRingsRowIds(getActivity());
                             for (int i = 0; i < ids.length; i++) {
                                 if (allPubRowIds.contains(ids[i])) {
-                                    masterKeyIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
                                 } else {
-                                    masterKeyIds[i] = ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
                                 }
                             }
-                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            ExportHelper mExportHelper =
+                                new ExportHelper((ActionBarActivity) getActivity());
                             mExportHelper
                                     .showExportKeysDialog(masterKeyIds, Id.type.public_key,
                                             Constants.Path.APP_DIR_FILE_PUB,

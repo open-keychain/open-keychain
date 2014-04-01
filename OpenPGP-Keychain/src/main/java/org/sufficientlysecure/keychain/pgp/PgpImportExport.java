@@ -168,7 +168,8 @@ public class PgpImportExport {
         return returnData;
     }
 
-    public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds, ArrayList<Long> secretKeyRingMasterIds,
+    public Bundle exportKeyRings(ArrayList<Long> publicKeyRingMasterIds,
+                                 ArrayList<Long> secretKeyRingMasterIds,
                                  OutputStream outStream) throws PgpGeneralException,
             PGPException, IOException {
         Bundle returnData = new Bundle();

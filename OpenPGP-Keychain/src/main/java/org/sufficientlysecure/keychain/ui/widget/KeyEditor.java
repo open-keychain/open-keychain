@@ -94,11 +94,13 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
                 GregorianCalendar date = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                 date.set(year, monthOfYear, dayOfMonth);
                 if (mOriginalExpiryDate != null) {
-                    long numDays = (date.getTimeInMillis() / 86400000) - (mOriginalExpiryDate.getTimeInMillis() / 86400000);
-                    if (numDays == 0)
+                    long numDays = (date.getTimeInMillis() / 86400000) -
+                        (mOriginalExpiryDate.getTimeInMillis() / 86400000);
+                    if (numDays == 0) {
                         setExpiryDate(mOriginalExpiryDate);
-                    else
+                    } else {
                         setExpiryDate(date);
+                    }
                 } else {
                     setExpiryDate(date);
                 }
@@ -316,11 +318,16 @@ public class KeyEditor extends LinearLayout implements Editor, OnClickListener {
     }
 
     public int getUsage() {
-        mUsage  = (mUsage & ~KeyFlags.CERTIFY_OTHER) | (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
-        mUsage  = (mUsage & ~KeyFlags.SIGN_DATA) | (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
-        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_COMMS) | (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
-        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) | (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
-        mUsage  = (mUsage & ~KeyFlags.AUTHENTICATION) | (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
+        mUsage  = (mUsage & ~KeyFlags.CERTIFY_OTHER) |
+            (mChkCertify.isChecked() ? KeyFlags.CERTIFY_OTHER : 0);
+        mUsage  = (mUsage & ~KeyFlags.SIGN_DATA) |
+            (mChkSign.isChecked() ? KeyFlags.SIGN_DATA : 0);
+        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_COMMS) |
+            (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_COMMS : 0);
+        mUsage  = (mUsage & ~KeyFlags.ENCRYPT_STORAGE) |
+            (mChkEncrypt.isChecked() ? KeyFlags.ENCRYPT_STORAGE : 0);
+        mUsage  = (mUsage & ~KeyFlags.AUTHENTICATION) |
+            (mChkAuthenticate.isChecked() ? KeyFlags.AUTHENTICATION : 0);
 
         return mUsage;
     }
