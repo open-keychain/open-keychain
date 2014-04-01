@@ -101,7 +101,7 @@ public class PgpDecryptVerify {
 
         // optional
         private ProgressDialogUpdater mProgressDialogUpdater = null;
-        private boolean mAllowSymmetricDecryption = false;
+        private boolean mAllowSymmetricDecryption = true;
         private String mPassphrase = null;
         private long mEnforcedKeyId = 0;
 
