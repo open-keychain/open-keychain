@@ -17,12 +17,12 @@
 
 package org.sufficientlysecure.keychain.compatibility;
 
-import java.lang.reflect.Method;
-
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.lang.reflect.Method;
 
 public class ClipboardReflection {
 

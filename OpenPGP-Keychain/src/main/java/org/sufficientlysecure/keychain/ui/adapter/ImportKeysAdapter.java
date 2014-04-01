@@ -32,7 +32,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import java.util.ArrayList;

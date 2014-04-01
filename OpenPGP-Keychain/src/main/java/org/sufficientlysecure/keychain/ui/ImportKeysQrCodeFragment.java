@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import com.google.zxing.integration.android.IntentResult;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,8 +30,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import com.google.zxing.integration.android.IntentResult;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;

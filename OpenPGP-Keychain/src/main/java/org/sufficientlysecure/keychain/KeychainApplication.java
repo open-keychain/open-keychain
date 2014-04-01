@@ -17,16 +17,17 @@
 
 package org.sufficientlysecure.keychain;
 
-import java.io.File;
-import java.security.Provider;
-import java.security.Security;
+import android.app.Application;
+import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
-import android.app.Application;
-import android.os.Environment;
+import java.io.File;
+import java.security.Provider;
+import java.security.Security;
 
 public class KeychainApplication extends Application {
 

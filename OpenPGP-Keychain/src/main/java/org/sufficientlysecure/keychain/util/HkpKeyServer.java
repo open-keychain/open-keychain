@@ -31,7 +31,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 
 import java.io.ByteArrayOutputStream;
@@ -42,8 +41,6 @@ import java.net.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry.getAlgorithmFromId;
 
 public class HkpKeyServer extends KeyServer {
     private static class HttpError extends Exception {
@@ -244,7 +241,7 @@ public class HkpKeyServer extends KeyServer {
             entry.setBitStrength(Integer.parseInt(matcher.group(3)));
 
             final int algorithmId = Integer.decode(matcher.group(2));
-            entry.setAlgorithm(getAlgorithmFromId(algorithmId));
+            entry.setAlgorithm(ImportKeysListEntry.getAlgorithmFromId(algorithmId));
 
             // group 1 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
