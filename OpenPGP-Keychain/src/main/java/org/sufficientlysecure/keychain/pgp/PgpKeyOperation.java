@@ -478,9 +478,7 @@ public class PgpKeyOperation {
                     PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
                     sigList.add(new Pair<String, PGPSignature>(userId, certification));
                 }
-                if (!origID.equals("")) {
-                    masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
-                }
+                masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
                 userIDIndex++;
             }
             for (Pair<String, PGPSignature> toAdd : sigList) {
@@ -502,9 +500,7 @@ public class PgpKeyOperation {
                         sGen.setUnhashedSubpackets(unhashedPacketsGen.generate());
                     }
                     PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
-                    if (!origID.equals("")) {
-                        masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
-                    }
+                    masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
                     masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, certification);
                 }
                 userIDIndex++;
@@ -523,9 +519,7 @@ public class PgpKeyOperation {
                         sigList.add(new Pair<String, PGPSignature>(userId, sig));
                     }
                 }
-                if (!userId.equals("")) {
-                    masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, userId);
-                }
+                masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, userId);
                 userIDIndex++;
             }
             anyIDChanged = true;
