@@ -47,9 +47,13 @@ import java.util.regex.Matcher;
 public class DecryptMessageFragment extends DecryptFragment {
     public static final String ARG_CIPHERTEXT = "ciphertext";
 
+    // view
     private EditText mMessage;
     private BootstrapButton mDecryptButton;
     private BootstrapButton mDecryptFromCLipboardButton;
+
+    // model
+    private String mCiphertext;
 
     /**
      * Inflate the layout for this fragment
@@ -64,13 +68,13 @@ public class DecryptMessageFragment extends DecryptFragment {
         mDecryptButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                decryptStart(null);
+                decryptClicked();
             }
         });
         mDecryptFromCLipboardButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                decryptFromClipboard();
+                decryptFromClipboardClicked();
             }
         });
 
@@ -88,7 +92,12 @@ public class DecryptMessageFragment extends DecryptFragment {
         }
     }
 
-    private void decryptFromClipboard() {
+    private void decryptClicked() {
+        mCiphertext = mMessage.getText().toString();
+        decryptStart(null);
+    }
+
+    private void decryptFromClipboardClicked() {
         CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
         // only decrypt if clipboard content is available and a pgp message or cleartext signature
@@ -98,8 +107,7 @@ public class DecryptMessageFragment extends DecryptFragment {
                 matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
             }
             if (matcher.matches()) {
-                String data = matcher.group(1);
-                mMessage.setText(data);
+                mCiphertext = matcher.group(1);
                 decryptStart(null);
             } else {
                 AppMsg.makeText(getActivity(), R.string.error_invalid_data, AppMsg.STYLE_INFO)
@@ -125,8 +133,7 @@ public class DecryptMessageFragment extends DecryptFragment {
 
         // data
         data.putInt(KeychainIntentService.TARGET, KeychainIntentService.TARGET_BYTES);
-        String message = mMessage.getText().toString();
-        data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, message.getBytes());
+        data.putByteArray(KeychainIntentService.DECRYPT_CIPHERTEXT_BYTES, mCiphertext.getBytes());
         data.putString(KeychainIntentService.DECRYPT_PASSPHRASE, passphrase);
 
         intent.putExtra(KeychainIntentService.EXTRA_DATA, data);
