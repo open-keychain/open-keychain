@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.FileHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -256,7 +255,15 @@ public class EncryptFileFragment extends Fragment {
             if (mEncryptInterface.getSignatureKey() != 0 &&
                 PassphraseCacheService.getCachedPassphrase(getActivity(),
                     mEncryptInterface.getSignatureKey()) == null) {
-                showPassphraseDialog();
+                PassphraseDialogFragment.show(getActivity(), mEncryptInterface.getSignatureKey(),
+                    new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                showOutputFileDialog();
+                            }
+                        }
+                    });
 
                 return;
             }
@@ -368,36 +375,6 @@ public class EncryptFileFragment extends Fragment {
 
                 break;
             }
-        }
-    }
-
-    /**
-     * Shows passphrase dialog to cache a new passphrase the user enters for using it later for
-     * encryption
-     */
-    private void showPassphraseDialog() {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    showOutputFileDialog();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(
-                    getActivity(), messenger, mEncryptInterface.getSignatureKey());
-
-            passphraseDialog.show(getActivity().getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key, encrypt directly!");
-            // send message to handler to start encryption directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
         }
     }
 }
