@@ -24,7 +24,11 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;

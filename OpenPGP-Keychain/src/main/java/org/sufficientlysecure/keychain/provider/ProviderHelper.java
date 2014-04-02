@@ -17,7 +17,11 @@
 
 package org.sufficientlysecure.keychain.provider;
 
-import android.content.*;
+import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
