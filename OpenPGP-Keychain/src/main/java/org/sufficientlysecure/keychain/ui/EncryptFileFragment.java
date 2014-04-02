@@ -224,9 +224,9 @@ public class EncryptFileFragment extends Fragment {
         if (mEncryptInterface.isModeSymmetric()) {
             // symmetric encryption
 
-            boolean gotPassPhrase = (mEncryptInterface.getPassphrase() != null
+            boolean gotPassphrase = (mEncryptInterface.getPassphrase() != null
                     && mEncryptInterface.getPassphrase().length() != 0);
-            if (!gotPassPhrase) {
+            if (!gotPassphrase) {
                 AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
                 return;

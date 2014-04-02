@@ -97,9 +97,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private SectionView mKeysView;
 
     private String mCurrentPassphrase = null;
-    private String mNewPassPhrase = null;
-    private String mSavedNewPassPhrase = null;
-    private boolean mIsPassPhraseSet;
+    private String mNewPassphrase = null;
+    private String mSavedNewPassphrase = null;
+    private boolean mIsPassphraseSet;
     private boolean mNeedsSaving;
     private boolean mIsBrandNewKeyring = false;
 
@@ -403,8 +403,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         mCurrentPassphrase = "";
         buildLayout(false);
 
-        mIsPassPhraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
-        if (!mIsPassPhraseSet) {
+        mIsPassphraseSet = PassphraseCacheService.hasPassphrase(this, masterKeyId);
+        if (!mIsPassphraseSet) {
             // check "no passphrase" checkbox and remove button
             mNoPassphrase.setChecked(true);
             mChangePassphrase.setVisibility(View.GONE);
@@ -423,10 +423,10 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     Bundle data = message.getData();
 
                     // set new returned passphrase!
-                    mNewPassPhrase = data
+                    mNewPassphrase = data
                             .getString(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE);
 
-                    updatePassPhraseButtonText();
+                    updatePassphraseButtonText();
                     somethingChanged();
                 }
             }
@@ -466,7 +466,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.edit_key_container);
-        if (mIsPassPhraseSet) {
+        if (mIsPassphraseSet) {
             mChangePassphrase.setText(getString(R.string.btn_change_passphrase));
         }
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
@@ -482,7 +482,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         mKeysView.setEditorListener(this);
         container.addView(mKeysView);
 
-        updatePassPhraseButtonText();
+        updatePassphraseButtonText();
 
         mChangePassphrase.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -497,11 +497,11 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // remove passphrase
-                    mSavedNewPassPhrase = mNewPassPhrase;
-                    mNewPassPhrase = "";
+                    mSavedNewPassphrase = mNewPassphrase;
+                    mNewPassphrase = "";
                     mChangePassphrase.setVisibility(View.GONE);
                 } else {
-                    mNewPassPhrase = mSavedNewPassPhrase;
+                    mNewPassphrase = mSavedNewPassphrase;
                     mChangePassphrase.setVisibility(View.VISIBLE);
                 }
                 somethingChanged();
@@ -519,8 +519,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     public boolean isPassphraseSet() {
         if (mNoPassphrase.isChecked()) {
             return true;
-        } else if ((mIsPassPhraseSet)
-                || (mNewPassPhrase != null && !mNewPassPhrase.equals(""))) {
+        } else if ((mIsPassphraseSet)
+                || (mNewPassphrase != null && !mNewPassphrase.equals(""))) {
             return true;
         } else {
             return false;
@@ -530,9 +530,9 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     public boolean hasPassphraseChanged() {
         if (mNoPassphrase != null) {
             if (mNoPassphrase.isChecked()) {
-                return mIsPassPhraseSet;
+                return mIsPassphraseSet;
             } else {
-                return (mNewPassPhrase != null && !mNewPassPhrase.equals(""));
+                return (mNewPassphrase != null && !mNewPassphrase.equals(""));
             }
         } else {
             return false;
@@ -548,7 +548,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
 
                 String passphrase;
-                if (mIsPassPhraseSet) {
+                if (mIsPassphraseSet) {
                     passphrase = PassphraseCacheService.getCachedPassphrase(this, masterKeyId);
                 } else {
                     passphrase = "";
@@ -638,8 +638,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             saveParams.deletedKeys = mKeysView.getDeletedKeys();
             saveParams.keysExpiryDates = getKeysExpiryDates(mKeysView);
             saveParams.keysUsages = getKeysUsages(mKeysView);
-            saveParams.newPassPhrase = mNewPassPhrase;
-            saveParams.oldPassPhrase = mCurrentPassphrase;
+            saveParams.newPassphrase = mNewPassphrase;
+            saveParams.oldPassphrase = mCurrentPassphrase;
             saveParams.newKeys = toPrimitiveArray(mKeysView.getNewKeysArray());
             saveParams.keys = getKeys(mKeysView);
             saveParams.originalPrimaryID = mUserIdsView.getOriginalPrimaryID();
@@ -819,7 +819,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         return keysExpiryDates;
     }
 
-    private void updatePassPhraseButtonText() {
+    private void updatePassphraseButtonText() {
         mChangePassphrase.setText(isPassphraseSet() ? getString(R.string.btn_change_passphrase)
                 : getString(R.string.btn_set_passphrase));
     }

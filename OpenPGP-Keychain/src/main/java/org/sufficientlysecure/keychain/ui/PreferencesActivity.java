@@ -61,8 +61,8 @@ public class PreferencesActivity extends PreferenceActivity {
         if (action != null && action.equals(ACTION_PREFS_GEN)) {
             addPreferencesFromResource(R.xml.gen_preferences);
 
-            initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = sPreferences.getKeyServers();
@@ -165,8 +165,8 @@ public class PreferencesActivity extends PreferenceActivity {
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.gen_preferences);
 
-            initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = sPreferences.getKeyServers();
@@ -261,15 +261,15 @@ public class PreferencesActivity extends PreferenceActivity {
                 || super.isValidFragment(fragmentName);
     }
 
-    private static void initializePassPassPhraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
-        mPassphraseCacheTtl.setValue("" + sPreferences.getPassPhraseCacheTtl());
+    private static void initializePassPassphraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
+        mPassphraseCacheTtl.setValue("" + sPreferences.getPassphraseCacheTtl());
         mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
         mPassphraseCacheTtl
                 .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         mPassphraseCacheTtl.setValue(newValue.toString());
                         mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
-                        sPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
+                        sPreferences.setPassphraseCacheTtl(Integer.parseInt(newValue.toString()));
                         return false;
                     }
                 });
