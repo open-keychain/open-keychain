@@ -58,8 +58,8 @@ public class Preferences {
         editor.commit();
     }
 
-    public long getPassPhraseCacheTtl() {
-        int ttl = mSharedPreferences.getInt(Constants.Pref.PASS_PHRASE_CACHE_TTL, 180);
+    public long getPassphraseCacheTtl() {
+        int ttl = mSharedPreferences.getInt(Constants.Pref.PASSPHRASE_CACHE_TTL, 180);
         // fix the value if it was set to "never" in previous versions, which currently is not
         // supported
         if (ttl == 0) {
@@ -68,9 +68,9 @@ public class Preferences {
         return (long) ttl;
     }
 
-    public void setPassPhraseCacheTtl(int value) {
+    public void setPassphraseCacheTtl(int value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(Constants.Pref.PASS_PHRASE_CACHE_TTL, value);
+        editor.putInt(Constants.Pref.PASSPHRASE_CACHE_TTL, value);
         editor.commit();
     }
 
@@ -118,13 +118,13 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getDefaultAsciiArmour() {
-        return mSharedPreferences.getBoolean(Constants.Pref.DEFAULT_ASCII_ARMOUR, false);
+    public boolean getDefaultAsciiArmor() {
+        return mSharedPreferences.getBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, false);
     }
 
-    public void setDefaultAsciiArmour(boolean value) {
+    public void setDefaultAsciiArmor(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOUR, value);
+        editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, value);
         editor.commit();
     }
 

@@ -61,8 +61,8 @@ public class PreferencesActivity extends PreferenceActivity {
         if (action != null && action.equals(ACTION_PREFS_GEN)) {
             addPreferencesFromResource(R.xml.gen_preferences);
 
-            initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = sPreferences.getKeyServers();
@@ -110,8 +110,8 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmor(
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
@@ -165,8 +165,8 @@ public class PreferencesActivity extends PreferenceActivity {
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.gen_preferences);
 
-            initializePassPassPhraceCacheTtl(
-                    (IntegerListPreference) findPreference(Constants.Pref.PASS_PHRASE_CACHE_TTL));
+            initializePassPassphraceCacheTtl(
+                    (IntegerListPreference) findPreference(Constants.Pref.PASSPHRASE_CACHE_TTL));
 
             mKeyServerPreference = (PreferenceScreen) findPreference(Constants.Pref.KEY_SERVERS);
             String servers[] = sPreferences.getKeyServers();
@@ -247,8 +247,8 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmor(
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
@@ -261,15 +261,15 @@ public class PreferencesActivity extends PreferenceActivity {
                 || super.isValidFragment(fragmentName);
     }
 
-    private static void initializePassPassPhraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
-        mPassphraseCacheTtl.setValue("" + sPreferences.getPassPhraseCacheTtl());
+    private static void initializePassPassphraceCacheTtl(final IntegerListPreference mPassphraseCacheTtl) {
+        mPassphraseCacheTtl.setValue("" + sPreferences.getPassphraseCacheTtl());
         mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
         mPassphraseCacheTtl
                 .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                     public boolean onPreferenceChange(Preference preference, Object newValue) {
                         mPassphraseCacheTtl.setValue(newValue.toString());
                         mPassphraseCacheTtl.setSummary(mPassphraseCacheTtl.getEntry());
-                        sPreferences.setPassPhraseCacheTtl(Integer.parseInt(newValue.toString()));
+                        sPreferences.setPassphraseCacheTtl(Integer.parseInt(newValue.toString()));
                         return false;
                     }
                 });
@@ -362,12 +362,12 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
-    private static void initializeAsciiArmour(final CheckBoxPreference mAsciiArmour) {
-        mAsciiArmour.setChecked(sPreferences.getDefaultAsciiArmour());
-        mAsciiArmour.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeAsciiArmor(final CheckBoxPreference mAsciiArmor) {
+        mAsciiArmor.setChecked(sPreferences.getDefaultAsciiArmor());
+        mAsciiArmor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mAsciiArmour.setChecked((Boolean) newValue);
-                sPreferences.setDefaultAsciiArmour((Boolean) newValue);
+                mAsciiArmor.setChecked((Boolean) newValue);
+                sPreferences.setDefaultAsciiArmor((Boolean) newValue);
                 return false;
             }
         });

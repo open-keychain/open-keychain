@@ -488,16 +488,16 @@ public class KeychainIntentService extends IntentService
             try {
                 /* Input */
                 SaveKeyringParcel saveParams = data.getParcelable(SAVE_KEYRING_PARCEL);
-                String oldPassPhrase = saveParams.oldPassPhrase;
-                String newPassPhrase = saveParams.newPassPhrase;
+                String oldPassphrase = saveParams.oldPassphrase;
+                String newPassphrase = saveParams.newPassphrase;
                 boolean canSign = true;
 
                 if (data.containsKey(SAVE_KEYRING_CAN_SIGN)) {
                     canSign = data.getBoolean(SAVE_KEYRING_CAN_SIGN);
                 }
 
-                if (newPassPhrase == null) {
-                    newPassPhrase = oldPassPhrase;
+                if (newPassphrase == null) {
+                    newPassphrase = oldPassphrase;
                 }
 
                 long masterKeyId = saveParams.keys.get(0).getKeyID();
@@ -508,7 +508,7 @@ public class KeychainIntentService extends IntentService
                     PGPSecretKeyRing keyRing = ProviderHelper
                             .getPGPSecretKeyRingByKeyId(this, masterKeyId);
                     keyRing = keyOperations.changeSecretKeyPassphrase(keyRing,
-                            oldPassPhrase, newPassPhrase);
+                            oldPassphrase, newPassphrase);
                     setProgress(R.string.progress_saving_key_ring, 50, 100);
                     ProviderHelper.saveKeyRing(this, keyRing);
                     setProgress(R.string.progress_done, 100, 100);
@@ -526,7 +526,7 @@ public class KeychainIntentService extends IntentService
                     ProviderHelper.saveKeyRing(this, pair.second);
                     setProgress(R.string.progress_done, 100, 100);
                 }
-                PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassPhrase);
+                PassphraseCacheService.addCachedPassphrase(this, masterKeyId, newPassphrase);
 
                 /* Output */
                 sendMessageToHandler(KeychainIntentServiceHandler.MESSAGE_OKAY);
@@ -816,9 +816,9 @@ public class KeychainIntentService extends IntentService
                 ArrayList<String> userIds = data.getStringArrayList(CERTIFY_KEY_UIDS);
 
                 /* Operation */
-                String signaturePassPhrase = PassphraseCacheService.getCachedPassphrase(this,
+                String signaturePassphrase = PassphraseCacheService.getCachedPassphrase(this,
                         masterKeyId);
-                if (signaturePassPhrase == null) {
+                if (signaturePassphrase == null) {
                     throw new PgpGeneralException("Unable to obtain passphrase");
                 }
 
@@ -829,7 +829,7 @@ public class KeychainIntentService extends IntentService
                 PGPSecretKey certificationKey = PgpKeyHelper.getCertificationKey(this,
                         masterKeyId);
                 publicKey = keyOperation.certifyKey(certificationKey, publicKey,
-                        userIds, signaturePassPhrase);
+                        userIds, signaturePassphrase);
                 publicRing = PGPPublicKeyRing.insertPublicKey(publicRing, publicKey);
 
                 // store the signed key in our local cache

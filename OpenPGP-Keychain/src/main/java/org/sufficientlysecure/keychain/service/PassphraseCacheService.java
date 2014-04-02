@@ -95,7 +95,7 @@ public class PassphraseCacheService extends Service {
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
-        intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassPhraseCacheTtl());
+        intent.putExtra(EXTRA_TTL, Preferences.getPreferences(context).getPassphraseCacheTtl());
         intent.putExtra(EXTRA_PASSPHRASE, passphrase);
         intent.putExtra(EXTRA_KEY_ID, keyId);
 

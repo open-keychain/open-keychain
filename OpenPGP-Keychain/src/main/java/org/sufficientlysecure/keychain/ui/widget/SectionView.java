@@ -64,7 +64,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
     private boolean mOldItemDeleted = false;
     private ArrayList<String> mDeletedIDs = new ArrayList<String>();
     private ArrayList<PGPSecretKey> mDeletedKeys = new ArrayList<PGPSecretKey>();
-    private boolean mCanEdit = true;
+    private boolean mCanBeEdited = true;
 
     private ActionBarActivity mActivity;
 
@@ -107,9 +107,9 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
         }
     }
 
-    public void setCanEdit(boolean bCanEdit) {
-        mCanEdit = bCanEdit;
-        if (!mCanEdit) {
+    public void setCanBeEdited(boolean canBeEdited) {
+        mCanBeEdited = canBeEdited;
+        if (!mCanBeEdited) {
             mPlusButton.setVisibility(View.INVISIBLE);
         }
     }
@@ -265,7 +265,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
      * {@inheritDoc}
      */
     public void onClick(View v) {
-        if (mCanEdit) {
+        if (mCanBeEdited) {
             switch (mType) {
                 case Id.type.user_id: {
                     UserIdEditor view = (UserIdEditor) mInflater.inflate(
@@ -315,7 +315,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
                     mEditors, false);
             view.setEditorListener(this);
             view.setValue(userId, mEditors.getChildCount() == 0, false);
-            view.setCanEdit(mCanEdit);
+            view.setCanBeEdited(mCanBeEdited);
             mEditors.addView(view);
         }
 
@@ -336,7 +336,7 @@ public class SectionView extends LinearLayout implements OnClickListener, Editor
             view.setEditorListener(this);
             boolean isMasterKey = (mEditors.getChildCount() == 0);
             view.setValue(list.get(i), isMasterKey, usages.get(i), newKeys);
-            view.setCanEdit(mCanEdit);
+            view.setCanBeEdited(mCanBeEdited);
             mEditors.addView(view);
         }
 

@@ -55,10 +55,10 @@ public final class Constants {
     public static final class Pref {
         public static final String DEFAULT_ENCRYPTION_ALGORITHM = "defaultEncryptionAlgorithm";
         public static final String DEFAULT_HASH_ALGORITHM = "defaultHashAlgorithm";
-        public static final String DEFAULT_ASCII_ARMOUR = "defaultAsciiArmour";
+        public static final String DEFAULT_ASCII_ARMOR = "defaultAsciiArmor";
         public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
         public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
-        public static final String PASS_PHRASE_CACHE_TTL = "passphraseCacheTtl";
+        public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";
         public static final String LANGUAGE = "language";
         public static final String FORCE_V3_SIGNATURES = "forceV3Signatures";
         public static final String KEY_SERVERS = "keyServers";

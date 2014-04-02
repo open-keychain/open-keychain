@@ -138,8 +138,8 @@ public class EncryptFileFragment extends Fragment {
         mDeleteAfter = (CheckBox) view.findViewById(R.id.deleteAfterEncryption);
         mShareAfter = (CheckBox) view.findViewById(R.id.shareAfterEncryption);
 
-        mAsciiArmor = (CheckBox) view.findViewById(R.id.asciiArmour);
-        mAsciiArmor.setChecked(Preferences.getPreferences(getActivity()).getDefaultAsciiArmour());
+        mAsciiArmor = (CheckBox) view.findViewById(R.id.asciiArmor);
+        mAsciiArmor.setChecked(Preferences.getPreferences(getActivity()).getDefaultAsciiArmor());
 
         return view;
     }
@@ -224,9 +224,9 @@ public class EncryptFileFragment extends Fragment {
         if (mEncryptInterface.isModeSymmetric()) {
             // symmetric encryption
 
-            boolean gotPassPhrase = (mEncryptInterface.getPassphrase() != null
+            boolean gotPassphrase = (mEncryptInterface.getPassphrase() != null
                     && mEncryptInterface.getPassphrase().length() != 0);
-            if (!gotPassPhrase) {
+            if (!gotPassphrase) {
                 AppMsg.makeText(getActivity(), R.string.passphrase_must_not_be_empty, AppMsg.STYLE_ALERT)
                         .show();
                 return;
