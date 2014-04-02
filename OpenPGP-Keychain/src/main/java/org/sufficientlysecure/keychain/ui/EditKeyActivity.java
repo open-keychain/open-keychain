@@ -290,7 +290,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
                     mCurrentPassphrase = PassphraseCacheService.getCachedPassphrase(
                             EditKeyActivity.this, masterKeyId);
-                    finallySaveClicked();
+                    checkEmptyIDsWanted();
                 }
             }
         };
