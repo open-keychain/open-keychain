@@ -82,7 +82,7 @@ public class FoldableLinearLayout extends LinearLayout {
      * @param attrs
      */
     private void processAttributes(Context context, AttributeSet attrs) {
-        if(attrs != null) {
+        if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs,
                     R.styleable.FoldableLinearLayout, 0, 0);
             mFoldedIconName = a.getString(R.styleable.FoldableLinearLayout_foldedIcon);
@@ -102,7 +102,7 @@ public class FoldableLinearLayout extends LinearLayout {
     protected void onFinishInflate() {
         // if the migration has already happened
         // there is no need to move any children
-        if(!mHasMigrated) {
+        if (!mHasMigrated) {
             migrateChildrenToContainer();
             mHasMigrated = true;
         }
@@ -120,10 +120,10 @@ public class FoldableLinearLayout extends LinearLayout {
         int childNum = getChildCount();
         View[] children = new View[childNum];
 
-        for(int i = 0; i < childNum; i++) {
+        for (int i = 0; i < childNum; i++) {
             children[i] = getChildAt(i);
         }
-        if(children[0].getId() == R.id.foldableControl) {
+        if (children[0].getId() == R.id.foldableControl) {
 
         }
 
@@ -131,14 +131,14 @@ public class FoldableLinearLayout extends LinearLayout {
         detachAllViewsFromParent();
 
         // Inflate the inner foldable_linearlayout.xml
-        LayoutInflater inflator = (LayoutInflater)getContext().getSystemService(
+        LayoutInflater inflator = (LayoutInflater) getContext().getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
         mFoldableLayout = inflator.inflate(R.layout.foldable_linearlayout, this, true);
         mFoldableContainer = (LinearLayout) mFoldableLayout.findViewById(R.id.foldableContainer);
 
         // Push previously collected children into foldableContainer.
-        for(int i = 0; i < childNum; i++) {
+        for (int i = 0; i < childNum; i++) {
             addView(children[i]);
         }
     }
@@ -196,7 +196,7 @@ public class FoldableLinearLayout extends LinearLayout {
      */
     @Override
     public void addView(View child) {
-        if(mFoldableContainer != null) {
+        if (mFoldableContainer != null) {
             mFoldableContainer.addView(child);
         }
     }

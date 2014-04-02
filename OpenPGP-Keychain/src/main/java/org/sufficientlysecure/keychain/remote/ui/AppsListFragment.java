@@ -37,11 +37,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.util.Log;
 
 public class AppsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {

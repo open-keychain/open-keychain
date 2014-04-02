@@ -283,12 +283,14 @@ public class KeychainContract {
         /**
          * Use if multiple items get returned
          */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.thialfihar.apg.api_app.accounts";
+        public static final String CONTENT_TYPE =
+            "vnd.android.cursor.dir/vnd.thialfihar.apg.api_app.accounts";
 
         /**
          * Use if a single item is returned
          */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.thialfihar.apg.api_app.account";
+        public static final String CONTENT_ITEM_TYPE =
+            "vnd.android.cursor.item/vnd.thialfihar.apg.api_app.account";
 
         public static Uri buildBaseUri(String packageName) {
             return CONTENT_URI.buildUpon().appendEncodedPath(packageName).appendPath(PATH_ACCOUNTS)

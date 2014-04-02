@@ -9,9 +9,9 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
 <module name="OpenPgpChecker">
 
-  <!--<module name="SuppressionFilter">
+  <module name="SuppressionFilter">
    <property name="file" value="tools/suppressions.xml"/>
-  </module>-->
+  </module>
 
   <module name="RegexpSingleline">
     <!-- Requires a copyright notice in each file.

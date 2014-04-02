@@ -22,14 +22,14 @@ import android.content.Context;
 public class PgpGeneralMsgIdException extends Exception {
     static final long serialVersionUID = 0xf812773343L;
 
-    private final int msgId;
+    private final int mMessageId;
 
-    public PgpGeneralMsgIdException(int msgId) {
-        super("msg[" + msgId + "]");
-        this.msgId = msgId;
+    public PgpGeneralMsgIdException(int messageId) {
+        super("msg[" + messageId + "]");
+        mMessageId = messageId;
     }
 
     public PgpGeneralException getContextualized(Context context) {
-        return new PgpGeneralException(context.getString(msgId), this);
+        return new PgpGeneralException(context.getString(mMessageId), this);
     }
 }

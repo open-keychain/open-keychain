@@ -65,14 +65,16 @@ public class PgpConversionHelper {
         try {
             while ((obj = factory.nextObject()) != null) {
                 PGPSecretKey secKey = null;
-                if(obj instanceof PGPSecretKey) {
-                    if ((secKey = (PGPSecretKey)obj ) == null) {
+                if (obj instanceof PGPSecretKey) {
+                    secKey = (PGPSecretKey) obj;
+                    if (secKey == null) {
                         Log.e(Constants.TAG, "No keys given!");
                     }
                     keys.add(secKey);
-                } else if(obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
+                } else if (obj instanceof PGPSecretKeyRing) { //master keys are sent as keyrings
                     PGPSecretKeyRing keyRing = null;
-                    if ((keyRing = (PGPSecretKeyRing)obj) == null) {
+                    keyRing = (PGPSecretKeyRing) obj;
+                    if (keyRing == null) {
                         Log.e(Constants.TAG, "No keys given!");
                     }
                     @SuppressWarnings("unchecked")

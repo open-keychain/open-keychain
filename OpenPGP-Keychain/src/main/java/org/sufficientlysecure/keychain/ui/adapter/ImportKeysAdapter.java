@@ -32,7 +32,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 
 import java.util.ArrayList;
@@ -45,12 +44,12 @@ public class ImportKeysAdapter extends ArrayAdapter<ImportKeysListEntry> {
     protected List<ImportKeysListEntry> mData;
 
     static class ViewHolder {
-        private TextView mainUserId;
-        private TextView mainUserIdRest;
-        private TextView keyId;
-        private TextView fingerprint;
-        private TextView algorithm;
-        private TextView status;
+        public TextView mainUserId;
+        public TextView mainUserIdRest;
+        public TextView keyId;
+        public TextView fingerprint;
+        public TextView algorithm;
+        public TextView status;
     }
 
     public ImportKeysAdapter(Activity activity) {

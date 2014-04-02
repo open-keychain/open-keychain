@@ -17,16 +17,17 @@
 
 package org.sufficientlysecure.keychain;
 
-import java.io.File;
-import java.security.Provider;
-import java.security.Security;
+import android.app.Application;
+import android.os.Environment;
 
 import org.spongycastle.jce.provider.BouncyCastleProvider;
+
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 
-import android.app.Application;
-import android.os.Environment;
+import java.io.File;
+import java.security.Provider;
+import java.security.Security;
 
 public class KeychainApplication extends Application {
 
@@ -40,14 +41,14 @@ public class KeychainApplication extends Application {
 
         /*
          * Sets Bouncy (Spongy) Castle as preferred security provider
-         * 
+         *
          * insertProviderAt() position starts from 1
          */
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
 
         /*
          * apply RNG fixes
-         * 
+         *
          * among other things, executes Security.insertProviderAt(new
          * LinuxPRNGSecureRandomProvider(), 1) for Android <= SDK 17
          */

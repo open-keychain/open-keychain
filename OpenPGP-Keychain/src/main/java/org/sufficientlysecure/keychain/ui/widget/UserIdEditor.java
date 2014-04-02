@@ -16,11 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -31,8 +26,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+
+import java.util.regex.Matcher;
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
@@ -85,8 +84,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         }
 
         @Override
-        public void afterTextChanged(Editable s)
-        {
+        public void afterTextChanged(Editable s) {
             if (mEditorListener != null) {
                 mEditorListener.onEdited();
             }
@@ -240,25 +238,22 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     @Override
     public boolean needsSaving() {
         boolean retval = false; //(mOriginallyMainUserID != isMainUserId());
-        retval |= !(mOriginalName.equals( ("" + mName.getText()).trim() ) );
-        retval |= !(mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
-        retval |= !(mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
+        retval |= !(mOriginalName.equals(("" + mName.getText()).trim()));
+        retval |= !(mOriginalEmail.equals(("" + mEmail.getText()).trim()));
+        retval |= !(mOriginalComment.equals(("" + mComment.getText()).trim()));
         retval |= mIsNewId;
         return retval;
     }
 
-    public  boolean getIsOriginallyMainUserID()
-    {
+    public  boolean getIsOriginallyMainUserID() {
         return mOriginallyMainUserID;
     }
 
-    public boolean primarySwapped()
-    {
+    public boolean primarySwapped() {
         return (mOriginallyMainUserID != isMainUserId());
     }
 
-    public String getOriginalID()
-    {
+    public String getOriginalID() {
         return mOriginalID;
     }
 

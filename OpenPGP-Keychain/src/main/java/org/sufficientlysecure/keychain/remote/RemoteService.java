@@ -243,7 +243,8 @@ public abstract class RemoteService extends Service {
                 return true;
             } else {
                 throw new WrongPackageSignatureException(
-                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
+                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not " +
+                            "equals signature from database)");
             }
         }
 

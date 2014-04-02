@@ -51,12 +51,12 @@ public class DeleteKeyDialogFragment extends DialogFragment {
     public static final int MESSAGE_OKAY = 1;
     public static final int MESSAGE_ERROR = 0;
 
-    private boolean isSingleSelection = false;
+    private boolean mIsSingleSelection = false;
 
-    private TextView mainMessage;
-    private CheckBox checkDeleteSecret;
-    private LinearLayout deleteSecretKeyView;
-    private View inflateView;
+    private TextView mMainMessage;
+    private CheckBox mCheckDeleteSecret;
+    private LinearLayout mDeleteSecretKeyView;
+    private View mInflateView;
 
     private Messenger mMessenger;
 
@@ -90,12 +90,12 @@ public class DeleteKeyDialogFragment extends DialogFragment {
 
         //Setup custom View to display in AlertDialog
         LayoutInflater inflater = activity.getLayoutInflater();
-        inflateView = inflater.inflate(R.layout.view_key_delete_fragment, null);
-        builder.setView(inflateView);
+        mInflateView = inflater.inflate(R.layout.view_key_delete_fragment, null);
+        builder.setView(mInflateView);
 
-        deleteSecretKeyView = (LinearLayout) inflateView.findViewById(R.id.deleteSecretKeyView);
-        mainMessage = (TextView) inflateView.findViewById(R.id.mainMessage);
-        checkDeleteSecret = (CheckBox) inflateView.findViewById(R.id.checkDeleteSecret);
+        mDeleteSecretKeyView = (LinearLayout) mInflateView.findViewById(R.id.deleteSecretKeyView);
+        mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
+        mCheckDeleteSecret = (CheckBox) mInflateView.findViewById(R.id.checkDeleteSecret);
 
         builder.setTitle(R.string.warning);
 
@@ -103,7 +103,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         if (keyRingRowIds.length == 1) {
             Uri dataUri;
             ArrayList<Long> publicKeyRings; //Any one will do
-            isSingleSelection = true;
+            mIsSingleSelection = true;
 
             long selectedRow = keyRingRowIds[0];
             long keyType;
@@ -119,16 +119,16 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             }
 
             String userId = ProviderHelper.getUserId(activity, dataUri);
-            //Hide the Checkbox and TextView since this is a single selection,user will be notified thru message
-            deleteSecretKeyView.setVisibility(View.GONE);
-            //Set message depending on which key it is.
-            mainMessage.setText(getString(keyType == Id.type.secret_key ? R.string.secret_key_deletion_confirmation
-                    : R.string.public_key_deletetion_confirmation, userId));
-
-
+            // Hide the Checkbox and TextView since this is a single selection,
+            // user will be notified thru message
+            mDeleteSecretKeyView.setVisibility(View.GONE);
+            // Set message depending on which key it is.
+            mMainMessage.setText(getString(keyType == Id.type.secret_key ?
+                    R.string.secret_key_deletion_confirmation :
+                    R.string.public_key_deletetion_confirmation, userId));
         } else {
-            deleteSecretKeyView.setVisibility(View.VISIBLE);
-            mainMessage.setText(R.string.key_deletion_confirmation_multi);
+            mDeleteSecretKeyView.setVisibility(View.VISIBLE);
+            mMainMessage.setText(R.string.key_deletion_confirmation_multi);
         }
 
 
@@ -148,8 +148,9 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 String selectionIDs = "";
                 for (int i = 0; i < keyRingRowIds.length; i++) {
                     selectionIDs += "'" + String.valueOf(keyRingRowIds[i]) + "'";
-                    if (i + 1 < keyRingRowIds.length)
+                    if (i + 1 < keyRingRowIds.length) {
                         selectionIDs += ",";
+                    }
                 }
                 selection += selectionIDs + ")";
 
@@ -166,30 +167,33 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                         masterKeyId = cursor.getLong(0);
                         keyType = cursor.getLong(1);
 
-                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId
-                                + ", keyType:" + (keyType == KeychainContract.KeyTypes.PUBLIC ? "Public" : "Private"));
-
+                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId +
+                                ", keyType:" +
+                                    (keyType == KeychainContract.KeyTypes.PUBLIC ?
+                                        "Public" : "Private"));
 
                         if (keyType == KeychainContract.KeyTypes.SECRET) {
-                            if (checkDeleteSecret.isChecked() || isSingleSelection) {
-                                ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), true);
+                            if (mCheckDeleteSecret.isChecked() || mIsSingleSelection) {
+                                ProviderHelper.deleteUnifiedKeyRing(activity,
+                                    String.valueOf(masterKeyId), true);
                             }
                         } else {
-                            ProviderHelper.deleteUnifiedKeyRing(activity, String.valueOf(masterKeyId), false);
+                            ProviderHelper.deleteUnifiedKeyRing(activity,
+                                String.valueOf(masterKeyId), false);
                         }
                     }
 
                     //Check if the selected rows have actually been deleted
-                    cursor = activity.getContentResolver().query(queryUri, projection, selection, null, null);
-                    if (cursor == null || cursor.getCount() == 0 || !checkDeleteSecret.isChecked()) {
+                    cursor = activity.getContentResolver().query(
+                                queryUri, projection, selection, null, null);
+                    if (cursor == null || cursor.getCount() == 0 ||
+                        !mCheckDeleteSecret.isChecked()) {
                         isSuccessfullyDeleted = true;
                     }
-
                 } finally {
                     if (cursor != null) {
                         cursor.close();
                     }
-
                 }
 
                 dismiss();
@@ -200,9 +204,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                     sendMessageToHandler(MESSAGE_ERROR, null);
                 }
             }
-
-        }
-        );
+        });
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
             @Override
@@ -232,5 +234,4 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             Log.w(Constants.TAG, "Messenger is null!", e);
         }
     }
-
 }

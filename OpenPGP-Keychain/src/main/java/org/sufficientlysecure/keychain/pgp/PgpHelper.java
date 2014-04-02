@@ -51,9 +51,9 @@ public class PgpHelper {
             ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);
 
     public static final Pattern PGP_CLEARTEXT_SIGNATURE = Pattern
-            .compile(
-                    ".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
-                    Pattern.DOTALL);
+            .compile(".*?(-----BEGIN PGP SIGNED MESSAGE-----.*?-----" +
+                     "BEGIN PGP SIGNATURE-----.*?-----END PGP SIGNATURE-----).*",
+                     Pattern.DOTALL);
 
     public static final Pattern PGP_PUBLIC_KEY = Pattern.compile(
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",

@@ -69,7 +69,8 @@ public class AccountSettingsFragment extends Fragment implements
         this.mAccSettings = accountSettings;
 
         mAccNameView.setText(accountSettings.getAccountName());
-        Uri keyUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(accountSettings.getKeyId()));
+        Uri keyUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
+            String.valueOf(accountSettings.getKeyId()));
         mSelectKeyFragment.selectKey(keyUri);
         mEncryptionAlgorithm.setSelection(mEncryptionAdapter.getPosition(accountSettings
                 .getEncryptionAlgorithm()));

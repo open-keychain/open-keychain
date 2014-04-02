@@ -185,17 +185,20 @@ public class KeyListFragment extends Fragment
                         }
                         case R.id.menu_key_list_multi_export: {
                             ids = mStickyList.getWrappedList().getCheckedItemIds();
-                            long[] masterKeyIds = new long[2*ids.length];
+                            long[] masterKeyIds = new long[2 * ids.length];
                             ArrayList<Long> allPubRowIds =
                                     ProviderHelper.getPublicKeyRingsRowIds(getActivity());
                             for (int i = 0; i < ids.length; i++) {
                                 if (allPubRowIds.contains(ids[i])) {
-                                    masterKeyIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
                                 } else {
-                                    masterKeyIds[i] = ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
                                 }
                             }
-                            ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
+                            ExportHelper mExportHelper =
+                                new ExportHelper((ActionBarActivity) getActivity());
                             mExportHelper
                                     .showExportKeysDialog(masterKeyIds, Id.type.public_key,
                                             Constants.Path.APP_DIR_FILE_PUB,

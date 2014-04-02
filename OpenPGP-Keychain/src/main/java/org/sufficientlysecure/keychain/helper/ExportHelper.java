@@ -30,17 +30,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.FileDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.lang.reflect.Array;
-import java.security.Provider;
-import java.util.ArrayList;
 
 public class ExportHelper {
     protected FileDialogFragment mFileDialog;
@@ -81,7 +75,7 @@ public class ExportHelper {
                     int type = keyType;
                     mExportFilename = data.getString(FileDialogFragment.MESSAGE_DATA_FILENAME);
 
-                    if( data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED) ) {
+                    if (data.getBoolean(FileDialogFragment.MESSAGE_DATA_CHECKED)) {
                         type = Id.type.public_secret_key;
                     }
 

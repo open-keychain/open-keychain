@@ -36,8 +36,6 @@ import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.*;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.DataStream;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.util.*;
@@ -487,10 +485,13 @@ public class KeychainIntentService extends IntentService
                     ProviderHelper.saveKeyRing(this, keyRing);
                     setProgress(R.string.progress_done, 100, 100);
                 } else {
-                    PgpKeyOperation keyOperations = new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
-                    PGPSecretKeyRing privkey = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
-                    PGPPublicKeyRing pubkey = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, masterKeyId);
-                    PgpKeyOperation.Pair<PGPSecretKeyRing,PGPPublicKeyRing> pair =
+                    PgpKeyOperation keyOperations =
+                        new PgpKeyOperation(new ProgressScaler(this, 0, 90, 100));
+                    PGPSecretKeyRing privkey =
+                        ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
+                    PGPPublicKeyRing pubkey =
+                        ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, masterKeyId);
+                    PgpKeyOperation.Pair<PGPSecretKeyRing, PGPPublicKeyRing> pair =
                         keyOperations.buildSecretKey(privkey, pubkey, saveParams);
                     setProgress(R.string.progress_saving_key_ring, 90, 100);
                     ProviderHelper.saveKeyRing(this, pair.first);
@@ -747,11 +748,14 @@ public class KeychainIntentService extends IntentService
 
                     // verify downloaded key by comparing fingerprints
                     if (entry.getFingerPrintHex() != null) {
-                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(downloadedKey.getPublicKey().getFingerprint());
+                        String downloadedKeyFp = PgpKeyHelper.convertFingerprintToHex(
+                            downloadedKey.getPublicKey().getFingerprint());
                         if (downloadedKeyFp.equals(entry.getFingerPrintHex())) {
-                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as the requested fingerprint!");
+                            Log.d(Constants.TAG, "fingerprint of downloaded key is the same as " +
+                                    "the requested fingerprint!");
                         } else {
-                            throw new PgpGeneralException("fingerprint of downloaded key is NOT the same as the requested fingerprint!");
+                            throw new PgpGeneralException("fingerprint of downloaded key is " +
+                                "NOT the same as the requested fingerprint!");
                         }
                     }
 
@@ -820,7 +824,7 @@ public class KeychainIntentService extends IntentService
             return;
         }
         // contextualize the exception, if necessary
-        if(e instanceof PgpGeneralMsgIdException) {
+        if (e instanceof PgpGeneralMsgIdException) {
             e = ((PgpGeneralMsgIdException) e).getContextualized(this);
         }
         Log.e(Constants.TAG, "ApgService Exception: ", e);

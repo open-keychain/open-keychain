@@ -150,8 +150,9 @@ public class EncryptMessageFragment extends Fragment {
                 return;
             }
 
-            if (mEncryptInterface.getSignatureKey() != 0
-                    && PassphraseCacheService.getCachedPassphrase(getActivity(), mEncryptInterface.getSignatureKey()) == null) {
+            if (mEncryptInterface.getSignatureKey() != 0 &&
+                PassphraseCacheService.getCachedPassphrase(getActivity(),
+                    mEncryptInterface.getSignatureKey()) == null) {
                 showPassphraseDialog(toClipboard);
 
                 return;
@@ -182,8 +183,10 @@ public class EncryptMessageFragment extends Fragment {
             }
             data.putString(KeychainIntentService.ENCRYPT_SYMMETRIC_PASSPHRASE, passphrase);
         } else {
-            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID, mEncryptInterface.getSignatureKey());
-            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS, mEncryptInterface.getEncryptionKeys());
+            data.putLong(KeychainIntentService.ENCRYPT_SIGNATURE_KEY_ID,
+                mEncryptInterface.getSignatureKey());
+            data.putLongArray(KeychainIntentService.ENCRYPT_ENCRYPTION_KEYS_IDS,
+                mEncryptInterface.getEncryptionKeys());
 
             boolean signOnly = (mEncryptInterface.getEncryptionKeys() == null
                     || mEncryptInterface.getEncryptionKeys().length == 0);

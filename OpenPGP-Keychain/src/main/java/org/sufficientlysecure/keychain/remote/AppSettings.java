@@ -17,10 +17,6 @@
 
 package org.sufficientlysecure.keychain.remote;
 
-import org.spongycastle.bcpg.HashAlgorithmTags;
-import org.spongycastle.openpgp.PGPEncryptedData;
-import org.sufficientlysecure.keychain.Id;
-
 public class AppSettings {
     private String mPackageName;
     private byte[] mPackageSignature;

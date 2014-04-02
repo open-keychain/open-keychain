@@ -53,12 +53,12 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
 
     private SelectSecretKeyCallback mCallback;
 
-    final String[] PROJECTION = new String[]{
-            KeychainContract.UserIds.USER_ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID
+    private static final String[] PROJECTION = new String[] {
+        KeychainContract.UserIds.USER_ID,
+        KeychainContract.KeyRings.MASTER_KEY_ID,
     };
-    final int INDEX_USER_ID = 0;
-    final int INDEX_MASTER_KEY_ID = 1;
+    private static final int INDEX_USER_ID = 0;
+    private static final int INDEX_MASTER_KEY_ID = 1;
 
     public interface SelectSecretKeyCallback {
         void onKeySelected(long secretKeyId);

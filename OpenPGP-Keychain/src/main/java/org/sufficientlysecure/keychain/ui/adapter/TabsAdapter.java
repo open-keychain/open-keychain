@@ -36,8 +36,8 @@ public class TabsAdapter extends FragmentStatePagerAdapter implements ActionBar.
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     static final class TabInfo {
-        private final Class<?> clss;
-        private final Bundle args;
+        public final Class<?> clss;
+        public final Bundle args;
 
         TabInfo(Class<?> clss, Bundle args) {
             this.clss = clss;

@@ -296,8 +296,8 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildPublicKeyOperations(Context context,
-                                                                     long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
+    private static ContentProviderOperation buildPublicKeyOperations(
+        Context context, long keyRingRowId, PGPPublicKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
         values.put(Keys.KEY_ID, key.getKeyID());
         values.put(Keys.IS_MASTER_KEY, key.isMasterKey());
@@ -324,8 +324,8 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildPublicUserIdOperations(Context context,
-                                                                        long keyRingRowId, String userId, int rank) {
+    private static ContentProviderOperation buildPublicUserIdOperations(
+        Context context, long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -339,8 +339,8 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add PGPSecretKey to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildSecretKeyOperations(Context context,
-                                                                     long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
+    private static ContentProviderOperation buildSecretKeyOperations(
+        Context context, long keyRingRowId, PGPSecretKey key, int rank) throws IOException {
         ContentValues values = new ContentValues();
 
         boolean hasPrivate = true;
@@ -376,8 +376,8 @@ public class ProviderHelper {
     /**
      * Build ContentProviderOperation to add SecretUserIds to database corresponding to a keyRing
      */
-    private static ContentProviderOperation buildSecretUserIdOperations(Context context,
-                                                                        long keyRingRowId, String userId, int rank) {
+    private static ContentProviderOperation buildSecretUserIdOperations(
+        Context context, long keyRingRowId, String userId, int rank) {
         ContentValues values = new ContentValues();
         values.put(UserIds.KEY_RING_ROW_ID, keyRingRowId);
         values.put(UserIds.USER_ID, userId);
@@ -508,13 +508,14 @@ public class ProviderHelper {
      */
 
     public static boolean getMasterKeyCanCertify(Context context, Uri queryUri) {
-        String[] projection = new String[]{
+        String[] projection = new String[] {
                 KeyRings.MASTER_KEY_ID,
                 "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
                         + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
                         + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
                         + " AND sign_keys." + Keys.CAN_CERTIFY + " = '1' AND " + Keys.IS_MASTER_KEY
-                        + " = 1) AS sign",};
+                        + " = 1) AS sign",
+        };
 
         ContentResolver cr = context.getContentResolver();
         Cursor cursor = cr.query(queryUri, projection, null, null, null);
