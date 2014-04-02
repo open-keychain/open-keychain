@@ -80,10 +80,10 @@
   <string name="warning">Uyarı</string>
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="file_delete_successful">Başarıyla silindi.</string>
   <string name="no_file_selected">Önce bir dosya seçin.</string>
-  <string name="encryption_successful">Başarıyla şifrelendi.</string>
   <string name="key_not_found">Anahtar %08X bulunamadı.</string>
   <string name="key_sign_success">Anahtar başarıyla imzalandı</string>
   <string name="list_empty">Liste boş!</string>

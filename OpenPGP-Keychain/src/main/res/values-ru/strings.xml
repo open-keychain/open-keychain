@@ -48,6 +48,7 @@
   <string name="btn_certify">Сертифицировать</string>
   <string name="btn_decrypt">Расшифровать</string>
   <string name="btn_decrypt_verify">Расшифровать и проверить</string>
+  <string name="btn_decrypt_verify_clipboard">Из буфера обмена</string>
   <string name="btn_select_encrypt_keys">Выбрать получателей</string>
   <string name="btn_encrypt_file">Зашифровать файл</string>
   <string name="btn_save">Сохранить</string>
@@ -55,8 +56,8 @@
   <string name="btn_delete">Удалить</string>
   <string name="btn_no_date">Нет</string>
   <string name="btn_okay">Да</string>
-  <string name="btn_change_passphrase">Изменить пароль</string>
-  <string name="btn_set_passphrase">Задать пароль</string>
+  <string name="btn_change_passphrase">Изменить новый пароль</string>
+  <string name="btn_set_passphrase">Задать новый пароль</string>
   <string name="btn_search">Поиск</string>
   <string name="btn_export_to_server">Загрузить на сервер ключей</string>
   <string name="btn_next">Далее</string>
@@ -73,7 +74,6 @@
   <string name="menu_import_from_qr_code">Импорт из QR кода</string>
   <string name="menu_import">Импорт</string>
   <string name="menu_import_from_nfc">Импорт из NFC</string>
-  <string name="menu_export_keys">Экспорт всех ключей</string>
   <string name="menu_export_secret_keys">Экспорт всех секретных ключей</string>
   <string name="menu_export_key">Экспорт в файл</string>
   <string name="menu_delete_key">Удалить ключ</string>
@@ -162,9 +162,6 @@
   <string name="secret_key">Секретный ключ:</string>
   <!--choice-->
   <string name="choice_none">Нет</string>
-  <string name="choice_sign_only">Только подпись</string>
-  <string name="choice_encrypt_only">Только шифрование</string>
-  <string name="choice_sign_and_encrypt">Шифрование и подпись</string>
   <string name="choice_15secs">15 секунд</string>
   <string name="choice_1min">1 минуту</string>
   <string name="choice_3mins">3 минуты</string>
@@ -184,21 +181,21 @@
   <string name="warning">Внимание</string>
   <string name="error">Ошибка</string>
   <string name="error_message">Ошибка: %s</string>
+  <!--key flags-->
+  <string name="flag_certify">Сертифицировать</string>
+  <string name="flag_sign">Подписать</string>
+  <string name="flag_encrypt">Зашифровать</string>
   <!--sentences-->
   <string name="wrong_passphrase">Неправ. пароль</string>
   <string name="using_clipboard_content">Следить за буфером обмена</string>
   <string name="set_a_passphrase">Сначала задайте пароль</string>
   <string name="no_filemanager_installed">Нет совместимого менеджера файлов.</string>
   <string name="passphrases_do_not_match">Пароли не совпадают.</string>
-  <string name="passphrase_must_not_be_empty">Пустой пароль недопустим.</string>
   <string name="passphrase_for_symmetric_encryption">Симметричное шифрование.</string>
   <string name="passphrase_for">Введите пароль для\n\'%s\'</string>
   <string name="file_delete_confirmation">Вы уверены, что хотите удалить\n%s ?</string>
   <string name="file_delete_successful">Удалено.</string>
   <string name="no_file_selected">Сначала выберите файл.</string>
-  <string name="decryption_successful">Расшифровано.</string>
-  <string name="encryption_successful">Зашифровано.</string>
-  <string name="encryption_to_clipboard_successful">Зашифровано в буфер обмена.</string>
   <string name="enter_passphrase_twice">Дважды введите пароль.</string>
   <string name="select_encryption_key">Укажите хотя бы один ключ.</string>
   <string name="select_encryption_or_signature_key">Выберите хотя бы один ключ для шифрования или подписи.</string>
@@ -390,6 +387,8 @@
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
   <!--Remote API-->
   <string name="api_no_apps">Нет связанных программ!\n\nСторонние программы могут запросить доступ к OpenKeychain, после чего они будут отражаться здесь.</string>
+  <string name="api_settings_show_info">Показать подробную информацию</string>
+  <string name="api_settings_hide_info">Скрыть  подробную информацию</string>
   <string name="api_settings_show_advanced">Показать расширенные настройки</string>
   <string name="api_settings_hide_advanced">Скрыть расширенные настройки</string>
   <string name="api_settings_no_key">Ключ не выбран</string>
@@ -431,9 +430,6 @@
   <string name="key_view_tab_main">Информация</string>
   <string name="key_view_tab_certs">Сертификация</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Контакты</string>
-  <string name="nav_encrypt">Зашифровать</string>
-  <string name="nav_decrypt">Расшифровать</string>
   <string name="nav_import">Импорт ключей</string>
   <string name="nav_secret_keys">Мои ключи</string>
   <string name="nav_apps">Связанные приложения</string>
@@ -444,6 +440,6 @@
   <string name="label_secret_key">Секретный ключ</string>
   <string name="secret_key_yes">доступен</string>
   <string name="secret_key_no">не доступен</string>
+  <string name="section_uids_to_sign">Подписываемые ID пользователя</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Напишите сообщение здесь, что бы зашифровать...</string>
 </resources>

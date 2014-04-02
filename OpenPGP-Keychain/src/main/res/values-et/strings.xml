@@ -35,7 +35,6 @@
   <string name="btn_save">Salvesta</string>
   <string name="btn_do_not_save">Katkesta</string>
   <string name="btn_delete">Kustuta</string>
-  <string name="btn_set_passphrase">Määra salasõne</string>
   <string name="btn_search">Otsi</string>
   <string name="btn_export_to_server">Saada võtmeserverisse</string>
   <string name="btn_next">Järgmine</string>
@@ -77,9 +76,6 @@
   <string name="fingerprint">Sõrmejälg:</string>
   <string name="secret_key">Salajane võti:</string>
   <!--choice-->
-  <string name="choice_sign_only">Ainult allkirjastamine</string>
-  <string name="choice_encrypt_only">Ainult krüpteerimine</string>
-  <string name="choice_sign_and_encrypt">Allkirjastamine ja krüpteerimine</string>
   <string name="choice_15secs">15 sekundit</string>
   <string name="choice_1min">1 minut</string>
   <string name="choice_3mins">3 minutit</string>
@@ -98,11 +94,11 @@
   <string name="warning">Hoiatus</string>
   <string name="error">Viga</string>
   <string name="error_message">Viga: %s</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Vale salasõne</string>
   <string name="set_a_passphrase">Määra enne salasõne.</string>
   <string name="passphrases_do_not_match">Salasõned ei ühti.</string>
-  <string name="passphrase_must_not_be_empty">Tühi salasõne pole lubatud.</string>
   <string name="passphrase_for_symmetric_encryption">Sümmeetriline krüpteering</string>
   <!--errors
          no punctuation, all lowercase,
