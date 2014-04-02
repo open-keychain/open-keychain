@@ -98,6 +98,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
         checkDeleteSecret = (CheckBox) inflateView.findViewById(R.id.checkDeleteSecret);
 
         builder.setTitle(R.string.warning);
+        /* TODO! redo
 
         //If only a single key has been selected
         if (keyRingRowIds.length == 1) {
@@ -210,6 +211,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
+        */
         return builder.create();
     }
 

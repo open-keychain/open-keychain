@@ -85,7 +85,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 long masterKeyId = mAdapter.getMasterKeyId(position);
-                Uri result = KeyRings.buildSecretKeyRingsByMasterKeyIdUri(String.valueOf(masterKeyId));
+                Uri result = KeyRings.buildGenericKeyRingUri(String.valueOf(masterKeyId));
 
                 // return data to activity, which results in finishing it
                 mActivity.afterListSelection(result);
@@ -112,12 +112,7 @@ public class SelectSecretKeyFragment extends ListFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
         // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildSecretKeyRingsUri();
-
-        String capFilter = null;
-        if (mFilterCertify) {
-            capFilter = "(cert > 0)";
-        }
+        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
@@ -125,29 +120,36 @@ public class SelectSecretKeyFragment extends ListFragment implements
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,
-                "(SELECT COUNT(cert_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                        + " AS cert_keys WHERE cert_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND cert_keys."
-                        + Keys.CAN_CERTIFY + " = '1') AS cert",
-                "(SELECT COUNT(available_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                        + " AS available_keys WHERE available_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                        + " AND available_keys." + Keys.IS_REVOKED + " = '0' AND  available_keys."
-                        + Keys.CAN_SIGN + " = '1') AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
-                "(SELECT COUNT(valid_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                        + " AS valid_keys WHERE valid_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID + " AND valid_keys."
-                        + Keys.IS_REVOKED + " = '0' AND valid_keys." + Keys.CAN_SIGN
-                        + " = '1' AND valid_keys." + Keys.CREATION + " <= '" + now + "' AND "
-                        + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys." + Keys.EXPIRY
-                        + " >= '" + now + "')) AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID,};
+                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                    + " WHERE k." + Keys.MASTER_KEY_ID + " = "
+                        + KeychainDatabase.Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
+                            + " AND k." + Keys.CAN_CERTIFY + " = '1'"
+                    + ") AS cert",
+                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                    +" WHERE k." + Keys.MASTER_KEY_ID + " = "
+                        + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                            + " AND k." + Keys.IS_REVOKED + " = '0'"
+                            + " AND k." + Keys.CAN_SIGN + " = '1'"
+                    + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
+                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                    + " WHERE k." + Keys.MASTER_KEY_ID + " = "
+                        + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                            + " AND k." + Keys.IS_REVOKED + " = '0'"
+                            + " AND k." + Keys.CAN_SIGN + " = '1'"
+                            + " AND k." + Keys.CREATION + " <= '" + now + "'"
+                            + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY + " >= '" + now + "' )"
+                    + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String orderBy = UserIds.USER_ID + " ASC";
 
+        String where = Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL";
+        if (mFilterCertify) {
+            where += " AND (cert > 0)";
+        }
+
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, capFilter, null, orderBy);
+        return new CursorLoader(getActivity(), baseUri, projection, where, null, orderBy);
     }
 
     @Override

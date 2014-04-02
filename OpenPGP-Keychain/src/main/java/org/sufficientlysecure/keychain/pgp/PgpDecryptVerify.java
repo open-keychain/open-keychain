@@ -239,7 +239,7 @@ public class PgpDecryptVerify {
                     if (mEnforcedKeyId != 0) {
                         // TODO: improve this code! get master key directly!
                         PGPSecretKeyRing secretKeyRing =
-                                ProviderHelper.getPGPSecretKeyRingByKeyId(mContext, encData.getKeyID());
+                                ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, encData.getKeyID());
                         long masterKeyId = PgpKeyHelper.getMasterKey(secretKeyRing).getKeyID();
                         Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
                         Log.d(Constants.TAG, "enforcedKeyId: " + mEnforcedKeyId);
@@ -371,7 +371,7 @@ public class PgpDecryptVerify {
                     signatureIndex = i;
                     signatureKeyId = signature.getKeyID();
                     String userId = null;
-                    PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(
+                    PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(
                             mContext, signatureKeyId);
                     if (signKeyRing != null) {
                         userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signKeyRing));
@@ -555,7 +555,7 @@ public class PgpDecryptVerify {
             } else {
                 signatureKeyId = signature.getKeyID();
                 String userId = null;
-                PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(mContext,
+                PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(mContext,
                         signatureKeyId);
                 if (signKeyRing != null) {
                     userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signKeyRing));
@@ -619,7 +619,7 @@ public class PgpDecryptVerify {
         long signatureKeyId = signature.getKeyID();
         boolean validKeyBinding = false;
 
-        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingByKeyId(context,
+        PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(context,
                 signatureKeyId);
         PGPPublicKey mKey = null;
         if (signKeyRing != null) {

@@ -186,6 +186,7 @@ public class KeyListFragment extends Fragment
                         case R.id.menu_key_list_multi_export: {
                             ids = mStickyList.getWrappedList().getCheckedItemIds();
                             long[] masterKeyIds = new long[2*ids.length];
+                            /* TODO! redo
                             ArrayList<Long> allPubRowIds =
                                     ProviderHelper.getPublicKeyRingsRowIds(getActivity());
                             for (int i = 0; i < ids.length; i++) {
@@ -194,7 +195,7 @@ public class KeyListFragment extends Fragment
                                 } else {
                                     masterKeyIds[i] = ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
                                 }
-                            }
+                            }*/
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
                             mExportHelper
                                     .showExportKeysDialog(masterKeyIds, Id.type.public_key,
@@ -254,22 +255,22 @@ public class KeyListFragment extends Fragment
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
             KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.TYPE,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
+            KeychainContract.Keys.MASTER_KEY_ID,
             KeychainContract.UserIds.USER_ID,
-            KeychainContract.Keys.IS_REVOKED
+            KeychainContract.Keys.IS_REVOKED,
+            KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID
     };
 
-    static final int INDEX_TYPE = 1;
-    static final int INDEX_MASTER_KEY_ID = 2;
-    static final int INDEX_USER_ID = 3;
-    static final int INDEX_IS_REVOKED = 4;
+    static final int INDEX_MASTER_KEY_ID = 1;
+    static final int INDEX_USER_ID = 2;
+    static final int INDEX_IS_REVOKED = 3;
+    static final int INDEX_HAS_SECRET = 4;
 
     static final String SORT_ORDER =
             // show secret before public key
-            KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings.TYPE + " DESC, "
+            KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID + " IS NULL ASC, " +
                     // sort by user id otherwise
-                    + UserIds.USER_ID + " ASC";
+                    UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -326,7 +327,7 @@ public class KeyListFragment extends Fragment
         }
         viewIntent.setData(
                 KeychainContract
-                        .KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                        .KeyRings.buildPublicKeyRingUri(
                                             Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
@@ -503,7 +504,7 @@ public class KeyListFragment extends Fragment
                 Button button = (Button) view.findViewById(R.id.edit);
                 TextView revoked = (TextView) view.findViewById(R.id.revoked);
 
-                if (cursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+                if (!cursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
                     // this is a secret key - show the edit button
                     statusDivider.setVisibility(View.VISIBLE);
                     statusLayout.setVisibility(View.VISIBLE);
@@ -516,7 +517,7 @@ public class KeyListFragment extends Fragment
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
                             editIntent.setData(
                                     KeychainContract.KeyRings
-                                            .buildSecretKeyRingsByMasterKeyIdUri(Long.toString(id)));
+                                            .buildSecretKeyRingUri(Long.toString(id)));
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);
                         }
@@ -577,7 +578,7 @@ public class KeyListFragment extends Fragment
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
 
-            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+            if (!mCursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
                 { // set contact count
                     int num = mCursor.getCount();
                     String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
@@ -617,7 +618,7 @@ public class KeyListFragment extends Fragment
             }
 
             // early breakout: all secret keys are assigned id 0
-            if (mCursor.getInt(KeyListFragment.INDEX_TYPE) == KeyTypes.SECRET) {
+            if (!mCursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
                 return 1L;
             }
             // otherwise, return the first character of the name as ID

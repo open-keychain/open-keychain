@@ -139,8 +139,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
         Log.e(Constants.TAG, "uri: " + mDataUri);
 
-        PGPPublicKeyRing signKey = (PGPPublicKeyRing) ProviderHelper.getPGPKeyRing(this, mDataUri);
-
         mUserIds = (ListView) findViewById(R.id.user_ids);
 
         mUserIdsAdapter = new ViewKeyUserIdsAdapter(this, null, 0, true);
@@ -149,20 +147,12 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
 
-        if (signKey != null) {
-            mPubKeyId = PgpKeyHelper.getMasterKey(signKey).getKeyID();
-        }
-        if (mPubKeyId == 0) {
-            Log.e(Constants.TAG, "this shouldn't happen. KeyId == 0!");
-            finish();
-            return;
-        }
     }
 
     static final String[] KEYRING_PROJECTION =
             new String[] {
                     KeychainContract.KeyRings._ID,
-                    KeychainContract.KeyRings.MASTER_KEY_ID,
+                    KeychainContract.Keys.MASTER_KEY_ID,
                     KeychainContract.Keys.FINGERPRINT,
                     KeychainContract.UserIds.USER_ID
             };
@@ -182,11 +172,13 @@ public class CertifyKeyActivity extends ActionBarActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch(id) {
-            case LOADER_ID_KEYRING:
-                return new CursorLoader(this, mDataUri, KEYRING_PROJECTION, null, null, null);
+            case LOADER_ID_KEYRING: {
+                Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                return new CursorLoader(this, uri, KEYRING_PROJECTION, null, null, null);
+            }
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
-                return new CursorLoader(this, baseUri, USER_IDS_PROJECTION, null, null, USER_IDS_SORT_ORDER);
+                Uri uri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
+                return new CursorLoader(this, uri, USER_IDS_PROJECTION, null, null, USER_IDS_SORT_ORDER);
             }
         }
         return null;
@@ -199,19 +191,14 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                 // the first key here is our master key
                 if (data.moveToFirst()) {
                     // TODO: put findViewById in onCreate!
-
-                    long keyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(keyId);
+                    mPubKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    String keyIdStr = PgpKeyHelper.convertKeyIdToHexShort(mPubKeyId);
                     ((TextView) findViewById(R.id.key_id)).setText(keyIdStr);
 
                     String mainUserId = data.getString(INDEX_USER_ID);
                     ((TextView) findViewById(R.id.main_user_id)).setText(mainUserId);
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
-                    if (fingerprintBlob == null) {
-                        // FALLBACK for old database entries
-                        fingerprintBlob = ProviderHelper.getFingerprint(this, mDataUri);
-                    }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
                     ((TextView) findViewById(R.id.fingerprint)).setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
@@ -261,7 +248,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
      * handles the UI bits of the signing process on the UI thread
      */
     private void initiateSigning() {
-        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(this, mPubKeyId);
+        PGPPublicKeyRing pubring = ProviderHelper.getPGPPublicKeyRing(this, mPubKeyId);
         if (pubring != null) {
             // if we have already signed this key, dont bother doing it again
             boolean alreadySigned = false;

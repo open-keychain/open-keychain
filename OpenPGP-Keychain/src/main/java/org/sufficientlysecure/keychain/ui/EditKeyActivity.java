@@ -356,7 +356,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             return true;
         case R.id.menu_key_edit_delete:
             long rowId= ProviderHelper.getRowId(this,mDataUri);
-            Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
+            Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(Long.toString(rowId));
             // Message is received after key is deleted
             Handler returnHandler = new Handler() {
                 @Override
@@ -380,7 +380,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private void finallyEdit(final long masterKeyId) {
         if (masterKeyId != 0) {
             PGPSecretKey masterKey = null;
-            mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
+            mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
             if (mKeyRing != null) {
                 masterKey = PgpKeyHelper.getMasterKey(mKeyRing);
                 for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {

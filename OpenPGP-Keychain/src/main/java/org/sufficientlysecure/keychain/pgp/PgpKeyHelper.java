@@ -219,8 +219,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPPublicKey getEncryptPublicKey(Context context, long masterKeyId) {
-        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId);
         if (keyRing == null) {
             Log.e(Constants.TAG, "keyRing is null!");
             return null;
@@ -234,8 +233,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getCertificationKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -247,8 +245,7 @@ public class PgpKeyHelper {
     }
 
     public static PGPSecretKey getSigningKey(Context context, long masterKeyId) {
-        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(context,
-                masterKeyId);
+        PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId);
         if (keyRing == null) {
             return null;
         }
@@ -491,21 +488,6 @@ public class PgpKeyHelper {
         return algorithmStr + ", " + keySize + " bit";
     }
 
-    public static String getFingerPrint(Context context, long keyId) {
-        PGPPublicKey key = ProviderHelper.getPGPPublicKeyByKeyId(context, keyId);
-        // if it is no public key get it from your own keys...
-        if (key == null) {
-            PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, keyId);
-            if (secretKey == null) {
-                Log.e(Constants.TAG, "Key could not be found!");
-                return null;
-            }
-            key = secretKey.getPublicKey();
-        }
-
-        return convertFingerprintToHex(key.getFingerprint());
-    }
-
     /**
      * Converts fingerprint to hex (optional: with whitespaces after 4 characters)
      * <p/>
@@ -513,7 +495,6 @@ public class PgpKeyHelper {
      * better differentiate between numbers and letters when letters are lowercase.
      *
      * @param fingerprint
-     * @param split       split into 4 character chunks
      * @return
      */
     public static String convertFingerprintToHex(byte[] fingerprint) {

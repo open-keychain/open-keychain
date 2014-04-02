@@ -41,7 +41,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
     private int mIndexKeyId;
     private int mIndexAlgorithm;
     private int mIndexKeySize;
-    private int mIndexIsMasterKey;
+    private int mIndexRank;
     private int mIndexCanCertify;
     private int mIndexCanEncrypt;
     private int mIndexCanSign;
@@ -76,7 +76,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
             mIndexKeyId = cursor.getColumnIndexOrThrow(Keys.KEY_ID);
             mIndexAlgorithm = cursor.getColumnIndexOrThrow(Keys.ALGORITHM);
             mIndexKeySize = cursor.getColumnIndexOrThrow(Keys.KEY_SIZE);
-            mIndexIsMasterKey = cursor.getColumnIndexOrThrow(Keys.IS_MASTER_KEY);
+            mIndexRank = cursor.getColumnIndexOrThrow(Keys.RANK);
             mIndexCanCertify = cursor.getColumnIndexOrThrow(Keys.CAN_CERTIFY);
             mIndexCanEncrypt = cursor.getColumnIndexOrThrow(Keys.CAN_ENCRYPT);
             mIndexCanSign = cursor.getColumnIndexOrThrow(Keys.CAN_SIGN);
@@ -103,7 +103,7 @@ public class ViewKeyKeysAdapter extends CursorAdapter {
         keyId.setText(keyIdStr);
         keyDetails.setText("(" + algorithmStr + ")");
 
-        if (cursor.getInt(mIndexIsMasterKey) != 1) {
+        if (cursor.getInt(mIndexRank) == 0) {
             masterKeyIcon.setVisibility(View.INVISIBLE);
         } else {
             masterKeyIcon.setVisibility(View.VISIBLE);

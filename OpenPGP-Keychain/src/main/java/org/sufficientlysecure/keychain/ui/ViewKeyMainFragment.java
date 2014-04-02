@@ -69,7 +69,6 @@ public class ViewKeyMainFragment extends Fragment implements
     private ListView mUserIds;
     private ListView mKeys;
 
-    private static final int LOADER_ID_KEYRING = 0;
     private static final int LOADER_ID_USER_IDS = 1;
     private static final int LOADER_ID_KEYS = 2;
 
@@ -144,7 +143,7 @@ public class ViewKeyMainFragment extends Fragment implements
                         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
                         editIntent.setData(
                                 KeychainContract
-                                        .KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
+                                        .KeyRings.buildSecretKeyRingUri(
                                         Long.toString(masterKeyId)));
                         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                         startActivityForResult(editIntent, 0);
@@ -163,7 +162,7 @@ public class ViewKeyMainFragment extends Fragment implements
             // TODO see todo note above, doing this here for now
             mActionCertify.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    certifyKey(KeychainContract.KeyRings.buildPublicKeyRingsByMasterKeyIdUri(
+                    certifyKey(KeychainContract.KeyRings.buildGenericKeyRingUri(
                             Long.toString(masterKeyId)
                     ));
                 }
@@ -187,17 +186,9 @@ public class ViewKeyMainFragment extends Fragment implements
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
-        getActivity().getSupportLoaderManager().initLoader(LOADER_ID_KEYRING, null, this);
         getActivity().getSupportLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
         getActivity().getSupportLoaderManager().initLoader(LOADER_ID_KEYS, null, this);
     }
-
-    static final String[] KEYRING_PROJECTION =
-            new String[]{KeychainContract.KeyRings._ID, KeychainContract.KeyRings.MASTER_KEY_ID,
-                    KeychainContract.UserIds.USER_ID};
-    static final int KEYRING_INDEX_ID = 0;
-    static final int KEYRING_INDEX_MASTER_KEY_ID = 1;
-    static final int KEYRING_INDEX_USER_ID = 2;
 
     static final String[] USER_IDS_PROJECTION =
             new String[]{
@@ -205,21 +196,21 @@ public class ViewKeyMainFragment extends Fragment implements
                     KeychainContract.UserIds.USER_ID,
                     KeychainContract.UserIds.RANK,
             };
+    static final int INDEX_UID_UID = 1;
     static final String USER_IDS_SORT_ORDER =
             KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
     static final String[] KEYS_PROJECTION =
             new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
-                    KeychainContract.Keys.IS_MASTER_KEY, KeychainContract.Keys.ALGORITHM,
+                    KeychainContract.Keys.ALGORITHM, KeychainContract.Keys.RANK,
                     KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
                     KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
                     KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
                     KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
     static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
-    static final int KEYS_INDEX_ID = 0;
     static final int KEYS_INDEX_KEY_ID = 1;
-    static final int KEYS_INDEX_IS_MASTER_KEY = 2;
-    static final int KEYS_INDEX_ALGORITHM = 3;
+    static final int KEYS_INDEX_ALGORITHM = 2;
+    static final int KEYS_INDEX_RANK = 3;
     static final int KEYS_INDEX_KEY_SIZE = 4;
     static final int KEYS_INDEX_CAN_CERTIFY = 5;
     static final int KEYS_INDEX_CAN_SIGN = 6;
@@ -231,13 +222,6 @@ public class ViewKeyMainFragment extends Fragment implements
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case LOADER_ID_KEYRING: {
-                Uri baseUri = mDataUri;
-
-                // Now create and return a CursorLoader that will take care of
-                // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, KEYRING_PROJECTION, null, null, null);
-            }
             case LOADER_ID_USER_IDS: {
                 Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
 
@@ -263,11 +247,11 @@ public class ViewKeyMainFragment extends Fragment implements
         // Swap the new cursor in. (The framework will take care of closing the
         // old cursor once we return.)
         switch (loader.getId()) {
-            case LOADER_ID_KEYRING:
+            case LOADER_ID_USER_IDS:
                 if (data.moveToFirst()) {
                     // get name, email, and comment from USER_ID
                     String[] mainUserId = PgpKeyHelper.splitUserId(data
-                            .getString(KEYRING_INDEX_USER_ID));
+                            .getString(INDEX_UID_UID));
                     if (mainUserId[0] != null) {
                         getActivity().setTitle(mainUserId[0]);
                         mName.setText(mainUserId[0]);
@@ -278,9 +262,6 @@ public class ViewKeyMainFragment extends Fragment implements
                     mEmail.setText(mainUserId[1]);
                     mComment.setText(mainUserId[2]);
                 }
-
-                break;
-            case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(data);
                 break;
             case LOADER_ID_KEYS:
@@ -354,9 +335,6 @@ public class ViewKeyMainFragment extends Fragment implements
      */
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
-            case LOADER_ID_KEYRING:
-                // No resources need to be freed for this ID
-                break;
             case LOADER_ID_USER_IDS:
                 mUserIdsAdapter.swapCursor(null);
                 break;
@@ -368,11 +346,11 @@ public class ViewKeyMainFragment extends Fragment implements
         }
     }
 
-
     private void encryptToContact(Uri dataUri) {
-        long keyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
+        // TODO preselect from uri? should be feasible without trivial query
+        long keyId = Long.parseLong(dataUri.getPathSegments().get(1));
 
-        long[] encryptionKeyIds = new long[]{keyId};
+        long[] encryptionKeyIds = new long[]{ keyId };
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
         intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
