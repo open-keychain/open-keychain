@@ -138,8 +138,8 @@ public class EncryptFileFragment extends Fragment {
         mDeleteAfter = (CheckBox) view.findViewById(R.id.deleteAfterEncryption);
         mShareAfter = (CheckBox) view.findViewById(R.id.shareAfterEncryption);
 
-        mAsciiArmor = (CheckBox) view.findViewById(R.id.asciiArmour);
-        mAsciiArmor.setChecked(Preferences.getPreferences(getActivity()).getDefaultAsciiArmour());
+        mAsciiArmor = (CheckBox) view.findViewById(R.id.asciiArmor);
+        mAsciiArmor.setChecked(Preferences.getPreferences(getActivity()).getDefaultAsciiArmor());
 
         return view;
     }

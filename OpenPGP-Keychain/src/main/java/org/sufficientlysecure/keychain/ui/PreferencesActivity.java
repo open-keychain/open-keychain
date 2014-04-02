@@ -110,8 +110,8 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmor(
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
@@ -247,8 +247,8 @@ public class PreferencesActivity extends PreferenceActivity {
                     (IntegerListPreference) findPreference(Constants.Pref.DEFAULT_FILE_COMPRESSION),
                     entries, values);
 
-            initializeAsciiArmour(
-                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOUR));
+            initializeAsciiArmor(
+                    (CheckBoxPreference) findPreference(Constants.Pref.DEFAULT_ASCII_ARMOR));
 
             initializeForceV3Signatures(
                     (CheckBoxPreference) findPreference(Constants.Pref.FORCE_V3_SIGNATURES));
@@ -362,12 +362,12 @@ public class PreferencesActivity extends PreferenceActivity {
         });
     }
 
-    private static void initializeAsciiArmour(final CheckBoxPreference mAsciiArmour) {
-        mAsciiArmour.setChecked(sPreferences.getDefaultAsciiArmour());
-        mAsciiArmour.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+    private static void initializeAsciiArmor(final CheckBoxPreference mAsciiArmor) {
+        mAsciiArmor.setChecked(sPreferences.getDefaultAsciiArmor());
+        mAsciiArmor.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                mAsciiArmour.setChecked((Boolean) newValue);
-                sPreferences.setDefaultAsciiArmour((Boolean) newValue);
+                mAsciiArmor.setChecked((Boolean) newValue);
+                sPreferences.setDefaultAsciiArmor((Boolean) newValue);
                 return false;
             }
         });

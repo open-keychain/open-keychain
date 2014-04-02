@@ -55,7 +55,7 @@ public final class Constants {
     public static final class Pref {
         public static final String DEFAULT_ENCRYPTION_ALGORITHM = "defaultEncryptionAlgorithm";
         public static final String DEFAULT_HASH_ALGORITHM = "defaultHashAlgorithm";
-        public static final String DEFAULT_ASCII_ARMOUR = "defaultAsciiArmour";
+        public static final String DEFAULT_ASCII_ARMOR = "defaultAsciiArmor";
         public static final String DEFAULT_MESSAGE_COMPRESSION = "defaultMessageCompression";
         public static final String DEFAULT_FILE_COMPRESSION = "defaultFileCompression";
         public static final String PASSPHRASE_CACHE_TTL = "passphraseCacheTtl";

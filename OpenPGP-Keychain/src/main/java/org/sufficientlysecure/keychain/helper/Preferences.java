@@ -118,13 +118,13 @@ public class Preferences {
         editor.commit();
     }
 
-    public boolean getDefaultAsciiArmour() {
-        return mSharedPreferences.getBoolean(Constants.Pref.DEFAULT_ASCII_ARMOUR, false);
+    public boolean getDefaultAsciiArmor() {
+        return mSharedPreferences.getBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, false);
     }
 
-    public void setDefaultAsciiArmour(boolean value) {
+    public void setDefaultAsciiArmor(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOUR, value);
+        editor.putBoolean(Constants.Pref.DEFAULT_ASCII_ARMOR, value);
         editor.commit();
     }
 
