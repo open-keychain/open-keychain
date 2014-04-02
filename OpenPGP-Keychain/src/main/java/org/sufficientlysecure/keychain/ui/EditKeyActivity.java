@@ -568,15 +568,14 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
     }
 
-    private void checkEmptyIDsWanted()
-    {
+    private void checkEmptyIDsWanted() {
         try {
             ArrayList<String> userIDs = getUserIds(mUserIdsView);
             List<Boolean> newIDs = mUserIdsView.getNewIDFlags();
             ArrayList<String> originalIDs = mUserIdsView.getOriginalIDs();
             int curID = 0;
             for (String userID : userIDs) {
-                if ( userID.equals("") && (!userID.equals(originalIDs.get(curID)) || newIDs.get(curID) ) ) {
+                if (userID.equals("") && (!userID.equals(originalIDs.get(curID)) || newIDs.get(curID))) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(
                             EditKeyActivity.this);
 

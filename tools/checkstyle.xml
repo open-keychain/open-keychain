@@ -12,7 +12,6 @@ page at http://checkstyle.sourceforge.net/config.html -->
   <module name="SuppressionFilter">
    <property name="file" value="tools/suppressions.xml"/>
   </module>
-
   <module name="RegexpSingleline">
     <!-- Requires a copyright notice in each file.
       Code intended to be open-sourced may have a multi-line copyright
@@ -30,6 +29,13 @@ page at http://checkstyle.sourceforge.net/config.html -->
     <property name="maximum" value="10"/>
     <property name="message" value="Copyright is missing or malformed."/>
     <property name="severity" value="error"/>
+  </module>
+
+
+  <module name="RegexpSingleline">
+    <property name="format" value="^import.*\*.*$"/>
+    <property name="message" value="Wildcard imports are not ideal."/>
+    <property name="severity" value="warning"/>
   </module>
 
   <module name="FileTabCharacter">
