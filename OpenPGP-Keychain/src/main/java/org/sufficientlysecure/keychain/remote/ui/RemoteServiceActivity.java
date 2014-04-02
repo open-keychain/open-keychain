@@ -178,9 +178,23 @@ public class RemoteServiceActivity extends ActionBarActivity {
             mAccSettingsFragment.setAccSettings(settings);
         } else if (ACTION_CACHE_PASSPHRASE.equals(action)) {
             long secretKeyId = extras.getLong(EXTRA_SECRET_KEY_ID);
-            Intent resultData = extras.getParcelable(EXTRA_DATA);
+            final Intent resultData = extras.getParcelable(EXTRA_DATA);
 
-            showPassphraseDialog(resultData, secretKeyId);
+            PassphraseDialogFragment.show(this, secretKeyId,
+                new Handler() {
+                    @Override
+                    public void handleMessage(Message message) {
+                        if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                            // return given params again, for calling the service method again
+                            RemoteServiceActivity.this.setResult(RESULT_OK, resultData);
+                        } else {
+                            RemoteServiceActivity.this.setResult(RESULT_CANCELED);
+                        }
+
+                        RemoteServiceActivity.this.finish();
+                    }
+                });
+
         } else if (ACTION_SELECT_PUB_KEYS.equals(action)) {
             long[] selectedMasterKeyIds = intent.getLongArrayExtra(EXTRA_SELECTED_MASTER_KEY_IDS);
             ArrayList<String> missingUserIds = intent

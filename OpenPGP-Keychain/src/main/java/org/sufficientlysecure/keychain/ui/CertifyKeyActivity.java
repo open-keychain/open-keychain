@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
@@ -224,32 +223,6 @@ public class CertifyKeyActivity extends ActionBarActivity implements
         }
     }
 
-    private void showPassphraseDialog(final long secretKeyId) {
-        // Message is received after passphrase is cached
-        Handler returnHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
-                    startSigning();
-                }
-            }
-        };
-
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(returnHandler);
-
-        try {
-            PassphraseDialogFragment passphraseDialog = PassphraseDialogFragment.newInstance(this,
-                    messenger, secretKeyId);
-
-            passphraseDialog.show(getSupportFragmentManager(), "passphraseDialog");
-        } catch (PgpGeneralException e) {
-            Log.d(Constants.TAG, "No passphrase for this secret key!");
-            // send message to handler to start certification directly
-            returnHandler.sendEmptyMessage(PassphraseDialogFragment.MESSAGE_OKAY);
-        }
-    }
-
     /**
      * handles the UI bits of the signing process on the UI thread
      */
@@ -277,7 +250,15 @@ public class CertifyKeyActivity extends ActionBarActivity implements
                  */
                 String passphrase = PassphraseCacheService.getCachedPassphrase(this, mMasterKeyId);
                 if (passphrase == null) {
-                    showPassphraseDialog(mMasterKeyId);
+                    PassphraseDialogFragment.show(this, mMasterKeyId,
+                        new Handler() {
+                            @Override
+                            public void handleMessage(Message message) {
+                                if (message.what == PassphraseDialogFragment.MESSAGE_OKAY) {
+                                    startSigning();
+                                }
+                            }
+                        });
                     // bail out; need to wait until the user has entered the passphrase before trying again
                     return;
                 } else {
