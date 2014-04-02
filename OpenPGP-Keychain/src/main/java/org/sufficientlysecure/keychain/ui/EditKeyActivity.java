@@ -553,7 +553,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     showPassphraseDialog(masterKeyId);
                 } else {
                     mCurrentPassphrase = passphrase;
-                    finallySaveClicked();
+                    checkEmptyIDsWanted();
                 }
             } catch (PgpGeneralException e) {
                 Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
@@ -562,6 +562,51 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         } else {
             AppMsg.makeText(this, R.string.error_change_something_first, AppMsg.STYLE_ALERT).show();
         }
+    }
+
+    private void checkEmptyIDsWanted()
+    {
+        try {
+            ArrayList<String> userIDs = getUserIds(mUserIdsView);
+            List<Boolean> newIDs = mUserIdsView.getNewIDFlags();
+            ArrayList<String> originalIDs = mUserIdsView.getOriginalIDs();
+            int curID = 0;
+            for (String userID : userIDs) {
+                if ( userID.equals("") && (!userID.equals(originalIDs.get(curID)) || newIDs.get(curID) ) ) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(
+                            EditKeyActivity.this);
+
+                    alert.setIcon(android.R.drawable.ic_dialog_alert);
+                    alert.setTitle(R.string.warning);
+                    alert.setMessage(EditKeyActivity.this.getString(R.string.ask_empty_id_ok));
+
+                    alert.setPositiveButton(EditKeyActivity.this.getString(android.R.string.yes),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                    finallySaveClicked();
+                                }
+                            }
+                    );
+                    alert.setNegativeButton(this.getString(android.R.string.no),
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.dismiss();
+                                }
+                            }
+                    );
+                    alert.setCancelable(false);
+                    alert.create().show();
+                    return;
+                }
+                curID++;
+            }
+        } catch (PgpGeneralException e) {
+            Log.e(Constants.TAG, getString(R.string.error_message, e.getMessage()));
+            Toast.makeText(this, getString(R.string.error_message, e.getMessage()),
+                    Toast.LENGTH_SHORT).show();
+        }
+        finallySaveClicked();
     }
 
     private boolean[] toPrimitiveArray(final List<Boolean> booleanList) {
