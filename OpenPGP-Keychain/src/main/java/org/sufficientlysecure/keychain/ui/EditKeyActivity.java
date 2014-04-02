@@ -471,13 +471,13 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
         }
         mUserIdsView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mUserIdsView.setType(Id.type.user_id);
-        mUserIdsView.setCanEdit(mMasterCanSign);
+        mUserIdsView.setCanBeEdited(mMasterCanSign);
         mUserIdsView.setUserIds(mUserIds);
         mUserIdsView.setEditorListener(this);
         container.addView(mUserIdsView);
         mKeysView = (SectionView) inflater.inflate(R.layout.edit_key_section, container, false);
         mKeysView.setType(Id.type.key);
-        mKeysView.setCanEdit(mMasterCanSign);
+        mKeysView.setCanBeEdited(mMasterCanSign);
         mKeysView.setKeys(mKeys, mKeysUsages, newKeys);
         mKeysView.setEditorListener(this);
         container.addView(mKeysView);
