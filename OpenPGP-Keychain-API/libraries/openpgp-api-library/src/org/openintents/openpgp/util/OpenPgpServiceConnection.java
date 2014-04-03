@@ -27,7 +27,6 @@ import android.os.IBinder;
 public class OpenPgpServiceConnection {
     private Context mApplicationContext;
 
-    private boolean mBound;
     private IOpenPgpService mService;
     private String mProviderPackageName;
 
@@ -41,18 +40,16 @@ public class OpenPgpServiceConnection {
     }
 
     public boolean isBound() {
-        return mBound;
+        return (mService != null);
     }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = IOpenPgpService.Stub.asInterface(service);
-            mBound = true;
         }
 
         public void onServiceDisconnected(ComponentName name) {
             mService = null;
-            mBound = false;
         }
     };
 
@@ -63,7 +60,7 @@ public class OpenPgpServiceConnection {
      */
     public boolean bindToService() {
         // if not already bound...
-        if (mService == null && !mBound) {
+        if (mService == null) {
             try {
                 Intent serviceIntent = new Intent();
                 serviceIntent.setAction(IOpenPgpService.class.getName());
