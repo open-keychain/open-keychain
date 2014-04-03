@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -34,8 +35,10 @@ import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import com.devspark.appmsg.AppMsg;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
@@ -54,7 +57,6 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             + "IMPORT_KEY_FROM_QR_CODE";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEYSERVER";
-    // TODO: implement:
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN = Constants.INTENT_PREFIX
             + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN";
 
@@ -86,7 +88,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             ImportKeysNFCFragment.class
     };
 
-    private int mCurrentNavPostition = -1;
+    private int mCurrentNavPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,15 +106,20 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        setupDrawerNavigation(savedInstanceState);
-
-        // set drop down navigation
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
-        Context context = getSupportActionBar().getThemedContext();
-        ArrayAdapter<CharSequence> navigationAdapter = ArrayAdapter.createFromResource(context,
-                R.array.import_action_list, android.R.layout.simple_spinner_dropdown_item);
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-        getSupportActionBar().setListNavigationCallbacks(navigationAdapter, this);
+
+        if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
+            getSupportActionBar().setTitle(R.string.nav_import);
+        } else {
+            setupDrawerNavigation(savedInstanceState);
+
+            // set drop down navigation
+            Context context = getSupportActionBar().getThemedContext();
+            ArrayAdapter<CharSequence> navigationAdapter = ArrayAdapter.createFromResource(context,
+                    R.array.import_action_list, android.R.layout.simple_spinner_dropdown_item);
+            getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+            getSupportActionBar().setListNavigationCallbacks(navigationAdapter, this);
+        }
 
         handleActions(savedInstanceState, getIntent());
     }
@@ -152,34 +159,47 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                 // action: directly load data
                 startListFragment(savedInstanceState, importData, null, null);
             }
-        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)) {
-            String query = null;
-            if (extras.containsKey(EXTRA_QUERY)) {
-                query = extras.getString(EXTRA_QUERY);
-            } else if (extras.containsKey(EXTRA_KEY_ID)) {
-                long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
-                if (keyId != 0) {
-                    query = PgpKeyHelper.convertKeyIdToHex(keyId);
+        } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)
+                || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(action)) {
+            if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
+                /* simple search based on query or key id */
+
+                String query = null;
+                if (extras.containsKey(EXTRA_QUERY)) {
+                    query = extras.getString(EXTRA_QUERY);
+                } else if (extras.containsKey(EXTRA_KEY_ID)) {
+                    long keyId = intent.getLongExtra(EXTRA_KEY_ID, 0);
+                    if (keyId != 0) {
+                        query = PgpKeyHelper.convertKeyIdToHex(keyId);
+                    }
+                }
+
+                if (query != null && query.length() > 0) {
+                    // display keyserver fragment with query
+                    Bundle args = new Bundle();
+                    args.putString(ImportKeysServerFragment.ARG_QUERY, query);
+                    loadNavFragment(0, args);
+
+                    // action: search immediately
+                    startListFragment(savedInstanceState, null, null, query);
+                } else {
+                    Log.e(Constants.TAG, "Query is empty!");
+                    return;
                 }
             } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
+                /*
+                 * search based on fingerprint, here we can enforce a check in the end
+                 * if the right key has been downloaded
+                 */
+
                 String fingerprint = intent.getStringExtra(EXTRA_FINGERPRINT);
-                if (fingerprint != null) {
-                    query = "0x" + fingerprint;
-                }
+                loadFromFingerprint(savedInstanceState, fingerprint);
             } else {
                 Log.e(Constants.TAG,
-                "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
-                    "'fingerprint' extra!");
+                        "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
+                                "'fingerprint' extra!");
                 return;
             }
-
-            // display keyserver fragment with query
-            Bundle args = new Bundle();
-            args.putString(ImportKeysServerFragment.ARG_QUERY, query);
-            loadNavFragment(0, args);
-
-            // action: search immediately
-            startListFragment(savedInstanceState, null, null, query);
         } else if (ACTION_IMPORT_KEY_FROM_FILE.equals(action)) {
 
             // NOTE: this only displays the appropriate fragment, no actions are taken
@@ -234,14 +254,14 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
      * onNavigationItemSelected() should check whether the Fragment is already in existence
      * inside your Activity."
      * <p/>
-     * from http://bit.ly/1dBYThO
+     * from http://stackoverflow.com/a/14295474
      * <p/>
      * In our case, if we start ImportKeysActivity with parameters to directly search using a fingerprint,
      * the fragment would be loaded twice resulting in the query being empty after the second load.
      * <p/>
      * Our solution:
      * To prevent that a fragment will be loaded again even if it was already loaded loadNavFragment
-     * checks against mCurrentNavPostition.
+     * checks against mCurrentNavPosition.
      *
      * @param itemPosition
      * @param itemId
@@ -257,10 +277,12 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     }
 
     private void loadNavFragment(int itemPosition, Bundle args) {
-        if (mCurrentNavPostition != itemPosition) {
-            getSupportActionBar().setSelectedNavigationItem(itemPosition);
+        if (mCurrentNavPosition != itemPosition) {
+            if (ActionBar.NAVIGATION_MODE_LIST == getSupportActionBar().getNavigationMode()) {
+                getSupportActionBar().setSelectedNavigationItem(itemPosition);
+            }
             loadFragment(NAVIGATION_CLASSES[itemPosition], args, mNavigationStrings[itemPosition]);
-            mCurrentNavPostition = itemPosition;
+            mCurrentNavPosition = itemPosition;
         }
     }
 
@@ -280,7 +302,11 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
 
         Log.d(Constants.TAG, "fingerprint: " + fingerprint);
 
-        if (fingerprint.length() < 16) {
+        loadFromFingerprint(savedInstanceState, fingerprint);
+    }
+
+    public void loadFromFingerprint(Bundle savedInstanceState, String fingerprint) {
+        if (fingerprint == null || fingerprint.length() < 40) {
             AppMsg.makeText(this, R.string.import_qr_code_too_short_fingerprint,
                     AppMsg.STYLE_ALERT).show();
             return;
@@ -291,6 +317,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         // display keyserver fragment with query
         Bundle args = new Bundle();
         args.putString(ImportKeysServerFragment.ARG_QUERY, query);
+        args.putBoolean(ImportKeysServerFragment.ARG_DISABLE_QUERY_EDIT, true);
         loadNavFragment(0, args);
 
         // action: search directly
@@ -300,66 +327,6 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     public void loadCallback(byte[] importData, Uri dataUri, String serverQuery, String keyServer) {
         mListFragment.loadNew(importData, dataUri, serverQuery, keyServer);
     }
-
-    // private void importAndSignOld(final long keyId, final String expectedFingerprint) {
-    // if (expectedFingerprint != null && expectedFingerprint.length() > 0) {
-    //
-    // Thread t = new Thread() {
-    // @Override
-    // public void run() {
-    // try {
-    // // TODO: display some sort of spinner here while the user waits
-    //
-    // // TODO: there should be only 1
-    // HkpKeyServer server = new HkpKeyServer(mPreferences.getKeyServers()[0]);
-    // String encodedKey = server.get(keyId);
-    //
-    // PGPKeyRing keyring = PGPHelper.decodeKeyRing(new ByteArrayInputStream(
-    // encodedKey.getBytes()));
-    // if (keyring != null && keyring instanceof PGPPublicKeyRing) {
-    // PGPPublicKeyRing publicKeyRing = (PGPPublicKeyRing) keyring;
-    //
-    // // make sure the fingerprints match before we cache this thing
-    // String actualFingerprint = PGPHelper.convertFingerprintToHex(publicKeyRing
-    // .getPublicKey().getFingerprint());
-    // if (expectedFingerprint.equals(actualFingerprint)) {
-    // // store the signed key in our local cache
-    // int retval = PGPMain.storeKeyRingInCache(publicKeyRing);
-    // if (retval != Id.return_value.ok
-    // && retval != Id.return_value.updated) {
-    // status.putString(EXTRA_ERROR,
-    // "Failed to store signed key in local cache");
-    // } else {
-    // Intent intent = new Intent(ImportFromQRCodeActivity.this,
-    // SignKeyActivity.class);
-    // intent.putExtra(EXTRA_KEY_ID, keyId);
-    // startActivityForResult(intent, Id.request.sign_key);
-    // }
-    // } else {
-    // status.putString(
-    // EXTRA_ERROR,
-    // "Scanned fingerprint does NOT match the fingerprint of the received key. " +
-    // "You shouldnt trust this key.");
-    // }
-    // }
-    // } catch (QueryException e) {
-    // Log.e(TAG, "Failed to query KeyServer", e);
-    // status.putString(EXTRA_ERROR, "Failed to query KeyServer");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // } catch (IOException e) {
-    // Log.e(TAG, "Failed to query KeyServer", e);
-    // status.putString(EXTRA_ERROR, "Failed to query KeyServer");
-    // status.putInt(Constants.extras.STATUS, Id.message.done);
-    // }
-    // }
-    // };
-    //
-    // t.setName("KeyExchange Download Thread");
-    // t.setDaemon(true);
-    // t.start();
-    // }
-    // }
-
 
     /**
      * Import keys with mImportData
@@ -404,6 +371,11 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                         BadImportKeyDialogFragment badImportKeyDialogFragment =
                                 BadImportKeyDialogFragment.newInstance(bad);
                         badImportKeyDialogFragment.show(getSupportFragmentManager(), "badKeyDialog");
+                    }
+
+                    if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
+                        ImportKeysActivity.this.setResult(Activity.RESULT_OK);
+                        finish();
                     }
                 }
             }

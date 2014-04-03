@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.util.Log;
 public class ImportKeysServerFragment extends Fragment {
     public static final String ARG_QUERY = "query";
     public static final String ARG_KEY_SERVER = "key_server";
+    public static final String ARG_DISABLE_QUERY_EDIT = "disable_query_edit";
 
     private ImportKeysActivity mImportActivity;
 
@@ -139,6 +140,10 @@ public class ImportKeysServerFragment extends Fragment {
                 mServerSpinner.setSelection(keyServerPos);
 
                 Log.d(Constants.TAG, "keyServer: " + keyServer);
+            }
+
+            if (getArguments().getBoolean(ARG_DISABLE_QUERY_EDIT, false)) {
+                mQueryEditText.setEnabled(false);
             }
         }
     }

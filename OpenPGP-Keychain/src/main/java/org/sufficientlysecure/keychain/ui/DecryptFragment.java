@@ -38,6 +38,8 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.dialog.PassphraseDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -88,13 +90,9 @@ public class DecryptFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
 
-            // this request is returned after LookupUnknownKeyDialogFragment started
-            // ImportKeysActivity and user looked uo key
             case RESULT_CODE_LOOKUP_KEY: {
-                Log.d(Constants.TAG, "Returning from Lookup Key...");
                 if (resultCode == Activity.RESULT_OK) {
-                    // decrypt again
-//                    decryptStart();
+                    // TODO: generate new OpenPgpSignatureResult and display it
                 }
                 return;
             }
@@ -189,6 +187,7 @@ public class DecryptFragment extends Fragment {
 
     /**
      * Should be overridden by MessageFragment and FileFragment to start actual decryption
+     *
      * @param passphrase
      */
     protected void decryptStart(String passphrase) {
