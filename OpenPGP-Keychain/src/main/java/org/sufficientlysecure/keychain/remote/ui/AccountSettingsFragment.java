@@ -69,9 +69,7 @@ public class AccountSettingsFragment extends Fragment implements
         this.mAccSettings = accountSettings;
 
         mAccNameView.setText(accountSettings.getAccountName());
-        Uri keyUri = KeychainContract.KeyRings.buildSecretKeyRingsByMasterKeyIdUri(
-            String.valueOf(accountSettings.getKeyId()));
-        mSelectKeyFragment.selectKey(keyUri);
+        mSelectKeyFragment.selectKey(accountSettings.getKeyId());
         mEncryptionAlgorithm.setSelection(mEncryptionAdapter.getPosition(accountSettings
                 .getEncryptionAlgorithm()));
         mHashAlgorithm.setSelection(mHashAdapter.getPosition(accountSettings.getHashAlgorithm()));
@@ -179,7 +177,8 @@ public class AccountSettingsFragment extends Fragment implements
                 if (resultCode == Activity.RESULT_OK) {
                     // select newly created key
                     Uri newKeyUri = data.getData();
-                    mSelectKeyFragment.selectKey(newKeyUri);
+                    // TODO helper method for this?
+                    mSelectKeyFragment.selectKey(Long.parseLong(newKeyUri.getPathSegments().get(1)));
                 }
                 break;
             }

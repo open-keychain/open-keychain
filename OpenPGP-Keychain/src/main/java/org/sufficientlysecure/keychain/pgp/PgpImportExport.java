@@ -194,7 +194,7 @@ public class PgpImportExport {
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
             PGPPublicKeyRing publicKeyRing =
-                    ProviderHelper.getPGPPublicKeyRingByMasterKeyId(mContext, pubKeyMasterId);
+                    ProviderHelper.getPGPPublicKeyRing(mContext, pubKeyMasterId);
 
             if (publicKeyRing != null) {
                 publicKeyRing.encode(arOutStream);
@@ -217,7 +217,7 @@ public class PgpImportExport {
 
             updateProgress(progress * 100 / masterKeyIdsSize, 100);
             PGPSecretKeyRing secretKeyRing =
-                    ProviderHelper.getPGPSecretKeyRingByMasterKeyId(mContext, secretKeyMasterId);
+                    ProviderHelper.getPGPSecretKeyRing(mContext, secretKeyMasterId);
 
             if (secretKeyRing != null) {
                 secretKeyRing.encode(arOutStream);

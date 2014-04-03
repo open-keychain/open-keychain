@@ -103,7 +103,7 @@ public class PgpHelper {
             if (obj instanceof PGPPublicKeyEncryptedData) {
                 gotAsymmetricEncryption = true;
                 PGPPublicKeyEncryptedData pbe = (PGPPublicKeyEncryptedData) obj;
-                secretKey = ProviderHelper.getPGPSecretKeyByKeyId(context, pbe.getKeyID());
+                secretKey = ProviderHelper.getPGPSecretKeyRing(context, pbe.getKeyID()).getSecretKey();
                 if (secretKey != null) {
                     break;
                 }

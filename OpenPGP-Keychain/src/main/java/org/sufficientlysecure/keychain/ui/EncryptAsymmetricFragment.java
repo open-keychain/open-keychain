@@ -141,7 +141,7 @@ public class EncryptAsymmetricFragment extends Fragment {
     private void preselectKeys(long preselectedSignatureKeyId, long[] preselectedEncryptionKeyIds) {
         if (preselectedSignatureKeyId != 0) {
             // TODO: don't use bouncy castle objects!
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(getActivity(),
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
                     preselectedSignatureKeyId);
             PGPSecretKey masterKey;
             if (keyRing != null) {
@@ -160,7 +160,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
                 // TODO: don't use bouncy castle objects!
 
-                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingByMasterKeyId(getActivity(),
+                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(getActivity(),
                         preselectedEncryptionKeyIds[i]);
                 PGPPublicKey masterKey;
                 if (keyRing == null) {
@@ -203,7 +203,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
             // TODO: don't use bouncy castle objects!
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(getActivity(),
+            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
                     mSecretKeyId);
             if (keyRing != null) {
                 PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);

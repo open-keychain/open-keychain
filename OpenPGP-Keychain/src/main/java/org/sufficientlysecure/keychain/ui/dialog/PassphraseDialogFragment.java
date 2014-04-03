@@ -116,10 +116,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             secretKey = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
-            // TODO: by master key id???
-            secretKey = PgpKeyHelper.getMasterKey(ProviderHelper.getPGPSecretKeyRingByKeyId(activity,
-                    secretKeyId));
-            // secretKey = PGPHelper.getMasterKey(PGPMain.getSecretKeyRing(secretKeyId));
+            secretKey = ProviderHelper.getPGPSecretKeyByKeyId(activity, secretKeyId);
 
             if (secretKey == null) {
                 alert.setTitle(R.string.title_key_not_found);
@@ -175,7 +172,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
                                         return;
                                     } else {
                                         clickSecretKey = PgpKeyHelper.getKeyNum(ProviderHelper
-                                                .getPGPSecretKeyRingByKeyId(activity, secretKeyId),
+                                                .getPGPSecretKeyRingWithKeyId(activity, secretKeyId),
                                                 curKeyIndex);
                                         curKeyIndex++; // does post-increment work like C?
                                         continue;

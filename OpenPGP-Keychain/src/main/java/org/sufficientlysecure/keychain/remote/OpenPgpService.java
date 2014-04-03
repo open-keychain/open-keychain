@@ -66,7 +66,7 @@ public class OpenPgpService extends RemoteService {
         ArrayList<String> dublicateUserIds = new ArrayList<String>();
 
         for (String email : encryptionUserIds) {
-            Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByEmailsUri(email);
+            Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingsByEmailUri(email);
             Cursor cur = getContentResolver().query(uri, null, null, null, null);
             if (cur.moveToFirst()) {
                 long id = cur.getLong(cur.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID));
