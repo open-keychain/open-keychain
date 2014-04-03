@@ -24,7 +24,11 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.*;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -33,11 +37,21 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
@@ -191,9 +205,11 @@ public class KeyListFragment extends Fragment
                                     ProviderHelper.getPublicKeyRingsRowIds(getActivity());
                             for (int i = 0; i < ids.length; i++) {
                                 if (allPubRowIds.contains(ids[i])) {
-                                    masterKeyIds[i] = ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
                                 } else {
-                                    masterKeyIds[i] = ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
+                                    masterKeyIds[i] =
+                                        ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
                                 }
                             }*/
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());

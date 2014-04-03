@@ -127,7 +127,7 @@ public abstract class RemoteService extends Service {
      *
      * @return package name
      */
-    private String getCurrentCallingPackage() {
+    protected String getCurrentCallingPackage() {
         // TODO:
         // callingPackages contains more than one entry when sharedUserId has been used...
         String[] callingPackages = getPackageManager().getPackagesForUid(Binder.getCallingUid());
@@ -243,7 +243,8 @@ public abstract class RemoteService extends Service {
                 return true;
             } else {
                 throw new WrongPackageSignatureException(
-                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not equals signature from database)");
+                        "PACKAGE NOT ALLOWED! Signature wrong! (Signature not " +
+                            "equals signature from database)");
             }
         }
 

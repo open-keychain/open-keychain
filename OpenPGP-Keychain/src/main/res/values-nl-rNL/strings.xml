@@ -36,8 +36,6 @@
   <string name="btn_delete">Verwijderen</string>
   <string name="btn_no_date">Geen</string>
   <string name="btn_okay">OK</string>
-  <string name="btn_change_passphrase">Wachtwoord wijzigen</string>
-  <string name="btn_set_passphrase">Wachtwoord instellen</string>
   <string name="btn_search">Zoeken</string>
   <string name="btn_next">Volgende</string>
   <string name="btn_back">Terug</string>
@@ -46,7 +44,6 @@
   <string name="menu_import_from_file">Importeren uit bestand</string>
   <string name="menu_import_from_qr_code">Importeren met QR-code</string>
   <string name="menu_import_from_nfc">Importeren met NFC</string>
-  <string name="menu_export_keys">Alle sleutels exporteren</string>
   <string name="menu_export_key">Exporteren naar bestand</string>
   <string name="menu_delete_key">Sleutel verwijderen</string>
   <string name="menu_create_key">Sleutel aanmaken</string>
@@ -91,9 +88,6 @@
   <string name="secret_key">Privésleutel:</string>
   <!--choice-->
   <string name="choice_none">Geen</string>
-  <string name="choice_sign_only">Alleen ondertekenen</string>
-  <string name="choice_encrypt_only">Alleen versleutelen</string>
-  <string name="choice_sign_and_encrypt">Ondertekenen en versleutelen</string>
   <string name="choice_15secs">15 sec.</string>
   <string name="choice_1min">1 min.</string>
   <string name="choice_3mins">3 min.</string>
@@ -112,21 +106,18 @@
   <string name="warning">Waarschuwing</string>
   <string name="error">Fout</string>
   <string name="error_message">Fout: %s</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>
   <string name="using_clipboard_content">Gebruikmaken van klembordinhoud.</string>
   <string name="set_a_passphrase">Stel eerst een wachtwoord in.</string>
   <string name="no_filemanager_installed">Geen compatibele bestandsbeheerder geïnstalleerd.</string>
   <string name="passphrases_do_not_match">De wachtwoorden komen niet overeen.</string>
-  <string name="passphrase_must_not_be_empty">Lege wachtwoorden zijn niet toegestaand.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische versleuteling.</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
   <string name="file_delete_confirmation">Weer u zeker dat u het volgende wilt verwijderen:\n%s?</string>
   <string name="file_delete_successful">Succesvol verwijderd.</string>
   <string name="no_file_selected">Selecteer eerst een bestand.</string>
-  <string name="decryption_successful">Succesvol ontsleuteld.</string>
-  <string name="encryption_successful">Succesvol versleuteld.</string>
-  <string name="encryption_to_clipboard_successful">Succesvol versleuteld naar klembord.</string>
   <string name="enter_passphrase_twice">Voer het wachtwoord tweemaal in.</string>
   <string name="select_encryption_key">Selecteer ten minste één versleutelingssleutel.</string>
   <string name="select_encryption_or_signature_key">Selecter ten minste één versleutelings-/ondertekeningssleutel.</string>

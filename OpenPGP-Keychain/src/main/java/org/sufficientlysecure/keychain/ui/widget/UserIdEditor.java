@@ -16,11 +16,6 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,10 +24,18 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import com.beardedhen.androidbootstrap.BootstrapButton;
-import org.sufficientlysecure.keychain.helper.ContactHelper;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.helper.ContactHelper;
+import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+
+import java.util.regex.Matcher;
 
 public class UserIdEditor extends LinearLayout implements Editor, OnClickListener {
     private EditorListener mEditorListener = null;
@@ -49,8 +52,8 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     private boolean mOriginallyMainUserID;
     private boolean mIsNewId;
 
-    public void setCanEdit(boolean bCanEdit) {
-        if (!bCanEdit) {
+    public void setCanBeEdited(boolean canBeEdited) {
+        if (!canBeEdited) {
             mDeleteButton.setVisibility(View.INVISIBLE);
             mName.setEnabled(false);
             mIsMainUserId.setEnabled(false);
@@ -85,8 +88,7 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
         }
 
         @Override
-        public void afterTextChanged(Editable s)
-        {
+        public void afterTextChanged(Editable s) {
             if (mEditorListener != null) {
                 mEditorListener.onEdited();
             }
@@ -240,25 +242,24 @@ public class UserIdEditor extends LinearLayout implements Editor, OnClickListene
     @Override
     public boolean needsSaving() {
         boolean retval = false; //(mOriginallyMainUserID != isMainUserId());
-        retval |= !(mOriginalName.equals( ("" + mName.getText()).trim() ) );
-        retval |= !(mOriginalEmail.equals( ("" + mEmail.getText()).trim() ) );
-        retval |= !(mOriginalComment.equals( ("" + mComment.getText()).trim() ) );
+        retval |= !(mOriginalName.equals(("" + mName.getText()).trim()));
+        retval |= !(mOriginalEmail.equals(("" + mEmail.getText()).trim()));
+        retval |= !(mOriginalComment.equals(("" + mComment.getText()).trim()));
         retval |= mIsNewId;
         return retval;
     }
 
-    public  boolean getIsOriginallyMainUserID()
-    {
+    public  boolean getIsOriginallyMainUserID() {
         return mOriginallyMainUserID;
     }
 
-    public boolean primarySwapped()
-    {
+    public boolean primarySwapped() {
         return (mOriginallyMainUserID != isMainUserId());
     }
 
-    public String getOriginalID()
-    {
+    public String getOriginalID() {
         return mOriginalID;
     }
+
+    public boolean getIsNewID() { return mIsNewId; }
 }

@@ -17,30 +17,54 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+import android.util.Pair;
+
 import org.spongycastle.bcpg.CompressionAlgorithmTags;
 import org.spongycastle.bcpg.HashAlgorithmTags;
 import org.spongycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.spongycastle.bcpg.sig.KeyFlags;
 import org.spongycastle.jce.spec.ElGamalParameterSpec;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPEncryptedData;
+import org.spongycastle.openpgp.PGPException;
+import org.spongycastle.openpgp.PGPKeyPair;
+import org.spongycastle.openpgp.PGPKeyRingGenerator;
+import org.spongycastle.openpgp.PGPPrivateKey;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketGenerator;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.openpgp.PGPUtil;
 import org.spongycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.spongycastle.openpgp.operator.PBESecretKeyEncryptor;
 import org.spongycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.spongycastle.openpgp.operator.PGPDigestCalculator;
-import org.spongycastle.openpgp.operator.jcajce.*;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcaPGPKeyPair;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.spongycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralMsgIdException;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressDialogUpdater;
-import org.sufficientlysecure.keychain.util.IterableIterator;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -171,35 +195,35 @@ public class PgpKeyOperation {
             sha1Calc, isMasterKey, keyEncryptor);
     }
 
-    public PGPSecretKeyRing changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassPhrase,
-                                          String newPassPhrase) throws IOException, PGPException,
-            NoSuchProviderException {
+    public PGPSecretKeyRing changeSecretKeyPassphrase(PGPSecretKeyRing keyRing, String oldPassphrase,
+                                          String newPassphrase)
+        throws IOException, PGPException, NoSuchProviderException {
 
         updateProgress(R.string.progress_building_key, 0, 100);
-        if (oldPassPhrase == null) {
-            oldPassPhrase = "";
+        if (oldPassphrase == null) {
+            oldPassphrase = "";
         }
-        if (newPassPhrase == null) {
-            newPassPhrase = "";
+        if (newPassphrase == null) {
+            newPassphrase = "";
         }
 
         PGPSecretKeyRing newKeyRing = PGPSecretKeyRing.copyWithNewPassword(
                 keyRing,
                 new JcePBESecretKeyDecryptorBuilder(new JcaPGPDigestCalculatorProviderBuilder()
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build()).setProvider(
-                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray()),
+                        Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassphrase.toCharArray()),
                 new JcePBESecretKeyEncryptorBuilder(keyRing.getSecretKey()
-                        .getKeyEncryptionAlgorithm()).build(newPassPhrase.toCharArray()));
+                        .getKeyEncryptionAlgorithm()).build(newPassphrase.toCharArray()));
 
         return newKeyRing;
 
     }
 
-    private Pair<PGPSecretKeyRing,PGPPublicKeyRing> buildNewSecretKey(
+    private Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildNewSecretKey(
                                    ArrayList<String> userIds, ArrayList<PGPSecretKey> keys,
                                    ArrayList<GregorianCalendar> keysExpiryDates,
                                    ArrayList<Integer> keysUsages,
-                                   String newPassPhrase, String oldPassPhrase)
+                                   String newPassphrase, String oldPassphrase)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
 
         int usageId = keysUsages.get(0);
@@ -212,7 +236,7 @@ public class PgpKeyOperation {
         PGPPublicKey masterPublicKey = masterKey.getPublicKey();
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassPhrase.toCharArray());
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(oldPassphrase.toCharArray());
         PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
 
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
@@ -246,13 +270,16 @@ public class PgpKeyOperation {
             GregorianCalendar expiryDate = keysExpiryDates.get(0);
             //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
             //here we purposefully ignore partial days in each date - long type has no fractional part!
-            long numDays = (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
-            if (numDays <= 0)
+            long numDays = (expiryDate.getTimeInMillis() / 86400000) -
+                (creationDate.getTimeInMillis() / 86400000);
+            if (numDays <= 0) {
                 throw new PgpGeneralMsgIdException(R.string.error_expiry_must_come_after_creation);
+            }
             hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
         } else {
-            hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
-            //this happens anyway
+            hashedPacketsGen.setKeyExpirationTime(false, 0);
+            // do this explicitly, although since we're rebuilding,
+            // this happens anyway
         }
 
         updateProgress(R.string.progress_building_master_key, 30, 100);
@@ -267,7 +294,7 @@ public class PgpKeyOperation {
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        newPassPhrase.toCharArray());
+                        newPassphrase.toCharArray());
 
         PGPKeyRingGenerator keyGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
                 masterKeyPair, mainUserId, sha1Calc, hashedPacketsGen.generate(),
@@ -283,7 +310,7 @@ public class PgpKeyOperation {
 
             PBESecretKeyDecryptor keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                            oldPassPhrase.toCharArray());
+                            oldPassphrase.toCharArray());
             PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
 
             // TODO: now used without algorithm and creation time?! (APG 1)
@@ -318,15 +345,16 @@ public class PgpKeyOperation {
                 GregorianCalendar expiryDate = keysExpiryDates.get(i);
                 //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
                 //here we purposefully ignore partial days in each date - long type has no fractional part!
-                long numDays =
-                        (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
+                long numDays = (expiryDate.getTimeInMillis() / 86400000) -
+                    (creationDate.getTimeInMillis() / 86400000);
                 if (numDays <= 0) {
                     throw new PgpGeneralMsgIdException(R.string.error_expiry_must_come_after_creation);
                 }
                 hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
             } else {
-                hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
-                //this happens anyway
+                hashedPacketsGen.setKeyExpirationTime(false, 0);
+                // do this explicitly, although since we're rebuilding,
+                // this happens anyway
             }
 
             keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
@@ -335,11 +363,11 @@ public class PgpKeyOperation {
         PGPSecretKeyRing secretKeyRing = keyGen.generateSecretKeyRing();
         PGPPublicKeyRing publicKeyRing = keyGen.generatePublicKeyRing();
 
-        return new Pair<PGPSecretKeyRing,PGPPublicKeyRing>(secretKeyRing, publicKeyRing);
+        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(secretKeyRing, publicKeyRing);
 
     }
 
-    public Pair<PGPSecretKeyRing,PGPPublicKeyRing> buildSecretKey (PGPSecretKeyRing mKR,
+    public Pair<PGPSecretKeyRing, PGPPublicKeyRing> buildSecretKey(PGPSecretKeyRing mKR,
                                                                    PGPPublicKeyRing pKR,
                                                                    SaveKeyringParcel saveParcel)
             throws PgpGeneralMsgIdException, PGPException, SignatureException, IOException {
@@ -347,16 +375,16 @@ public class PgpKeyOperation {
         updateProgress(R.string.progress_building_key, 0, 100);
         PGPSecretKey masterKey = saveParcel.keys.get(0);
 
-        if (saveParcel.oldPassPhrase == null) {
-            saveParcel.oldPassPhrase = "";
+        if (saveParcel.oldPassphrase == null) {
+            saveParcel.oldPassphrase = "";
         }
-        if (saveParcel.newPassPhrase == null) {
-            saveParcel.newPassPhrase = "";
+        if (saveParcel.newPassphrase == null) {
+            saveParcel.newPassphrase = "";
         }
 
         if (mKR == null) {
             return buildNewSecretKey(saveParcel.userIDs, saveParcel.keys, saveParcel.keysExpiryDates,
-                    saveParcel.keysUsages, saveParcel.newPassPhrase, saveParcel.oldPassPhrase); //new Keyring
+                    saveParcel.keysUsages, saveParcel.newPassphrase, saveParcel.oldPassphrase); //new Keyring
         }
 
         /*
@@ -395,7 +423,7 @@ public class PgpKeyOperation {
         String mainUserId = saveParcel.userIDs.get(0);
 
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
-                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(saveParcel.oldPassPhrase.toCharArray());
+                Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(saveParcel.oldPassphrase.toCharArray());
         PGPPrivateKey masterPrivateKey = masterKey.extractPrivateKey(keyDecryptor);
 
         updateProgress(R.string.progress_certifying_master_key, 20, 100);
@@ -423,22 +451,28 @@ public class PgpKeyOperation {
             GregorianCalendar expiryDate = saveParcel.keysExpiryDates.get(0);
             //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
             //here we purposefully ignore partial days in each date - long type has no fractional part!
-            long numDays = (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
-            if (numDays <= 0)
+            long numDays = (expiryDate.getTimeInMillis() / 86400000) -
+                (creationDate.getTimeInMillis() / 86400000);
+            if (numDays <= 0) {
                 throw new PgpGeneralMsgIdException(R.string.error_expiry_must_come_after_creation);
+            }
             hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
         } else {
-            hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
-            //this happens anyway
+            hashedPacketsGen.setKeyExpirationTime(false, 0);
+            // do this explicitly, although since we're rebuilding,
+            // this happens anyway
         }
 
-        if (saveParcel.primaryIDChanged || !saveParcel.originalIDs.get(0).equals(saveParcel.userIDs.get(0))) {
+        if (saveParcel.primaryIDChanged ||
+            !saveParcel.originalIDs.get(0).equals(saveParcel.userIDs.get(0))) {
             anyIDChanged = true;
             ArrayList<Pair<String, PGPSignature>> sigList = new ArrayList<Pair<String, PGPSignature>>();
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (origID.equals(userId) && !userId.equals(saveParcel.originalPrimaryID) && userIDIndex != 0) {
-                    Iterator<PGPSignature> origSigs = masterPublicKey.getSignaturesForID(origID); //TODO: make sure this iterator only has signatures we are interested in
+                if (origID.equals(userId) && !saveParcel.newIDs[userIDIndex] &&
+                    !userId.equals(saveParcel.originalPrimaryID) && userIDIndex != 0) {
+                    Iterator<PGPSignature> origSigs = masterPublicKey.getSignaturesForID(origID);
+                    // TODO: make sure this iterator only has signatures we are interested in
                     while (origSigs.hasNext()) {
                         PGPSignature origSig = origSigs.next();
                         sigList.add(new Pair<String, PGPSignature>(origID, origSig));
@@ -457,18 +491,19 @@ public class PgpKeyOperation {
                     PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
                     sigList.add(new Pair<String, PGPSignature>(userId, certification));
                 }
-                if (!origID.equals("")) {
+                if (!saveParcel.newIDs[userIDIndex]) {
                     masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
                 }
                 userIDIndex++;
             }
             for (Pair<String, PGPSignature> toAdd : sigList) {
-                masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, toAdd.first, toAdd.second);
+                masterPublicKey =
+                    PGPPublicKey.addCertification(masterPublicKey, toAdd.first, toAdd.second);
             }
         } else {
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
-                if (!origID.equals(userId)) {
+                if (!origID.equals(userId) || saveParcel.newIDs[userIDIndex]) {
                     anyIDChanged = true;
                     PGPContentSignerBuilder signerBuilder = new JcaPGPContentSignerBuilder(
                             masterPublicKey.getAlgorithm(), HashAlgorithmTags.SHA1)
@@ -481,10 +516,11 @@ public class PgpKeyOperation {
                         sGen.setUnhashedSubpackets(unhashedPacketsGen.generate());
                     }
                     PGPSignature certification = sGen.generateCertification(userId, masterPublicKey);
-                    if (!origID.equals("")) {
+                    if (!saveParcel.newIDs[userIDIndex]) {
                         masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, origID);
                     }
-                    masterPublicKey = PGPPublicKey.addCertification(masterPublicKey, userId, certification);
+                    masterPublicKey =
+                        PGPPublicKey.addCertification(masterPublicKey, userId, certification);
                 }
                 userIDIndex++;
             }
@@ -496,15 +532,14 @@ public class PgpKeyOperation {
             for (String userId : saveParcel.userIDs) {
                 String origID = saveParcel.originalIDs.get(userIDIndex);
                 if (!(origID.equals(saveParcel.originalPrimaryID) && !saveParcel.primaryIDChanged)) {
-                    Iterator<PGPSignature> sigs = masterPublicKey.getSignaturesForID(userId); //TODO: make sure this iterator only has signatures we are interested in
+                    Iterator<PGPSignature> sigs = masterPublicKey.getSignaturesForID(userId);
+                    // TODO: make sure this iterator only has signatures we are interested in
                     while (sigs.hasNext()) {
                         PGPSignature sig = sigs.next();
                         sigList.add(new Pair<String, PGPSignature>(userId, sig));
                     }
                 }
-                if (!userId.equals("")) {
-                    masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, userId);
-                }
+                masterPublicKey = PGPPublicKey.removeCertification(masterPublicKey, userId);
                 userIDIndex++;
             }
             anyIDChanged = true;
@@ -530,7 +565,7 @@ public class PgpKeyOperation {
         PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        saveParcel.oldPassPhrase.toCharArray());
+                        saveParcel.oldPassphrase.toCharArray());
 
         //this generates one more signature than necessary...
         PGPKeyRingGenerator keyGen = new PGPKeyRingGenerator(PGPSignature.POSITIVE_CERTIFICATION,
@@ -551,7 +586,7 @@ public class PgpKeyOperation {
                 } else {
                     keyDecryptor2 = new JcePBESecretKeyDecryptorBuilder()
                             .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    saveParcel.oldPassPhrase.toCharArray());
+                                    saveParcel.oldPassphrase.toCharArray());
                 }
                 PGPPrivateKey subPrivateKey = subKey.extractPrivateKey(keyDecryptor2);
                 PGPKeyPair subKeyPair = new PGPKeyPair(subPublicKey, subPrivateKey);
@@ -583,23 +618,27 @@ public class PgpKeyOperation {
                     GregorianCalendar creationDate = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
                     creationDate.setTime(subPublicKey.getCreationTime());
                     GregorianCalendar expiryDate = saveParcel.keysExpiryDates.get(i);
-                    //note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
-                    //here we purposefully ignore partial days in each date - long type has no fractional part!
-                    long numDays = (expiryDate.getTimeInMillis() / 86400000) - (creationDate.getTimeInMillis() / 86400000);
-                    if (numDays <= 0)
+                    // note that the below, (a/c) - (b/c) is *not* the same as (a - b) /c
+                    // here we purposefully ignore partial days in each date - long type has
+                    // no fractional part!
+                    long numDays = (expiryDate.getTimeInMillis() / 86400000) -
+                        (creationDate.getTimeInMillis() / 86400000);
+                    if (numDays <= 0) {
                         throw new PgpGeneralMsgIdException(R.string.error_expiry_must_come_after_creation);
+                    }
                     hashedPacketsGen.setKeyExpirationTime(false, numDays * 86400);
                 } else {
-                    hashedPacketsGen.setKeyExpirationTime(false, 0); //do this explicitly, although since we're rebuilding,
-                    //this happens anyway
+                    hashedPacketsGen.setKeyExpirationTime(false, 0);
+                    // do this explicitly, although since we're rebuilding,
+                    // this happens anyway
                 }
 
                 keyGen.addSubKey(subKeyPair, hashedPacketsGen.generate(), unhashedPacketsGen.generate());
-                //certifications will be discarded if the key is changed, because I think, for a start,
-                //they will be invalid. Binding certs are regenerated anyway, and other certs which
-                //need to be kept are on IDs and attributes
-                //TODO: don't let revoked keys be edited, other than removed - changing one would result in the
-                //revocation being wrong?
+                // certifications will be discarded if the key is changed, because I think, for a start,
+                // they will be invalid. Binding certs are regenerated anyway, and other certs which
+                // need to be kept are on IDs and attributes
+                // TODO: don't let revoked keys be edited, other than removed - changing one would
+                // result in the revocation being wrong?
             }
         }
 
@@ -628,7 +667,7 @@ public class PgpKeyOperation {
         PBESecretKeyEncryptor keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
                 PGPEncryptedData.CAST5, sha1Calc)
                 .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                        saveParcel.newPassPhrase.toCharArray());
+                        saveParcel.newPassphrase.toCharArray());
 
         //update the passphrase
         mKR = PGPSecretKeyRing.copyWithNewPassword(mKR, keyDecryptor, keyEncryptorNew);
@@ -638,8 +677,10 @@ public class PgpKeyOperation {
         Log.d(Constants.TAG, " ------- in private key -------");
 
         for(String uid : new IterableIterator<String>(secretKeyRing.getPublicKey().getUserIDs())) {
-            for(PGPSignature sig : new IterableIterator<PGPSignature>(secretKeyRing.getPublicKey().getSignaturesForID(uid))) {
-                Log.d(Constants.TAG, "sig: " + PgpKeyHelper.convertKeyIdToHex(sig.getKeyID()) + " for " + uid);
+            for(PGPSignature sig : new IterableIterator<PGPSignature>(
+                                    secretKeyRing.getPublicKey().getSignaturesForID(uid))) {
+                Log.d(Constants.TAG, "sig: " +
+                    PgpKeyHelper.convertKeyIdToHex(sig.getKeyID()) + " for " + uid);
              }
 
         }
@@ -647,14 +688,16 @@ public class PgpKeyOperation {
         Log.d(Constants.TAG, " ------- in public key -------");
 
         for(String uid : new IterableIterator<String>(publicKeyRing.getPublicKey().getUserIDs())) {
-            for(PGPSignature sig : new IterableIterator<PGPSignature>(publicKeyRing.getPublicKey().getSignaturesForID(uid))) {
-                Log.d(Constants.TAG, "sig: " + PgpKeyHelper.convertKeyIdToHex(sig.getKeyID()) + " for " + uid);
+            for(PGPSignature sig : new IterableIterator<PGPSignature>(
+                                    publicKeyRing.getPublicKey().getSignaturesForID(uid))) {
+                Log.d(Constants.TAG, "sig: " +
+                    PgpKeyHelper.convertKeyIdToHex(sig.getKeyID()) + " for " + uid);
             }
         }
 
         */
 
-        return new Pair<PGPSecretKeyRing,PGPPublicKeyRing>(mKR, pKR);
+        return new Pair<PGPSecretKeyRing, PGPPublicKeyRing>(mKR, pKR);
 
     }
 
@@ -667,9 +710,10 @@ public class PgpKeyOperation {
      * @param passphrase Passphrase of the secret key
      * @return A keyring with added certifications
      */
-    public PGPPublicKey certifyKey(PGPSecretKey certificationKey, PGPPublicKey publicKey, List<String> userIds, String passphrase)
+    public PGPPublicKey certifyKey(PGPSecretKey certificationKey, PGPPublicKey publicKey,
+                                   List<String> userIds, String passphrase)
             throws PgpGeneralMsgIdException, NoSuchAlgorithmException, NoSuchProviderException,
-            PGPException, SignatureException {
+                PGPException, SignatureException {
 
         // create a signatureGenerator from the supplied masterKeyId and passphrase
         PGPSignatureGenerator signatureGenerator; {
@@ -701,7 +745,7 @@ public class PgpKeyOperation {
         }
 
         // fetch public key ring, add the certification and return it
-        for(String userId : new IterableIterator<String>(userIds.iterator())) {
+        for (String userId : new IterableIterator<String>(userIds.iterator())) {
             PGPSignature sig = signatureGenerator.generateCertification(userId, publicKey);
             publicKey = PGPPublicKey.addCertification(publicKey, userId, sig);
         }

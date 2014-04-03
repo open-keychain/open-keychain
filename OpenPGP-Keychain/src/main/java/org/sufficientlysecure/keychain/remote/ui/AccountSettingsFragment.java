@@ -17,7 +17,9 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.ui.EditKeyActivity;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
@@ -39,6 +42,8 @@ import org.sufficientlysecure.keychain.util.AlgorithmNames;
 
 public class AccountSettingsFragment extends Fragment implements
         SelectSecretKeyLayoutFragment.SelectSecretKeyCallback {
+
+    private static final int REQUEST_CODE_CREATE_KEY = 0x00008884;
 
     // model
     private AccountSettings mAccSettings;
@@ -162,7 +167,27 @@ public class AccountSettingsFragment extends Fragment implements
         intent.putExtra(EditKeyActivity.EXTRA_GENERATE_DEFAULT_KEYS, true);
         // set default user id to account name TODO: not working currently in EditKey
         intent.putExtra(EditKeyActivity.EXTRA_USER_IDS, mAccSettings.getAccountName());
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, REQUEST_CODE_CREATE_KEY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CODE_CREATE_KEY: {
+                if (resultCode == Activity.RESULT_OK) {
+                    // select newly created key
+                    Uri newKeyUri = data.getData();
+                    // TODO helper method for this?
+                    mSelectKeyFragment.selectKey(Long.parseLong(newKeyUri.getPathSegments().get(1)));
+                }
+                break;
+            }
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+
+                break;
+        }
     }
 
     /**

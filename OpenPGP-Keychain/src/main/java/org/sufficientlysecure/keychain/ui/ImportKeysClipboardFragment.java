@@ -65,7 +65,7 @@ public class ImportKeysClipboardFragment extends Fragment {
                 String sendText = "";
                 if (clipboardText != null) {
                     sendText = clipboardText.toString();
-                    if(sendText.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
+                    if (sendText.toLowerCase(Locale.ENGLISH).startsWith(Constants.FINGERPRINT_SCHEME)) {
                         mImportActivity.loadFromFingerprintUri(null, Uri.parse(sendText));
                         return;
                     }

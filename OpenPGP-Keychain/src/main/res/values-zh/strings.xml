@@ -79,9 +79,6 @@
   <string name="expired">过期了</string>
   <!--choice-->
   <string name="choice_none">没有</string>
-  <string name="choice_sign_only">仅签署</string>
-  <string name="choice_encrypt_only">仅加密</string>
-  <string name="choice_sign_and_encrypt">签署并加密</string>
   <string name="choice_15secs">15秒</string>
   <string name="choice_1min">1分钟</string>
   <string name="choice_3mins">3分钟</string>
@@ -97,17 +94,14 @@
   <string name="filemanager_title_open">打开...</string>
   <string name="warning">警告</string>
   <string name="error">错误</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="set_a_passphrase">先设置密钥</string>
   <string name="no_filemanager_installed">安装了不匹配的文件管理器</string>
   <string name="passphrases_do_not_match">密钥不匹配</string>
-  <string name="passphrase_must_not_be_empty">不允许空的密钥</string>
   <string name="passphrase_for_symmetric_encryption">对称加密</string>
   <string name="file_delete_successful">删除成功</string>
   <string name="no_file_selected">先选择一个文件</string>
-  <string name="decryption_successful">解密成功</string>
-  <string name="encryption_successful">加密成功</string>
-  <string name="encryption_to_clipboard_successful">成功地加密到了剪贴板</string>
   <string name="enter_passphrase_twice">输入两次密钥</string>
   <string name="select_encryption_key">选择至少一个加密密钥</string>
   <string name="select_encryption_or_signature_key">选择至少一个加密密钥或者签名密钥</string>
@@ -182,8 +176,6 @@
   <string name="key_list_empty_text3">或者</string>
   <!--Key view-->
   <!--Navigation Drawer-->
-  <string name="nav_encrypt">加密</string>
-  <string name="nav_decrypt">解密</string>
   <string name="nav_import">导入密钥</string>
   <string name="nav_secret_keys">我的密钥</string>
   <!--hints-->

@@ -187,20 +187,17 @@ public class SelectSecretKeyLayoutFragment extends Fragment implements LoaderMan
         return;
     }
 
-    // Select Secret Key Activity delivers the intent which was sent by it using interface to Select
-    // Secret Key Fragment.Intent contains the passed Uri
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode & 0xFFFF) {
+        switch (requestCode) {
             case REQUEST_CODE_SELECT_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     mReceivedUri = data.getData();
 
                     //Must be restartLoader() or the data will not be updated on selecting a new key
-                    getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+                    getActivity().getSupportLoaderManager().restartLoader(0, null, this);
 
                     mKeyUserId.setError(null);
-
                 }
                 break;
             }

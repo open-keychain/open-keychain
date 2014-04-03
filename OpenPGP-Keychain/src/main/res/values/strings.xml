@@ -78,7 +78,7 @@
     <string name="menu_import_from_qr_code">Import from QR Code</string>
     <string name="menu_import">Import</string>
     <string name="menu_import_from_nfc">Import from NFC</string>
-    <string name="menu_export_keys">Export all keys</string>
+    <string name="menu_export_public_keys">Export all public keys</string>
     <string name="menu_export_secret_keys">Export all secret keys</string>
     <string name="menu_export_key">Export to file</string>
     <string name="menu_delete_key">Delete key</string>
@@ -103,6 +103,8 @@
     <string name="menu_key_edit_cancel">Cancel</string>
     <string name="menu_encrypt_to">Encrypt to…</string>
     <string name="menu_select_all">Select all</string>
+    <string name="menu_add_keys">Add keys</string>
+    <string name="menu_export_keys">Export keys</string>
 
     <!-- label -->
     <string name="label_sign">Sign</string>
@@ -223,6 +225,7 @@
     <string name="key_deletion_confirmation_multi">Do you really want to delete all selected keys?\nYou can\'t undo this!</string>
     <string name="secret_key_deletion_confirmation">Do you really want to delete the SECRET key \'%s\'?\nYou can\'t undo this!</string>
     <string name="ask_save_changed_key">You have made changes to the keyring, would you like to save it?</string>
+    <string name="ask_empty_id_ok">"You have added an empty user ID, are you sure you want to continue?"</string>
     <string name="public_key_deletetion_confirmation">Do you really want to delete the PUBLIC key \'%s\'?\nYou can\'t undo this!</string>
     <string name="secret_key_delete_text">Delete Secret Keys ?</string>
     <string name="also_export_secret_keys">Also export secret keys?</string>
@@ -469,7 +472,7 @@
     <string name="key_view_tab_certs">Certifications</string>
 
     <!-- Navigation Drawer -->
-    <string name="nav_contacts">Contacts</string>
+    <string name="nav_contacts">Keys</string>
     <string name="nav_encrypt">Sign and Encrypt</string>
     <string name="nav_decrypt">Decrypt and Verify</string>
     <string name="nav_import">Import Keys</string>

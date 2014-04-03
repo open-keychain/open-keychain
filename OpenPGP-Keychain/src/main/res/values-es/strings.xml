@@ -48,6 +48,7 @@
   <string name="btn_certify">Certificar</string>
   <string name="btn_decrypt">Descifrar</string>
   <string name="btn_decrypt_verify">Descifrar y verificar</string>
+  <string name="btn_decrypt_verify_clipboard">Desde el portapapeles</string>
   <string name="btn_select_encrypt_keys">Seleccionar destinatarios</string>
   <string name="btn_encrypt_file">Cifrar archivo</string>
   <string name="btn_save">Guardar</string>
@@ -55,8 +56,8 @@
   <string name="btn_delete">Eliminar</string>
   <string name="btn_no_date">Ninguno</string>
   <string name="btn_okay">De acuerdo</string>
-  <string name="btn_change_passphrase">Cambiar la frase de contraseña</string>
-  <string name="btn_set_passphrase">Establecer frase de contraseña</string>
+  <string name="btn_change_passphrase">Cambiar nueva frase de contraseña</string>
+  <string name="btn_set_passphrase">Establecer nueva frase de contraseña</string>
   <string name="btn_search">Buscar</string>
   <string name="btn_export_to_server">Cargar al servidor de claves</string>
   <string name="btn_next">Siguiente</string>
@@ -73,7 +74,6 @@
   <string name="menu_import_from_qr_code">Importar desde código QR</string>
   <string name="menu_import">Importar</string>
   <string name="menu_import_from_nfc">Importar desde NFC</string>
-  <string name="menu_export_keys">Exportar todas las claves</string>
   <string name="menu_export_secret_keys">Exportar todas las claves secretas</string>
   <string name="menu_export_key">Exportar hacia archivo</string>
   <string name="menu_delete_key">Borrar clave</string>
@@ -129,8 +129,6 @@
   <string name="label_name">Nombre</string>
   <string name="label_comment">Comentario</string>
   <string name="label_email">Email</string>
-  <string name="label_sign_user_id">Firmar Id de usuario</string>
-  <string name="label_sign_email">Firmar correo</string>
   <string name="label_send_key">Cargar clave al servidor de claves seleccionado después de la certificación</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="select_keys_button_default">Seleccionar</string>
@@ -161,9 +159,6 @@
   <string name="secret_key">Clave secreta:</string>
   <!--choice-->
   <string name="choice_none">Ninguna</string>
-  <string name="choice_sign_only">Solo firmar</string>
-  <string name="choice_encrypt_only">Solo cifrar</string>
-  <string name="choice_sign_and_encrypt">Firmar y cifrar</string>
   <string name="choice_15secs">15 segs</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 mins</string>
@@ -183,21 +178,22 @@
   <string name="warning">Advertencia</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
+  <!--key flags-->
+  <string name="flag_certify">Certificar</string>
+  <string name="flag_sign">Firmar</string>
+  <string name="flag_encrypt">Cifrar</string>
+  <string name="flag_authenticate">Autentificar</string>
   <!--sentences-->
   <string name="wrong_passphrase">Frase de contraseña incorrecta.</string>
   <string name="using_clipboard_content">Usando el contenido del portapapeles.</string>
   <string name="set_a_passphrase">Establece una frase de contraseña antes.</string>
   <string name="no_filemanager_installed">No hay un gestor de archivos compatible instalado.</string>
   <string name="passphrases_do_not_match">Las frases de contraseña no coinciden.</string>
-  <string name="passphrase_must_not_be_empty">Las frases de contraseña no pueden estar vacías.</string>
   <string name="passphrase_for_symmetric_encryption">Cifrado simétrico.</string>
   <string name="passphrase_for">Introducir la frase de contraseña para \'%s\'</string>
   <string name="file_delete_confirmation">¿Estás seguro de que quieres borrar\n%s?</string>
   <string name="file_delete_successful">Borrado satisfactoriamente.</string>
   <string name="no_file_selected">Selecciona un archivo antes.</string>
-  <string name="decryption_successful">Descifrado satisfactoriamente.</string>
-  <string name="encryption_successful">Cifrado satisfactoriamente.</string>
-  <string name="encryption_to_clipboard_successful">Cifrado satisfactoriamente al portapapeles.</string>
   <string name="enter_passphrase_twice">Introduce la frase de contraseña dos veces.</string>
   <string name="select_encryption_key">Selecciona al menos una clave de cifrado.</string>
   <string name="select_encryption_or_signature_key">Selecciona al menos una clave de cifrado o de firma.</string>
@@ -208,6 +204,7 @@
   <string name="key_deletion_confirmation">¿Quieres realmente borrar la clave \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="key_deletion_confirmation_multi">¿Quieres realmente borrar todas las claves seleccionadas?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_deletion_confirmation">¿Quieres realmente borrar la clave SECRETA \'%s\'?\n¡No podrás deshacerlo!</string>
+  <string name="ask_save_changed_key">Has hecho cambios en el almacén de claves, ¿quieres guardarlos?</string>
   <string name="public_key_deletetion_confirmation">¿Quieres realmente borrar la clave PÚBLICA \'%s\'?\n¡No podrás deshacerlo!</string>
   <string name="secret_key_delete_text">¿Borrar claves secretas?</string>
   <string name="also_export_secret_keys">¿Exportar también las claves secretas?</string>
@@ -285,6 +282,7 @@
   <string name="error_nfc_needed">¡NFC no está disponible en tu dispositivo!</string>
   <string name="error_nothing_import">¡Nada que importar!</string>
   <string name="error_expiry_must_come_after_creation">la fecha de caducidad debe ser posterior a la fecha de creación</string>
+  <string name="error_save_first">Por favor, guarda el almacén de claves antes</string>
   <string name="error_can_not_delete_contact">no puedes eliminar este contacto porque eres tú mismo.</string>
   <string name="error_can_not_delete_contacts">no puedes eliminar los siguientes contactos porque son tú mismo:\n%s</string>
   <string name="error_keyserver_insufficient_query">Consulta al servidor insuficiente</string>
@@ -384,13 +382,16 @@
   <string name="api_settings_hide_advanced">Ocultar la configuración avanzada</string>
   <string name="api_settings_no_key">No se ha seleccionado ninguna clave</string>
   <string name="api_settings_select_key">Seleccionar clave</string>
+  <string name="api_settings_create_key">Crear una nueva clave para esta cuenta</string>
   <string name="api_settings_save">Guardar</string>
   <string name="api_settings_cancel">Cancelar</string>
   <string name="api_settings_revoke">Revocar acceso</string>
+  <string name="api_settings_delete_account">Borrar cuenta</string>
   <string name="api_settings_package_name">Nombre de paquete</string>
   <string name="api_settings_package_signature">SHA-256 de firma de paquete</string>
   <string name="api_settings_accounts">Cuentas</string>
   <string name="api_settings_accounts_empty">No hay cuentas asociadas a esta aplicación.</string>
+  <string name="api_create_account_text">La aplicación solicita la creación de una nueva cuenta. Por favor, selecciona una clave privada que ya exista o crea una nueva.\n¡Las aplicaciones tienen restringido el uso de claves a las que tú selecciones aquí!</string>
   <string name="api_register_text">La aplicación mostrada solicita acceso a OpenKeychain.\n¿Permitir el acceso?\n\nAVISO: Si no sabes por qué aparece esta pantalla, ¡deniega el acceso! Puedes revocarlo después usando la pantalla \'Aplicaciones registradas\'.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
@@ -422,9 +423,6 @@
   <string name="key_view_tab_main">Información</string>
   <string name="key_view_tab_certs">Certificaciones</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Contactos</string>
-  <string name="nav_encrypt">Cifrar</string>
-  <string name="nav_decrypt">Descifrar</string>
   <string name="nav_import">Importar claves</string>
   <string name="nav_secret_keys">Mis claves</string>
   <string name="nav_apps">Aplicaciones registradas</string>
@@ -438,5 +436,4 @@
   <string name="section_uids_to_sign">IDs de usuario para firmar</string>
   <string name="progress_re_adding_certs">Nueva aplicación de certificados</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Escribe aquí el mensaje que quieras cifrar...</string>
 </resources>

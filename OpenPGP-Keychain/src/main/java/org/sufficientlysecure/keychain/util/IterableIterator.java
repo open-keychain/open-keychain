@@ -24,7 +24,7 @@ public class IterableIterator<T> implements Iterable<T> {
 
     public IterableIterator(Iterator<T> iter, boolean failsafe) {
         mIter = iter;
-        if(failsafe && mIter == null) {
+        if (failsafe && mIter == null) {
             // is there a better way?
             mIter = new ArrayList<T>().iterator();
         }

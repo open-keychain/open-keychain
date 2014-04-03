@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_key_list_multi_select_all"
-        android:icon="@drawable/ic_action_select_all"
-        android:title="@string/menu_select_all" />
-    <item
         android:id="@+id/menu_key_list_multi_export"
         android:icon="@drawable/ic_action_import_export"
         android:title="@string/menu_export_key" />
@@ -17,5 +13,9 @@
         android:id="@+id/menu_key_list_multi_delete"
         android:icon="@drawable/ic_action_discard"
         android:title="@string/menu_delete_key" />
+    <item
+        android:id="@+id/menu_key_list_multi_select_all"
+        android:icon="@drawable/ic_action_select_all"
+        android:title="@string/menu_select_all" />
 
 </menu>

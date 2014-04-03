@@ -111,7 +111,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
             content = keyringArmored.get(0);
 
             // OnClickListener are set in onResume to prevent automatic dismissing of Dialogs
-            // http://stackoverflow.com/questions/2620444/how-to-prevent-a-dialog-from-closing-when-a-button-is-clicked
+            // http://bit.ly/O5vfaR
             alert.setPositiveButton(R.string.btn_next, null);
             alert.setNegativeButton(android.R.string.cancel, null);
 

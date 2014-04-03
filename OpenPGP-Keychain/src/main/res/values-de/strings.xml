@@ -55,8 +55,6 @@
   <string name="btn_delete">Löschen</string>
   <string name="btn_no_date">Keine</string>
   <string name="btn_okay">Okay</string>
-  <string name="btn_change_passphrase">Passwort ändern</string>
-  <string name="btn_set_passphrase">Passwort setzen</string>
   <string name="btn_search">Suchen</string>
   <string name="btn_export_to_server">Auf Schlüsselserver hochladen</string>
   <string name="btn_next">Weiter</string>
@@ -73,7 +71,6 @@
   <string name="menu_import_from_qr_code">QR-Code</string>
   <string name="menu_import">Importieren</string>
   <string name="menu_import_from_nfc">NFC</string>
-  <string name="menu_export_keys">Alle Schlüssel exportieren</string>
   <string name="menu_export_secret_keys">Alle geheimen Schlüssel exportieren</string>
   <string name="menu_export_key">In Datei exportieren</string>
   <string name="menu_delete_key">Schlüssel löschen</string>
@@ -129,8 +126,6 @@
   <string name="label_name">Name</string>
   <string name="label_comment">Kommentar</string>
   <string name="label_email">E-Mail</string>
-  <string name="label_sign_user_id">Benutzer ID unterschreiben</string>
-  <string name="label_sign_email">Email unterschreiben</string>
   <string name="label_send_key">Schlüssel nach Beglaubigung auf ausgewählten Schlüsselserver hochladen</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="select_keys_button_default">Auswählen</string>
@@ -161,9 +156,6 @@
   <string name="secret_key">Privater Schlüssel:</string>
   <!--choice-->
   <string name="choice_none">Keine</string>
-  <string name="choice_sign_only">Nur Signieren</string>
-  <string name="choice_encrypt_only">Nur Verschlüsseln</string>
-  <string name="choice_sign_and_encrypt">Signieren und Verschlüsseln</string>
   <string name="choice_15secs">15 s</string>
   <string name="choice_1min">1 min</string>
   <string name="choice_3mins">3 min</string>
@@ -183,21 +175,18 @@
   <string name="warning">Warnung</string>
   <string name="error">Fehler</string>
   <string name="error_message">Fehler: %s</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Falsches Passwort.</string>
   <string name="using_clipboard_content">Verwende Inhalt der Zwischenablage.</string>
   <string name="set_a_passphrase">Zuerst ein Passwort setzen.</string>
   <string name="no_filemanager_installed">Kein passender Dateimanager installiert.</string>
   <string name="passphrases_do_not_match">Die Passwörter stimmten nicht überein.</string>
-  <string name="passphrase_must_not_be_empty">Leere Passwörter sind nicht erlaubt.</string>
   <string name="passphrase_for_symmetric_encryption">Symmetrische Verschlüsselung.</string>
   <string name="passphrase_for">Passwort für \'%s\' eingeben</string>
   <string name="file_delete_confirmation">%s\nwirklich löschen?</string>
   <string name="file_delete_successful">Erfolgreich gelöscht.</string>
   <string name="no_file_selected">Zuerst eine Datei auswählen.</string>
-  <string name="decryption_successful">Erfolgreich entschlüsselt.</string>
-  <string name="encryption_successful">Erfolgreich verschlüsselt.</string>
-  <string name="encryption_to_clipboard_successful">Erfolgreich in die Zwischenablage verschlüsselt.</string>
   <string name="enter_passphrase_twice">Passwort zweimal eingeben.</string>
   <string name="select_encryption_key">Mindestens einen Schlüssel zum verschlüsseln auswählen.</string>
   <string name="select_encryption_or_signature_key">Mindestens einen Schlüssel zum Verschlüsseln oder einen zum Signieren auswählen.</string>
@@ -416,9 +405,6 @@
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_certs">Zertifikationen</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Kontakte</string>
-  <string name="nav_encrypt">Verschlüsseln</string>
-  <string name="nav_decrypt">Entschlüsseln</string>
   <string name="nav_import">Schlüssel Importieren</string>
   <string name="nav_secret_keys">Meine Schlüssel</string>
   <string name="nav_apps">Registrierte Anwendungen</string>

@@ -58,8 +58,8 @@ public class OpenPgpProviderActivity extends Activity {
     public static final int REQUEST_CODE_DECRYPT_AND_VERIFY = 9913;
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.openpgp_provider);
 
         mMessage = (EditText) findViewById(R.id.crypto_provider_demo_message);
@@ -171,7 +171,7 @@ public class OpenPgpProviderActivity extends Activity {
 
         @Override
         public void onReturn(Intent result) {
-            switch (result.getIntExtra(OpenPgpApi.RESULT_CODE, 0)) {
+            switch (result.getIntExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR)) {
                 case OpenPgpApi.RESULT_CODE_SUCCESS: {
                     try {
                         Log.d(OpenPgpApi.TAG, "result: " + os.toByteArray().length
@@ -218,7 +218,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN));
@@ -231,7 +231,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_ENCRYPT));
@@ -244,7 +244,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(false);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.executeApiAsync(data, is, os, new MyCallback(true, os, REQUEST_CODE_SIGN_AND_ENCRYPT));
@@ -256,7 +256,7 @@ public class OpenPgpProviderActivity extends Activity {
         data.putExtra(OpenPgpApi.EXTRA_ACCOUNT_NAME, mAccount.getText().toString());
 
         InputStream is = getInputstream(true);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
 
         OpenPgpApi api = new OpenPgpApi(this, mServiceConnection.getService());
         api.executeApiAsync(data, is, os, new MyCallback(false, os, REQUEST_CODE_DECRYPT_AND_VERIFY));

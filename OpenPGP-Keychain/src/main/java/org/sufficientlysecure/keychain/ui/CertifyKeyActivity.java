@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
  * Copyright (C) 2011 Senecaso
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,13 +32,18 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.spongycastle.openpgp.PGPPublicKeyRing;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.helper.OtherHelper;
 import org.sufficientlysecure.keychain.helper.Preferences;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -200,7 +205,8 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
                     byte[] fingerprintBlob = data.getBlob(INDEX_FINGERPRINT);
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-                    ((TextView) findViewById(R.id.fingerprint)).setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
+                    ((TextView) findViewById(R.id.fingerprint))
+                        .setText(PgpKeyHelper.colorizeFingerprint(fingerprint));
                 }
                 break;
             case LOADER_ID_USER_IDS:
@@ -294,7 +300,7 @@ public class CertifyKeyActivity extends ActionBarActivity implements
 
         // Bail out if there is not at least one user id selected
         ArrayList<String> userIds = mUserIdsAdapter.getSelectedUserIds();
-        if(userIds.isEmpty()) {
+        if (userIds.isEmpty()) {
             Toast.makeText(CertifyKeyActivity.this, "No User IDs to sign selected!",
                     Toast.LENGTH_SHORT).show();
             return;

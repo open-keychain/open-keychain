@@ -18,7 +18,13 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.spongycastle.asn1.DERObjectIdentifier;
-import org.spongycastle.asn1.x509.*;
+import org.spongycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.spongycastle.asn1.x509.BasicConstraints;
+import org.spongycastle.asn1.x509.GeneralName;
+import org.spongycastle.asn1.x509.GeneralNames;
+import org.spongycastle.asn1.x509.SubjectKeyIdentifier;
+import org.spongycastle.asn1.x509.X509Extensions;
+import org.spongycastle.asn1.x509.X509Name;
 import org.spongycastle.openpgp.PGPException;
 import org.spongycastle.openpgp.PGPPrivateKey;
 import org.spongycastle.openpgp.PGPPublicKey;
@@ -29,19 +35,25 @@ import org.spongycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.PasswordCallback;
+import javax.security.auth.callback.UnsupportedCallbackException;
 
 public class PgpToX509 {
     public static final String DN_COMMON_PART_O = "OpenPGP to X.509 Bridge";
@@ -71,9 +83,10 @@ public class PgpToX509 {
      * @throws Exception
      * @author Bruno Harbulot
      */
-    public static X509Certificate createSelfSignedCert(PublicKey pubKey, PrivateKey privKey,
-                                                       X509Name subject, Date startDate, Date endDate, String subjAltNameURI)
-            throws InvalidKeyException, IllegalStateException, NoSuchAlgorithmException,
+    public static X509Certificate createSelfSignedCert(
+        PublicKey pubKey, PrivateKey privKey, X509Name subject, Date startDate, Date endDate,
+        String subjAltNameURI)
+        throws InvalidKeyException, IllegalStateException, NoSuchAlgorithmException,
             SignatureException, CertificateException, NoSuchProviderException {
 
         X509V3CertificateGenerator certGenerator = new X509V3CertificateGenerator();
@@ -170,10 +183,10 @@ public class PgpToX509 {
     /**
      * Creates a self-signed certificate from a PGP Secret Key.
      *
-     * @param pgpSecKey      PGP Secret Key (from which one can extract the public and private keys and other
-     *                       attributes).
-     * @param pgpPrivKey     PGP Private Key corresponding to the Secret Key (password callbacks should be done
-     *                       before calling this method)
+     * @param pgpSecKey      PGP Secret Key (from which one can extract the public and private
+     *                       keys and other attributes).
+     * @param pgpPrivKey     PGP Private Key corresponding to the Secret Key (password callbacks
+     *                       should be done before calling this method)
      * @param subjAltNameURI optional URI to embed in the subject alternative-name
      * @return self-signed certificate
      * @throws PGPException
@@ -184,9 +197,9 @@ public class PgpToX509 {
      * @throws CertificateException
      * @author Bruno Harbulot
      */
-    public static X509Certificate createSelfSignedCert(PGPSecretKey pgpSecKey,
-                                                       PGPPrivateKey pgpPrivKey, String subjAltNameURI) throws PGPException,
-            NoSuchProviderException, InvalidKeyException, NoSuchAlgorithmException,
+    public static X509Certificate createSelfSignedCert(
+        PGPSecretKey pgpSecKey, PGPPrivateKey pgpPrivKey, String subjAltNameURI)
+        throws PGPException, NoSuchProviderException, InvalidKeyException, NoSuchAlgorithmException,
             SignatureException, CertificateException {
         // get public key from secret key
         PGPPublicKey pgpPubKey = pgpSecKey.getPublicKey();

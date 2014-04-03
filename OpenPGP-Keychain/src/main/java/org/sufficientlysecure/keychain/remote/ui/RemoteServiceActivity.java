@@ -95,7 +95,7 @@ public class RemoteServiceActivity extends ActionBarActivity {
         if (ACTION_REGISTER.equals(action)) {
             final String packageName = extras.getString(EXTRA_PACKAGE_NAME);
             final byte[] packageSignature = extras.getByteArray(EXTRA_PACKAGE_SIGNATURE);
-            Log.d(Constants.TAG, "ACTION_REGISTER packageName: "+packageName);
+            Log.d(Constants.TAG, "ACTION_REGISTER packageName: " + packageName);
 
             // Inflate a "Done"/"Cancel" custom action bar view
             ActionBarHelper.setTwoButtonView(getSupportActionBar(),

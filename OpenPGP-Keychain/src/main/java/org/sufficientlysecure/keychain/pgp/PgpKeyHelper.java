@@ -24,7 +24,12 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 
 import org.spongycastle.bcpg.sig.KeyFlags;
-import org.spongycastle.openpgp.*;
+import org.spongycastle.openpgp.PGPPublicKey;
+import org.spongycastle.openpgp.PGPPublicKeyRing;
+import org.spongycastle.openpgp.PGPSecretKey;
+import org.spongycastle.openpgp.PGPSecretKeyRing;
+import org.spongycastle.openpgp.PGPSignature;
+import org.spongycastle.openpgp.PGPSignatureSubpacketVector;
 import org.spongycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -35,7 +40,11 @@ import org.sufficientlysecure.keychain.util.Log;
 import java.security.DigestException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -288,8 +297,7 @@ public class PgpKeyHelper {
         return userId;
     }
 
-    public static int getKeyUsage(PGPSecretKey key)
-    {
+    public static int getKeyUsage(PGPSecretKey key) {
         return getKeyUsage(key.getPublicKey());
     }
 
@@ -298,13 +306,19 @@ public class PgpKeyHelper {
         int usage = 0;
         if (key.getVersion() >= 4) {
             for (PGPSignature sig : new IterableIterator<PGPSignature>(key.getSignatures())) {
-                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) continue;
+                if (key.isMasterKey() && sig.getKeyID() != key.getKeyID()) {
+                    continue;
+                }
 
                 PGPSignatureSubpacketVector hashed = sig.getHashedSubPackets();
-                if (hashed != null) usage |= hashed.getKeyFlags();
+                if (hashed != null) {
+                    usage |= hashed.getKeyFlags();
+                }
 
                 PGPSignatureSubpacketVector unhashed = sig.getUnhashedSubPackets();
-                if (unhashed != null) usage |= unhashed.getKeyFlags();
+                if (unhashed != null) {
+                    usage |= unhashed.getKeyFlags();
+                }
             }
         }
         return usage;

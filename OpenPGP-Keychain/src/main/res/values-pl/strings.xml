@@ -55,8 +55,6 @@
   <string name="btn_delete">Usuń</string>
   <string name="btn_no_date">Żaden</string>
   <string name="btn_okay">Ok</string>
-  <string name="btn_change_passphrase">Zmień hasło</string>
-  <string name="btn_set_passphrase">Ustaw hasło</string>
   <string name="btn_search">Wyszukaj</string>
   <string name="btn_export_to_server">Wyślij do serwera kluczy</string>
   <string name="btn_next">Dalej</string>
@@ -73,8 +71,7 @@
   <string name="menu_import_from_qr_code">Zaimportuj z kodu QR</string>
   <string name="menu_import">Import</string>
   <string name="menu_import_from_nfc">Zaimportuj przy użyciu NFC</string>
-  <string name="menu_export_keys">Eksportuj wszystkie klucze</string>
-  <string name="menu_export_secret_keys">Eksportuj wszystkie klucze prywatne</string>
+  <string name="menu_export_secret_keys">Eksportuj wszystkie prywatne klucze</string>
   <string name="menu_export_key">Eksportuj do pliku</string>
   <string name="menu_delete_key">Usuń klucz</string>
   <string name="menu_create_key">Stwórz klucz</string>
@@ -129,8 +126,6 @@
   <string name="label_name">Imię</string>
   <string name="label_comment">Komentarz</string>
   <string name="label_email">Adres email</string>
-  <string name="label_sign_user_id">Identyfikator użytkownika podpisu (sign user id)</string>
-  <string name="label_sign_email">Podpisz e-mail</string>
   <string name="label_send_key">Wyślij klucz do serwera kluczy po certyfikacji</string>
   <string name="label_fingerprint">Odcisk</string>
   <string name="select_keys_button_default">Wybierz</string>
@@ -163,10 +158,7 @@
   <string name="fingerprint">Odcisk:</string>
   <string name="secret_key">Klucz prywatny:</string>
   <!--choice-->
-  <string name="choice_none">Żaden</string>
-  <string name="choice_sign_only">Tylko podpisz</string>
-  <string name="choice_encrypt_only">Tylko zaszyfruj</string>
-  <string name="choice_sign_and_encrypt">Podpisz i zaszyfruj</string>
+  <string name="choice_none">Brak</string>
   <string name="choice_15secs">15 sekund</string>
   <string name="choice_1min">1 minuta</string>
   <string name="choice_3mins">3 minuty</string>
@@ -186,21 +178,18 @@
   <string name="warning">Ostrzeżenie</string>
   <string name="error">Błąd</string>
   <string name="error_message">Błąd: %s</string>
+  <!--key flags-->
   <!--sentences-->
   <string name="wrong_passphrase">Nieprawidłowe hasło.</string>
   <string name="using_clipboard_content">Użycie zawartości schowka.</string>
   <string name="set_a_passphrase">Najpierw ustaw hasło.</string>
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
   <string name="passphrases_do_not_match">Hasła nie pasują do siebie</string>
-  <string name="passphrase_must_not_be_empty">Puste hasła nie są dozwolone.</string>
   <string name="passphrase_for_symmetric_encryption">Szyfrowanie symetryczne.</string>
   <string name="passphrase_for">Podaj hasło dla \'%s\'</string>
   <string name="file_delete_confirmation">Czy jesteś pewien że chcesz usunąć\n%s?</string>
   <string name="file_delete_successful">Usunięto pomyślnie.</string>
   <string name="no_file_selected">Najpierw wskaż plik.</string>
-  <string name="decryption_successful">Odszyfrowano pomyślnie.</string>
-  <string name="encryption_successful">Zaszyfrowano pomyślnie.</string>
-  <string name="encryption_to_clipboard_successful">Pomyślnie zaszyfrowano do schowka.</string>
   <string name="enter_passphrase_twice">Podaj hasło dwukrotnie.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
   <string name="select_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
@@ -398,13 +387,16 @@
   <string name="api_settings_hide_advanced">Ukryj zaawansowane ustawienia</string>
   <string name="api_settings_no_key">Nie wybrano klucza</string>
   <string name="api_settings_select_key">Wybierz klucz</string>
+  <string name="api_settings_create_key">Utwórz nowy klucz dla tego konta</string>
   <string name="api_settings_save">Zapisz</string>
   <string name="api_settings_cancel">Anuluj</string>
   <string name="api_settings_revoke">Odwołaj dostęp</string>
+  <string name="api_settings_delete_account">Usuń konto</string>
   <string name="api_settings_package_name">Nazwa paczki</string>
   <string name="api_settings_package_signature">Skrót SHA-256 podpisu paczki</string>
   <string name="api_settings_accounts">Konta</string>
   <string name="api_settings_accounts_empty">Nie przypisano żadnych kont do tej aplikacji</string>
+  <string name="api_create_account_text">Aplikacja prosi o zgodę na utworzenie nowego konta. Wskaż istniejący klucz prywatny lub wygeneruj nowy.\nAplikacje mogą używać wyłącznie klucze które tutaj wskażesz!</string>
   <string name="api_register_text">Wyświetlona aplikacja prosi o dostęp do OpenKeychain.\nZezwolić?\n\nOSTRZEZENIE: Jeżeli nie wiesz, czemu wyświetlił się ten komunikat, nie zezwalaj na dostęp! Możesz to również zrobić później, korzystając z ekranu \'Zarejestrowane aplikacje\'.</string>
   <string name="api_register_allow">Zezwól na dostęp</string>
   <string name="api_register_disallow">Odmów dostępu</string>
@@ -437,10 +429,7 @@
   <string name="key_view_tab_main">Informacje</string>
   <string name="key_view_tab_certs">Certyfikaty</string>
   <!--Navigation Drawer-->
-  <string name="nav_contacts">Kontakty</string>
-  <string name="nav_encrypt">Zaszyfruj</string>
-  <string name="nav_decrypt">Deszyfruj</string>
-  <string name="nav_import">importuj klucze</string>
+  <string name="nav_import">Importuj klucze</string>
   <string name="nav_secret_keys">Moje klucze</string>
   <string name="nav_apps">Zarejestrowane aplikacje</string>
   <string name="drawer_open">Otwórz panel nawigacji</string>
@@ -453,5 +442,4 @@
   <string name="section_uids_to_sign">Identyfikator użytkownika do podpisu</string>
   <string name="progress_re_adding_certs">Ponowne stosowanie certyfikatów</string>
   <!--hints-->
-  <string name="encrypt_content_edit_text_hint">Wpisz tutaj wiadomość do zaszyfrowania...</string>
 </resources>
