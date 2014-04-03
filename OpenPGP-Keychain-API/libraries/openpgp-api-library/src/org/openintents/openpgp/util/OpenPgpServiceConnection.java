@@ -25,14 +25,44 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 public class OpenPgpServiceConnection {
+
+    // interface to create callbacks for onServiceConnected
+    public interface OnBound {
+        public void onBound(IOpenPgpService service);
+    }
+
     private Context mApplicationContext;
 
     private IOpenPgpService mService;
     private String mProviderPackageName;
 
+    private OnBound mOnBoundListener;
+
+    /**
+     * Create new OpenPgpServiceConnection
+     *
+     * @param context
+     * @param providerPackageName specify package name of OpenPGP provider,
+     *                            e.g., "org.sufficientlysecure.keychain"
+     */
     public OpenPgpServiceConnection(Context context, String providerPackageName) {
         this.mApplicationContext = context.getApplicationContext();
         this.mProviderPackageName = providerPackageName;
+    }
+
+    /**
+     * Create new OpenPgpServiceConnection
+     *
+     * @param context
+     * @param providerPackageName specify package name of OpenPGP provider,
+     *                            e.g., "org.sufficientlysecure.keychain"
+     * @param onBoundListener     callback, executed when connection to service has been established
+     */
+    public OpenPgpServiceConnection(Context context, String providerPackageName,
+                                    OnBound onBoundListener) {
+        this.mApplicationContext = context.getApplicationContext();
+        this.mProviderPackageName = providerPackageName;
+        this.mOnBoundListener = onBoundListener;
     }
 
     public IOpenPgpService getService() {
@@ -46,6 +76,9 @@ public class OpenPgpServiceConnection {
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder service) {
             mService = IOpenPgpService.Stub.asInterface(service);
+            if (mOnBoundListener != null) {
+                mOnBoundListener.onBound(mService);
+            }
         }
 
         public void onServiceDisconnected(ComponentName name) {
