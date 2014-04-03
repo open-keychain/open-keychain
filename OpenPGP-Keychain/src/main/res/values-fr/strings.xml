@@ -74,6 +74,7 @@
   <string name="menu_import_from_qr_code">Importer depuis un code QR</string>
   <string name="menu_import">Importer</string>
   <string name="menu_import_from_nfc">Importer avec NFC</string>
+  <string name="menu_export_public_keys">Exporter toutes les clefs publiques</string>
   <string name="menu_export_secret_keys">Exporter toutes les clefs secrètes</string>
   <string name="menu_export_key">Exporter vers un fichier</string>
   <string name="menu_delete_key">Supprimer la clef</string>
@@ -98,6 +99,8 @@
   <string name="menu_key_edit_cancel">Annuler</string>
   <string name="menu_encrypt_to">Chiffrer vers...</string>
   <string name="menu_select_all">Tout sélectionner</string>
+  <string name="menu_add_keys">Ajouter des clefs</string>
+  <string name="menu_export_keys">Exporter des clefs</string>
   <!--label-->
   <string name="label_sign">Signer</string>
   <string name="label_message">Message</string>
@@ -189,11 +192,15 @@
   <string name="set_a_passphrase">Définir d\'abord une phrase de passe.</string>
   <string name="no_filemanager_installed">Aucun gestionnaire de fichiers compatible installé.</string>
   <string name="passphrases_do_not_match">Les phrases de passe ne correspondent pas.</string>
+  <string name="passphrase_must_not_be_empty">Veuillez saisir une phrase de passe</string>
   <string name="passphrase_for_symmetric_encryption">Chriffrement symétrique.</string>
   <string name="passphrase_for">Saisir une phrase de passe pour « %s »</string>
   <string name="file_delete_confirmation">Êtes-vous sûr de vouloir supprimer\n%s ?</string>
   <string name="file_delete_successful">Supprimé avec succès.</string>
   <string name="no_file_selected">Choisir d\'abord un fichier.</string>
+  <string name="decryption_successful">Déchiffré et/ou vérifié avec succès</string>
+  <string name="encryption_successful">Signé et/ou chiffré avec succès</string>
+  <string name="encryption_to_clipboard_successful">Signé et/ou chiffré vers le presse-papiers avec succès</string>
   <string name="enter_passphrase_twice">Saisir la phrase de passe deux fois.</string>
   <string name="select_encryption_key">Choisir au moins une clef de chiffrement.</string>
   <string name="select_encryption_or_signature_key">Choisir au moins une clef de chiffrement ou de signature.</string>
@@ -205,6 +212,7 @@
   <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clefs choisies ?\nCeci est irréversible !</string>
   <string name="secret_key_deletion_confirmation">Voulez-vous vraiment supprimer la clef SECRÈTE %s ?\nVous ne pourrez pas la restituer !</string>
   <string name="ask_save_changed_key">Vous avez apporté des changements au trousseau, voulez-vous l\'enregistrer ?</string>
+  <string name="ask_empty_id_ok">Vous avez ajouté un ID utilisateur vide, êtes-vous certain de vouloir continuer?</string>
   <string name="public_key_deletetion_confirmation">Voulez-vous vraiment supprimer la clef PUBLIQUE « %s » ?\nVous ne pourrez pas la restituer !</string>
   <string name="secret_key_delete_text">Supprimer les clefs privées ?</string>
   <string name="also_export_secret_keys">Exporter aussi les clefs secrètes?</string>
@@ -424,6 +432,9 @@
   <string name="key_view_tab_main">Infos</string>
   <string name="key_view_tab_certs">Certifications</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Clefs</string>
+  <string name="nav_encrypt">Signer et chiffrer</string>
+  <string name="nav_decrypt">Déchiffrer et vérifier</string>
   <string name="nav_import">Importer les clefs</string>
   <string name="nav_secret_keys">Mes clefs</string>
   <string name="nav_apps">Applis enregistrées</string>
@@ -437,4 +448,6 @@
   <string name="section_uids_to_sign">ID utilisateur pour signer</string>
   <string name="progress_re_adding_certs">Nouvel application des certificats</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Écrire ici le message à chiffrer et/ou signer...</string>
+  <string name="decrypt_content_edit_text_hint">Saisir le cryptogramme à déchiffrer et/ou à vérifier ici...</string>
 </resources>

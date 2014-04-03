@@ -74,6 +74,7 @@
   <string name="menu_import_from_qr_code">Імпорт з штрих-коду</string>
   <string name="menu_import">Імпорт</string>
   <string name="menu_import_from_nfc">Імпорт з NFC</string>
+  <string name="menu_export_public_keys">Експортувати усі публічні ключі</string>
   <string name="menu_export_secret_keys">Експортувати усі секретні ключі</string>
   <string name="menu_export_key">Експорт до файлу</string>
   <string name="menu_delete_key">Вилучити ключ</string>
@@ -98,6 +99,8 @@
   <string name="menu_key_edit_cancel">Скасувати</string>
   <string name="menu_encrypt_to">Зашифрувати…</string>
   <string name="menu_select_all">Вибрати усе</string>
+  <string name="menu_add_keys">Додати ключі</string>
+  <string name="menu_export_keys">Експортувати ключі</string>
   <!--label-->
   <string name="label_sign">Підпис</string>
   <string name="label_message">Повідомлення</string>
@@ -192,11 +195,15 @@
   <string name="set_a_passphrase">Спершу задайте парольну фразу.</string>
   <string name="no_filemanager_installed">Нема встановленого сумісного менеджера файлів.</string>
   <string name="passphrases_do_not_match">Парольні фрази не збігаються.</string>
+  <string name="passphrase_must_not_be_empty">Будь ласка, введіть парольну фразу.</string>
   <string name="passphrase_for_symmetric_encryption">Симетричне шифрування.</string>
   <string name="passphrase_for">Введіть парольну фразу для \'%s\'</string>
   <string name="file_delete_confirmation">Ви справді хочете вилучити\n%s?</string>
   <string name="file_delete_successful">Успішно вилучено.</string>
   <string name="no_file_selected">Виберіть спершу файл.</string>
+  <string name="decryption_successful">Успішно розшифровано та/або перевірено.</string>
+  <string name="encryption_successful">Успішно підписано та/або перевірено.</string>
+  <string name="encryption_to_clipboard_successful">Успішно підписано та/або зашифровано до буфера обміну.</string>
   <string name="enter_passphrase_twice">Введіть двічі парольну фразу.</string>
   <string name="select_encryption_key">Виберіть принаймні один ключ шифрування.</string>
   <string name="select_encryption_or_signature_key">Виберіть принаймні один ключ шифрування або ключ підпису.</string>
@@ -208,6 +215,7 @@
   <string name="key_deletion_confirmation_multi">Ви справді хочете вилучити усі вибрані ключі?\nВи не зможете це відмінити!</string>
   <string name="secret_key_deletion_confirmation">Ви справді хочете вилучити секретний ключ \'%s\'?\nВи не зможете це відмінити!</string>
   <string name="ask_save_changed_key">Ви внесли зміни до в\'язки ключів, ви б хотіли. Волієте їх зберегти?</string>
+  <string name="ask_empty_id_ok">Ви вже додали порожній ідентифікатор користувача. Справді хочете продовжити?</string>
   <string name="public_key_deletetion_confirmation">Справді волієте вилучити ВІДКРИТИЙ ключ \'%s\'?\nВи е зможете відмінити цю дію!</string>
   <string name="secret_key_delete_text">Видалити секретні ключі?</string>
   <string name="also_export_secret_keys">Також експортувати секретні ключі?</string>
@@ -439,6 +447,9 @@
   <string name="key_view_tab_main">Інформація</string>
   <string name="key_view_tab_certs">Сертифікати</string>
   <!--Navigation Drawer-->
+  <string name="nav_contacts">Ключі</string>
+  <string name="nav_encrypt">Підписати і зашифрувати</string>
+  <string name="nav_decrypt">Розшифрувати і Перевірити</string>
   <string name="nav_import">Імпортувати ключі</string>
   <string name="nav_secret_keys">Мої ключі</string>
   <string name="nav_apps">Зареєстровані програми</string>
@@ -452,4 +463,6 @@
   <string name="section_uids_to_sign">ІД користувача для реєстрації</string>
   <string name="progress_re_adding_certs">Перезастосування сертифікатів</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">Напишіть повідомлення для шифрування та/або підпису…</string>
+  <string name="decrypt_content_edit_text_hint">Уведіть зашифрований текст тут для його розшифрування та/або перевірки…</string>
 </resources>
