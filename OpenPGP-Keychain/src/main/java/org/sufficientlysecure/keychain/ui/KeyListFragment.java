@@ -58,12 +58,9 @@ import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.helper.ExportHelper;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.HighlightQueryCursorAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.DeleteKeyDialogFragment;
 import org.sufficientlysecure.keychain.util.Log;
@@ -257,11 +254,11 @@ public class KeyListFragment extends Fragment
 
     // These are the rows that we will retrieve.
     static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.Keys.MASTER_KEY_ID,
-            KeychainContract.UserIds.USER_ID,
-            KeychainContract.Keys.IS_REVOKED,
-            KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID
+            KeyRings._ID,
+            KeyRings.MASTER_KEY_ID,
+            KeyRings.USER_ID,
+            KeyRings.IS_REVOKED,
+            KeyRings.HAS_SECRET
     };
 
     static final int INDEX_MASTER_KEY_ID = 1;
@@ -269,11 +266,8 @@ public class KeyListFragment extends Fragment
     static final int INDEX_IS_REVOKED = 3;
     static final int INDEX_HAS_SECRET = 4;
 
-    static final String SORT_ORDER =
-            // show secret before public key
-            KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID + " IS NULL ASC, " +
-                    // sort by user id otherwise
-                    UserIds.USER_ID + " ASC";
+    // show secret before public key, sort by user id otherwise
+    static final String SORT_ORDER = KeyRings.HAS_SECRET + " DESC, " + UserIds.USER_ID + " ASC";
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -283,7 +277,7 @@ public class KeyListFragment extends Fragment
         String where = null;
         String whereArgs[] = null;
         if (mCurQuery != null) {
-            where = KeychainContract.UserIds.USER_ID + " LIKE ?";
+            where = KeyRings.USER_ID + " LIKE ?";
             whereArgs = new String[]{"%" + mCurQuery + "%"};
         }
         // Now create and return a CursorLoader that will take care of
@@ -329,17 +323,15 @@ public class KeyListFragment extends Fragment
             viewIntent = new Intent(getActivity(), ViewKeyActivityJB.class);
         }
         viewIntent.setData(
-                KeychainContract
-                        .KeyRings.buildGenericKeyRingUri(
-                                            Long.toString(mAdapter.getMasterKeyId(position))));
+                KeyRings.buildGenericKeyRingUri(Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
 
     @TargetApi(11)
-    protected void encrypt(ActionMode mode, long[] keyRingMasterKeyIds) {
+    protected void encrypt(ActionMode mode, long[] masterKeyIds) {
         Intent intent = new Intent(getActivity(), EncryptActivity.class);
         intent.setAction(EncryptActivity.ACTION_ENCRYPT);
-        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, keyRingMasterKeyIds);
+        intent.putExtra(EncryptActivity.EXTRA_ENCRYPTION_KEY_IDS, masterKeyIds);
         // used instead of startActivity set actionbar based on callingPackage
         startActivityForResult(intent, 0);
 
@@ -507,7 +499,7 @@ public class KeyListFragment extends Fragment
                 Button button = (Button) view.findViewById(R.id.edit);
                 TextView revoked = (TextView) view.findViewById(R.id.revoked);
 
-                if (!cursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
+                if (cursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                     // this is a secret key - show the edit button
                     statusDivider.setVisibility(View.VISIBLE);
                     statusLayout.setVisibility(View.VISIBLE);
@@ -518,9 +510,7 @@ public class KeyListFragment extends Fragment
                     button.setOnClickListener(new OnClickListener() {
                         public void onClick(View view) {
                             Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
-                            editIntent.setData(
-                                    KeychainContract.KeyRings
-                                            .buildSecretKeyRingUri(Long.toString(id)));
+                            editIntent.setData(KeyRingData.buildSecretKeyRingUri(Long.toString(id)));
                             editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                             startActivityForResult(editIntent, 0);
                         }
@@ -581,7 +571,7 @@ public class KeyListFragment extends Fragment
                 throw new IllegalStateException("couldn't move cursor to position " + position);
             }
 
-            if (!mCursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
+            if (mCursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                 { // set contact count
                     int num = mCursor.getCount();
                     String contactsTotal = getResources().getQuantityString(R.plurals.n_contacts, num, num);
@@ -621,7 +611,7 @@ public class KeyListFragment extends Fragment
             }
 
             // early breakout: all secret keys are assigned id 0
-            if (!mCursor.isNull(KeyListFragment.INDEX_HAS_SECRET)) {
+            if (mCursor.getInt(KeyListFragment.INDEX_HAS_SECRET) != 0) {
                 return 1L;
             }
             // otherwise, return the first character of the name as ID

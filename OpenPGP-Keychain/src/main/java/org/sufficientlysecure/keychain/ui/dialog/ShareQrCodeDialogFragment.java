@@ -107,7 +107,7 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
             long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
             // get public keyring as ascii armored string
             ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
-                    getActivity(), dataUri, new long[] { masterKeyId });
+                    getActivity(), new long[] { masterKeyId });
 
             // TODO: binary?
 

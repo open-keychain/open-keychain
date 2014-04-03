@@ -38,7 +38,10 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyKeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.ViewKeyUserIdsAdapter;
@@ -124,6 +127,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
         { // label whether secret key is available, and edit button if it is
             final long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), mDataUri);
+            // TODO do this some other way...
             if (ProviderHelper.hasSecretKeyByMasterKeyId(getActivity(), masterKeyId)) {
                 // set this attribute. this is a LITTLE unclean, but we have the info available
                 // right here, so why not.
@@ -141,8 +145,7 @@ public class ViewKeyMainFragment extends Fragment implements
                     public void onClick(View view) {
                         Intent editIntent = new Intent(getActivity(), EditKeyActivity.class);
                         editIntent.setData(
-                                KeychainContract
-                                        .KeyRings.buildSecretKeyRingUri(
+                                KeyRingData.buildSecretKeyRingUri(
                                         Long.toString(masterKeyId)));
                         editIntent.setAction(EditKeyActivity.ACTION_EDIT_KEY);
                         startActivityForResult(editIntent, 0);
@@ -161,7 +164,7 @@ public class ViewKeyMainFragment extends Fragment implements
             // TODO see todo note above, doing this here for now
             mActionCertify.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    certifyKey(KeychainContract.KeyRings.buildGenericKeyRingUri(
+                    certifyKey(KeyRings.buildGenericKeyRingUri(
                             Long.toString(masterKeyId)
                     ));
                 }
@@ -190,31 +193,26 @@ public class ViewKeyMainFragment extends Fragment implements
     }
 
     static final String[] USER_IDS_PROJECTION =
-            new String[]{
-                    KeychainContract.UserIds._ID,
-                    KeychainContract.UserIds.USER_ID,
-                    KeychainContract.UserIds.RANK,
+            new String[] {
+                    UserIds._ID,
+                    UserIds.USER_ID,
+                    UserIds.RANK,
             };
     static final int INDEX_UID_UID = 1;
-    static final String USER_IDS_SORT_ORDER =
-            KeychainContract.UserIds.RANK + " COLLATE LOCALIZED ASC";
 
-    static final String[] KEYS_PROJECTION =
-            new String[]{KeychainContract.Keys._ID, KeychainContract.Keys.KEY_ID,
-                    KeychainContract.Keys.ALGORITHM, KeychainContract.Keys.RANK,
-                    KeychainContract.Keys.KEY_SIZE, KeychainContract.Keys.CAN_CERTIFY,
-                    KeychainContract.Keys.CAN_SIGN, KeychainContract.Keys.CAN_ENCRYPT,
-                    KeychainContract.Keys.IS_REVOKED, KeychainContract.Keys.CREATION,
-                    KeychainContract.Keys.EXPIRY, KeychainContract.Keys.FINGERPRINT};
-    static final String KEYS_SORT_ORDER = KeychainContract.Keys.RANK + " ASC";
+    static final String[] KEYS_PROJECTION = new String[] {
+            Keys._ID,
+            Keys.KEY_ID, Keys.RANK,
+            Keys.ALGORITHM, Keys.KEY_SIZE,
+            Keys.CAN_CERTIFY, Keys.CAN_ENCRYPT,
+            Keys.CAN_SIGN, Keys.IS_REVOKED,
+            Keys.CREATION, Keys.EXPIRY,
+            Keys.FINGERPRINT
+    };
     static final int KEYS_INDEX_KEY_ID = 1;
-    static final int KEYS_INDEX_ALGORITHM = 2;
-    static final int KEYS_INDEX_RANK = 3;
+    static final int KEYS_INDEX_ALGORITHM = 3;
     static final int KEYS_INDEX_KEY_SIZE = 4;
-    static final int KEYS_INDEX_CAN_CERTIFY = 5;
-    static final int KEYS_INDEX_CAN_SIGN = 6;
-    static final int KEYS_INDEX_CAN_ENCRYPT = 7;
-    static final int KEYS_INDEX_IS_REVOKED = 8;
+    static final int KEYS_INDEX_CAN_ENCRYPT = 6;
     static final int KEYS_INDEX_CREATION = 9;
     static final int KEYS_INDEX_EXPIRY = 10;
     static final int KEYS_INDEX_FINGERPRINT = 11;
@@ -222,19 +220,18 @@ public class ViewKeyMainFragment extends Fragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_USER_IDS: {
-                Uri baseUri = KeychainContract.UserIds.buildUserIdsUri(mDataUri);
+                Uri baseUri = UserIds.buildUserIdsUri(mDataUri);
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null,
-                        USER_IDS_SORT_ORDER);
+                return new CursorLoader(getActivity(), baseUri, USER_IDS_PROJECTION, null, null, null);
             }
             case LOADER_ID_KEYS: {
-                Uri baseUri = KeychainContract.Keys.buildKeysUri(mDataUri);
+                Uri baseUri = Keys.buildKeysUri(mDataUri);
 
                 // Now create and return a CursorLoader that will take care of
                 // creating a Cursor for the data being displayed.
-                return new CursorLoader(getActivity(), baseUri, KEYS_PROJECTION, null, null, KEYS_SORT_ORDER);
+                return new CursorLoader(getActivity(), baseUri, KEYS_PROJECTION, null, null, null);
             }
 
             default:
@@ -343,7 +340,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
     private void encryptToContact(Uri dataUri) {
         // TODO preselect from uri? should be feasible without trivial query
-        long keyId = Long.parseLong(dataUri.getPathSegments().get(1));
+        long keyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
 
         long[] encryptionKeyIds = new long[]{ keyId };
         Intent intent = new Intent(getActivity(), EncryptActivity.class);

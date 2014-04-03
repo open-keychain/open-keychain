@@ -26,19 +26,15 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyTypes;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserIdsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -46,13 +42,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class KeychainProvider extends ContentProvider {
-    // public static final String ACTION_BROADCAST_DATABASE_CHANGE = Constants.PACKAGE_NAME
-    // + ".action.DATABASE_CHANGE";
-    //
-    // public static final String EXTRA_BROADCAST_KEY_TYPE = "key_type";
-    // public static final String EXTRA_BROADCAST_CONTENT_ITEM_TYPE = "contentItemType";
 
     private static final int KEY_RINGS_UNIFIED = 101;
+    private static final int KEY_RINGS_PUBLIC = 102;
 
     private static final int KEY_RING_UNIFIED = 200;
     private static final int KEY_RING_KEYS = 201;
@@ -79,18 +71,22 @@ public class KeychainProvider extends ContentProvider {
         String authority = KeychainContract.CONTENT_AUTHORITY;
 
         /**
-         * select from key_ring
+         * list key_rings
          *
          * <pre>
          * key_rings/unified
+         * key_rings/public
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                 + "/" + KeychainContract.PATH_UNIFIED,
                 KEY_RINGS_UNIFIED);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
+                + "/" + KeychainContract.PATH_PUBLIC,
+                KEY_RINGS_PUBLIC);
 
         /**
-         * select from key_ring
+         * list key_ring specifics
          *
          * <pre>
          * key_rings/_/unified
@@ -215,45 +211,44 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RING_UNIFIED:
             case KEY_RINGS_UNIFIED: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(BaseColumns._ID, Tables.KEYS + ".oid AS _id");
-                projectionMap.put(KeysColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.MASTER_KEY_ID);
-                projectionMap.put(KeysColumns.RANK, Tables.KEYS + "." + KeysColumns.RANK);
-                projectionMap.put(KeysColumns.KEY_ID, KeysColumns.KEY_ID);
-                projectionMap.put(KeysColumns.KEY_SIZE, KeysColumns.KEY_SIZE);
-                projectionMap.put(KeysColumns.IS_REVOKED, KeysColumns.IS_REVOKED);
-                projectionMap.put(KeysColumns.CAN_CERTIFY, KeysColumns.CAN_CERTIFY);
-                projectionMap.put(KeysColumns.CAN_ENCRYPT, KeysColumns.CAN_ENCRYPT);
-                projectionMap.put(KeysColumns.CAN_SIGN, KeysColumns.CAN_SIGN);
-                projectionMap.put(KeysColumns.CREATION, KeysColumns.CREATION);
-                projectionMap.put(KeysColumns.EXPIRY, KeysColumns.EXPIRY);
-                projectionMap.put(KeysColumns.ALGORITHM, KeysColumns.ALGORITHM);
-                projectionMap.put(KeysColumns.FINGERPRINT, KeysColumns.FINGERPRINT);
-                projectionMap.put(UserIdsColumns.USER_ID, UserIdsColumns.USER_ID);
-                projectionMap.put(Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID, Tables.KEY_RINGS_SECRET + "." + KeyRingsColumns.MASTER_KEY_ID);
+                projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
+                projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
+                projectionMap.put(KeyRings.KEY_ID, Keys.KEY_ID);
+                projectionMap.put(KeyRings.KEY_SIZE, Keys.KEY_SIZE);
+                projectionMap.put(KeyRings.IS_REVOKED, Keys.IS_REVOKED);
+                projectionMap.put(KeyRings.CAN_CERTIFY, Keys.CAN_CERTIFY);
+                projectionMap.put(KeyRings.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
+                projectionMap.put(KeyRings.CAN_SIGN, Keys.CAN_SIGN);
+                projectionMap.put(KeyRings.CREATION, Keys.CREATION);
+                projectionMap.put(KeyRings.EXPIRY, Keys.EXPIRY);
+                projectionMap.put(KeyRings.ALGORITHM, Keys.ALGORITHM);
+                projectionMap.put(KeyRings.FINGERPRINT, Keys.FINGERPRINT);
+                projectionMap.put(KeyRings.USER_ID, UserIds.USER_ID);
+                projectionMap.put(KeyRings.HAS_SECRET, "(" + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NOT NULL) AS " + KeyRings.HAS_SECRET);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(
                     Tables.KEYS
                         + " INNER JOIN " + Tables.USER_IDS + " ON ("
-                                    + Tables.KEYS + "." + KeysColumns.MASTER_KEY_ID
+                                    + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
-                                    + Tables.USER_IDS + "." + UserIdsColumns.MASTER_KEY_ID
-                            + " AND " + Tables.USER_IDS + "." + UserIdsColumns.RANK + " = 0"
+                                    + Tables.USER_IDS + "." + UserIds.MASTER_KEY_ID
+                            + " AND " + Tables.USER_IDS + "." + UserIds.RANK + " = 0"
                         + ") LEFT JOIN " + Tables.KEY_RINGS_SECRET + " ON ("
-                            + Tables.KEYS + "." + KeysColumns.MASTER_KEY_ID
+                            + Tables.KEYS + "." + Keys.MASTER_KEY_ID
                                 + " = "
-                            + Tables.KEY_RINGS_SECRET + "." + KeyRingsColumns.MASTER_KEY_ID
+                            + Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID
                         + ")"
                     );
-                qb.appendWhere(Tables.KEYS + "." + KeysColumns.RANK + " = 0");
+                qb.appendWhere(Tables.KEYS + "." + Keys.RANK + " = 0");
 
                 if(match == KEY_RING_UNIFIED) {
-                    qb.appendWhere(" AND " + Tables.KEYS + "." + KeysColumns.MASTER_KEY_ID + " = ");
+                    qb.appendWhere(" AND " + Tables.KEYS + "." + Keys.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 } else if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder =
                             Tables.KEY_RINGS_SECRET + "." + KeyRings.MASTER_KEY_ID + " IS NULL DESC"
-                            + Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
+                            + Tables.USER_IDS + "." + UserIds.USER_ID + " ASC";
                 }
 
                 // uri to watch is all /key_rings/
@@ -276,38 +271,38 @@ public class KeychainProvider extends ContentProvider {
                     if (i != 0) {
                         emailWhere += " OR ";
                     }
-                    emailWhere += "tmp." + UserIdsColumns.USER_ID + " LIKE ";
+                    emailWhere += "tmp." + UserIds.USER_ID + " LIKE ";
                     // match '*<email>', so it has to be at the *end* of the user id
                     emailWhere += DatabaseUtils.sqlEscapeString("%<" + chunks[i] + ">");
                     gotCondition = true;
                 }
 
                 if (gotCondition) {
-                    qb.appendWhere(" AND EXISTS (SELECT tmp." + BaseColumns._ID + " FROM "
-                            + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIdsColumns.KEY_RING_ROW_ID
-                            + " = " + Tables.KEY_RINGS + "." + BaseColumns._ID + " AND (" + emailWhere
+                    qb.appendWhere(" AND EXISTS (SELECT tmp." + Base._ID + " FROM "
+                            + Tables.USER_IDS + " AS tmp WHERE tmp." + UserIds.KEY_RING_ROW_ID
+                            + " = " + Tables.KEY_RINGS + "." + Base._ID + " AND (" + emailWhere
                             + "))");
                 }*/
 
             case KEY_RING_KEYS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(BaseColumns._ID, Tables.KEYS + ".oid AS _id");
-                projectionMap.put(KeysColumns.MASTER_KEY_ID, Tables.KEYS + "." + KeysColumns.MASTER_KEY_ID);
-                projectionMap.put(KeysColumns.RANK, Tables.KEYS + "." + KeysColumns.RANK);
-                projectionMap.put(KeysColumns.KEY_ID, KeysColumns.KEY_ID);
-                projectionMap.put(KeysColumns.KEY_SIZE, KeysColumns.KEY_SIZE);
-                projectionMap.put(KeysColumns.IS_REVOKED, KeysColumns.IS_REVOKED);
-                projectionMap.put(KeysColumns.CAN_CERTIFY, KeysColumns.CAN_CERTIFY);
-                projectionMap.put(KeysColumns.CAN_ENCRYPT, KeysColumns.CAN_ENCRYPT);
-                projectionMap.put(KeysColumns.CAN_SIGN, KeysColumns.CAN_SIGN);
-                projectionMap.put(KeysColumns.CREATION, KeysColumns.CREATION);
-                projectionMap.put(KeysColumns.EXPIRY, KeysColumns.EXPIRY);
-                projectionMap.put(KeysColumns.ALGORITHM, KeysColumns.ALGORITHM);
-                projectionMap.put(KeysColumns.FINGERPRINT, KeysColumns.FINGERPRINT);
+                projectionMap.put(Keys._ID, Tables.KEYS + ".oid AS _id");
+                projectionMap.put(Keys.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
+                projectionMap.put(Keys.RANK, Tables.KEYS + "." + Keys.RANK);
+                projectionMap.put(Keys.KEY_ID, Keys.KEY_ID);
+                projectionMap.put(Keys.KEY_SIZE, Keys.KEY_SIZE);
+                projectionMap.put(Keys.IS_REVOKED, Keys.IS_REVOKED);
+                projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
+                projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
+                projectionMap.put(Keys.CAN_SIGN, Keys.CAN_SIGN);
+                projectionMap.put(Keys.CREATION, Keys.CREATION);
+                projectionMap.put(Keys.EXPIRY, Keys.EXPIRY);
+                projectionMap.put(Keys.ALGORITHM, Keys.ALGORITHM);
+                projectionMap.put(Keys.FINGERPRINT, Keys.FINGERPRINT);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEYS);
-                qb.appendWhere(KeysColumns.MASTER_KEY_ID + " = ");
+                qb.appendWhere(Keys.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
@@ -315,7 +310,7 @@ public class KeychainProvider extends ContentProvider {
 
             case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(BaseColumns._ID, Tables.USER_IDS + ".oid AS _id");
+                projectionMap.put(UserIds._ID, Tables.USER_IDS + ".oid AS _id");
                 projectionMap.put(UserIds.MASTER_KEY_ID, UserIds.MASTER_KEY_ID);
                 projectionMap.put(UserIds.USER_ID, UserIds.USER_ID);
                 projectionMap.put(UserIds.RANK, UserIds.RANK);
@@ -323,36 +318,44 @@ public class KeychainProvider extends ContentProvider {
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.USER_IDS);
-                qb.appendWhere(UserIdsColumns.MASTER_KEY_ID + " = ");
+                qb.appendWhere(UserIds.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+
+                if (TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = UserIds.RANK + " ASC";
+                }
 
                 break;
 
             }
 
+            case KEY_RINGS_PUBLIC:
             case KEY_RING_PUBLIC: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
-                projectionMap.put(KeyRings.MASTER_KEY_ID, KeyRings.MASTER_KEY_ID);
-                projectionMap.put(KeyRings.KEY_RING_DATA, KeyRings.KEY_RING_DATA);
+                projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
+                projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
+                projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_PUBLIC);
-                qb.appendWhere(KeyRingsColumns.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+
+                if(match == KEY_RING_PUBLIC) {
+                    qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
+                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
+                }
 
                 break;
             }
 
             case KEY_RING_SECRET: {
                 HashMap<String, String> projectionMap = new HashMap<String, String>();
-                projectionMap.put(BaseColumns._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
-                projectionMap.put(KeyRings.MASTER_KEY_ID, KeyRings.MASTER_KEY_ID);
-                projectionMap.put(KeyRings.KEY_RING_DATA, KeyRings.KEY_RING_DATA);
+                projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
+                projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
+                projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
                 qb.setProjectionMap(projectionMap);
 
                 qb.setTables(Tables.KEY_RINGS_SECRET);
-                qb.appendWhere(KeyRingsColumns.MASTER_KEY_ID + " = ");
+                qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 break;
@@ -429,23 +432,23 @@ public class KeychainProvider extends ContentProvider {
             switch (match) {
                 case KEY_RING_PUBLIC:
                     db.insertOrThrow(Tables.KEY_RINGS_PUBLIC, null, values);
-                    keyId = values.getAsLong(KeyRingsColumns.MASTER_KEY_ID);
+                    keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
 
                 case KEY_RING_SECRET:
                     db.insertOrThrow(Tables.KEY_RINGS_SECRET, null, values);
-                    keyId = values.getAsLong(KeyRingsColumns.MASTER_KEY_ID);
+                    keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
 
                 case KEY_RING_KEYS:
                     Log.d(Constants.TAG, "keys");
                     db.insertOrThrow(Tables.KEYS, null, values);
-                    keyId = values.getAsLong(KeysColumns.MASTER_KEY_ID);
+                    keyId = values.getAsLong(Keys.MASTER_KEY_ID);
                     break;
 
                 case KEY_RING_USER_IDS:
                     db.insertOrThrow(Tables.USER_IDS, null, values);
-                    keyId = values.getAsLong(UserIdsColumns.MASTER_KEY_ID);
+                    keyId = values.getAsLong(UserIds.MASTER_KEY_ID);
                     break;
 
                 case API_APPS:

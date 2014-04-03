@@ -20,8 +20,6 @@ package org.sufficientlysecure.keychain.ui.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
@@ -35,14 +33,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DeleteKeyDialogFragment extends DialogFragment {
@@ -107,13 +104,11 @@ public class DeleteKeyDialogFragment extends DialogFragment {
             long masterKeyId = masterKeyIds[0];
 
             HashMap<String, Object> data = ProviderHelper.getUnifiedData(activity, masterKeyId, new String[]{
-                    KeychainContract.UserIds.USER_ID,
-                    KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID
+                    KeyRings.USER_ID,
+                    KeyRings.HAS_SECRET
             });
-            String userId = (String) data.get(KeychainContract.UserIds.USER_ID);
-            boolean hasSecret = data.get(
-                    KeychainDatabase.Tables.KEY_RINGS_SECRET + "." + KeychainContract.KeyRings.MASTER_KEY_ID
-            ) instanceof Long;
+            String userId = (String) data.get(KeyRings.USER_ID);
+            boolean hasSecret = ((Long) data.get(KeyRings.HAS_SECRET)) == 1;
 
             // Hide the Checkbox and TextView since this is a single selection,user will be notified through message
             mDeleteSecretKeyView.setVisibility(View.GONE);
@@ -136,7 +131,7 @@ public class DeleteKeyDialogFragment extends DialogFragment {
                 boolean success = false;
                 for(long masterKeyId : masterKeyIds) {
                     int count = activity.getContentResolver().delete(
-                            KeychainContract.KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null
+                            KeyRingData.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null
                         );
                     if(count > 0)
                     success = true;

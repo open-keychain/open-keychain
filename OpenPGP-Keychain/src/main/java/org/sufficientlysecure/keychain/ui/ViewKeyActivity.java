@@ -185,8 +185,8 @@ public class ViewKeyActivity extends ActionBarActivity {
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this,
-                    dataUri, new long[]{masterKeyId});
+            ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                    this, new long[]{ masterKeyId });
 
             content = keyringArmored.get(0);
 
@@ -216,8 +216,8 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void copyToClipboard(Uri dataUri) {
         // get public keyring as ascii armored string
         long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);
-        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(this, dataUri,
-                new long[]{masterKeyId});
+        ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
+                this, new long[]{ masterKeyId });
 
         ClipboardReflection.copyToClipboard(this, keyringArmored.get(0));
         Toast.makeText(getApplicationContext(), R.string.key_copied_to_clipboard, Toast.LENGTH_LONG)

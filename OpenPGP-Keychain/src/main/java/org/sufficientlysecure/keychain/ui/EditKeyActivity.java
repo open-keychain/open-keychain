@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.service.KeychainIntentService;
 import org.sufficientlysecure.keychain.service.KeychainIntentServiceHandler;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -345,7 +346,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
                 return true;
             case R.id.menu_key_edit_delete:
-                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(mDataUri);
+                Uri convertUri = KeyRingData.buildSecretKeyRingUri(mDataUri);
                     // Message is received after key is deleted
                     Handler returnHandler = new Handler() {
                         @Override
