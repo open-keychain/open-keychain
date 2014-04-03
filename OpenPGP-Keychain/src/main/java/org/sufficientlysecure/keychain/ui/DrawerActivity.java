@@ -125,13 +125,11 @@ public class DrawerActivity extends ActionBarActivity {
             // so that it doesn't consume all the Back button presses
             mDrawerLayout.setFocusableInTouchMode(false);
         }
-        // if (savedInstanceState == null) {
-        // selectItem(0);
-        // }
     }
 
     /**
      * Uses startActivity to call the Intent of the given class
+     *
      * @param drawerItem the class of the drawer item you want to load. Based on Constants.DrawerItems.*
      */
     public void callIntentForDrawerItem(Class drawerItem) {
@@ -159,16 +157,6 @@ public class DrawerActivity extends ActionBarActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content
-        // view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        // menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // The action bar home/up action should open or close the drawer.
@@ -191,26 +179,11 @@ public class DrawerActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
-        // Handle action buttons
-        // switch (item.getItemId()) {
-        // case R.id.action_websearch:
-        // // create intent to perform web search for this planet
-        // Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-        // intent.putExtra(SearchManager.QUERY, getSupportActionBar().getTitle());
-        // // catch event that there's no activity to handle intent
-        // if (intent.resolveActivity(getPackageManager()) != null) {
-        // startActivity(intent);
-        // } else {
-        // Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-        // }
-        // return true;
-        // default:
-        // return super.onOptionsItemSelected(item);
-        // }
     }
 
-    /* The click listener for ListView in the navigation drawer */
+    /**
+     * The click listener for ListView in the navigation drawer
+     */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
