@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.sufficientlysecure.keychain"
     android:installLocation="auto"
-    android:versionCode="24000"
-    android:versionName="2.4">
+    android:versionCode="25000"
+    android:versionName="2.5">
 
     <!--
         General remarks
