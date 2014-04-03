@@ -241,7 +241,7 @@ public class PgpDecryptVerify {
                         // TODO: improve this code! get master key directly!
                         PGPSecretKeyRing secretKeyRing =
                                 ProviderHelper.getPGPSecretKeyRingWithKeyId(mContext, encData.getKeyID());
-                        long masterKeyId = PgpKeyHelper.getMasterKey(secretKeyRing).getKeyID();
+                        long masterKeyId = secretKeyRing.getSecretKey().getKeyID();
                         Log.d(Constants.TAG, "encData.getKeyID():" + encData.getKeyID());
                         Log.d(Constants.TAG, "allowedKeyIds: " + mAllowedKeyIds);
                         Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
@@ -375,7 +375,7 @@ public class PgpDecryptVerify {
                     PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(
                             mContext, signatureKeyId);
                     if (signKeyRing != null) {
-                        userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signKeyRing));
+                        userId = PgpKeyHelper.getMainUserId(signKeyRing.getPublicKey());
                     }
                     signatureResult.setUserId(userId);
                     break;
@@ -559,7 +559,7 @@ public class PgpDecryptVerify {
                 PGPPublicKeyRing signKeyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(mContext,
                         signatureKeyId);
                 if (signKeyRing != null) {
-                    userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signKeyRing));
+                    userId = PgpKeyHelper.getMainUserId(signKeyRing.getPublicKey());
                 }
                 signatureResult.setUserId(userId);
                 break;
@@ -624,7 +624,7 @@ public class PgpDecryptVerify {
                 signatureKeyId);
         PGPPublicKey mKey = null;
         if (signKeyRing != null) {
-            mKey = PgpKeyHelper.getMasterKey(signKeyRing);
+            mKey = signKeyRing.getPublicKey();
         }
 
         if (signature.getKeyID() != mKey.getKeyID()) {

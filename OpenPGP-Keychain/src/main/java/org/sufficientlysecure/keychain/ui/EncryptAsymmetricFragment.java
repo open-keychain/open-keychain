@@ -145,7 +145,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                     preselectedSignatureKeyId);
             PGPSecretKey masterKey;
             if (keyRing != null) {
-                masterKey = PgpKeyHelper.getMasterKey(keyRing);
+                masterKey = keyRing.getSecretKey();
                 if (masterKey != null) {
                     Vector<PGPSecretKey> signKeys = PgpKeyHelper.getUsableSigningKeys(keyRing);
                     if (signKeys.size() > 0) {
@@ -166,7 +166,7 @@ public class EncryptAsymmetricFragment extends Fragment {
                 if (keyRing == null) {
                     continue;
                 }
-                masterKey = PgpKeyHelper.getMasterKey(keyRing);
+                masterKey = keyRing.getPublicKey();
                 if (masterKey == null) {
                     continue;
                 }

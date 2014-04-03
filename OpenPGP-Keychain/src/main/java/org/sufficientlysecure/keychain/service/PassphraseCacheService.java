@@ -174,7 +174,7 @@ public class PassphraseCacheService extends Service {
             if (keyRing == null) {
                 return null;
             }
-            PGPSecretKey masterKey = PgpKeyHelper.getMasterKey(keyRing);
+            PGPSecretKey masterKey = keyRing.getSecretKey();
             if (masterKey == null) {
                 return null;
             }

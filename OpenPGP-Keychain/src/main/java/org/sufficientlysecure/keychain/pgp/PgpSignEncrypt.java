@@ -306,7 +306,7 @@ public class PgpSignEncrypt {
                 signatureGenerator = new PGPSignatureGenerator(contentSignerBuilder);
                 signatureGenerator.init(signatureType, signaturePrivateKey);
 
-                String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signingKeyRing));
+                String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
                 PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
                 spGen.setSignerUserID(false, userId);
                 signatureGenerator.setHashedSubpackets(spGen.generate());
@@ -505,7 +505,7 @@ public class PgpSignEncrypt {
             signatureGenerator.init(type, signaturePrivateKey);
 
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
-            String userId = PgpKeyHelper.getMainUserId(PgpKeyHelper.getMasterKey(signingKeyRing));
+            String userId = PgpKeyHelper.getMainUserId(signingKeyRing.getSecretKey());
             spGen.setSignerUserID(false, userId);
             signatureGenerator.setHashedSubpackets(spGen.generate());
         }

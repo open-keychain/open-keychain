@@ -260,30 +260,6 @@ public class ProviderHelper {
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
     }
 
-    /**
-     * Private helper method
-     */
-    private static ArrayList<Long> getKeyRingsMasterKeyIds(Context context, Uri queryUri) {
-        Cursor cursor = context.getContentResolver().query(queryUri,
-                new String[]{KeyRings.MASTER_KEY_ID}, null, null, null);
-
-        ArrayList<Long> masterKeyIds = new ArrayList<Long>();
-        if (cursor != null) {
-            int masterKeyIdCol = cursor.getColumnIndex(KeyRings.MASTER_KEY_ID);
-            if (cursor.moveToFirst()) {
-                do {
-                    masterKeyIds.add(cursor.getLong(masterKeyIdCol));
-                } while (cursor.moveToNext());
-            }
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return masterKeyIds;
-    }
-
     public static void deletePublicKeyRing(Context context, long masterKeyId) {
         ContentResolver cr = context.getContentResolver();
         cr.delete(KeyRings.buildPublicKeyRingUri(Long.toString(masterKeyId)), null, null);
@@ -292,38 +268,6 @@ public class ProviderHelper {
     public static void deleteSecretKeyRing(Context context, long masterKeyId) {
         ContentResolver cr = context.getContentResolver();
         cr.delete(KeyRings.buildSecretKeyRingUri(Long.toString(masterKeyId)), null, null);
-    }
-
-    public static boolean getMasterKeyCanCertify(Context context, Uri queryUri) {
-        // TODO redo
-
-        return false;
-
-        /*
-            String[] projection = new String[]{
-                    KeyRings.MASTER_KEY_ID,
-                    "(SELECT COUNT(sign_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                            + " AS sign_keys WHERE sign_keys." + Keys.KEY_RING_ROW_ID + " = "
-                            + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                            + " AND sign_keys." + Keys.CAN_CERTIFY + " = '1' AND " + Keys.IS_MASTER_KEY
-                            + " = 1) AS sign",};
-
-            ContentResolver cr = context.getContentResolver();
-            Cursor cursor = cr.query(queryUri, projection, null, null, null);
-
-            long masterKeyId = -1;
-            if (cursor != null && cursor.moveToFirst()) {
-                int masterKeyIdCol = cursor.getColumnIndex("sign");
-
-                masterKeyId = cursor.getLong(masterKeyIdCol);
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-
-            return (masterKeyId > 0);
-        */
     }
 
     public static boolean hasSecretKeyByMasterKeyId(Context context, long masterKeyId) {
@@ -336,8 +280,16 @@ public class ProviderHelper {
      * Get master key id of key
      */
     public static long getMasterKeyId(Context context, Uri queryUri) {
-        String[] projection = new String[]{KeyRings.MASTER_KEY_ID};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
+        // try extracting from the uri first
+        try {
+            return Long.parseLong(queryUri.getPathSegments().get(1));
+        } catch(NumberFormatException e) {
+            // didn't work? oh well.
+        }
+
+        Cursor cursor = context.getContentResolver().query(queryUri, new String[] {
+                KeyRings.MASTER_KEY_ID
+        }, null, null, null);
 
         long masterKeyId = 0;
         try {

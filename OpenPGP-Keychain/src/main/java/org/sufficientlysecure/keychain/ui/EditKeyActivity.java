@@ -276,8 +276,6 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
 
             // get master key id using row id
             long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-
-            mMasterCanSign = ProviderHelper.getMasterKeyCanCertify(this, mDataUri);
             finallyEdit(masterKeyId);
         }
     }
@@ -347,8 +345,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                 }
                 return true;
             case R.id.menu_key_edit_delete:
-                long rowId= ProviderHelper.getRowId(this,mDataUri);
-                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(Long.toString(rowId));
+                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(mDataUri);
                     // Message is received after key is deleted
                     Handler returnHandler = new Handler() {
                         @Override
@@ -374,7 +371,8 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             PGPSecretKey masterKey = null;
             mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
             if (mKeyRing != null) {
-                masterKey = PgpKeyHelper.getMasterKey(mKeyRing);
+                masterKey = mKeyRing.getSecretKey();
+                mMasterCanSign = PgpKeyHelper.isCertificationKey(mKeyRing.getSecretKey());
                 for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
                     mKeys.add(key);
                     mKeysUsages.add(-1); // get usage when view is created
@@ -382,6 +380,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
             } else {
                 Log.e(Constants.TAG, "Keyring not found with masterKeyId: " + masterKeyId);
                 Toast.makeText(this, R.string.error_no_secret_key_found, Toast.LENGTH_LONG).show();
+                // TODO
             }
             if (masterKey != null) {
                 boolean isSet = false;

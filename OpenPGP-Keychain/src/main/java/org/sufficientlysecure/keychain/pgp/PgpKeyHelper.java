@@ -61,34 +61,6 @@ public class PgpKeyHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static PGPPublicKey getMasterKey(PGPPublicKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPPublicKey key : new IterableIterator<PGPPublicKey>(keyRing.getPublicKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static PGPSecretKey getMasterKey(PGPSecretKeyRing keyRing) {
-        if (keyRing == null) {
-            return null;
-        }
-        for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(keyRing.getSecretKeys())) {
-            if (key.isMasterKey()) {
-                return key;
-            }
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
     public static PGPSecretKey getKeyNum(PGPSecretKeyRing keyRing, long num) {
         long cnt = 0;
         if (keyRing == null) {
