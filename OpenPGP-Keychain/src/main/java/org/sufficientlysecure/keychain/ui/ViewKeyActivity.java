@@ -173,10 +173,15 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content;
         if (fingerprintOnly) {
-            byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
-
-            content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            Object blob = ProviderHelper.getUnifiedData(this, dataUri, KeychainContract.Keys.FINGERPRINT);
+            if(blob instanceof byte[]) {
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex((byte[]) blob);
+                content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
+            } else {
+                Toast.makeText(getApplicationContext(), "Bad key selected!",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
         } else {
             // get public keyring as ascii armored string
             long masterKeyId = ProviderHelper.getMasterKeyId(this, dataUri);

@@ -34,6 +34,7 @@ import com.beardedhen.androidbootstrap.BootstrapButton;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.ui.EditKeyActivity;
 import org.sufficientlysecure.keychain.ui.SelectSecretKeyLayoutFragment;
@@ -176,9 +177,8 @@ public class AccountSettingsFragment extends Fragment implements
             case REQUEST_CODE_CREATE_KEY: {
                 if (resultCode == Activity.RESULT_OK) {
                     // select newly created key
-                    Uri newKeyUri = data.getData();
-                    // TODO helper method for this?
-                    mSelectKeyFragment.selectKey(Long.parseLong(newKeyUri.getPathSegments().get(1)));
+                    long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), data.getData());
+                    mSelectKeyFragment.selectKey(masterKeyId);
                 }
                 break;
             }

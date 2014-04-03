@@ -256,6 +256,9 @@ public class KeychainProvider extends ContentProvider {
                             + Tables.USER_IDS + "." + UserIdsColumns.USER_ID + " ASC";
                 }
 
+                // uri to watch is all /key_rings/
+                uri = KeyRings.CONTENT_URI;
+
                 break;
             }
             /*case SECRET_KEY_RING_BY_EMAILS:
@@ -503,6 +506,7 @@ public class KeychainProvider extends ContentProvider {
                 }
                 // corresponding keys and userIds are deleted by ON DELETE CASCADE
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
+                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
                 break;
             }
             case KEY_RING_SECRET: {
@@ -512,6 +516,7 @@ public class KeychainProvider extends ContentProvider {
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.KEY_RINGS_SECRET, selection, selectionArgs);
+                uri = KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1));
                 break;
             }
 

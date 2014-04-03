@@ -23,7 +23,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.CursorWindow;
+import android.database.CursorWrapper;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteCursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
@@ -42,7 +45,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserIds;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.remote.AccountSettings;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -52,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,6 +83,57 @@ public class ProviderHelper {
 
         return keyRing;
     }
+
+    public static Object getUnifiedData(Context context, long masterKeyId, String column) {
+        return getUnifiedData(context, masterKeyId, new String[] { column }).get(column);
+    }
+    public static Object getUnifiedData(Context context, Uri uri, String column) {
+        return getUnifiedData(context, uri, new String[] { column }).get(column);
+    }
+
+    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj) {
+        return getUnifiedData(context, KeyRings.buildGenericKeyRingUri(Long.toString(masterKeyId)), proj);
+    }
+
+    public static HashMap<String,Object> getUnifiedData(Context context, Uri uri, String[] proj) {
+        uri = KeyRings.buildUnifiedKeyRingUri(uri);
+
+        Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+
+        HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
+        if (cursor != null && cursor.moveToFirst()) {
+            // this is a HACK because we don't have Cursor.getType (which is api level 11)
+            CursorWindow cursorWindow;
+            if(cursor instanceof CursorWrapper) {
+                cursorWindow = ((SQLiteCursor) ((CursorWrapper) cursor).getWrappedCursor()).getWindow();
+            } else {
+                cursorWindow = ((SQLiteCursor) cursor).getWindow();
+            }
+
+            int pos = 0;
+            for(String p : proj) {
+                if (cursorWindow.isNull(0, pos)) {
+                    result.put(p, cursor.isNull(pos));
+                } else if (cursorWindow.isLong(0, pos)) {
+                    result.put(p, cursor.getLong(pos));
+                } else if (cursorWindow.isFloat(0, pos)) {
+                    result.put(p, cursor.getFloat(pos));
+                } else if (cursorWindow.isString(0, pos)) {
+                    result.put(p, cursor.getString(pos));
+                } else if (cursorWindow.isBlob(0, pos)) {
+                    result.put(p, cursor.getBlob(pos));
+                }
+                pos += 1;
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return result;
+    }
+
 
     public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
         return getPGPPublicKeyRingWithKeyId(context, keyId).getPublicKey(keyId);
@@ -305,84 +359,6 @@ public class ProviderHelper {
         }
 
         return masterKeyId;
-    }
-
-    public static long getRowId(Context context, Uri queryUri) {
-        String[] projection = new String[]{KeyRings._ID};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-
-        long rowId = 0;
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                int idCol = cursor.getColumnIndexOrThrow(KeyRings._ID);
-
-                rowId = cursor.getLong(idCol);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return rowId;
-    }
-
-    /**
-     * Get fingerprint of key
-     */
-    public static byte[] getFingerprint(Context context, Uri queryUri) {
-        String[] projection = new String[]{Keys.FINGERPRINT};
-        Cursor cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-
-        byte[] fingerprint = null;
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                int col = cursor.getColumnIndexOrThrow(Keys.FINGERPRINT);
-
-                fingerprint = cursor.getBlob(col);
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        // FALLBACK: If fingerprint is not in database, get it from key blob!
-        // this could happen if the key was saved by a previous version of Keychain!
-        if (fingerprint == null) {
-            Log.d(Constants.TAG, "FALLBACK: fingerprint is not in database, get it from key blob!");
-
-            // get master key id
-            projection = new String[]{KeyRings.MASTER_KEY_ID};
-            cursor = context.getContentResolver().query(queryUri, projection, null, null, null);
-            long masterKeyId = 0;
-            try {
-                if (cursor != null && cursor.moveToFirst()) {
-                    int col = cursor.getColumnIndexOrThrow(KeyRings.MASTER_KEY_ID);
-
-                    masterKeyId = cursor.getLong(col);
-                }
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-
-            PGPPublicKey key = ProviderHelper.getPGPPublicKeyRing(context, masterKeyId).getPublicKey();
-            // if it is no public key get it from your own keys...
-            if (key == null) {
-                PGPSecretKey secretKey = ProviderHelper.getPGPSecretKeyRing(context, masterKeyId).getSecretKey();
-                if (secretKey == null) {
-                    Log.e(Constants.TAG, "Key could not be found!");
-                    return null;
-                }
-                key = secretKey.getPublicKey();
-            }
-
-            fingerprint = key.getFingerprint();
-        }
-
-        return fingerprint;
     }
 
     public static ArrayList<String> getKeyRingsAsArmoredString(Context context, Uri uri,

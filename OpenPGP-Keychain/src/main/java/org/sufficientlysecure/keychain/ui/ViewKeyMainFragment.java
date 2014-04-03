@@ -298,10 +298,6 @@ public class ViewKeyMainFragment extends Fragment implements
                     mAlgorithm.setText(algorithmStr);
 
                     byte[] fingerprintBlob = data.getBlob(KEYS_INDEX_FINGERPRINT);
-                    if (fingerprintBlob == null) {
-                        // FALLBACK for old database entries
-                        fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), mDataUri);
-                    }
                     String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
 
                     mFingerprint.setText(PgpKeyHelper.colorizeFingerprint(fingerprint));

@@ -37,8 +37,10 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class EncryptAsymmetricFragment extends Fragment {
@@ -202,20 +204,17 @@ public class EncryptAsymmetricFragment extends Fragment {
         } else {
             String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
-            // TODO: don't use bouncy castle objects!
-            PGPSecretKeyRing keyRing = ProviderHelper.getPGPSecretKeyRingWithKeyId(getActivity(),
-                    mSecretKeyId);
-            if (keyRing != null) {
-                PGPSecretKey key = PgpKeyHelper.getMasterKey(keyRing);
-                if (key != null) {
-                    String userId = PgpKeyHelper.getMainUserIdSafe(getActivity(), key);
-                    String chunks[] = userId.split(" <", 2);
-                    uid = chunks[0];
-                    if (chunks.length > 1) {
-                        uidExtra = "<" + chunks[1];
-                    }
+            // See if we can get a user_id from a unified query
+            Object data = ProviderHelper.getUnifiedData(
+                    getActivity(), mSecretKeyId, KeychainContract.UserIds.USER_ID);
+            if(data instanceof String) {
+                String chunks[] = ((String) data).split(" <", 2);
+                uid = chunks[0];
+                if (chunks.length > 1) {
+                    uidExtra = "<" + chunks[1];
                 }
             }
+
             mMainUserId.setText(uid);
             mMainUserIdRest.setText(uidExtra);
             mSign.setChecked(true);

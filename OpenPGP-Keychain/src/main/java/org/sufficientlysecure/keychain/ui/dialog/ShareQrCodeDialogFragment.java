@@ -31,6 +31,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
@@ -89,22 +90,24 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         if (mFingerprintOnly) {
             alert.setPositiveButton(R.string.btn_okay, null);
 
-            byte[] fingerprintBlob = ProviderHelper.getFingerprint(getActivity(), dataUri);
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
+            Object blob = ProviderHelper.getUnifiedData(getActivity(), dataUri, KeychainContract.Keys.FINGERPRINT);
+            if(!(blob instanceof byte[])) {
+                // TODO error handling?!
+                return null;
+            }
 
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex((byte[]) blob);
             mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
-
             content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
             setQrCode(content);
         } else {
             mText.setText(R.string.share_qr_code_dialog_start);
 
-            // TODO
+            // TODO works, but
             long masterKeyId = ProviderHelper.getMasterKeyId(getActivity(), dataUri);
-
             // get public keyring as ascii armored string
             ArrayList<String> keyringArmored = ProviderHelper.getKeyRingsAsArmoredString(
-                    getActivity(), dataUri, new long[]{masterKeyId});
+                    getActivity(), dataUri, new long[] { masterKeyId });
 
             // TODO: binary?
 

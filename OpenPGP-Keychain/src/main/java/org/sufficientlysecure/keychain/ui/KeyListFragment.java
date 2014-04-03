@@ -193,28 +193,15 @@ public class KeyListFragment extends Fragment
                             break;
                         }
                         case R.id.menu_key_list_multi_delete: {
-                            ids = mStickyList.getWrappedList().getCheckedItemIds();
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             showDeleteKeyDialog(mode, ids);
                             break;
                         }
                         case R.id.menu_key_list_multi_export: {
-                            ids = mStickyList.getWrappedList().getCheckedItemIds();
-                            long[] masterKeyIds = new long[2*ids.length];
-                            /* TODO! redo
-                            ArrayList<Long> allPubRowIds =
-                                    ProviderHelper.getPublicKeyRingsRowIds(getActivity());
-                            for (int i = 0; i < ids.length; i++) {
-                                if (allPubRowIds.contains(ids[i])) {
-                                    masterKeyIds[i] =
-                                        ProviderHelper.getPublicMasterKeyId(getActivity(), ids[i]);
-                                } else {
-                                    masterKeyIds[i] =
-                                        ProviderHelper.getSecretMasterKeyId(getActivity(), ids[i]);
-                                }
-                            }*/
+                            ids = mAdapter.getCurrentSelectedMasterKeyIds();
                             ExportHelper mExportHelper = new ExportHelper((ActionBarActivity) getActivity());
                             mExportHelper
-                                    .showExportKeysDialog(masterKeyIds, Id.type.public_key,
+                                    .showExportKeysDialog(ids, Id.type.public_key,
                                             Constants.Path.APP_DIR_FILE_PUB,
                                             getString(R.string.also_export_secret_keys));
                             break;
@@ -343,7 +330,7 @@ public class KeyListFragment extends Fragment
         }
         viewIntent.setData(
                 KeychainContract
-                        .KeyRings.buildPublicKeyRingUri(
+                        .KeyRings.buildGenericKeyRingUri(
                                             Long.toString(mAdapter.getMasterKeyId(position))));
         startActivity(viewIntent);
     }
@@ -362,11 +349,11 @@ public class KeyListFragment extends Fragment
     /**
      * Show dialog to delete key
      *
-     * @param keyRingRowIds
+     * @param masterKeyIds
      */
     @TargetApi(11)
     // TODO: this method needs an overhaul to handle both public and secret keys gracefully!
-    public void showDeleteKeyDialog(final ActionMode mode, long[] keyRingRowIds) {
+    public void showDeleteKeyDialog(final ActionMode mode, long[] masterKeyIds) {
         // Message is received after key is deleted
         Handler returnHandler = new Handler() {
             @Override
@@ -381,7 +368,7 @@ public class KeyListFragment extends Fragment
         Messenger messenger = new Messenger(returnHandler);
 
         DeleteKeyDialogFragment deleteKeyDialog = DeleteKeyDialogFragment.newInstance(messenger,
-                keyRingRowIds);
+                masterKeyIds);
 
         deleteKeyDialog.show(getActivity().getSupportFragmentManager(), "deleteKeyDialog");
     }
