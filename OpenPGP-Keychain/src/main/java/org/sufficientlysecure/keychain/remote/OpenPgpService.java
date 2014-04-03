@@ -35,7 +35,8 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerify;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyResult;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncrypt;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAccounts;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.remote.ui.RemoteServiceActivity;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -351,7 +352,7 @@ public class OpenPgpService extends RemoteService {
         try {
             long keyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
 
-            if (ProviderHelper.getPGPPublicKeyByKeyId(this, keyId) == null) {
+            if (ProviderHelper.getPGPPublicKeyRing(this, keyId) == null) {
                 Intent result = new Intent();
 
                 // If keys are not in db we return an additional PendingIntent
@@ -460,7 +461,7 @@ public class OpenPgpService extends RemoteService {
                 String currentPkg = getCurrentCallingPackage();
                 Set<Long> allowedKeyIds =
                     ProviderHelper.getAllKeyIdsForApp(mContext,
-                        KeychainContract.ApiAccounts.buildBaseUri(currentPkg));
+                        ApiAccounts.buildBaseUri(currentPkg));
                 return decryptAndVerifyImpl(data, input, output, allowedKeyIds);
             } else if (OpenPgpApi.ACTION_GET_KEY.equals(action)) {
                 return getKeyImpl(data);

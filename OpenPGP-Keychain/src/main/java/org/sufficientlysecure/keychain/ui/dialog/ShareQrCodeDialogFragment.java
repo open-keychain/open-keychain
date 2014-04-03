@@ -90,7 +90,9 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         if (mFingerprintOnly) {
             alert.setPositiveButton(R.string.btn_okay, null);
 
-            Object blob = ProviderHelper.getUnifiedData(getActivity(), dataUri, KeychainContract.Keys.FINGERPRINT);
+            Object blob = ProviderHelper.getGenericData(
+                    getActivity(), KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    KeychainContract.Keys.FINGERPRINT);
             if(!(blob instanceof byte[])) {
                 // TODO error handling?!
                 return null;

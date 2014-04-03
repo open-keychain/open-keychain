@@ -61,44 +61,10 @@ import java.util.Set;
 
 public class ProviderHelper {
 
-    /**
-     * Private helper method to get PGPKeyRing from database
-     */
-    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
-        Cursor cursor = context.getContentResolver().query(queryUri,
-                new String[]{KeyRings._ID, KeyRingData.KEY_RING_DATA}, null, null, null);
-
-        PGPKeyRing keyRing = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            int keyRingDataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
-
-            byte[] data = cursor.getBlob(keyRingDataCol);
-            if (data != null) {
-                keyRing = PgpConversionHelper.BytesToPGPKeyRing(data);
-            }
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        return keyRing;
+    public static Object getGenericData(Context context, Uri uri, String column) {
+        return getGenericData(context, uri, new String[] { column }).get(column);
     }
-
-    public static Object getUnifiedData(Context context, long masterKeyId, String column) {
-        return getUnifiedData(context, masterKeyId, new String[] { column }).get(column);
-    }
-    public static Object getUnifiedData(Context context, Uri uri, String column) {
-        return getUnifiedData(context, uri, new String[] { column }).get(column);
-    }
-
-    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj) {
-        return getUnifiedData(context, KeyRings.buildGenericKeyRingUri(Long.toString(masterKeyId)), proj);
-    }
-
-    public static HashMap<String,Object> getUnifiedData(Context context, Uri uri, String[] proj) {
-        uri = KeyRings.buildUnifiedKeyRingUri(uri);
-
+    public static HashMap<String,Object> getGenericData(Context context, Uri uri, String[] proj) {
         Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
 
         HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
@@ -135,20 +101,65 @@ public class ProviderHelper {
         return result;
     }
 
-
-    public static PGPPublicKey getPGPPublicKeyByKeyId(Context context, long keyId) {
-        return getPGPPublicKeyRingWithKeyId(context, keyId).getPublicKey(keyId);
+    public static Object getUnifiedData(Context context, long masterKeyId, String column) {
+        return getUnifiedData(context, masterKeyId, new String[] { column }).get(column);
     }
+    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj) {
+        return getGenericData(context, KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj);
+    }
+
+    /** Find the master key id related to a given query. The id will either be extracted from the
+     * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
+     */
+    public static long getMasterKeyId(Context context, Uri queryUri) {
+        // try extracting from the uri first
+        String firstSegment = queryUri.getPathSegments().get(1);
+        if(!firstSegment.equals("find")) try {
+            return Long.parseLong(firstSegment);
+        } catch(NumberFormatException e) {
+            // didn't work? oh well.
+            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
+        }
+        Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID);
+        if(data instanceof Long)
+            return (Long) data;
+        // TODO better error handling?
+        return 0L;
+    }
+
+    public static PGPKeyRing getPGPKeyRing(Context context, Uri queryUri) {
+        Cursor cursor = context.getContentResolver().query(queryUri,
+                new String[]{KeyRings._ID, KeyRingData.KEY_RING_DATA}, null, null, null);
+
+        PGPKeyRing keyRing = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            int keyRingDataCol = cursor.getColumnIndex(KeyRingData.KEY_RING_DATA);
+
+            byte[] data = cursor.getBlob(keyRingDataCol);
+            if (data != null) {
+                keyRing = PgpConversionHelper.BytesToPGPKeyRing(data);
+            }
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return keyRing;
+    }
+
     public static PGPPublicKeyRing getPGPPublicKeyRingWithKeyId(Context context, long keyId) {
-        // todo do
+        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
+        long masterKeyId = getMasterKeyId(context, uri);
+        if(masterKeyId != 0)
+            return getPGPPublicKeyRing(context, masterKeyId);
         return null;
     }
-
-    public static PGPSecretKey getPGPSecretKeyByKeyId(Context context, long keyId) {
-        return getPGPSecretKeyRingWithKeyId(context, keyId).getSecretKey(keyId);
-    }
     public static PGPSecretKeyRing getPGPSecretKeyRingWithKeyId(Context context, long keyId) {
-        // todo do
+        Uri uri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(keyId));
+        long masterKeyId = getMasterKeyId(context, uri);
+        if(masterKeyId != 0)
+            return getPGPSecretKeyRing(context, masterKeyId);
         return null;
     }
 
@@ -330,24 +341,6 @@ public class ProviderHelper {
         Uri queryUri = KeyRingData.buildSecretKeyRingUri(Long.toString(masterKeyId));
         // see if we can get our master key id back from the uri
         return getMasterKeyId(context, queryUri) == masterKeyId;
-    }
-
-    /** Find the master key id related to a given query. The id will either be extracted from the
-     * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
-     */
-    public static long getMasterKeyId(Context context, Uri queryUri) {
-        // try extracting from the uri first
-        try {
-            return Long.parseLong(queryUri.getPathSegments().get(1));
-        } catch(NumberFormatException e) {
-            // didn't work? oh well.
-            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
-        }
-        Object data = getUnifiedData(context, queryUri, KeyRings.MASTER_KEY_ID);
-        if(data instanceof Long)
-            return (Long) data;
-        // TODO better error handling?
-        return 0L;
     }
 
     public static ArrayList<String> getKeyRingsAsArmoredString(Context context, long[] masterKeyIds) {

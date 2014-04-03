@@ -266,9 +266,6 @@ public class KeyListFragment extends Fragment
     static final int INDEX_IS_REVOKED = 3;
     static final int INDEX_HAS_SECRET = 4;
 
-    // show secret before public key, sort by user id otherwise
-    static final String SORT_ORDER = KeyRings.HAS_SECRET + " DESC, " + UserIds.USER_ID + " ASC";
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // This is called when a new Loader needs to be created. This
@@ -282,7 +279,7 @@ public class KeyListFragment extends Fragment
         }
         // Now create and return a CursorLoader that will take care of
         // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, SORT_ORDER);
+        return new CursorLoader(getActivity(), baseUri, PROJECTION, where, whereArgs, null);
     }
 
     @Override

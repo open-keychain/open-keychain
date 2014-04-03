@@ -37,7 +37,7 @@ import org.spongycastle.openpgp.PGPSecretKeyRing;
 import org.sufficientlysecure.keychain.Id;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 
 import java.util.HashMap;
@@ -206,7 +206,7 @@ public class EncryptAsymmetricFragment extends Fragment {
             String uidExtra = "";
             // See if we can get a user_id from a unified query
             Object data = ProviderHelper.getUnifiedData(
-                    getActivity(), mSecretKeyId, KeychainContract.UserIds.USER_ID);
+                    getActivity(), mSecretKeyId, KeyRings.USER_ID);
             if(data instanceof String) {
                 String chunks[] = ((String) data).split(" <", 2);
                 uid = chunks[0];

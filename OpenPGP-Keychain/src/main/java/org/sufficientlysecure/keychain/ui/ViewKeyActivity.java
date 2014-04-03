@@ -173,7 +173,9 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content;
         if (fingerprintOnly) {
-            Object blob = ProviderHelper.getUnifiedData(this, dataUri, KeychainContract.Keys.FINGERPRINT);
+            Object blob = ProviderHelper.getGenericData(
+                    this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    KeychainContract.Keys.FINGERPRINT);
             if(blob instanceof byte[]) {
                 String fingerprint = PgpKeyHelper.convertFingerprintToHex((byte[]) blob);
                 content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;

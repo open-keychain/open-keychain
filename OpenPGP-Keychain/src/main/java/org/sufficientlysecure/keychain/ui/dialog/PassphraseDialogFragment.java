@@ -116,7 +116,7 @@ public class PassphraseDialogFragment extends DialogFragment implements OnEditor
             secretKey = null;
             alert.setMessage(R.string.passphrase_for_symmetric_encryption);
         } else {
-            secretKey = ProviderHelper.getPGPSecretKeyByKeyId(activity, secretKeyId);
+            secretKey = ProviderHelper.getPGPSecretKeyRing(activity, secretKeyId).getSecretKey();
 
             if (secretKey == null) {
                 alert.setTitle(R.string.title_key_not_found);

@@ -232,7 +232,7 @@ public class PgpDecryptVerify {
                 updateProgress(R.string.progress_finding_key, currentProgress, 100);
 
                 PGPPublicKeyEncryptedData encData = (PGPPublicKeyEncryptedData) obj;
-                secretKey = ProviderHelper.getPGPSecretKeyByKeyId(mContext, encData.getKeyID());
+                secretKey = ProviderHelper.getPGPSecretKeyRing(mContext, encData.getKeyID()).getSecretKey();
                 if (secretKey != null) {
                     // secret key exists in database
 
@@ -362,7 +362,7 @@ public class PgpDecryptVerify {
             for (int i = 0; i < sigList.size(); ++i) {
                 signature = sigList.get(i);
                 signatureKey = ProviderHelper
-                        .getPGPPublicKeyByKeyId(mContext, signature.getKeyID());
+                        .getPGPPublicKeyRing(mContext, signature.getKeyID()).getPublicKey();
                 if (signatureKeyId == 0) {
                     signatureKeyId = signature.getKeyID();
                 }
@@ -546,7 +546,7 @@ public class PgpDecryptVerify {
         PGPPublicKey signatureKey = null;
         for (int i = 0; i < sigList.size(); ++i) {
             signature = sigList.get(i);
-            signatureKey = ProviderHelper.getPGPPublicKeyByKeyId(mContext, signature.getKeyID());
+            signatureKey = ProviderHelper.getPGPPublicKeyRing(mContext, signature.getKeyID()).getPublicKey();
             if (signatureKeyId == 0) {
                 signatureKeyId = signature.getKeyID();
             }
