@@ -108,13 +108,13 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             }
         });
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
 
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
             setTitle(R.string.nav_import);
         } else {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+
             setupDrawerNavigation(savedInstanceState);
 
             // set drop down navigation
