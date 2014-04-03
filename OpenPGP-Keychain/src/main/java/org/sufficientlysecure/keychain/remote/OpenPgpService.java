@@ -356,11 +356,10 @@ public class OpenPgpService extends RemoteService {
 
                 // If keys are not in db we return an additional PendingIntent
                 // to retrieve the missing key
-                // TODO!!!
-                Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
-                intent.setAction(RemoteServiceActivity.ACTION_ERROR_MESSAGE);
-                intent.putExtra(RemoteServiceActivity.EXTRA_ERROR_MESSAGE, "todo");
-                intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
+                Intent intent = new Intent(getBaseContext(), ImportKeysActivity.class);
+                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
+                intent.putExtra(ImportKeysActivity.EXTRA_KEY_ID, keyId);
+                intent.putExtra(ImportKeysActivity.EXTRA_PENDING_INTENT_DATA, data);
 
                 PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,
                         intent,
@@ -372,6 +371,9 @@ public class OpenPgpService extends RemoteService {
             } else {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+
+                // TODO: also return PendingIntent that opens the key view activity
+                
                 return result;
             }
         } catch (Exception e) {
