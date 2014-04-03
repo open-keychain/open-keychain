@@ -340,25 +340,24 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                     Toast.makeText(this, R.string.error_save_first, Toast.LENGTH_LONG).show();
                 } else {
                     long masterKeyId = ProviderHelper.getMasterKeyId(this, mDataUri);
-                    long[] ids = new long[] {masterKeyId};
-                    mExportHelper.showExportKeysDialog(
-                        ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC, null);
+                long[] ids = new long[]{masterKeyId};
+                mExportHelper.showExportKeysDialog(ids, Id.type.secret_key, Constants.Path.APP_DIR_FILE_SEC,
+                        null);
                     return true;
                 }
                 return true;
             case R.id.menu_key_edit_delete:
-                long rowId = ProviderHelper.getRowId(this, mDataUri);
-                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingsUri(Long.toString(rowId));
-                // Message is received after key is deleted
-                Handler returnHandler = new Handler() {
-                    @Override
-                    public void handleMessage(Message message) {
-                        if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
-                            setResult(RESULT_CANCELED);
-                            finish();
-                        }
-                    }
-                };
+                long rowId= ProviderHelper.getRowId(this,mDataUri);
+                Uri convertUri = KeychainContract.KeyRings.buildSecretKeyRingUri(Long.toString(rowId));
+                    // Message is received after key is deleted
+                    Handler returnHandler = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+                            if (message.what == DeleteKeyDialogFragment.MESSAGE_OKAY) {
+                                setResult(RESULT_CANCELED);
+                                finish();
+                            }
+                    }};
                 mExportHelper.deleteKey(convertUri, returnHandler);
                 return true;
 
@@ -373,7 +372,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
     private void finallyEdit(final long masterKeyId) {
         if (masterKeyId != 0) {
             PGPSecretKey masterKey = null;
-            mKeyRing = ProviderHelper.getPGPSecretKeyRingByMasterKeyId(this, masterKeyId);
+            mKeyRing = ProviderHelper.getPGPSecretKeyRing(this, masterKeyId);
             if (mKeyRing != null) {
                 masterKey = PgpKeyHelper.getMasterKey(mKeyRing);
                 for (PGPSecretKey key : new IterableIterator<PGPSecretKey>(mKeyRing.getSecretKeys())) {
@@ -663,7 +662,7 @@ public class EditKeyActivity extends ActionBarActivity implements EditorListener
                         Intent data = new Intent();
 
                         // return uri pointing to new created key
-                        Uri uri = KeychainContract.KeyRings.buildPublicKeyRingsByKeyIdUri(
+                        Uri uri = KeychainContract.KeyRings.buildGenericKeyRingUri(
                                 String.valueOf(getMasterKeyId()));
                         data.setData(uri);
 

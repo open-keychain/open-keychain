@@ -83,13 +83,7 @@ public class ViewKeyActivity extends ActionBarActivity {
             selectedTab = intent.getExtras().getInt(EXTRA_SELECTED_TAB);
         }
 
-        {
-            // normalize mDataUri to a "by row id" query, to ensure it works with any
-            // given valid /public/ query
-            long rowId = ProviderHelper.getRowId(this, getIntent().getData());
-            // TODO: handle (rowId == 0) with something else than a crash
-            mDataUri = KeychainContract.KeyRings.buildPublicKeyRingsUri(Long.toString(rowId));
-        }
+        mDataUri = getIntent().getData();
 
         Bundle mainBundle = new Bundle();
         mainBundle.putParcelable(ViewKeyMainFragment.ARG_DATA_URI, mDataUri);
@@ -124,10 +118,8 @@ public class ViewKeyActivity extends ActionBarActivity {
                 uploadToKeyserver(mDataUri);
                 return true;
             case R.id.menu_key_view_export_file:
-                long masterKeyId =
-                        ProviderHelper.getPublicMasterKeyId(this,
-                            Long.valueOf(mDataUri.getLastPathSegment()));
-                long[] ids = new long[] {masterKeyId};
+                long masterKeyId = Long.valueOf(mDataUri.getLastPathSegment());
+                long[] ids = new long[]{masterKeyId};
                 mExportHelper.showExportKeysDialog(ids, Id.type.public_key,
                         Constants.Path.APP_DIR_FILE_PUB, null);
                 return true;

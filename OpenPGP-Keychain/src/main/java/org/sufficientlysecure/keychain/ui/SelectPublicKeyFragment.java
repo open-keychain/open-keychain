@@ -254,9 +254,7 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // This is called when a new Loader needs to be created. This
-        // sample only has one Loader, so we don't care about the ID.
-        Uri baseUri = KeyRings.buildPublicKeyRingsUri();
+        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
 
         // These are the rows that we will retrieve.
         long now = new Date().getTime() / 1000;
@@ -264,24 +262,24 @@ public class SelectPublicKeyFragment extends ListFragmentWorkaround implements T
                 KeyRings._ID,
                 KeyRings.MASTER_KEY_ID,
                 UserIds.USER_ID,
-                "(SELECT COUNT(available_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                        + " AS available_keys WHERE available_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                        + " AND available_keys." + Keys.IS_REVOKED + " = '0' AND  available_keys."
-                        + Keys.CAN_ENCRYPT + " = '1') AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
-                "(SELECT COUNT(valid_keys." + Keys._ID + ") FROM " + Tables.KEYS
-                        + " AS valid_keys WHERE valid_keys." + Keys.KEY_RING_ROW_ID + " = "
-                        + KeychainDatabase.Tables.KEY_RINGS + "." + KeyRings._ID
-                        + " AND valid_keys." + Keys.IS_REVOKED + " = '0' AND valid_keys."
-                        + Keys.CAN_ENCRYPT + " = '1' AND valid_keys." + Keys.CREATION + " <= '"
-                        + now + "' AND " + "(valid_keys." + Keys.EXPIRY + " IS NULL OR valid_keys."
-                        + Keys.EXPIRY + " >= '" + now + "')) AS "
-                        + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
+                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                        +" WHERE k." + Keys.MASTER_KEY_ID + " = "
+                            + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                            + " AND k." + Keys.IS_REVOKED + " = '0'"
+                            + " AND k." + Keys.CAN_ENCRYPT + " = '1'"
+                        + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_AVAILABLE,
+                "(SELECT COUNT(*) FROM " + Tables.KEYS + " AS k"
+                        + " WHERE k." + Keys.MASTER_KEY_ID + " = "
+                            + KeychainDatabase.Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                            + " AND k." + Keys.IS_REVOKED + " = '0'"
+                            + " AND k." + Keys.CAN_ENCRYPT + " = '1'"
+                            + " AND k." + Keys.CREATION + " <= '" + now + "'"
+                            + " AND ( k." + Keys.EXPIRY + " IS NULL OR k." + Keys.EXPIRY + " >= '" + now + "' )"
+                        + ") AS " + SelectKeyCursorAdapter.PROJECTION_ROW_VALID, };
 
         String inMasterKeyList = null;
         if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {
-            inMasterKeyList = KeyRings.MASTER_KEY_ID + " IN (";
+            inMasterKeyList = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN (";
             for (int i = 0; i < mSelectedMasterKeyIds.length; ++i) {
                 if (i != 0) {
                     inMasterKeyList += ", ";
