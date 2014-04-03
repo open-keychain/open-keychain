@@ -74,6 +74,10 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
     public static final String EXTRA_KEY_ID = "key_id";
     public static final String EXTRA_FINGERPRINT = "fingerprint";
 
+    // only used by ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN when used from OpenPgpService
+    public static final String EXTRA_PENDING_INTENT_DATA = "data";
+    private Intent mPendingIntentData;
+
     // view
     private ImportKeysListFragment mListFragment;
     private String[] mNavigationStrings;
@@ -109,7 +113,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
         mNavigationStrings = getResources().getStringArray(R.array.import_action_list);
 
         if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
-            getSupportActionBar().setTitle(R.string.nav_import);
+            setTitle(R.string.nav_import);
         } else {
             setupDrawerNavigation(savedInstanceState);
 
@@ -161,6 +165,11 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
             }
         } else if (ACTION_IMPORT_KEY_FROM_KEYSERVER.equals(action)
                 || ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(action)) {
+
+            // only used for OpenPgpService
+            if (extras.containsKey(EXTRA_PENDING_INTENT_DATA)) {
+                mPendingIntentData = extras.getParcelable(EXTRA_PENDING_INTENT_DATA);
+            }
             if (extras.containsKey(EXTRA_QUERY) || extras.containsKey(EXTRA_KEY_ID)) {
                 /* simple search based on query or key id */
 
@@ -374,7 +383,7 @@ public class ImportKeysActivity extends DrawerActivity implements ActionBar.OnNa
                     }
 
                     if (ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN.equals(getIntent().getAction())) {
-                        ImportKeysActivity.this.setResult(Activity.RESULT_OK);
+                        ImportKeysActivity.this.setResult(Activity.RESULT_OK, mPendingIntentData);
                         finish();
                     }
                 }
