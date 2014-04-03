@@ -61,15 +61,15 @@ public class OpenPgpService extends RemoteService {
         ArrayList<Long> keyIds = new ArrayList<Long>();
 
         boolean missingUserIdsCheck = false;
-        boolean dublicateUserIdsCheck = false;
+        boolean duplicateUserIdsCheck = false;
         ArrayList<String> missingUserIds = new ArrayList<String>();
-        ArrayList<String> dublicateUserIds = new ArrayList<String>();
+        ArrayList<String> duplicateUserIds = new ArrayList<String>();
 
         for (String email : encryptionUserIds) {
-            Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingsByEmailUri(email);
+            Uri uri = KeyRings.buildUnifiedKeyRingsFindByEmailUri(email);
             Cursor cur = getContentResolver().query(uri, null, null, null, null);
             if (cur.moveToFirst()) {
-                long id = cur.getLong(cur.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID));
+                long id = cur.getLong(cur.getColumnIndex(KeyRings.MASTER_KEY_ID));
                 keyIds.add(id);
             } else {
                 missingUserIdsCheck = true;
@@ -77,8 +77,8 @@ public class OpenPgpService extends RemoteService {
                 Log.d(Constants.TAG, "user id missing");
             }
             if (cur.moveToNext()) {
-                dublicateUserIdsCheck = true;
-                dublicateUserIds.add(email);
+                duplicateUserIdsCheck = true;
+                duplicateUserIds.add(email);
                 Log.d(Constants.TAG, "more than one user id with the same email");
             }
         }
@@ -90,13 +90,13 @@ public class OpenPgpService extends RemoteService {
         }
 
         // allow the user to verify pub key selection
-        if (missingUserIdsCheck || dublicateUserIdsCheck) {
+        if (missingUserIdsCheck || duplicateUserIdsCheck) {
             // build PendingIntent
             Intent intent = new Intent(getBaseContext(), RemoteServiceActivity.class);
             intent.setAction(RemoteServiceActivity.ACTION_SELECT_PUB_KEYS);
             intent.putExtra(RemoteServiceActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
             intent.putExtra(RemoteServiceActivity.EXTRA_MISSING_USER_IDS, missingUserIds);
-            intent.putExtra(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS, dublicateUserIds);
+            intent.putExtra(RemoteServiceActivity.EXTRA_DUBLICATE_USER_IDS, duplicateUserIds);
             intent.putExtra(RemoteServiceActivity.EXTRA_DATA, data);
 
             PendingIntent pi = PendingIntent.getActivity(getBaseContext(), 0,

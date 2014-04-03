@@ -160,23 +160,11 @@ public class EncryptAsymmetricFragment extends Fragment {
         if (preselectedEncryptionKeyIds != null) {
             Vector<Long> goodIds = new Vector<Long>();
             for (int i = 0; i < preselectedEncryptionKeyIds.length; ++i) {
-                // TODO: don't use bouncy castle objects!
-
-                PGPPublicKeyRing keyRing = ProviderHelper.getPGPPublicKeyRingWithKeyId(getActivity(),
-                        preselectedEncryptionKeyIds[i]);
-                PGPPublicKey masterKey;
-                if (keyRing == null) {
-                    continue;
-                }
-                masterKey = keyRing.getPublicKey();
-                if (masterKey == null) {
-                    continue;
-                }
-                Vector<PGPPublicKey> encryptKeys = PgpKeyHelper.getUsableEncryptKeys(keyRing);
-                if (encryptKeys.size() == 0) {
-                    continue;
-                }
-                goodIds.add(masterKey.getKeyID());
+                long id = ProviderHelper.getMasterKeyId(getActivity(),
+                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(Long.toString(preselectedEncryptionKeyIds[i]))
+                );
+                // TODO check for available encrypt keys... is this even relevant?
+                goodIds.add(id);
             }
             if (goodIds.size() > 0) {
                 long[] keyIds = new long[goodIds.size()];

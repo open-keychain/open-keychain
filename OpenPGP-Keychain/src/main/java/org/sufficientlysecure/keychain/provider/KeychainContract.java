@@ -83,10 +83,9 @@ public class KeychainContract {
 
     public static final String PATH_UNIFIED = "unified";
 
-    public static final String PATH_BY_MASTER_KEY_ID = "master_key_id";
-    public static final String PATH_BY_KEY_ID = "key_id";
-    public static final String PATH_BY_EMAILS = "emails";
-    public static final String PATH_BY_LIKE_EMAIL = "like_email";
+    public static final String PATH_FIND = "find";
+    public static final String PATH_BY_EMAIL = "email";
+    public static final String PATH_BY_SUBKEY = "subkey";
 
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
@@ -109,20 +108,24 @@ public class KeychainContract {
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
         }
-        public static Uri buildUnifiedKeyRingsByEmailUri(String email) {
-            return CONTENT_URI.buildUpon().appendPath("email:" + email).build();
-        }
 
         public static Uri buildGenericKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).build();
         }
-
         public static Uri buildUnifiedKeyRingUri(String masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(masterKeyId).appendPath(PATH_UNIFIED).build();
         }
         public static Uri buildUnifiedKeyRingUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_UNIFIED).build();
         }
+
+        public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_EMAIL).appendPath(email).build();
+        }
+        public static Uri buildUnifiedKeyRingsFindBySubkeyUri(String subkey) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FIND).appendPath(PATH_BY_SUBKEY).appendPath(subkey).build();
+        }
+
     }
 
     public static class KeyRingData implements KeyRingsColumns, BaseColumns {
