@@ -373,7 +373,7 @@ public class OpenPgpService extends RemoteService {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
 
                 // TODO: also return PendingIntent that opens the key view activity
-                
+
                 return result;
             }
         } catch (Exception e) {
