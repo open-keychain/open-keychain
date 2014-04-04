@@ -158,8 +158,10 @@ public class ViewKeyActivity extends ActionBarActivity {
     }
 
     private void updateFromKeyserver(Uri dataUri) {
-        byte[] fingerprintBlob = ProviderHelper.getFingerprint(this, dataUri);
-        String fingerprint = PgpKeyHelper.convertFingerprintToHex(fingerprintBlob);
+        byte[] blob = (byte[]) ProviderHelper.getGenericData(
+                this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
+                KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+        String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
 
         Intent queryIntent = new Intent(this, ImportKeysActivity.class);
         queryIntent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN);
@@ -171,11 +173,11 @@ public class ViewKeyActivity extends ActionBarActivity {
     private void shareKey(Uri dataUri, boolean fingerprintOnly) {
         String content;
         if (fingerprintOnly) {
-            Object blob = ProviderHelper.getGenericData(
+            byte[] data = (byte[]) ProviderHelper.getGenericData(
                     this, KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.Keys.FINGERPRINT);
-            if(blob instanceof byte[]) {
-                String fingerprint = PgpKeyHelper.convertFingerprintToHex((byte[]) blob);
+                    KeychainContract.Keys.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+            if(data != null) {
+                String fingerprint = PgpKeyHelper.convertFingerprintToHex(data);
                 content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
             } else {
                 Toast.makeText(getApplicationContext(), "Bad key selected!",

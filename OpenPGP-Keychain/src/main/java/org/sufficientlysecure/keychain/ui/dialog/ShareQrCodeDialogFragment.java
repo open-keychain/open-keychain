@@ -31,7 +31,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpKeyHelper;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.ProviderHelper;
 import org.sufficientlysecure.keychain.util.QrCodeUtils;
 
@@ -90,15 +90,15 @@ public class ShareQrCodeDialogFragment extends DialogFragment {
         if (mFingerprintOnly) {
             alert.setPositiveButton(R.string.btn_okay, null);
 
-            Object blob = ProviderHelper.getGenericData(
-                    getActivity(), KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri),
-                    KeychainContract.Keys.FINGERPRINT);
-            if(!(blob instanceof byte[])) {
+            byte[] blob = (byte[]) ProviderHelper.getGenericData(
+                    getActivity(), KeyRings.buildUnifiedKeyRingUri(dataUri),
+                    KeyRings.FINGERPRINT, ProviderHelper.FIELD_TYPE_BLOB);
+            if(blob == null) {
                 // TODO error handling?!
                 return null;
             }
 
-            String fingerprint = PgpKeyHelper.convertFingerprintToHex((byte[]) blob);
+            String fingerprint = PgpKeyHelper.convertFingerprintToHex(blob);
             mText.setText(getString(R.string.share_qr_code_dialog_fingerprint_text) + " " + fingerprint);
             content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
             setQrCode(content);

@@ -61,22 +61,30 @@ import java.util.Set;
 
 public class ProviderHelper {
 
-    public static Object getGenericData(Context context, Uri uri, String column) {
-        return getGenericData(context, uri, new String[] { column }).get(column);
+    // If we ever switch to api level 11, we can ditch this whole mess!
+    public static final int FIELD_TYPE_NULL = 1;
+    // this is called integer to stay coherent with the constants in Cursor (api level 11)
+    public static final int FIELD_TYPE_INTEGER = 2;
+    public static final int FIELD_TYPE_FLOAT = 3;
+    public static final int FIELD_TYPE_STRING = 4;
+    public static final int FIELD_TYPE_BLOB = 5;
+
+    public static Object getGenericData(Context context, Uri uri, String column, int type) {
+        return getGenericData(context, uri, new String[] { column }, new int[] { type }).get(column);
     }
-    public static HashMap<String,Object> getGenericData(Context context, Uri uri, String[] proj) {
+    public static HashMap<String,Object> getGenericData(Context context, Uri uri, String[] proj, int[] types) {
         Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
 
         HashMap<String, Object> result = new HashMap<String, Object>(proj.length);
         if (cursor != null && cursor.moveToFirst()) {
             int pos = 0;
             for(String p : proj) {
-                switch(cursor.getType(pos)) {
-                    case Cursor.FIELD_TYPE_NULL: result.put(p, cursor.isNull(pos)); break;
-                    case Cursor.FIELD_TYPE_INTEGER: result.put(p, cursor.getLong(pos)); break;
-                    case Cursor.FIELD_TYPE_FLOAT: result.put(p, cursor.getFloat(pos)); break;
-                    case Cursor.FIELD_TYPE_STRING: result.put(p, cursor.getString(pos)); break;
-                    case Cursor.FIELD_TYPE_BLOB: result.put(p, cursor.getBlob(pos)); break;
+                switch(types[pos]) {
+                    case FIELD_TYPE_NULL: result.put(p, cursor.isNull(pos)); break;
+                    case FIELD_TYPE_INTEGER: result.put(p, cursor.getLong(pos)); break;
+                    case FIELD_TYPE_FLOAT: result.put(p, cursor.getFloat(pos)); break;
+                    case FIELD_TYPE_STRING: result.put(p, cursor.getString(pos)); break;
+                    case FIELD_TYPE_BLOB: result.put(p, cursor.getBlob(pos)); break;
                 }
                 pos += 1;
             }
@@ -89,11 +97,11 @@ public class ProviderHelper {
         return result;
     }
 
-    public static Object getUnifiedData(Context context, long masterKeyId, String column) {
-        return getUnifiedData(context, masterKeyId, new String[] { column }).get(column);
+    public static Object getUnifiedData(Context context, long masterKeyId, String column, int type) {
+        return getUnifiedData(context, masterKeyId, new String[] { column }, new int[] { type }).get(column);
     }
-    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj) {
-        return getGenericData(context, KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj);
+    public static HashMap<String,Object> getUnifiedData(Context context, long masterKeyId, String[] proj, int[] types) {
+        return getGenericData(context, KeyRings.buildUnifiedKeyRingUri(Long.toString(masterKeyId)), proj, types);
     }
 
     /** Find the master key id related to a given query. The id will either be extracted from the
@@ -108,8 +116,8 @@ public class ProviderHelper {
             // didn't work? oh well.
             Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
         }
-        Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID);
-        if(data instanceof Long)
+        Object data = getGenericData(context, queryUri, KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
+        if(data != null)
             return (Long) data;
         // TODO better error handling?
         return 0L;

@@ -193,10 +193,10 @@ public class EncryptAsymmetricFragment extends Fragment {
             String uid = getResources().getString(R.string.user_id_no_name);
             String uidExtra = "";
             // See if we can get a user_id from a unified query
-            Object data = ProviderHelper.getUnifiedData(
-                    getActivity(), mSecretKeyId, KeyRings.USER_ID);
-            if(data instanceof String) {
-                String chunks[] = ((String) data).split(" <", 2);
+            String user_id = (String) ProviderHelper.getUnifiedData(
+                    getActivity(), mSecretKeyId, KeyRings.USER_ID, ProviderHelper.FIELD_TYPE_STRING);
+            if(user_id != null) {
+                String chunks[] = user_id.split(" <", 2);
                 uid = chunks[0];
                 if (chunks.length > 1) {
                     uidExtra = "<" + chunks[1];
