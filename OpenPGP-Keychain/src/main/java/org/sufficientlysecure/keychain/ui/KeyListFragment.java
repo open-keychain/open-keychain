@@ -154,9 +154,6 @@ public class KeyListFragment extends Fragment
         } catch (ApiLevelTooLowException e) {
         }
 
-        // this view is made visible if no data is available
-        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
-
         /*
          * ActionBarSherlock does not support MultiChoiceModeListener. Thus multi-selection is only
          * available for Android >= 3.0
@@ -290,6 +287,9 @@ public class KeyListFragment extends Fragment
         mAdapter.swapCursor(data);
 
         mStickyList.setAdapter(mAdapter);
+
+        // this view is made visible if no data is available
+        mStickyList.setEmptyView(getActivity().findViewById(R.id.key_list_empty));
 
         // NOTE: Not supported by StickyListHeader, but reimplemented here
         // The list should now be shown.

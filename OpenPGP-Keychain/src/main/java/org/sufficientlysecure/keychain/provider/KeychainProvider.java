@@ -168,8 +168,13 @@ public class KeychainProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mUriMatcher = buildUriMatcher();
-        mKeychainDatabase = new KeychainDatabase(getContext());
         return true;
+    }
+
+    public KeychainDatabase getDb() {
+        if(mKeychainDatabase == null)
+            mKeychainDatabase = new KeychainDatabase(getContext());
+        return mKeychainDatabase;
     }
 
     /**
@@ -441,7 +446,7 @@ public class KeychainProvider extends ContentProvider {
             orderBy = sortOrder;
         }
 
-        SQLiteDatabase db = mKeychainDatabase.getReadableDatabase();
+        SQLiteDatabase db = getDb().getReadableDatabase();
         Cursor c = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
 
         // Tell the cursor what uri to watch, so it knows when its source data changes
@@ -465,7 +470,7 @@ public class KeychainProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(Constants.TAG, "insert(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
+        final SQLiteDatabase db = getDb().getWritableDatabase();
 
         Uri rowUri = null;
         Long keyId = null;
@@ -538,7 +543,7 @@ public class KeychainProvider extends ContentProvider {
     public int delete(Uri uri, String additionalSelection, String[] selectionArgs) {
         Log.v(Constants.TAG, "delete(uri=" + uri + ")");
 
-        final SQLiteDatabase db = mKeychainDatabase.getWritableDatabase();
+        final SQLiteDatabase db = getDb().getWritableDatabase();
 
         int count;
         final int match = mUriMatcher.match(uri);

@@ -30,6 +30,7 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -55,6 +56,7 @@ public class ViewKeyMainFragment extends Fragment implements
 
     public static final String ARG_DATA_URI = "uri";
 
+    private LinearLayout mContainer;
     private TextView mName;
     private TextView mEmail;
     private TextView mComment;
@@ -83,6 +85,7 @@ public class ViewKeyMainFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_main_fragment, container, false);
 
+        mContainer = (LinearLayout) view.findViewById(R.id.container);
         mName = (TextView) view.findViewById(R.id.name);
         mEmail = (TextView) view.findViewById(R.id.email);
         mComment = (TextView) view.findViewById(R.id.comment);
@@ -120,6 +123,9 @@ public class ViewKeyMainFragment extends Fragment implements
             Log.d(Constants.TAG, "Same URI, no need to load the data again!");
             return;
         }
+
+        getActivity().setProgressBarIndeterminateVisibility(Boolean.TRUE);
+        mContainer.setVisibility(View.GONE);
 
         mDataUri = dataUri;
 
@@ -319,6 +325,8 @@ public class ViewKeyMainFragment extends Fragment implements
             default:
                 break;
         }
+        getActivity().setProgressBarIndeterminateVisibility(Boolean.FALSE);
+        mContainer.setVisibility(View.VISIBLE);
     }
 
     /**

@@ -260,7 +260,6 @@ public class PgpImportExport {
                 }
 
                 if (save) {
-                    ProviderHelper.saveKeyRing(mContext, secretKeyRing);
                     // TODO: preserve certifications
                     // (http://osdir.com/ml/encryption.bouncy-castle.devel/2007-01/msg00054.html ?)
                     PGPPublicKeyRing newPubRing = null;
@@ -275,6 +274,7 @@ public class PgpImportExport {
                     if (newPubRing != null) {
                         ProviderHelper.saveKeyRing(mContext, newPubRing);
                     }
+                    ProviderHelper.saveKeyRing(mContext, secretKeyRing);
                     // TODO: remove status returns, use exceptions!
                     status = Id.return_value.ok;
                 }
